@@ -1,0 +1,61 @@
+html{
+  --color-fill-1: #f3f6fa;
+  --color-fill-2: #fff;
+  --menu-border-radius-base: 32px;
+  --color-white-1: #fff;
+  --font-weight-normal: 500;
+  --font-weight-bold: 700;
+  --color-text-1: #1d2129;
+
+  .css-var-rf {
+    --ant-font-size: 12px;
+  }
+ 
+  .css-var-rf.ant-menu-css-var {
+    --ant-menu-item-height: 46px;
+    --ant-menu-item-selected-bg: var(--color-white-1);
+    --ant-menu-item-border-radius: 24px;
+    --ant-menu-item-selected-color: var(--ant-color-primary);
+    --ant-menu-item-hover-bg: var(--color-white-1);
+    --ant-menu-item-color: var(--color-text-1);
+    --ant-menu-item-active-bg: var(--color-white-1);
+  }
+}
+body {
+  font-weight: var(--font-weight-normal);
+}
+
+// ======== basic layout style start============
+.ant-pro-layout {
+  height: 100vh;
+  .ant-pro-sider-logo {
+    border-block-end: none;
+  }
+  .ant-layout {
+    min-height: 100vh;
+    
+  }
+  .ant-pro-layout-container {
+    background-color: var(--color-fill-2);
+  }
+}
+
+// ======== basic layout style end ============
+
+// ======== menu style start ============
+.ant-pro-sider-collapsed-button {
+  display: none;
+}
+
+.ant-pro-layout {
+  .ant-pro-sider {
+    .ant-menu {
+      .ant-menu-item:hover {
+        color: inherit;
+      }
+    }
+  }
+}
+// ======== menu style end ============
+
+@import url('src/assets/menu.less');

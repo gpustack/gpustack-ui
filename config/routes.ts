@@ -15,6 +15,7 @@ export default [
   },
   {
     name: 'Playground',
+    title: 'Playground',
     path: '/playground',
     key: 'playground',
     icon: 'Comment',

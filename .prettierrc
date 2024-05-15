@@ -1,7 +1,9 @@
 {
   "printWidth": 80,
   "singleQuote": true,
-  "trailingComma": "all",
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "htmlWhitespaceSensitivity": "strict",
   "proseWrap": "never",
   "overrides": [{ "files": ".prettierrc", "options": { "parser": "json" } }],
   "plugins": ["prettier-plugin-organize-imports", "prettier-plugin-packagejson","unused-imports"],

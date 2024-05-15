@@ -6,17 +6,20 @@ export default defineConfig({
   antd: {
     style: 'less',
     configProvider: {
+      componentSize: 'large',
       theme:{
         'root-entry-name': 'variable',
         cssVar: true,
         hashed: false,
-       token: {
-        colorPrimary: '#2fbf85',
-        motion: true,
-       }
+        token: {
+          colorPrimary: '#2fbf85',
+          borderRadius:'20px',
+          motion: true,
+        },
       },
     }
   },
+  hash: true,
   access: {},
   model: {},
   initialState: {},

@@ -1,0 +1,63 @@
+.ant-pro-footer-bar {
+  padding-block: 20px;
+  padding-bottom: 30px;
+  border:none;
+  .ant-pro-footer-bar-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+.messageInput{
+  position:relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max(50%, 500px);
+  background-color: var(--color-fill-1);
+  border-radius: 30px;
+  padding-right: 50px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  &:focus-within {
+    border-color: var(--ant-input-active-border-color);
+    box-shadow: var(--ant-input-active-shadow);
+    background-color: var(--color-white-1);
+    transition: all 0.2s ease;
+    &:hover {
+      background-color: var(--color-white-1);
+    }
+  }
+  
+  &:hover {
+    background: var(--ant-color-fill-secondary);
+    transition: background 0.2s ease;
+  }
+ textarea {
+  padding: 16px;
+  border-radius: 30px;
+  background-color:transparent;
+ }
+ textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 6px;
+}
+ .send-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 11px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(-30deg);
+ }
+}

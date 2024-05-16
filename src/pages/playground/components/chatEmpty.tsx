@@ -1,7 +1,7 @@
 import Logo from '@/assets/images/logo.png';
-import chatStyle from './chat-style.less'
+import chatStyle from './chat-style.less';
 
-const ChatEmpty:React.FC = () => {
+const ChatEmpty: React.FC = () => {
   return (
     <div className={chatStyle.chatEmpty}>
       <div className={chatStyle.logo}>
@@ -10,6 +10,6 @@ const ChatEmpty:React.FC = () => {
       <h3 className={chatStyle.tips}>How can I help you today?</h3>
     </div>
   );
-}
+};
 
 export default ChatEmpty;

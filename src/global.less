@@ -27,7 +27,10 @@ html {
     --ant-font-size-sm: var(--font-size-base);
     --ant-font-size-lg: var(--font-size-base);
     --ant-font-size-xl: 20px;
+    --ant-font-size: var(--font-size-base);
     --ant-padding-sm: 14px;
+    --ant-border-radius-lg: 20px;
+    --ant-color-error: #ff4d4f;
 
     &.ant-popover {
       --ant-popover-inner-padding: 26px;
@@ -60,8 +63,47 @@ html {
     --ant-select-option-font-size: var(--font-size-base);
   }
 }
+
 body * {
   font-weight: var(--font-weight-normal);
+}
+
+body {
+  // input
+  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled):focus,
+  .ant-input-outlined.ant-input-status-error:not(
+      .ant-input-disabled
+    ):focus-within {
+    border: none;
+    box-shadow: none;
+  }
+  // input number
+  .ant-input-number-outlined.ant-input-number-status-error:not(
+      .ant-input-number-disabled
+    ) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .ant-input-number-outlined.ant-input-number-status-error:not(
+      .ant-input-number-disabled
+    ):focus,
+  .ant-input-number-outlined.ant-input-number-status-error:not(
+      .ant-input-disabled
+    ):focus-within {
+    border: none;
+    box-shadow: none;
+  }
+
+  // form item help
+  .ant-form-item-with-help .ant-form-item-explain {
+    padding-left: 24px;
+  }
 }
 
 // ======== basic layout style start============

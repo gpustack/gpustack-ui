@@ -1,7 +1,6 @@
-import SealPopover from '@/components/popover';
 import { ControlOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Select, Space } from 'antd';
+import { Button, Popover, Select, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import ChatContent from './components/chatContent';
 import MessageInput from './components/messageInput';
@@ -17,6 +16,7 @@ const Playground: React.FC = () => {
   const [ModelList, setModelList] = useState(dataList);
   const [messageList, setMessageList] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState('llama3:latest');
+  const [showPopover, setShowPopover] = useState(false);
 
   const handleSelectChange = (value: string) => {
     setSelectedModel(value);
@@ -26,6 +26,14 @@ const Playground: React.FC = () => {
     // fetch message list from server
     console.log('getModelList');
     setMessageList(['1']);
+  };
+
+  const handleTogglePopover = () => {
+    setShowPopover(!showPopover);
+  };
+
+  const handleClosePopover = () => {
+    setShowPopover(false);
   };
 
   useEffect(() => {
@@ -45,21 +53,26 @@ const Playground: React.FC = () => {
             onChange={handleSelectChange}
             variant="filled"
           ></Select>
-          <SealPopover
-            content={<ParamsSettings></ParamsSettings>}
+          <Popover
+            content={
+              <ParamsSettings onClose={handleClosePopover}></ParamsSettings>
+            }
             destroyTooltipOnHide={true}
             title="Params Settings"
             trigger="click"
             arrow={false}
-            overlayInnerStyle={{ maxHeight: '500px', overflow: 'auto' }}
+            open={showPopover}
+            overlayStyle={{ top: 70 }}
+            overlayInnerStyle={{ paddingRight: 0 }}
             placement="bottomRight"
           >
             <Button
+              onClick={handleTogglePopover}
               type="primary"
               shape="circle"
               icon={<ControlOutlined />}
             ></Button>
-          </SealPopover>
+          </Popover>
         </Space>
       ]}
       footer={[<MessageInput />]}

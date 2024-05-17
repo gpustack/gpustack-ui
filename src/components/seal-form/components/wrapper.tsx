@@ -4,6 +4,9 @@ interface WrapperProps {
   children: React.ReactNode;
   label: string;
   isFocus: boolean;
+  status?: string;
+  className?: string;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
@@ -11,10 +14,21 @@ const Wrapper: React.FC<WrapperProps> = ({
   children,
   label,
   isFocus,
+  status,
+  className,
+  disabled,
   onClick
 }) => {
   return (
-    <div className={wrapperStyle.wrapper} onClick={onClick}>
+    <div
+      className={classNames(
+        wrapperStyle.wrapper,
+        wrapperStyle[`validate-status-${status}`],
+        disabled ? wrapperStyle['seal-input-wrapper-disabled'] : '',
+        className ? wrapperStyle[className] : ''
+      )}
+      onClick={onClick}
+    >
       <label
         onClick={onClick}
         className={classNames(

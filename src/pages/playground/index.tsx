@@ -1,10 +1,11 @@
-import SealInput from '@/components/seal-form/seal-input';
+import SealPopover from '@/components/popover';
 import { ControlOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Popover, Select, Space } from 'antd';
+import { Button, Select, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import ChatContent from './components/chatContent';
 import MessageInput from './components/messageInput';
+import ParamsSettings from './components/params-settings';
 
 const dataList = [
   { value: 'llama3:latest', label: 'llama3:latest' },
@@ -23,6 +24,7 @@ const Playground: React.FC = () => {
 
   const getMessageList = () => {
     // fetch message list from server
+    console.log('getModelList');
     setMessageList(['1']);
   };
 
@@ -43,13 +45,21 @@ const Playground: React.FC = () => {
             onChange={handleSelectChange}
             variant="filled"
           ></Select>
-          <Popover content="ssd" title="Title" trigger="click">
+          <SealPopover
+            content={<ParamsSettings></ParamsSettings>}
+            destroyTooltipOnHide={true}
+            title="Params Settings"
+            trigger="click"
+            arrow={false}
+            overlayInnerStyle={{ maxHeight: '500px', overflow: 'auto' }}
+            placement="bottomRight"
+          >
             <Button
               type="primary"
               shape="circle"
               icon={<ControlOutlined />}
             ></Button>
-          </Popover>
+          </SealPopover>
         </Space>
       ]}
       footer={[<MessageInput />]}
@@ -57,7 +67,6 @@ const Playground: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <ChatContent messageList={messageList}></ChatContent>
       </div>
-      <SealInput.Input label="test label"></SealInput.Input>
     </PageContainer>
   );
 };

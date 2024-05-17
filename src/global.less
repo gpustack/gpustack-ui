@@ -1,4 +1,4 @@
-html{
+html {
   --color-fill-1: rgba(0, 0, 0, 0.04);
   --color-fill-2: #fff;
   --color-fill-3: #f3f6fa;
@@ -10,23 +10,37 @@ html{
   --color-text-1: #1d2129;
   --color-bg-light-1: #f0fff6;
   --font-size-base: 12px;
-  --ant-input-active-shadow: 0 0 0 2px rgba(5, 255, 105, 0.06);
-  --ant-input-active-border-color: #2fbf85;
   --ant-color-fill-secondary: rgba(0, 0, 0, 0.06);
   // --color-text-1: #000;
- 
+
+  --seal-transition-func: cubic-bezier(0, 0, 1, 1);
+  // ======== input ============
+  --ant-input-active-shadow: 0 0 0 2px rgba(5, 255, 105, 0.06);
+  --ant-input-active-border-color: #2fbf85;
+  --ant-input-hover-border-color: #54cc98;
 
   .css-var-rf {
-    --ant-font-size:  var(--font-size-base);
+    --ant-font-size: var(--font-size-base);
   }
   .css-var-r0 {
     // --ant-control-height: 36px;
-    --ant-font-size-sm:  var(--font-size-base);
-    --ant-font-size-lg:  var(--font-size-base);
+    --ant-font-size-sm: var(--font-size-base);
+    --ant-font-size-lg: var(--font-size-base);
     --ant-font-size-xl: 20px;
     --ant-padding-sm: 14px;
+
+    &.ant-popover {
+      --ant-popover-inner-padding: 26px;
+      --ant-popover-title-margin-bottom: 22px;
+    }
+
+    &.ant-btn {
+      --ant-button-content-font-size-lg: 13px;
+      --ant-button-content-font-size: 13px;
+      --ant-button-content-font-size-sm: 13px;
+    }
   }
- 
+
   .css-var-rf.ant-menu-css-var {
     --ant-menu-item-height: 46px;
     --ant-menu-item-selected-bg: var(--color-white-1);
@@ -39,12 +53,12 @@ html{
   .css-var-r0.ant-input-css-var {
     --ant-input-input-font-size: var(--font-size-base);
     --ant-input-input-font-size-lg: var(--font-size-base);
-    --ant-input-input-font-size-sm:var(--font-size-base);
+    --ant-input-input-font-size-sm: var(--font-size-base);
   }
   .css-var-r0.ant-select-css-var {
     --ant-select-option-active-bg: var(--color-fill-1);
     --ant-select-option-font-size: var(--font-size-base);
-  } 
+  }
 }
 body * {
   font-weight: var(--font-weight-normal);
@@ -59,7 +73,6 @@ body * {
   }
   .ant-layout {
     min-height: 100vh;
-    
   }
   .ant-pro-layout-container {
     background-color: var(--color-fill-2);

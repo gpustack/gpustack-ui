@@ -1,0 +1,27 @@
+:local(.seal_custom_popover) {
+  position: relative;
+  padding-top: var(--ant-popover-inner-padding);
+  border-radius: var(--ant-border-radius-lg);
+  background-color: var(--color-white-1);
+  box-shadow: var(--ant-box-shadow-secondary);
+  overflow: hidden;
+  padding-top: 80px;
+  :global(.ant-popover-inner) {
+    box-shadow: none;
+    padding-top: 0;
+  }
+  :global(.ant-popover-content) {
+    position: static;
+  }
+  :global(.ant-popover-title) {
+    position: absolute;
+    top: 0;
+    padding-block: var(--ant-popover-inner-padding)
+      var(--ant-popover-title-margin-bottom);
+    margin-bottom: 0;
+    background: #fff;
+    padding-left: var(--ant-popover-inner-padding);
+    left: 0;
+    width: 100%;
+  }
+}

@@ -14,12 +14,14 @@
     "@ant-design/icons": "^5.3.7",
     "@ant-design/pro-components": "^2.7.1",
     "@umijs/max": "^4.2.1",
-    "antd": "^5.17.0"
+    "antd": "^5.17.0",
+    "antd-style": "^3.6.2",
+    "classnames": "^2.5.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
-    "eslint": "^9.2.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-unused-imports": "^3.2.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",

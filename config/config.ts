@@ -7,16 +7,16 @@ export default defineConfig({
     style: 'less',
     configProvider: {
       componentSize: 'large',
-      theme:{
+      theme: {
         'root-entry-name': 'variable',
         cssVar: true,
         hashed: false,
         token: {
           colorPrimary: '#2fbf85',
-          borderRadius:'20px',
-          motion: true,
-        },
-      },
+          borderRadius: 20,
+          motion: true
+        }
+      }
     }
   },
   hash: true,
@@ -31,5 +31,5 @@ export default defineConfig({
   // },
   layout: false,
   routes,
-  npmClient: 'pnpm',
+  npmClient: 'pnpm'
 });

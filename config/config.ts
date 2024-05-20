@@ -11,6 +11,14 @@ export default defineConfig({
         'root-entry-name': 'variable',
         cssVar: true,
         hashed: false,
+        components: {
+          Input: {
+            inputFontSize: 12
+          },
+          Table: {
+            cellFontSize: 12
+          }
+        },
         token: {
           colorPrimary: '#2fbf85',
           borderRadius: 20,
@@ -32,4 +40,4 @@ export default defineConfig({
   layout: false,
   routes,
   npmClient: 'pnpm'
-});
+}) as any;

@@ -65,10 +65,11 @@ const SealInputSearch: React.FC<SearchProps & SealFormItemProps> = (props) => {
       <Input.Search
         {...rest}
         ref={inputRef}
+        autoComplete="off"
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
         onSearch={handleSearch}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
       ></Input.Search>
     </Wrapper>
   );

@@ -1,5 +1,7 @@
 html {
   --color-fill-1: rgba(0, 0, 0, 0.04);
+  // --color-fill-1: #f3f6fa;
+  --color-fill-2: #fff;
   --color-fill-2: #fff;
   --color-fill-3: #f3f6fa;
   --menu-border-radius-base: 32px;
@@ -11,6 +13,8 @@ html {
   --color-bg-light-1: #f0fff6;
   --font-size-base: 12px;
   --ant-color-fill-secondary: rgba(0, 0, 0, 0.06);
+  --table-td-radius: 24px;
+  --checkbox-border-radius: 4px;
   // --color-text-1: #000;
 
   --seal-transition-func: cubic-bezier(0, 0, 1, 1);
@@ -39,8 +43,12 @@ html {
 
     &.ant-btn {
       --ant-button-content-font-size-lg: 13px;
-      --ant-button-content-font-size: 13px;
-      --ant-button-content-font-size-sm: 13px;
+      --ant-button-content-font-size: 12px;
+      --ant-button-content-font-size-sm: 12px;
+    }
+
+    &.ant-table-css-var {
+      --ant-table-row-hover-bg: #e6e6e6;
     }
   }
 
@@ -57,6 +65,7 @@ html {
     --ant-input-input-font-size: var(--font-size-base);
     --ant-input-input-font-size-lg: var(--font-size-base);
     --ant-input-input-font-size-sm: var(--font-size-base);
+    --ant-input-padding-inline-lg: 14px;
   }
   .css-var-r0.ant-select-css-var {
     --ant-select-option-active-bg: var(--color-fill-1);
@@ -69,7 +78,52 @@ body * {
 }
 
 body {
+  .ant-checkbox {
+    .ant-checkbox-inner {
+      border-radius: var(--checkbox-border-radius) !important;
+    }
+  }
+
+  // table
+  .ant-table-wrapper .ant-table-selection-column {
+    padding-inline-start: 16px !important;
+  }
+  .ant-table-container .ant-table-content table {
+    border-spacing: 0 20px;
+    .ant-table-thead th.ant-table-column-sort {
+      background-color: transparent;
+    }
+    .ant-checkbox {
+      .ant-checkbox-inner::after {
+        display: flex !important;
+      }
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      display: flex !important;
+    }
+    tr > th {
+      background-color: var(--color-white-1);
+      border: none;
+      padding-block: 0px;
+    }
+    tr > td {
+      background-color: var(--color-fill-1);
+      border-bottom: none;
+      height: 70px;
+      &:first-child {
+        border-top-left-radius: var(--table-td-radius);
+        border-bottom-left-radius: var(--table-td-radius);
+      }
+      &:last-child {
+        border-top-right-radius: var(--table-td-radius);
+        border-bottom-right-radius: var(--table-td-radius);
+      }
+    }
+  }
   // input
+  .ant-input-css-var.ant-input {
+    height: 40px;
+  }
   .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled) {
     border: none;
     box-shadow: none;

@@ -1,6 +1,11 @@
 import avatar from '@/assets/images/avatar.png';
 import logo from '@/assets/images/logo.png';
-import { CopyOutlined, DislikeOutlined, EditOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  CopyOutlined,
+  DislikeOutlined,
+  EditOutlined,
+  SyncOutlined
+} from '@ant-design/icons';
 import { Button, Space, Tooltip } from 'antd';
 import chatStyle from './chat-style.less';
 import ChatEmpty from './chatEmpty';

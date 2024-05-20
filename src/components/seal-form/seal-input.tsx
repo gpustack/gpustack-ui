@@ -1,7 +1,7 @@
 import type { InputProps } from 'antd';
 import { Form, Input } from 'antd';
 import type { TextAreaProps } from 'antd/es/input/TextArea';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Wrapper from './components/wrapper';
 import SealInputNumber from './input-number';
 import SealInputSearch from './input-search';
@@ -9,7 +9,16 @@ import SealPassword from './password';
 import { SealFormItemProps } from './types';
 
 const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
-  const { label, placeholder, style, ...rest } = props;
+  const {
+    label,
+    placeholder,
+    onChange,
+    onFocus,
+    onBlur,
+    onInput,
+    style,
+    ...rest
+  } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   const { status } = Form.Item.useStatus();
@@ -20,32 +29,44 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     }
   }, [props.value]);
 
-  const handleClickWrapper = () => {
+  const handleClickWrapper = useCallback(() => {
     if (!props.disabled && !isFocus) {
       inputRef.current?.focus?.();
       setIsFocus(true);
     }
-  };
+  }, [props.disabled, isFocus]);
 
-  const handleChange = (e: any) => {
-    props.onChange?.(e);
-  };
+  const handleChange = useCallback(
+    (e: any) => {
+      onChange?.(e);
+    },
+    [onChange]
+  );
 
-  const handleOnFocus = (e: any) => {
-    setIsFocus(true);
-    props.onFocus?.(e);
-  };
+  const handleOnFocus = useCallback(
+    (e: any) => {
+      setIsFocus(true);
+      onFocus?.(e);
+    },
+    [onFocus]
+  );
 
-  const handleOnBlur = (e: any) => {
-    if (!inputRef.current?.input?.value) {
-      setIsFocus(false);
-      props.onBlur?.(e);
-    }
-  };
+  const handleOnBlur = useCallback(
+    (e: any) => {
+      if (!inputRef.current?.input?.value) {
+        setIsFocus(false);
+        onBlur?.(e);
+      }
+    },
+    [onBlur]
+  );
 
-  const handleInput = (e: any) => {
-    props.onInput?.(e);
-  };
+  const handleInput = useCallback(
+    (e: any) => {
+      onInput?.(e);
+    },
+    [onInput]
+  );
 
   return (
     <Wrapper
@@ -120,10 +141,11 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
       <Input
         {...rest}
         ref={inputRef}
+        autoComplete="off"
         onInput={handleInput}
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
       ></Input>
     </Wrapper>
   );

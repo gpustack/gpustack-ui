@@ -50,9 +50,10 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
       <Input.Password
         {...rest}
         ref={inputRef}
+        autoComplete="off"
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
       ></Input.Password>
     </Wrapper>
   );

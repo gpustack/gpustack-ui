@@ -56,10 +56,11 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
       <InputNumber
         {...rest}
         ref={inputRef}
+        autoComplete="off"
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
         onInput={handleInput}
-        onChange={(e) => handleChange(e)}
+        onChange={handleChange}
       ></InputNumber>
     </Wrapper>
   );

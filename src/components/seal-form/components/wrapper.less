@@ -18,6 +18,10 @@
     cursor: not-allowed;
     &:hover {
       border-color: var(--ant-color-border);
+      :global(.ant-input-search-button) {
+        border-color: var(--ant-color-border) !important;
+        color: var(--ant-color-text-description) !important;
+      }
     }
   }
 
@@ -70,7 +74,7 @@
     align-items: center;
     border: none;
     box-shadow: none;
-    height: @inputheight;
+    height: @inputheight !important;
   }
   :global(.ant-select-selector) {
     border: none !important;
@@ -79,7 +83,7 @@
     box-shadow: none !important;
   }
   :global(.ant-select-selection-item) {
-    height: @inputheight;
+    height: @inputheight !important;
   }
   :global(
       .ant-select-outlined.ant-select-disabled:not(.ant-select-customize-input)
@@ -96,7 +100,7 @@
     box-shadow: none;
     padding-block: 5px;
     padding-inline: 12px;
-    height: @inputheight;
+    height: @inputheight !important;
   }
   :global(.ant-input-number) {
     display: flex;
@@ -104,7 +108,7 @@
     border: none;
     box-shadow: none;
     padding: 0;
-    height: @inputheight;
+    height: @inputheight !important;
   }
   :global(.ant-input-outlined) {
     &.seal-textarea {
@@ -115,7 +119,7 @@
     background-color: transparent;
   }
   :global(input.ant-input-number-input) {
-    height: @inputheight;
+    height: @inputheight !important;
     padding-block: 5px;
     padding-inline: 12px;
   }
@@ -148,6 +152,7 @@
     border-left: var(--ant-line-width) var(--ant-line-type)
       var(--ant-color-border);
   }
+
   :global(.ant-input-number-handler-wrap) {
     top: -20px;
     height: @wrapheight - 2px;

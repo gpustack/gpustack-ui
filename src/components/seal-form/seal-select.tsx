@@ -60,7 +60,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
         onSearch={handleOnSearch}
-        onChange={(val, options) => handleChange(val, options)}
+        onChange={handleChange}
       >
         {children}
       </Select>

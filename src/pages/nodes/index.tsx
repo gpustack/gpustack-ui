@@ -95,10 +95,6 @@ const Models: React.FC = () => {
     });
   };
 
-  const handleClickMenu = (e: any) => {
-    console.log('click', e);
-  };
-
   const RenderProgress = memo(
     (props: { record: NodeItem; dataIndex: string }) => {
       const { record, dataIndex } = props;

@@ -3,7 +3,12 @@ import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  SyncOutlined,
+  WechatWorkOutlined
+} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import {
   Button,
@@ -205,10 +210,21 @@ const Models: React.FC = () => {
             render={(text, record) => {
               return (
                 <Space>
-                  <Button size="middle">Open in PlayGround</Button>
-                  <Button size="middle" danger>
-                    Delete
-                  </Button>
+                  <Tooltip title="Open in PlayGround">
+                    <Button
+                      size="small"
+                      type="primary"
+                      icon={<WechatWorkOutlined />}
+                    ></Button>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <Button
+                      size="small"
+                      type="primary"
+                      danger
+                      icon={<DeleteOutlined></DeleteOutlined>}
+                    ></Button>
+                  </Tooltip>
                 </Space>
               );
             }}

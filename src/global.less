@@ -35,6 +35,7 @@ html {
     --ant-padding-sm: 14px;
     --ant-border-radius-lg: 20px;
     --ant-color-error: #ff4d4f;
+    --ant-color-bg-mask: rgba(0, 0, 0, 0.35);
 
     &.ant-popover {
       --ant-popover-inner-padding: 26px;
@@ -60,6 +61,7 @@ html {
     --ant-button-content-font-size-lg: 13px;
     --ant-button-content-font-size: 12px;
     --ant-button-content-font-size-sm: 12px;
+    --ant-modal-content-padding: 24px 30px;
   }
 
   .css-var-rf.ant-menu-css-var {
@@ -102,6 +104,9 @@ body {
     border-spacing: 0 20px;
     .ant-table-thead th.ant-table-column-sort {
       background-color: transparent;
+      &::before {
+        background-color: var(--ant-table-header-split-color) !important;
+      }
     }
     .ant-checkbox {
       .ant-checkbox-inner::after {
@@ -167,6 +172,13 @@ body {
   // form item help
   .ant-form-item-with-help .ant-form-item-explain {
     padding-left: 24px;
+  }
+
+  // icon
+  .anticon {
+    &.size-16 {
+      font-size: 16px;
+    }
   }
 }
 

@@ -7,3 +7,10 @@ export interface DropDownItem {
 }
 
 export type PageActionType = 'create' | 'update' | 'view';
+
+export type StatusType =
+  | 'error'
+  | 'warning'
+  | 'transitioning'
+  | 'success'
+  | 'inactive';

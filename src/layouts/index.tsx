@@ -12,19 +12,19 @@ import {
   useAppData,
   useLocation,
   useNavigate,
-  type IRoute,
+  type IRoute
 } from '@umijs/max';
 import { useMemo } from 'react';
 import Exception from './Exception';
 import './Layout.css';
 import Logo from './Logo';
 import { getRightRenderContent } from './rightRender';
-import { renderMenuIcon,patchRoutes } from './runtime';
+import { patchRoutes } from './runtime';
 
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
 const filterRoutes = (
   routes: IRoute[],
-  filterFn: (route: IRoute) => boolean,
+  filterFn: (route: IRoute) => boolean
 ) => {
   if (routes.length === 0) {
     return [];
@@ -78,34 +78,33 @@ export default (props: any) => {
   const navigate = useNavigate();
   const { clientRoutes, pluginManager } = useAppData();
 
-  console.log('pluginManager===========', pluginManager);
-
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
     loading: false,
-    setInitialState: null,
+    setInitialState: null
   };
   const { initialState, loading, setInitialState } = initialInfo;
 
   const userConfig = {
     title: '',
-    layout: 'mix',
+    layout: 'mix'
   };
 
   const formatMessage = undefined;
   const runtimeConfig = pluginManager.applyPlugins({
     key: 'layout',
     type: 'modify',
+    logout: true,
     initialValue: {
       ...initialInfo,
       notFound: <div>not found</div>
-    },
+    }
   });
   console.log(
     'clientRoute===========',
     clientRoutes,
     runtimeConfig,
-    initialInfo,
+    initialInfo
   );
 
   // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级, proLayout 消费时, 无法正确展示菜单, 这里对冗余数据进行过滤操作
@@ -116,18 +115,17 @@ export default (props: any) => {
         (!!route.isLayout && route.id !== '@@/global-layout') ||
         !!route.isWrapper
       );
-    },
+    }
   );
-  console.log('clientRoutes===========', clientRoutes, newRoutes)
+  console.log('clientRoutes===========', clientRoutes, newRoutes);
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes));
   patchRoutes({ routes: route?.children || [] });
 
-
   const matchedRoute = useMemo(
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,
-    [location.pathname],
+    [location.pathname]
   );
-console.log('route===========', route)
+  console.log('route===========', route);
   return (
     <ProLayout
       route={route}
@@ -147,7 +145,7 @@ console.log('route===========', route)
       menu={{ locale: userConfig.locale }}
       logo={Logo}
       menuItemRender={(menuItemProps, defaultDom) => {
-        console.log('meurender=========',{ defaultDom})
+        console.log('meurender=========', { defaultDom });
         if (menuItemProps.isUrl || menuItemProps.children) {
           return defaultDom;
         }
@@ -158,15 +156,11 @@ console.log('route===========', route)
               to={menuItemProps.path.replace('/*', '')}
               target={menuItemProps.target}
             >
-               {defaultDom}
+              {defaultDom}
             </Link>
           );
         }
-        return (
-          <>
-          {defaultDom}
-          </>
-        );
+        return <>{defaultDom}</>;
       }}
       itemRender={(route, _, routes) => {
         const { breadcrumbName, title, path } = route;
@@ -190,7 +184,7 @@ console.log('route===========', route)
             runtimeConfig,
             loading,
             initialState,
-            setInitialState,
+            setInitialState
           });
           if (runtimeConfig.rightContentRender) {
             return runtimeConfig.rightContentRender(layoutProps, dom, {
@@ -199,7 +193,7 @@ console.log('route===========', route)
               runtimeConfig,
               loading,
               initialState,
-              setInitialState,
+              setInitialState
             });
           }
           return dom;

@@ -39,6 +39,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   };
 
   const handleOnBlur = (e: any) => {
+    setIsFocus(false);
     props.onBlur?.(e);
   };
 
@@ -61,6 +62,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
         onBlur={handleOnBlur}
         onSearch={handleOnSearch}
         onChange={handleChange}
+        notFoundContent={null}
       >
         {children}
       </Select>

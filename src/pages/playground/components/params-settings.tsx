@@ -64,7 +64,6 @@ const ParamsSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         >
           <SealInput.Input
             label="Seed"
-            disabled={true}
             style={{ width: INPUT_WIDTH.default }}
           ></SealInput.Input>
         </Form.Item>
@@ -72,11 +71,7 @@ const ParamsSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           name="select"
           rules={[{ required: true }]}
         >
-          <SealSelect
-            label="Select"
-            disabled={true}
-            style={{ width: INPUT_WIDTH.default }}
-          >
+          <SealSelect label="Select" style={{ width: INPUT_WIDTH.default }}>
             <Select.Option value={1}>1</Select.Option>
             <Select.Option value={2}>2</Select.Option>
             <Select.Option value={3}>3</Select.Option>

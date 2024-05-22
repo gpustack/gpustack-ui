@@ -1,0 +1,20 @@
+.divider-line {
+  height: 8px;
+  // border-radius: 4px;
+  width: 100%;
+  // background-color: var(--color-fill-1);
+  z-index: 100;
+  margin: 0;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -9px;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    background: var(--color-fill-1);
+    // border-radius: 4px;
+  }
+}

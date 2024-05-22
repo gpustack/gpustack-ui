@@ -4,14 +4,14 @@ export default [
     key: 'dashboard',
     layout: false,
     icon: 'home',
-    redirect: '/dashboard',
+    redirect: '/dashboard'
   },
   {
     name: 'Dashboard',
     path: '/dashboard',
     key: 'dashboard',
     icon: 'home',
-    component: './dashboard',
+    component: './dashboard'
   },
   {
     name: 'Playground',
@@ -19,52 +19,34 @@ export default [
     path: '/playground',
     key: 'playground',
     icon: 'Comment',
-    component: './playground',
+    component: './playground'
   },
   {
     name: 'Models',
     path: '/models',
     key: 'models',
     icon: 'Block',
-    component: './models',
+    component: './models'
   },
   {
     name: 'Nodes',
     path: '/nodes',
     key: 'nodes',
     icon: 'CloudServer',
-    component: './nodes',
+    component: './nodes'
   },
   {
     name: 'Users',
     path: '/users',
     key: 'users',
     icon: 'Team',
-    component: './users',
+    component: './users'
   },
-  // {
-  //   name: '首页',
-  //   path: '/home',
-  //   key: 'homes',
-  //   component: './Home',
-  // },
-  // {
-  //   name: '权限演示',
-  //   path: '/access',
-  //   key: 'access',
-  //   component: './Access',
-  // },
-  // {
-  //   name: ' CRUD 示例',
-  //   path: '/table',
-  //   key: 'table',
-  //   component: './Table',
-  // },
   {
     name: '404',
     path: '*',
     key: '404',
     layout: false,
-    component: './404',
-  },
+    component: './404'
+  }
 ];

@@ -12,13 +12,15 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
+    "@ant-design/plots": "^2.2.2",
     "@ant-design/pro-components": "^2.7.1",
     "@types/lodash": "^4.17.4",
     "@umijs/max": "^4.2.1",
     "antd": "^5.17.0",
     "antd-style": "^3.6.2",
     "classnames": "^2.5.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "numeral": "^2.0.6"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",

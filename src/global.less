@@ -207,8 +207,14 @@ body {
 .ant-pro-layout {
   .ant-pro-sider {
     .ant-menu {
+      .ant-menu-item:not(.ant-menu-item-selected) {
+        color: var(--ant-color-text);
+      }
       .ant-menu-item:hover {
-        color: inherit;
+        color: var(--ant-color-text);
+      }
+      .ant-menu-item.ant-menu-item-selected:hover {
+        color: var(--ant-color-primary);
       }
     }
   }

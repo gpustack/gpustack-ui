@@ -71,6 +71,8 @@ export function getRightRenderContent(opts: {
     ]
   };
   // antd@5 和  4.24 之后推荐使用 menu，性能更好
+
+  console.log('version+++++++++=', opts.runtimeConfig, version);
   let dropdownProps;
   if (version.startsWith('5.') || version.startsWith('4.24.')) {
     dropdownProps = { menu: langMenu };

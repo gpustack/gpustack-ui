@@ -91,6 +91,7 @@ export default (props: any) => {
   };
 
   const formatMessage = undefined;
+
   const runtimeConfig = pluginManager.applyPlugins({
     key: 'layout',
     type: 'modify',
@@ -101,7 +102,7 @@ export default (props: any) => {
     }
   });
   console.log(
-    'clientRoute===========',
+    'clientRoute==========2=',
     clientRoutes,
     runtimeConfig,
     initialInfo

@@ -10,6 +10,7 @@ import {
   WechatWorkOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
+import { useNavigate } from '@umijs/max';
 import {
   Button,
   Input,
@@ -43,6 +44,7 @@ const dataSource = [
 ];
 
 const Models: React.FC = () => {
+  const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -116,6 +118,11 @@ const Models: React.FC = () => {
         console.log('Cancel');
       }
     });
+  };
+
+  const handleOpenPlayGround = (row: any) => {
+    console.log('handleOpenPlayGround', row);
+    navigate('/playground');
   };
   return (
     <>
@@ -214,6 +221,7 @@ const Models: React.FC = () => {
                     <Button
                       size="small"
                       type="primary"
+                      onClick={() => handleOpenPlayGround(record)}
                       icon={<WechatWorkOutlined />}
                     ></Button>
                   </Tooltip>

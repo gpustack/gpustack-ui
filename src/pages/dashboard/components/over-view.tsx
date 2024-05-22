@@ -25,9 +25,8 @@ const Overview: React.FC = (props) => {
   return (
     <Row gutter={[20, 20]} className={styles.row}>
       {overviewConfigs.map((config, index) => (
-        <Col span={5}>
+        <Col span={5} key={config.key}>
           <CardItem
-            key={config.key}
             label={config.label}
             value={data[config.key] || 0}
             bgColor={config.backgroundColor}

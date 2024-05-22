@@ -87,7 +87,8 @@ export default (props: any) => {
 
   const userConfig = {
     title: '',
-    layout: 'mix'
+    layout: 'mix',
+    locale: true
   };
 
   const formatMessage = undefined;

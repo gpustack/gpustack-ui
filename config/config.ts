@@ -32,11 +32,14 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
-  // locale: {
-  //   // 默认使用 src/locales/zh-CN.ts 作为多语言文件
-  //   default: 'zh-CN',
-  //   baseSeparator: '-',
-  // },
+  locale: {
+    antd: true,
+    baseNavigator: true,
+    baseSeparator: '-',
+    default: 'zh-CN',
+    title: false,
+    useLocalStorage: true
+  },
   layout: false,
   routes,
   npmClient: 'pnpm'

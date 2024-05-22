@@ -46,6 +46,7 @@ const UtilizationOvertime: React.FC = () => {
     color: ['red', 'blue', 'green'],
     colorField: 'type',
     slider: false,
+    shapeField: 'smooth',
     axis: {
       x: {
         textStyle: {
@@ -53,23 +54,21 @@ const UtilizationOvertime: React.FC = () => {
         }
       }
     },
-    xAxis: {
-      autoRotate: true
-    },
-    yAxis: {
-      nice: true,
-      label: {
-        autoRotate: true
-      }
-    },
     point: {
       shapeField: 'circle',
       sizeField: 2
+    },
+    style: {
+      lineWidth: 1.4
     },
     legend: {
       color: {
         layout: { justifyContent: 'center' }
       }
+    },
+    tooltip: {
+      title: 'time',
+      items: [{ channel: 'y' }]
     },
     label: {
       autoRotate: true

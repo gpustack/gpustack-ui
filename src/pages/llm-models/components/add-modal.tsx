@@ -11,13 +11,12 @@ type AddModalProps = {
   onOk: () => void;
   onCancel: () => void;
 };
-const AddModal: React.FC<AddModalProps> = ({
-  title,
-  action,
-  open,
-  onOk,
-  onCancel
-}) => {
+const AddModal: React.FC<AddModalProps> = (props) => {
+  const { title, action, open, onOk, onCancel } = props || {};
+  if (!open) {
+    return null;
+  }
+  console.log('modal open', open);
   const [form] = Form.useForm();
   return (
     <Modal

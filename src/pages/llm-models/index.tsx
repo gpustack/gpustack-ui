@@ -10,8 +10,9 @@ import {
   WechatWorkOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useNavigate } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import {
+  App,
   Button,
   Input,
   Modal,
@@ -21,7 +22,7 @@ import {
   Tooltip,
   message
 } from 'antd';
-import { useState } from 'react';
+import { StrictMode, useState } from 'react';
 import AddModal from './components/add-modal';
 const { Column } = Table;
 
@@ -44,6 +45,8 @@ const dataSource = [
 ];
 
 const Models: React.FC = () => {
+  const { modal } = App.useApp();
+  const intl = useIntl();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
@@ -125,7 +128,7 @@ const Models: React.FC = () => {
     navigate('/playground');
   };
   return (
-    <>
+    <StrictMode>
       <PageContainer
         ghost
         header={{
@@ -157,7 +160,7 @@ const Models: React.FC = () => {
                 type="primary"
                 onClick={handleAddModal}
               >
-                Import Module
+                {intl?.formatMessage?.({ id: 'models.button.deploy' })}
               </Button>
               <Button
                 icon={<DeleteOutlined />}
@@ -246,7 +249,7 @@ const Models: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
-    </>
+    </StrictMode>
   );
 };
 

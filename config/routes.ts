@@ -26,7 +26,7 @@ export default [
     path: '/models',
     key: 'models',
     icon: 'Block',
-    component: './models'
+    component: './llm-models'
   },
   {
     name: 'Nodes',

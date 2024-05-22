@@ -43,10 +43,6 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     props.onBlur?.(e);
   };
 
-  const handleOnSearch = (val: any) => {
-    props.onSearch?.(val);
-  };
-
   return (
     <Wrapper
       status={status}
@@ -60,7 +56,6 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
         ref={inputRef}
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
-        onSearch={handleOnSearch}
         onChange={handleChange}
         notFoundContent={null}
       >

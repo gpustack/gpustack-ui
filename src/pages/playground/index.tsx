@@ -44,7 +44,7 @@ const Playground: React.FC = () => {
     <PageContainer
       title={false}
       extra={[
-        <Space size={20}>
+        <Space size={20} key="space">
           <Select
             showSearch
             options={ModelList}
@@ -52,6 +52,7 @@ const Playground: React.FC = () => {
             value={selectedModel}
             onChange={handleSelectChange}
             variant="filled"
+            key="model-select"
           ></Select>
           <Popover
             content={
@@ -65,17 +66,19 @@ const Playground: React.FC = () => {
             overlayStyle={{ top: 70 }}
             overlayInnerStyle={{ paddingRight: 0 }}
             placement="bottomRight"
+            key="popover"
           >
             <Button
               onClick={handleTogglePopover}
               type="primary"
               shape="circle"
+              key="button"
               icon={<ControlOutlined />}
             ></Button>
           </Popover>
         </Space>
       ]}
-      footer={[<MessageInput />]}
+      footer={[<MessageInput key="message" />]}
     >
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <ChatContent messageList={messageList}></ChatContent>

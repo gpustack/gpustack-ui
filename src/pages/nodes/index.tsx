@@ -34,7 +34,7 @@ const dataSource: NodeItem[] = [
     state: 'ALIVE'
   },
   {
-    id: 1,
+    id: 2,
     name: '192.168.1.2',
     address: '192.168.1.5',
     hostname: 'node-2',
@@ -173,6 +173,7 @@ const Models: React.FC = () => {
           dataSource={dataSource}
           rowSelection={rowSelection}
           loading={loading}
+          rowKey="id"
           onChange={handleTableChange}
           pagination={{
             showSizeChanger: true,

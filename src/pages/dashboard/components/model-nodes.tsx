@@ -36,7 +36,7 @@ const dataSource: NodeItem[] = [
     state: 'ALIVE'
   },
   {
-    id: 1,
+    id: 2,
     name: '192.168.1.2',
     address: '192.168.1.5',
     hostname: 'node-2',
@@ -81,7 +81,7 @@ const dataSource: NodeItem[] = [
   }
 ];
 
-const Models: React.FC = () => {
+const ModelNodes: React.FC = () => {
   const rowSelection = useTableRowSelection();
 
   const [selectName, setSelectName] = useState<string>('llama3:latest');
@@ -186,6 +186,7 @@ const Models: React.FC = () => {
         ></PageTools>
         <Table
           dataSource={dataSource}
+          rowKey={(record) => record.id}
           loading={loading}
           onChange={handleTableChange}
           pagination={false}
@@ -265,4 +266,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default Models;
+export default ModelNodes;

@@ -1,29 +1,25 @@
 import classNames from 'classnames';
-import React from 'react';
-import LabelInfo from './label-info';
-import wrapperStyle from './wrapper.less';
+import LabelInfo from './components/label-info';
+import wrapperStyle from './components/wrapper.less';
 interface WrapperProps {
   children: React.ReactNode;
   label: string;
-  isFocus: boolean;
   status?: string;
-  required?: boolean;
-  description?: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  required?: boolean;
+  description?: string;
   onClick?: () => void;
 }
 
 const Wrapper: React.FC<WrapperProps> = ({
   children,
   label,
-  isFocus,
   status,
   className,
   disabled,
-  description,
   required,
-  onClick
+  description
 }) => {
   return (
     <div
@@ -33,15 +29,11 @@ const Wrapper: React.FC<WrapperProps> = ({
         disabled ? wrapperStyle['seal-input-wrapper-disabled'] : '',
         className ? wrapperStyle[className] : ''
       )}
-      onClick={onClick}
     >
       <label
-        onClick={onClick}
         className={classNames(
           wrapperStyle['label'],
-          isFocus
-            ? wrapperStyle['isfoucs-has-value']
-            : wrapperStyle['blur-no-value']
+          wrapperStyle['isfoucs-has-value']
         )}
       >
         <LabelInfo
@@ -50,7 +42,14 @@ const Wrapper: React.FC<WrapperProps> = ({
           description={description}
         ></LabelInfo>
       </label>
-      {children}
+      <div
+        style={{
+          padding: '0 calc(var(--ant-padding-sm) - 5px)',
+          width: '100%'
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

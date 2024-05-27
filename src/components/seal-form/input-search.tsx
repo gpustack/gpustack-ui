@@ -16,7 +16,7 @@ type OnSearch = (
 ) => void;
 
 const SealInputSearch: React.FC<SearchProps & SealFormItemProps> = (props) => {
-  const { label, placeholder, ...rest } = props;
+  const { label, placeholder, required, description, ...rest } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   const { status } = Form.Item.useStatus();
@@ -59,6 +59,8 @@ const SealInputSearch: React.FC<SearchProps & SealFormItemProps> = (props) => {
       status={status}
       label={label || (placeholder as string)}
       isFocus={isFocus}
+      required={required}
+      description={description}
       disabled={props.disabled}
       onClick={handleClickWrapper}
     >

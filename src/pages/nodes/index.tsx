@@ -4,18 +4,18 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Input, Progress, Space, Table } from 'antd';
-import _ from 'lodash';
-import { memo, useMemo, useState } from 'react';
+import { Button, Input, Space, Table } from 'antd';
+import { useState } from 'react';
+import RenderProgress from './components/render-progress';
 import { NodeItem } from './config/types';
 const { Column } = Table;
 
 const dataSource: NodeItem[] = [
   {
     id: 1,
-    name: '192.168.1.2',
-    address: '192.168.1.2',
-    hostname: 'node-1',
+    name: 'bj-web-service-1',
+    address: '183.14.31.136',
+    hostname: 'bj-web-service-1',
     labels: {},
     resources: {
       capacity: {
@@ -31,13 +31,13 @@ const dataSource: NodeItem[] = [
         gram: '24 Gib'
       }
     },
-    state: 'ALIVE'
+    state: 'ACTIVE'
   },
   {
     id: 2,
-    name: '192.168.1.2',
-    address: '192.168.1.5',
-    hostname: 'node-2',
+    name: 'bj-db-service-2',
+    address: '172.24.1.36',
+    hostname: 'bj-db-service-2',
     labels: {},
     resources: {
       capacity: {
@@ -53,7 +53,51 @@ const dataSource: NodeItem[] = [
         gram: '12 Gib'
       }
     },
-    state: 'ALIVE'
+    state: 'ACTIVE'
+  },
+  {
+    id: 3,
+    name: 'guangzhou-computed-node-2',
+    address: '170.10.2.10',
+    hostname: 'guangzhou-computed-node-2',
+    labels: {},
+    resources: {
+      capacity: {
+        cpu: 8,
+        gpu: 4,
+        memory: '64 GiB',
+        gram: '24 Gib'
+      },
+      allocable: {
+        cpu: 2,
+        gpu: 1.5,
+        memory: '32 GiB',
+        gram: '12 Gib'
+      }
+    },
+    state: 'ACTIVE'
+  },
+  {
+    id: 4,
+    name: 'hangzhou-cache-node-1',
+    address: '115.2.21.10',
+    hostname: 'hangzhou-cache-node-1',
+    labels: {},
+    resources: {
+      capacity: {
+        cpu: 8,
+        gpu: 4,
+        memory: '64 GiB',
+        gram: '24 Gib'
+      },
+      allocable: {
+        cpu: 4,
+        gpu: 2.5,
+        memory: '40 GiB',
+        gram: '16 Gib'
+      }
+    },
+    state: 'ACTIVE'
   }
 ];
 
@@ -62,7 +106,7 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const [total, setTotal] = useState(100);
+  const [total, setTotal] = useState(10);
   const [loading, setLoading] = useState(false);
   const [queryParams, setQueryParams] = useState({
     current: 1,
@@ -94,53 +138,6 @@ const Models: React.FC = () => {
       name: e.target.value
     });
   };
-
-  const RenderProgress = memo(
-    (props: { record: NodeItem; dataIndex: string }) => {
-      const { record, dataIndex } = props;
-      const value1 = useMemo(() => {
-        let value = _.get(record, ['resources', 'allocable', dataIndex]);
-        if (['gram', 'memory'].includes(dataIndex)) {
-          value = _.toNumber(value.replace(/GiB|Gib/, ''));
-        }
-        return value;
-      }, [record, dataIndex]);
-
-      const value2 = useMemo(() => {
-        let value = _.get(record, ['resources', 'capacity', dataIndex]);
-        if (['gram', 'memory'].includes(dataIndex)) {
-          value = _.toNumber(value.replace(/GiB|Gib/, ''));
-        }
-        return value;
-      }, [record, dataIndex]);
-
-      if (!value1 || !value2) {
-        return <Progress percent={0} strokeColor="var(--ant-color-primary)" />;
-      }
-      const percent = _.round(value1 / value2, 2) * 100;
-      const strokeColor = useMemo(() => {
-        if (percent <= 50) {
-          return 'var(--ant-color-primary)';
-        }
-        if (percent <= 80) {
-          return 'var(--ant-color-warning)';
-        }
-        return 'var(--ant-color-error)';
-      }, [percent]);
-      return (
-        <Progress
-          steps={5}
-          format={() => {
-            return (
-              <span style={{ color: 'var(--ant-color-text)' }}>{percent}%</span>
-            );
-          }}
-          percent={percent}
-          strokeColor={strokeColor}
-        />
-      );
-    }
-  );
 
   return (
     <>

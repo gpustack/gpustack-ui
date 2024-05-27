@@ -36,6 +36,13 @@ export default [
     component: './nodes'
   },
   {
+    name: 'API Keys',
+    path: '/api-keys',
+    key: 'apikeys',
+    icon: 'LockOutlined',
+    component: './api-keys'
+  },
+  {
     name: 'Users',
     path: '/users',
     key: 'users',

@@ -60,7 +60,7 @@
     pointer-events: all;
     z-index: 5;
     &.isfoucs-has-value {
-      top: 8px;
+      top: 10px;
       transition: all 0.2s var(--seal-transition-func);
     }
     &.blur-no-value {
@@ -68,6 +68,7 @@
       transition: all 0.2s var(--seal-transition-func);
     }
   }
+
   // ==================== select ==================
   :global(.ant-select) {
     display: flex;
@@ -84,12 +85,21 @@
   }
   :global(.ant-select-selection-item) {
     height: @inputheight !important;
+    padding-block: 5px !important;
+    line-height: 22px !important;
+    padding-inline-end: 0 !important;
+  }
+  :global(.ant-select-arrow) {
+    top: 10px;
   }
   :global(
       .ant-select-outlined.ant-select-disabled:not(.ant-select-customize-input)
         .ant-select-selector
     ) {
     background-color: transparent;
+  }
+  :global(.ant-select-selection-search-input) {
+    height: @inputheight !important;
   }
   // ==================== input ====================
   :global(.ant-input),

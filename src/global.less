@@ -26,6 +26,20 @@ html {
   .css-var-rf {
     --ant-font-size: var(--font-size-base);
   }
+  .css-var-rg,
+  .css-var-ri,
+  .css-var-rh {
+    --ant-font-size: var(--font-size-base);
+    &.ant-menu-css-var {
+      --ant-menu-item-height: 46px;
+      --ant-menu-item-selected-bg: var(--color-white-1);
+      --ant-menu-item-border-radius: 24px;
+      --ant-menu-item-selected-color: var(--ant-color-primary);
+      --ant-menu-item-hover-bg: var(--color-white-1);
+      --ant-menu-item-color: var(--color-text-1);
+      --ant-menu-item-active-bg: var(--color-white-1);
+    }
+  }
   .css-var-r0 {
     // --ant-control-height: 36px;
     --ant-font-size-sm: var(--font-size-base);
@@ -64,7 +78,9 @@ html {
     --ant-modal-content-padding: 24px 30px;
   }
 
-  .css-var-rf.ant-menu-css-var {
+  .css-var-rf.ant-menu-css-var,
+  .css-var-ri.ant-menu-css-var,
+  .css-var-rh.ant-menu-css-var {
     --ant-menu-item-height: 46px;
     --ant-menu-item-selected-bg: var(--color-white-1);
     --ant-menu-item-border-radius: 24px;

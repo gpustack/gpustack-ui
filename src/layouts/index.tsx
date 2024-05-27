@@ -93,17 +93,25 @@ export default (props: any) => {
 
   const formatMessage = undefined;
 
-  const runtimeConfig = pluginManager.applyPlugins({
-    key: 'layout',
-    type: 'modify',
-    logout: true,
-    initialValue: {
-      ...initialInfo,
-      notFound: <div>not found</div>
-    }
-  });
+  // const runtimeConfig = pluginManager.applyPlugins({
+  //   key: 'layout',
+  //   type: 'modify',
+  //   logout: true,
+  //   initialValue: {
+  //     ...initialInfo,
+  //     notFound: <div>not found</div>
+  //   }
+  // });
+  const runtimeConfig = {
+    ...initialInfo,
+    logout: () => {
+      console.log('logout');
+    },
+    notFound: <div>not found</div>
+  };
   console.log(
     'clientRoute==========2=',
+    props,
     clientRoutes,
     runtimeConfig,
     initialInfo

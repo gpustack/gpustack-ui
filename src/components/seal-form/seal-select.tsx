@@ -6,7 +6,8 @@ import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
 const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
-  const { label, placeholder, children, ...rest } = props;
+  const { label, placeholder, children, required, description, ...rest } =
+    props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   const { status } = Form.Item.useStatus();
@@ -39,7 +40,9 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   };
 
   const handleOnBlur = (e: any) => {
-    setIsFocus(false);
+    if (!props.value) {
+      setIsFocus(false);
+    }
     props.onBlur?.(e);
   };
 
@@ -48,6 +51,8 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
       status={status}
       label={label || (placeholder as string)}
       isFocus={isFocus}
+      required={required}
+      description={description}
       disabled={props.disabled}
       onClick={handleClickWrapper}
     >

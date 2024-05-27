@@ -17,6 +17,8 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     onBlur,
     onInput,
     style,
+    required,
+    description,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -73,6 +75,8 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
       status={status}
       label={label || (placeholder as string)}
       isFocus={isFocus}
+      required={required}
+      description={description}
       className="seal-textarea-wrapper"
       disabled={props.disabled}
       onClick={handleClickWrapper}
@@ -92,7 +96,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
 };
 
 const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
-  const { label, placeholder, ...rest } = props;
+  const { label, placeholder, required, description, ...rest } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   const { status } = Form.Item.useStatus();
@@ -135,6 +139,8 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
       status={status}
       label={label || (placeholder as string)}
       isFocus={isFocus}
+      required={required}
+      description={description}
       disabled={props.disabled}
       onClick={handleClickWrapper}
     >

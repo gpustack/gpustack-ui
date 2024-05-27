@@ -7,7 +7,7 @@ import { SealFormItemProps } from './types';
 const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   props
 ) => {
-  const { label, placeholder, ...rest } = props;
+  const { label, placeholder, required, description, ...rest } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   const { status } = Form.Item.useStatus();
@@ -50,6 +50,8 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
       status={status}
       label={label || (placeholder as string)}
       isFocus={isFocus}
+      required={required}
+      description={description}
       disabled={props.disabled}
       onClick={handleClickWrapper}
     >

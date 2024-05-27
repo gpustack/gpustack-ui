@@ -5,51 +5,48 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import {
   DeleteOutlined,
+  EditOutlined,
   PlusOutlined,
-  SyncOutlined,
-  WechatWorkOutlined
+  SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl, useNavigate } from '@umijs/max';
-import {
-  App,
-  Button,
-  Input,
-  Modal,
-  Progress,
-  Space,
-  Table,
-  Tooltip,
-  message
-} from 'antd';
-import { StrictMode, useState } from 'react';
-import AddModal from './components/add-modal';
+import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
+import { useState } from 'react';
+import AddAPIKeyModal from './components/add-apikey';
 const { Column } = Table;
 
 const dataSource = [
   {
     key: '1',
-    name: 'llama3:latest',
-    progress: 30,
-    transition: true,
-    createTime: '2024-05-22 12:20:10'
+    name: 'local',
+    secretKey: `auk_uzem...owsa`,
+    lastusedTime: '2024-05-22 12:20:10',
+    createTime: '2024-05-20 12:13:25'
   },
   {
     key: '2',
-    name: 'openbmb/MiniCPM-Llama3-V-2_5',
-    createTime: '2024-05-19 13:30:22'
+    name: 'dev',
+    secretKey: `auk_uzem...okwa`,
+    lastusedTime: '2024-05-19 13:30:22',
+    createTime: '2024-05-18 10:28:32'
   },
   {
     key: '3',
-    name: 'openbmb/MiniCPM-Llama3-V-2_5',
-    createTime: '2024-05-18 10:28:32'
+    name: 'prod',
+    secretKey: `auk_uzem...uuds`,
+    lastusedTime: '2024-05-18 10:28:32',
+    createTime: '2024-05-17 08:21:09'
+  },
+  {
+    key: '4',
+    name: 'test',
+    secretKey: `auk_uzem...uksa`,
+    lastusedTime: '2024-05-18 10:28:32',
+    createTime: '2024-05-16 13:33:23'
   }
 ];
 
 const Models: React.FC = () => {
-  const { modal } = App.useApp();
-  const intl = useIntl();
-  const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -91,10 +88,10 @@ const Models: React.FC = () => {
     });
   };
 
-  const handleAddModal = () => {
+  const handleAddUser = () => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-    setTitle('Deploy Model');
+    setTitle('Add User');
   };
 
   const handleClickMenu = (e: any) => {
@@ -114,7 +111,7 @@ const Models: React.FC = () => {
   const handleDelete = () => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected models?',
+      content: 'Are you sure you want to delete the selected keys?',
       onOk() {
         console.log('OK');
         message.success('successfully!');
@@ -125,16 +122,17 @@ const Models: React.FC = () => {
     });
   };
 
-  const handleOpenPlayGround = (row: any) => {
-    console.log('handleOpenPlayGround', row);
-    navigate('/playground');
+  const handleEditUser = () => {
+    setOpenAddModal(true);
+    setAction(PageAction.EDIT);
+    setTitle('Edit User');
   };
   return (
-    <StrictMode>
+    <>
       <PageContainer
         ghost
         header={{
-          title: 'Models'
+          title: 'API Keys'
         }}
         extra={[]}
       >
@@ -160,9 +158,9 @@ const Models: React.FC = () => {
               <Button
                 icon={<PlusOutlined></PlusOutlined>}
                 type="primary"
-                onClick={handleAddModal}
+                onClick={handleAddUser}
               >
-                {intl?.formatMessage?.({ id: 'models.button.deploy' })}
+                Add API-key
               </Button>
               <Button
                 icon={<DeleteOutlined />}
@@ -190,25 +188,8 @@ const Models: React.FC = () => {
             onChange: handlePageChange
           }}
         >
-          <Column
-            title="Model Name"
-            dataIndex="name"
-            key="name"
-            width={400}
-            render={(text, record) => {
-              return (
-                <>
-                  <Tooltip>{text}</Tooltip>
-                  {record.progress && (
-                    <Progress
-                      percent={record.progress}
-                      strokeColor="var(--ant-color-primary)"
-                    />
-                  )}
-                </>
-              );
-            }}
-          />
+          <Column title="Name" dataIndex="name" key="name" width={400} />
+          <Column title="Secret Key" dataIndex="secretKey" key="secretKey" />
           <Column
             title="Create Time"
             dataIndex="createTime"
@@ -219,20 +200,25 @@ const Models: React.FC = () => {
             sorter={true}
           />
           <Column
+            title="Last Used"
+            dataIndex="lastusedTime"
+            key="lastusedTime"
+          />
+          <Column
             title="Operation"
             key="operation"
             render={(text, record) => {
-              return !record.transition ? (
+              return (
                 <Space>
-                  <Tooltip title="Open in PlayGround">
+                  <Tooltip title="编辑">
                     <Button
                       size="small"
                       type="primary"
-                      onClick={() => handleOpenPlayGround(record)}
-                      icon={<WechatWorkOutlined />}
+                      onClick={handleEditUser}
+                      icon={<EditOutlined></EditOutlined>}
                     ></Button>
                   </Tooltip>
-                  <Tooltip title="Delete">
+                  <Tooltip title="删除">
                     <Button
                       size="small"
                       type="primary"
@@ -241,19 +227,19 @@ const Models: React.FC = () => {
                     ></Button>
                   </Tooltip>
                 </Space>
-              ) : null;
+              );
             }}
           />
         </Table>
       </PageContainer>
-      <AddModal
+      <AddAPIKeyModal
         open={openAddModal}
         action={action}
         title={title}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
-      ></AddModal>
-    </StrictMode>
+      ></AddAPIKeyModal>
+    </>
   );
 };
 

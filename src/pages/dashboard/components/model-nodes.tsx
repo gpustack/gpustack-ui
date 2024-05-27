@@ -15,9 +15,9 @@ const models = [
 const dataSource: NodeItem[] = [
   {
     id: 1,
-    name: '192.168.1.2',
-    address: '192.168.1.2',
-    hostname: 'node-1',
+    name: 'bj-web-service-1',
+    address: '183.14.31.136',
+    hostname: 'bj-web-service-1',
     labels: {},
     resources: {
       capacity: {
@@ -33,13 +33,13 @@ const dataSource: NodeItem[] = [
         gram: '24 Gib'
       }
     },
-    state: 'ALIVE'
+    state: 'ACTIVE'
   },
   {
     id: 2,
-    name: '192.168.1.2',
-    address: '192.168.1.5',
-    hostname: 'node-2',
+    name: 'bj-db-service-2',
+    address: '172.24.1.36',
+    hostname: 'bj-db-service-2',
     labels: {},
     resources: {
       capacity: {
@@ -55,29 +55,51 @@ const dataSource: NodeItem[] = [
         gram: '12 Gib'
       }
     },
-    state: 'ALIVE'
+    state: 'ACTIVE'
   },
   {
     id: 3,
-    name: '192.168.1.3',
-    address: '192.168.1.3',
-    hostname: 'node-3',
+    name: 'guangzhou-computed-node-2',
+    address: '170.10.2.10',
+    hostname: 'guangzhou-computed-node-2',
     labels: {},
     resources: {
       capacity: {
-        cpu: 4,
-        gpu: 2,
+        cpu: 8,
+        gpu: 4,
         memory: '64 GiB',
         gram: '24 Gib'
       },
       allocable: {
-        cpu: 1,
-        gpu: 0.5,
-        memory: '28 GiB',
-        gram: '6 Gib'
+        cpu: 2,
+        gpu: 1.5,
+        memory: '32 GiB',
+        gram: '12 Gib'
       }
     },
-    state: 'ALIVE'
+    state: 'ACTIVE'
+  },
+  {
+    id: 4,
+    name: 'hangzhou-cache-node-1',
+    address: '115.2.21.10',
+    hostname: 'hangzhou-cache-node-1',
+    labels: {},
+    resources: {
+      capacity: {
+        cpu: 8,
+        gpu: 4,
+        memory: '64 GiB',
+        gram: '24 Gib'
+      },
+      allocable: {
+        cpu: 4,
+        gpu: 2.5,
+        memory: '40 GiB',
+        gram: '16 Gib'
+      }
+    },
+    state: 'ACTIVE'
   }
 ];
 

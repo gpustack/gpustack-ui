@@ -1,7 +1,7 @@
 import { SendOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
 import { useState } from 'react';
-import './message-input.less';
+import '../style/message-input.less';
 
 const MessageInput: React.FC = () => {
   const { TextArea } = Input;

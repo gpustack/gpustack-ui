@@ -1,7 +1,8 @@
+import CopyButton from '@/components/copy-button';
 import ModalFooter from '@/components/modal-footer';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
-import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
+import { SyncOutlined } from '@ant-design/icons';
 import { Form, Modal } from 'antd';
 
 type AddModalProps = {
@@ -27,9 +28,6 @@ const AddModal: React.FC<AddModalProps> = ({
       }}
     />
   );
-  const RenderCopyButton = () => {
-    return <CopyOutlined></CopyOutlined>;
-  };
 
   return (
     <Modal
@@ -52,7 +50,9 @@ const AddModal: React.FC<AddModalProps> = ({
         <Form.Item name="secretkey" rules={[{ required: true }]}>
           <SealInput.Input
             label="Secret Key"
-            addonAfter={<RenderCopyButton></RenderCopyButton>}
+            addonAfter={
+              <CopyButton text={form.getFieldValue('secretKey')}></CopyButton>
+            }
           ></SealInput.Input>
         </Form.Item>
       </Form>

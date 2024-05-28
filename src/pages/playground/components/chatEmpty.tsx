@@ -1,5 +1,5 @@
 import Logo from '@/assets/images/logo.png';
-import chatStyle from './chat-style.less';
+import chatStyle from '../style/chat-style.less';
 
 const ChatEmpty: React.FC = () => {
   return (

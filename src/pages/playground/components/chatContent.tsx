@@ -7,7 +7,7 @@ import {
   SyncOutlined
 } from '@ant-design/icons';
 import { Button, Space, Tooltip } from 'antd';
-import chatStyle from './chat-style.less';
+import chatStyle from '../style/chat-style.less';
 import ChatEmpty from './chatEmpty';
 
 export type ChatContentProps = {

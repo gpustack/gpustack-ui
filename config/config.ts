@@ -22,6 +22,7 @@ export default defineConfig({
         token: {
           colorPrimary: '#2fbf85',
           borderRadius: 20,
+          fontSize: 12,
           motion: true
         }
       }

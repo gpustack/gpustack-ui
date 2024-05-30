@@ -26,7 +26,7 @@ export default [
     path: '/models',
     key: 'models',
     icon: 'Block',
-    component: './llm-models'
+    component: './llmodels'
   },
   {
     name: 'Nodes',
@@ -48,6 +48,14 @@ export default [
     key: 'users',
     icon: 'Team',
     component: './users'
+  },
+  {
+    name: 'Profile',
+    path: '/profile',
+    key: 'profile',
+    hideInMenu: true,
+    component: './profile',
+    icon: 'User'
   },
   {
     name: '404',

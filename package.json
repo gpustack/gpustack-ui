@@ -14,6 +14,7 @@
     "@ant-design/icons": "^5.3.7",
     "@ant-design/plots": "^2.2.2",
     "@ant-design/pro-components": "^2.7.1",
+    "@monaco-editor/react": "^4.6.0",
     "@types/lodash": "^4.17.4",
     "@umijs/max": "^4.2.1",
     "antd": "^5.17.0",

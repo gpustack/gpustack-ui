@@ -4,6 +4,7 @@ import '../style/ground-left.less';
 import ChatFooter from './chat-footer';
 import MessageItem from './message-item';
 import ReferenceParams from './reference-params';
+import ViewCodeModal from './view-code-modal';
 
 const MessageList: React.FC = () => {
   const [messageList, setMessageList] = useState<any[]>([
@@ -16,6 +17,7 @@ const MessageList: React.FC = () => {
       message: 'hello, nice to meet you!'
     }
   ]);
+  const [show, setShow] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const handleNewMessage = () => {
@@ -33,11 +35,15 @@ const MessageList: React.FC = () => {
   };
 
   const handleView = () => {
-    console.log('view');
+    setShow(true);
   };
 
   const handleSubmit = () => {
     console.log('submit');
+  };
+
+  const handleCloseViewCode = () => {
+    setShow(false);
   };
 
   const handleDelete = (index: number) => {
@@ -71,6 +77,11 @@ const MessageList: React.FC = () => {
           feedback={<ReferenceParams></ReferenceParams>}
         ></ChatFooter>
       </div>
+      <ViewCodeModal
+        open={show}
+        onCancel={handleCloseViewCode}
+        title="View code"
+      ></ViewCodeModal>
     </div>
   );
 };

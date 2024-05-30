@@ -68,10 +68,9 @@ const ParamsSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           name="temperature"
           rules={[{ required: true }]}
         >
-          <SealInput.Input
-            label="Temperature"
-            style={{ width: INPUT_WIDTH.mini }}
-          ></SealInput.Input>
+          <FieldWrapper label="Temperature">
+            <Slider defaultValue={50}></Slider>
+          </FieldWrapper>
         </Form.Item>
         <Form.Item<ParamsSettingsProps>
           name="maxTokens"
@@ -86,7 +85,7 @@ const ParamsSettings: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           name="topP"
           rules={[{ required: true }]}
         >
-          <FieldWrapper label="TopP">
+          <FieldWrapper label="Top P">
             <Slider defaultValue={50}></Slider>
           </FieldWrapper>
         </Form.Item>

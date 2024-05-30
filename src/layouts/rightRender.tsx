@@ -1,7 +1,13 @@
 // @ts-nocheck
 
 import avatarImg from '@/assets/images/avatar.png';
-import { LogoutOutlined } from '@ant-design/icons';
+import {
+  GlobalOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+  SunOutlined
+} from '@ant-design/icons';
+import { useNavigate } from '@umijs/max';
 import { Avatar, Dropdown, Menu, Spin, version } from 'antd';
 
 export function getRightRenderContent(opts: {
@@ -52,10 +58,48 @@ export function getRightRenderContent(opts: {
   // 如果没有打开Locale，并且头像为空就取消掉这个返回的内容
   if (!avatar) return null;
 
+  const navigate = useNavigate();
+
   const langMenu = {
     className: 'umi-plugin-layout-menu',
     selectedKeys: [],
     items: [
+      {
+        key: 'settings',
+        label: (
+          <>
+            <SettingOutlined />
+            设置
+          </>
+        ),
+        onClick: () => {
+          navigate('/profile');
+        }
+      },
+      {
+        key: 'theme',
+        label: (
+          <>
+            <SunOutlined />
+            外观
+          </>
+        ),
+        onClick: () => {
+          console.log('theme');
+        }
+      },
+      {
+        key: 'lang',
+        label: (
+          <>
+            <GlobalOutlined />
+            语言
+          </>
+        ),
+        onClick: () => {
+          console.log('lang');
+        }
+      },
       {
         key: 'logout',
         label: (
@@ -66,20 +110,6 @@ export function getRightRenderContent(opts: {
         ),
         onClick: () => {
           opts?.runtimeConfig?.logout?.(opts.initialState);
-        }
-      },
-      {
-        key: 'theme',
-        label: <>外观</>,
-        onClick: () => {
-          console.log('theme');
-        }
-      },
-      {
-        key: 'lang',
-        label: '语言',
-        onClick: () => {
-          console.log('lang');
         }
       }
     ]

@@ -6,11 +6,22 @@ import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
 const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
-  const { label, placeholder, children, required, description, ...rest } =
-    props;
+  const {
+    label,
+    placeholder,
+    children,
+    required,
+    description,
+    isInFormItems = true,
+    ...rest
+  } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const { status } = Form.Item.useStatus();
+  let status = '';
+  if (isInFormItems) {
+    const statusData = Form?.Item?.useStatus?.();
+    status = statusData?.status || '';
+  }
 
   useEffect(() => {
     if (isNotEmptyValue(props.value)) {

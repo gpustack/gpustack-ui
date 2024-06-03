@@ -1,16 +1,36 @@
 .message-item {
+  position: relative;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
   margin-bottom: 12px;
+  &:hover {
+    .delete-btn {
+      opacity: 1;
+      transition: all 0.3s var(--seal-transition-func);
+    }
+  }
   .role-type {
     margin-right: 12px;
+    background-color: var(--ant-button-text-hover-bg);
     .ant-btn {
       text-align: left;
       width: 100px;
+      background-color: var(--ant-button-text-hover-bg);
+      height: 46px;
     }
   }
   .message-content-input {
     flex: 1;
+    .ant-input {
+      padding-right: 30px;
+    }
+  }
+  .delete-btn {
+    opacity: 0;
+    position: absolute;
+    top: 2px;
+    right: 0;
+    transition: all 0.3s var(--seal-transition-func);
   }
 }

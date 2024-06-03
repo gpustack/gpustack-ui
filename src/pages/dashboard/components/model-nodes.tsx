@@ -1,7 +1,7 @@
 import PageTools from '@/components/page-tools';
 import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
-import { NodeItem } from '@/pages/nodes/config/types';
+import { NodeItem } from '@/pages/resources/config/types';
 import { Progress, Select, Space, Table } from 'antd';
 import _ from 'lodash';
 import { memo, useMemo, useState } from 'react';

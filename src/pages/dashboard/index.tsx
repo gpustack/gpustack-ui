@@ -3,8 +3,6 @@ import PageTools from '@/components/page-tools';
 import { PageContainer } from '@ant-design/pro-components';
 import { Col, Row } from 'antd';
 import GPUUtilization from './components/gpu-utilization';
-import ModelBills from './components/model-bills';
-import ModelNodes from './components/model-nodes';
 import Overview from './components/over-view';
 import UtilizationOvertime from './components/utilization-overtime';
 
@@ -17,10 +15,26 @@ const Dashboard: React.FC = () => {
       <DividerLine></DividerLine>
       <PageContainer ghost title={false}>
         <Row gutter={20} style={{ marginTop: '0px' }}>
-          <Col span={17}>
-            <ModelNodes></ModelNodes>
+          <Col span={12}>
+            <PageTools
+              marginBottom={10}
+              marginTop={0}
+              left={
+                <div
+                  style={{
+                    height: '34px',
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center'
+                  }}
+                >
+                  VRAM
+                </div>
+              }
+            ></PageTools>
+            <GPUUtilization></GPUUtilization>
           </Col>
-          <Col span={7}>
+          <Col span={12}>
             <PageTools
               marginBottom={10}
               marginTop={0}
@@ -40,12 +54,12 @@ const Dashboard: React.FC = () => {
           </Col>
         </Row>
       </PageContainer>
-      <DividerLine></DividerLine>
+      {/* <DividerLine></DividerLine>
       <PageContainer ghost title={false}>
         <div style={{ marginTop: '0px' }}>
           <ModelBills></ModelBills>
         </div>
-      </PageContainer>
+      </PageContainer> */}
       <DividerLine></DividerLine>
       <PageContainer ghost title={false}>
         <div style={{ marginTop: '0px' }}>

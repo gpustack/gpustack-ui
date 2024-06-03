@@ -29,11 +29,11 @@ export default [
     component: './llmodels'
   },
   {
-    name: 'Nodes',
-    path: '/nodes',
-    key: 'nodes',
+    name: 'Resources',
+    path: '/resources',
+    key: 'resources',
     icon: 'CloudServer',
-    component: './nodes'
+    component: './resources'
   },
   {
     name: 'API Keys',

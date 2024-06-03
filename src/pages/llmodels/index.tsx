@@ -5,7 +5,9 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import {
   DeleteOutlined,
+  DownOutlined,
   PlusOutlined,
+  RightOutlined,
   SyncOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
@@ -191,6 +193,17 @@ const Models: React.FC = () => {
             hideOnSinglePage: true,
             onShowSizeChange: handleShowSizeChange,
             onChange: handlePageChange
+          }}
+          expandable={{
+            expandIcon: ({ expanded, onExpand, record }) => {
+              return expanded ? (
+                <DownOutlined onClick={(e) => onExpand(record, e)} />
+              ) : (
+                <RightOutlined onClick={(e) => onExpand(record, e)} />
+              );
+            },
+            expandedRowRender: (record) => <p style={{ margin: 0 }}>list</p>,
+            rowExpandable: (record) => record.name !== 'Not Expandable'
           }}
         >
           <Column

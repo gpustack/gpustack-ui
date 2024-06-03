@@ -1,7 +1,10 @@
-import SealInput from '@/components/seal-form/seal-input';
+import TransitionWrapper from '@/components/transition';
+import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
+import { Button, Input } from 'antd';
 import { useState } from 'react';
 import '../style/ground-left.less';
+import '../style/system-message-wrap.less';
 import ChatFooter from './chat-footer';
 import MessageItem from './message-item';
 import ReferenceParams from './reference-params';
@@ -18,9 +21,14 @@ const MessageList: React.FC = () => {
       message: 'hello, nice to meet you!'
     }
   ]);
+  const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
+  const handleSystemMessageChange = (e: any) => {
+    console.log('system message:', e.target.value);
+    setSystemMessage(e.target.value);
+  };
   const handleNewMessage = () => {
     console.log('new message');
     messageList.push({
@@ -52,12 +60,30 @@ const MessageList: React.FC = () => {
     setMessageList([...messageList]);
   };
 
+  const renderLabel = () => {
+    return (
+      <div className="system-message-wrap ">
+        <span className="title">System</span>
+        <Button type="primary" size="small">
+          <EyeInvisibleOutlined />
+        </Button>
+      </div>
+    );
+  };
   return (
     <div className="ground-left">
       <PageContainer title={false} className="message-list-wrap">
-        <div style={{ marginBottom: '40px' }}>
-          <SealInput.TextArea label="Message"></SealInput.TextArea>
+        <div style={{ marginBottom: 40 }}>
+          <TransitionWrapper header={renderLabel()} variant="filled">
+            <Input.TextArea
+              value={systemMessage}
+              style={{ minHeight: '0px' }}
+              variant="filled"
+              onChange={handleSystemMessageChange}
+            ></Input.TextArea>
+          </TransitionWrapper>
         </div>
+
         <div>
           {messageList.map((item, index) => {
             return (

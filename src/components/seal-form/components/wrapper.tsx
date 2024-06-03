@@ -11,6 +11,7 @@ interface WrapperProps {
   description?: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  extra?: React.ReactNode;
   onClick?: () => void;
 }
 
@@ -23,6 +24,7 @@ const Wrapper: React.FC<WrapperProps> = ({
   disabled,
   description,
   required,
+  extra,
   onClick
 }) => {
   return (
@@ -50,6 +52,7 @@ const Wrapper: React.FC<WrapperProps> = ({
           description={description}
         ></LabelInfo>
       </label>
+      {extra && <div className={wrapperStyle.extra}>{extra}</div>}
       {children}
     </div>
   );

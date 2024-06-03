@@ -7,10 +7,21 @@ import { SealFormItemProps } from './types';
 const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   props
 ) => {
-  const { label, placeholder, required, description, ...rest } = props;
+  const {
+    label,
+    placeholder,
+    required,
+    description,
+    isInFormItems = true,
+    ...rest
+  } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const { status } = Form.Item.useStatus();
+  let status = '';
+  if (isInFormItems) {
+    const statusData = Form?.Item?.useStatus?.();
+    status = statusData?.status || '';
+  }
 
   useEffect(() => {
     if (props.value) {

@@ -18,12 +18,19 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     onInput,
     style,
     required,
+    isInFormItems = true,
     description,
+    variant,
+    extra,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const { status } = Form.Item.useStatus();
+  let status = '';
+  if (isInFormItems) {
+    const statusData = Form?.Item?.useStatus?.();
+    status = statusData?.status || '';
+  }
 
   useEffect(() => {
     if (props.value) {
@@ -57,7 +64,11 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
 
   const handleOnBlur = useCallback(
     (e: any) => {
-      if (!inputRef.current?.input?.value) {
+      console.log(
+        'inputRef.current==========',
+        inputRef.current?.resizableTextArea?.textArea?.value
+      );
+      if (!inputRef.current?.resizableTextArea?.textArea?.value) {
         setIsFocus(false);
         onBlur?.(e);
       }
@@ -80,6 +91,8 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
       required={required}
       description={description}
       className="seal-textarea-wrapper"
+      variant={variant}
+      extra={extra}
       disabled={props.disabled}
       onClick={handleClickWrapper}
     >
@@ -98,10 +111,21 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
 };
 
 const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
-  const { label, placeholder, required, description, ...rest } = props;
+  const {
+    label,
+    placeholder,
+    required,
+    description,
+    isInFormItems = true,
+    ...rest
+  } = props;
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const { status } = Form.Item.useStatus();
+  let status = '';
+  if (isInFormItems) {
+    const statusData = Form?.Item?.useStatus?.();
+    status = statusData?.status || '';
+  }
 
   useEffect(() => {
     if (props.value) {

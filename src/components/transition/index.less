@@ -1,0 +1,28 @@
+.transition-wrapper {
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  &.bordered {
+    border-width: var(--ant-line-width);
+    border-style: var(--ant-line-type);
+    border-color: var(--ant-color-border);
+    background-color: var(--color-white-1);
+  }
+  &.filled {
+    border-color: var(--ant-color-border);
+    .content-wrapper {
+      background-color: var(--color-fill-1);
+    }
+  }
+  .header {
+    background-color: var(--color-fill-1);
+    cursor: pointer;
+    padding: 8px 16px;
+  }
+
+  .content-wrapper {
+    overflow: hidden;
+    transition: height 300ms ease-in-out;
+  }
+}

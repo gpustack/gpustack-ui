@@ -1,7 +1,7 @@
 :local(.wrapper) {
   @wrapheight: 54px;
   @inputheight: 32px;
-  @borderRadius: 24px;
+  @borderRadius: 20px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -13,6 +13,12 @@
   border-radius: @borderRadius;
   padding-inline: 12px;
   padding-block: 20px 0;
+  .extra {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    z-index: 10;
+  }
 
   &.seal-input-wrapper-disabled {
     background-color: var(--ant-color-bg-container-disabled);

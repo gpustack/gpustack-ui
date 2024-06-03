@@ -57,7 +57,7 @@ const MessageContent: React.FC<{
         <Button
           type="text"
           shape="circle"
-          style={{ color: 'var(--ant-color-primary' }}
+          style={{ color: 'var(--ant-color-primary)' }}
           onClick={handleDelete}
           icon={<MinusCircleOutlined />}
         ></Button>

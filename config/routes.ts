@@ -58,6 +58,14 @@ export default [
     icon: 'User'
   },
   {
+    name: 'Login',
+    path: '/login',
+    key: 'login',
+    layout: false,
+    hideInMenu: true,
+    component: './login'
+  },
+  {
     name: '404',
     path: '*',
     key: '404',

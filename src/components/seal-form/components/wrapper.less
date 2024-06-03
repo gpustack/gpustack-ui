@@ -1,6 +1,7 @@
 :local(.wrapper) {
   @wrapheight: 54px;
   @inputheight: 32px;
+  @borderRadius: 24px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -9,7 +10,7 @@
   border-width: var(--ant-line-width);
   border-style: var(--ant-line-type);
   border-color: var(--ant-color-border);
-  border-radius: 28px;
+  border-radius: @borderRadius;
   padding-inline: 12px;
   padding-block: 20px 0;
 
@@ -121,6 +122,13 @@
     height: @inputheight !important;
   }
   :global(.ant-input-outlined) {
+    display: flex;
+    align-items: center;
+    border: none;
+    box-shadow: none;
+    padding-block: 5px;
+    padding-inline: 12px;
+    height: @inputheight !important;
     &.seal-textarea {
       min-height: 100px !important;
     }
@@ -138,7 +146,7 @@
   }
   :global(.ant-input-group-addon) {
     inset-inline-start: unset !important;
-    border-radius: 0 28px 28px 0;
+    border-radius: 0 @borderRadius @borderRadius 0;
     width: 30px;
     background-color: transparent;
   }
@@ -155,7 +163,7 @@
     position: absolute;
     top: -20px;
     right: -11px;
-    border-radius: 0 28px 28px 0 !important;
+    border-radius: 0 @borderRadius @borderRadius 0 !important;
     overflow: hidden;
     border: none;
     height: 52px;
@@ -169,5 +177,10 @@
   }
   :global(.ant-input-group-addon) {
     border: none;
+  }
+  :global(.ant-input-prefix) {
+    position: absolute;
+    top: 1px;
+    left: -4px;
   }
 }

@@ -5,6 +5,7 @@ export default (initialState: API.UserInfo) => {
     initialState && initialState.name !== 'dontHaveAccess'
   );
   return {
-    canSeeAdmin
+    canSeeAdmin,
+    canDelete: true
   };
 };

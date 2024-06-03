@@ -21,6 +21,9 @@ const Profile: React.FC = () => {
   const handleOnFinishFailed = (errorInfo: any) => {
     console.log('handleOnFinishFailed', errorInfo);
   };
+  const handleCancel = () => {
+    form.resetFields();
+  };
 
   return (
     <StrictMode>
@@ -69,8 +72,8 @@ const Profile: React.FC = () => {
               style={{ width: INPUT_WIDTH.default }}
             ></SealInput.Password>
           </Form.Item>
+          <FormButtons htmlType="submit" onCancel={handleCancel}></FormButtons>
         </Form>
-        <FormButtons></FormButtons>
       </PageContainer>
     </StrictMode>
   );

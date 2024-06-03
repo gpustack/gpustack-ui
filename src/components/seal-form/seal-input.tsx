@@ -33,7 +33,9 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
 
   const handleClickWrapper = useCallback(() => {
     if (!props.disabled && !isFocus) {
-      inputRef.current?.focus?.();
+      inputRef.current?.focus?.({
+        cursor: 'all'
+      });
       setIsFocus(true);
     }
   }, [props.disabled, isFocus]);
@@ -109,7 +111,9 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
 
   const handleClickWrapper = () => {
     if (!props.disabled && !isFocus) {
-      inputRef.current?.focus?.();
+      inputRef.current?.focus?.({
+        cursor: 'all'
+      });
       setIsFocus(true);
     }
   };

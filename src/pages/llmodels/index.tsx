@@ -10,7 +10,7 @@ import {
   WechatWorkOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl, useNavigate } from '@umijs/max';
+import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import {
   App,
   Button,
@@ -48,6 +48,7 @@ const dataSource = [
 
 const Models: React.FC = () => {
   const { modal } = App.useApp();
+  const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
@@ -164,14 +165,16 @@ const Models: React.FC = () => {
               >
                 {intl?.formatMessage?.({ id: 'models.button.deploy' })}
               </Button>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={handleDelete}
-                disabled={!rowSelection.selectedRowKeys.length}
-              >
-                Delete
-              </Button>
+              <Access accessible={access.canDelete}>
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  onClick={handleDelete}
+                  disabled={!rowSelection.selectedRowKeys.length}
+                >
+                  Delete
+                </Button>
+              </Access>
             </Space>
           }
         ></PageTools>

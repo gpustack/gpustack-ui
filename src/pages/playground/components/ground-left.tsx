@@ -1,3 +1,4 @@
+import SealInput from '@/components/seal-form/seal-input';
 import { PageContainer } from '@ant-design/pro-components';
 import { useState } from 'react';
 import '../style/ground-left.less';
@@ -54,6 +55,9 @@ const MessageList: React.FC = () => {
   return (
     <div className="ground-left">
       <PageContainer title={false} className="message-list-wrap">
+        <div style={{ marginBottom: '40px' }}>
+          <SealInput.TextArea label="Message"></SealInput.TextArea>
+        </div>
         <div>
           {messageList.map((item, index) => {
             return (

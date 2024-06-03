@@ -8,6 +8,7 @@ import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
   Outlet,
+  history,
   matchRoutes,
   useAppData,
   useLocation,
@@ -20,6 +21,8 @@ import './Layout.css';
 import Logo from './Logo';
 import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
+
+const loginPath = '/login';
 
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
 const filterRoutes = (
@@ -150,6 +153,11 @@ export default (props: any) => {
       }}
       onPageChange={(route) => {
         console.log('onRouteChange', route);
+        const { location } = history;
+        // 如果没有登录，重定向到 login
+        // if (!initialState?.currentUser && location.pathname !== loginPath) {
+        //   history.push(loginPath);
+        // }
       }}
       formatMessage={userConfig.formatMessage || formatMessage}
       menu={{ locale: userConfig.locale }}

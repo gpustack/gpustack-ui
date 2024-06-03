@@ -18,7 +18,9 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
 
   const handleClickWrapper = () => {
     if (!props.disabled && !isFocus) {
-      inputRef.current?.focus?.();
+      inputRef.current?.focus?.({
+        cursor: 'all'
+      });
       setIsFocus(true);
     }
   };

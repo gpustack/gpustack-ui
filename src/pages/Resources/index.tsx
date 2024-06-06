@@ -32,13 +32,15 @@ const Resources = () => {
       }}
       extra={[]}
     >
-      <Tabs
-        type="card"
-        defaultActiveKey="nodes"
-        items={items}
-        accessKey={activeKey}
-        onChange={handleChangeTab}
-      ></Tabs>
+      <div style={{ marginTop: 70 }}>
+        <Tabs
+          type="card"
+          defaultActiveKey="nodes"
+          items={items}
+          accessKey={activeKey}
+          onChange={handleChangeTab}
+        ></Tabs>
+      </div>
     </PageContainer>
   );
 };

@@ -23,6 +23,18 @@
 
   .content-wrapper {
     overflow: hidden;
-    transition: height 300ms ease-in-out;
+    transition: all 300ms ease-in-out;
+    .content {
+      height: max-content;
+      background-color: var(--color-white-1);
+      border-radius: var(--border-radius-base);
+    }
+  }
+  .ant-input {
+    /* 只隐藏垂直滚动条轨道 */
+    &::-webkit-scrollbar-track {
+      width: 0px !important;
+      color: transparent;
+    }
   }
 }

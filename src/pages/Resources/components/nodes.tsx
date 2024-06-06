@@ -191,7 +191,7 @@ const Models: React.FC = () => {
             );
           }}
         />
-        <Column title="IP / PID" dataIndex="address" key="address" />
+        <Column title="IP" dataIndex="address" key="address" />
         <Column
           title="CPU"
           dataIndex="CPU"
@@ -226,9 +226,9 @@ const Models: React.FC = () => {
           }}
         />
         <Column
-          title="GRAM"
+          title="VRAM"
           dataIndex="GRAM"
-          key="GRAM"
+          key="VRAM"
           render={(text, record: NodeItem) => {
             return (
               <RenderProgress record={record} dataIndex="gram"></RenderProgress>

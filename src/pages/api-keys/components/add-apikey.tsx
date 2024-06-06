@@ -1,6 +1,7 @@
 import CopyButton from '@/components/copy-button';
 import ModalFooter from '@/components/modal-footer';
 import SealInput from '@/components/seal-form/seal-input';
+import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
 import { SyncOutlined } from '@ant-design/icons';
 import { Form, Modal } from 'antd';
@@ -12,6 +13,12 @@ type AddModalProps = {
   onOk: () => void;
   onCancel: () => void;
 };
+
+const expirationOptions = [
+  { label: '1 Month', value: '1m' },
+  { label: '6 Months', value: '6m' },
+  { label: 'Never', value: 'never' }
+];
 const AddModal: React.FC<AddModalProps> = ({
   title,
   action,
@@ -54,6 +61,13 @@ const AddModal: React.FC<AddModalProps> = ({
               <CopyButton text={form.getFieldValue('secretKey')}></CopyButton>
             }
           ></SealInput.Input>
+        </Form.Item>
+        <Form.Item name="expiration" rules={[{ required: true }]}>
+          <SealSelect
+            label="Expiration"
+            required
+            options={expirationOptions}
+          ></SealSelect>
         </Form.Item>
       </Form>
     </Modal>

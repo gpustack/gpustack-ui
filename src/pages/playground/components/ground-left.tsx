@@ -2,7 +2,7 @@ import TransitionWrapper from '@/components/transition';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Button, Input } from 'antd';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import ChatFooter from './chat-footer';
@@ -24,9 +24,9 @@ const MessageList: React.FC = () => {
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const systemRef = useRef<any>(null);
 
   const handleSystemMessageChange = (e: any) => {
-    console.log('system message:', e.target.value);
     setSystemMessage(e.target.value);
   };
   const handleNewMessage = () => {
@@ -74,11 +74,16 @@ const MessageList: React.FC = () => {
     <div className="ground-left">
       <PageContainer title={false} className="message-list-wrap">
         <div style={{ marginBottom: 40 }}>
-          <TransitionWrapper header={renderLabel()} variant="filled">
+          <TransitionWrapper
+            header={renderLabel()}
+            variant="filled"
+            ref={systemRef}
+          >
             <Input.TextArea
               value={systemMessage}
-              style={{ minHeight: '0px' }}
               variant="filled"
+              autoSize={true}
+              placeholder="Enter system message here..."
               onChange={handleSystemMessageChange}
             ></Input.TextArea>
           </TransitionWrapper>

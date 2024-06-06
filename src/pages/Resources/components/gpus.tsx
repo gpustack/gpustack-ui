@@ -191,44 +191,16 @@ const Models: React.FC = () => {
             );
           }}
         />
-        <Column title="IP / PID" dataIndex="address" key="address" />
+        <Column title="IP" dataIndex="address" key="address" />
+
+        <Column title="Temperature" dataIndex="Temperature" key="Temperature" />
+        <Column title="Core" dataIndex="core" key="Core" />
+        <Column title="GPU-Util" dataIndex="gpuUtil" key="gpuUtil" />
+
         <Column
-          title="CPU"
-          dataIndex="CPU"
-          key="CPU"
-          render={(text, record: NodeItem) => {
-            return (
-              <RenderProgress record={record} dataIndex="cpu"></RenderProgress>
-            );
-          }}
-        />
-        <Column
-          title="Memory"
-          dataIndex="memory"
-          key="Memory"
-          render={(text, record: NodeItem) => {
-            return (
-              <RenderProgress
-                record={record}
-                dataIndex="memory"
-              ></RenderProgress>
-            );
-          }}
-        />
-        <Column
-          title="GPU"
-          dataIndex="GPU"
-          key="GPU"
-          render={(text, record: NodeItem) => {
-            return (
-              <RenderProgress record={record} dataIndex="gpu"></RenderProgress>
-            );
-          }}
-        />
-        <Column
-          title="GRAM"
+          title="VRAM"
           dataIndex="GRAM"
-          key="GRAM"
+          key="VRAM"
           render={(text, record: NodeItem) => {
             return (
               <RenderProgress record={record} dataIndex="gram"></RenderProgress>

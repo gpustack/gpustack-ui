@@ -5,9 +5,7 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import {
   DeleteOutlined,
-  DownOutlined,
   PlusOutlined,
-  RightOutlined,
   SyncOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
@@ -24,29 +22,13 @@ import {
   Tooltip,
   message
 } from 'antd';
-import { StrictMode, useState } from 'react';
+import dayjs from 'dayjs';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { createModel, deleteModel, queryModelsList } from './apis';
 import AddModal from './components/add-modal';
+import { FormData, ListItem } from './config/types';
 const { Column } = Table;
-
-const dataSource = [
-  {
-    key: '1',
-    name: 'llama3:latest',
-    progress: 30,
-    transition: true,
-    createTime: '2024-05-22 12:20:10'
-  },
-  {
-    key: '2',
-    name: 'openbmb/MiniCPM-Llama3-V-2_5',
-    createTime: '2024-05-19 13:30:22'
-  },
-  {
-    key: '3',
-    name: 'openbmb/MiniCPM-Llama3-V-2_5',
-    createTime: '2024-05-18 10:28:32'
-  }
-];
 
 const Models: React.FC = () => {
   const { modal } = App.useApp();
@@ -62,17 +44,43 @@ const Models: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
+  const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [queryParams, setQueryParams] = useState({
-    current: 1,
-    pageSize: 10,
-    name: ''
+    page: 1,
+    perPage: 10,
+    query: ''
   });
-  const handleShowSizeChange = (current: number, size: number) => {
-    console.log(current, size);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        ..._.pickBy(queryParams, (val: any) => !!val)
+      };
+      const res = await queryModelsList(params);
+      console.log('res=======', res);
+      setDataSource(res.items);
+      setTotal(res.pagination.total);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleShowSizeChange = (page: number, size: number) => {
+    console.log(page, size);
+    setQueryParams({
+      ...queryParams,
+      perPage: size
+    });
   };
 
   const handlePageChange = (page: number, pageSize: number | undefined) => {
     console.log(page, pageSize);
+    setQueryParams({
+      ...queryParams,
+      page: page
+    });
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -80,9 +88,6 @@ const Models: React.FC = () => {
     setSortOrder(sorter.order);
   };
 
-  const fetchData = async () => {
-    console.log('fetchData');
-  };
   const handleSearch = (e: any) => {
     fetchData();
   };
@@ -90,7 +95,7 @@ const Models: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      name: e.target.value
+      query: e.target.value
     });
   };
 
@@ -104,17 +109,32 @@ const Models: React.FC = () => {
     console.log('click', e);
   };
 
-  const handleModalOk = () => {
-    console.log('handleModalOk');
+  const handleModalOk = async (data: FormData) => {
+    console.log('handleModalOk', data);
+    await createModel({ data });
     setOpenAddModal(false);
+    message.success('successfully!');
   };
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
     setOpenAddModal(false);
   };
-
-  const handleDelete = () => {
+  const handleDelete = async (row: any) => {
+    Modal.confirm({
+      title: '',
+      content: 'Are you sure you want to delete the selected models?',
+      async onOk() {
+        await deleteModel(row.id);
+        message.success('successfully!');
+        fetchData();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+  const handleDeleteBatch = () => {
     Modal.confirm({
       title: '',
       content: 'Are you sure you want to delete the selected models?',
@@ -132,8 +152,15 @@ const Models: React.FC = () => {
     console.log('handleOpenPlayGround', row);
     navigate('/playground');
   };
+
+  // request data
+
+  useEffect(() => {
+    fetchData();
+  }, [queryParams]);
+
   return (
-    <StrictMode>
+    <>
       <PageContainer
         ghost
         header={{
@@ -148,6 +175,7 @@ const Models: React.FC = () => {
               <Input
                 placeholder="按名称查询"
                 style={{ width: 300 }}
+                allowClear
                 onChange={handleNameChange}
               ></Input>
               <Button
@@ -171,7 +199,7 @@ const Models: React.FC = () => {
                 <Button
                   icon={<DeleteOutlined />}
                   danger
-                  onClick={handleDelete}
+                  onClick={handleDeleteBatch}
                   disabled={!rowSelection.selectedRowKeys.length}
                 >
                   Delete
@@ -184,26 +212,16 @@ const Models: React.FC = () => {
           dataSource={dataSource}
           rowSelection={rowSelection}
           loading={loading}
+          rowKey="id"
           onChange={handleTableChange}
           pagination={{
             showSizeChanger: true,
-            pageSize: 10,
-            current: 2,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
             total: total,
             hideOnSinglePage: true,
             onShowSizeChange: handleShowSizeChange,
             onChange: handlePageChange
-          }}
-          expandable={{
-            expandIcon: ({ expanded, onExpand, record }) => {
-              return expanded ? (
-                <DownOutlined onClick={(e) => onExpand(record, e)} />
-              ) : (
-                <RightOutlined onClick={(e) => onExpand(record, e)} />
-              );
-            },
-            expandedRowRender: (record) => <p style={{ margin: 0 }}>list</p>,
-            rowExpandable: (record) => record.name !== 'Not Expandable'
           }}
         >
           <Column
@@ -227,12 +245,15 @@ const Models: React.FC = () => {
           />
           <Column
             title="Create Time"
-            dataIndex="createTime"
+            dataIndex="created_at"
             key="createTime"
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={true}
+            render={(val, row) => {
+              return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
+            }}
           />
           <Column
             title="Operation"
@@ -253,6 +274,7 @@ const Models: React.FC = () => {
                       size="small"
                       type="primary"
                       danger
+                      onClick={() => handleDelete(record)}
                       icon={<DeleteOutlined></DeleteOutlined>}
                     ></Button>
                   </Tooltip>
@@ -269,7 +291,7 @@ const Models: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
-    </StrictMode>
+    </>
   );
 };
 

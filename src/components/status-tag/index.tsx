@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import styles from './index.less';
 
 export const StatusMaps = {
-  running: 'blue',
+  transitioning: 'blue',
   error: 'red',
   warning: 'orange',
-  success: 'success'
+  success: 'success',
+  inactive: 'inactive'
 };
 
 type StatusTagProps = {

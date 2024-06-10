@@ -13,46 +13,61 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
-import { useState } from 'react';
+import dayjs from 'dayjs';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { createUser, deleteUser, queryUsersList } from './apis';
 import AddModal from './components/add-modal';
+import { FormData, ListItem } from './config/types';
 const { Column } = Table;
-
-const dataSource = [
-  {
-    key: '1',
-    name: 'sam',
-    role: 'admin',
-    createTime: '2021-09-01 12:00:00'
-  },
-  {
-    key: '2',
-    name: 'wang',
-    role: 'user',
-    createTime: '2021-09-01 12:00:00'
-  }
-];
 
 const Models: React.FC = () => {
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const [total, setTotal] = useState(100);
+  const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
   const [queryParams, setQueryParams] = useState({
-    current: 1,
-    pageSize: 10,
-    name: ''
+    page: 1,
+    perPage: 10,
+    query: ''
   });
-  const handleShowSizeChange = (current: number, size: number) => {
-    console.log(current, size);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        ..._.pickBy(queryParams, (val: any) => !!val)
+      };
+      const res = await queryUsersList(params);
+      console.log('res=======', res);
+      setDataSource(res.items);
+      setTotal(res.pagination.total);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleShowSizeChange = (page: number, size: number) => {
+    setQueryParams({
+      ...queryParams,
+      perPage: size
+    });
   };
 
   const handlePageChange = (page: number, pageSize: number | undefined) => {
     console.log(page, pageSize);
+    setQueryParams({
+      ...queryParams,
+      page: page
+    });
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -60,9 +75,6 @@ const Models: React.FC = () => {
     setSortOrder(sorter.order);
   };
 
-  const fetchData = async () => {
-    console.log('fetchData');
-  };
   const handleSearch = (e: any) => {
     fetchData();
   };
@@ -70,7 +82,7 @@ const Models: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      name: e.target.value
+      query: e.target.value
     });
   };
 
@@ -84,9 +96,15 @@ const Models: React.FC = () => {
     console.log('click', e);
   };
 
-  const handleModalOk = () => {
+  const handleModalOk = async (data: FormData) => {
     console.log('handleModalOk');
+    const params = {
+      ...data,
+      is_admin: data.is_admin === 'admin'
+    };
+    await createUser({ data: params });
     setOpenAddModal(false);
+    message.success('successfully!');
   };
 
   const handleModalCancel = () => {
@@ -94,7 +112,23 @@ const Models: React.FC = () => {
     setOpenAddModal(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (row: ListItem) => {
+    Modal.confirm({
+      title: '',
+      content: 'Are you sure you want to delete the selected users?',
+      async onOk() {
+        console.log('OK');
+        await deleteUser(row.id);
+        message.success('successfully!');
+        fetchData();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const handleDeleteBatch = () => {
     Modal.confirm({
       title: '',
       content: 'Are you sure you want to delete the selected users?',
@@ -113,6 +147,11 @@ const Models: React.FC = () => {
     setAction(PageAction.EDIT);
     setTitle('Edit User');
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [queryParams]);
+
   return (
     <>
       <PageContainer
@@ -151,7 +190,7 @@ const Models: React.FC = () => {
               <Button
                 icon={<DeleteOutlined />}
                 danger
-                onClick={handleDelete}
+                onClick={handleDeleteBatch}
                 disabled={!rowSelection.selectedRowKeys.length}
               >
                 Delete
@@ -163,11 +202,12 @@ const Models: React.FC = () => {
           dataSource={dataSource}
           rowSelection={rowSelection}
           loading={loading}
+          rowKey="id"
           onChange={handleTableChange}
           pagination={{
             showSizeChanger: true,
-            pageSize: 10,
-            current: 2,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
             total: total,
             hideOnSinglePage: true,
             onShowSizeChange: handleShowSizeChange,
@@ -177,20 +217,23 @@ const Models: React.FC = () => {
           <Column title="Name" dataIndex="name" key="name" width={400} />
           <Column
             title="Create Time"
-            dataIndex="createTime"
+            dataIndex="created_at"
             key="createTime"
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={true}
+            render={(text, record) => {
+              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+            }}
           />
           <Column
             title="Role"
             dataIndex="role"
             key="role"
             width={400}
-            render={(text, record) => {
-              return text === 'admin' ? (
+            render={(text, record: ListItem) => {
+              return record.is_admin ? (
                 <UserSwitchOutlined className="size-16" />
               ) : (
                 <UserOutlined className="size-16" />
@@ -216,6 +259,7 @@ const Models: React.FC = () => {
                       size="small"
                       type="primary"
                       danger
+                      onClick={() => handleDelete(record)}
                       icon={<DeleteOutlined></DeleteOutlined>}
                     ></Button>
                   </Tooltip>

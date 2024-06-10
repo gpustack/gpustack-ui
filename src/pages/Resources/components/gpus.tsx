@@ -5,11 +5,11 @@ import useTableSort from '@/hooks/use-table-sort';
 import { SyncOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
 import { useState } from 'react';
-import { NodeItem } from '../config/types';
+import { Gpu } from '../config/types';
 import RenderProgress from './render-progress';
 const { Column } = Table;
 
-const dataSource: NodeItem[] = [
+const dataSource: Gpu[] = [
   {
     id: 1,
     name: 'bj-web-service-1',
@@ -161,7 +161,6 @@ const Models: React.FC = () => {
       ></PageTools>
       <Table
         dataSource={dataSource}
-        rowSelection={rowSelection}
         loading={loading}
         rowKey="id"
         onChange={handleTableChange}
@@ -193,7 +192,11 @@ const Models: React.FC = () => {
         />
         <Column title="IP" dataIndex="address" key="address" />
 
-        <Column title="Temperature" dataIndex="Temperature" key="Temperature" />
+        <Column
+          title="Temperature(˚C)"
+          dataIndex="Temperature"
+          key="Temperature"
+        />
         <Column title="Core" dataIndex="core" key="Core" />
         <Column title="GPU-Util" dataIndex="gpuUtil" key="gpuUtil" />
 
@@ -201,10 +204,8 @@ const Models: React.FC = () => {
           title="VRAM"
           dataIndex="GRAM"
           key="VRAM"
-          render={(text, record: NodeItem) => {
-            return (
-              <RenderProgress record={record} dataIndex="gram"></RenderProgress>
-            );
+          render={(text, record: Gpu) => {
+            return <RenderProgress percent={0}></RenderProgress>;
           }}
         />
         <Column

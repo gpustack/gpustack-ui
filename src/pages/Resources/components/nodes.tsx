@@ -4,129 +4,59 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { SyncOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
-import { useState } from 'react';
-import { NodeItem } from '../config/types';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { queryNodesList } from '../apis';
+import { ListItem } from '../config/types';
 import RenderProgress from './render-progress';
 const { Column } = Table;
-
-const dataSource: NodeItem[] = [
-  {
-    id: 1,
-    name: 'bj-web-service-1',
-    address: '183.14.31.136',
-    hostname: 'bj-web-service-1',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 4,
-        gpu: 2,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 2.5,
-        gpu: 1.6,
-        memory: '64',
-        gram: '24 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  },
-  {
-    id: 2,
-    name: 'bj-db-service-2',
-    address: '172.24.1.36',
-    hostname: 'bj-db-service-2',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 4,
-        gpu: 2,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 2,
-        gpu: 1.5,
-        memory: '32 GiB',
-        gram: '12 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  },
-  {
-    id: 3,
-    name: 'guangzhou-computed-node-2',
-    address: '170.10.2.10',
-    hostname: 'guangzhou-computed-node-2',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 8,
-        gpu: 4,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 2,
-        gpu: 1.5,
-        memory: '32 GiB',
-        gram: '12 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  },
-  {
-    id: 4,
-    name: 'hangzhou-cache-node-1',
-    address: '115.2.21.10',
-    hostname: 'hangzhou-cache-node-1',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 8,
-        gpu: 4,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 4,
-        gpu: 2.5,
-        memory: '40 GiB',
-        gram: '16 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  }
-];
 
 const Models: React.FC = () => {
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const [total, setTotal] = useState(10);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [queryParams, setQueryParams] = useState({
-    current: 1,
-    pageSize: 10,
-    name: ''
+    page: 1,
+    perPage: 10,
+    query: ''
   });
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        ..._.pickBy(queryParams, (val: any) => !!val)
+      };
+      const res = await queryNodesList(params);
+      console.log('res=======', res);
+      setDataSource(res.items);
+      setTotal(res.pagination.total);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleShowSizeChange = (current: number, size: number) => {
     console.log(current, size);
   };
 
-  const handlePageChange = (page: number, pageSize: number | undefined) => {
-    console.log(page, pageSize);
+  const handlePageChange = (page: number, perPage: number | undefined) => {
+    console.log(page, perPage);
+    setQueryParams({
+      ...queryParams,
+      page: page
+    });
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     setSortOrder(sorter.order);
   };
 
-  const fetchData = async () => {
-    console.log('fetchData');
-  };
   const handleSearch = (e: any) => {
     fetchData();
   };
@@ -134,9 +64,19 @@ const Models: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      name: e.target.value
+      query: e.target.value
     });
   };
+
+  const formateUtilazation = (val1: number, val2: number): number => {
+    if (!val2 || !val1) {
+      return 0;
+    }
+    return _.round((val1 / val2) * 100, 2);
+  };
+  useEffect(() => {
+    fetchData();
+  }, [queryParams]);
 
   return (
     <>
@@ -161,14 +101,13 @@ const Models: React.FC = () => {
       ></PageTools>
       <Table
         dataSource={dataSource}
-        rowSelection={rowSelection}
         loading={loading}
         rowKey="id"
         onChange={handleTableChange}
         pagination={{
           showSizeChanger: true,
-          pageSize: 10,
-          current: 2,
+          pageSize: queryParams.perPage,
+          current: queryParams.page,
           total: total,
           hideOnSinglePage: true,
           onShowSizeChange: handleShowSizeChange,
@@ -180,12 +119,13 @@ const Models: React.FC = () => {
           title="State"
           dataIndex="state"
           key="state"
-          render={(text, record) => {
+          render={(text, record: ListItem) => {
             return (
               <StatusTag
                 statusValue={{
-                  status: 'success',
-                  text: 'ALIVE'
+                  status:
+                    record.status?.state === 'active' ? 'success' : 'error',
+                  text: record.status?.state
                 }}
               ></StatusTag>
             );
@@ -196,9 +136,11 @@ const Models: React.FC = () => {
           title="CPU"
           dataIndex="CPU"
           key="CPU"
-          render={(text, record: NodeItem) => {
+          render={(text, record: ListItem) => {
             return (
-              <RenderProgress record={record} dataIndex="cpu"></RenderProgress>
+              <RenderProgress
+                percent={_.round(record?.status?.cpu.utilization_rate, 2)}
+              ></RenderProgress>
             );
           }}
         />
@@ -206,11 +148,13 @@ const Models: React.FC = () => {
           title="Memory"
           dataIndex="memory"
           key="Memory"
-          render={(text, record: NodeItem) => {
+          render={(text, record: ListItem) => {
             return (
               <RenderProgress
-                record={record}
-                dataIndex="memory"
+                percent={formateUtilazation(
+                  record?.status?.memory.used,
+                  record?.status?.memory.total
+                )}
               ></RenderProgress>
             );
           }}
@@ -219,20 +163,16 @@ const Models: React.FC = () => {
           title="GPU"
           dataIndex="GPU"
           key="GPU"
-          render={(text, record: NodeItem) => {
-            return (
-              <RenderProgress record={record} dataIndex="gpu"></RenderProgress>
-            );
+          render={(text, record: ListItem) => {
+            return <RenderProgress percent={0}></RenderProgress>;
           }}
         />
         <Column
           title="VRAM"
           dataIndex="GRAM"
           key="VRAM"
-          render={(text, record: NodeItem) => {
-            return (
-              <RenderProgress record={record} dataIndex="gram"></RenderProgress>
-            );
+          render={(text, record: ListItem) => {
+            return <RenderProgress percent={0}></RenderProgress>;
           }}
         />
         <Column

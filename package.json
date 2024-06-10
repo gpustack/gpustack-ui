@@ -21,6 +21,7 @@
     "antd-style": "^3.6.2",
     "classnames": "^2.5.1",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.11",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6"
   },

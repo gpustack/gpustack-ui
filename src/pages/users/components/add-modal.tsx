@@ -4,12 +4,14 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
 import { SyncOutlined } from '@ant-design/icons';
 import { Form, Modal } from 'antd';
+import { UserRolesOptions } from '../config';
+import { FormData } from '../config/types';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
-  onOk: () => void;
+  onOk: (values: FormData) => void;
   onCancel: () => void;
 };
 const AddModal: React.FC<AddModalProps> = ({
@@ -19,6 +21,10 @@ const AddModal: React.FC<AddModalProps> = ({
   onOk,
   onCancel
 }) => {
+  if (!open) {
+    return null;
+  }
+
   const [form] = Form.useForm();
   const suffix = (
     <SyncOutlined
@@ -28,11 +34,16 @@ const AddModal: React.FC<AddModalProps> = ({
       }}
     />
   );
+
+  const handleSumit = () => {
+    form.submit();
+  };
+
   return (
     <Modal
       title={title}
       open={open}
-      onOk={onOk}
+      onOk={handleSumit}
       onCancel={onCancel}
       destroyOnClose={true}
       closeIcon={false}
@@ -40,19 +51,22 @@ const AddModal: React.FC<AddModalProps> = ({
       keyboard={false}
       width={600}
       styles={{}}
-      footer={<ModalFooter onOk={onOk} onCancel={onCancel}></ModalFooter>}
+      footer={
+        <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
+      }
     >
-      <Form name="addUserForm" form={form} onFinish={onOk}>
-        <Form.Item name="name" rules={[{ required: true }]}>
+      <Form name="addUserForm" form={form} onFinish={onOk} preserve={false}>
+        <Form.Item<FormData> name="name" rules={[{ required: true }]}>
           <SealInput.Input label="Name"></SealInput.Input>
         </Form.Item>
-        <Form.Item name="role" rules={[{ required: true }]}>
-          <SealSelect label="Role"></SealSelect>
+        <Form.Item<FormData> name="full_name" rules={[{ required: true }]}>
+          <SealInput.Input label="FullName"></SealInput.Input>
         </Form.Item>
-        <Form.Item name="email" rules={[{ required: true }]}>
-          <SealInput.Input label="Email"></SealInput.Input>
+        <Form.Item<FormData> name="is_admin" rules={[{ required: true }]}>
+          <SealSelect label="Role" options={UserRolesOptions}></SealSelect>
         </Form.Item>
-        <Form.Item name="password" rules={[{ required: true }]}>
+
+        <Form.Item<FormData> name="password" rules={[{ required: true }]}>
           <SealInput.Input label="Password"></SealInput.Input>
         </Form.Item>
       </Form>

@@ -1,3 +1,5 @@
+import { StatusMaps } from '@/config';
+
 export const modelInstanceCols = [
   {
     title: 'Name',
@@ -29,3 +31,7 @@ export const modelInstanceCols = [
     key: 'Operation'
   }
 ];
+
+export const status: any = {
+  Running: StatusMaps.success
+};

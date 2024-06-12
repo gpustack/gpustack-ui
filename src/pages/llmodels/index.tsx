@@ -1,12 +1,15 @@
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
+import RowChildren from '@/components/seal-table/components/row-children';
 import SealColumn from '@/components/seal-table/components/seal-column';
+import StatusTag from '@/components/status-tag';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import {
   DeleteOutlined,
+  FieldTimeOutlined,
   PlusOutlined,
   SyncOutlined,
   WechatWorkOutlined
@@ -16,21 +19,28 @@ import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import {
   App,
   Button,
+  Col,
   Input,
   Modal,
   Progress,
+  Row,
   Space,
-  Table,
   Tooltip,
   message
 } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { createModel, deleteModel, queryModelsList } from './apis';
+import {
+  createModel,
+  deleteModel,
+  deleteModelInstance,
+  queryModelInstancesList,
+  queryModelsList
+} from './apis';
 import AddModal from './components/add-modal';
-import { FormData, ListItem } from './config/types';
-const { Column } = Table;
+import { status } from './config';
+import { FormData, ListItem, ModelInstanceListItem } from './config/types';
 
 const Models: React.FC = () => {
   const { modal } = App.useApp();
@@ -152,7 +162,85 @@ const Models: React.FC = () => {
 
   const handleOpenPlayGround = (row: any) => {
     console.log('handleOpenPlayGround', row);
-    navigate('/playground');
+    navigate(`/playground?model=${row.name}`);
+  };
+
+  const handleViewLogs = (row: any) => {
+    console.log('handleViewLogs', row);
+  };
+  const handleDeleteInstace = (row: any) => {
+    Modal.confirm({
+      title: '',
+      content: 'Are you sure you want to delete the instance?',
+      async onOk() {
+        console.log('OK');
+        await deleteModelInstance(row.id);
+        message.success('successfully!');
+        fetchData();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const getModelInstances = async (row: any) => {
+    const params = {
+      id: row.id,
+      page: 1,
+      perPage: 100
+    };
+    const data = await queryModelInstancesList(params);
+    return data.items || [];
+  };
+
+  const renderChildren = (list: any) => {
+    return (
+      <>
+        {_.map(list, (item: ModelInstanceListItem) => {
+          return (
+            <RowChildren key={item.id}>
+              <Row style={{ width: '100%' }} align="middle">
+                <Col span={4}>
+                  {item.node_ip}:{item.port}
+                </Col>
+                <Col span={5}>{item.huggingface_repo_id}</Col>
+                <Col span={4}>
+                  {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
+                </Col>
+                <Col span={4}>
+                  <StatusTag
+                    statusValue={{
+                      status: status[item.state] as any,
+                      text: item.state
+                    }}
+                  ></StatusTag>
+                </Col>
+                <Col span={7}>
+                  <Space>
+                    <Tooltip title="Delete">
+                      <Button
+                        size="small"
+                        danger
+                        onClick={() => handleDeleteInstace(item)}
+                        icon={<DeleteOutlined></DeleteOutlined>}
+                      ></Button>
+                    </Tooltip>
+                    <Tooltip title="View Logs">
+                      <Button
+                        size="small"
+                        onClick={() => handleViewLogs(item)}
+                        icon={<FieldTimeOutlined />}
+                      ></Button>
+                    </Tooltip>
+                  </Space>
+                </Col>
+              </Row>
+            </RowChildren>
+          );
+        })}
+      </>
+    );
   };
 
   // request data
@@ -217,6 +305,8 @@ const Models: React.FC = () => {
           rowKey="id"
           expandable={true}
           onChange={handleTableChange}
+          loadChildren={getModelInstances}
+          renderChildren={renderChildren}
           pagination={{
             showSizeChanger: true,
             pageSize: queryParams.perPage,

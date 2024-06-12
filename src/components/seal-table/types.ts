@@ -31,6 +31,8 @@ export interface SealTableProps {
   dataSource: any[];
   loading?: boolean;
   onExpand?: (expanded: boolean, record: any) => void;
+  renderChildren?: (data: any) => React.ReactNode;
+  loadChildren?: (record: any) => Promise<any[]>;
   rowKey: string;
 }
 

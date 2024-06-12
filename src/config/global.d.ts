@@ -1,7 +1,7 @@
 declare namespace Global {
   interface Pagination {
     page: number;
-    perPage: number;
+    perPage?: number;
     watch?: boolean;
   }
   interface PageResponse<T> {

@@ -1,17 +1,26 @@
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { Button, Input } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
+import { memo, useEffect, useRef, useState } from 'react';
 import { Roles } from '../config';
 import '../style/message-item.less';
 
-const MessageContent: React.FC<{
-  message: string;
-  role: string;
+const MessageItem: React.FC<{
+  message: {
+    role: string;
+    content: string;
+  };
+  loading?: boolean;
+  islast?: boolean;
+  updateMessage: (message: { role: string; content: string }) => void;
   isFocus: boolean;
   onDelete: () => void;
-}> = ({ message, role, isFocus, onDelete }) => {
-  const [roleType, setRoleType] = useState(role);
-  const [messageContent, setMessageContent] = useState(message);
+}> = ({ message, isFocus, onDelete, updateMessage, loading, islast }) => {
+  const [roleType, setRoleType] = useState(message.role);
+  const [isTyping, setIsTyping] = useState(false);
+  const [messageContent, setMessageContent] = useState(message.content);
+  const isInitialRender = useRef(true);
+  const [isAnimating, setIsAnimating] = useState(false);
   const inputRef = useRef<any>(null);
 
   useEffect(() => {
@@ -20,17 +29,49 @@ const MessageContent: React.FC<{
     }
   }, [isFocus]);
 
+  useEffect(() => {
+    if (isTyping) return;
+    let index = 0;
+    const text = message.content;
+    if (!text.length) {
+      return;
+    }
+    setMessageContent('');
+    setIsAnimating(true);
+    const intervalId = setInterval(() => {
+      setMessageContent((prev) => prev + text[index]);
+      index += 1;
+      if (index === text.length) {
+        setIsAnimating(false);
+        clearInterval(intervalId);
+      }
+    }, 20);
+    return () => clearInterval(intervalId);
+  }, [message.content, isTyping]);
+
+  useEffect(() => {
+    if (!isAnimating && !isInitialRender.current) {
+      updateMessage({ role: roleType, content: messageContent });
+    } else {
+      isInitialRender.current = false;
+    }
+  }, [roleType, messageContent]);
+
   const handleMessageChange = (e: any) => {
+    setIsTyping(true);
     setMessageContent(e.target.value);
   };
 
+  const handleBlur = () => {
+    setIsTyping(true);
+  };
+
   const handleRoleChange = () => {
-    if (roleType === Roles.User) {
-      setRoleType(Roles.Assistant);
-    }
-    if (roleType === Roles.Assistant) {
-      setRoleType(Roles.User);
-    }
+    setRoleType((prevRoleType) => {
+      const newRoleType =
+        prevRoleType === Roles.User ? Roles.Assistant : Roles.User;
+      return newRoleType;
+    });
   };
 
   const handleDelete = () => {
@@ -40,7 +81,7 @@ const MessageContent: React.FC<{
     <div className="message-item">
       <div className="role-type">
         <Button onClick={handleRoleChange} type="text">
-          {roleType}
+          {_.upperFirst(roleType)}
         </Button>
       </div>
       <div className="message-content-input">
@@ -51,6 +92,7 @@ const MessageContent: React.FC<{
           autoSize={true}
           variant="filled"
           onChange={handleMessageChange}
+          onBlur={handleBlur}
         ></Input.TextArea>
       </div>
       <div className="delete-btn">
@@ -66,4 +108,4 @@ const MessageContent: React.FC<{
   );
 };
 
-export default MessageContent;
+export default memo(MessageItem);

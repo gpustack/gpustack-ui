@@ -1,8 +1,11 @@
 import TransitionWrapper from '@/components/transition';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Input } from 'antd';
+import { Button, Input, Spin } from 'antd';
+import _ from 'lodash';
 import { useRef, useState } from 'react';
+import { execChatCompletions } from '../apis';
+import { Roles } from '../config';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import ChatFooter from './chat-footer';
@@ -10,37 +13,74 @@ import MessageItem from './message-item';
 import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
 
-const MessageList: React.FC = () => {
-  const [messageList, setMessageList] = useState<any[]>([
+interface MessageProps {
+  parameters: any;
+}
+const MessageList: React.FC<MessageProps> = (props) => {
+  const { parameters } = props;
+  const [messageList, setMessageList] = useState<
+    { role: string; content: string }[]
+  >([
     {
-      role: 'User',
-      message: 'hello'
-    },
-    {
-      role: 'Assistant',
-      message: 'hello, nice to meet you!'
+      role: 'user',
+      content: ''
     }
   ]);
+
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [tokenResult, setTokenResult] = useState<any>(null);
   const systemRef = useRef<any>(null);
 
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
   };
   const handleNewMessage = () => {
-    console.log('new message');
     messageList.push({
-      role: 'User',
-      message: 'hello'
+      role: 'user',
+      content: ''
     });
     setMessageList([...messageList]);
     setActiveIndex(messageList.length - 1);
   };
 
+  const submitMessage = async () => {
+    try {
+      setLoading(true);
+
+      const chatParams = {
+        messages: systemMessage
+          ? [
+              {
+                role: 'system',
+                content: systemMessage
+              },
+              ...messageList
+            ]
+          : [...messageList],
+        ...parameters
+      };
+      const data = await execChatCompletions(chatParams);
+      const assistant = _.get(data, ['choices', '0', 'message']);
+      setTokenResult({
+        ...data.usage
+      });
+      setMessageList([
+        ...messageList,
+        {
+          role: Roles.Assistant,
+          content: assistant.content
+        }
+      ]);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
   const handleClear = () => {
-    console.log('clear');
+    setMessageList([]);
   };
 
   const handleView = () => {
@@ -49,6 +89,7 @@ const MessageList: React.FC = () => {
 
   const handleSubmit = () => {
     console.log('submit');
+    submitMessage();
   };
 
   const handleCloseViewCode = () => {
@@ -57,6 +98,15 @@ const MessageList: React.FC = () => {
 
   const handleDelete = (index: number) => {
     messageList.splice(index, 1);
+    setMessageList([...messageList]);
+  };
+
+  const handleUpdateMessage = (
+    index: number,
+    message: { role: string; content: string }
+  ) => {
+    messageList[index] = message;
+    console.log('updatemessage========', index, message);
     setMessageList([...messageList]);
   };
 
@@ -94,13 +144,27 @@ const MessageList: React.FC = () => {
             return (
               <MessageItem
                 key={index}
-                role={item.role}
                 isFocus={index === activeIndex}
+                islast={index === messageList.length - 1}
+                loading={loading}
                 onDelete={() => handleDelete(index)}
-                message={item.message}
+                updateMessage={(message: { role: string; content: string }) =>
+                  handleUpdateMessage(index, message)
+                }
+                message={item}
               />
             );
           })}
+          {loading && (
+            <Spin>
+              <MessageItem
+                message={{ role: Roles.Assistant, content: '' }}
+                isFocus={false}
+                onDelete={() => {}}
+                updateMessage={() => {}}
+              />
+            </Spin>
+          )}
         </div>
       </PageContainer>
       <div className="ground-left-footer">
@@ -109,7 +173,8 @@ const MessageList: React.FC = () => {
           onNewMessage={handleNewMessage}
           onSubmit={handleSubmit}
           onView={handleView}
-          feedback={<ReferenceParams></ReferenceParams>}
+          disabled={loading}
+          feedback={<ReferenceParams usage={tokenResult}></ReferenceParams>}
         ></ChatFooter>
       </div>
       <ViewCodeModal

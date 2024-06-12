@@ -164,12 +164,21 @@ const Models: React.FC = () => {
           dataIndex="GPU"
           key="GPU"
           render={(text, record: ListItem) => {
-            return <RenderProgress percent={0}></RenderProgress>;
+            return (
+              <RenderProgress
+                percent={_.get(record, [
+                  'status',
+                  'gpu',
+                  '0',
+                  'core_utilization_rate'
+                ])}
+              ></RenderProgress>
+            );
           }}
         />
         <Column
           title="VRAM"
-          dataIndex="GRAM"
+          dataIndex="VRAM"
           key="VRAM"
           render={(text, record: ListItem) => {
             return <RenderProgress percent={0}></RenderProgress>;

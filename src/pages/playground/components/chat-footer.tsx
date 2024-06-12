@@ -12,24 +12,30 @@ interface ChatFooterProps {
   onClear: () => void;
   onNewMessage: () => void;
   onView: () => void;
+  disabled?: boolean;
   feedback?: React.ReactNode;
 }
 
 const ChatFooter: React.FC<ChatFooterProps> = (props) => {
-  const { onSubmit, onClear, onNewMessage, onView, feedback } = props;
+  const { onSubmit, onClear, onNewMessage, onView, feedback, disabled } = props;
   return (
     <div className="chat-footer">
       <Row style={{ width: '100%' }}>
         <Col span={8}>
           <Space size={20}>
             <Button
+              disabled={disabled}
               type="primary"
               icon={<PlusOutlined />}
               onClick={onNewMessage}
             >
               New Message
             </Button>
-            <Button icon={<DeleteOutlined></DeleteOutlined>} onClick={onClear}>
+            <Button
+              icon={<DeleteOutlined></DeleteOutlined>}
+              onClick={onClear}
+              disabled={disabled}
+            >
               Clear
             </Button>
           </Space>
@@ -37,10 +43,15 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
         <Col span={8}>{feedback}</Col>
         <Col span={8} style={{ textAlign: 'right' }}>
           <Space size={20}>
-            <Button icon={<CodeOutlined></CodeOutlined>} onClick={onView}>
+            <Button
+              icon={<CodeOutlined></CodeOutlined>}
+              onClick={onView}
+              disabled={disabled}
+            >
               View
             </Button>
             <Button
+              disabled={disabled}
               type="primary"
               icon={<SaveOutlined></SaveOutlined>}
               onClick={onSubmit}

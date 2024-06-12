@@ -8,8 +8,16 @@ import './styles/index.less';
 import { SealColumnProps, SealTableProps } from './types';
 
 const SealTable: React.FC<SealTableProps> = (props) => {
-  const { children, rowKey, onExpand, loading, expandable, rowSelection } =
-    props;
+  const {
+    children,
+    rowKey,
+    onExpand,
+    loading,
+    expandable,
+    rowSelection,
+    renderChildren,
+    loadChildren
+  } = props;
 
   const [selectAll, setSelectAll] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
@@ -121,6 +129,8 @@ const SealTable: React.FC<SealTableProps> = (props) => {
               rowSelection={rowSelection}
               expandable={expandable}
               rowKey={rowKey}
+              renderChildren={renderChildren}
+              loadChildren={loadChildren}
               onExpand={onExpand}
             ></TableRow>
           );

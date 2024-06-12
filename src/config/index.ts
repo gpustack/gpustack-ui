@@ -29,3 +29,11 @@ export const StatusColorMap: Record<StatusType, { text: string; bg: string }> =
       bg: `var(--ant-color-fill)`
     }
   };
+
+export const StatusMaps = {
+  error: 'error',
+  warning: 'warning',
+  transitioning: 'transitioning',
+  success: 'success',
+  inactive: 'inactive'
+};

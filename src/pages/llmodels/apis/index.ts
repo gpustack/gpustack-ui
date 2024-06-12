@@ -1,8 +1,11 @@
 import { request } from '@umijs/max';
-import { FormData, ListItem } from '../config/types';
+import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 
 export const MODELS_API = '/models';
 
+export const MODEL_INSTANCE_API = '/model_instances';
+
+// ===================== Models =====================
 export async function queryModelsList(
   params: Global.Pagination & { query?: string }
 ) {
@@ -31,3 +34,60 @@ export async function updateModel(params: { id: number; data: FormData }) {
     data: params.data
   });
 }
+
+export async function queryModelDetail(id: number) {
+  return request(`${MODELS_API}/${id}`, {
+    method: 'GET'
+  });
+}
+
+// ===================== Model Instances start =====================
+
+export async function queryModelInstancesList(
+  params: Global.Pagination & { query?: string; id: number }
+) {
+  return request<Global.PageResponse<ModelInstanceListItem>>(
+    `${MODELS_API}/${params.id}/instances`,
+    {
+      method: 'GET',
+      params
+    }
+  );
+}
+
+export async function createModelInstance(params: { data: FormData }) {
+  return request(`${MODEL_INSTANCE_API}`, {
+    method: 'POST',
+    data: params.data
+  });
+}
+
+export async function deleteModelInstance(id: number) {
+  return request(`${MODEL_INSTANCE_API}/${id}`, {
+    method: 'DELETE'
+  });
+}
+
+export async function updateModelInstance(params: {
+  id: number;
+  data: FormData;
+}) {
+  return request(`${MODEL_INSTANCE_API}/${params.id}`, {
+    method: 'PUT',
+    data: params.data
+  });
+}
+
+export async function queryModelInstanceDetail(id: number) {
+  return request(`${MODEL_INSTANCE_API}/${id}`, {
+    method: 'GET'
+  });
+}
+
+export async function queryModelInstanceLogs(id: number) {
+  return request(`${MODEL_INSTANCE_API}/${id}/logs`, {
+    method: 'GET'
+  });
+}
+
+// ===================== Model Instances end =====================

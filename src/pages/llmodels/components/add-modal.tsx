@@ -47,17 +47,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           name="huggingface_repo_id"
           rules={[{ required: true }]}
         >
-          <SealInput.Input label="Huggingface ID" required></SealInput.Input>
+          <SealInput.Input label="Repo ID" required></SealInput.Input>
         </Form.Item>
-        {/* <Form.Item<FormData>
+        <Form.Item<FormData>
           name="huggingface_filename"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
-          <SealInput.Input
-            label="Huggingface File Name"
-            required
-          ></SealInput.Input>
-        </Form.Item> */}
+          <SealInput.Input label="File Name" required></SealInput.Input>
+        </Form.Item>
       </>
     );
   };

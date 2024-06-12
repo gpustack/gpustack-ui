@@ -18,3 +18,21 @@ export interface FormData {
   name: string;
   description: string;
 }
+
+export interface ModelInstanceListItem {
+  source: string;
+  huggingface_repo_id: string;
+  huggingface_filename: string;
+  s3_address: string;
+  node_id: number;
+  node_ip: string;
+  pid: number;
+  port: number;
+  state: string;
+  download_progress: number;
+  model_id: number;
+  model_name: string;
+  id: number;
+  created_at: string;
+  updated_at: string;
+}

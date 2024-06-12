@@ -1,5 +1,5 @@
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Row } from 'antd';
+import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -17,11 +17,15 @@ const TableRow: React.FC<
     rowSelection,
     rowKey,
     columns,
-    onExpand
+    onExpand,
+    renderChildren,
+    loadChildren
   } = props;
 
   const [expanded, setExpanded] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [childrenData, setChildrenData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (rowSelection) {
@@ -34,9 +38,18 @@ const TableRow: React.FC<
     }
   }, [rowSelection]);
 
-  const handleRowExpand = () => {
-    setExpanded(!expanded);
-    onExpand?.(!expanded, record);
+  const handleRowExpand = async () => {
+    try {
+      setExpanded(!expanded);
+      onExpand?.(!expanded, record);
+      setLoading(true);
+      const data = await loadChildren?.(record);
+      setChildrenData(data || []);
+      setLoading(false);
+    } catch (error) {
+      setChildrenData([]);
+      setLoading(false);
+    }
   };
 
   const handleSelectChange = (e: any) => {
@@ -126,7 +139,13 @@ const TableRow: React.FC<
         </div>
         {expanded && (
           <div className="expanded-row">
-            <div className="expanded-row-content">rowchildren</div>
+            <Spin spinning={loading}>
+              {childrenData.length ? (
+                renderChildren?.(childrenData)
+              ) : (
+                <Empty></Empty>
+              )}
+            </Spin>
           </div>
         )}
       </div>

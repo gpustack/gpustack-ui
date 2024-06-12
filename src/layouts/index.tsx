@@ -86,6 +86,7 @@ export default (props: any) => {
     loading: false,
     setInitialState: null
   };
+  console.log('initialInfo==========', initialInfo);
   const { initialState, loading, setInitialState } = initialInfo;
 
   const userConfig = {

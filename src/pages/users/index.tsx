@@ -243,7 +243,7 @@ const Models: React.FC = () => {
           <Column
             title="Operation"
             key="operation"
-            render={(text, record) => {
+            render={(text, record: ListItem) => {
               return (
                 <Space>
                   <Tooltip title="编辑">

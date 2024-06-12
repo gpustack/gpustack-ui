@@ -1,4 +1,6 @@
 import PageTools from '@/components/page-tools';
+import SealTable from '@/components/seal-table';
+import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
@@ -208,11 +210,12 @@ const Models: React.FC = () => {
             </Space>
           }
         ></PageTools>
-        <Table
+        <SealTable
           dataSource={dataSource}
           rowSelection={rowSelection}
           loading={loading}
           rowKey="id"
+          expandable={true}
           onChange={handleTableChange}
           pagination={{
             showSizeChanger: true,
@@ -224,11 +227,12 @@ const Models: React.FC = () => {
             onChange: handlePageChange
           }}
         >
-          <Column
+          <SealColumn
             title="Model Name"
             dataIndex="name"
             key="name"
             width={400}
+            span={8}
             render={(text, record) => {
               return (
                 <>
@@ -243,7 +247,8 @@ const Models: React.FC = () => {
               );
             }}
           />
-          <Column
+          <SealColumn
+            span={8}
             title="Create Time"
             dataIndex="created_at"
             key="createTime"
@@ -255,7 +260,8 @@ const Models: React.FC = () => {
               return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
             }}
           />
-          <Column
+          <SealColumn
+            span={8}
             title="Operation"
             key="operation"
             render={(text, record) => {
@@ -282,7 +288,7 @@ const Models: React.FC = () => {
               ) : null;
             }}
           />
-        </Table>
+        </SealTable>
       </PageContainer>
       <AddModal
         open={openAddModal}

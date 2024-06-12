@@ -4,8 +4,14 @@ import { Tabs } from 'antd';
 import { useState } from 'react';
 import GPUs from './components/gpus';
 import Nodes from './components/nodes';
+import Test from './components/test';
 
 const items: TabsProps['items'] = [
+  {
+    key: 'test',
+    label: 'Test',
+    children: <Test />
+  },
   {
     key: 'nodes',
     label: 'Nodes',
@@ -18,7 +24,7 @@ const items: TabsProps['items'] = [
   }
 ];
 const Resources = () => {
-  const [activeKey, setActiveKey] = useState('nodes');
+  const [activeKey, setActiveKey] = useState('test');
 
   const handleChangeTab = (key: string) => {
     setActiveKey(key);

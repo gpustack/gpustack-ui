@@ -1,0 +1,23 @@
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-inline: var(--ant-table-cell-padding-inline);
+  border-right: 1px solid var(--ant-table-header-split-color);
+
+  &-last {
+    border-right: none;
+  }
+  &-cell {
+    font-weight: 600;
+  }
+  &-left {
+    justify-content: flex-start;
+  }
+  &-right {
+    justify-content: flex-end;
+  }
+  &-center {
+    justify-content: center;
+  }
+}

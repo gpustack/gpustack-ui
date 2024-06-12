@@ -7,6 +7,7 @@ export const requestConfig: RequestConfig = {
       console.log('errorThrower+++++++++++++++', res);
     },
     errorHandler: (error: any, opts: any) => {
+      if (opts?.skipErrorHandler) throw error;
       const { message: errorMessage, response } = error;
       const errMsg = response?.data?.message || errorMessage;
       message.error(errMsg);

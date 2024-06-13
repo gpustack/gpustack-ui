@@ -64,10 +64,6 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
 
   const handleOnBlur = useCallback(
     (e: any) => {
-      console.log(
-        'inputRef.current==========',
-        inputRef.current?.resizableTextArea?.textArea?.value
-      );
       if (!inputRef.current?.resizableTextArea?.textArea?.value) {
         setIsFocus(false);
         onBlur?.(e);

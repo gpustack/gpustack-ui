@@ -48,7 +48,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               onClick={onView}
               disabled={disabled}
             >
-              View
+              View Code
             </Button>
             <Button
               disabled={disabled}

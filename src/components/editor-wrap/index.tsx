@@ -8,6 +8,7 @@ interface EditorwrapProps {
   children: React.ReactNode;
   showHeader?: boolean;
   copyText: string;
+  defaultValue?: string;
   langOptions?: { label: string; value: string }[];
   onChangeLang?: (value: string) => void;
 }
@@ -17,6 +18,7 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
   copyText,
   langOptions,
   onChangeLang,
+  defaultValue,
   showHeader = true
 }) => {
   const handleChangeLang = (value: string) => {
@@ -30,7 +32,7 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
       return (
         <div className="editor-header">
           <Select
-            defaultValue="JSON"
+            defaultValue={defaultValue}
             style={{ width: 120 }}
             size="middle"
             variant="filled"
@@ -51,4 +53,4 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
   );
 };
 
-export default EditorWrap;
+export default React.memo(EditorWrap);

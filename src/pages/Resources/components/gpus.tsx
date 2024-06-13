@@ -1,4 +1,5 @@
 import PageTools from '@/components/page-tools';
+import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -6,7 +7,6 @@ import { SyncOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
 import { useState } from 'react';
 import { Gpu } from '../config/types';
-import RenderProgress from './render-progress';
 const { Column } = Table;
 
 const dataSource: Gpu[] = [
@@ -205,18 +205,7 @@ const Models: React.FC = () => {
           dataIndex="GRAM"
           key="VRAM"
           render={(text, record: Gpu) => {
-            return <RenderProgress percent={0}></RenderProgress>;
-          }}
-        />
-        <Column
-          title="Operation"
-          key="operation"
-          render={(text, record) => {
-            return (
-              <Space>
-                <Button size="middle">Logs</Button>
-              </Space>
-            );
+            return <ProgressBar percent={0}></ProgressBar>;
           }}
         />
       </Table>

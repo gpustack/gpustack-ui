@@ -214,7 +214,7 @@ const Models: React.FC = () => {
             onChange: handlePageChange
           }}
         >
-          <Column title="Name" dataIndex="name" key="name" width={400} />
+          <Column title="Name" dataIndex="name" key="name" width={200} />
           <Column
             title="Create Time"
             dataIndex="created_at"
@@ -243,9 +243,10 @@ const Models: React.FC = () => {
           <Column
             title="Operation"
             key="operation"
+            width={200}
             render={(text, record: ListItem) => {
               return (
-                <Space>
+                <Space size={20}>
                   <Tooltip title="编辑">
                     <Button
                       size="small"

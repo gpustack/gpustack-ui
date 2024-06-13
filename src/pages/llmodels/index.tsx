@@ -1,4 +1,5 @@
 import PageTools from '@/components/page-tools';
+import ProgressBar from '@/components/progress-bar';
 import SealTable from '@/components/seal-table';
 import RowChildren from '@/components/seal-table/components/row-children';
 import SealColumn from '@/components/seal-table/components/seal-column';
@@ -33,12 +34,15 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import {
   createModel,
+  createModelInstance,
   deleteModel,
   deleteModelInstance,
+  queryModelInstanceLogs,
   queryModelInstancesList,
   queryModelsList
 } from './apis';
 import AddModal from './components/add-modal';
+import ViewLogsModal from './components/view-logs-modal';
 import { status } from './config';
 import { FormData, ListItem, ModelInstanceListItem } from './config/types';
 
@@ -51,6 +55,9 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const [logContent, setLogContent] = useState('');
+  const [openLogModal, setOpenLogModal] = useState(false);
+  const [hoverChildIndex, setHoverChildIndex] = useState(-1);
   const [total, setTotal] = useState(100);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -132,6 +139,10 @@ const Models: React.FC = () => {
     console.log('handleModalCancel');
     setOpenAddModal(false);
   };
+
+  const handleLogModalCancel = () => {
+    setOpenLogModal(false);
+  };
   const handleDelete = async (row: any) => {
     Modal.confirm({
       title: '',
@@ -165,8 +176,26 @@ const Models: React.FC = () => {
     navigate(`/playground?model=${row.name}`);
   };
 
-  const handleViewLogs = (row: any) => {
-    console.log('handleViewLogs', row);
+  const handleDeployInstance = async (row: any) => {
+    try {
+      const data = {
+        model_id: row.id,
+        model_name: row.name,
+        huggingface_repo_id: row.huggingface_repo_id,
+        huggingface_filename: row.huggingface_filename,
+        source: row.source
+      };
+      await createModelInstance({ data });
+      message.success('successfully!');
+    } catch (error) {}
+  };
+
+  const handleViewLogs = async (row: any) => {
+    try {
+      const data = await queryModelInstanceLogs(row.id);
+      setLogContent(data);
+      setOpenLogModal(true);
+    } catch (error) {}
   };
   const handleDeleteInstace = (row: any) => {
     Modal.confirm({
@@ -184,6 +213,14 @@ const Models: React.FC = () => {
     });
   };
 
+  const handleOnMouseEnter = (index: number) => {
+    setHoverChildIndex(index);
+  };
+
+  const handleOnMouseLeave = () => {
+    setHoverChildIndex(-1);
+  };
+
   const getModelInstances = async (row: any) => {
     const params = {
       id: row.id,
@@ -196,50 +233,69 @@ const Models: React.FC = () => {
 
   const renderChildren = (list: any) => {
     return (
-      <>
-        {_.map(list, (item: ModelInstanceListItem) => {
+      <Space size={16} direction="vertical" style={{ width: '100%' }}>
+        {_.map(list, (item: ModelInstanceListItem, index: number) => {
           return (
-            <RowChildren key={item.id}>
-              <Row style={{ width: '100%' }} align="middle">
-                <Col span={4}>
-                  {item.node_ip}:{item.port}
-                </Col>
-                <Col span={5}>{item.huggingface_repo_id}</Col>
-                <Col span={4}>
-                  {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
-                </Col>
-                <Col span={4}>
-                  <StatusTag
-                    statusValue={{
-                      status: status[item.state] as any,
-                      text: item.state
-                    }}
-                  ></StatusTag>
-                </Col>
-                <Col span={7}>
-                  <Space>
-                    <Tooltip title="Delete">
-                      <Button
-                        size="small"
-                        danger
-                        onClick={() => handleDeleteInstace(item)}
-                        icon={<DeleteOutlined></DeleteOutlined>}
-                      ></Button>
-                    </Tooltip>
-                    <Tooltip title="View Logs">
-                      <Button
-                        size="small"
-                        onClick={() => handleViewLogs(item)}
-                        icon={<FieldTimeOutlined />}
-                      ></Button>
-                    </Tooltip>
-                  </Space>
-                </Col>
-              </Row>
-            </RowChildren>
+            <div
+              key={`${item.id}`}
+              onMouseEnter={() => handleOnMouseEnter(index)}
+              onMouseLeave={handleOnMouseLeave}
+            >
+              <RowChildren>
+                <Row style={{ width: '100%' }} align="middle">
+                  <Col span={4}>
+                    {item.node_ip}:{item.port}
+                  </Col>
+                  <Col span={5}>
+                    <span>{item.huggingface_repo_id}</span>
+                    <div style={{ marginTop: '4px' }}>
+                      <ProgressBar
+                        download
+                        percent={item.download_progress || 0}
+                      ></ProgressBar>
+                    </div>
+                  </Col>
+                  <Col span={4}>
+                    {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
+                  </Col>
+                  <Col span={4}>
+                    {item.state && (
+                      <StatusTag
+                        download={{ percent: 10 }}
+                        statusValue={{
+                          status: status[item.state] as any,
+                          text: item.state
+                        }}
+                      ></StatusTag>
+                    )}
+                  </Col>
+                  <Col span={7}>
+                    {hoverChildIndex === index && (
+                      <Space size={20}>
+                        <Tooltip title="Delete">
+                          <Button
+                            size="small"
+                            danger
+                            onClick={() => handleDeleteInstace(item)}
+                            icon={<DeleteOutlined></DeleteOutlined>}
+                          ></Button>
+                        </Tooltip>
+                        <Tooltip title="View Logs">
+                          <Button
+                            size="small"
+                            onClick={() => handleViewLogs(item)}
+                            icon={<FieldTimeOutlined />}
+                          ></Button>
+                        </Tooltip>
+                      </Space>
+                    )}
+                  </Col>
+                </Row>
+              </RowChildren>
+            </div>
           );
         })}
-      </>
+      </Space>
     );
   };
 
@@ -356,7 +412,7 @@ const Models: React.FC = () => {
             key="operation"
             render={(text, record) => {
               return !record.transition ? (
-                <Space>
+                <Space size={20}>
                   <Tooltip title="Open in PlayGround">
                     <Button
                       size="small"
@@ -387,6 +443,11 @@ const Models: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
+      <ViewLogsModal
+        title="View Logs"
+        open={openLogModal}
+        onCancel={handleLogModalCancel}
+      ></ViewLogsModal>
     </>
   );
 };

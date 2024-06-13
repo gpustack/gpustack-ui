@@ -15,7 +15,9 @@ export interface FormData {
   huggingface_repo_id: string;
   huggingface_filename: string;
   s3_address: string;
+  ollama_library_model_name: 'string';
   name: string;
+  replicas: number;
   description: string;
 }
 
@@ -35,4 +37,12 @@ export interface ModelInstanceListItem {
   id: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface ModelInstanceFormData {
+  model_id: number;
+  model_name: string;
+  source: string;
+  huggingface_repo_id: 'string';
+  huggingface_filename: 'string';
 }

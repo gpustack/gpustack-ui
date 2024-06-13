@@ -1,7 +1,8 @@
 import { StatusColorMap } from '@/config';
 import { StatusType } from '@/config/types';
+import classNames from 'classnames';
 import { useEffect, useState } from 'react';
-import styles from './index.less';
+import './index.less';
 
 export const StatusMaps = {
   transitioning: 'blue',
@@ -16,9 +17,12 @@ type StatusTagProps = {
     status: StatusType;
     text: string;
   };
+  download?: {
+    percent: number;
+  };
 };
 
-const StatusTag: React.FC<StatusTagProps> = ({ statusValue }) => {
+const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
   const { text, status } = statusValue;
   const [statusColor, setStatusColor] = useState<{ text: string; bg: string }>({
     text: '',
@@ -31,11 +35,18 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue }) => {
 
   return (
     <span
-      className={styles['status-tag']}
-      style={{
-        color: statusColor.text,
-        border: `1px solid ${statusColor.text}`
-      }}
+      className={classNames('status-tag', { download: download })}
+      style={
+        download
+          ? {
+              color: StatusColorMap['success']['text'],
+              border: `1px solid ${StatusColorMap['success']['text']}`
+            }
+          : {
+              color: statusColor?.text,
+              border: `1px solid ${statusColor?.text}`
+            }
+      }
     >
       {text}
     </span>

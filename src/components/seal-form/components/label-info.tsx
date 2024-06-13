@@ -5,7 +5,7 @@ import './label-info.less';
 
 interface NoteInfoProps {
   required?: boolean;
-  label: string;
+  label: React.ReactNode;
   description?: React.ReactNode;
 }
 const NoteInfo: React.FC<NoteInfoProps> = (props) => {

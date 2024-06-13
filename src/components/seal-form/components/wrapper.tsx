@@ -4,7 +4,7 @@ import LabelInfo from './label-info';
 import wrapperStyle from './wrapper.less';
 interface WrapperProps {
   children: React.ReactNode;
-  label: string;
+  label: React.ReactNode;
   isFocus: boolean;
   status?: string;
   required?: boolean;

@@ -4,3 +4,10 @@ export const isNotEmptyValue = (value: any) => {
   }
   return value !== null && value !== undefined && value !== '';
 };
+
+export const handleBatchRequest = async (
+  list: any[],
+  fn: (args: any) => void
+) => {
+  return Promise.all(list.map((item) => fn(item)));
+};

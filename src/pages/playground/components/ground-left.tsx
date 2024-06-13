@@ -179,6 +179,9 @@ const MessageList: React.FC<MessageProps> = (props) => {
       </div>
       <ViewCodeModal
         open={show}
+        systemMessage={systemMessage}
+        messageList={messageList}
+        parameters={parameters}
         onCancel={handleCloseViewCode}
         title="View code"
       ></ViewCodeModal>

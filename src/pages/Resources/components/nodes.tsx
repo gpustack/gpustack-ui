@@ -1,4 +1,5 @@
 import PageTools from '@/components/page-tools';
+import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -8,7 +9,6 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { queryNodesList } from '../apis';
 import { ListItem } from '../config/types';
-import RenderProgress from './render-progress';
 const { Column } = Table;
 
 const Models: React.FC = () => {
@@ -138,9 +138,9 @@ const Models: React.FC = () => {
           key="CPU"
           render={(text, record: ListItem) => {
             return (
-              <RenderProgress
+              <ProgressBar
                 percent={_.round(record?.status?.cpu.utilization_rate, 2)}
-              ></RenderProgress>
+              ></ProgressBar>
             );
           }}
         />
@@ -150,12 +150,12 @@ const Models: React.FC = () => {
           key="Memory"
           render={(text, record: ListItem) => {
             return (
-              <RenderProgress
+              <ProgressBar
                 percent={formateUtilazation(
                   record?.status?.memory.used,
                   record?.status?.memory.total
                 )}
-              ></RenderProgress>
+              ></ProgressBar>
             );
           }}
         />
@@ -165,14 +165,14 @@ const Models: React.FC = () => {
           key="GPU"
           render={(text, record: ListItem) => {
             return (
-              <RenderProgress
+              <ProgressBar
                 percent={_.get(record, [
                   'status',
                   'gpu',
                   '0',
                   'core_utilization_rate'
                 ])}
-              ></RenderProgress>
+              ></ProgressBar>
             );
           }}
         />
@@ -181,18 +181,7 @@ const Models: React.FC = () => {
           dataIndex="VRAM"
           key="VRAM"
           render={(text, record: ListItem) => {
-            return <RenderProgress percent={0}></RenderProgress>;
-          }}
-        />
-        <Column
-          title="Operation"
-          key="operation"
-          render={(text, record) => {
-            return (
-              <Space>
-                <Button size="middle">Logs</Button>
-              </Space>
-            );
+            return <ProgressBar percent={0}></ProgressBar>;
           }}
         />
       </Table>

@@ -72,7 +72,11 @@ const Profile: React.FC = () => {
               style={{ width: INPUT_WIDTH.default }}
             ></SealInput.Password>
           </Form.Item>
-          <FormButtons htmlType="submit" onCancel={handleCancel}></FormButtons>
+          <FormButtons
+            htmlType="submit"
+            onCancel={handleCancel}
+            showCancel={false}
+          ></FormButtons>
         </Form>
       </PageContainer>
     </StrictMode>

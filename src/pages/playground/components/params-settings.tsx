@@ -22,11 +22,6 @@ type ParamsSettingsProps = {
   params?: ParamsSettingsFormProps;
   setParams: (params: any) => void;
 };
-// const dataList = [
-//   { value: 'llama3:latest', label: 'llama3:latest' },
-//   { value: 'wangfuyun/AnimateLCM', label: 'wangfuyun/AnimateLCM' },
-//   { value: 'Revanthraja/Text_to_Vision', label: 'Revanthraja/Text_to_Vision' }
-// ];
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   onClose,
@@ -126,7 +121,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               max={2}
               step={0.1}
               style={{ marginBottom: 0 }}
-              tooltip={{ open: true }}
             ></Slider>
           </FieldWrapper>
         </Form.Item>
@@ -149,7 +143,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               max={1}
               step={0.1}
               style={{ marginBottom: 0 }}
-              tooltip={{ open: true }}
             ></Slider>
           </FieldWrapper>
         </Form.Item>

@@ -1,5 +1,10 @@
 import { request } from '@umijs/max';
-import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
+import {
+  FormData,
+  ListItem,
+  ModelInstanceFormData,
+  ModelInstanceListItem
+} from '../config/types';
 
 export const MODELS_API = '/models';
 
@@ -55,7 +60,9 @@ export async function queryModelInstancesList(
   );
 }
 
-export async function createModelInstance(params: { data: FormData }) {
+export async function createModelInstance(params: {
+  data: ModelInstanceFormData;
+}) {
   return request(`${MODEL_INSTANCE_API}`, {
     method: 'POST',
     data: params.data
@@ -91,3 +98,17 @@ export async function queryModelInstanceLogs(id: number) {
 }
 
 // ===================== Model Instances end =====================
+
+// ===================== call huggingface quicksearch api =====================
+
+export async function callHuggingfaceQuickSearch(params: any) {
+  return request<{
+    models: Array<{
+      id: string;
+      _id: string;
+    }>;
+  }>(`https://huggingface.co/api/quicksearch`, {
+    method: 'GET',
+    params
+  });
+}

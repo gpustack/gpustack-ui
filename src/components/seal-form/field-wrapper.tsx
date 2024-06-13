@@ -1,9 +1,10 @@
 import classNames from 'classnames';
+import React from 'react';
 import LabelInfo from './components/label-info';
 import wrapperStyle from './components/wrapper.less';
 interface WrapperProps {
   children: React.ReactNode;
-  label: string;
+  label: React.ReactNode;
   status?: string;
   className?: string;
   disabled?: boolean;

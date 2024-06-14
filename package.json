@@ -2,11 +2,11 @@
   "private": true,
   "author": "jialin <jialinkuang@126.com>",
   "scripts": {
-    "dev": "max dev",
     "build": "max build",
+    "dev": "max dev",
     "format": "prettier --cache --write .",
-    "prepare": "husky",
     "postinstall": "max setup",
+    "prepare": "husky",
     "setup": "max setup",
     "start": "npm run dev"
   },
@@ -19,6 +19,7 @@
     "@umijs/max": "^4.2.1",
     "antd": "^5.17.0",
     "antd-style": "^3.6.2",
+    "axios": "^1.7.2",
     "classnames": "^2.5.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",

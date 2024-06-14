@@ -37,3 +37,9 @@ export const StatusMaps = {
   success: 'success',
   inactive: 'inactive'
 };
+
+export const WatchEventType = {
+  CREATE: 'ADDED',
+  UPDATE: 'MODIFIED',
+  DELETE: 'DELETED'
+};

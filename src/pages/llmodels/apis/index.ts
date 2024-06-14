@@ -12,11 +12,13 @@ export const MODEL_INSTANCE_API = '/model_instances';
 
 // ===================== Models =====================
 export async function queryModelsList(
-  params: Global.Pagination & { query?: string }
+  params: Global.Pagination & { query?: string },
+  options?: any
 ) {
   return request<Global.PageResponse<ListItem>>(`${MODELS_API}`, {
     methos: 'GET',
-    params
+    params,
+    ...options
   });
 }
 
@@ -111,4 +113,13 @@ export async function callHuggingfaceQuickSearch(params: any) {
     method: 'GET',
     params
   });
+}
+
+export async function queryHuggingfaceModelFiles(params: any) {
+  return request(
+    `https://huggingface.co/openbmb/MiniCPM-Llama3-V-2_5-gguf/tree/main`,
+    {
+      method: 'GET'
+    }
+  );
 }

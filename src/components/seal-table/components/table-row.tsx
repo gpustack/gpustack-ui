@@ -2,7 +2,7 @@ import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import RowContext from '../row-context';
 import { RowContextProps, SealTableProps } from '../types';
 
@@ -17,6 +17,7 @@ const TableRow: React.FC<
     rowSelection,
     rowKey,
     columns,
+    pollingChildren,
     onExpand,
     renderChildren,
     loadChildren
@@ -26,6 +27,7 @@ const TableRow: React.FC<
   const [checked, setChecked] = useState(false);
   const [childrenData, setChildrenData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const pollTimer = useRef<any>(null);
 
   useEffect(() => {
     if (rowSelection) {
@@ -38,12 +40,26 @@ const TableRow: React.FC<
     }
   }, [rowSelection]);
 
-  const handleRowExpand = async () => {
-    setExpanded(!expanded);
-    onExpand?.(!expanded, record);
-    if (expanded) {
-      return;
+  useEffect(() => {
+    return () => {
+      if (pollTimer.current) {
+        clearInterval(pollTimer.current);
+      }
+    };
+  }, []);
+
+  const handlePolling = async () => {
+    if (pollingChildren) {
+      try {
+        const data = await loadChildren?.(record);
+        setChildrenData(data || []);
+      } catch (error) {
+        setChildrenData([]);
+      }
     }
+  };
+
+  const handleLoadChildren = async () => {
     try {
       setLoading(true);
       const data = await loadChildren?.(record);
@@ -52,6 +68,28 @@ const TableRow: React.FC<
     } catch (error) {
       setChildrenData([]);
       setLoading(false);
+    }
+  };
+
+  const handleRowExpand = async () => {
+    setExpanded(!expanded);
+    onExpand?.(!expanded, record);
+
+    if (pollTimer.current) {
+      clearInterval(pollTimer.current);
+    }
+
+    if (expanded) {
+      return;
+    }
+
+    if (pollingChildren) {
+      await handleLoadChildren();
+      pollTimer.current = setInterval(() => {
+        handlePolling();
+      }, 1000);
+    } else {
+      handleLoadChildren();
     }
   };
 

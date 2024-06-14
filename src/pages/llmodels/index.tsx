@@ -5,8 +5,12 @@ import SealColumn from '@/components/seal-table/components/seal-column';
 import StatusTag from '@/components/status-tag';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
+import useSetChunkRequest, {
+  createAxiosToken
+} from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import {
   DeleteOutlined,
   FieldTimeOutlined,
@@ -30,8 +34,9 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
+  MODELS_API,
   createModel,
   createModelInstance,
   deleteModel,
@@ -50,6 +55,7 @@ const Models: React.FC = () => {
   const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
+  const { setChunkRequest } = useSetChunkRequest();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -63,19 +69,30 @@ const Models: React.FC = () => {
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
+  const timer = useRef<any>();
+  let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
     query: ''
   });
+  // request data
 
-  const fetchData = async () => {
-    setLoading(true);
+  const { updateChunkedList } = useUpdateChunkedList(dataSource, {
+    setDataList: setDataSource
+  });
+
+  const fetchData = async (polling?: boolean) => {
+    axiosToken?.cancel?.();
+    axiosToken = createAxiosToken();
+    setLoading(!polling);
     try {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
       };
-      const res = await queryModelsList(params);
+      const res = await queryModelsList(params, {
+        cancelToken: axiosToken.token
+      });
       console.log('res=======', res);
       setDataSource(res.items);
       setTotal(res.pagination.total);
@@ -85,6 +102,15 @@ const Models: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // update data by polling
+  const fetchDataByPolling = () => {
+    clearInterval(timer.current);
+    timer.current = setInterval(() => {
+      fetchData(true);
+    }, 3000);
+  };
+
   const handleShowSizeChange = (page: number, size: number) => {
     console.log(page, size);
     setQueryParams({
@@ -106,7 +132,38 @@ const Models: React.FC = () => {
     setSortOrder(sorter.order);
   };
 
+  const handleFilter = () => {
+    fetchData();
+  };
+
+  const updateHandler = (list: any) => {
+    _.each(list, (data: any) => {
+      updateChunkedList(data);
+    });
+    if (!dataSource.length) {
+      handleFilter();
+    }
+  };
+
+  const createModelsChunkRequest = () => {
+    try {
+      setChunkRequest({
+        url: MODELS_API,
+        params: {
+          ..._.pickBy(
+            _.omit(queryParams, ['page', 'perPage']),
+            (val: any) => !!val
+          )
+        },
+        handler: updateHandler
+      });
+    } catch (error) {
+      // ignore
+    }
+  };
+
   const handleSearch = (e: any) => {
+    console.log('request==========');
     fetchData();
   };
 
@@ -230,6 +287,17 @@ const Models: React.FC = () => {
     return data.items || [];
   };
 
+  useEffect(() => {
+    fetchData();
+  }, [queryParams]);
+
+  useEffect(() => {
+    fetchDataByPolling();
+    return () => {
+      clearInterval(timer.current);
+    };
+  }, []);
+
   const renderChildren = (list: any) => {
     return (
       <Space size={16} direction="vertical" style={{ width: '100%' }}>
@@ -239,6 +307,10 @@ const Models: React.FC = () => {
               key={`${item.id}`}
               onMouseEnter={() => handleOnMouseEnter(item.id, index)}
               onMouseLeave={handleOnMouseLeave}
+              style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
+              className={
+                item.download_progress !== 100 ? 'skeleton-loading' : ''
+              }
             >
               <RowChildren>
                 <Row style={{ width: '100%' }} align="middle">
@@ -296,12 +368,6 @@ const Models: React.FC = () => {
     );
   };
 
-  // request data
-
-  useEffect(() => {
-    fetchData();
-  }, [queryParams]);
-
   return (
     <>
       <PageContainer
@@ -358,6 +424,7 @@ const Models: React.FC = () => {
           rowKey="id"
           expandable={true}
           onChange={handleTableChange}
+          pollingChildren={true}
           loadChildren={getModelInstances}
           renderChildren={renderChildren}
           pagination={{

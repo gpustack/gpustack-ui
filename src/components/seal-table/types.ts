@@ -29,6 +29,7 @@ export interface SealTableProps {
   empty?: React.ReactNode;
   expandable?: React.ReactNode;
   dataSource: any[];
+  pollingChildren?: boolean;
   loading?: boolean;
   onExpand?: (expanded: boolean, record: any) => void;
   renderChildren?: (data: any) => React.ReactNode;
@@ -39,5 +40,6 @@ export interface SealTableProps {
 export interface RowContextProps {
   record: Record<string, any>;
   columns: React.ReactNode[];
+  pollingChildren?: boolean;
   rowIndex: number;
 }

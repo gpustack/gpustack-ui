@@ -7,14 +7,14 @@ export default [
     redirect: '/dashboard'
   },
   {
-    name: 'Dashboard',
+    name: 'dashboard',
     path: '/dashboard',
     key: 'dashboard',
     icon: 'home',
     component: './dashboard'
   },
   {
-    name: 'Playground',
+    name: 'playground',
     title: 'Playground',
     path: '/playground',
     key: 'playground',
@@ -22,14 +22,14 @@ export default [
     component: './playground'
   },
   {
-    name: 'Models',
+    name: 'models',
     path: '/models',
     key: 'models',
     icon: 'Block',
     component: './llmodels'
   },
   {
-    name: 'Resources',
+    name: 'resources',
     path: '/resources',
     key: 'resources',
     icon: 'CloudServer',
@@ -43,14 +43,14 @@ export default [
     component: './api-keys'
   },
   {
-    name: 'Users',
+    name: 'users',
     path: '/users',
     key: 'users',
     icon: 'Team',
     component: './users'
   },
   {
-    name: 'Profile',
+    name: 'profile',
     path: '/profile',
     key: 'profile',
     hideInMenu: true,
@@ -58,7 +58,7 @@ export default [
     icon: 'User'
   },
   {
-    name: 'Login',
+    name: 'login',
     path: '/login',
     key: 'login',
     layout: false,

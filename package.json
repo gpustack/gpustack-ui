@@ -30,6 +30,8 @@
   "devDependencies": {
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
+    "@umijs/case-sensitive-paths-webpack-plugin": "^1.0.1",
+    "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "eslint": "^8.56.0",
     "eslint-plugin-unused-imports": "^3.2.0",
     "husky": "^9.0.11",

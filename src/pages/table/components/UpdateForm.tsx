@@ -4,7 +4,7 @@ import {
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
-  StepsForm,
+  StepsForm
 } from '@ant-design/pro-components';
 import { Modal } from 'antd';
 import React from 'react';
@@ -27,7 +27,7 @@ export interface UpdateFormProps {
 const UpdateForm: React.FC<UpdateFormProps> = (props) => (
   <StepsForm
     stepsProps={{
-      size: 'small',
+      size: 'small'
     }}
     stepsFormRender={(dom, submitter) => {
       return (
@@ -49,7 +49,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => (
     <StepsForm.StepForm
       initialValues={{
         name: props.values.name,
-        nickName: props.values.nickName,
+        nickName: props.values.nickName
       }}
       title="基本信息"
     >
@@ -65,14 +65,14 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => (
         label="规则描述"
         placeholder="请输入至少五个字符"
         rules={[
-          { required: true, message: '请输入至少五个字符的规则描述！', min: 5 },
+          { required: true, message: '请输入至少五个字符的规则描述！', min: 5 }
         ]}
       />
     </StepsForm.StepForm>
     <StepsForm.StepForm
       initialValues={{
         target: '0',
-        template: '0',
+        template: '0'
       }}
       title="配置规则属性"
     >
@@ -82,7 +82,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => (
         label="监控对象"
         valueEnum={{
           0: '表一',
-          1: '表二',
+          1: '表二'
         }}
       />
       <ProFormSelect
@@ -91,7 +91,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => (
         label="规则模板"
         valueEnum={{
           0: '规则模板一',
-          1: '规则模板二',
+          1: '规则模板二'
         }}
       />
       <ProFormRadio.Group
@@ -101,19 +101,19 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => (
         options={[
           {
             value: '0',
-            label: '强',
+            label: '强'
           },
           {
             value: '1',
-            label: '弱',
-          },
+            label: '弱'
+          }
         ]}
       />
     </StepsForm.StepForm>
     <StepsForm.StepForm
       initialValues={{
         type: '1',
-        frequency: 'month',
+        frequency: 'month'
       }}
       title="设定调度周期"
     >
@@ -128,7 +128,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => (
         width="xs"
         valueEnum={{
           month: '月',
-          week: '周',
+          week: '周'
         }}
       />
     </StepsForm.StepForm>

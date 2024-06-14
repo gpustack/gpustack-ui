@@ -1,16 +1,9 @@
 import { defineConfig } from '@umijs/max';
 
-const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-
 import proxy from './proxy';
 import routes from './routes';
 
 export default defineConfig({
-  chainWebpack(config) {
-    config
-      .plugin('case-sensitive-paths-webpack-plugin')
-      .use(CaseSensitivePathsPlugin);
-  },
   proxy: {
     ...proxy()
   },

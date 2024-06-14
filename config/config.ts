@@ -1,14 +1,14 @@
 import { defineConfig } from '@umijs/max';
+
 import proxy from './proxy';
 import routes from './routes';
-const { REACT_APP_ENV = 'dev' } = process.env;
-
-console.log('env+++++++++++++++', process.env.NODE_ENV, REACT_APP_ENV);
 
 export default defineConfig({
   proxy: {
     ...proxy()
   },
+  base: process.env.npm_config_base || '/',
+  esbuildMinifyIIFE: true,
   clickToComponent: {},
   antd: {
     style: 'less',

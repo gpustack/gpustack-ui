@@ -1,5 +1,4 @@
 import PageTools from '@/components/page-tools';
-import ProgressBar from '@/components/progress-bar';
 import SealTable from '@/components/seal-table';
 import RowChildren from '@/components/seal-table/components/row-children';
 import SealColumn from '@/components/seal-table/components/seal-column';
@@ -57,7 +56,7 @@ const Models: React.FC = () => {
   });
   const [logContent, setLogContent] = useState('');
   const [openLogModal, setOpenLogModal] = useState(false);
-  const [hoverChildIndex, setHoverChildIndex] = useState(-1);
+  const [hoverChildIndex, setHoverChildIndex] = useState<string | number>(-1);
   const [total, setTotal] = useState(100);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -213,8 +212,8 @@ const Models: React.FC = () => {
     });
   };
 
-  const handleOnMouseEnter = (index: number) => {
-    setHoverChildIndex(index);
+  const handleOnMouseEnter = (id: number, index: number) => {
+    setHoverChildIndex(`${id}-${index}`);
   };
 
   const handleOnMouseLeave = () => {
@@ -238,7 +237,7 @@ const Models: React.FC = () => {
           return (
             <div
               key={`${item.id}`}
-              onMouseEnter={() => handleOnMouseEnter(index)}
+              onMouseEnter={() => handleOnMouseEnter(item.id, index)}
               onMouseLeave={handleOnMouseLeave}
             >
               <RowChildren>
@@ -248,12 +247,6 @@ const Models: React.FC = () => {
                   </Col>
                   <Col span={5}>
                     <span>{item.huggingface_repo_id}</span>
-                    <div style={{ marginTop: '4px' }}>
-                      <ProgressBar
-                        download
-                        percent={item.download_progress || 0}
-                      ></ProgressBar>
-                    </div>
                   </Col>
                   <Col span={4}>
                     {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
@@ -261,7 +254,11 @@ const Models: React.FC = () => {
                   <Col span={4}>
                     {item.state && (
                       <StatusTag
-                        download={{ percent: 10 }}
+                        download={
+                          item.download_progress !== 100
+                            ? { percent: item.download_progress }
+                            : undefined
+                        }
                         statusValue={{
                           status: status[item.state] as any,
                           text: item.state
@@ -270,7 +267,7 @@ const Models: React.FC = () => {
                     )}
                   </Col>
                   <Col span={7}>
-                    {hoverChildIndex === index && (
+                    {hoverChildIndex === `${item.id}-${index}` && (
                       <Space size={20}>
                         <Tooltip title="Delete">
                           <Button

@@ -39,9 +39,12 @@ const TableRow: React.FC<
   }, [rowSelection]);
 
   const handleRowExpand = async () => {
+    setExpanded(!expanded);
+    onExpand?.(!expanded, record);
+    if (expanded) {
+      return;
+    }
     try {
-      setExpanded(!expanded);
-      onExpand?.(!expanded, record);
       setLoading(true);
       const data = await loadChildren?.(record);
       setChildrenData(data || []);

@@ -51,7 +51,7 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const [total, setTotal] = useState(100);
+  const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
@@ -91,7 +91,7 @@ const Models: React.FC = () => {
   const handleAddUser = () => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-    setTitle('Add User');
+    setTitle('Add API Key');
   };
 
   const handleClickMenu = (e: any) => {
@@ -160,7 +160,7 @@ const Models: React.FC = () => {
                 type="primary"
                 onClick={handleAddUser}
               >
-                Add API-key
+                Add API Key
               </Button>
               <Button
                 icon={<DeleteOutlined />}
@@ -209,7 +209,7 @@ const Models: React.FC = () => {
             key="operation"
             render={(text, record) => {
               return (
-                <Space>
+                <Space size={20}>
                   <Tooltip title="编辑">
                     <Button
                       size="small"

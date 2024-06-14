@@ -33,9 +33,22 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
     setStatusColor(StatusColorMap[status]);
   }, [status]);
 
+  const renderContent = () => {
+    const percent = download?.percent || 0;
+
+    if (download && percent > 0 && percent < 100) {
+      return (
+        <>
+          <span className="progress">{download?.percent || 0}%</span>
+          <span className="download" style={{ width: `${percent}%` }}></span>
+        </>
+      );
+    }
+    return <span>{text}</span>;
+  };
   return (
     <span
-      className={classNames('status-tag', { download: download })}
+      className={classNames('status-tag')}
       style={
         download
           ? {
@@ -48,7 +61,7 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
             }
       }
     >
-      {text}
+      {renderContent()}
     </span>
   );
 };

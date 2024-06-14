@@ -1,10 +1,31 @@
 .status-tag {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2px 10px;
   border-radius: 20px;
   width: fit-content;
+  min-width: 76px;
   height: 26px;
   font-size: var(--font-size-base);
+  overflow: hidden;
+
+  .download {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    background-color: var(--ant-color-primary);
+  }
+
+  .progress {
+    position: relative;
+    z-index: 10;
+    color: var(--color-white-1);
+  }
 }

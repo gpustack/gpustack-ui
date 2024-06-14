@@ -8,7 +8,10 @@ export default defineConfig({
     ...proxy()
   },
   base: process.env.npm_config_base || '/',
-  esbuildMinifyIIFE: true,
+  // esbuildMinifyIIFE: true,
+  jsMinifier: 'terser',
+  cssMinifier: 'cssnano',
+  presets: ['umi-presets-pro'],
   clickToComponent: {},
   antd: {
     style: 'less',

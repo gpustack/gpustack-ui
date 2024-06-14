@@ -24,7 +24,8 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "lodash": "^4.17.21",
-    "numeral": "^2.0.6"
+    "numeral": "^2.0.6",
+    "umi-presets-pro": "^2.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",

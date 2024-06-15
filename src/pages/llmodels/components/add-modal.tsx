@@ -4,10 +4,14 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import { convertFileSize } from '@/utils';
 import { Form, Modal } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { callHuggingfaceQuickSearch } from '../apis';
+import {
+  callHuggingfaceQuickSearch,
+  queryHuggingfaceModelFiles
+} from '../apis';
 import { FormData } from '../config/types';
 
 type AddModalProps = {
@@ -51,9 +55,41 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     console.log('repo change', value);
   };
 
-  const debounceSearch = _.debounce((text: string) => {
-    handleOnSearchRepo(text);
-  }, 300);
+  const fileNamLabel = (item: any) => {
+    return (
+      <span>
+        {item.path}
+        <span
+          style={{ color: 'var(--ant-color-text-tertiary)', marginLeft: '4px' }}
+        >
+          ({convertFileSize(item.size)})
+        </span>
+      </span>
+    );
+  };
+  const handleRepoSelect = async (repo: string) => {
+    try {
+      const res = await queryHuggingfaceModelFiles({ repo });
+      const list = _.filter(res, (file: any) => {
+        return _.endsWith(file.path, '.gguf');
+      }).map((item: any) => {
+        return {
+          label: fileNamLabel(item),
+          value: item.path,
+          size: item.size
+        };
+      });
+      setFileOptions(list);
+    } catch (error) {
+      setFileOptions([]);
+    }
+  };
+
+  const handleRepoOnBlur = (e: any) => {
+    const repo = form.getFieldValue('huggingface_repo_id');
+    console.log('repo blur', repo);
+    handleRepoSelect(repo);
+  };
 
   const handleOnSearchRepo = async (text: string) => {
     try {
@@ -74,6 +110,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
+  const debounceSearch = _.debounce((text: string) => {
+    handleOnSearchRepo(text);
+  }, 300);
+
   const renderHuggingfaceFields = () => {
     return (
       <>
@@ -85,6 +125,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             label="Repo ID"
             required
             showSearch
+            onBlur={handleRepoOnBlur}
             onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
@@ -94,7 +135,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           name="huggingface_filename"
           rules={[{ required: true }]}
         >
-          <SealInput.Input label="File Name" required></SealInput.Input>
+          <SealAutoComplete
+            showSearch
+            label="File Name"
+            required
+            options={fileOptions}
+          ></SealAutoComplete>
         </Form.Item>
       </>
     );

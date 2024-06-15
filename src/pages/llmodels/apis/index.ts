@@ -1,3 +1,4 @@
+import { listFiles } from '@huggingface/hub';
 import { request } from '@umijs/max';
 import {
   FormData,
@@ -115,11 +116,10 @@ export async function callHuggingfaceQuickSearch(params: any) {
   });
 }
 
-export async function queryHuggingfaceModelFiles(params: any) {
-  return request(
-    `https://huggingface.co/openbmb/MiniCPM-Llama3-V-2_5-gguf/tree/main`,
-    {
-      method: 'GET'
-    }
-  );
+export async function queryHuggingfaceModelFiles(params: { repo: string }) {
+  const result = [];
+  for await (const fileInfo of listFiles(params)) {
+    result.push(fileInfo);
+  }
+  return result;
 }

@@ -13,6 +13,7 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
     required,
     description,
     isInFormItems = true,
+    onSelect,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -48,8 +49,8 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
   const handleOnBlur = (e: any) => {
     if (!props.value) {
       setIsFocus(false);
-      props.onBlur?.(e);
     }
+    props.onBlur?.(e);
   };
 
   const handleSearch = (text: string) => {
@@ -57,7 +58,7 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
   };
 
   const handleOnSelect = (value: any, option: any) => {
-    props.onSelect?.(value, option);
+    onSelect?.(value, option);
   };
 
   return (

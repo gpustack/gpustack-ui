@@ -1,0 +1,11 @@
+#!/bin/bash
+set -ex
+
+source scripts/version
+
+version::get_version_vars
+
+TARBALL=${GIT_VERSION}.tar.gz
+echo "Compressing to ${TARBALL}..."
+tar -czf ${TARBALL} dist
+mv ${TARBALL} dist

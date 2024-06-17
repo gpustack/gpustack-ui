@@ -16,14 +16,21 @@ import ViewCodeModal from './view-code-modal';
 interface MessageProps {
   parameters: any;
 }
+
+interface MessageItemProps {
+  role: string;
+  content: string;
+  uid: number;
+}
+
 const MessageList: React.FC<MessageProps> = (props) => {
   const { parameters } = props;
-  const [messageList, setMessageList] = useState<
-    { role: string; content: string }[]
-  >([
+  const messageId = useRef<number>(0);
+  const [messageList, setMessageList] = useState<MessageItemProps[]>([
     {
       role: 'user',
-      content: ''
+      content: '',
+      uid: messageId.current
     }
   ]);
 
@@ -37,11 +44,17 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
   };
+
+  const setMessageId = () => {
+    messageId.current = messageId.current + 1;
+  };
   const handleNewMessage = () => {
     messageList.push({
       role: 'user',
-      content: ''
+      content: '',
+      uid: messageId.current + 1
     });
+    setMessageId();
     setMessageList([...messageList]);
     setActiveIndex(messageList.length - 1);
   };
@@ -71,9 +84,11 @@ const MessageList: React.FC<MessageProps> = (props) => {
         ...messageList,
         {
           role: Roles.Assistant,
-          content: assistant.content
+          content: assistant.content,
+          uid: messageId.current + 1
         }
       ]);
+      setMessageId();
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -101,10 +116,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
     setMessageList([...messageList]);
   };
 
-  const handleUpdateMessage = (
-    index: number,
-    message: { role: string; content: string }
-  ) => {
+  const handleUpdateMessage = (index: number, message: MessageItemProps) => {
     messageList[index] = message;
     console.log('updatemessage========', index, message);
     setMessageList([...messageList]);
@@ -143,12 +155,12 @@ const MessageList: React.FC<MessageProps> = (props) => {
           {messageList.map((item, index) => {
             return (
               <MessageItem
-                key={index}
+                key={item.uid}
                 isFocus={index === activeIndex}
                 islast={index === messageList.length - 1}
                 loading={loading}
                 onDelete={() => handleDelete(index)}
-                updateMessage={(message: { role: string; content: string }) =>
+                updateMessage={(message: MessageItemProps) =>
                   handleUpdateMessage(index, message)
                 }
                 message={item}

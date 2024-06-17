@@ -161,7 +161,7 @@ const ModelBills: React.FC = () => {
       <PageTools
         marginBottom={10}
         marginTop={0}
-        left={<span>Bills by model</span>}
+        left={false}
         right={
           <Space>
             <Select

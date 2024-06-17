@@ -1,15 +1,21 @@
 import PageTools from '@/components/page-tools';
+import { generateRandomArray } from '@/utils';
 import { Line } from '@ant-design/plots';
-import { DatePicker } from 'antd';
 import _ from 'lodash';
 
+const mockData = {
+  GPU: generateRandomArray(),
+  CPU: generateRandomArray(),
+  Memory: generateRandomArray(),
+  VRAM: generateRandomArray()
+};
 const UtilizationOvertime: React.FC = () => {
   const timeList = [
-    '01:00:00',
-    '02:00:00',
-    '03:00:00',
-    '04:00:00',
-    '05:00:00',
+    // '01:00:00',
+    // '02:00:00',
+    // '03:00:00',
+    // '04:00:00',
+    // '05:00:00',
     '06:00:00',
     '07:00:00',
     '08:00:00',
@@ -21,7 +27,7 @@ const UtilizationOvertime: React.FC = () => {
     '14:00:00',
     '15:00:00'
   ];
-  const typeList = ['GPU', 'CPU', 'Memory'];
+  const typeList = ['GPU', 'CPU', 'Memory', 'VRAM'];
   const generateData = () => {
     const data = [];
     for (let i = 0; i < timeList.length; i++) {
@@ -29,7 +35,7 @@ const UtilizationOvertime: React.FC = () => {
         data.push({
           time: timeList[i],
           type: typeList[j],
-          value: _.round(Math.random(), 3)
+          value: _.get(mockData, typeList[j])[i]
         });
       }
     }
@@ -41,10 +47,12 @@ const UtilizationOvertime: React.FC = () => {
     console.log('dateString============', date);
   };
   const config = {
+    // title: 'Resource Utilization',
     xField: 'time',
     yField: 'value',
     color: ['red', 'blue', 'green'],
     colorField: 'type',
+    autoFit: true,
     slider: false,
     shapeField: 'smooth',
     axis: {
@@ -69,21 +77,15 @@ const UtilizationOvertime: React.FC = () => {
     tooltip: {
       title: 'time',
       items: [{ channel: 'y' }]
-    },
-    label: {
-      autoRotate: true
     }
+    // label: {
+    //   autoRotate: true
+    // }
   };
+  // <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
   return (
     <>
-      <PageTools
-        marginBottom={10}
-        marginTop={0}
-        left={<span>Utilization Over Time</span>}
-        right={
-          <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
-        }
-      />
+      <PageTools marginBottom={10} marginTop={0} left={false} right={false} />
       <Line height={400} data={data} {...config} />
     </>
   );

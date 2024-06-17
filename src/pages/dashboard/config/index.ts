@@ -1,13 +1,7 @@
 export const overviewConfigs = [
   {
-    key: 'models',
-    label: 'Models',
-    backgroundColor:
-      'linear-gradient(180deg, rgba(0,188,203,.2) 0%, rgba(40,207,181,.2) 100%)'
-  },
-  {
-    key: 'nodes',
-    label: 'Nodes',
+    key: 'workers',
+    label: 'Workers',
     backgroundColor:
       'linear-gradient(180deg, rgba(0,188,203,.2) 0%, rgba(40,207,181,.2) 100%)'
   },
@@ -18,14 +12,20 @@ export const overviewConfigs = [
       'linear-gradient(180deg, rgba(0,188,203,.2) 0%, rgba(40,207,181,.2) 100%)'
   },
   {
-    key: 'idleGpus',
-    label: 'Idle GPUs',
+    key: 'allocatedGpus',
+    label: 'Allocated GPUs',
     backgroundColor:
       'linear-gradient(180deg, rgba(0,188,203,.2) 0%, rgba(40,207,181,.2) 100%)'
   },
   {
-    key: 'allocatedGpus',
-    label: 'Allocated GPUs',
+    key: 'models',
+    label: 'Models',
+    backgroundColor:
+      'linear-gradient(180deg, rgba(0,188,203,.2) 0%, rgba(40,207,181,.2) 100%)'
+  },
+  {
+    key: 'instances',
+    label: 'Instances',
     backgroundColor:
       'linear-gradient(180deg, rgba(0,188,203,.2) 0%, rgba(40,207,181,.2) 100%)'
   }

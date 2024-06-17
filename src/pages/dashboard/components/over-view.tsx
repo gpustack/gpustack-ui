@@ -1,12 +1,15 @@
-import { Card, Col, Row } from 'antd';
+import { Card, Col, Row, Space } from 'antd';
+import React from 'react';
 import { overviewConfigs } from '../config';
+import '../styles/index.less';
 import styles from './over-view.less';
 
-const CardItem: React.FC<{ label: string; value: number; bgColor: string }> = ({
-  label,
-  value,
-  bgColor
+const renderCardItem = (data: {
+  label: string;
+  value: React.ReactNode;
+  bgColor: string;
 }) => {
+  const { label, value, bgColor } = data;
   return (
     <Card
       bordered={false}
@@ -21,16 +24,52 @@ const CardItem: React.FC<{ label: string; value: number; bgColor: string }> = ({
   );
 };
 const Overview: React.FC = (props) => {
-  const { data = {} } = props;
+  // const { data = {} } = props;
+  const data = {
+    workers: 8,
+    models: {
+      healthy: 10,
+      warning: 2,
+      error: 1
+    },
+    gpus: 30,
+    allocatedGpus: 12,
+    instances: {
+      healthy: 32,
+      warning: 3,
+      error: 2
+    }
+  };
+
+  const renderValue = (
+    value:
+      | number
+      | {
+          healthy: number;
+          warning: number;
+          error: number;
+        }
+  ) => {
+    if (typeof value === 'number') {
+      return value;
+    }
+    return (
+      <Space className="value-box">
+        <span className={'value-healthy'}>{value.healthy}</span>
+        <span className={'value-warning'}>{value.warning}</span>
+        <span className={'value-error'}>{value.error}</span>
+      </Space>
+    );
+  };
   return (
     <Row gutter={[20, 20]} className={styles.row}>
       {overviewConfigs.map((config, index) => (
         <Col span={5} key={config.key}>
-          <CardItem
-            label={config.label}
-            value={data[config.key] || 0}
-            bgColor={config.backgroundColor}
-          />
+          {renderCardItem({
+            label: config.label,
+            value: renderValue(data[config.key] || 0),
+            bgColor: config.backgroundColor
+          })}
         </Col>
       ))}
     </Row>

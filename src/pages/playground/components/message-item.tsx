@@ -4,18 +4,20 @@ import _ from 'lodash';
 import { memo, useEffect, useRef, useState } from 'react';
 import { Roles } from '../config';
 import '../style/message-item.less';
+interface MessageItemProps {
+  role: string;
+  content: string;
+  uid: number;
+}
 
 const MessageItem: React.FC<{
-  message: {
-    role: string;
-    content: string;
-  };
+  message: MessageItemProps;
   loading?: boolean;
   islast?: boolean;
-  updateMessage: (message: { role: string; content: string }) => void;
+  updateMessage: (message: MessageItemProps) => void;
   isFocus: boolean;
   onDelete: () => void;
-}> = ({ message, isFocus, onDelete, updateMessage, loading, islast }) => {
+}> = ({ message, isFocus, onDelete, updateMessage }) => {
   const [roleType, setRoleType] = useState(message.role);
   const [isTyping, setIsTyping] = useState(false);
   const [messageContent, setMessageContent] = useState(message.content);
@@ -51,7 +53,11 @@ const MessageItem: React.FC<{
 
   useEffect(() => {
     if (!isAnimating && !isInitialRender.current) {
-      updateMessage({ role: roleType, content: messageContent });
+      updateMessage({
+        role: roleType,
+        content: messageContent,
+        uid: message.uid
+      });
     } else {
       isInitialRender.current = false;
     }

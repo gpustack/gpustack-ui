@@ -129,6 +129,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
+            description="Only .gguf format is supported"
           ></SealAutoComplete>
         </Form.Item>
         <Form.Item<FormData>
@@ -210,11 +211,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     >
       <Form name="addModalForm" form={form} onFinish={onOk} preserve={false}>
         <Form.Item<FormData> name="name" rules={[{ required: true }]}>
-          <SealInput.Input
-            label="Name"
-            required
-            description="description info"
-          ></SealInput.Input>
+          <SealInput.Input label="Name" required></SealInput.Input>
         </Form.Item>
         <Form.Item<FormData> name="source" rules={[{ required: true }]}>
           <SealSelect

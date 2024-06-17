@@ -1,0 +1,8 @@
+#!/bin/bash
+set -ex
+
+if [[ -n "${LOCK}" ]]; then
+    BASE_ARGS="--frozen-lockfile"
+fi
+
+pnpm install ${BASE_ARGS:-}

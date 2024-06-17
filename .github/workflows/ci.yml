@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - 'main'
+
+env:
+  NODE_VERSION: '21'
+
+jobs:
+  deps:
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Setup Pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.3.0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+          cache: 'pnpm'
+      - name: Deps
+        run: scripts/deps
+        env:
+          LOCK: true
+      - name: Archive Modules
+        timeout-minutes: 5
+        uses: actions/cache/save@v4
+        with:
+          key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          path: |
+            ${{ github.workspace }}/node_modules
+
+  build:
+    needs:
+      - deps
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Unarchive Node Modules
+        timeout-minutes: 5
+        uses: actions/cache/restore@v4
+        with:
+          key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          path: |
+            ${{ github.workspace }}/node_modules
+      - name: Build
+        run: scripts/build
+
+  build-publish:
+    needs:
+      - deps
+    if: github.event_name == 'push'
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        version: ['latest', '${{ github.ref_name  }}']
+        exclude:
+          - version: 'main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Unarchive Node Modules
+        timeout-minutes: 5
+        uses: actions/cache/restore@v4
+        with:
+          key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          path: |
+            ${{ github.workspace }}/node_modules
+      - name: Build
+        run: scripts/build
+      - name: Package
+        run: scripts/package
+        env:
+          VERSION: '${{ matrix.version }}'
+      - name: Release
+        uses: TencentCloud/cos-action@b0aa648235fb35a1bdd6a77f529eb0ac4c2f1c25
+        with:
+          secret_id: ${{ secrets.CI_TECENTCOS_SECRET_ID }}
+          secret_key: ${{ secrets.CI_TECENTCOS_SECRET_KEY }}
+          cos_bucket: ${{ secrets.COS_BUCKET }}
+          cos_region: ${{ secrets.COS_REGION }}
+          local_path: dist/${{ matrix.version }}.tar.gz
+          remote_path: releases/${{ matrix.version }}.tar.gz
+          accelerate: true
+          clean: false

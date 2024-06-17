@@ -1,6 +1,5 @@
-import PageTools from '@/components/page-tools';
+import LineChart from '@/components/charts/line-chart';
 import { generateRandomArray } from '@/utils';
-import { Line } from '@ant-design/plots';
 import _ from 'lodash';
 
 const mockData = {
@@ -43,50 +42,10 @@ const UtilizationOvertime: React.FC = () => {
   };
   const data = generateData();
 
-  const handleSelectDate = (date: string) => {
-    console.log('dateString============', date);
-  };
-  const config = {
-    // title: 'Resource Utilization',
-    xField: 'time',
-    yField: 'value',
-    color: ['red', 'blue', 'green'],
-    colorField: 'type',
-    autoFit: true,
-    slider: false,
-    shapeField: 'smooth',
-    axis: {
-      x: {
-        textStyle: {
-          autoRoate: true
-        }
-      }
-    },
-    point: {
-      shapeField: 'circle',
-      sizeField: 2
-    },
-    style: {
-      lineWidth: 1.4
-    },
-    legend: {
-      color: {
-        layout: { justifyContent: 'center' }
-      }
-    },
-    tooltip: {
-      title: 'time',
-      items: [{ channel: 'y' }]
-    }
-    // label: {
-    //   autoRotate: true
-    // }
-  };
   // <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
   return (
     <>
-      <PageTools marginBottom={10} marginTop={0} left={false} right={false} />
-      <Line height={400} data={data} {...config} />
+      <LineChart height={400} data={data} />
     </>
   );
 };

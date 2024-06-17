@@ -7,7 +7,7 @@ const DeleteCssPlugin = require('./plugins/delete-css-plugin');
 import proxy from './proxy';
 import routes from './routes';
 const env = process.env.NODE_ENV;
-const isProduction = env === 'production';
+const isProduction = env === 'production1';
 
 export default defineConfig({
   proxy: {
@@ -48,11 +48,11 @@ export default defineConfig({
               ignoreOrder: true
             }
           ]);
-          config.plugin('delete-css').use(DeleteCssPlugin, [
-            {
-              outputPath: path.resolve(__dirname, '../', 'dist')
-            }
-          ]);
+          // config.plugin('delete-css').use(DeleteCssPlugin, [
+          //   {
+          //     outputPath: path.resolve(__dirname, '../', 'dist')
+          //   }
+          // ]);
           config.output
             .filename('js/[name].[contenthash:8].js')
             .chunkFilename('js/[name].[contenthash:8].chunk.js');

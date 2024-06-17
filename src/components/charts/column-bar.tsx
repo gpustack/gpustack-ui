@@ -13,7 +13,6 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     data,
     xField,
     yField,
-    title,
     // colorField: 'name',
     direction: 'vertical',
     height,
@@ -31,7 +30,12 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         xAxis: true
       }
     },
-
+    title: {
+      title,
+      style: {
+        align: 'center'
+      }
+    },
     split: {
       type: 'line',
       line: {
@@ -44,7 +48,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     },
 
     style: {
-      fill: '#2fbf85',
+      fill: '#54cc98',
       radiusTopLeft: 8,
       radiusTopRight: 8,
       width: 30

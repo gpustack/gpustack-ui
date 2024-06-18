@@ -42,12 +42,14 @@ const projectColumns = [
   {
     title: 'Token Quota',
     dataIndex: 'quota',
-    key: 'quota'
+    key: 'quota',
+    render: (text: any, record: any) => <span>{record.quota}k</span>
   },
   {
     title: 'Token Utilization',
     dataIndex: 'utilization',
-    key: 'utilization'
+    key: 'utilization',
+    render: (text: any, record: any) => <span>{record.utilization}%</span>
   },
   {
     title: 'Members',

@@ -1,3 +1,4 @@
+import { PageContainer } from '@ant-design/pro-components';
 import { Card, Col, Row, Space } from 'antd';
 import React from 'react';
 import { overviewConfigs } from '../config';
@@ -62,17 +63,19 @@ const Overview: React.FC = (props) => {
     );
   };
   return (
-    <Row gutter={[20, 20]} className={styles.row}>
-      {overviewConfigs.map((config, index) => (
-        <Col span={5} key={config.key}>
-          {renderCardItem({
-            label: config.label,
-            value: renderValue(data[config.key] || 0),
-            bgColor: config.backgroundColor
-          })}
-        </Col>
-      ))}
-    </Row>
+    <PageContainer ghost title={false}>
+      <Row gutter={[20, 20]} className={styles.row}>
+        {overviewConfigs.map((config, index) => (
+          <Col span={5} key={config.key}>
+            {renderCardItem({
+              label: config.label,
+              value: renderValue(data[config.key] || 0),
+              bgColor: config.backgroundColor
+            })}
+          </Col>
+        ))}
+      </Row>
+    </PageContainer>
   );
 };
 

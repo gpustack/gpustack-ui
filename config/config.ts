@@ -7,7 +7,7 @@ const DeleteCssPlugin = require('./plugins/delete-css-plugin');
 import proxy from './proxy';
 import routes from './routes';
 const env = process.env.NODE_ENV;
-const isProduction = env === 'production1';
+const isProduction = env === 'production';
 
 export default defineConfig({
   proxy: {
@@ -39,20 +39,25 @@ export default defineConfig({
           }
         },
         chainWebpack(config: any) {
-          config.module.rules.delete('image');
-          config.module.rules.delete('images');
-          config.plugin('extract-css').use(MiniCssExtractPlugin, [
-            {
-              filename: 'css/[name].[contenthash:8].css',
-              chunkFilename: 'css/[name].[contenthash:8].chunk.css',
-              ignoreOrder: true
-            }
-          ]);
+          // config.plugin('extract-css').use(MiniCssExtractPlugin, [
+          //   {
+          //     filename: 'css/[name].[contenthash:8].css',
+          //     chunkFilename: 'css/[name].[contenthash:8].chunk.css',
+          //     ignoreOrder: true
+          //   }
+          // ]);
           // config.plugin('delete-css').use(DeleteCssPlugin, [
           //   {
           //     outputPath: path.resolve(__dirname, '../', 'dist')
           //   }
           // ]);
+          config.plugin('mini-css-extract-plugin').tap((args: any) => [
+            {
+              ...args[0],
+              filename: `css/[name].[contenthash:8].css`,
+              chunkFilename: `css/[name].[contenthash:8].chunk.css`
+            }
+          ]);
           config.output
             .filename('js/[name].[contenthash:8].js')
             .chunkFilename('js/[name].[contenthash:8].chunk.js');

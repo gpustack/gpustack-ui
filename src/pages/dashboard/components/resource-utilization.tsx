@@ -1,12 +1,28 @@
 import LineChart from '@/components/charts/line-chart';
-import { generateRandomArray } from '@/utils';
+import { generateFluctuatingData } from '@/utils';
 import _ from 'lodash';
 
 const mockData = {
-  GPU: generateRandomArray(),
-  CPU: generateRandomArray(),
-  Memory: generateRandomArray(),
-  VRAM: generateRandomArray()
+  GPU: generateFluctuatingData({
+    total: 17,
+    max: 80,
+    min: 20
+  }),
+  CPU: generateFluctuatingData({
+    total: 17,
+    max: 70,
+    min: 10
+  }),
+  Memory: generateFluctuatingData({
+    total: 17,
+    max: 60,
+    min: 20
+  }),
+  VRAM: generateFluctuatingData({
+    total: 17,
+    max: 90,
+    min: 15
+  })
 };
 const UtilizationOvertime: React.FC = () => {
   const timeList = [
@@ -15,8 +31,8 @@ const UtilizationOvertime: React.FC = () => {
     // '03:00:00',
     // '04:00:00',
     // '05:00:00',
-    '06:00:00',
-    '07:00:00',
+    // '06:00:00',
+    // '07:00:00',
     '08:00:00',
     '09:00:00',
     '10:00:00',
@@ -24,7 +40,16 @@ const UtilizationOvertime: React.FC = () => {
     '12:00:00',
     '13:00:00',
     '14:00:00',
-    '15:00:00'
+    '15:00:00',
+    '16:00:00',
+    '17:00:00',
+    '18:00:00',
+    '19:00:00',
+    '20:00:00',
+    '21:00:00',
+    '22:00:00',
+    '23:00:00',
+    '24:00:00'
   ];
   const typeList = ['GPU', 'CPU', 'Memory', 'VRAM'];
   const generateData = () => {

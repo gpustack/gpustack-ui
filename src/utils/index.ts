@@ -55,3 +55,87 @@ export const generateRandomArray = (config?: {
 
   return data;
 };
+
+export const generateFluctuatingData2 = ({
+  total = 100,
+  noiseLevel = 10,
+  max = 50,
+  min = 5
+}) => {
+  const x = [];
+  const y = [];
+
+  for (let i = 0; i < total; i++) {
+    // 生成一个基本的线性趋势，使用正弦函数
+    const phaseShift = Math.random() * 2 * Math.PI;
+    const trend =
+      max * Math.sin((3 * Math.PI * i + phaseShift) / total) + max / 2;
+
+    // 生成噪声
+    const noise = (Math.random() * 2 - 1) * noiseLevel;
+
+    // 叠加趋势和噪声
+    const value = trend + noise;
+    x.push(i);
+    y.push(Math.max(min, value));
+  }
+
+  return y;
+};
+
+export const generateFluctuatingData = ({
+  total = 50,
+  trendType = 'linear',
+  max = 1,
+  f = 1,
+  phase = 0,
+  min = 0
+}) => {
+  /**
+   * 生成一组用于折线图的数据,具有自然且美观的趋势。
+   *
+   * 参数:
+   * total (number): 生成数据点的数量
+   * trendType (string): 数据趋势类型, 可选'linear', 'sine', 'exponential'
+   * max (number): 波动幅度
+   * f (number): 波动频率
+   * phase (number): 波动相位
+   * min (number): 数据的最小值
+   *
+   * 返回:
+   * x (number[]): x轴数据
+   * y (number[]): y轴数据
+   */
+  const x = Array.from({ length: total }, (_, i) => (i * 10) / (total - 1));
+
+  let y;
+  switch (trendType) {
+    case 'linear':
+      y = x.map(
+        (val) => val * (Math.random() * 2 - 1) * 3 + Math.random() * 8 - 4
+      );
+
+      break;
+    case 'sine':
+      y = x.map(
+        (val) =>
+          max * Math.sin(2 * Math.PI * f * val + phase) + Math.random() * 2 - 1
+      );
+      break;
+    case 'exponential':
+      y = x.map(
+        (val) => Math.exp(val * Math.random() * 0.2) + Math.random() * 4 - 2
+      );
+      break;
+    default:
+      throw new Error(
+        '无效的trendType参数,请选择"linear", "sine"或"exponential".'
+      );
+  }
+
+  // 将数据调整到最小值
+  const minY = Math.min(...y);
+  y = y.map((val) => _.round(val - minY + min, 2));
+
+  return y;
+};

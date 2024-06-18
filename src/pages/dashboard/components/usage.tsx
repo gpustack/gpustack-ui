@@ -133,7 +133,7 @@ const Usage = () => {
               data={userDataList}
               xField="time"
               yField="value"
-              height={360}
+              height={400}
             ></HBar>
           </PageContainer>
         </Col>
@@ -144,7 +144,7 @@ const Usage = () => {
               data={projectDataList}
               xField="time"
               yField="value"
-              height={360}
+              height={400}
             ></HBar>
           </PageContainer>
         </Col>

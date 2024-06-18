@@ -30,6 +30,7 @@ const GaugeChart: React.FC<GaugeChartProps> = (props) => {
       }
     },
     title: {
+      // title,
       titleFontSize: 14,
       style: {
         align: 'center'

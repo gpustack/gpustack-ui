@@ -9,6 +9,7 @@ import routes from './routes';
 const env = process.env.NODE_ENV;
 const isProduction = env === 'production';
 
+const t = Date.now();
 export default defineConfig({
   proxy: {
     ...proxy()
@@ -16,22 +17,27 @@ export default defineConfig({
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
-        extraBabelPlugins: [
-          [
-            'babel-plugin-named-asset-import',
-            {
-              loaderMap: {
-                css: {
-                  loader: 'css-loader',
-                  options: {
-                    modules: {
-                      localIdentName: 'css/[name]__[local]___[hash:base64:5]'
-                    }
-                  }
-                }
-              }
-            }
-          ]
+        // extraBabelPlugins: [
+        //   [
+        //     'babel-plugin-named-asset-import',
+        //     {
+        //       loaderMap: {
+        //         css: {
+        //           loader: 'css-loader',
+        //           options: {
+        //             modules: {
+        //               localIdentName: 'css/[name]__[local]___[hash:base64:5]'
+        //             }
+        //           }
+        //         }
+        //       }
+        //     }
+        //   ]
+        // ],
+        scripts: [
+          {
+            src: `/js/umi.${t}.js`
+          }
         ],
         cssLoader: {
           modules: {
@@ -39,28 +45,16 @@ export default defineConfig({
           }
         },
         chainWebpack(config: any) {
-          // config.plugin('extract-css').use(MiniCssExtractPlugin, [
-          //   {
-          //     filename: 'css/[name].[contenthash:8].css',
-          //     chunkFilename: 'css/[name].[contenthash:8].chunk.css',
-          //     ignoreOrder: true
-          //   }
-          // ]);
-          // config.plugin('delete-css').use(DeleteCssPlugin, [
-          //   {
-          //     outputPath: path.resolve(__dirname, '../', 'dist')
-          //   }
-          // ]);
           config.plugin('mini-css-extract-plugin').tap((args: any) => [
             {
               ...args[0],
-              filename: `css/[name].[contenthash:8].css`,
-              chunkFilename: `css/[name].[contenthash:8].chunk.css`
+              filename: `css/[name].${t}.css`,
+              chunkFilename: `css/[name].${t}.chunk.css`
             }
           ]);
           config.output
-            .filename('js/[name].[contenthash:8].js')
-            .chunkFilename('js/[name].[contenthash:8].chunk.js');
+            .filename(`js/[name].${t}.js`)
+            .chunkFilename(`js/[name].${t}.chunk.js`);
           config
             .plugin('compression-webpack-plugin')
             .use(CompressionWebpackPlugin, [
@@ -72,24 +66,23 @@ export default defineConfig({
                 minRatio: 0.8
               }
             ]);
-          config.module
-            .rule('images')
-            .test(/\.(png|jpe?g|gif|svg|ico)(\?.*)?$/)
-            .use('url-loader')
-            .loader(require.resolve('url-loader'))
-            .tap((options: any) => {
-              console.log('iamges==options========', options);
-              return {
-                ...options,
-                limit: 8192, // 小于8KB的图片会被转为base64
-                fallback: {
-                  loader: require.resolve('file-loader'),
-                  options: {
-                    name: 'static/[name].[hash:8].[ext]' // 将所有图片输出到 static 目录
-                  }
-                }
-              };
-            });
+          // config.module
+          //   .rule('images')
+          //   .test(/\.(png|jpe?g|gif|svg|ico)(\?.*)?$/)
+          //   .use('url-loader')
+          //   .loader(require.resolve('url-loader'))
+          //   .tap((options: any) => {
+          //     return {
+          //       ...options,
+          //       limit: 8192, // 小于8KB的图片会被转为base64
+          //       fallback: {
+          //         loader: require.resolve('file-loader'),
+          //         options: {
+          //           name: 'static/[name].[hash:8].[ext]' // 将所有图片输出到 static 目录
+          //         }
+          //       }
+          //     };
+          //   });
         }
       }
     : {}),

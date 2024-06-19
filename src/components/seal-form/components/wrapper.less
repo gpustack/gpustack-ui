@@ -2,6 +2,7 @@
   @wrapheight: 54px;
   @inputheight: 32px;
   @borderRadius: 20px;
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -13,6 +14,22 @@
   border-radius: @borderRadius;
   padding-inline: 12px;
   padding-block: 20px 0;
+
+  &.filled {
+    border: none;
+    box-shadow: none;
+  }
+
+  &.borderless {
+    border: none;
+    box-shadow: none;
+  }
+
+  &.borderless:focus-within {
+    border: none;
+    box-shadow: none;
+  }
+
   .extra {
     position: absolute;
     right: 12px;
@@ -23,8 +40,10 @@
   &.seal-input-wrapper-disabled {
     background-color: var(--ant-color-bg-container-disabled);
     cursor: not-allowed;
+
     &:hover {
       border-color: var(--ant-color-border);
+
       :global(.ant-input-search-button) {
         border-color: var(--ant-color-border) !important;
         color: var(--ant-color-text-description) !important;
@@ -37,39 +56,47 @@
     padding-bottom: 10px;
     padding-right: 10px;
   }
+
   &.validate-status-error {
     border-width: var(--ant-line-width);
     border-style: var(--ant-line-type);
     border-color: var(--ant-color-error);
+
     &:hover {
       border-color: var(--ant-color-error-border-hover);
     }
+
     &:focus-within {
       border-color: var(--ant-color-error);
     }
   }
+
   &:hover {
     border-color: var(--ant-input-hover-border-color);
     transition: all 0.2s ease;
   }
+
   &:focus-within {
     border-color: var(--ant-input-active-border-color);
     box-shadow: var(--ant-input-active-shadow);
     outline: 0;
     background-color: var(--ant-input-active-bg);
   }
+
   .label {
     position: absolute;
     left: 24px;
-    color: rgba(0, 0, 0, 0.45);
+    color: rgba(0, 0, 0, 45%);
     font-size: var(--font-size-base);
     line-height: 1;
     pointer-events: all;
     z-index: 5;
+
     &.isfoucs-has-value {
       top: 10px;
       transition: all 0.2s var(--seal-transition-func);
     }
+
     &.blur-no-value {
       top: 21px;
       transition: all 0.2s var(--seal-transition-func);
@@ -84,27 +111,32 @@
     box-shadow: none;
     height: @inputheight !important;
   }
+
   :global(.ant-select-selector) {
     border: none !important;
     padding-block: 5px;
     padding-inline: 12px;
     box-shadow: none !important;
   }
+
   :global(.ant-select-selection-item) {
     height: @inputheight !important;
     padding-block: 5px !important;
     line-height: 22px !important;
     padding-inline-end: 0 !important;
   }
+
   :global(.ant-select-arrow) {
     top: 10px;
   }
+
   :global(
       .ant-select-outlined.ant-select-disabled:not(.ant-select-customize-input)
         .ant-select-selector
     ) {
     background-color: transparent;
   }
+
   :global(.ant-select-selection-search-input) {
     height: @inputheight !important;
   }
@@ -119,6 +151,7 @@
     padding-inline: 12px;
     height: @inputheight !important;
   }
+
   :global(.ant-input-number) {
     display: flex;
     align-items: center;
@@ -127,6 +160,7 @@
     padding: 0;
     height: @inputheight !important;
   }
+
   :global(.ant-input-outlined) {
     display: flex;
     align-items: center;
@@ -135,36 +169,46 @@
     padding-block: 5px;
     padding-inline: 12px;
     height: @inputheight !important;
+
     &.seal-textarea {
       min-height: 100px !important;
     }
   }
+
   :global(.ant-input.ant-input-disabled) {
     background-color: transparent;
   }
+
   :global(input.ant-input-number-input) {
     height: @inputheight !important;
     padding-block: 5px;
     padding-inline: 12px;
   }
+
   :global(.ant-input-group) {
     position: static;
   }
+
   :global(.ant-input-group-addon) {
     inset-inline-start: unset !important;
     border-radius: 0 @borderRadius @borderRadius 0;
     width: 30px;
     background-color: transparent;
+    border: none;
   }
+
   :global(.ant-input-group-addon:hover) {
     background-color: transparent !important;
   }
+
   :global(.ant-input-group-wrapper-disabled .ant-input-group-addon) {
     background-color: transparent;
   }
+
   :global(.ant-input-group-wrapper-disabled .ant-input-group-addon:hover) {
     background-color: transparent !important;
   }
+
   :global(.ant-input-search-button) {
     position: absolute;
     top: -20px;
@@ -181,9 +225,7 @@
     top: -20px;
     height: @wrapheight - 2px;
   }
-  :global(.ant-input-group-addon) {
-    border: none;
-  }
+
   :global(.ant-input-prefix) {
     position: absolute;
     top: 1px;

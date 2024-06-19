@@ -1,0 +1,19 @@
+:local(.label) {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+
+  :global(.label-val) {
+    position: absolute;
+    top: -14px;
+    right: 26px;
+    width: 80px;
+    border-radius: var(--border-radius-small);
+    text-align: center;
+
+    :global(.ant-input-number-input) {
+      text-align: center !important;
+    }
+  }
+}

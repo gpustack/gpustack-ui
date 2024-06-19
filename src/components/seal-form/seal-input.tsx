@@ -1,110 +1,12 @@
 import type { InputProps } from 'antd';
 import { Form, Input } from 'antd';
-import type { TextAreaProps } from 'antd/es/input/TextArea';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Wrapper from './components/wrapper';
 import SealInputNumber from './input-number';
 import SealInputSearch from './input-search';
 import SealPassword from './password';
+import SealTextArea from './seal-textarea';
 import { SealFormItemProps } from './types';
-
-const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
-  const {
-    label,
-    placeholder,
-    onChange,
-    onFocus,
-    onBlur,
-    onInput,
-    style,
-    required,
-    isInFormItems = true,
-    description,
-    variant,
-    extra,
-    ...rest
-  } = props;
-  const [isFocus, setIsFocus] = useState(false);
-  const inputRef = useRef<any>(null);
-  let status = '';
-  if (isInFormItems) {
-    const statusData = Form?.Item?.useStatus?.();
-    status = statusData?.status || '';
-  }
-
-  useEffect(() => {
-    if (props.value) {
-      setIsFocus(true);
-    }
-  }, [props.value]);
-
-  const handleClickWrapper = useCallback(() => {
-    if (!props.disabled && !isFocus) {
-      inputRef.current?.focus?.({
-        cursor: 'all'
-      });
-      setIsFocus(true);
-    }
-  }, [props.disabled, isFocus]);
-
-  const handleChange = useCallback(
-    (e: any) => {
-      onChange?.(e);
-    },
-    [onChange]
-  );
-
-  const handleOnFocus = useCallback(
-    (e: any) => {
-      setIsFocus(true);
-      onFocus?.(e);
-    },
-    [onFocus]
-  );
-
-  const handleOnBlur = useCallback(
-    (e: any) => {
-      if (!inputRef.current?.resizableTextArea?.textArea?.value) {
-        setIsFocus(false);
-        onBlur?.(e);
-      }
-    },
-    [onBlur]
-  );
-
-  const handleInput = useCallback(
-    (e: any) => {
-      onInput?.(e);
-    },
-    [onInput]
-  );
-
-  return (
-    <Wrapper
-      status={status}
-      label={label || (placeholder as string)}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      className="seal-textarea-wrapper"
-      variant={variant}
-      extra={extra}
-      disabled={props.disabled}
-      onClick={handleClickWrapper}
-    >
-      <Input.TextArea
-        {...rest}
-        ref={inputRef}
-        style={{ minHeight: '80px', ...style }}
-        className="seal-textarea"
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onInput={handleInput}
-        onChange={(e) => handleChange(e)}
-      ></Input.TextArea>
-    </Wrapper>
-  );
-};
 
 const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
   const {
@@ -113,6 +15,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     required,
     description,
     isInFormItems = true,
+    variant,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -132,7 +35,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
   const handleClickWrapper = () => {
     if (!props.disabled && !isFocus) {
       inputRef.current?.focus?.({
-        cursor: 'all'
+        cursor: 'end'
       });
       setIsFocus(true);
     }

@@ -318,7 +318,7 @@ const Models: React.FC = () => {
                     {item.node_ip}:{item.port}
                   </Col>
                   <Col span={5}>
-                    <span>{item.huggingface_repo_id}</span>
+                    <span>{item.huggingface_filename}</span>
                   </Col>
                   <Col span={4}>
                     {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}

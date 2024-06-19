@@ -3,37 +3,43 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
   &.bordered {
     border-width: var(--ant-line-width);
     border-style: var(--ant-line-type);
     border-color: var(--ant-color-border);
     background-color: var(--color-white-1);
   }
+
   &.filled {
     border-color: var(--ant-color-border);
-    .content-wrapper {
+
+    .transition-content-wrapper {
       background-color: var(--color-fill-1);
     }
   }
+
   .header {
     background-color: var(--color-fill-1);
     cursor: pointer;
     padding: 8px 16px;
   }
 
-  .content-wrapper {
+  .transition-content-wrapper {
     overflow: hidden;
     transition: all 300ms ease-in-out;
-    .content {
+
+    .transition-content {
       height: max-content;
       background-color: var(--color-white-1);
       border-radius: var(--border-radius-base);
     }
   }
+
   .ant-input {
     /* 只隐藏垂直滚动条轨道 */
     &::-webkit-scrollbar-track {
-      width: 0px !important;
+      width: 0 !important;
       color: transparent;
     }
   }

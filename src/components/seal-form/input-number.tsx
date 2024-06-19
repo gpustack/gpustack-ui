@@ -32,7 +32,7 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   const handleClickWrapper = () => {
     if (!props.disabled && !isFocus) {
       inputRef.current?.focus?.({
-        cursor: 'all'
+        cursor: 'end'
       });
       setIsFocus(true);
     }

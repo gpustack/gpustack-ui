@@ -12,6 +12,7 @@ interface WrapperProps {
   className?: string;
   disabled?: boolean;
   extra?: React.ReactNode;
+  variant?: string;
   onClick?: () => void;
 }
 
@@ -25,6 +26,7 @@ const Wrapper: React.FC<WrapperProps> = ({
   description,
   required,
   extra,
+  variant,
   onClick
 }) => {
   return (

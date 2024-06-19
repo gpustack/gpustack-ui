@@ -62,14 +62,14 @@ const TransitionWrapper: React.FC<TransitionWrapProps> = forwardRef(
           {header}
         </div>
         <div
-          className="content-wrapper"
+          className="transition-content-wrapper"
           style={{
             minHeight: isOpen ? height : 0,
             height: isOpen ? 'auto' : 0
           }}
           ref={contentRef}
         >
-          <div className="content">{children}</div>
+          <div className="transition-content">{children}</div>
         </div>
       </div>
     );

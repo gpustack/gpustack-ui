@@ -10,6 +10,8 @@ interface WrapperProps {
   disabled?: boolean;
   required?: boolean;
   description?: string;
+  variant?: string;
+  style?: React.CSSProperties;
   onClick?: () => void;
 }
 
@@ -20,14 +22,19 @@ const Wrapper: React.FC<WrapperProps> = ({
   className,
   disabled,
   required,
+  variant,
+  style,
   description
 }) => {
   return (
     <div
+      style={{ ...style }}
       className={classNames(
         wrapperStyle.wrapper,
         wrapperStyle[`validate-status-${status}`],
         disabled ? wrapperStyle['seal-input-wrapper-disabled'] : '',
+        variant === 'filled' ? wrapperStyle['filled'] : '',
+        variant === 'borderless' ? wrapperStyle['borderless'] : '',
         className ? wrapperStyle[className] : ''
       )}
     >

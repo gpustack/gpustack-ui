@@ -48,7 +48,9 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
   };
   return (
     <span
-      className={classNames('status-tag')}
+      className={classNames('status-tag', {
+        download: download?.percent
+      })}
       style={
         download
           ? {

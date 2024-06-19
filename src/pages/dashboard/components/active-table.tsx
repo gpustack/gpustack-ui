@@ -1,4 +1,5 @@
 import ContentWrapper from '@/components/content-wrapper';
+import PageTools from '@/components/page-tools';
 import { Col, Row, Table } from 'antd';
 
 const modelColumns = [
@@ -132,10 +133,18 @@ const ActiveTable = () => {
   return (
     <Row>
       <Col span={12}>
-        <ContentWrapper
-          contentStyle={{ paddingRight: 0 }}
-          title={<span style={{ lineHeight: '48px' }}>Active Models</span>}
-        >
+        <PageTools
+          style={{ margin: '32px 40px' }}
+          left={
+            <span
+              style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}
+            >
+              Active Models
+            </span>
+          }
+          right={false}
+        />
+        <ContentWrapper contentStyle={{ paddingRight: 0 }} title={false}>
           <Table
             columns={modelColumns}
             dataSource={modelData}
@@ -145,9 +154,18 @@ const ActiveTable = () => {
         </ContentWrapper>
       </Col>
       <Col span={12}>
-        <ContentWrapper
-          title={<span style={{ lineHeight: '48px' }}>Active Projects</span>}
-        >
+        <PageTools
+          style={{ margin: '32px 40px' }}
+          left={
+            <span
+              style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}
+            >
+              Active Projects
+            </span>
+          }
+          right={false}
+        />
+        <ContentWrapper title={false}>
           <Table
             columns={projectColumns}
             dataSource={projectData}

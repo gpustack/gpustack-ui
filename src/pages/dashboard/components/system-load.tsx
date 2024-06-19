@@ -10,19 +10,23 @@ const SystemLoad = () => {
   };
 
   return (
-    <PageContainer ghost title="System Load">
+    <PageContainer ghost title={false}>
       <div className="system-load">
         <PageTools
           marginBottom={10}
           marginTop={0}
-          left={false}
+          left={
+            <span style={{ fontSize: 'var(--font-size-large)' }}>
+              System Load
+            </span>
+          }
           right={
             <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
           }
         />
         <ResourceUtilization />
-        <Row style={{ width: '100%' }}>
-          <Col span={6}>
+        <Row style={{ width: '100%', marginTop: '32px' }}>
+          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
             <GaugeChart
               title="GPU Compute Utilization"
               total={100}
@@ -32,7 +36,7 @@ const SystemLoad = () => {
               rangColor={['#54cc98', '#ffd666', '#ff7875']}
             ></GaugeChart>
           </Col>
-          <Col span={6}>
+          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
             <GaugeChart
               title="GPU Memory Utilization"
               total={100}
@@ -42,7 +46,7 @@ const SystemLoad = () => {
               rangColor={['#54cc98', '#ffd666', '#ff7875']}
             ></GaugeChart>
           </Col>
-          <Col span={6}>
+          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
             <GaugeChart
               title="CPU Compute Utilization"
               total={100}
@@ -52,7 +56,7 @@ const SystemLoad = () => {
               rangColor={['#54cc98', '#ffd666', '#ff7875']}
             ></GaugeChart>
           </Col>
-          <Col span={6}>
+          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
             <GaugeChart
               title="CPU Memory Utilization"
               total={100}

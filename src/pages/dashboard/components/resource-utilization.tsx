@@ -26,13 +26,6 @@ const mockData = {
 };
 const UtilizationOvertime: React.FC = () => {
   const timeList = [
-    // '01:00:00',
-    // '02:00:00',
-    // '03:00:00',
-    // '04:00:00',
-    // '05:00:00',
-    // '06:00:00',
-    // '07:00:00',
     '08:00:00',
     '09:00:00',
     '10:00:00',
@@ -67,7 +60,6 @@ const UtilizationOvertime: React.FC = () => {
   };
   const data = generateData();
 
-  // <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
   return (
     <>
       <LineChart height={400} data={data} />

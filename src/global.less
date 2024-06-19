@@ -31,8 +31,6 @@ html {
   --color-chart-red: #ff7875;
   --color-chart-green: #54cc98;
   --color-chart-glod: #ffd666;
-  // --color-text-1: #000;
-
   --seal-transition-func: cubic-bezier(0, 0, 1, 1);
   // ======== input ============
   --ant-input-active-shadow: 0 0 0 2px rgba(5, 255, 105, 6%);
@@ -129,8 +127,10 @@ body {
   }
 
   // table
-  .ant-table-wrapper .ant-table-selection-column {
-    padding-inline-start: 16px !important;
+  .ant-table-wrapper {
+    .ant-table-selection-column {
+      padding-inline-start: 16px !important;
+    }
   }
 
   .ant-table-container .ant-table-content table {
@@ -245,6 +245,10 @@ body {
     min-height: 100vh;
   }
 
+  .ant-pro-layout-bg-list {
+    background: transparent !important;
+  }
+
   .ant-pro-layout-container {
     background-color: var(--color-fill-2);
   }
@@ -270,6 +274,23 @@ body {
 // ======== monaco editor style ============
 .monaco-editor {
   border-radius: 16px;
+}
+// .background {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   bottom: 0;
+//   right: 0;
+//   background: radial-gradient(
+//     circle,
+//     rgba(47, 191, 133, 0.02),
+//     rgba(55, 125, 184, 0.2)
+//   );
+//   filter: blur(100px);
+//   height: 100%;
+// }
+.ant-pro-page-container {
+  background: transparent;
 }
 
 @keyframes skeleton-loading {

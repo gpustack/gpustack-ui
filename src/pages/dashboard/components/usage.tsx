@@ -1,8 +1,8 @@
 import ColumnBar from '@/components/charts/column-bar';
 import HBar from '@/components/charts/h-bar';
+import ContentWrapper from '@/components/content-wrapper';
 import PageTools from '@/components/page-tools';
 import { generateRandomArray } from '@/utils';
-import { PageContainer } from '@ant-design/pro-components';
 import { Col, DatePicker, Row } from 'antd';
 
 const times = [
@@ -91,19 +91,16 @@ const Usage = () => {
   };
   return (
     <>
-      <PageContainer ghost title="Usage">
-        <PageTools
-          marginBottom={10}
-          marginTop={0}
-          left={false}
-          right={
-            <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
-          }
-        />
-      </PageContainer>
-      <Row style={{ width: '100%' }}>
+      <PageTools
+        style={{ margin: '32px 40px' }}
+        left={<span style={{ fontSize: 'var(--font-size-large)' }}>Usage</span>}
+        right={
+          <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
+        }
+      />
+      <Row style={{ width: '100%' }} gutter={[20, 0]}>
         <Col span={12}>
-          <PageContainer title={false}>
+          <ContentWrapper title={false} contentStyle={{ paddingRight: 0 }}>
             <ColumnBar
               title="API Request"
               data={dataList}
@@ -111,10 +108,10 @@ const Usage = () => {
               yField="value"
               height={360}
             ></ColumnBar>
-          </PageContainer>
+          </ContentWrapper>
         </Col>
         <Col span={12}>
-          <PageContainer title={false}>
+          <ContentWrapper title={false} contentStyle={{ paddingLeft: 0 }}>
             <ColumnBar
               title="Tokens"
               data={tokenUsage}
@@ -122,12 +119,12 @@ const Usage = () => {
               yField="value"
               height={360}
             ></ColumnBar>
-          </PageContainer>
+          </ContentWrapper>
         </Col>
       </Row>
-      <Row style={{ width: '100%' }}>
+      <Row style={{ width: '100%' }} gutter={[20, 0]}>
         <Col span={12}>
-          <PageContainer title={false}>
+          <ContentWrapper title={false} contentStyle={{ paddingRight: 0 }}>
             <HBar
               title="Top Users"
               data={userDataList}
@@ -135,10 +132,10 @@ const Usage = () => {
               yField="value"
               height={400}
             ></HBar>
-          </PageContainer>
+          </ContentWrapper>
         </Col>
         <Col span={12}>
-          <PageContainer title={false}>
+          <ContentWrapper title={false} contentStyle={{ paddingLeft: 0 }}>
             <HBar
               title="Top Projects"
               data={projectDataList}
@@ -146,7 +143,7 @@ const Usage = () => {
               yField="value"
               height={400}
             ></HBar>
-          </PageContainer>
+          </ContentWrapper>
         </Col>
       </Row>
     </>

@@ -1,8 +1,5 @@
 import { defineConfig } from '@umijs/max';
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
-const DeleteCssPlugin = require('./plugins/delete-css-plugin');
 
 import proxy from './proxy';
 import routes from './routes';
@@ -17,23 +14,6 @@ export default defineConfig({
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
-        // extraBabelPlugins: [
-        //   [
-        //     'babel-plugin-named-asset-import',
-        //     {
-        //       loaderMap: {
-        //         css: {
-        //           loader: 'css-loader',
-        //           options: {
-        //             modules: {
-        //               localIdentName: 'css/[name]__[local]___[hash:base64:5]'
-        //             }
-        //           }
-        //         }
-        //       }
-        //     }
-        //   ]
-        // ],
         scripts: [
           {
             src: `/js/umi.${t}.js`

@@ -5,7 +5,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
-import { Form, Modal } from 'antd';
+import { Form, Input, Modal } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import {
@@ -130,7 +130,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             onSearch={debounceSearch}
             options={repoOptions}
             description="Only .gguf format is supported"
-          ></SealAutoComplete>
+          >
+            <Input.Search style={{ width: '520px' }}></Input.Search>
+          </SealAutoComplete>
         </Form.Item>
         <Form.Item<FormData>
           name="huggingface_filename"

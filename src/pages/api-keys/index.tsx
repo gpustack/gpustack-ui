@@ -141,7 +141,7 @@ const Models: React.FC = () => {
           left={
             <Space>
               <Input
-                placeholder="按名称查询"
+                placeholder="名称查询"
                 style={{ width: 300 }}
                 onChange={handleNameChange}
               ></Input>

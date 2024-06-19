@@ -1,4 +1,4 @@
-import { PageContainer } from '@ant-design/pro-components';
+import ContentWrapper from '@/components/content-wrapper';
 import { Card, Col, Row, Space } from 'antd';
 import React from 'react';
 import { overviewConfigs } from '../config';
@@ -55,7 +55,7 @@ const Overview: React.FC = (props) => {
       return value;
     }
     return (
-      <Space className="value-box">
+      <Space className="value-box" size={20}>
         <span className={'value-healthy'}>{value.healthy}</span>
         <span className={'value-warning'}>{value.warning}</span>
         <span className={'value-error'}>{value.error}</span>
@@ -63,8 +63,8 @@ const Overview: React.FC = (props) => {
     );
   };
   return (
-    <PageContainer ghost title={false}>
-      <Row gutter={[20, 20]} className={styles.row}>
+    <ContentWrapper contentStyle={{ paddingBlockStart: '32px' }} title={false}>
+      <Row gutter={[24, 20]} className={styles.row}>
         {overviewConfigs.map((config, index) => (
           <Col span={5} key={config.key}>
             {renderCardItem({
@@ -75,7 +75,7 @@ const Overview: React.FC = (props) => {
           </Col>
         ))}
       </Row>
-    </PageContainer>
+    </ContentWrapper>
   );
 };
 

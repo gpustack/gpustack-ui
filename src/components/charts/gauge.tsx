@@ -29,14 +29,18 @@ const GaugeChart: React.FC<GaugeChartProps> = (props) => {
         range: rangColor
       }
     },
+    startAngle: Math.PI,
+    endAngle: 0,
     title: {
-      // title,
+      title,
+      size: 0,
       titleFontSize: 14,
       style: {
         align: 'center'
       }
     },
     style: {
+      arcShape: 'round',
       textContent: (target: number, total: number) => {
         return `${(target / total) * 100}%`;
       }

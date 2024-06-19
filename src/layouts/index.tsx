@@ -1,7 +1,5 @@
 // @ts-nocheck
 
-/// <reference types="@ant-design/pro-components" />
-
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
 import { ProLayout } from '@ant-design/pro-components';
@@ -141,97 +139,100 @@ export default (props: any) => {
   );
   console.log('route===========', route);
   return (
-    <ProLayout
-      route={route}
-      location={location}
-      title={userConfig.title}
-      navTheme="light"
-      siderWidth={270}
-      onMenuHeaderClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        navigate('/');
-      }}
-      onPageChange={(route) => {
-        console.log('onRouteChange', route);
-        const { location } = history;
-        // 如果没有登录，重定向到 login
-        // if (!initialState?.currentUser && location.pathname !== loginPath) {
-        //   history.push(loginPath);
-        // }
-      }}
-      formatMessage={userConfig.formatMessage || formatMessage}
-      menu={{ locale: userConfig.locale }}
-      logo={Logo}
-      menuItemRender={(menuItemProps, defaultDom) => {
-        console.log('meurender=========', { defaultDom });
-        if (menuItemProps.isUrl || menuItemProps.children) {
-          return defaultDom;
-        }
-        if (menuItemProps.path && location.pathname !== menuItemProps.path) {
-          return (
-            // handle wildcard route path, for example /slave/* from qiankun
-            <Link
-              to={menuItemProps.path.replace('/*', '')}
-              target={menuItemProps.target}
-            >
-              {defaultDom}
-            </Link>
-          );
-        }
-        return <>{defaultDom}</>;
-      }}
-      itemRender={(route, _, routes) => {
-        const { breadcrumbName, title, path } = route;
-        const label = title || breadcrumbName;
-        const last = routes[routes.length - 1];
-        if (last) {
-          if (last.path === path || last.linkPath === path) {
-            return <span>{label}</span>;
+    <div>
+      <div className="background"></div>
+      <ProLayout
+        route={route}
+        location={location}
+        title={userConfig.title}
+        navTheme="light"
+        siderWidth={270}
+        onMenuHeaderClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          navigate('/');
+        }}
+        onPageChange={(route) => {
+          console.log('onRouteChange', route);
+          const { location } = history;
+          // 如果没有登录，重定向到 login
+          // if (!initialState?.currentUser && location.pathname !== loginPath) {
+          //   history.push(loginPath);
+          // }
+        }}
+        formatMessage={userConfig.formatMessage || formatMessage}
+        menu={{ locale: userConfig.locale }}
+        logo={Logo}
+        menuItemRender={(menuItemProps, defaultDom) => {
+          console.log('meurender=========', { defaultDom });
+          if (menuItemProps.isUrl || menuItemProps.children) {
+            return defaultDom;
           }
-        }
-        return <Link to={path}>{label}</Link>;
-      }}
-      disableContentMargin
-      fixSiderbar
-      fixedHeader
-      {...runtimeConfig}
-      rightContentRender={
-        runtimeConfig.rightContentRender !== false &&
-        ((layoutProps) => {
-          const dom = getRightRenderContent({
-            runtimeConfig,
-            loading,
-            initialState,
-            setInitialState
-          });
-          if (runtimeConfig.rightContentRender) {
-            return runtimeConfig.rightContentRender(layoutProps, dom, {
-              // BREAK CHANGE userConfig > runtimeConfig
-              userConfig,
+          if (menuItemProps.path && location.pathname !== menuItemProps.path) {
+            return (
+              // handle wildcard route path, for example /slave/* from qiankun
+              <Link
+                to={menuItemProps.path.replace('/*', '')}
+                target={menuItemProps.target}
+              >
+                {defaultDom}
+              </Link>
+            );
+          }
+          return <>{defaultDom}</>;
+        }}
+        itemRender={(route, _, routes) => {
+          const { breadcrumbName, title, path } = route;
+          const label = title || breadcrumbName;
+          const last = routes[routes.length - 1];
+          if (last) {
+            if (last.path === path || last.linkPath === path) {
+              return <span>{label}</span>;
+            }
+          }
+          return <Link to={path}>{label}</Link>;
+        }}
+        disableContentMargin
+        fixSiderbar
+        fixedHeader
+        {...runtimeConfig}
+        rightContentRender={
+          runtimeConfig.rightContentRender !== false &&
+          ((layoutProps) => {
+            const dom = getRightRenderContent({
               runtimeConfig,
               loading,
               initialState,
               setInitialState
             });
-          }
-          return dom;
-        })
-      }
-    >
-      <Exception
-        route={matchedRoute}
-        noFound={runtimeConfig?.noFound}
-        notFound={runtimeConfig?.notFound}
-        unAccessible={runtimeConfig?.unAccessible}
-        noAccessible={runtimeConfig?.noAccessible}
+            if (runtimeConfig.rightContentRender) {
+              return runtimeConfig.rightContentRender(layoutProps, dom, {
+                // BREAK CHANGE userConfig > runtimeConfig
+                userConfig,
+                runtimeConfig,
+                loading,
+                initialState,
+                setInitialState
+              });
+            }
+            return dom;
+          })
+        }
       >
-        {runtimeConfig.childrenRender ? (
-          runtimeConfig.childrenRender(<Outlet />, props)
-        ) : (
-          <Outlet />
-        )}
-      </Exception>
-    </ProLayout>
+        <Exception
+          route={matchedRoute}
+          noFound={runtimeConfig?.noFound}
+          notFound={runtimeConfig?.notFound}
+          unAccessible={runtimeConfig?.unAccessible}
+          noAccessible={runtimeConfig?.noAccessible}
+        >
+          {runtimeConfig.childrenRender ? (
+            runtimeConfig.childrenRender(<Outlet />, props)
+          ) : (
+            <Outlet />
+          )}
+        </Exception>
+      </ProLayout>
+    </div>
   );
 };

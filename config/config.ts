@@ -19,11 +19,11 @@ export default defineConfig({
             src: `/js/umi.${t}.js`
           }
         ],
-        cssLoader: {
-          modules: {
-            localIdentName: 'css/[name]__[local]___[hash:base64:5]'
-          }
-        },
+        // cssLoader: {
+        //   modules: {
+        //     localIdentName: 'css/[name]__[local]___[hash:base64:5]'
+        //   }
+        // },
         chainWebpack(config: any) {
           config.plugin('mini-css-extract-plugin').tap((args: any) => [
             {

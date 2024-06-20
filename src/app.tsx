@@ -23,14 +23,14 @@ export async function getInitialState() {
     return undefined;
   };
 
-  if (![loginPath].includes(location.pathname)) {
-    const currentUser = await fetchUserInfo();
-    return {
-      fetchUserInfo,
-      name: 'admin',
-      ...currentUser
-    };
-  }
+  // if (![loginPath].includes(location.pathname)) {
+  //   const currentUser = await fetchUserInfo();
+  //   return {
+  //     fetchUserInfo,
+  //     name: 'admin',
+  //     ...currentUser
+  //   };
+  // }
   return {
     fetchUserInfo,
     name: 'admin'

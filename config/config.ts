@@ -11,6 +11,9 @@ export default defineConfig({
   proxy: {
     ...proxy()
   },
+  history: {
+    type: 'hash'
+  },
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
@@ -19,11 +22,6 @@ export default defineConfig({
             src: `/js/umi.${t}.js`
           }
         ],
-        // cssLoader: {
-        //   modules: {
-        //     localIdentName: 'css/[name]__[local]___[hash:base64:5]'
-        //   }
-        // },
         chainWebpack(config: any) {
           config.plugin('mini-css-extract-plugin').tap((args: any) => [
             {

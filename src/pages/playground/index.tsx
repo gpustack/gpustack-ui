@@ -1,5 +1,4 @@
 import { useSearchParams } from '@umijs/max';
-import { Divider } from 'antd';
 import { useState } from 'react';
 import GroundLeft from './components/ground-left';
 import ParamsSettings from './components/params-settings';
@@ -30,9 +29,7 @@ const Playground: React.FC = () => {
       <div className="chat">
         <GroundLeft parameters={params}></GroundLeft>
       </div>
-      <div className="divider-line">
-        <Divider type="vertical" />
-      </div>
+      <div className="divider-line">{/* <Divider type="vertical" /> */}</div>
       <div className="params">
         <ParamsSettings
           onClose={handleClosePopover}

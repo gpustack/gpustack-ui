@@ -52,6 +52,7 @@ const UtilizationOvertime: React.FC = () => {
         data.push({
           time: timeList[i],
           type: typeList[j],
+          color: 'red',
           value: _.get(mockData, typeList[j])[i]
         });
       }

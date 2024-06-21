@@ -16,7 +16,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     height,
     xField: xField || 'time',
     yField: yField || 'value',
-    color: color || ['red', 'blue', 'green'],
+    color: color || ['red', 'blue', 'green', 'yellow'],
     colorField: 'type',
     autoFit: true,
     slider,
@@ -26,12 +26,15 @@ const LineChart: React.FC<LineChartProps> = (props) => {
         textStyle: {
           autoRoate: true
         }
+      },
+      y: {
+        tick: false
       }
     },
-    point: {
-      shapeField: 'circle',
-      sizeField: 2
-    },
+    // point: {
+    //   shapeField: 'circle',
+    //   sizeField: 2
+    // },
     style: {
       lineWidth: 1.5
     },

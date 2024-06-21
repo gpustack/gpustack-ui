@@ -1,6 +1,6 @@
+import CardWrapper from '@/components/card-wrapper';
 import ColumnBar from '@/components/charts/column-bar';
 import HBar from '@/components/charts/h-bar';
-import ContentWrapper from '@/components/content-wrapper';
 import PageTools from '@/components/page-tools';
 import { generateRandomArray } from '@/utils';
 import { Col, DatePicker, Row } from 'antd';
@@ -86,9 +86,11 @@ const tokenUsage = TokensData.map((val, i) => {
 });
 
 const Usage = () => {
+  const bgColor = '#fff';
   const handleSelectDate = (dateString: string) => {
     console.log('dateString============', dateString);
   };
+
   return (
     <>
       <PageTools
@@ -98,9 +100,9 @@ const Usage = () => {
           <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
         }
       />
-      <Row style={{ width: '100%' }} gutter={[20, 0]}>
-        <Col span={12}>
-          <ContentWrapper title={false} contentStyle={{ paddingRight: 0 }}>
+      <Row style={{ width: '100%' }} gutter={[0, 20]}>
+        <Col span={12} style={{ paddingRight: '20px' }}>
+          <CardWrapper>
             <ColumnBar
               title="API Request"
               data={dataList}
@@ -108,10 +110,10 @@ const Usage = () => {
               yField="value"
               height={360}
             ></ColumnBar>
-          </ContentWrapper>
+          </CardWrapper>
         </Col>
         <Col span={12}>
-          <ContentWrapper title={false} contentStyle={{ paddingLeft: 0 }}>
+          <CardWrapper>
             <ColumnBar
               title="Tokens"
               data={tokenUsage}
@@ -119,31 +121,34 @@ const Usage = () => {
               yField="value"
               height={360}
             ></ColumnBar>
-          </ContentWrapper>
+          </CardWrapper>
         </Col>
       </Row>
-      <Row style={{ width: '100%' }} gutter={[20, 0]}>
-        <Col span={12}>
-          <ContentWrapper title={false} contentStyle={{ paddingRight: 0 }}>
+      <Row style={{ width: '100%', marginTop: '20px' }} gutter={[0, 20]}>
+        <Col span={12} style={{ paddingRight: '20px' }}>
+          <CardWrapper>
             <HBar
               title="Top Users"
               data={userDataList}
               xField="time"
               yField="value"
-              height={400}
             ></HBar>
-          </ContentWrapper>
+          </CardWrapper>
         </Col>
         <Col span={12}>
-          <ContentWrapper title={false} contentStyle={{ paddingLeft: 0 }}>
+          <CardWrapper
+            style={{
+              background: bgColor,
+              borderRadius: 'var(--border-radius-base)'
+            }}
+          >
             <HBar
               title="Top Projects"
               data={projectDataList}
               xField="time"
               yField="value"
-              height={400}
             ></HBar>
-          </ContentWrapper>
+          </CardWrapper>
         </Col>
       </Row>
     </>

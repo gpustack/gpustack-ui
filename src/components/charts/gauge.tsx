@@ -16,6 +16,19 @@ const GaugeChart: React.FC<GaugeChartProps> = (props) => {
   const config = {
     width,
     height,
+    box: {
+      padding: [0, 0, 0, 0],
+      style: {
+        padding: [0, 0, 0, 0]
+      }
+    },
+    guide: {
+      arc: {
+        style: {
+          lineWidth: 30
+        }
+      }
+    },
     autoFit: true,
     data: {
       target,

@@ -17,6 +17,12 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     direction: 'vertical',
     height,
     group: true,
+    scale: {
+      x: {
+        type: 'band',
+        padding: 0.5
+      }
+    },
     legend: {
       color: {
         position: 'top',
@@ -27,7 +33,11 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     },
     axis: {
       x: {
-        xAxis: true
+        xAxis: true,
+        tick: false
+      },
+      y: {
+        tick: false
       }
     },
     title: {
@@ -48,9 +58,10 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     },
 
     style: {
-      fill: '#54cc98',
-      radiusTopLeft: 8,
-      radiusTopRight: 8,
+      fill: 'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+      radiusTopLeft: 12,
+      radiusTopRight: 12,
+      align: 'center',
       width: 30
     }
   };

@@ -1,4 +1,3 @@
-import ContentWrapper from '@/components/content-wrapper';
 import { Card, Col, Row, Space } from 'antd';
 import React from 'react';
 import { overviewConfigs } from '../config';
@@ -63,7 +62,7 @@ const Overview: React.FC = (props) => {
     );
   };
   return (
-    <ContentWrapper contentStyle={{ paddingBlockStart: '32px' }} title={false}>
+    <div>
       <Row gutter={[24, 20]} className={styles.row}>
         {overviewConfigs.map((config, index) => (
           <Col span={5} key={config.key}>
@@ -75,7 +74,7 @@ const Overview: React.FC = (props) => {
           </Col>
         ))}
       </Row>
-    </ContentWrapper>
+    </div>
   );
 };
 

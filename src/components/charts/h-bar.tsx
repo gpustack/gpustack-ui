@@ -8,7 +8,7 @@ interface BarChartProps {
   height?: number;
 }
 const BarChart: React.FC<BarChartProps> = (props) => {
-  const { data, xField, yField, title, height = 300 } = props;
+  const { data, xField, yField, title, height } = props;
   const config = {
     data,
     xField,
@@ -25,9 +25,19 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         }
       }
     },
+    scale: {
+      x: {
+        type: 'band',
+        padding: 0.5
+      }
+    },
     axis: {
       x: {
-        xAxis: true
+        xAxis: true,
+        tick: false
+      },
+      y: {
+        tick: false
       }
     },
     title: {
@@ -39,18 +49,16 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     split: {
       type: 'line',
       line: {
-        color: 'red',
         style: {
-          color: 'red',
           lineDash: [4, 5]
         }
       }
     },
-
+    markBackground: {},
     style: {
-      fill: '#54cc98',
-      radiusTopLeft: 8,
-      radiusTopRight: 8,
+      fill: 'linear-gradient(180deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+      radiusTopLeft: 12,
+      radiusTopRight: 12,
       height: 30
     }
   };

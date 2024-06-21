@@ -7,10 +7,11 @@ html {
   // --color-fill-1: #f3f6fa;
   --color-fill-2: #fff;
   --color-fill-3: #f3f6fa;
-  --menu-border-radius-base: 32px;
+  --menu-border-radius-base: 20px;
   --border-radius-base: 16px;
+  --border-radius-middle: 20px;
   --border-radius-small: 8px;
-  --color-white-1: #fff;
+  --color-white-1: rgba(255, 255, 255, 75%);
   --font-weight-normal: 500;
   --font-weight-bold: 700;
   --color-text-1: var(--ant-color-text);
@@ -19,7 +20,7 @@ html {
   --font-size-large: 16px;
   --font-size-middle: 14px;
   --ant-color-fill-secondary: rgba(0, 0, 0, 6%);
-  --table-td-radius: 24px;
+  --table-td-radius: 20px;
   --checkbox-border-radius: 4px;
   --ant-table-cell-padding-inline: 16px;
   --ant-table-cell-padding-block: 16px;
@@ -36,6 +37,7 @@ html {
   --ant-input-active-shadow: 0 0 0 2px rgba(5, 255, 105, 6%);
   --ant-input-active-border-color: #2fbf85;
   --ant-input-hover-border-color: #54cc98;
+  --box-shadow-base: 0 4px 12px rgb(227, 232, 240);
 
   .css-var-rf {
     --ant-font-size: var(--font-size-base);
@@ -67,6 +69,7 @@ html {
     --ant-border-radius-lg: 16px;
     --ant-color-error: #ff4d4f;
     --ant-color-bg-mask: rgba(0, 0, 0, 35%);
+    --ant-color-border: rgb(217 217 217 / 50%);
 
     &.ant-popover {
       --ant-popover-inner-padding: 26px;
@@ -222,11 +225,42 @@ body {
       font-size: 16px;
     }
   }
+
+  // ============== new theme style start ===============
+  .ant-pro-layout {
+    background-color: var(--color-fill-1);
+    height: 100%;
+
+    .ant-pro-sider .ant-layout-sider-children {
+      background-color: var(--color-white-1);
+      box-shadow: var(--box-shadow-base);
+    }
+  }
+
+  .ant-table-wrapper .ant-table {
+    background-color: unset;
+  }
+
+  .ant-table-content table {
+    .ant-table-thead > tr > th {
+      background-color: unset;
+    }
+
+    .ant-table-tbody {
+      .ant-table-row {
+        border-radius: var(--table-td-radius);
+        background-color: var(--color-white-1);
+        box-shadow: var(--box-shadow-base);
+
+        > td {
+          background-color: unset;
+        }
+      }
+    }
+  }
+
+  // ============== new theme style end =================
 }
-
-// ======== basic layout style start============
-
-// ======== basic layout style end ============
 
 // ======== menu style start ============
 .ant-pro-sider-collapsed-button {
@@ -250,7 +284,7 @@ body {
   }
 
   .ant-pro-layout-container {
-    background-color: var(--color-fill-2);
+    // background-color: var(--color-fill-2);
   }
 
   .ant-pro-sider {
@@ -275,20 +309,35 @@ body {
 .monaco-editor {
   border-radius: 16px;
 }
-// .background {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   bottom: 0;
-//   right: 0;
-//   background: radial-gradient(
-//     circle,
-//     rgba(47, 191, 133, 0.02),
-//     rgba(55, 125, 184, 0.2)
-//   );
-//   filter: blur(100px);
-//   height: 100%;
-// }
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  // background: radial-gradient(
+  //   circle,
+  //   rgba(47, 191, 133, 0.02),
+  //   rgba(55, 125, 184, 0.2)
+  // );
+  background: url('./assets/images/bg.png') center center no-repeat;
+  background-size: cover;
+
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    backdrop-filter: blur(100px);
+    filter: blur(100px);
+    height: 100%;
+  }
+}
+
 .ant-pro-page-container {
   background: transparent;
 }

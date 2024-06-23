@@ -11,6 +11,7 @@ import useSetChunkRequest, {
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
+import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   FieldTimeOutlined,
@@ -217,9 +218,10 @@ const Models: React.FC = () => {
     Modal.confirm({
       title: '',
       content: 'Are you sure you want to delete the selected models?',
-      onOk() {
-        console.log('OK');
+      async onOk() {
+        await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
         message.success('successfully!');
+        fetchData();
       },
       onCancel() {
         console.log('Cancel');

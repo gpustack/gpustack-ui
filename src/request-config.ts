@@ -1,6 +1,8 @@
 import { RequestConfig } from '@umijs/max';
 import { message } from 'antd';
 
+const NoBaseURLAPIs = ['/auth'];
+
 export const requestConfig: RequestConfig = {
   errorConfig: {
     errorThrower: (res: any) => {
@@ -17,6 +19,10 @@ export const requestConfig: RequestConfig = {
   requestInterceptors: [
     (url, options) => {
       console.log('requestInterceptors+++++++++++++++', url, options);
+      if (NoBaseURLAPIs.some((api) => url.startsWith(api))) {
+        options.baseURL = '';
+        return { url, options };
+      }
       return { url, options };
     }
   ],

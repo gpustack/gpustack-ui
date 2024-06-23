@@ -4,7 +4,8 @@ export default [
     key: 'dashboard',
     layout: false,
     icon: 'home',
-    redirect: '/dashboard'
+    redirect: '/dashboard',
+    access: 'canLogin'
   },
   {
     name: 'Dashboard',

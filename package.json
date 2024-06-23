@@ -26,6 +26,7 @@
     "dayjs": "^1.11.11",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",
+    "query-string": "^9.0.0",
     "umi-presets-pro": "^2.0.3"
   },
   "devDependencies": {

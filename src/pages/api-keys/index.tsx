@@ -1,21 +1,33 @@
+import CopyButton from '@/components/copy-button';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-  SyncOutlined
-} from '@ant-design/icons';
+import { handleBatchRequest } from '@/utils';
+import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
-import { useState } from 'react';
+import {
+  Button,
+  Input,
+  Modal,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  message
+} from 'antd';
+import dayjs from 'dayjs';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { createApisKey, deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
+import { expirationOptions } from './config';
+import { FormData, ListItem } from './config/types';
+
 const { Column } = Table;
 
-const dataSource = [
+const list = [
   {
     key: '1',
     name: 'local',
@@ -51,22 +63,32 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const [dataSource, setDataSource] = useState([]);
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
   const [queryParams, setQueryParams] = useState({
-    current: 1,
-    pageSize: 10,
-    name: ''
+    page: 1,
+    perPage: 10,
+    query: ''
   });
-  const handleShowSizeChange = (current: number, size: number) => {
-    console.log(current, size);
+
+  const handleShowSizeChange = (page: number, size: number) => {
+    console.log(page, size);
+    setQueryParams({
+      ...queryParams,
+      perPage: size
+    });
   };
 
   const handlePageChange = (page: number, pageSize: number | undefined) => {
     console.log(page, pageSize);
+    setQueryParams({
+      ...queryParams,
+      page: page
+    });
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -74,8 +96,40 @@ const Models: React.FC = () => {
     setSortOrder(sorter.order);
   };
 
+  const getExpireValue = (val: number | null) => {
+    const expires_in = val;
+    if (expires_in === -1) {
+      return 0;
+    }
+    const selected = expirationOptions.find(
+      (item) => expires_in === item.value
+    );
+
+    const d1 = dayjs().add(
+      selected?.value as number,
+      `${selected?.type}` as never
+    );
+    const d2 = dayjs();
+    const res = d1.diff(d2, 'second');
+    return res;
+  };
+
   const fetchData = async () => {
-    console.log('fetchData');
+    setLoading(true);
+    try {
+      const params = {
+        ..._.pickBy(queryParams, (val: any) => !!val)
+      };
+      const res = await queryApisKeysList(params);
+      console.log('res=======', res);
+      setDataSource(res.items || []);
+      setTotal(res.pagination.total);
+    } catch (error) {
+      console.log('error', error);
+      setDataSource([]);
+    } finally {
+      setLoading(false);
+    }
   };
   const handleSearch = (e: any) => {
     fetchData();
@@ -84,7 +138,7 @@ const Models: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      name: e.target.value
+      query: e.target.value
     });
   };
 
@@ -94,13 +148,22 @@ const Models: React.FC = () => {
     setTitle('Add API Key');
   };
 
-  const handleClickMenu = (e: any) => {
-    console.log('click', e);
-  };
-
-  const handleModalOk = () => {
+  const handleModalOk = async (data: FormData) => {
     console.log('handleModalOk');
-    setOpenAddModal(false);
+
+    try {
+      const params = {
+        ...data,
+        expires_in: getExpireValue(data.expires_in)
+      };
+      const res = await createApisKey({ data: params });
+      setOpenAddModal(false);
+      message.success('successfully!');
+      setDataSource([res, ...dataSource]);
+      setTotal(total + 1);
+    } catch (error) {
+      setOpenAddModal(false);
+    }
   };
 
   const handleModalCancel = () => {
@@ -108,13 +171,30 @@ const Models: React.FC = () => {
     setOpenAddModal(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (row: ListItem) => {
     Modal.confirm({
       title: '',
       content: 'Are you sure you want to delete the selected keys?',
-      onOk() {
+      async onOk() {
         console.log('OK');
+        await deleteApisKey(row.id);
         message.success('successfully!');
+        fetchData();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const handleDeleteBatch = () => {
+    Modal.confirm({
+      title: '',
+      content: 'Are you sure you want to delete the selected keys?',
+      async onOk() {
+        await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
+        message.success('successfully!');
+        fetchData();
       },
       onCancel() {
         console.log('Cancel');
@@ -127,6 +207,34 @@ const Models: React.FC = () => {
     setAction(PageAction.EDIT);
     setTitle('Edit User');
   };
+
+  const renderSecrectKey = (text: string, record: ListItem) => {
+    const { value } = record;
+
+    return (
+      <Space direction="vertical">
+        <span>{text}</span>
+        {value && (
+          <span>
+            <Tag color="error" style={{ padding: '10px 12px' }}>
+              确保立即复制您的个人访问密钥。您将无法再次看到它！
+            </Tag>
+            <span className="flex-center">
+              <Tooltip
+                title={value}
+              >{`${value?.slice(0, 8)}...${value?.slice(-8, -1)}`}</Tooltip>
+              <CopyButton text={value}></CopyButton>
+            </span>
+          </span>
+        )}
+      </Space>
+    );
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [queryParams]);
+
   return (
     <>
       <PageContainer
@@ -165,7 +273,7 @@ const Models: React.FC = () => {
               <Button
                 icon={<DeleteOutlined />}
                 danger
-                onClick={handleDelete}
+                onClick={handleDeleteBatch}
                 disabled={!rowSelection.selectedRowKeys.length}
               >
                 Delete
@@ -177,49 +285,58 @@ const Models: React.FC = () => {
           dataSource={dataSource}
           rowSelection={rowSelection}
           loading={loading}
+          rowKey="id"
           onChange={handleTableChange}
           pagination={{
             showSizeChanger: true,
-            pageSize: 10,
-            current: 2,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
             total: total,
             hideOnSinglePage: true,
             onShowSizeChange: handleShowSizeChange,
             onChange: handlePageChange
           }}
         >
-          <Column title="Name" dataIndex="name" key="name" width={400} />
-          <Column title="Secret Key" dataIndex="secretKey" key="secretKey" />
+          <Column
+            title="Name"
+            dataIndex="name"
+            key="name"
+            width={400}
+            ellipsis={{
+              showTitle: false
+            }}
+            render={renderSecrectKey}
+          />
+
           <Column
             title="Create Time"
-            dataIndex="createTime"
+            dataIndex="created_at"
             key="createTime"
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={true}
+            render={(text, record) => {
+              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+            }}
           />
           <Column
-            title="Last Used"
-            dataIndex="lastusedTime"
-            key="lastusedTime"
+            title="Expiration"
+            dataIndex="expires_at"
+            key="expiration"
+            render={(text, record) => {
+              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+            }}
           />
           <Column
             title="Operation"
             key="operation"
-            render={(text, record) => {
+            render={(text, record: ListItem) => {
               return (
                 <Space size={20}>
-                  <Tooltip title="编辑">
-                    <Button
-                      size="small"
-                      type="primary"
-                      onClick={handleEditUser}
-                      icon={<EditOutlined></EditOutlined>}
-                    ></Button>
-                  </Tooltip>
                   <Tooltip title="删除">
                     <Button
+                      onClick={() => handleDelete(record)}
                       size="small"
                       type="primary"
                       danger

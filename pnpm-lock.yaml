@@ -50,6 +50,9 @@ dependencies:
   numeral:
     specifier: ^2.0.6
     version: 2.0.6
+  query-string:
+    specifier: ^9.0.0
+    version: 9.0.0
   umi-presets-pro:
     specifier: ^2.0.3
     version: 2.0.3(@babel/core@7.24.5)(@types/react-dom@18.3.0)(@types/react@18.3.1)(antd@5.17.0)(dva@2.5.0-beta.2)(rc-field-form@1.44.0)(react-dom@18.3.1)(react@18.3.1)(umi@4.2.1)
@@ -4246,7 +4249,7 @@ packages:
     dependencies:
       '@babel/core': 7.24.5
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -4273,7 +4276,7 @@ packages:
       postcss-syntax: '>=0.36.2'
     dependencies:
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
       remark: 13.0.0
       unist-util-find-all-after: 3.0.2
     transitivePeerDependencies:
@@ -7852,8 +7855,13 @@ packages:
     dev: false
 
   /decode-uri-component@0.2.2:
-    resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==}
+    resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==, tarball: https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.2.tgz}
     engines: {node: '>=0.10'}
+    dev: false
+
+  /decode-uri-component@0.4.1:
+    resolution: {integrity: sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==, tarball: https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.4.1.tgz}
+    engines: {node: '>=14.16'}
     dev: false
 
   /deep-equal@1.1.2:
@@ -9361,8 +9369,13 @@ packages:
       to-regex-range: 5.0.1
 
   /filter-obj@1.1.0:
-    resolution: {integrity: sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==}
+    resolution: {integrity: sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==, tarball: https://registry.npmjs.org/filter-obj/-/filter-obj-1.1.0.tgz}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /filter-obj@5.1.0:
+    resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==, tarball: https://registry.npmjs.org/filter-obj/-/filter-obj-5.1.0.tgz}
+    engines: {node: '>=14.16'}
     dev: false
 
   /finalhandler@1.2.0:
@@ -12380,7 +12393,7 @@ packages:
     dependencies:
       htmlparser2: 3.10.1
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
     dev: false
 
   /postcss-image-set-function@4.0.7(postcss@8.4.38):
@@ -12670,30 +12683,6 @@ packages:
       lodash: 4.17.21
       postcss: 8.4.38
 
-  /postcss-syntax@0.36.2(postcss@7.0.39):
-    resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
-    peerDependencies:
-      postcss: '>=5.0.0'
-      postcss-html: '*'
-      postcss-jsx: '*'
-      postcss-less: '*'
-      postcss-markdown: '*'
-      postcss-scss: '*'
-    peerDependenciesMeta:
-      postcss-html:
-        optional: true
-      postcss-jsx:
-        optional: true
-      postcss-less:
-        optional: true
-      postcss-markdown:
-        optional: true
-      postcss-scss:
-        optional: true
-    dependencies:
-      postcss: 7.0.39
-    dev: false
-
   /postcss-syntax@0.36.2(postcss@8.4.38):
     resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
     peerDependencies:
@@ -12955,13 +12944,22 @@ packages:
     dev: false
 
   /query-string@6.14.1:
-    resolution: {integrity: sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==}
+    resolution: {integrity: sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==, tarball: https://registry.npmjs.org/query-string/-/query-string-6.14.1.tgz}
     engines: {node: '>=6'}
     dependencies:
       decode-uri-component: 0.2.2
       filter-obj: 1.1.0
       split-on-first: 1.1.0
       strict-uri-encode: 2.0.0
+    dev: false
+
+  /query-string@9.0.0:
+    resolution: {integrity: sha512-4EWwcRGsO2H+yzq6ddHcVqkCQ2EFUSfDMEjF8ryp8ReymyZhIuaFRGLomeOQLkrzacMHoyky2HW0Qe30UbzkKw==, tarball: https://registry.npmjs.org/query-string/-/query-string-9.0.0.tgz}
+    engines: {node: '>=18'}
+    dependencies:
+      decode-uri-component: 0.4.1
+      filter-obj: 5.1.0
+      split-on-first: 3.0.0
     dev: false
 
   /querystring-es3@0.2.1:
@@ -15408,8 +15406,13 @@ packages:
     dev: false
 
   /split-on-first@1.1.0:
-    resolution: {integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==}
+    resolution: {integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==, tarball: https://registry.npmjs.org/split-on-first/-/split-on-first-1.1.0.tgz}
     engines: {node: '>=6'}
+    dev: false
+
+  /split-on-first@3.0.0:
+    resolution: {integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==, tarball: https://registry.npmjs.org/split-on-first/-/split-on-first-3.0.0.tgz}
+    engines: {node: '>=12'}
     dev: false
 
   /split2@4.2.0:
@@ -15756,7 +15759,7 @@ packages:
       postcss-sass: 0.4.4
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.0.16
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
       slash: 3.0.0

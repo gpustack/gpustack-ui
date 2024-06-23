@@ -8,7 +8,8 @@ export interface ListItem {
 }
 
 export interface FormData {
-  name: string;
+  username: string;
+  id?: number;
   is_admin: boolean;
   full_name: string;
   password: string;

@@ -4,10 +4,9 @@ import avatarImg from '@/assets/images/avatar.png';
 import {
   GlobalOutlined,
   LogoutOutlined,
-  SettingOutlined,
-  SunOutlined
+  SettingOutlined
 } from '@ant-design/icons';
-import { useNavigate } from '@umijs/max';
+import { history } from '@umijs/max';
 import { Avatar, Dropdown, Menu, Spin, version } from 'antd';
 
 export function getRightRenderContent(opts: {
@@ -26,10 +25,10 @@ export function getRightRenderContent(opts: {
   }
 
   const showAvatar =
-    opts.initialState?.avatar ||
-    opts.initialState?.name ||
+    opts.initialState?.currentUser?.avatar ||
+    opts.initialState?.currentUser?.username ||
     opts.runtimeConfig.logout;
-  const disableAvatarImg = opts.initialState?.avatar === false;
+  const disableAvatarImg = opts.initialState?.currentUser?.avatar === false;
   const nameClassName = disableAvatarImg
     ? 'umi-plugin-layout-name umi-plugin-layout-hide-avatar-img'
     : 'umi-plugin-layout-name';
@@ -39,11 +38,13 @@ export function getRightRenderContent(opts: {
         <Avatar
           size="small"
           className="umi-plugin-layout-avatar"
-          src={opts.initialState?.avatar || avatarImg}
+          src={opts.initialState?.currentUser?.avatar || avatarImg}
           alt="avatar"
         />
       ) : null}
-      <span className={nameClassName}>{opts.initialState?.name}</span>
+      <span className={nameClassName}>
+        {opts.initialState?.currentUser?.username}
+      </span>
     </span>
   ) : null;
 
@@ -58,8 +59,6 @@ export function getRightRenderContent(opts: {
   // 如果没有打开Locale，并且头像为空就取消掉这个返回的内容
   if (!avatar) return null;
 
-  const navigate = useNavigate();
-
   const langMenu = {
     className: 'umi-plugin-layout-menu',
     selectedKeys: [],
@@ -73,21 +72,21 @@ export function getRightRenderContent(opts: {
           </>
         ),
         onClick: () => {
-          navigate('/profile');
+          history.push('/profile');
         }
       },
-      {
-        key: 'theme',
-        label: (
-          <>
-            <SunOutlined />
-            外观
-          </>
-        ),
-        onClick: () => {
-          console.log('theme');
-        }
-      },
+      // {
+      //   key: 'theme',
+      //   label: (
+      //     <>
+      //       <SunOutlined />
+      //       外观
+      //     </>
+      //   ),
+      //   onClick: () => {
+      //     console.log('theme');
+      //   }
+      // },
       {
         key: 'lang',
         label: (
@@ -109,14 +108,13 @@ export function getRightRenderContent(opts: {
           </>
         ),
         onClick: () => {
-          opts?.runtimeConfig?.logout?.(opts.initialState);
+          opts?.runtimeConfig?.logout?.(opts.initialState.currentUser);
         }
       }
     ]
   };
   // antd@5 和  4.24 之后推荐使用 menu，性能更好
 
-  console.log('version+++++++++=', opts.runtimeConfig, version);
   let dropdownProps;
   if (version.startsWith('5.') || version.startsWith('4.24.')) {
     dropdownProps = { menu: langMenu };

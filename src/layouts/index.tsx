@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
 import { ProLayout } from '@ant-design/pro-components';
@@ -106,18 +107,19 @@ export default (props: any) => {
   // });
   const runtimeConfig = {
     ...initialInfo,
-    logout: () => {
-      console.log('logout');
+    logout: async (userInfo) => {
+      console.log('logout', userInfo);
+      await logout();
+      navigate(loginPath);
     },
-    notFound: <div>not found</div>
+    notFound: <span>404 not found</span>
   };
-  console.log(
-    'clientRoute==========2=',
+  console.log('clientRoute==========2=', {
     props,
     clientRoutes,
     runtimeConfig,
     initialInfo
-  );
+  });
 
   // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级, proLayout 消费时, 无法正确展示菜单, 这里对冗余数据进行过滤操作
   const newRoutes = filterRoutes(
@@ -153,12 +155,12 @@ export default (props: any) => {
           navigate('/');
         }}
         onPageChange={(route) => {
-          console.log('onRouteChange', route);
+          console.log('onRouteChange', initialState, route);
           const { location } = history;
           // 如果没有登录，重定向到 login
-          // if (!initialState?.currentUser && location.pathname !== loginPath) {
-          //   history.push(loginPath);
-          // }
+          if (!initialState?.currentUser && location.pathname !== loginPath) {
+            history.push(loginPath);
+          }
         }}
         formatMessage={userConfig.formatMessage || formatMessage}
         menu={{ locale: userConfig.locale }}

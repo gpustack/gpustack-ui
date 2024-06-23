@@ -1,5 +1,5 @@
 import { request } from '@umijs/max';
-import { ListItem } from '../config/types';
+import { FormData, ListItem } from '../config/types';
 
 export const USERS_API = '/users';
 
@@ -20,7 +20,7 @@ export async function createUser(params: { data: FormData }) {
 }
 
 export async function updateUser(params: { data: FormData }) {
-  return request(`${USERS_API}`, {
+  return request(`${USERS_API}/${params.data.id}`, {
     method: 'PUT',
     data: params.data
   });

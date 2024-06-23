@@ -1,7 +1,10 @@
 import LogoIcon from '@/assets/images/logo.png';
 import SealInput from '@/components/seal-form/seal-input';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { history, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
+import { flushSync } from 'react-dom';
+import { login } from './apis';
 
 const renderLogo = () => {
   return (
@@ -20,8 +23,43 @@ const renderLogo = () => {
   );
 };
 const Login = () => {
+  const { initialState, setInitialState } = useModel('@@initialState');
+
+  const [form] = Form.useForm();
+
+  const fetchUserInfo = async () => {
+    const userInfo = await initialState?.fetchUserInfo?.();
+
+    if (userInfo) {
+      flushSync(() => {
+        setInitialState((s: any) => ({
+          ...s,
+          currentUser: userInfo
+        }));
+      });
+    }
+  };
+
+  const handleLogin = async (values: any) => {
+    console.log('values', values, form);
+    try {
+      await login({
+        username: values.username,
+        password: values.password
+      });
+      await fetchUserInfo();
+      history.push('/');
+    } catch (error) {
+      console.log('error====', error);
+    }
+  };
+
   return (
-    <Form style={{ width: '400px', margin: '5% auto 0' }}>
+    <Form
+      form={form}
+      style={{ width: '400px', margin: '5% auto 0' }}
+      onFinish={handleLogin}
+    >
       <div>{renderLogo()}</div>
       <Form.Item
         name="username"
@@ -48,7 +86,7 @@ const Login = () => {
       </Form.Item>
       <Form.Item name="autoLogin">
         <div style={{ paddingLeft: 10 }}>
-          <Checkbox>Auto login</Checkbox>
+          <Checkbox>Remember me</Checkbox>
         </div>
       </Form.Item>
       <Button htmlType="submit" type="primary" block>

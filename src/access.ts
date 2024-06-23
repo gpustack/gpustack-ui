@@ -6,6 +6,7 @@ export default (initialState: API.UserInfo) => {
   );
   return {
     canSeeAdmin,
-    canDelete: true
+    canDelete: true,
+    canLogin: true
   };
 };

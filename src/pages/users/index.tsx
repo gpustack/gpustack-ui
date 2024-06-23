@@ -3,6 +3,7 @@ import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -16,7 +17,7 @@ import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { createUser, deleteUser, queryUsersList } from './apis';
+import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 const { Column } = Table;
@@ -32,6 +33,9 @@ const Models: React.FC = () => {
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
+  const [currentData, setCurrentData] = useState<ListItem | undefined>(
+    undefined
+  );
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
@@ -102,9 +106,22 @@ const Models: React.FC = () => {
       ...data,
       is_admin: data.is_admin === 'admin'
     };
-    await createUser({ data: params });
-    setOpenAddModal(false);
-    message.success('successfully!');
+    try {
+      if (action === PageAction.EDIT) {
+        await updateUser({
+          data: {
+            ...params,
+            id: currentData?.id
+          }
+        });
+      } else {
+        await createUser({ data: params });
+      }
+      setOpenAddModal(false);
+      message.success('successfully!');
+    } catch (error) {
+      setOpenAddModal(false);
+    }
   };
 
   const handleModalCancel = () => {
@@ -132,9 +149,10 @@ const Models: React.FC = () => {
     Modal.confirm({
       title: '',
       content: 'Are you sure you want to delete the selected users?',
-      onOk() {
-        console.log('OK');
+      async onOk() {
+        await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);
         message.success('successfully!');
+        fetchData();
       },
       onCancel() {
         console.log('Cancel');
@@ -142,7 +160,8 @@ const Models: React.FC = () => {
     });
   };
 
-  const handleEditUser = () => {
+  const handleEditUser = (row: ListItem) => {
+    setCurrentData(row);
     setOpenAddModal(true);
     setAction(PageAction.EDIT);
     setTitle('Edit User');
@@ -214,7 +233,7 @@ const Models: React.FC = () => {
             onChange: handlePageChange
           }}
         >
-          <Column title="Name" dataIndex="name" key="name" width={200} />
+          <Column title="Name" dataIndex="username" key="name" width={200} />
           <Column
             title="Create Time"
             dataIndex="created_at"
@@ -231,13 +250,30 @@ const Models: React.FC = () => {
             title="Role"
             dataIndex="role"
             key="role"
-            width={400}
             render={(text, record: ListItem) => {
               return record.is_admin ? (
-                <UserSwitchOutlined className="size-16" />
+                <>
+                  <UserSwitchOutlined className="size-16" />
+                  <span className="m-l-5">管理员</span>
+                </>
               ) : (
-                <UserOutlined className="size-16" />
+                <>
+                  <UserOutlined className="size-16" />
+                  <span className="m-l-5">普通用户</span>
+                </>
               );
+            }}
+          />
+          <Column
+            title="Update Time"
+            dataIndex="updated_at"
+            key="updateTime"
+            defaultSortOrder="descend"
+            sortOrder={sortOrder}
+            showSorterTooltip={false}
+            sorter={true}
+            render={(text, record) => {
+              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
             }}
           />
           <Column
@@ -251,7 +287,7 @@ const Models: React.FC = () => {
                     <Button
                       size="small"
                       type="primary"
-                      onClick={handleEditUser}
+                      onClick={() => handleEditUser(record)}
                       icon={<EditOutlined></EditOutlined>}
                     ></Button>
                   </Tooltip>
@@ -274,6 +310,7 @@ const Models: React.FC = () => {
         open={openAddModal}
         action={action}
         title={title}
+        data={currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>

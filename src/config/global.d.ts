@@ -13,4 +13,11 @@ declare namespace Global {
       perPage: number;
     };
   }
+
+  interface UserInfo {
+    username: string;
+    is_admin: boolean;
+    full_name: string;
+    id: number;
+  }
 }

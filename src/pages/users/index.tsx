@@ -117,6 +117,7 @@ const Models: React.FC = () => {
       } else {
         await createUser({ data: params });
       }
+      fetchData();
       setOpenAddModal(false);
       message.success('successfully!');
     } catch (error) {

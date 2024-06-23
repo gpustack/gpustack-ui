@@ -96,15 +96,6 @@ export default (props: any) => {
 
   const formatMessage = undefined;
 
-  // const runtimeConfig = pluginManager.applyPlugins({
-  //   key: 'layout',
-  //   type: 'modify',
-  //   logout: true,
-  //   initialValue: {
-  //     ...initialInfo,
-  //     notFound: <div>not found</div>
-  //   }
-  // });
   const runtimeConfig = {
     ...initialInfo,
     logout: async (userInfo) => {
@@ -114,12 +105,6 @@ export default (props: any) => {
     },
     notFound: <span>404 not found</span>
   };
-  console.log('clientRoute==========2=', {
-    props,
-    clientRoutes,
-    runtimeConfig,
-    initialInfo
-  });
 
   // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级, proLayout 消费时, 无法正确展示菜单, 这里对冗余数据进行过滤操作
   const newRoutes = filterRoutes(
@@ -131,15 +116,20 @@ export default (props: any) => {
       );
     }
   );
+
   console.log('clientRoutes===========', clientRoutes, newRoutes);
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes));
-  patchRoutes({ routes: route?.children || [] });
+
+  patchRoutes({
+    routes: route.children,
+    initialState: initialInfo.initialState
+  });
 
   const matchedRoute = useMemo(
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,
     [location.pathname]
   );
-  console.log('route===========', route);
+  console.log('route===========', matchedRoute, route);
   return (
     <div>
       <div className="background"></div>
@@ -160,6 +150,11 @@ export default (props: any) => {
           // 如果没有登录，重定向到 login
           if (!initialState?.currentUser && location.pathname !== loginPath) {
             history.push(loginPath);
+          } else if (location.path === '/') {
+            const pathname = initialState?.currentUser?.is_admin
+              ? '/dashboard'
+              : '/playground';
+            history.push(pathname);
           }
         }}
         formatMessage={userConfig.formatMessage || formatMessage}

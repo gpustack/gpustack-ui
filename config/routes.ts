@@ -1,17 +1,16 @@
 export default [
-  {
-    path: '/',
-    key: 'dashboard',
-    layout: false,
-    icon: 'home',
-    redirect: '/dashboard',
-    access: 'canLogin'
-  },
+  // {
+  //   path: '/',
+  //   key: 'root',
+  //   icon: 'home',
+  //   redirect: ''
+  // },
   {
     name: 'Dashboard',
     path: '/dashboard',
     key: 'dashboard',
     icon: 'home',
+    access: 'canSeeAdmin',
     component: './dashboard'
   },
   {
@@ -48,6 +47,7 @@ export default [
     path: '/users',
     key: 'users',
     icon: 'Team',
+    access: 'canSeeAdmin',
     component: './users'
   },
   {

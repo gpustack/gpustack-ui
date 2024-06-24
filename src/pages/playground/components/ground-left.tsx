@@ -5,7 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
-import { execChatCompletions } from '../apis';
+import { fetchChatStream, receiveChatStream } from '../apis';
 import { Roles } from '../config';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
@@ -13,7 +13,6 @@ import ChatFooter from './chat-footer';
 import MessageItem from './message-item';
 import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
-
 interface MessageProps {
   parameters: any;
 }
@@ -42,7 +41,11 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const [activeIndex, setActiveIndex] = useState(-1);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const systemRef = useRef<any>(null);
+  const contentRef = useRef<any>('');
 
+  const handleReceiveMessage = (data: any) => {
+    console.log('event source message: ', { data });
+  };
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
   };
@@ -61,10 +64,32 @@ const MessageList: React.FC<MessageProps> = (props) => {
     setActiveIndex(messageList.length - 1);
   };
 
+  const joinMessage = (chunk: any) => {
+    if (_.get(chunk, 'choices.0.finish_reason')) {
+      setTokenResult({
+        ...chunk?.usage
+      });
+
+      return true;
+    }
+    contentRef.current =
+      contentRef.current + _.get(chunk, 'choices.0.delta.content');
+    setMessageList([
+      ...messageList,
+      {
+        role: Roles.Assistant,
+        content: contentRef.current,
+        uid: messageId.current
+      }
+    ]);
+    return false;
+  };
   const submitMessage = async () => {
     try {
       setLoading(true);
-
+      setMessageId();
+      setTokenResult(null);
+      contentRef.current = '';
       const chatParams = {
         messages: systemMessage
           ? [
@@ -75,22 +100,19 @@ const MessageList: React.FC<MessageProps> = (props) => {
               ...messageList
             ]
           : [...messageList],
-        ...parameters
+        ...parameters,
+        stream: true
       };
-      const data = await execChatCompletions(chatParams);
-      const assistant = _.get(data, ['choices', '0', 'message']);
-      setTokenResult({
-        ...data.usage
+      const result = await fetchChatStream(chatParams);
+
+      if (!result) {
+        return;
+      }
+      const { reader, decoder } = result;
+
+      await receiveChatStream(reader, decoder, (data: any) => {
+        joinMessage(data);
       });
-      setMessageList([
-        ...messageList,
-        {
-          role: Roles.Assistant,
-          content: assistant.content,
-          uid: messageId.current + 1
-        }
-      ]);
-      setMessageId();
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -105,7 +127,6 @@ const MessageList: React.FC<MessageProps> = (props) => {
   };
 
   const handleSubmit = () => {
-    console.log('submit');
     submitMessage();
   };
 

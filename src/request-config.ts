@@ -28,7 +28,6 @@ export const requestConfig: RequestConfig = {
   ],
   responseInterceptors: [
     (response) => {
-      console.log('responseInterceptors+++++++++++++++', response);
       return response;
     }
   ]

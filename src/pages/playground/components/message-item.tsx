@@ -32,28 +32,32 @@ const MessageItem: React.FC<{
     }
   }, [isFocus]);
 
-  useEffect(() => {
-    if (isTyping) return;
-    let index = 0;
-    const text = message.content;
-    if (!text.length) {
-      return;
-    }
-    setMessageContent('');
-    setIsAnimating(true);
-    const intervalId = setInterval(() => {
-      setMessageContent((prev) => prev + text[index]);
-      index += 1;
-      if (index === text.length) {
-        setIsAnimating(false);
-        clearInterval(intervalId);
-      }
-    }, 20);
-    return () => clearInterval(intervalId);
-  }, [message.content, isTyping]);
+  // useEffect(() => {
+  //   if (isTyping) return;
+  //   let index = 0;
+  //   const text = message.content;
+  //   if (!text.length) {
+  //     return;
+  //   }
+  //   setMessageContent('');
+  //   setIsAnimating(true);
+  //   const intervalId = setInterval(() => {
+  //     setMessageContent((prev) => prev + text[index]);
+  //     index += 1;
+  //     if (index === text.length) {
+  //       setIsAnimating(false);
+  //       clearInterval(intervalId);
+  //     }
+  //   }, 20);
+  //   return () => clearInterval(intervalId);
+  // }, [message.content, isTyping]);
 
   useEffect(() => {
-    if (!isAnimating && !isInitialRender.current) {
+    setMessageContent(message.content);
+  }, [message.content]);
+
+  useEffect(() => {
+    if (!isInitialRender.current) {
       updateMessage({
         role: roleType,
         content: messageContent,

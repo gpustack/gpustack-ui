@@ -1,5 +1,6 @@
 import EditorWrap from '@/components/editor-wrap';
 import Editor from '@monaco-editor/react';
+import { useIntl } from '@umijs/max';
 import { Modal, Spin } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
@@ -23,6 +24,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     parameters = {}
   } = props || {};
 
+  const intl = useIntl();
   const editorRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
   const [codeValue, setCodeValue] = useState('');
@@ -34,16 +36,24 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     { label: 'Nodejs', value: 'javascript' }
   ];
 
-  useEffect(() => {
-    generateCode();
-  }, [lang, systemMessage, messageList, parameters]);
-
+  const formatCode = () => {
+    if (editorRef.current) {
+      setTimeout(() => {
+        editorRef.current
+          ?.getAction?.('editor.action.formatDocument')
+          ?.run()
+          .then(() => {
+            console.log('format success');
+          });
+      }, 100);
+    }
+  };
   const generateCode = () => {
     if (lang === 'shell') {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `curl ${window.location.origin}/v1/chat/completions \n-H "Content-Type: application/json" \n-H "Authorization: Bearer $\{GPUSTACK_API_KEY}\" \n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/v1/chat/completions \n-H "Content-Type: application/json" \n-H "Authorization: Bearer $\{GPUSTACK_API_KEY}" \n-d '${JSON.stringify(
         {
           ...parameters,
           messages: [...systemList, ...messageList]
@@ -92,19 +102,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     setLoaded(true);
   };
 
-  function formatCode() {
-    if (editorRef.current) {
-      setTimeout(() => {
-        editorRef.current
-          ?.getAction?.('editor.action.formatDocument')
-          ?.run()
-          .then(() => {
-            console.log('format success');
-          });
-      }, 100);
-    }
-  }
-
   const handleOnChangeLang = (value: string) => {
     setLang(value);
   };
@@ -124,6 +121,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     }
   };
 
+  useEffect(() => {
+    generateCode();
+  }, [lang, systemMessage, messageList, parameters]);
+
   return (
     <>
       <Modal
@@ -139,8 +140,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         footer={null}
       >
         <div style={{ marginBottom: '10px' }}>
-          You can use the following code to start integrating your current
-          prompt and settings into your application.
+          {intl.formatMessage({ id: 'playground.viewcode.info' })}
         </div>
         <Spin spinning={!loaded}>
           <EditorWrap
@@ -162,10 +162,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
             />
           </EditorWrap>
         </Spin>
-        <div style={{ marginTop: '10px' }}>
-          our API Key can be foundhere You should use environment variables or a
-          secret management tool to expose your key to your applications.
-        </div>
       </Modal>
     </>
   );

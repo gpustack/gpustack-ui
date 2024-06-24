@@ -3,6 +3,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { INPUT_WIDTH } from '@/constants';
 import { queryModelsList } from '@/pages/llmodels/apis';
+import { useIntl } from '@umijs/max';
 import { Button, Form, InputNumber, Slider } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -29,6 +30,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   selectedModel,
   setParams
 }) => {
+  const intl = useIntl();
   const [ModelList, setModelList] = useState([]);
   const initialValues = {
     seed: null,
@@ -137,17 +139,22 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       onFinishFailed={handleOnFinishFailed}
     >
       <div>
-        <h3 className="m-b-20 m-l-10">Model</h3>
+        <h3 className="m-b-20 m-l-10">
+          {intl.formatMessage({ id: 'playground.model' })}
+        </h3>
         <Form.Item<ParamsSettingsFormProps>
           name="model"
           rules={[{ required: true }]}
         >
-          <SealSelect options={ModelList} label="Model"></SealSelect>
+          <SealSelect
+            options={ModelList}
+            label={intl.formatMessage({ id: 'playground.model' })}
+          ></SealSelect>
         </Form.Item>
         <h3 className="m-b-20 m-l-10 flex-between flex-center">
-          <span>Parameters</span>
+          <span>{intl.formatMessage({ id: 'playground.parameters' })}</span>
           <Button size="small" onClick={handleResetParams}>
-            Reset
+            {intl.formatMessage({ id: 'common.button.reset' })}
           </Button>
         </h3>
         <Form.Item<ParamsSettingsFormProps>
@@ -195,10 +202,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               onChange={(val) => handleFieldValueChange(val, 'max_tokens')}
             ></Slider>
           </FieldWrapper>
-          {/* <SealInput.Number
-            label="Max Tokens"
-            style={{ width: INPUT_WIDTH.mini }}
-          ></SealInput.Number> */}
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="top_p"

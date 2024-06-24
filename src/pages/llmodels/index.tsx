@@ -178,7 +178,6 @@ const Models: React.FC = () => {
   const handleAddModal = () => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-    setTitle('Deploy Model');
   };
 
   const handleClickMenu = (e: any) => {
@@ -186,10 +185,9 @@ const Models: React.FC = () => {
   };
 
   const handleModalOk = async (data: FormData) => {
-    console.log('handleModalOk', data);
     await createModel({ data });
     setOpenAddModal(false);
-    message.success('successfully!');
+    message.success(intl.formatMessage({ id: 'common.message.success' }));
   };
 
   const handleModalCancel = () => {
@@ -203,10 +201,13 @@ const Models: React.FC = () => {
   const handleDelete = async (row: any) => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected models?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'models.table.models' }) }
+      ),
       async onOk() {
         await deleteModel(row.id);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
@@ -217,10 +218,13 @@ const Models: React.FC = () => {
   const handleDeleteBatch = () => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected models?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'models.table.models' }) }
+      ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
@@ -244,7 +248,7 @@ const Models: React.FC = () => {
         source: row.source
       };
       await createModelInstance({ data });
-      message.success('successfully!');
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   };
 
@@ -258,11 +262,13 @@ const Models: React.FC = () => {
   const handleDeleteInstace = (row: any) => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the instance?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'models.instances' }) }
+      ),
       async onOk() {
-        console.log('OK');
         await deleteModelInstance(row.id);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
@@ -343,7 +349,11 @@ const Models: React.FC = () => {
                   <Col span={7}>
                     {hoverChildIndex === `${item.id}-${index}` && (
                       <Space size={20}>
-                        <Tooltip title="Delete">
+                        <Tooltip
+                          title={intl.formatMessage({
+                            id: 'common.button.delete'
+                          })}
+                        >
                           <Button
                             size="small"
                             danger
@@ -351,7 +361,11 @@ const Models: React.FC = () => {
                             icon={<DeleteOutlined></DeleteOutlined>}
                           ></Button>
                         </Tooltip>
-                        <Tooltip title="View Logs">
+                        <Tooltip
+                          title={intl.formatMessage({
+                            id: 'common.button.viewlog'
+                          })}
+                        >
                           <Button
                             size="small"
                             onClick={() => handleViewLogs(item)}
@@ -375,7 +389,7 @@ const Models: React.FC = () => {
       <PageContainer
         ghost
         header={{
-          title: 'Models'
+          title: intl.formatMessage({ id: 'models.title' })
         }}
         extra={[]}
       >
@@ -384,7 +398,7 @@ const Models: React.FC = () => {
           left={
             <Space>
               <Input
-                placeholder="名称查询"
+                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
                 allowClear
                 onChange={handleNameChange}
@@ -413,7 +427,7 @@ const Models: React.FC = () => {
                   onClick={handleDeleteBatch}
                   disabled={!rowSelection.selectedRowKeys.length}
                 >
-                  Delete
+                  {intl?.formatMessage?.({ id: 'common.button.delete' })}
                 </Button>
               </Access>
             </Space>
@@ -440,7 +454,7 @@ const Models: React.FC = () => {
           }}
         >
           <SealColumn
-            title="Model Name"
+            title={intl.formatMessage({ id: 'models.table.name' })}
             dataIndex="name"
             key="name"
             width={400}
@@ -461,7 +475,7 @@ const Models: React.FC = () => {
           />
           <SealColumn
             span={8}
-            title="Create Time"
+            title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"
             defaultSortOrder="descend"
@@ -474,12 +488,16 @@ const Models: React.FC = () => {
           />
           <SealColumn
             span={8}
-            title="Operation"
+            title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
             render={(text, record) => {
               return !record.transition ? (
                 <Space size={20}>
-                  <Tooltip title="Open in PlayGround">
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'models.openinplayground'
+                    })}
+                  >
                     <Button
                       size="small"
                       type="primary"
@@ -487,7 +505,9 @@ const Models: React.FC = () => {
                       icon={<WechatWorkOutlined />}
                     ></Button>
                   </Tooltip>
-                  <Tooltip title="Delete">
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'common.button.delete' })}
+                  >
                     <Button
                       size="small"
                       type="primary"
@@ -505,12 +525,12 @@ const Models: React.FC = () => {
       <AddModal
         open={openAddModal}
         action={action}
-        title={title}
+        title={intl.formatMessage({ id: 'models.button.deploy' })}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
       <ViewLogsModal
-        title="View Logs"
+        title={intl.formatMessage({ id: 'common.button.viewlog' })}
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>

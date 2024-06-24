@@ -63,7 +63,7 @@ const Login = () => {
   return (
     <Form
       form={form}
-      style={{ width: '400px', margin: '5% auto 0' }}
+      style={{ width: '400px', margin: '0 auto', paddingTop: '5%' }}
       onFinish={handleLogin}
     >
       <div>{renderLogo()}</div>

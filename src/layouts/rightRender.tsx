@@ -16,6 +16,7 @@ export function getRightRenderContent(opts: {
   setInitialState: any;
 }) {
   console.log('runtimeConfig==', opts.runtimeConfig, opts);
+  // const intl = useIntl();
   if (opts.runtimeConfig.rightRender) {
     return opts.runtimeConfig.rightRender(
       opts.initialState,
@@ -64,7 +65,10 @@ export function getRightRenderContent(opts: {
         icon={
           <span style={{ fontSize: '12px' }}>
             <GlobalOutlined />
-            <span className="m-l-8">语言</span>
+            <span className="m-l-8">
+              {/* {FormattedMessage({ id: 'common.settings.language' })} */}
+              Language
+            </span>
           </span>
         }
       ></SelectLang>
@@ -83,7 +87,8 @@ export function getRightRenderContent(opts: {
         label: (
           <>
             <SettingOutlined />
-            设置
+            {/* {intl.formatMessage({ id: 'common.button.settings' })} */}
+            Settings
           </>
         ),
         onClick: () => {
@@ -107,7 +112,8 @@ export function getRightRenderContent(opts: {
         label: (
           <>
             <LogoutOutlined />
-            退出登录
+            {/* {intl.formatMessage({ id: 'common.button.logout' })} */}
+            Logout
           </>
         ),
         onClick: () => {

@@ -4,6 +4,7 @@ import {
   PlusOutlined,
   SaveOutlined
 } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Col, Row, Space } from 'antd';
 import '../style/chat-footer.less';
 
@@ -17,6 +18,7 @@ interface ChatFooterProps {
 }
 
 const ChatFooter: React.FC<ChatFooterProps> = (props) => {
+  const intl = useIntl();
   const { onSubmit, onClear, onNewMessage, onView, feedback, disabled } = props;
   return (
     <div className="chat-footer">
@@ -29,14 +31,14 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               icon={<PlusOutlined />}
               onClick={onNewMessage}
             >
-              New Message
+              {intl.formatMessage({ id: 'playground.newMessage' })}
             </Button>
             <Button
               icon={<DeleteOutlined></DeleteOutlined>}
               onClick={onClear}
               disabled={disabled}
             >
-              Clear
+              {intl.formatMessage({ id: 'common.button.clear' })}
             </Button>
           </Space>
         </Col>
@@ -48,7 +50,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               onClick={onView}
               disabled={disabled}
             >
-              View Code
+              {intl.formatMessage({ id: 'playground.viewcode' })}
             </Button>
             <Button
               disabled={disabled}
@@ -56,7 +58,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               icon={<SaveOutlined></SaveOutlined>}
               onClick={onSubmit}
             >
-              Submit
+              {intl.formatMessage({ id: 'common.button.submit' })}
             </Button>
           </Space>
         </Col>

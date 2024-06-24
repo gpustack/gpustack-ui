@@ -9,7 +9,7 @@ import {
 
 export const MODELS_API = '/models';
 
-export const MODEL_INSTANCE_API = '/model_instances';
+export const MODEL_INSTANCE_API = '/model-instances';
 
 // ===================== Models =====================
 export async function queryModelsList(

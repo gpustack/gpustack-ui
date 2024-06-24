@@ -27,37 +27,6 @@ import { FormData, ListItem } from './config/types';
 
 const { Column } = Table;
 
-const list = [
-  {
-    key: '1',
-    name: 'local',
-    secretKey: `auk_uzem...owsa`,
-    lastusedTime: '2024-05-22 12:20:10',
-    createTime: '2024-05-20 12:13:25'
-  },
-  {
-    key: '2',
-    name: 'dev',
-    secretKey: `auk_uzem...okwa`,
-    lastusedTime: '2024-05-19 13:30:22',
-    createTime: '2024-05-18 10:28:32'
-  },
-  {
-    key: '3',
-    name: 'prod',
-    secretKey: `auk_uzem...uuds`,
-    lastusedTime: '2024-05-18 10:28:32',
-    createTime: '2024-05-17 08:21:09'
-  },
-  {
-    key: '4',
-    name: 'test',
-    secretKey: `auk_uzem...uksa`,
-    lastusedTime: '2024-05-18 10:28:32',
-    createTime: '2024-05-16 13:33:23'
-  }
-];
-
 const Models: React.FC = () => {
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({

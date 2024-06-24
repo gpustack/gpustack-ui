@@ -1,4 +1,5 @@
 import { PageContainer } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
 import { Tabs } from 'antd';
 import { useState } from 'react';
@@ -20,6 +21,8 @@ const items: TabsProps['items'] = [
 const Resources = () => {
   const [activeKey, setActiveKey] = useState('test');
 
+  const intl = useIntl();
+
   const handleChangeTab = (key: string) => {
     setActiveKey(key);
   };
@@ -28,7 +31,7 @@ const Resources = () => {
     <PageContainer
       ghost
       header={{
-        title: 'Resources'
+        title: intl.formatMessage({ id: 'resources.title' })
       }}
       extra={[]}
     >

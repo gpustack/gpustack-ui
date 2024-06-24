@@ -5,6 +5,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
+import { useIntl } from '@umijs/max';
 import { Form, Input, Modal } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -31,6 +32,7 @@ const sourceOptions = [
 const AddModal: React.FC<AddModalProps> = (props) => {
   const { title, action, open, onOk, onCancel } = props || {};
   const [form] = Form.useForm();
+  const intl = useIntl();
   const modelSource = Form.useWatch('source', form);
   const [repoOptions, setRepoOptions] = useState<
     { label: string; value: string }[]
@@ -42,7 +44,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const initFormValue = () => {
     if (action === PageAction.CREATE && open) {
       form.setFieldsValue({
-        source: 'huggingface'
+        source: 'huggingface',
+        replicas: 1
       });
     }
   };
@@ -51,9 +54,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     initFormValue();
   }, [open]);
 
-  const handleInputRepoChange = (value: string) => {
-    console.log('repo change', value);
-  };
+  const handleInputRepoChange = (value: string) => {};
 
   const fileNamLabel = (item: any) => {
     return (
@@ -87,7 +88,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleRepoOnBlur = (e: any) => {
     const repo = form.getFieldValue('huggingface_repo_id');
-    console.log('repo blur', repo);
     handleRepoSelect(repo);
   };
 
@@ -119,28 +119,48 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       <>
         <Form.Item<FormData>
           name="huggingface_repo_id"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.form.repoid' }) }
+              )
+            }
+          ]}
         >
           <SealAutoComplete
-            label="Repo ID"
+            label={intl.formatMessage({ id: 'models.form.repoid' })}
             required
             showSearch
             onBlur={handleRepoOnBlur}
             onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
-            description="Only .gguf format is supported"
+            description={intl.formatMessage({ id: 'models.form.repoid.desc' })}
           >
             <Input.Search style={{ width: '520px' }}></Input.Search>
           </SealAutoComplete>
         </Form.Item>
         <Form.Item<FormData>
           name="huggingface_filename"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.form.filename' }) }
+              )
+            }
+          ]}
         >
           <SealAutoComplete
             showSearch
-            label="File Name"
+            label={intl.formatMessage({ id: 'models.form.filename' })}
             required
             options={fileOptions}
           ></SealAutoComplete>
@@ -152,8 +172,26 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const renderS3Fields = () => {
     return (
       <>
-        <Form.Item<FormData> name="s3_address" rules={[{ required: true }]}>
-          <SealInput.Input label="S3 Address" required></SealInput.Input>
+        <Form.Item<FormData>
+          name="s3_address"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.form.s3address' }) }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input
+            label={intl.formatMessage({
+              id: 'models.form.s3address'
+            })}
+            required
+          ></SealInput.Input>
         </Form.Item>
       </>
     );
@@ -164,9 +202,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       <>
         <Form.Item<FormData>
           name="ollama_library_model_name"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.table.name' }) }
+              )
+            }
+          ]}
         >
-          <SealInput.Input label="Model Name" required></SealInput.Input>
+          <SealInput.Input
+            label={intl.formatMessage({ id: 'models.table.name' })}
+            required
+          ></SealInput.Input>
         </Form.Item>
       </>
     );
@@ -212,28 +263,80 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       }
     >
       <Form name="addModalForm" form={form} onFinish={onOk} preserve={false}>
-        <Form.Item<FormData> name="name" rules={[{ required: true }]}>
-          <SealInput.Input label="Name" required></SealInput.Input>
+        <Form.Item<FormData>
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'common.table.name' }) }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input
+            label={intl.formatMessage({
+              id: 'common.table.name'
+            })}
+            required
+          ></SealInput.Input>
         </Form.Item>
-        <Form.Item<FormData> name="source" rules={[{ required: true }]}>
+        <Form.Item<FormData>
+          name="source"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.select'
+                },
+                { name: intl.formatMessage({ id: 'models.form.source' }) }
+              )
+            }
+          ]}
+        >
           <SealSelect
-            label="Source"
+            label={intl.formatMessage({
+              id: 'models.form.source'
+            })}
             options={sourceOptions}
             required
             onChange={handleSourceChange}
           ></SealSelect>
         </Form.Item>
         {renderFieldsBySource()}
-        <Form.Item<FormData> name="replicas" rules={[{ required: true }]}>
+        <Form.Item<FormData>
+          name="replicas"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.form.replicas' }) }
+              )
+            }
+          ]}
+        >
           <SealInput.Number
             style={{ width: '100%' }}
-            label="Replicas"
+            label={intl.formatMessage({
+              id: 'models.form.replicas'
+            })}
             required
             min={1}
           ></SealInput.Number>
         </Form.Item>
         <Form.Item<FormData> name="description">
-          <SealInput.TextArea label="Description"></SealInput.TextArea>
+          <SealInput.TextArea
+            label={intl.formatMessage({
+              id: 'common.table.description'
+            })}
+          ></SealInput.TextArea>
         </Form.Item>
       </Form>
     </Modal>

@@ -41,6 +41,7 @@ export default {
   'common.button.edit': 'Edit',
   'common.button.authorize': 'Role Authorization',
   'common.button.confirm': 'Confirm',
+  'common.button.viewlog': 'View Logs',
   'common.table.operation': 'Operation',
   'common.table.createTime': 'Created',
   'common.table.updateTime': 'Updated',
@@ -173,6 +174,10 @@ export default {
   'common.nodata.created': 'No {type} has been created yet',
   'common.nodata.added': 'No {type} has been added yet',
   'common.status.edited': 'Edited',
-  'common.table.user': '用户',
-  'common.settings.instructions': 'Instructions'
+  'common.table.user': 'User',
+  'common.settings.instructions': 'Instructions',
+  'common.settings.language': 'Language',
+  'common.delete.confirm':
+    'Are you sure you want to delete the selected {type}?',
+  'common.filter.name': 'Filter by name'
 };

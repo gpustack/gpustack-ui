@@ -1,6 +1,6 @@
 import { MinusCircleOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Input } from 'antd';
-import _ from 'lodash';
 import { memo, useEffect, useRef, useState } from 'react';
 import { Roles } from '../config';
 import '../style/message-item.less';
@@ -18,6 +18,7 @@ const MessageItem: React.FC<{
   isFocus: boolean;
   onDelete: () => void;
 }> = ({ message, isFocus, onDelete, updateMessage }) => {
+  const intl = useIntl();
   const [roleType, setRoleType] = useState(message.role);
   const [isTyping, setIsTyping] = useState(false);
   const [messageContent, setMessageContent] = useState(message.content);
@@ -87,7 +88,7 @@ const MessageItem: React.FC<{
     <div className="message-item">
       <div className="role-type">
         <Button onClick={handleRoleChange} type="text">
-          {_.upperFirst(roleType)}
+          {intl.formatMessage({ id: `playground.${roleType}` })}
         </Button>
       </div>
       <div className="message-content-input">

@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 import { FormData, ListItem } from '../config/types';
 
-export const APIS_KEYS_API = '/api_keys';
+export const APIS_KEYS_API = '/api-keys';
 
 export async function queryApisKeysList(
   params: Global.Pagination & { query?: string }

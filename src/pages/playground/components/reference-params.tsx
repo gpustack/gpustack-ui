@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { Space, Tooltip } from 'antd';
 import '../style/reference-params.less';
 
@@ -10,6 +11,7 @@ interface ReferenceParamsProps {
 }
 
 const ReferenceParams = (props: ReferenceParamsProps) => {
+  const intl = useIntl();
   const { usage } = props;
   if (!usage) {
     return null;
@@ -19,12 +21,21 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
       <Tooltip
         title={
           <Space>
-            <span>Completion: {usage.completion_tokens}</span>
-            <span>Prompt: {usage.prompt_tokens}</span>
+            <span>
+              {intl.formatMessage({ id: 'playground.completion' })}:{' '}
+              {usage.completion_tokens}
+            </span>
+            <span>
+              {intl.formatMessage({ id: 'playground.prompt' })}:{' '}
+              {usage.prompt_tokens}
+            </span>
           </Space>
         }
       >
-        <span>Token Usage: {usage.total_tokens}</span>
+        <span>
+          {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
+          {usage.total_tokens}
+        </span>
       </Tooltip>
     </div>
   );

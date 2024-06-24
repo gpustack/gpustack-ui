@@ -10,6 +10,7 @@ import {
   history,
   matchRoutes,
   useAppData,
+  useIntl,
   useLocation,
   useNavigate,
   type IRoute
@@ -78,6 +79,7 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 export default (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const intl = useIntl();
   const { clientRoutes, pluginManager } = useAppData();
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
@@ -94,7 +96,10 @@ export default (props: any) => {
     locale: true
   };
 
-  const formatMessage = undefined;
+  const formatMessage = (args) => {
+    console.log('formatMessage', args);
+    return intl.formatMessage({ id: args.id });
+  };
 
   const runtimeConfig = {
     ...initialInfo,
@@ -158,8 +163,8 @@ export default (props: any) => {
             history.push(pathname);
           }
         }}
-        formatMessage={userConfig.formatMessage || formatMessage}
-        menu={{ locale: userConfig.locale }}
+        formatMessage={formatMessage}
+        menu={{ locale: true }}
         logo={Logo}
         menuItemRender={(menuItemProps, defaultDom) => {
           console.log('meurender=========', { defaultDom });

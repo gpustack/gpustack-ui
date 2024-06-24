@@ -6,7 +6,7 @@ export default [
   //   redirect: ''
   // },
   {
-    name: 'Dashboard',
+    name: 'dashboard',
     path: '/dashboard',
     key: 'dashboard',
     icon: 'home',
@@ -14,7 +14,7 @@ export default [
     component: './dashboard'
   },
   {
-    name: 'Playground',
+    name: 'playground',
     title: 'Playground',
     path: '/playground',
     key: 'playground',
@@ -22,28 +22,28 @@ export default [
     component: './playground'
   },
   {
-    name: 'Models',
+    name: 'models',
     path: '/models',
     key: 'models',
     icon: 'Block',
     component: './llmodels'
   },
   {
-    name: 'Resources',
+    name: 'resources',
     path: '/resources',
     key: 'resources',
     icon: 'CloudServer',
     component: './resources'
   },
   {
-    name: 'API Keys',
+    name: 'apikeys',
     path: '/api-keys',
     key: 'apikeys',
     icon: 'LockOutlined',
     component: './api-keys'
   },
   {
-    name: 'Users',
+    name: 'users',
     path: '/users',
     key: 'users',
     icon: 'Team',
@@ -51,7 +51,7 @@ export default [
     component: './users'
   },
   {
-    name: 'Profile',
+    name: 'profile',
     path: '/profile',
     key: 'profile',
     hideInMenu: true,
@@ -59,7 +59,7 @@ export default [
     icon: 'User'
   },
   {
-    name: 'Login',
+    name: 'login',
     path: '/login',
     key: 'login',
     layout: false,

@@ -1,6 +1,7 @@
 import TransitionWrapper from '@/components/transition';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
@@ -34,6 +35,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
     }
   ]);
 
+  const intl = useIntl();
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -73,7 +75,8 @@ const MessageList: React.FC<MessageProps> = (props) => {
               ...messageList
             ]
           : [...messageList],
-        ...parameters
+        ...parameters,
+        stream: true
       };
       const data = await execChatCompletions(chatParams);
       const assistant = _.get(data, ['choices', '0', 'message']);
@@ -118,14 +121,15 @@ const MessageList: React.FC<MessageProps> = (props) => {
 
   const handleUpdateMessage = (index: number, message: MessageItemProps) => {
     messageList[index] = message;
-    console.log('updatemessage========', index, message);
     setMessageList([...messageList]);
   };
 
   const renderLabel = () => {
     return (
       <div className="system-message-wrap ">
-        <span className="title">System</span>
+        <span className="title">
+          {intl.formatMessage({ id: 'playground.system' })}
+        </span>
         <Button type="primary" size="small">
           <EyeInvisibleOutlined />
         </Button>
@@ -145,7 +149,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
               value={systemMessage}
               variant="filled"
               autoSize={true}
-              placeholder="Enter system message here..."
+              placeholder={intl.formatMessage({ id: 'playground.system.tips' })}
               onChange={handleSystemMessageChange}
             ></Input.TextArea>
           </TransitionWrapper>
@@ -193,9 +197,9 @@ const MessageList: React.FC<MessageProps> = (props) => {
         open={show}
         systemMessage={systemMessage}
         messageList={messageList}
-        parameters={parameters}
+        parameters={{ ...parameters, stream: true }}
         onCancel={handleCloseViewCode}
-        title="View code"
+        title={intl.formatMessage({ id: 'playground.viewcode' })}
       ></ViewCodeModal>
     </div>
   );

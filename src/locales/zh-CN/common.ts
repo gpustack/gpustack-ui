@@ -40,6 +40,7 @@ export default {
   'common.button.edit': '编辑',
   'common.button.authorize': '角色授权',
   'common.button.confirm': '确定',
+  'common.button.viewlog': '查看日志',
   'common.table.operation': '操作',
   'common.table.createTime': '创建时间',
   'common.table.updateTime': '更新时间',
@@ -170,5 +171,8 @@ export default {
   'common.nodata.added': '尚未添加{type}',
   'common.status.edited': '已编辑',
   'common.table.user': '用户',
-  'common.settings.instructions': '操作指引'
+  'common.settings.instructions': '操作指引',
+  'common.settings.language': '语言',
+  'common.delete.confirm': '确定删除选中的{type}吗？',
+  'common.filter.name': '名称查询'
 };

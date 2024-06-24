@@ -4,6 +4,7 @@ import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { SyncOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const intl = useIntl();
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
@@ -86,7 +88,9 @@ const Models: React.FC = () => {
         left={
           <Space>
             <Input
-              placeholder="名称查询"
+              placeholder={intl.formatMessage({
+                id: 'common.filter.name'
+              })}
               style={{ width: 300 }}
               onChange={handleNameChange}
             ></Input>
@@ -114,9 +118,13 @@ const Models: React.FC = () => {
           onChange: handlePageChange
         }}
       >
-        <Column title="Host Name" dataIndex="hostname" key="hostname" />
         <Column
-          title="State"
+          title={intl.formatMessage({ id: 'resources.table.hostname' })}
+          dataIndex="hostname"
+          key="hostname"
+        />
+        <Column
+          title={intl.formatMessage({ id: 'common.table.status' })}
           dataIndex="state"
           key="state"
           render={(text, record: ListItem) => {
@@ -145,7 +153,7 @@ const Models: React.FC = () => {
           }}
         />
         <Column
-          title="Memory"
+          title={intl.formatMessage({ id: 'resources.table.memory' })}
           dataIndex="memory"
           key="Memory"
           render={(text, record: ListItem) => {
@@ -177,7 +185,15 @@ const Models: React.FC = () => {
           }}
         />
         <Column
-          title="VRAM"
+          title={intl.formatMessage({ id: 'resources.table.disk' })}
+          dataIndex="storage"
+          key="storage"
+          render={(text, record: ListItem) => {
+            return <ProgressBar percent={0}></ProgressBar>;
+          }}
+        />
+        <Column
+          title={intl.formatMessage({ id: 'resources.table.vram' })}
           dataIndex="VRAM"
           key="VRAM"
           render={(text, record: ListItem) => {

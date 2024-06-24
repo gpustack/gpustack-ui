@@ -75,8 +75,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
               ...messageList
             ]
           : [...messageList],
-        ...parameters,
-        stream: true
+        ...parameters
       };
       const data = await execChatCompletions(chatParams);
       const assistant = _.get(data, ['choices', '0', 'message']);
@@ -197,7 +196,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
         open={show}
         systemMessage={systemMessage}
         messageList={messageList}
-        parameters={{ ...parameters, stream: true }}
+        parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
       ></ViewCodeModal>

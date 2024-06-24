@@ -1,4 +1,5 @@
 import menu from './en-US/menu';
+import apikeys from './zh-CN/apikeys';
 import common from './zh-CN/common';
 import models from './zh-CN/models';
 import playground from './zh-CN/playground';
@@ -9,5 +10,6 @@ export default {
   ...menu,
   ...models,
   ...playground,
-  ...resources
+  ...resources,
+  ...apikeys
 };

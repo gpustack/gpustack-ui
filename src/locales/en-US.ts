@@ -1,3 +1,4 @@
+import apikeys from './en-US/apikeys';
 import common from './en-US/common';
 import menu from './en-US/menu';
 import models from './en-US/models';
@@ -9,5 +10,6 @@ export default {
   ...menu,
   ...models,
   ...playground,
-  ...resources
+  ...resources,
+  ...apikeys
 };

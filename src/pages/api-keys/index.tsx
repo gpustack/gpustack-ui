@@ -7,6 +7,7 @@ import useTableSort from '@/hooks/use-table-sort';
 import { handleBatchRequest } from '@/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import {
   Button,
   Input,
@@ -32,6 +33,7 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const intl = useIntl();
   const [dataSource, setDataSource] = useState([]);
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -114,7 +116,6 @@ const Models: React.FC = () => {
   const handleAddUser = () => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-    setTitle('Add API Key');
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -209,7 +210,7 @@ const Models: React.FC = () => {
       <PageContainer
         ghost
         header={{
-          title: 'API Keys'
+          title: intl.formatMessage({ id: 'apikeys.title' })
         }}
         extra={[]}
       >
@@ -218,7 +219,7 @@ const Models: React.FC = () => {
           left={
             <Space>
               <Input
-                placeholder="名称查询"
+                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
                 onChange={handleNameChange}
               ></Input>
@@ -237,7 +238,7 @@ const Models: React.FC = () => {
                 type="primary"
                 onClick={handleAddUser}
               >
-                Add API Key
+                {intl.formatMessage({ id: 'apikeys.button.create' })}
               </Button>
               <Button
                 icon={<DeleteOutlined />}
@@ -245,7 +246,7 @@ const Models: React.FC = () => {
                 onClick={handleDeleteBatch}
                 disabled={!rowSelection.selectedRowKeys.length}
               >
-                Delete
+                {intl.formatMessage({ id: 'common.button.delete' })}
               </Button>
             </Space>
           }
@@ -267,7 +268,7 @@ const Models: React.FC = () => {
           }}
         >
           <Column
-            title="Name"
+            title={intl.formatMessage({ id: 'apikeys.table.name' })}
             dataIndex="name"
             key="name"
             width={400}
@@ -278,7 +279,7 @@ const Models: React.FC = () => {
           />
 
           <Column
-            title="Create Time"
+            title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"
             defaultSortOrder="descend"
@@ -290,7 +291,7 @@ const Models: React.FC = () => {
             }}
           />
           <Column
-            title="Expiration"
+            title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
             dataIndex="expires_at"
             key="expiration"
             render={(text, record) => {
@@ -303,7 +304,9 @@ const Models: React.FC = () => {
             render={(text, record: ListItem) => {
               return (
                 <Space size={20}>
-                  <Tooltip title="删除">
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'common.button.delete' })}
+                  >
                     <Button
                       onClick={() => handleDelete(record)}
                       size="small"
@@ -321,7 +324,7 @@ const Models: React.FC = () => {
       <AddAPIKeyModal
         open={openAddModal}
         action={action}
-        title={title}
+        title={intl.formatMessage({ id: 'apikeys.button.create' })}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>

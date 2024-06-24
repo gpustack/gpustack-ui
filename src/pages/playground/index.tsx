@@ -1,4 +1,6 @@
+import CardWrapper from '@/components/card-wrapper';
 import { useSearchParams } from '@umijs/max';
+import { Divider } from 'antd';
 import { useState } from 'react';
 import GroundLeft from './components/ground-left';
 import ParamsSettings from './components/params-settings';
@@ -25,19 +27,24 @@ const Playground: React.FC = () => {
   };
 
   return (
-    <div className="play-ground">
-      <div className="chat">
-        <GroundLeft parameters={params}></GroundLeft>
+    <CardWrapper>
+      <div className="play-ground">
+        <div className="chat">
+          <GroundLeft parameters={params}></GroundLeft>
+        </div>
+        <div className="divider-line">
+          <Divider type="vertical" />
+        </div>
+
+        <div className="params">
+          <ParamsSettings
+            onClose={handleClosePopover}
+            setParams={setParams}
+            selectedModel={selectModel}
+          />
+        </div>
       </div>
-      <div className="divider-line">{/* <Divider type="vertical" /> */}</div>
-      <div className="params">
-        <ParamsSettings
-          onClose={handleClosePopover}
-          setParams={setParams}
-          selectedModel={selectModel}
-        />
-      </div>
-    </div>
+    </CardWrapper>
   );
 };
 

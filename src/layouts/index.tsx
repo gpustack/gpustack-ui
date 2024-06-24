@@ -144,7 +144,7 @@ export default (props: any) => {
         location={location}
         title={userConfig.title}
         navTheme="light"
-        siderWidth={270}
+        siderWidth={220}
         onMenuHeaderClick={(e) => {
           e.stopPropagation();
           e.preventDefault();

@@ -18,7 +18,7 @@ const SystemLoad = () => {
     <div>
       <div className="system-load">
         <PageTools
-          style={{ margin: '32px 40px' }}
+          style={{ margin: '32px 8px' }}
           left={
             <span style={{ fontSize: 'var(--font-size-large)' }}>
               System Load

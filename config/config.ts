@@ -65,6 +65,7 @@ export default defineConfig({
       }
     : {}),
   // esbuildMinifyIIFE: true,
+  favicons: ['/static/favicon.ico'],
   jsMinifier: 'terser',
   cssMinifier: 'cssnano',
   presets: ['umi-presets-pro'],

@@ -47,9 +47,11 @@ const GaugeChart: React.FC<GaugeChartProps> = (props) => {
     title: {
       title,
       size: 0,
-      titleFontSize: 14,
       style: {
-        align: 'center'
+        align: 'center',
+        titleFontSize: 14,
+        titleFill: 'rgba(0,0,0,0.88)',
+        titleFontWeight: 500
       }
     },
     style: {

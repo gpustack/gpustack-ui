@@ -39,11 +39,12 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       lineWidth: 1.5
     },
     legend: {
-      itemMarker: {
-        symbol: 'circle'
-      },
       color: {
         layout: { justifyContent: 'center' }
+      },
+      size: {
+        itemLabelFontSize: 14,
+        itemLabelFontWeight: 500
       }
     },
     tooltip: {

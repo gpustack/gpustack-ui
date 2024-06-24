@@ -132,9 +132,9 @@ const projectData = [
 const ActiveTable = () => {
   return (
     <Row gutter={[20, 0]}>
-      <Col span={12}>
+      <Col xs={24} sm={24} md={24} lg={12} xl={12}>
         <PageTools
-          style={{ margin: '32px 40px' }}
+          style={{ margin: '32px 8px' }}
           left={
             <span
               style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}
@@ -153,9 +153,9 @@ const ActiveTable = () => {
           />
         </div>
       </Col>
-      <Col span={12}>
+      <Col xs={24} sm={24} md={24} lg={12} xl={12}>
         <PageTools
-          style={{ margin: '32px 40px' }}
+          style={{ margin: '32px 8px' }}
           left={
             <span
               style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}

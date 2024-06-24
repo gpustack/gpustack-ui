@@ -43,7 +43,10 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     title: {
       title,
       style: {
-        align: 'center'
+        align: 'center',
+        titleFontSize: 14,
+        titleFill: 'rgba(0,0,0,0.88)',
+        titleFontWeight: 500
       }
     },
     split: {
@@ -62,7 +65,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
       radiusTopLeft: 12,
       radiusTopRight: 12,
       align: 'center',
-      width: 30
+      width: 20
     }
   };
 

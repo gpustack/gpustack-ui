@@ -27,6 +27,10 @@ const Login = () => {
 
   const [form] = Form.useForm();
 
+  const gotoDefaultPage = (userInfo: any) => {
+    const pathname = userInfo?.is_admin ? '/dashboard' : '/playground';
+    history.push(pathname);
+  };
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
 
@@ -38,6 +42,7 @@ const Login = () => {
         }));
       });
     }
+    return userInfo;
   };
 
   const handleLogin = async (values: any) => {
@@ -47,8 +52,9 @@ const Login = () => {
         username: values.username,
         password: values.password
       });
-      await fetchUserInfo();
-      history.push('/');
+      const userInfo = await fetchUserInfo();
+
+      gotoDefaultPage(userInfo);
     } catch (error) {
       console.log('error====', error);
     }

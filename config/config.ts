@@ -103,7 +103,7 @@ export default defineConfig({
     antd: true,
     baseNavigator: true,
     baseSeparator: '-',
-    default: 'zh-CN',
+    default: 'en-US',
     title: false,
     useLocalStorage: true
   },

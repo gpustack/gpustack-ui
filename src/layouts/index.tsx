@@ -52,23 +52,23 @@ const filterRoutes = (
 };
 
 // 格式化路由 处理因 wrapper 导致的 菜单 path 不一致
-const mapRoutes = (routes: IRoute[]) => {
+const mapRoutes = (routes: IRoute[], role: string) => {
   if (routes.length === 0) {
     return [];
   }
   return routes.map((route) => {
     // 需要 copy 一份, 否则会污染原始数据
-    const newRoute = { ...route };
+    const newRoute = { ...route, role };
     if (route.originPath) {
       newRoute.path = route.originPath;
     }
 
     if (Array.isArray(route.routes)) {
-      newRoute.routes = mapRoutes(route.routes);
+      newRoute.routes = mapRoutes(route.routes, role);
     }
 
     if (Array.isArray(route.children)) {
-      newRoute.children = mapRoutes(route.children);
+      newRoute.children = mapRoutes(route.children, role);
     }
 
     return newRoute;
@@ -117,8 +117,9 @@ export default (props: any) => {
     }
   );
 
-  console.log('clientRoutes===========', clientRoutes, newRoutes);
-  const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes));
+  const role = initialState?.currentUser?.is_admin ? 'admin' : 'user';
+  const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes, role));
+  console.log('clientRoutes===========', route, clientRoutes, newRoutes);
 
   patchRoutes({
     routes: route.children,
@@ -150,7 +151,7 @@ export default (props: any) => {
           // 如果没有登录，重定向到 login
           if (!initialState?.currentUser && location.pathname !== loginPath) {
             history.push(loginPath);
-          } else if (location.path === '/') {
+          } else if (location.pathname === '/') {
             const pathname = initialState?.currentUser?.is_admin
               ? '/dashboard'
               : '/playground';

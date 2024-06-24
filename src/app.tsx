@@ -1,4 +1,4 @@
-import { Navigate, RequestConfig, history } from '@umijs/max';
+import { RequestConfig, history } from '@umijs/max';
 import { requestConfig } from './request-config';
 import { queryCurrentUserState } from './services/profile/apis';
 
@@ -40,21 +40,22 @@ export async function getInitialState() {
   };
 }
 
-export const patchClientRoutes = async (params: { routes: any[] }) => {
-  const { routes } = params;
-  const data = await queryCurrentUserState({
-    skipErrorHandler: true
-  });
+// export const patchClientRoutes = async (params: { routes: any[] }) => {
+//   const { routes } = params;
+//   console.log('routes============999', routes);
+//   const data = await queryCurrentUserState({
+//     skipErrorHandler: true
+//   });
 
-  routes.unshift({
-    path: '/',
-    element: data?.is_admin ? (
-      <Navigate to="/dashboard" replace />
-    ) : (
-      <Navigate to="/playground" replace />
-    )
-  });
-};
+//   routes.unshift({
+//     path: '/',
+//     element: data?.is_admin ? (
+//       <Navigate to="/dashboard" replace />
+//     ) : (
+//       <Navigate to="/playground" replace />
+//     )
+//   });
+// };
 
 export const request: RequestConfig = {
   baseURL: ' /v1',

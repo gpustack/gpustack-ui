@@ -6,7 +6,7 @@ import {
   LogoutOutlined,
   SettingOutlined
 } from '@ant-design/icons';
-import { history } from '@umijs/max';
+import { SelectLang, history } from '@umijs/max';
 import { Avatar, Dropdown, Menu, Spin, version } from 'antd';
 
 export function getRightRenderContent(opts: {
@@ -56,6 +56,21 @@ export function getRightRenderContent(opts: {
     );
   }
 
+  const renderExtraActions = () => {
+    return (
+      <SelectLang
+        style={{ padding: '10px 18px', marginBottom: '20px' }}
+        reload={false}
+        icon={
+          <span style={{ fontSize: '12px' }}>
+            <GlobalOutlined />
+            <span className="m-l-8">语言</span>
+          </span>
+        }
+      ></SelectLang>
+    );
+  };
+
   // 如果没有打开Locale，并且头像为空就取消掉这个返回的内容
   if (!avatar) return null;
 
@@ -87,18 +102,6 @@ export function getRightRenderContent(opts: {
       //     console.log('theme');
       //   }
       // },
-      {
-        key: 'lang',
-        label: (
-          <>
-            <GlobalOutlined />
-            语言
-          </>
-        ),
-        onClick: () => {
-          console.log('lang');
-        }
-      },
       {
         key: 'logout',
         label: (
@@ -136,20 +139,23 @@ export function getRightRenderContent(opts: {
   }
 
   return (
-    <div className="umi-plugin-layout-right anticon">
-      {opts.runtimeConfig.logout ? (
-        <>
-          <Dropdown
-            {...dropdownProps}
-            overlayClassName="umi-plugin-layout-container"
-          >
-            {avatar}
-          </Dropdown>
-          <span></span>
-        </>
-      ) : (
-        avatar
-      )}
+    <div style={{ width: '100%' }}>
+      {renderExtraActions()}
+      <div className="umi-plugin-layout-right anticon">
+        {opts.runtimeConfig.logout ? (
+          <>
+            <Dropdown
+              {...dropdownProps}
+              overlayClassName="umi-plugin-layout-container"
+            >
+              {avatar}
+            </Dropdown>
+            <span></span>
+          </>
+        ) : (
+          avatar
+        )}
+      </div>
     </div>
   );
 }

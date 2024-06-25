@@ -1,13 +1,14 @@
 export default {
-  Create: ['ctrl+n', 'cmd+n'],
-  Save: ['ctrl+s', 'cmd+s'],
-  SaveAs: ['ctrl+shift+s', 'cmd+shift+s'],
-  Open: ['ctrl+o', 'cmd+o'],
-  Cancel: ['ctrl+w', 'cmd+w'],
-  Delete: ['delete'],
-  Copy: ['ctrl+c', 'cmd+c'],
-  Refresh: ['ctrl+r', 'cmd+r'],
-  Edit: ['ctrl+e', 'cmd+e'],
-  Search: ['ctrl+f', 'cmd+f'],
-  Reset: ['ctrl+shift+r', 'cmd+shift+r']
+  CREATE: ['ctrl+n', 'meta+n'],
+  SAVE: ['ctrl+s', 'meta+s'],
+  SUBMIT: ['ctrl+enter', 'meta+enter'],
+  SAVEAS: ['ctrl+shift+s', 'meta+shift+s'],
+  OPEN: ['ctrl+o', 'meta+o'],
+  CANCEL: ['ctrl+w', 'meta+w'],
+  DELETE: ['delete'],
+  COPY: ['ctrl+c', 'meta+c'],
+  REFRESH: ['ctrl+r', 'meta+r'],
+  EDIT: ['ctrl+e', 'meta+e'],
+  SEARCH: ['ctrl+f', 'meta+f'],
+  RESET: ['ctrl+shift+r', 'meta+shift+r']
 };

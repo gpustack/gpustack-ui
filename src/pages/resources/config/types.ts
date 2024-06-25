@@ -34,6 +34,8 @@ export interface ListItem {
   hostname: string;
   address: string;
   labels: object;
+  state: string;
+  ip: string;
   status: {
     cpu: {
       total: number;
@@ -60,7 +62,6 @@ export interface ListItem {
       uptime: number;
       boot_time: string;
     };
-    state: string;
   };
   id: number;
   created_at: string;

@@ -8,8 +8,8 @@ import Nodes from './components/nodes';
 
 const items: TabsProps['items'] = [
   {
-    key: 'nodes',
-    label: 'Nodes',
+    key: 'workers',
+    label: 'Workers',
     children: <Nodes />
   },
   {
@@ -38,7 +38,7 @@ const Resources = () => {
       <div style={{ marginTop: 70 }}>
         <Tabs
           type="card"
-          defaultActiveKey="nodes"
+          defaultActiveKey="workers"
           items={items}
           accessKey={activeKey}
           onChange={handleChangeTab}

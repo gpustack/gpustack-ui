@@ -1,11 +1,14 @@
+import HotKeys from '@/config/hotkeys';
 import {
   CodeOutlined,
   DeleteOutlined,
-  PlusOutlined,
-  SaveOutlined
+  EnterOutlined,
+  MacCommandOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Col, Row, Space } from 'antd';
+import { useHotkeys } from 'react-hotkeys-hook';
 import '../style/chat-footer.less';
 
 interface ChatFooterProps {
@@ -20,6 +23,14 @@ interface ChatFooterProps {
 const ChatFooter: React.FC<ChatFooterProps> = (props) => {
   const intl = useIntl();
   const { onSubmit, onClear, onNewMessage, onView, feedback, disabled } = props;
+  useHotkeys(
+    HotKeys.SUBMIT.join(','),
+    () => {
+      onSubmit();
+    },
+    { enabled: !disabled }
+  );
+
   return (
     <div className="chat-footer">
       <Row style={{ width: '100%' }}>
@@ -52,13 +63,11 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
             >
               {intl.formatMessage({ id: 'playground.viewcode' })}
             </Button>
-            <Button
-              disabled={disabled}
-              type="primary"
-              icon={<SaveOutlined></SaveOutlined>}
-              onClick={onSubmit}
-            >
+            <Button disabled={disabled} type="primary" onClick={onSubmit}>
               {intl.formatMessage({ id: 'common.button.submit' })}
+              <span className="m-l-5 opct-7">
+                <MacCommandOutlined /> + <EnterOutlined />
+              </span>
             </Button>
           </Space>
         </Col>

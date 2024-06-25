@@ -338,7 +338,7 @@ const Models: React.FC = () => {
               <RowChildren>
                 <Row style={{ width: '100%' }} align="middle">
                   <Col span={4}>
-                    {item.node_ip}:{item.port}
+                    {item.worker_ip}:{item.port}
                   </Col>
                   <Col span={5}>
                     <span>{item.huggingface_filename}</span>

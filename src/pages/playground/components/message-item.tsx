@@ -1,7 +1,9 @@
+import HotKeys from '@/config/hotkeys';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input } from 'antd';
 import { memo, useEffect, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import '../style/message-item.less';
 interface MessageItemProps {
@@ -14,17 +16,31 @@ const MessageItem: React.FC<{
   message: MessageItemProps;
   loading?: boolean;
   islast?: boolean;
+  onSubmit: () => void;
   updateMessage: (message: MessageItemProps) => void;
   isFocus: boolean;
   onDelete: () => void;
-}> = ({ message, isFocus, onDelete, updateMessage }) => {
+}> = ({ message, isFocus, onDelete, updateMessage, onSubmit, loading }) => {
   const intl = useIntl();
   const [roleType, setRoleType] = useState(message.role);
   const [isTyping, setIsTyping] = useState(false);
   const [messageContent, setMessageContent] = useState(message.content);
   const isInitialRender = useRef(true);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [currentIsFocus, setCurrentIsFocus] = useState(isFocus);
   const inputRef = useRef<any>(null);
+
+  useHotkeys(
+    HotKeys.SUBMIT,
+    () => {
+      onSubmit();
+    },
+    {
+      enabled: currentIsFocus && !loading,
+      enableOnFormTags: currentIsFocus && !loading,
+      preventDefault: true
+    }
+  );
 
   useEffect(() => {
     if (inputRef.current && isFocus) {
@@ -75,6 +91,11 @@ const MessageItem: React.FC<{
 
   const handleBlur = () => {
     setIsTyping(true);
+    setCurrentIsFocus(false);
+  };
+
+  const handleFocus = () => {
+    setCurrentIsFocus(true);
   };
 
   const handleRoleChange = () => {
@@ -103,6 +124,7 @@ const MessageItem: React.FC<{
           autoSize={true}
           variant="filled"
           onChange={handleMessageChange}
+          onFocus={handleFocus}
           onBlur={handleBlur}
         ></Input.TextArea>
       </div>
@@ -110,6 +132,7 @@ const MessageItem: React.FC<{
         <Button
           type="text"
           shape="circle"
+          size="small"
           style={{ color: 'var(--ant-color-primary)' }}
           onClick={handleDelete}
           icon={<MinusCircleOutlined />}

@@ -1,10 +1,12 @@
 import TransitionWrapper from '@/components/transition';
+import HotKeys from '@/config/hotkeys';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { fetchChatStream, receiveChatStream } from '../apis';
 import { Roles } from '../config';
 import '../style/ground-left.less';
@@ -13,6 +15,7 @@ import ChatFooter from './chat-footer';
 import MessageItem from './message-item';
 import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
+
 interface MessageProps {
   parameters: any;
 }
@@ -40,6 +43,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [tokenResult, setTokenResult] = useState<any>(null);
+  const [currentIsFocus, setCurrentIsFocus] = useState(false);
   const systemRef = useRef<any>(null);
   const contentRef = useRef<any>('');
 
@@ -153,6 +157,27 @@ const MessageList: React.FC<MessageProps> = (props) => {
       </div>
     );
   };
+
+  const handleFocus = () => {
+    setCurrentIsFocus(true);
+  };
+
+  const handleBlur = () => {
+    setCurrentIsFocus(false);
+  };
+
+  useHotkeys(
+    HotKeys.SUBMIT,
+    () => {
+      handleSubmit();
+    },
+    {
+      enabled: currentIsFocus && !loading,
+      enableOnFormTags: currentIsFocus && !loading,
+      preventDefault: true
+    }
+  );
+
   return (
     <div className="ground-left">
       <PageContainer title={false} className="message-list-wrap">
@@ -166,6 +191,8 @@ const MessageList: React.FC<MessageProps> = (props) => {
               value={systemMessage}
               variant="filled"
               autoSize={true}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
               placeholder={intl.formatMessage({ id: 'playground.system.tips' })}
               onChange={handleSystemMessageChange}
             ></Input.TextArea>
@@ -184,6 +211,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
                 updateMessage={(message: MessageItemProps) =>
                   handleUpdateMessage(index, message)
                 }
+                onSubmit={handleSubmit}
                 message={item}
               />
             );

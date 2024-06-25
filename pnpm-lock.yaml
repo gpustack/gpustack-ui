@@ -53,6 +53,9 @@ dependencies:
   query-string:
     specifier: ^9.0.0
     version: 9.0.0
+  react-hotkeys-hook:
+    specifier: ^4.5.0
+    version: 4.5.0(react-dom@18.3.1)(react@18.3.1)
   umi-presets-pro:
     specifier: ^2.0.3
     version: 2.0.3(@babel/core@7.24.5)(@types/react-dom@18.3.0)(@types/react@18.3.1)(antd@5.17.0)(dva@2.5.0-beta.2)(rc-field-form@1.44.0)(react-dom@18.3.1)(react@18.3.1)(umi@4.2.1)
@@ -14201,6 +14204,16 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
       react-fast-compare: 3.2.2
       shallowequal: 1.1.0
+    dev: false
+
+  /react-hotkeys-hook@4.5.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-Samb85GSgAWFQNvVt3PS90LPPGSf9mkH/r4au81ZP1yOIFayLC3QAvqTgGtJ8YEDMXtPmaVBs6NgipHO6h4Mug==, tarball: https://registry.npmjs.org/react-hotkeys-hook/-/react-hotkeys-hook-4.5.0.tgz}
+    peerDependencies:
+      react: '>=16.8.1'
+      react-dom: '>=16.8.1'
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /react-intl@3.12.1(react@18.3.1):

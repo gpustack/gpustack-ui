@@ -26,8 +26,8 @@ export interface ModelInstanceListItem {
   huggingface_repo_id: string;
   huggingface_filename: string;
   s3_address: string;
-  node_id: number;
-  node_ip: string;
+  worker_id: number;
+  worker_ip: string;
   pid: number;
   port: number;
   state: string;

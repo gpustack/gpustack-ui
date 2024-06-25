@@ -8,7 +8,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { queryNodesList } from '../apis';
+import { queryWorkersList } from '../apis';
 import { ListItem } from '../config/types';
 const { Column } = Table;
 
@@ -33,8 +33,8 @@ const Models: React.FC = () => {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
       };
-      const res = await queryNodesList(params);
-      console.log('res=======', res);
+      const res = await queryWorkersList(params);
+
       setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
@@ -131,15 +131,16 @@ const Models: React.FC = () => {
             return (
               <StatusTag
                 statusValue={{
-                  status:
-                    record.status?.state === 'active' ? 'success' : 'error',
-                  text: record.status?.state
+                  status: ['Inactive', 'unknown'].includes(record.state)
+                    ? 'inactive'
+                    : 'success',
+                  text: record.state
                 }}
               ></StatusTag>
             );
           }}
         />
-        <Column title="IP" dataIndex="address" key="address" />
+        <Column title="IP" dataIndex="ip" key="address" />
         <Column
           title="CPU"
           dataIndex="CPU"

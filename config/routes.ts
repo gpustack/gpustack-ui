@@ -26,6 +26,7 @@ export default [
     path: '/models',
     key: 'models',
     icon: 'Block',
+    access: 'canSeeAdmin',
     component: './llmodels'
   },
   {
@@ -33,6 +34,7 @@ export default [
     path: '/resources',
     key: 'resources',
     icon: 'CloudServer',
+    access: 'canSeeAdmin',
     component: './resources'
   },
   {

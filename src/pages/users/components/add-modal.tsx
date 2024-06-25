@@ -1,7 +1,7 @@
 import ModalFooter from '@/components/modal-footer';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import { PageAction } from '@/config';
+import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
 import {
   SyncOutlined,
@@ -122,12 +122,8 @@ const AddModal: React.FC<AddModalProps> = ({
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: intl.formatMessage({ id: 'common.form.password' })
-                }
-              )
+              pattern: PasswordReg,
+              message: intl.formatMessage({ id: 'users.form.rule.password' })
             }
           ]}
         >

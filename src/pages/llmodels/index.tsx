@@ -14,6 +14,7 @@ import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
+  EditOutlined,
   FieldTimeOutlined,
   PlusOutlined,
   SyncOutlined,
@@ -44,7 +45,8 @@ import {
   deleteModelInstance,
   queryModelInstanceLogs,
   queryModelInstancesList,
-  queryModelsList
+  queryModelsList,
+  updateModel
 } from './apis';
 import AddModal from './components/add-modal';
 import ViewLogsModal from './components/view-logs-modal';
@@ -70,6 +72,9 @@ const Models: React.FC = () => {
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
+  const [currentData, setCurrentData] = useState<ListItem | undefined>(
+    undefined
+  );
   const timer = useRef<any>();
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
@@ -164,7 +169,6 @@ const Models: React.FC = () => {
   };
 
   const handleSearch = (e: any) => {
-    console.log('request==========');
     fetchData();
   };
 
@@ -178,16 +182,20 @@ const Models: React.FC = () => {
   const handleAddModal = () => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-  };
-
-  const handleClickMenu = (e: any) => {
-    console.log('click', e);
+    setTitle(intl.formatMessage({ id: 'models.button.deploy' }));
   };
 
   const handleModalOk = async (data: FormData) => {
-    await createModel({ data });
-    setOpenAddModal(false);
-    message.success(intl.formatMessage({ id: 'common.message.success' }));
+    try {
+      if (action === PageAction.CREATE) {
+        await createModel({ data });
+      }
+      if (action === PageAction.EDIT) {
+        await updateModel({ data, id: currentData?.id as number });
+      }
+      setOpenAddModal(false);
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {}
   };
 
   const handleModalCancel = () => {
@@ -293,6 +301,13 @@ const Models: React.FC = () => {
     };
     const data = await queryModelInstancesList(params);
     return data.items || [];
+  };
+
+  const handleEdit = (row: ListItem) => {
+    setCurrentData(row);
+    setOpenAddModal(true);
+    setAction(PageAction.EDIT);
+    setTitle(intl.formatMessage({ id: 'models.title.edit' }));
   };
 
   useEffect(() => {
@@ -495,6 +510,18 @@ const Models: React.FC = () => {
                 <Space size={20}>
                   <Tooltip
                     title={intl.formatMessage({
+                      id: 'common.button.edit'
+                    })}
+                  >
+                    <Button
+                      size="small"
+                      type="primary"
+                      onClick={() => handleEdit(record)}
+                      icon={<EditOutlined></EditOutlined>}
+                    ></Button>
+                  </Tooltip>
+                  <Tooltip
+                    title={intl.formatMessage({
                       id: 'models.openinplayground'
                     })}
                   >
@@ -525,7 +552,8 @@ const Models: React.FC = () => {
       <AddModal
         open={openAddModal}
         action={action}
-        title={intl.formatMessage({ id: 'models.button.deploy' })}
+        title={title}
+        data={currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>

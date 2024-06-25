@@ -13,12 +13,13 @@ import {
   callHuggingfaceQuickSearch,
   queryHuggingfaceModelFiles
 } from '../apis';
-import { FormData } from '../config/types';
+import { FormData, ListItem } from '../config/types';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
+  data?: ListItem;
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -48,6 +49,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         replicas: 1
       });
     }
+    if (action === PageAction.EDIT && open) {
+      form.setFieldsValue({
+        ...props.data
+      });
+    }
   };
 
   useEffect(() => {
@@ -68,7 +74,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       </span>
     );
   };
-  const handleRepoSelect = async (repo: string) => {
+  const handleFetchModelFiles = async (repo: string) => {
     try {
       const res = await queryHuggingfaceModelFiles({ repo });
       const list = _.filter(res, (file: any) => {
@@ -88,7 +94,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleRepoOnBlur = (e: any) => {
     const repo = form.getFieldValue('huggingface_repo_id');
-    handleRepoSelect(repo);
+    handleFetchModelFiles(repo);
   };
 
   const handleOnSearchRepo = async (text: string) => {
@@ -163,6 +169,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             label={intl.formatMessage({ id: 'models.form.filename' })}
             required
             options={fileOptions}
+            onFocus={handleRepoOnBlur}
           ></SealAutoComplete>
         </Form.Item>
       </>

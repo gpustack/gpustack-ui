@@ -1,6 +1,7 @@
 export default {
   'models.button.deploy': 'Deploy Model',
   'models.title': 'Models',
+  'models.title.edit': 'Edit Model',
   'models.table.models': 'models',
   'models.table.name': 'Model Name',
   'models.form.source': 'Source',

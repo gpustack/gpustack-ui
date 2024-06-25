@@ -1,4 +1,4 @@
-const proxyTableList = ['cli', 'v1', 'auth'];
+const proxyTableList = ['cli', 'v1', 'auth', 'v1-openai'];
 
 // @ts-ingore
 export default function createProxyTable(target?: string) {

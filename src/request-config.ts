@@ -1,7 +1,7 @@
 import { RequestConfig } from '@umijs/max';
 import { message } from 'antd';
 
-const NoBaseURLAPIs = ['/auth'];
+const NoBaseURLAPIs = ['/auth', '/v1-openai'];
 
 export const requestConfig: RequestConfig = {
   errorConfig: {

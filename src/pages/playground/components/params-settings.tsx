@@ -2,11 +2,11 @@ import FieldWrapper from '@/components/seal-form/field-wrapper';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { INPUT_WIDTH } from '@/constants';
-import { queryModelsList } from '@/pages/llmodels/apis';
 import { useIntl } from '@umijs/max';
 import { Button, Form, InputNumber, Slider } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import { queryModelsList } from '../apis';
 import CustomLabelStyles from '../style/custom-label.less';
 
 type ParamsSettingsFormProps = {
@@ -44,15 +44,11 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   useEffect(() => {
     const getModelList = async () => {
       try {
-        const params = {
-          page: 1,
-          perPage: 100
-        };
-        const res = await queryModelsList(params);
-        const list = _.map(res.items || [], (item: any) => {
+        const res = await queryModelsList();
+        const list = _.map(res.data || [], (item: any) => {
           return {
-            value: item.name,
-            label: item.name
+            value: item.id,
+            label: item.id
           };
         });
         setModelList(list);

@@ -1,6 +1,8 @@
 import { request } from '@umijs/max';
 
-export const CHAT_API = '/chat/completions';
+export const CHAT_API = '/v1-openai/chat/completions';
+
+export const OPENAI_MODELS = '/v1-openai/models';
 
 export async function execChatCompletions(params: any) {
   return request(`${CHAT_API}`, {
@@ -9,8 +11,12 @@ export async function execChatCompletions(params: any) {
   });
 }
 
+export const queryModelsList = async () => {
+  return request(`${OPENAI_MODELS}`);
+};
+
 export const fetchChatStream = async (params: any) => {
-  const response = await fetch(`/v1${CHAT_API}`, {
+  const response = await fetch(`${CHAT_API}`, {
     method: 'POST',
     body: JSON.stringify(params),
     headers: {

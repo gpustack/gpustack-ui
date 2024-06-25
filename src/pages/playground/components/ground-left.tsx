@@ -43,9 +43,6 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const systemRef = useRef<any>(null);
   const contentRef = useRef<any>('');
 
-  const handleReceiveMessage = (data: any) => {
-    console.log('event source message: ', { data });
-  };
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
   };

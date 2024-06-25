@@ -43,3 +43,18 @@ export const WatchEventType = {
   UPDATE: 'MODIFIED',
   DELETE: 'DELETED'
 };
+
+export const PasswordReg =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?=\S+$).{6,12}$/;
+
+export const uppercaseReg = /(?=.*[A-Z])/;
+
+export const lowercaseReg = /(?=.*[a-z])/;
+
+export const digitReg = /(?=.*\d)/;
+
+export const specialCharacterReg = /(?=.*[\W_])/;
+
+export const noSpaceReg = /(?=\S+$)/;
+
+export const lengthReg = /^.{6,12}$/;

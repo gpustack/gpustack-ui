@@ -174,5 +174,8 @@ export default {
   'common.settings.instructions': '操作指引',
   'common.settings.language': '语言',
   'common.delete.confirm': '确定删除选中的{type}吗？',
-  'common.filter.name': '名称查询'
+  'common.filter.name': '名称查询',
+  'common.form.password': '密码',
+  'common.form.username': '用户名',
+  'common.login.rember': '记住我'
 };

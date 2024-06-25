@@ -179,5 +179,8 @@ export default {
   'common.settings.language': 'Language',
   'common.delete.confirm':
     'Are you sure you want to delete the selected {type}?',
-  'common.filter.name': 'Filter by name'
+  'common.filter.name': 'Filter by name',
+  'common.form.password': 'Password',
+  'common.form.username': 'Username',
+  'common.login.rember': 'Remember me'
 };

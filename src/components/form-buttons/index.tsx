@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 
 type FormButtonsProps = {
@@ -18,6 +19,7 @@ const FormButtons: React.FC<FormButtonsProps> = ({
   showOk = true,
   htmlType = 'button'
 }) => {
+  const intl = useIntl();
   return (
     <Space size={40} style={{ marginTop: '80px' }}>
       {showOk && (
@@ -27,12 +29,12 @@ const FormButtons: React.FC<FormButtonsProps> = ({
           style={{ width: '120px' }}
           htmlType={htmlType}
         >
-          {okText || '保存'}
+          {okText || intl.formatMessage({ id: 'common.button.save' })}
         </Button>
       )}
       {showCancel && (
         <Button onClick={onCancel} style={{ width: '98px' }}>
-          {cancelText || '取消'}
+          {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
         </Button>
       )}
     </Space>

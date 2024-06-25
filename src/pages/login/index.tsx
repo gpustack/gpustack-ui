@@ -1,7 +1,7 @@
 import LogoIcon from '@/assets/images/logo.png';
 import SealInput from '@/components/seal-form/seal-input';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { history, useModel } from '@umijs/max';
+import { GlobalOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
+import { SelectLang, history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import { flushSync } from 'react-dom';
 import { login } from './apis';
@@ -24,7 +24,7 @@ const renderLogo = () => {
 };
 const Login = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
+  const intl = useIntl();
   const [form] = Form.useForm();
 
   const gotoDefaultPage = (userInfo: any) => {
@@ -61,44 +61,63 @@ const Login = () => {
   };
 
   return (
-    <Form
-      form={form}
-      style={{ width: '400px', margin: '0 auto', paddingTop: '5%' }}
-      onFinish={handleLogin}
-    >
-      <div>{renderLogo()}</div>
-      <Form.Item
-        name="username"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your Username!'
-          }
-        ]}
+    <div>
+      <div style={{ position: 'fixed', right: 0, top: 0, padding: '0 20px' }}>
+        <SelectLang icon={<GlobalOutlined />} reload={false} />
+      </div>
+      <Form
+        form={form}
+        style={{ width: '400px', margin: '0 auto', paddingTop: '5%' }}
+        onFinish={handleLogin}
       >
-        <SealInput.Input label="Username" prefix={<UserOutlined />} />
-      </Form.Item>
+        <div>{renderLogo()}</div>
+        <Form.Item
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                { name: intl.formatMessage({ id: 'common.form.username' }) }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input
+            label={intl.formatMessage({ id: 'common.form.username' })}
+            prefix={<UserOutlined />}
+          />
+        </Form.Item>
 
-      <Form.Item
-        name="password"
-        rules={[
-          {
-            required: true,
-            message: 'Please input your Password!'
-          }
-        ]}
-      >
-        <SealInput.Password prefix={<LockOutlined />} label="Password" />
-      </Form.Item>
-      <Form.Item name="autoLogin">
-        <div style={{ paddingLeft: 10 }}>
-          <Checkbox>Remember me</Checkbox>
-        </div>
-      </Form.Item>
-      <Button htmlType="submit" type="primary" block>
-        Login
-      </Button>
-    </Form>
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                { name: intl.formatMessage({ id: 'common.form.password' }) }
+              )
+            }
+          ]}
+        >
+          <SealInput.Password
+            prefix={<LockOutlined />}
+            label={intl.formatMessage({ id: 'common.form.password' })}
+          />
+        </Form.Item>
+        <Form.Item name="autoLogin">
+          <div style={{ paddingLeft: 10 }}>
+            <Checkbox>
+              {intl.formatMessage({ id: 'common.login.rember' })}
+            </Checkbox>
+          </div>
+        </Form.Item>
+        <Button htmlType="submit" type="primary" block>
+          {intl.formatMessage({ id: 'menu.login' })}
+        </Button>
+      </Form>
+    </div>
   );
 };
 

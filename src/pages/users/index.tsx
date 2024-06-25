@@ -13,6 +13,7 @@ import {
   UserSwitchOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -27,6 +28,7 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const intl = useIntl();
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -93,11 +95,7 @@ const Models: React.FC = () => {
   const handleAddUser = () => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-    setTitle('Add User');
-  };
-
-  const handleClickMenu = (e: any) => {
-    console.log('click', e);
+    setTitle(intl.formatMessage({ id: 'users.form.create' }));
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -119,7 +117,7 @@ const Models: React.FC = () => {
       }
       fetchData();
       setOpenAddModal(false);
-      message.success('successfully!');
+      message.success('');
     } catch (error) {
       setOpenAddModal(false);
     }
@@ -133,11 +131,14 @@ const Models: React.FC = () => {
   const handleDelete = (row: ListItem) => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected users?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'users.table.user' }) }
+      ),
       async onOk() {
         console.log('OK');
         await deleteUser(row.id);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
@@ -149,10 +150,13 @@ const Models: React.FC = () => {
   const handleDeleteBatch = () => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected users?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'users.table.user' }) }
+      ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
@@ -165,7 +169,7 @@ const Models: React.FC = () => {
     setCurrentData(row);
     setOpenAddModal(true);
     setAction(PageAction.EDIT);
-    setTitle('Edit User');
+    setTitle(intl.formatMessage({ id: 'users.form.edit' }));
   };
 
   useEffect(() => {
@@ -177,7 +181,7 @@ const Models: React.FC = () => {
       <PageContainer
         ghost
         header={{
-          title: 'Users'
+          title: intl.formatMessage({ id: 'users.title' })
         }}
         extra={[]}
       >
@@ -186,7 +190,7 @@ const Models: React.FC = () => {
           left={
             <Space>
               <Input
-                placeholder="名称查询"
+                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
                 onChange={handleNameChange}
               ></Input>
@@ -205,7 +209,7 @@ const Models: React.FC = () => {
                 type="primary"
                 onClick={handleAddUser}
               >
-                Add User
+                {intl.formatMessage({ id: 'users.button.create' })}
               </Button>
               <Button
                 icon={<DeleteOutlined />}
@@ -213,7 +217,7 @@ const Models: React.FC = () => {
                 onClick={handleDeleteBatch}
                 disabled={!rowSelection.selectedRowKeys.length}
               >
-                Delete
+                {intl.formatMessage({ id: 'common.button.delete' })}
               </Button>
             </Space>
           }
@@ -234,9 +238,14 @@ const Models: React.FC = () => {
             onChange: handlePageChange
           }}
         >
-          <Column title="Name" dataIndex="username" key="name" width={200} />
           <Column
-            title="Create Time"
+            title={intl.formatMessage({ id: 'users.table.username' })}
+            dataIndex="username"
+            key="name"
+            width={200}
+          />
+          <Column
+            title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"
             defaultSortOrder="descend"
@@ -248,25 +257,29 @@ const Models: React.FC = () => {
             }}
           />
           <Column
-            title="Role"
+            title={intl.formatMessage({ id: 'users.table.role' })}
             dataIndex="role"
             key="role"
             render={(text, record: ListItem) => {
               return record.is_admin ? (
                 <>
                   <UserSwitchOutlined className="size-16" />
-                  <span className="m-l-5">管理员</span>
+                  <span className="m-l-5">
+                    {intl.formatMessage({ id: 'users.form.admin' })}
+                  </span>
                 </>
               ) : (
                 <>
                   <UserOutlined className="size-16" />
-                  <span className="m-l-5">普通用户</span>
+                  <span className="m-l-5">
+                    {intl.formatMessage({ id: 'users.form.user' })}
+                  </span>
                 </>
               );
             }}
           />
           <Column
-            title="Update Time"
+            title={intl.formatMessage({ id: 'common.table.updateTime' })}
             dataIndex="updated_at"
             key="updateTime"
             defaultSortOrder="descend"
@@ -278,13 +291,15 @@ const Models: React.FC = () => {
             }}
           />
           <Column
-            title="Operation"
+            title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
             width={200}
             render={(text, record: ListItem) => {
               return (
                 <Space size={20}>
-                  <Tooltip title="编辑">
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'common.button.edit' })}
+                  >
                     <Button
                       size="small"
                       type="primary"
@@ -292,7 +307,9 @@ const Models: React.FC = () => {
                       icon={<EditOutlined></EditOutlined>}
                     ></Button>
                   </Tooltip>
-                  <Tooltip title="删除">
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'common.button.delete' })}
+                  >
                     <Button
                       size="small"
                       type="primary"

@@ -3,8 +3,13 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { SyncOutlined } from '@ant-design/icons';
-import { Form, Modal } from 'antd';
+import {
+  SyncOutlined,
+  UserOutlined,
+  UserSwitchOutlined
+} from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
+import { Form, Modal, Select } from 'antd';
 import { useEffect } from 'react';
 import { UserRoles, UserRolesOptions } from '../config';
 import { FormData, ListItem } from '../config/types';
@@ -26,6 +31,7 @@ const AddModal: React.FC<AddModalProps> = ({
   onCancel
 }) => {
   const [form] = Form.useForm();
+  const intl = useIntl();
   const suffix = (
     <SyncOutlined
       style={{
@@ -68,18 +74,67 @@ const AddModal: React.FC<AddModalProps> = ({
       }
     >
       <Form name="addUserForm" form={form} onFinish={onOk} preserve={false}>
-        <Form.Item<FormData> name="username" rules={[{ required: true }]}>
-          <SealInput.Input label="Name" required></SealInput.Input>
+        <Form.Item<FormData>
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: intl.formatMessage({ id: 'common.table.name' })
+                }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input
+            label={intl.formatMessage({ id: 'common.table.name' })}
+            required
+          ></SealInput.Input>
         </Form.Item>
         <Form.Item<FormData> name="full_name" rules={[{ required: false }]}>
-          <SealInput.Input label="FullName"></SealInput.Input>
+          <SealInput.Input
+            label={intl.formatMessage({ id: 'users.form.fullname' })}
+          ></SealInput.Input>
         </Form.Item>
         <Form.Item<FormData> name="is_admin" rules={[{ required: false }]}>
-          <SealSelect label="Role" options={UserRolesOptions}></SealSelect>
+          <SealSelect label={intl.formatMessage({ id: 'users.table.role' })}>
+            {UserRolesOptions.map((item) => {
+              return (
+                <Select.Option value={item.value} key={item.value}>
+                  {item.value === UserRoles.ADMIN ? (
+                    <UserSwitchOutlined className="size-16" />
+                  ) : (
+                    <UserOutlined className="size-16" />
+                  )}
+                  <span className="m-l-5">
+                    {intl.formatMessage({ id: item.label })}
+                  </span>
+                </Select.Option>
+              );
+            })}
+          </SealSelect>
         </Form.Item>
 
-        <Form.Item<FormData> name="password" rules={[{ required: true }]}>
-          <SealInput.Password label="Password" required></SealInput.Password>
+        <Form.Item<FormData>
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: intl.formatMessage({ id: 'common.form.password' })
+                }
+              )
+            }
+          ]}
+        >
+          <SealInput.Password
+            label={intl.formatMessage({ id: 'common.form.password' })}
+            required
+          ></SealInput.Password>
         </Form.Item>
       </Form>
     </Modal>

@@ -4,6 +4,6 @@ export const UserRoles = {
 };
 
 export const UserRolesOptions = [
-  { label: '管理员', value: UserRoles.ADMIN },
-  { label: '普通用户', value: UserRoles.USER }
+  { label: 'users.form.admin', value: UserRoles.ADMIN },
+  { label: 'users.form.user', value: UserRoles.USER }
 ];

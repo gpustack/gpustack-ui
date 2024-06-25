@@ -27,3 +27,10 @@ export const accessToken = async () => {
     method: 'POST'
   });
 };
+
+export const updatePassword = async (params: any) => {
+  return request(`${AUTH_API}/update-password`, {
+    method: 'POST',
+    data: params
+  });
+};

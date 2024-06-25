@@ -128,7 +128,7 @@ const Models: React.FC = () => {
       };
       const res = await createApisKey({ data: params });
       setOpenAddModal(false);
-      message.success('successfully!');
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
       setDataSource([res, ...dataSource]);
       setTotal(total + 1);
     } catch (error) {
@@ -144,11 +144,14 @@ const Models: React.FC = () => {
   const handleDelete = (row: ListItem) => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected keys?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'apikeys.table.apikeys' }) }
+      ),
       async onOk() {
         console.log('OK');
         await deleteApisKey(row.id);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
@@ -160,22 +163,19 @@ const Models: React.FC = () => {
   const handleDeleteBatch = () => {
     Modal.confirm({
       title: '',
-      content: 'Are you sure you want to delete the selected keys?',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: intl.formatMessage({ id: 'apikeys.table.apikeys' }) }
+      ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
-        message.success('successfully!');
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
       },
       onCancel() {
         console.log('Cancel');
       }
     });
-  };
-
-  const handleEditUser = () => {
-    setOpenAddModal(true);
-    setAction(PageAction.EDIT);
-    setTitle('Edit User');
   };
 
   const renderSecrectKey = (text: string, record: ListItem) => {
@@ -187,7 +187,7 @@ const Models: React.FC = () => {
         {value && (
           <span>
             <Tag color="error" style={{ padding: '10px 12px' }}>
-              确保立即复制您的个人访问密钥。您将无法再次看到它！
+              {intl.formatMessage({ id: 'apikeys.table.save.tips' })}
             </Tag>
             <span className="flex-center">
               <Tooltip
@@ -299,7 +299,7 @@ const Models: React.FC = () => {
             }}
           />
           <Column
-            title="Operation"
+            title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
             render={(text, record: ListItem) => {
               return (

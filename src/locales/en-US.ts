@@ -4,6 +4,7 @@ import menu from './en-US/menu';
 import models from './en-US/models';
 import playground from './en-US/playground';
 import resources from './en-US/resources';
+import users from './en-US/users';
 
 export default {
   ...common,
@@ -11,5 +12,6 @@ export default {
   ...models,
   ...playground,
   ...resources,
-  ...apikeys
+  ...apikeys,
+  ...users
 };

@@ -41,8 +41,8 @@ export const receiveChatStream = async (
   }
 
   let chunk = decoder.decode(value, { stream: true });
-  if (chunk.startsWith('data: ')) {
-    chunk = chunk.substring('data: '.length);
+  if (chunk.startsWith('data:')) {
+    chunk = chunk.substring('data:'.length);
   }
   const item = JSON.parse(chunk?.trim());
   callback(item);

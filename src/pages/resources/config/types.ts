@@ -3,12 +3,17 @@ export interface Gpu {
   name: string;
   vendor: string;
   index: number;
-  core_total: number;
-  core_allocated: number;
-  core_utilization_rate: number;
-  memory_total: number;
-  memory_allocated: number;
-  memory_used: number;
+  core: {
+    total: number;
+    allocated: number;
+    utilization_rate: number;
+  };
+  memory: {
+    total: number;
+    allocated: number;
+    used: number;
+    utilization_rate: number;
+  };
   temperature: number;
 }
 

@@ -4,13 +4,13 @@ import type { TabsProps } from 'antd';
 import { Tabs } from 'antd';
 import { useState } from 'react';
 import GPUs from './components/gpus';
-import Nodes from './components/nodes';
+import Workers from './components/workers';
 
 const items: TabsProps['items'] = [
   {
     key: 'workers',
     label: 'Workers',
-    children: <Nodes />
+    children: <Workers />
   },
   {
     key: 'gpus',

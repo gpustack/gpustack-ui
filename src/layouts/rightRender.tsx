@@ -14,9 +14,9 @@ export function getRightRenderContent(opts: {
   loading: boolean;
   initialState: any;
   setInitialState: any;
+  intl: any;
 }) {
-  console.log('runtimeConfig==', opts.runtimeConfig, opts);
-  // const intl = useIntl();
+  const { intl } = opts;
   if (opts.runtimeConfig.rightRender) {
     return opts.runtimeConfig.rightRender(
       opts.initialState,
@@ -66,8 +66,7 @@ export function getRightRenderContent(opts: {
           <span style={{ fontSize: '12px' }}>
             <GlobalOutlined />
             <span className="m-l-8">
-              {/* {FormattedMessage({ id: 'common.settings.language' })} */}
-              Language
+              {intl?.formatMessage?.({ id: 'common.settings.language' })}
             </span>
           </span>
         }
@@ -87,8 +86,7 @@ export function getRightRenderContent(opts: {
         label: (
           <>
             <SettingOutlined />
-            {/* {intl.formatMessage({ id: 'common.button.settings' })} */}
-            Settings
+            {intl?.formatMessage?.({ id: 'common.button.settings' })}
           </>
         ),
         onClick: () => {
@@ -112,8 +110,7 @@ export function getRightRenderContent(opts: {
         label: (
           <>
             <LogoutOutlined />
-            {/* {intl.formatMessage({ id: 'common.button.logout' })} */}
-            Logout
+            {intl?.formatMessage?.({ id: 'common.button.logout' })}
           </>
         ),
         onClick: () => {

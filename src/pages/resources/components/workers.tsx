@@ -174,14 +174,30 @@ const Models: React.FC = () => {
           key="GPU"
           render={(text, record: ListItem) => {
             return (
-              <ProgressBar
-                percent={_.get(record, [
-                  'status',
-                  'gpu',
-                  '0',
-                  'core_utilization_rate'
-                ])}
-              ></ProgressBar>
+              <Space>
+                {record?.status?.gpu.map((item) => {
+                  return (
+                    <span key={item.index} className="flex-center">
+                      <span
+                        style={{
+                          display: 'flex',
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: 'var(--ant-color-primary)'
+                        }}
+                      ></span>
+                      <span className="m-l-5">
+                        {' '}
+                        {`${item.core.total}C`} /{' '}
+                        {item.core.utilization_rate
+                          ? `${item.core.utilization_rate}%`
+                          : 0}
+                      </span>
+                    </span>
+                  );
+                })}
+              </Space>
             );
           }}
         />
@@ -198,7 +214,30 @@ const Models: React.FC = () => {
           dataIndex="VRAM"
           key="VRAM"
           render={(text, record: ListItem) => {
-            return <ProgressBar percent={0}></ProgressBar>;
+            return (
+              <Space>
+                {record?.status?.gpu.map((item) => {
+                  return (
+                    <span key={item.index} className="flex-center">
+                      <span
+                        style={{
+                          display: 'flex',
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          backgroundColor: 'var(--ant-color-primary)'
+                        }}
+                      ></span>
+                      <span className="m-l-5">
+                        {item.memory.allocated
+                          ? `${formateUtilazation(item.memory.allocated, item.memory.total)}%`
+                          : 0}
+                      </span>
+                    </span>
+                  );
+                })}
+              </Space>
+            );
           }}
         />
       </Table>

@@ -206,7 +206,8 @@ export default (props: any) => {
               runtimeConfig,
               loading,
               initialState,
-              setInitialState
+              setInitialState,
+              intl
             });
             if (runtimeConfig.rightContentRender) {
               return runtimeConfig.rightContentRender(layoutProps, dom, {
@@ -215,7 +216,8 @@ export default (props: any) => {
                 runtimeConfig,
                 loading,
                 initialState,
-                setInitialState
+                setInitialState,
+                intl
               });
             }
             return dom;

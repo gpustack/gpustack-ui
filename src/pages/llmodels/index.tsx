@@ -114,7 +114,7 @@ const Models: React.FC = () => {
     clearInterval(timer.current);
     timer.current = setInterval(() => {
       fetchData(true);
-    }, 3000);
+    }, 5000);
   };
 
   const handleShowSizeChange = (page: number, size: number) => {

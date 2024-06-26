@@ -4,7 +4,9 @@ import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { Col, DatePicker, Row } from 'antd';
-import { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useContext, useEffect, useState } from 'react';
+import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
 const SystemLoad = () => {
@@ -13,7 +15,7 @@ const SystemLoad = () => {
     'linear-gradient(90deg, rgba(255, 214, 102,.8) 0%, rgba(255, 214, 102,0.5) 50%,  rgba(255, 214, 102,.8) 100%)',
     'linear-gradient(90deg, rgba(255, 120, 117,.8) 0%, rgba(255, 120, 117,0.5) 50%,  rgba(255, 120, 117,.8) 100%)'
   ];
-
+  const data = useContext(DashboardContext)?.system_load?.current || {};
   const { size } = useWindowResize();
   const [paddingRight, setPaddingRight] = useState<string>('20px');
   const [smallChartHeight, setSmallChartHeight] = useState<number>(190);
@@ -64,7 +66,7 @@ const SystemLoad = () => {
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="GPU Compute Utilization"
-                    percent={0.2}
+                    percent={_.round(data.gpu?.utilization_rate || 0, 2) / 100}
                     thresholds={thresholds}
                     rangColor={colors}
                   ></LiquidChart>
@@ -72,7 +74,9 @@ const SystemLoad = () => {
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="GPU Memory Utilization"
-                    percent={0.3}
+                    percent={
+                      _.round(data.gpu_memory?.utilization_rate || 0, 2) / 100
+                    }
                     thresholds={thresholds}
                     rangColor={colors}
                   ></LiquidChart>
@@ -80,7 +84,7 @@ const SystemLoad = () => {
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="CPU Compute Utilization"
-                    percent={0.8}
+                    percent={_.round(data.cpu?.utilization_rate || 0, 2) / 100}
                     thresholds={thresholds}
                     rangColor={colors}
                   ></LiquidChart>
@@ -88,7 +92,9 @@ const SystemLoad = () => {
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="CPU Memory Utilization"
-                    percent={0.7}
+                    percent={
+                      _.round(data.memory?.utilization_rate || 0, 2) / 100
+                    }
                     thresholds={thresholds}
                     rangColor={colors}
                   ></LiquidChart>

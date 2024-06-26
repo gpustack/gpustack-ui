@@ -7,10 +7,12 @@ interface LineChartProps {
   color?: string[];
   xField?: string;
   yField?: string;
-  slider?: boolean;
+  labelFormatter?: (v: any) => string;
+  slider?: any;
 }
 const LineChart: React.FC<LineChartProps> = (props) => {
-  const { data, title, color, xField, yField, slider, height } = props;
+  const { data, title, color, xField, yField, slider, height, labelFormatter } =
+    props;
   const config = {
     title,
     height,
@@ -28,7 +30,12 @@ const LineChart: React.FC<LineChartProps> = (props) => {
         }
       },
       y: {
-        tick: false
+        tick: false,
+        // size: 14,
+        // title: '%',
+        titlePosition: 'top',
+        titleFontSize: 12,
+        labelFormatter
       }
     },
     // point: {

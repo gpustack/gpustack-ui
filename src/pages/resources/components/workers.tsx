@@ -201,14 +201,7 @@ const Models: React.FC = () => {
             );
           }}
         />
-        <Column
-          title={intl.formatMessage({ id: 'resources.table.disk' })}
-          dataIndex="storage"
-          key="storage"
-          render={(text, record: ListItem) => {
-            return <ProgressBar percent={0}></ProgressBar>;
-          }}
-        />
+
         <Column
           title={intl.formatMessage({ id: 'resources.table.vram' })}
           dataIndex="VRAM"
@@ -238,6 +231,14 @@ const Models: React.FC = () => {
                 })}
               </Space>
             );
+          }}
+        />
+        <Column
+          title={intl.formatMessage({ id: 'resources.table.disk' })}
+          dataIndex="storage"
+          key="storage"
+          render={(text, record: ListItem) => {
+            return <ProgressBar percent={0}></ProgressBar>;
           }}
         />
       </Table>

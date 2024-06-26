@@ -6,7 +6,10 @@ import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { generateRandomArray } from '@/utils';
 import { Col, DatePicker, Row } from 'antd';
-import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+import _ from 'lodash';
+import { useContext, useEffect, useState } from 'react';
+import { DashboardContext } from '../config/dashboard-context';
 
 const { RangePicker } = DatePicker;
 const times = [
@@ -92,8 +95,81 @@ const tokenUsage = TokensData.map((val, i) => {
 const Usage = () => {
   const { size } = useWindowResize();
   const [paddingRight, setPaddingRight] = useState<string>('20px');
+  const [requestData, setRequestData] = useState<
+    { time: string; value: number }[]
+  >([]);
+  const [tokenData, setTokenData] = useState<{ time: string; value: number }[]>(
+    []
+  );
+  const [userData, setUserData] = useState<{ name: string; value: number }[]>(
+    []
+  );
+  const data = useContext(DashboardContext)?.model_usage || {};
 
   const handleSelectDate = (dateString: string) => {};
+
+  const generateData = () => {
+    const requestList: { time: string; value: number }[] = [];
+    const tokenList: {
+      time: string;
+      value: number;
+      name: string;
+      color: string;
+    }[] = [];
+    const userList: {
+      name: string;
+      value: number;
+      type: string;
+      color: string;
+    }[] = [];
+
+    _.each(data.api_request_history, (item: any) => {
+      requestList.push({
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+        value: item.value
+      });
+    });
+
+    _.each(data.completion_token_history, (item: any) => {
+      tokenList.push({
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+        name: 'completion_token',
+        color:
+          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+        value: item.value
+      });
+    });
+    _.each(data.prompt_token_history, (item: any) => {
+      tokenList.push({
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+        name: 'prompt_token',
+        color:
+          'linear-gradient(90deg,rgba(0, 170, 173, 0.8) 0%,rgba(0, 109, 193, 0.7) 100%)',
+        value: item.value
+      });
+    });
+
+    _.each(data.top_users, (item: any) => {
+      userList.push({
+        name: item.username,
+        type: 'completion_token',
+        color:
+          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+        value: item.completion_token_count
+      });
+      userList.push({
+        name: item.username,
+        type: 'prompt_token',
+        color:
+          'linear-gradient(90deg,rgba(0, 170, 173, 0.8) 0%,rgba(0, 109, 193, 0.7) 100%)',
+        value: item.prompt_token_count
+      });
+    });
+
+    setRequestData(requestList);
+    setTokenData(tokenList);
+    setUserData(userList);
+  };
 
   useEffect(() => {
     if (size.width < breakpoints.xl) {
@@ -102,6 +178,10 @@ const Usage = () => {
       setPaddingRight('20px');
     }
   }, [size.width]);
+
+  useEffect(() => {
+    generateData();
+  }, [data]);
 
   return (
     <>
@@ -126,7 +206,7 @@ const Usage = () => {
               <Col span={12}>
                 <ColumnBar
                   title="API Request"
-                  data={dataList}
+                  data={requestData}
                   xField="time"
                   yField="value"
                   height={360}
@@ -135,8 +215,12 @@ const Usage = () => {
               <Col span={12}>
                 <ColumnBar
                   title="Tokens"
-                  data={tokenUsage}
+                  data={tokenData}
+                  group={false}
+                  colorField="name"
+                  stack={true}
                   xField="time"
+                  legend={false}
                   yField="value"
                   height={360}
                 ></ColumnBar>
@@ -148,8 +232,11 @@ const Usage = () => {
           <CardWrapper>
             <HBar
               title="Top Users"
-              data={userDataList}
-              xField="time"
+              data={userData}
+              colorField="type"
+              stack={true}
+              legend={false}
+              xField="name"
               yField="value"
               height={360}
             ></HBar>

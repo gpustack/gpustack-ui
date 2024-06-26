@@ -12,7 +12,7 @@ interface LiquidChartProps {
 }
 const LiquidChart: React.FC<LiquidChartProps> = (props) => {
   const {
-    percent,
+    percent = 0,
     color,
     title,
     width,

@@ -1,12 +1,12 @@
 export const overviewConfigs = [
   {
-    key: 'workers',
+    key: 'workworker_count',
     label: 'Workers',
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
     backgroundColor: 'var(--color-white-1)'
   },
   {
-    key: 'gpus',
+    key: 'gpu_count',
     label: 'Total GPUs',
     backgroundColor: 'var(--color-white-1)'
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
@@ -18,13 +18,13 @@ export const overviewConfigs = [
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   },
   {
-    key: 'models',
+    key: 'model_count',
     label: 'Models',
     backgroundColor: 'var(--color-white-1)'
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   },
   {
-    key: 'instances',
+    key: 'model_instance_count',
     label: 'Instances',
     backgroundColor: 'var(--color-white-1)'
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'

@@ -6,25 +6,46 @@ interface BarChartProps {
   yField: string;
   title?: string;
   height?: number;
+  group?: boolean;
+  colorField?: string;
+  seriesField?: string;
+  stack?: boolean;
+  legend?: any;
 }
 const BarChart: React.FC<BarChartProps> = (props) => {
-  const { data, xField, yField, title, height } = props;
+  const {
+    data,
+    xField,
+    yField,
+    title,
+    height,
+    group,
+    colorField,
+    seriesField,
+    stack,
+    legend = undefined
+  } = props;
   const config = {
     data,
     xField,
     yField,
-    // colorField: 'name',
+    colorField: colorField || 'name',
     direction: 'vertical',
+    seriesField,
     height,
-    group: true,
-    legend: {
-      color: {
-        position: 'top',
-        layout: {
-          justifyContent: 'center'
-        }
-      }
-    },
+    group,
+    stack,
+    legend:
+      legend === 'undefined'
+        ? {
+            color: {
+              position: 'top',
+              layout: {
+                justifyContent: 'center'
+              }
+            }
+          }
+        : legend,
     scale: {
       x: {
         type: 'band',
@@ -59,7 +80,12 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     },
     markBackground: {},
     style: {
-      fill: 'linear-gradient(180deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+      fill: (params: any) => {
+        return (
+          params.color ||
+          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)'
+        );
+      },
       radiusTopLeft: 12,
       radiusTopRight: 12,
       height: 20

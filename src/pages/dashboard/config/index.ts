@@ -1,32 +1,32 @@
 export const overviewConfigs = [
   {
-    key: 'workers',
+    key: 'workworker_count',
     label: 'Workers',
-    backgroundColor:
-      'linear-gradient(180deg, rgb(0 139 188 / 20%) 0%, rgba(40,207,181,.2) 100%)'
+    // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
+    backgroundColor: 'var(--color-white-1)'
   },
   {
-    key: 'gpus',
+    key: 'gpu_count',
     label: 'Total GPUs',
-    backgroundColor:
-      'linear-gradient(180deg, rgb(0 139 188 / 20%) 0%, rgba(40,207,181,.2) 100%)'
+    backgroundColor: 'var(--color-white-1)'
+    // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   },
   {
     key: 'allocatedGpus',
     label: 'Allocated GPUs',
-    backgroundColor:
-      'linear-gradient(180deg, rgb(0 139 188 / 20%) 0%, rgba(40,207,181,.2) 100%)'
+    backgroundColor: 'var(--color-white-1)'
+    // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   },
   {
-    key: 'models',
+    key: 'model_count',
     label: 'Models',
-    backgroundColor:
-      'linear-gradient(180deg, rgb(0 139 188 / 20%) 0%, rgba(40,207,181,.2) 100%)'
+    backgroundColor: 'var(--color-white-1)'
+    // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   },
   {
-    key: 'instances',
+    key: 'model_instance_count',
     label: 'Instances',
-    backgroundColor:
-      'linear-gradient(180deg, rgb(0 139 188 / 20%) 0%, rgba(40,207,181,.2) 100%)'
+    backgroundColor: 'var(--color-white-1)'
+    // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   }
 ];

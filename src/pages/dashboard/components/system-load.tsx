@@ -1,20 +1,43 @@
-import GaugeChart from '@/components/charts/gauge';
+import CardWrapper from '@/components/card-wrapper';
+import LiquidChart from '@/components/charts/liquid';
 import PageTools from '@/components/page-tools';
-import { PageContainer } from '@ant-design/pro-components';
+import breakpoints from '@/config/breakpoints';
+import useWindowResize from '@/hooks/use-window-resize';
 import { Col, DatePicker, Row } from 'antd';
+import _ from 'lodash';
+import { useContext, useEffect, useState } from 'react';
+import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
 const SystemLoad = () => {
-  const handleSelectDate = (date: string) => {
-    console.log('dateString============', date);
-  };
+  const colors = [
+    'linear-gradient(90deg, rgba(84, 204, 152,.8) 0%, rgba(84, 204, 152,0.5) 50%,  rgba(84, 204, 152,.8) 100%)',
+    'linear-gradient(90deg, rgba(255, 214, 102,.8) 0%, rgba(255, 214, 102,0.5) 50%,  rgba(255, 214, 102,.8) 100%)',
+    'linear-gradient(90deg, rgba(255, 120, 117,.8) 0%, rgba(255, 120, 117,0.5) 50%,  rgba(255, 120, 117,.8) 100%)'
+  ];
+  const data = useContext(DashboardContext)?.system_load?.current || {};
+  const { size } = useWindowResize();
+  const [paddingRight, setPaddingRight] = useState<string>('20px');
+  const [smallChartHeight, setSmallChartHeight] = useState<number>(190);
+  const [largeChartHeight, setLargeChartHeight] = useState<number>(400);
+  const thresholds = [0.5, 0.7, 1];
+  const height = 400;
+
+  const handleSelectDate = (date: string) => {};
+
+  useEffect(() => {
+    if (size.width < breakpoints.xl) {
+      setPaddingRight('0');
+    } else {
+      setPaddingRight('20px');
+    }
+  }, [size.width]);
 
   return (
-    <PageContainer ghost title={false}>
+    <div>
       <div className="system-load">
         <PageTools
-          marginBottom={10}
-          marginTop={0}
+          style={{ margin: '32px 8px' }}
           left={
             <span style={{ fontSize: 'var(--font-size-large)' }}>
               System Load
@@ -24,51 +47,64 @@ const SystemLoad = () => {
             <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
           }
         />
-        <ResourceUtilization />
-        <Row style={{ width: '100%', marginTop: '32px' }}>
-          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
-            <GaugeChart
-              title="GPU Compute Utilization"
-              total={100}
-              target={20}
-              // height={320}
-              thresholds={[50, 70, 100]}
-              rangColor={['#54cc98', '#ffd666', '#ff7875']}
-            ></GaugeChart>
+        <Row style={{ width: '100%' }} gutter={[0, 20]}>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={24}
+            xl={16}
+            style={{ paddingRight: paddingRight }}
+          >
+            <CardWrapper style={{ height: height, width: '100%' }}>
+              <ResourceUtilization />
+            </CardWrapper>
           </Col>
-          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
-            <GaugeChart
-              title="GPU Memory Utilization"
-              total={100}
-              target={30}
-              // height={320}
-              thresholds={[50, 70, 100]}
-              rangColor={['#54cc98', '#ffd666', '#ff7875']}
-            ></GaugeChart>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
-            <GaugeChart
-              title="CPU Compute Utilization"
-              total={100}
-              target={40}
-              // height={320}
-              thresholds={[50, 70, 100]}
-              rangColor={['#54cc98', '#ffd666', '#ff7875']}
-            ></GaugeChart>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={6} xl={6}>
-            <GaugeChart
-              title="CPU Memory Utilization"
-              total={100}
-              target={70}
-              // height={320}
-              thresholds={[50, 70, 100]}
-              rangColor={['#54cc98', '#ffd666', '#ff7875']}
-            ></GaugeChart>
+          <Col xs={24} sm={24} md={24} lg={24} xl={8}>
+            <CardWrapper style={{ height: largeChartHeight, width: '100%' }}>
+              <Row style={{ height: largeChartHeight, width: '100%' }}>
+                <Col span={12} style={{ height: smallChartHeight }}>
+                  <LiquidChart
+                    title="GPU Compute Utilization"
+                    percent={_.round(data.gpu?.utilization_rate || 0, 2) / 100}
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+                <Col span={12} style={{ height: smallChartHeight }}>
+                  <LiquidChart
+                    title="GPU Memory Utilization"
+                    percent={
+                      _.round(data.gpu_memory?.utilization_rate || 0, 2) / 100
+                    }
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+                <Col span={12} style={{ height: smallChartHeight }}>
+                  <LiquidChart
+                    title="CPU Compute Utilization"
+                    percent={_.round(data.cpu?.utilization_rate || 0, 2) / 100}
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+                <Col span={12} style={{ height: smallChartHeight }}>
+                  <LiquidChart
+                    title="CPU Memory Utilization"
+                    percent={
+                      _.round(data.memory?.utilization_rate || 0, 2) / 100
+                    }
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+              </Row>
+            </CardWrapper>
           </Col>
         </Row>
       </div>
-    </PageContainer>
+    </div>
   );
 };
 

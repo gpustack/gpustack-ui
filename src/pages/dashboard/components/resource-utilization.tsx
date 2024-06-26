@@ -1,68 +1,68 @@
 import LineChart from '@/components/charts/line-chart';
-import { generateFluctuatingData } from '@/utils';
+import dayjs from 'dayjs';
 import _ from 'lodash';
+import { useContext, useEffect, useState } from 'react';
+import { DashboardContext } from '../config/dashboard-context';
 
-const mockData = {
-  GPU: generateFluctuatingData({
-    total: 17,
-    max: 80,
-    min: 20
-  }),
-  CPU: generateFluctuatingData({
-    total: 17,
-    max: 70,
-    min: 10
-  }),
-  Memory: generateFluctuatingData({
-    total: 17,
-    max: 60,
-    min: 20
-  }),
-  VRAM: generateFluctuatingData({
-    total: 17,
-    max: 90,
-    min: 15
-  })
+const TypeKeyMap = {
+  cpu: 'CPU',
+  memory: 'Memory',
+  gpu: 'GPU',
+  gpu_memory: 'VRAM'
 };
+
 const UtilizationOvertime: React.FC = () => {
-  const timeList = [
-    '08:00:00',
-    '09:00:00',
-    '10:00:00',
-    '11:00:00',
-    '12:00:00',
-    '13:00:00',
-    '14:00:00',
-    '15:00:00',
-    '16:00:00',
-    '17:00:00',
-    '18:00:00',
-    '19:00:00',
-    '20:00:00',
-    '21:00:00',
-    '22:00:00',
-    '23:00:00',
-    '24:00:00'
-  ];
-  const typeList = ['GPU', 'CPU', 'Memory', 'VRAM'];
-  const generateData = () => {
-    const data = [];
-    for (let i = 0; i < timeList.length; i++) {
-      for (let j = 0; j < typeList.length; j++) {
-        data.push({
-          time: timeList[i],
-          type: typeList[j],
-          value: _.get(mockData, typeList[j])[i]
-        });
-      }
+  const data = useContext(DashboardContext)?.system_load?.history || {};
+  const [result, setResult] = useState<
+    { time: string; value: number; type: string }[]
+  >([]);
+
+  const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
+  const sliderConfig = {
+    y: false,
+    x: {
+      style: {
+        selectionFill: 'rgb(84, 204, 152)',
+        selectionFillOpacity: 0.1,
+        handleIconFill: 'rgb(84, 204, 152)',
+        handleIconFillOpacity: 0.15,
+        handleIconStrokeOpacity: 0,
+        sparklineType: 'line',
+        sparkline: true
+      },
+      sparkline: true
     }
-    return data;
   };
-  const data = generateData();
+
+  const labelFormatter = (value: any) => {
+    return `${value}%`;
+  };
+  const generateData = () => {
+    const list: { value: number; time: string; type: string }[] = [];
+    _.each(typeList, (type: any) => {
+      const dataList = _.map(_.get(data, type, []), (item: any) => {
+        return {
+          value: _.round(item.value, 2) || 0,
+          time: dayjs(item.timestamp * 1000).format('HH:mm:ss'),
+          type: _.get(TypeKeyMap, type, '')
+        };
+      });
+      list.push(...dataList);
+    });
+    setResult(list);
+  };
+
+  useEffect(() => {
+    generateData();
+  }, [data]);
 
   return (
     <>
-      <LineChart height={400} data={data} />
+      <LineChart
+        data={result}
+        labelFormatter={labelFormatter}
+        slider={sliderConfig}
+      />
     </>
   );
 };

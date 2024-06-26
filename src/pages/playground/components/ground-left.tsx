@@ -235,6 +235,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
           onSubmit={handleSubmit}
           onView={handleView}
           disabled={loading}
+          hasTokenResult={!!tokenResult}
           feedback={<ReferenceParams usage={tokenResult}></ReferenceParams>}
         ></ChatFooter>
       </div>

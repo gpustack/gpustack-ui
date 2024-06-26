@@ -18,11 +18,20 @@ interface ChatFooterProps {
   onView: () => void;
   disabled?: boolean;
   feedback?: React.ReactNode;
+  hasTokenResult?: boolean;
 }
 
 const ChatFooter: React.FC<ChatFooterProps> = (props) => {
   const intl = useIntl();
-  const { onSubmit, onClear, onNewMessage, onView, feedback, disabled } = props;
+  const {
+    onSubmit,
+    onClear,
+    onNewMessage,
+    onView,
+    feedback,
+    disabled,
+    hasTokenResult
+  } = props;
   useHotkeys(
     HotKeys.SUBMIT.join(','),
     () => {
@@ -34,7 +43,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
   return (
     <div className="chat-footer">
       <Row style={{ width: '100%' }}>
-        <Col span={8}>
+        <Col span={hasTokenResult ? 8 : 12}>
           <Space size={20}>
             <Button
               disabled={disabled}
@@ -53,8 +62,8 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
             </Button>
           </Space>
         </Col>
-        <Col span={8}>{feedback}</Col>
-        <Col span={8} style={{ textAlign: 'right' }}>
+        <Col span={hasTokenResult ? 8 : 0}>{feedback}</Col>
+        <Col span={hasTokenResult ? 8 : 12} style={{ textAlign: 'right' }}>
           <Space size={20}>
             <Button
               icon={<CodeOutlined></CodeOutlined>}

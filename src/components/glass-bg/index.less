@@ -1,0 +1,39 @@
+.g-polygon {
+  position: absolute;
+  opacity: 0.5;
+}
+
+.g-polygon-1 {
+  // 定位代码，容器高宽随意
+  background: #fe5;
+  clip-path: polygon(0 10%, 30% 0, 100% 40%, 70% 100%, 20% 90%);
+  width: 50%;
+  height: 50%;
+}
+
+.g-polygon-2 {
+  // 定位代码，容器高宽随意
+  background: #e950d1;
+  clip-path: polygon(10% 0, 100% 70%, 100% 100%, 20% 90%);
+  width: 50%;
+  height: 50%;
+}
+
+.g-polygon-3 {
+  // 定位代码，容器高宽随意
+  background: rgba(87, 80, 233);
+  clip-path: polygon(80% 0, 100% 70%, 100% 100%, 20% 90%);
+  width: 50%;
+  height: 50%;
+}
+
+.g-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  backdrop-filter: blur(150px);
+  z-index: 1;
+}

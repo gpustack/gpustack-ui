@@ -1,7 +1,8 @@
-import ContentWrapper from '@/components/content-wrapper';
 import { Card, Col, Row, Space } from 'antd';
-import React from 'react';
+import _ from 'lodash';
+import React, { useContext } from 'react';
 import { overviewConfigs } from '../config';
+import { DashboardContext } from '../config/dashboard-context';
 import '../styles/index.less';
 import styles from './over-view.less';
 
@@ -24,23 +25,8 @@ const renderCardItem = (data: {
     </Card>
   );
 };
-const Overview: React.FC = (props) => {
-  // const { data = {} } = props;
-  const data = {
-    workers: 8,
-    models: {
-      healthy: 10,
-      warning: 2,
-      error: 1
-    },
-    gpus: 30,
-    allocatedGpus: 12,
-    instances: {
-      healthy: 32,
-      warning: 3,
-      error: 2
-    }
-  };
+const Overview: React.FC = () => {
+  const data = useContext(DashboardContext).resource_counts || {};
 
   const renderValue = (
     value:
@@ -63,19 +49,26 @@ const Overview: React.FC = (props) => {
     );
   };
   return (
-    <ContentWrapper contentStyle={{ paddingBlockStart: '32px' }} title={false}>
+    <div>
       <Row gutter={[24, 20]} className={styles.row}>
         {overviewConfigs.map((config, index) => (
-          <Col span={5} key={config.key}>
+          <Col
+            xs={{ flex: '100%' }}
+            sm={{ flex: '50%' }}
+            md={{ flex: '30%' }}
+            lg={{ flex: '20%' }}
+            xl={{ flex: '20%' }}
+            key={config.key}
+          >
             {renderCardItem({
               label: config.label,
-              value: renderValue(data[config.key] || 0),
+              value: renderValue(_.get(data, config.key, 0)),
               bgColor: config.backgroundColor
             })}
           </Col>
         ))}
       </Row>
-    </ContentWrapper>
+    </div>
   );
 };
 

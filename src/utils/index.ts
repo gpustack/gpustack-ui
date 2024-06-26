@@ -1,3 +1,4 @@
+import _ from 'lodash';
 export const isNotEmptyValue = (value: any) => {
   if (Array.isArray(value)) {
     return value.length > 0;

@@ -27,24 +27,26 @@ const Playground: React.FC = () => {
   };
 
   return (
-    <CardWrapper>
-      <div className="play-ground">
-        <div className="chat">
-          <GroundLeft parameters={params}></GroundLeft>
-        </div>
-        <div className="divider-line">
-          <Divider type="vertical" />
-        </div>
+    <div style={{ padding: '32px 40px' }}>
+      <CardWrapper>
+        <div className="play-ground">
+          <div className="chat">
+            <GroundLeft parameters={params}></GroundLeft>
+          </div>
+          <div className="divider-line">
+            <Divider type="vertical" />
+          </div>
 
-        <div className="params">
-          <ParamsSettings
-            onClose={handleClosePopover}
-            setParams={setParams}
-            selectedModel={selectModel}
-          />
+          <div className="params">
+            <ParamsSettings
+              onClose={handleClosePopover}
+              setParams={setParams}
+              selectedModel={selectModel}
+            />
+          </div>
         </div>
-      </div>
-    </CardWrapper>
+      </CardWrapper>
+    </div>
   );
 };
 

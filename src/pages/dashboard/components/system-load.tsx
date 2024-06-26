@@ -1,18 +1,20 @@
 import CardWrapper from '@/components/card-wrapper';
-import GaugeChart from '@/components/charts/gauge';
+import LiquidChart from '@/components/charts/liquid';
 import PageTools from '@/components/page-tools';
 import { Col, DatePicker, Row } from 'antd';
 import ResourceUtilization from './resource-utilization';
 
 const SystemLoad = () => {
   const colors = [
-    'rgba(84, 204, 152,.8)',
-    'rgba(255, 214, 102,.8)',
-    'rgba(255, 120, 117,.8)'
+    'linear-gradient(90deg, rgba(84, 204, 152,.8) 0%, rgba(84, 204, 152,0.5) 50%,  rgba(84, 204, 152,.8) 100%)',
+    'linear-gradient(90deg, rgba(255, 214, 102,.8) 0%, rgba(255, 214, 102,0.5) 50%,  rgba(255, 214, 102,.8) 100%)',
+    'linear-gradient(90deg, rgba(255, 120, 117,.8) 0%, rgba(255, 120, 117,0.5) 50%,  rgba(255, 120, 117,.8) 100%)'
   ];
-  const handleSelectDate = (date: string) => {
-    console.log('dateString============', date);
-  };
+
+  const thresholds = [0.5, 0.7, 1];
+  const height = 400;
+
+  const handleSelectDate = (date: string) => {};
 
   return (
     <div>
@@ -28,56 +30,48 @@ const SystemLoad = () => {
             <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
           }
         />
-        <CardWrapper>
-          <ResourceUtilization />
-        </CardWrapper>
-        <Row style={{ width: '100%', marginTop: '40px' }} gutter={[20, 20]}>
-          <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-            <CardWrapper>
-              <GaugeChart
-                title="GPU Compute Utilization"
-                total={100}
-                target={20}
-                // height={320}
-                thresholds={[50, 70, 100]}
-                rangColor={colors}
-              ></GaugeChart>
+        <Row style={{ width: '100%' }} gutter={[0, 20]}>
+          <Col span={16} style={{ paddingRight: '20px' }}>
+            <CardWrapper style={{ height: height }}>
+              <ResourceUtilization />
             </CardWrapper>
           </Col>
-          <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-            <CardWrapper>
-              <GaugeChart
-                title="GPU Memory Utilization"
-                total={100}
-                target={30}
-                // height={320}
-                thresholds={[50, 70, 100]}
-                rangColor={colors}
-              ></GaugeChart>
-            </CardWrapper>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-            <CardWrapper>
-              <GaugeChart
-                title="CPU Compute Utilization"
-                total={100}
-                target={40}
-                // height={320}
-                thresholds={[50, 70, 100]}
-                rangColor={colors}
-              ></GaugeChart>
-            </CardWrapper>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-            <CardWrapper>
-              <GaugeChart
-                title="CPU Memory Utilization"
-                total={100}
-                target={70}
-                // height={320}
-                thresholds={[50, 70, 100]}
-                rangColor={colors}
-              ></GaugeChart>
+          <Col span={8}>
+            <CardWrapper style={{ height: '400px' }}>
+              <Row style={{ height: height }}>
+                <Col span={12} style={{ height: height / 2 - 10 }}>
+                  <LiquidChart
+                    title="GPU Compute Utilization"
+                    percent={0.2}
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+                <Col span={12} style={{ height: height / 2 - 10 }}>
+                  <LiquidChart
+                    title="GPU Memory Utilization"
+                    percent={0.3}
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+                <Col span={12} style={{ height: height / 2 - 10 }}>
+                  <LiquidChart
+                    title="CPU Compute Utilization"
+                    percent={0.8}
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+                <Col span={12} style={{ height: height / 2 - 10 }}>
+                  <LiquidChart
+                    title="CPU Memory Utilization"
+                    percent={0.7}
+                    thresholds={thresholds}
+                    rangColor={colors}
+                  ></LiquidChart>
+                </Col>
+              </Row>
             </CardWrapper>
           </Col>
         </Row>

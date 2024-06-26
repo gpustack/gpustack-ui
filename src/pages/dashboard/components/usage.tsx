@@ -4,7 +4,7 @@ import HBar from '@/components/charts/h-bar';
 import PageTools from '@/components/page-tools';
 import { generateRandomArray } from '@/utils';
 import { Col, DatePicker, Row } from 'antd';
-
+const { RangePicker } = DatePicker;
 const times = [
   'june 1',
   'june 2',
@@ -97,11 +97,11 @@ const Usage = () => {
         style={{ margin: '32px 8px' }}
         left={<span style={{ fontSize: 'var(--font-size-large)' }}>Usage</span>}
         right={
-          <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
+          <RangePicker onChange={handleSelectDate} style={{ width: 300 }} />
         }
       />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
-        <Col span={14} style={{ paddingRight: '20px' }}>
+        <Col span={16} style={{ paddingRight: '20px' }}>
           <CardWrapper>
             <Row>
               <Col span={12}>
@@ -125,44 +125,18 @@ const Usage = () => {
             </Row>
           </CardWrapper>
         </Col>
-        <Col span={10}>
+        <Col span={8}>
           <CardWrapper>
-            <Row>
-              <Col span={12}>
-                <HBar
-                  title="Top Users"
-                  data={userDataList}
-                  xField="time"
-                  yField="value"
-                  height={360}
-                ></HBar>
-              </Col>
-              <Col span={12}>
-                <HBar
-                  title="Top Projects"
-                  data={projectDataList}
-                  xField="time"
-                  yField="value"
-                  height={360}
-                ></HBar>
-              </Col>
-            </Row>
+            <HBar
+              title="Top Users"
+              data={userDataList}
+              xField="time"
+              yField="value"
+              height={360}
+            ></HBar>
           </CardWrapper>
         </Col>
       </Row>
-      {/* <Row style={{ width: '100%', marginTop: '20px' }} gutter={[0, 20]}>
-        <Col span={12} style={{ paddingRight: '20px' }}>
-          <CardWrapper></CardWrapper>
-        </Col>
-        <Col span={12}>
-          <CardWrapper
-            style={{
-              background: bgColor,
-              borderRadius: 'var(--border-radius-base)'
-            }}
-          ></CardWrapper>
-        </Col>
-      </Row> */}
     </>
   );
 };

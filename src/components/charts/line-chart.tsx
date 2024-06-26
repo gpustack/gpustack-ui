@@ -16,7 +16,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     height,
     xField: xField || 'time',
     yField: yField || 'value',
-    color: color || ['red', 'blue', 'green', 'yellow'],
+    // color: color || ['red', 'blue', 'green', 'yellow'],
     colorField: 'type',
     autoFit: true,
     slider,
@@ -36,7 +36,8 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     //   sizeField: 2
     // },
     style: {
-      lineWidth: 1.5
+      lineWidth: 1.5,
+      opacity: 0.8
     },
     legend: {
       color: {

@@ -132,7 +132,7 @@ const projectData = [
 const ActiveTable = () => {
   return (
     <Row gutter={[20, 0]}>
-      <Col xs={24} sm={24} md={24} lg={12} xl={12}>
+      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
         <PageTools
           style={{ margin: '32px 8px' }}
           left={
@@ -148,27 +148,6 @@ const ActiveTable = () => {
           <Table
             columns={modelColumns}
             dataSource={modelData}
-            pagination={false}
-            rowKey="id"
-          />
-        </div>
-      </Col>
-      <Col xs={24} sm={24} md={24} lg={12} xl={12}>
-        <PageTools
-          style={{ margin: '32px 8px' }}
-          left={
-            <span
-              style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}
-            >
-              Active Projects
-            </span>
-          }
-          right={false}
-        />
-        <div>
-          <Table
-            columns={projectColumns}
-            dataSource={projectData}
             pagination={false}
             rowKey="id"
           />

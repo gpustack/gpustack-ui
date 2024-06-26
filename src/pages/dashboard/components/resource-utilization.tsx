@@ -52,7 +52,6 @@ const UtilizationOvertime: React.FC = () => {
         data.push({
           time: timeList[i],
           type: typeList[j],
-          color: 'red',
           value: _.get(mockData, typeList[j])[i]
         });
       }
@@ -63,7 +62,7 @@ const UtilizationOvertime: React.FC = () => {
 
   return (
     <>
-      <LineChart height={400} data={data} />
+      <LineChart data={data} />
     </>
   );
 };

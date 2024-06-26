@@ -1,7 +1,10 @@
 import CardWrapper from '@/components/card-wrapper';
 import LiquidChart from '@/components/charts/liquid';
 import PageTools from '@/components/page-tools';
+import breakpoints from '@/config/breakpoints';
+import useWindowResize from '@/hooks/use-window-resize';
 import { Col, DatePicker, Row } from 'antd';
+import { useEffect, useState } from 'react';
 import ResourceUtilization from './resource-utilization';
 
 const SystemLoad = () => {
@@ -11,10 +14,22 @@ const SystemLoad = () => {
     'linear-gradient(90deg, rgba(255, 120, 117,.8) 0%, rgba(255, 120, 117,0.5) 50%,  rgba(255, 120, 117,.8) 100%)'
   ];
 
+  const { size } = useWindowResize();
+  const [paddingRight, setPaddingRight] = useState<string>('20px');
+  const [smallChartHeight, setSmallChartHeight] = useState<number>(190);
+  const [largeChartHeight, setLargeChartHeight] = useState<number>(400);
   const thresholds = [0.5, 0.7, 1];
   const height = 400;
 
   const handleSelectDate = (date: string) => {};
+
+  useEffect(() => {
+    if (size.width < breakpoints.xl) {
+      setPaddingRight('0');
+    } else {
+      setPaddingRight('20px');
+    }
+  }, [size.width]);
 
   return (
     <div>
@@ -31,15 +46,22 @@ const SystemLoad = () => {
           }
         />
         <Row style={{ width: '100%' }} gutter={[0, 20]}>
-          <Col span={16} style={{ paddingRight: '20px' }}>
-            <CardWrapper style={{ height: height }}>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={24}
+            xl={16}
+            style={{ paddingRight: paddingRight }}
+          >
+            <CardWrapper style={{ height: height, width: '100%' }}>
               <ResourceUtilization />
             </CardWrapper>
           </Col>
-          <Col span={8}>
-            <CardWrapper style={{ height: '400px' }}>
-              <Row style={{ height: height }}>
-                <Col span={12} style={{ height: height / 2 - 10 }}>
+          <Col xs={24} sm={24} md={24} lg={24} xl={8}>
+            <CardWrapper style={{ height: largeChartHeight, width: '100%' }}>
+              <Row style={{ height: largeChartHeight, width: '100%' }}>
+                <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="GPU Compute Utilization"
                     percent={0.2}
@@ -47,7 +69,7 @@ const SystemLoad = () => {
                     rangColor={colors}
                   ></LiquidChart>
                 </Col>
-                <Col span={12} style={{ height: height / 2 - 10 }}>
+                <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="GPU Memory Utilization"
                     percent={0.3}
@@ -55,7 +77,7 @@ const SystemLoad = () => {
                     rangColor={colors}
                   ></LiquidChart>
                 </Col>
-                <Col span={12} style={{ height: height / 2 - 10 }}>
+                <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="CPU Compute Utilization"
                     percent={0.8}
@@ -63,7 +85,7 @@ const SystemLoad = () => {
                     rangColor={colors}
                   ></LiquidChart>
                 </Col>
-                <Col span={12} style={{ height: height / 2 - 10 }}>
+                <Col span={12} style={{ height: smallChartHeight }}>
                   <LiquidChart
                     title="CPU Memory Utilization"
                     percent={0.7}

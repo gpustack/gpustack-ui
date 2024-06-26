@@ -2,8 +2,12 @@ import CardWrapper from '@/components/card-wrapper';
 import ColumnBar from '@/components/charts/column-bar';
 import HBar from '@/components/charts/h-bar';
 import PageTools from '@/components/page-tools';
+import breakpoints from '@/config/breakpoints';
+import useWindowResize from '@/hooks/use-window-resize';
 import { generateRandomArray } from '@/utils';
 import { Col, DatePicker, Row } from 'antd';
+import { useEffect, useState } from 'react';
+
 const { RangePicker } = DatePicker;
 const times = [
   'june 1',
@@ -86,10 +90,18 @@ const tokenUsage = TokensData.map((val, i) => {
 });
 
 const Usage = () => {
-  const bgColor = '#fff';
-  const handleSelectDate = (dateString: string) => {
-    console.log('dateString============', dateString);
-  };
+  const { size } = useWindowResize();
+  const [paddingRight, setPaddingRight] = useState<string>('20px');
+
+  const handleSelectDate = (dateString: string) => {};
+
+  useEffect(() => {
+    if (size.width < breakpoints.xl) {
+      setPaddingRight('0');
+    } else {
+      setPaddingRight('20px');
+    }
+  }, [size.width]);
 
   return (
     <>
@@ -101,9 +113,16 @@ const Usage = () => {
         }
       />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
-        <Col span={16} style={{ paddingRight: '20px' }}>
-          <CardWrapper>
-            <Row>
+        <Col
+          xs={24}
+          sm={24}
+          md={24}
+          lg={24}
+          xl={16}
+          style={{ paddingRight: paddingRight }}
+        >
+          <CardWrapper style={{ width: '100%' }}>
+            <Row style={{ width: '100%' }}>
               <Col span={12}>
                 <ColumnBar
                   title="API Request"
@@ -125,7 +144,7 @@ const Usage = () => {
             </Row>
           </CardWrapper>
         </Col>
-        <Col span={8}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={8}>
           <CardWrapper>
             <HBar
               title="Top Users"

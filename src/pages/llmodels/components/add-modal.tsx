@@ -26,8 +26,7 @@ type AddModalProps = {
 
 const sourceOptions = [
   { label: 'Huggingface', value: 'huggingface', key: 'huggingface' },
-  { label: 'Ollama', value: 'ollama_library', key: 'ollama_library' },
-  { label: 'S3', value: 's3', key: 's3' }
+  { label: 'Ollama', value: 'ollama_library', key: 'ollama_library' }
 ];
 
 const AddModal: React.FC<AddModalProps> = (props) => {

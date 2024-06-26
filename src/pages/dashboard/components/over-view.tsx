@@ -65,7 +65,14 @@ const Overview: React.FC = (props) => {
     <div>
       <Row gutter={[24, 20]} className={styles.row}>
         {overviewConfigs.map((config, index) => (
-          <Col span={5} key={config.key}>
+          <Col
+            xs={{ flex: '100%' }}
+            sm={{ flex: '50%' }}
+            md={{ flex: '30%' }}
+            lg={{ flex: '20%' }}
+            xl={{ flex: '20%' }}
+            key={config.key}
+          >
             {renderCardItem({
               label: config.label,
               value: renderValue(data[config.key] || 0),

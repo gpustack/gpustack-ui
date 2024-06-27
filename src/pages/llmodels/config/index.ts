@@ -1,35 +1,14 @@
 import { StatusMaps } from '@/config';
 
-export const modelInstanceCols = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name'
-  },
-  {
-    title: 'Create Time',
-    dataIndex: 'createTime',
-    key: 'createTime'
-  },
-  {
-    title: 'Status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'Utilization',
-    dataIndex: 'utilization',
-    key: 'utilization'
-  },
-  {
-    title: 'Host Name',
-    dataIndex: 'hostName',
-    key: 'hostName'
-  },
-  {
-    title: 'Operation',
-    key: 'Operation'
-  }
+export const ollamaModelOptions = [
+  { label: 'llama3', value: 'llama3' },
+  { label: 'gemma', value: 'gemma' },
+  { label: 'mistral', value: 'mistral' },
+  { label: 'qwen', value: 'qwen' },
+  { label: 'llama2', value: 'llama2' },
+  { label: 'phi3', value: 'phi3' },
+  { label: 'codellama', value: 'codellama' },
+  { label: 'deepseek-coder', value: 'deepseek-coder' }
 ];
 
 export const status: any = {

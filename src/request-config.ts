@@ -1,4 +1,4 @@
-import { RequestConfig } from '@umijs/max';
+import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 
 const NoBaseURLAPIs = ['/auth', '/v1-openai'];
@@ -6,13 +6,16 @@ const NoBaseURLAPIs = ['/auth', '/v1-openai'];
 export const requestConfig: RequestConfig = {
   errorConfig: {
     errorThrower: (res: any) => {
-      console.log('errorThrower+++++++++++++++', res);
+      // to do something
     },
     errorHandler: (error: any, opts: any) => {
       if (opts?.skipErrorHandler) throw error;
       const { message: errorMessage, response } = error;
       const errMsg = response?.data?.message || errorMessage;
       message.error(errMsg);
+      if (response.status === 401) {
+        history.push('/login', { replace: true });
+      }
       console.log('errorHandler+++++++++++++++', error, opts);
     }
   },
@@ -28,6 +31,7 @@ export const requestConfig: RequestConfig = {
   ],
   responseInterceptors: [
     (response) => {
+      // to do something
       return response;
     }
   ]

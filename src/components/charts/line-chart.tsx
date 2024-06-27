@@ -45,6 +45,12 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     style: {
       lineWidth: 1.5,
       opacity: 0.8
+      // stroke: (params: any) => {
+      //   return (
+      //     params.color ||
+      //     'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgba(0, 168, 143,.7) 100%)'
+      //   );
+      // }
     },
     legend: {
       color: {

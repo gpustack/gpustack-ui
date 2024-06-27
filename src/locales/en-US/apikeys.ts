@@ -5,5 +5,9 @@ export default {
   'apikeys.form.expiretime': 'Expiration',
   'apikeys.table.name': 'Key Name',
   'apikeys.table.save.tips':
-    'Make sure to copy your key immediately. You will not be able to see it again.'
+    'Make sure to copy your key immediately. You will not be able to see it again.',
+  'apikeys.form.expiration.7days': '7 days',
+  'apikeys.form.expiration.1month': '1 month',
+  'apikeys.form.expiration.6months': '6 months',
+  'apikeys.form.expiration.never': 'never'
 };

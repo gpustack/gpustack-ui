@@ -5,10 +5,25 @@ import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
 const TypeKeyMap = {
-  cpu: 'CPU',
-  memory: 'Memory',
-  gpu: 'GPU',
-  gpu_memory: 'VRAM'
+  cpu: {
+    label: 'CPU',
+    color:
+      'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgba(0, 168, 143,.7) 100%)'
+  },
+  memory: {
+    label: 'Memory',
+    color:
+      'linear-gradient(90deg,rgba(249, 248, 113,.8) 0%,rgba(255, 199, 92,0.7) 100%)'
+  },
+  gpu: {
+    label: 'GPU',
+    color: 'rgba(84, 204, 152,0.8)'
+  },
+  gpu_memory: {
+    label: 'VRAM',
+    color:
+      'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgba(0, 168, 143,.7) 100%)'
+  }
 };
 
 const UtilizationOvertime: React.FC = () => {
@@ -44,7 +59,8 @@ const UtilizationOvertime: React.FC = () => {
         return {
           value: _.round(item.value, 2) || 0,
           time: dayjs(item.timestamp * 1000).format('HH:mm:ss'),
-          type: _.get(TypeKeyMap, type, '')
+          type: _.get(TypeKeyMap, [type, 'label'], ''),
+          color: 'red'
         };
       });
       list.push(...dataList);

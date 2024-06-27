@@ -46,6 +46,10 @@ const AddModal: React.FC<AddModalProps> = ({
         ...data,
         is_admin: data?.is_admin ? UserRoles.ADMIN : UserRoles.USER
       });
+    } else if (action === PageAction.CREATE && open) {
+      form.setFieldsValue({
+        is_admin: UserRoles.USER
+      });
     }
   };
 

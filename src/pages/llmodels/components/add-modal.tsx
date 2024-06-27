@@ -13,6 +13,7 @@ import {
   callHuggingfaceQuickSearch,
   queryHuggingfaceModelFiles
 } from '../apis';
+import { ollamaModelOptions } from '../config';
 import { FormData, ListItem } from '../config/types';
 
 type AddModalProps = {
@@ -99,7 +100,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleOnSearchRepo = async (text: string) => {
     try {
       const params = {
-        q: text,
+        q: `${text} gguf`,
         type: 'model'
       };
       const res = await callHuggingfaceQuickSearch(params);
@@ -164,7 +165,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           ]}
         >
           <SealAutoComplete
-            showSearch
+            filterOption
             label={intl.formatMessage({ id: 'models.form.filename' })}
             required
             options={fileOptions}
@@ -220,10 +221,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             }
           ]}
         >
-          <SealInput.Input
-            label={intl.formatMessage({ id: 'models.table.name' })}
+          <SealAutoComplete
+            filterOption
+            label="Ollama Model"
             required
-          ></SealInput.Input>
+            options={ollamaModelOptions}
+          ></SealAutoComplete>
         </Form.Item>
       </>
     );

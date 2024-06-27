@@ -1,10 +1,10 @@
 import ModalFooter from '@/components/modal-footer';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Select } from 'antd';
 import { expirationOptions } from '../config';
 import { FormData } from '../config/types';
 
@@ -25,14 +25,12 @@ const AddModal: React.FC<AddModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const intl = useIntl();
-  const Suffix = (
-    <SyncOutlined
-      style={{
-        fontSize: 16,
-        color: '#1677ff'
-      }}
-    />
-  );
+
+  if (action === PageAction.CREATE && open) {
+    form.setFieldsValue({
+      expires_in: 1
+    });
+  }
 
   const handleSumit = () => {
     form.submit();
@@ -91,8 +89,15 @@ const AddModal: React.FC<AddModalProps> = ({
           <SealSelect
             label={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
             required
-            options={expirationOptions}
-          ></SealSelect>
+          >
+            {expirationOptions.map((option) => {
+              return (
+                <Select.Option key={option.value} value={option.value}>
+                  {intl.formatMessage({ id: option.label })}
+                </Select.Option>
+              );
+            })}
+          </SealSelect>
         </Form.Item>
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <SealInput.TextArea

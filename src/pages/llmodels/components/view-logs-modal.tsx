@@ -1,15 +1,17 @@
+import LogsViewer from '@/components/logs-viewer';
 import { Modal } from 'antd';
 import React from 'react';
 
 type ViewModalProps = {
-  content?: string;
+  content: string;
   title: string;
   open: boolean;
+  url: string;
   onCancel: () => void;
 };
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const { title, open, onCancel, content } = props || {};
+  const { title, open, url, onCancel, content = '' } = props || {};
   if (!open) {
     return null;
   }
@@ -27,7 +29,14 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       style={{ top: '80px' }}
       footer={null}
     >
-      <div>{content}</div>
+      <LogsViewer
+        content={content}
+        height={400}
+        url={url}
+        params={{
+          follow: false
+        }}
+      ></LogsViewer>
     </Modal>
   );
 };

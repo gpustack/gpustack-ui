@@ -1,9 +1,14 @@
-import { Progress } from 'antd';
+import { Progress, Tooltip } from 'antd';
 import { memo, useMemo } from 'react';
 
 const RenderProgress = memo(
-  (props: { percent: number; steps?: number; download?: boolean }) => {
-    const { percent, steps = 5, download } = props;
+  (props: {
+    percent: number;
+    steps?: number;
+    download?: boolean;
+    label?: React.ReactNode;
+  }) => {
+    const { percent, steps = 5, download, label } = props;
 
     const strokeColor = useMemo(() => {
       if (download) {
@@ -19,16 +24,48 @@ const RenderProgress = memo(
     }, [percent]);
 
     return (
-      <Progress
-        steps={steps}
-        format={() => {
-          return (
-            <span style={{ color: 'var(--ant-color-text)' }}>{percent}%</span>
-          );
-        }}
-        percent={percent}
-        strokeColor={strokeColor}
-      />
+      <>
+        {label ? (
+          <Tooltip title={label}>
+            <Progress
+              percentPosition={{ align: 'center', type: 'inner' }}
+              size={[undefined, 12]}
+              format={() => {
+                return (
+                  <span
+                    style={{
+                      color: 'var(--ant-color-text)'
+                    }}
+                  >
+                    {percent}%
+                  </span>
+                );
+              }}
+              percent={percent}
+              strokeColor={strokeColor}
+            ></Progress>
+          </Tooltip>
+        ) : (
+          <Progress
+            type="line"
+            percentPosition={{ align: 'center', type: 'inner' }}
+            size={[undefined, 12]}
+            format={() => {
+              return (
+                <span
+                  style={{
+                    color: 'var(--ant-color-text)'
+                  }}
+                >
+                  {percent}%
+                </span>
+              );
+            }}
+            percent={percent}
+            strokeColor={strokeColor}
+          ></Progress>
+        )}
+      </>
     );
   }
 );

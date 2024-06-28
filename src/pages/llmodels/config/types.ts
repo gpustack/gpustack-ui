@@ -28,6 +28,7 @@ export interface ModelInstanceListItem {
   s3_address: string;
   worker_id: number;
   worker_ip: string;
+  gpu_index: number;
   pid: number;
   port: number;
   state: string;

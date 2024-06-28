@@ -16,7 +16,7 @@ const modelColumns = [
     dataIndex: 'gpu_utilization',
     key: 'gpu_utilization',
     render: (text: any, record: any) => (
-      <ProgressBar percent={_.round(text, 2)}></ProgressBar>
+      <ProgressBar percent={_.round(text, 0)}></ProgressBar>
     )
   },
   {
@@ -24,7 +24,7 @@ const modelColumns = [
     dataIndex: 'gpu_memory_utilization',
     key: 'gpu_memory_utilization',
     render: (text: any, record: any) => (
-      <ProgressBar percent={_.round(text, 2)}></ProgressBar>
+      <ProgressBar percent={_.round(text, 0)}></ProgressBar>
     )
   },
   {

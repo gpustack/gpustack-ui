@@ -3,13 +3,14 @@ import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { queryWorkersList } from '../apis';
-import { ListItem } from '../config/types';
+import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 const { Column } = Table;
 
 const Models: React.FC = () => {
@@ -44,7 +45,10 @@ const Models: React.FC = () => {
     }
   };
   const handleShowSizeChange = (current: number, size: number) => {
-    console.log(current, size);
+    setQueryParams({
+      ...queryParams,
+      perPage: size
+    });
   };
 
   const handlePageChange = (page: number, perPage: number | undefined) => {
@@ -74,7 +78,30 @@ const Models: React.FC = () => {
     if (!val2 || !val1) {
       return 0;
     }
-    return _.round((val1 / val2) * 100, 2);
+    return _.round((val1 / val2) * 100, 0);
+  };
+
+  const calcStorage = (files: Filesystem[]) => {
+    const mountRoot = _.find(
+      files,
+      (item: Filesystem) => item.mount_point === '/'
+    );
+    return mountRoot ? formateUtilazation(mountRoot.used, mountRoot.total) : 0;
+  };
+
+  const renderStorageTooltip = (files: Filesystem[]) => {
+    const mountRoot = _.find(
+      files,
+      (item: Filesystem) => item.mount_point === '/'
+    );
+    return mountRoot ? (
+      <span className="flex-column">
+        <span>Total: {convertFileSize(mountRoot?.total, 0)}</span>
+        <span>Used: {convertFileSize(mountRoot?.used, 0)}</span>
+      </span>
+    ) : (
+      0
+    );
   };
   useEffect(() => {
     fetchData();
@@ -148,7 +175,7 @@ const Models: React.FC = () => {
           render={(text, record: ListItem) => {
             return (
               <ProgressBar
-                percent={_.round(record?.status?.cpu.utilization_rate, 2)}
+                percent={_.round(record?.status?.cpu.utilization_rate, 0)}
               ></ProgressBar>
             );
           }}
@@ -164,6 +191,16 @@ const Models: React.FC = () => {
                   record?.status?.memory.used,
                   record?.status?.memory.total
                 )}
+                label={
+                  <span className="flex-column">
+                    <span>
+                      Total: {convertFileSize(record?.status?.memory.total, 0)}
+                    </span>
+                    <span>
+                      Used: {convertFileSize(record?.status?.memory.used, 0)}
+                    </span>
+                  </span>
+                }
               ></ProgressBar>
             );
           }}
@@ -174,30 +211,19 @@ const Models: React.FC = () => {
           key="GPU"
           render={(text, record: ListItem) => {
             return (
-              <Space>
-                {record?.status?.gpu.map((item) => {
+              <span className="flex-column">
+                {record?.status?.gpu_devices.map((item, index) => {
                   return (
-                    <span key={item.index} className="flex-center">
-                      <span
-                        style={{
-                          display: 'flex',
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--ant-color-primary)'
-                        }}
-                      ></span>
-                      <span className="m-l-5">
-                        {' '}
-                        {`${item.core.total}C`} /{' '}
-                        {item.core.utilization_rate
-                          ? `${item.core.utilization_rate}%`
-                          : 0}
-                      </span>
+                    <span className="flex-center" key={index}>
+                      <span className="m-r-5">[{index}]</span>
+                      <ProgressBar
+                        key={index}
+                        percent={_.round(item.core.utilization_rate, 0)}
+                      ></ProgressBar>
                     </span>
                   );
                 })}
-              </Space>
+              </span>
             );
           }}
         />
@@ -208,28 +234,39 @@ const Models: React.FC = () => {
           key="VRAM"
           render={(text, record: ListItem) => {
             return (
-              <Space>
-                {record?.status?.gpu.map((item) => {
-                  return (
-                    <span key={item.index} className="flex-center">
-                      <span
-                        style={{
-                          display: 'flex',
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--ant-color-primary)'
-                        }}
-                      ></span>
-                      <span className="m-l-5">
-                        {item.memory.allocated
-                          ? `${formateUtilazation(item.memory.allocated, item.memory.total)}%`
-                          : 0}
+              <span className="flex-column">
+                {record?.status?.gpu_devices.map(
+                  (item: GPUDeviceItem, index) => {
+                    return (
+                      <span key={index}>
+                        {item.memory.is_unified_memory ? (
+                          'Unified Memory'
+                        ) : (
+                          <span className="flex-center">
+                            <span className="m-r-5">[{index}]</span>
+                            <ProgressBar
+                              key={index}
+                              percent={_.round(item.memory.utilization_rate, 0)}
+                              label={
+                                <span className="flex-column">
+                                  <span>
+                                    Total:{' '}
+                                    {convertFileSize(item.memory?.total, 0)}
+                                  </span>
+                                  <span>
+                                    Used:{' '}
+                                    {convertFileSize(item.memory?.used, 0)}
+                                  </span>
+                                </span>
+                              }
+                            ></ProgressBar>
+                          </span>
+                        )}
                       </span>
-                    </span>
-                  );
-                })}
-              </Space>
+                    );
+                  }
+                )}
+              </span>
             );
           }}
         />
@@ -238,7 +275,12 @@ const Models: React.FC = () => {
           dataIndex="storage"
           key="storage"
           render={(text, record: ListItem) => {
-            return <ProgressBar percent={0}></ProgressBar>;
+            return (
+              <ProgressBar
+                percent={calcStorage(record.status?.filesystem)}
+                label={renderStorageTooltip(record.status.filesystem)}
+              ></ProgressBar>
+            );
           }}
         />
       </Table>

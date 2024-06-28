@@ -11,5 +11,6 @@ export default {
   'models.form.replicas': 'Replicas',
   'models.form.s3address': 'S3 Address',
   'models.openinplayground': 'Open in Playground',
-  'models.instances': 'instances'
+  'models.instances': 'instances',
+  'model.form.ollama.model': 'Ollama Model'
 };

@@ -98,6 +98,7 @@ export default defineConfig({
   hash: true,
   access: {},
   model: {},
+  valtio: {},
   initialState: {},
   request: {},
   locale: {

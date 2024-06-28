@@ -199,7 +199,7 @@ const useSetChunkRequest = () => {
     retryCount.current = totalCount;
     clearTimeout(timer.current);
     axiosChunkRequest(requestConfig.current);
-    return axiosToken.current;
+    return axiosToken;
   };
 
   useEffect(() => {

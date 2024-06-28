@@ -18,6 +18,7 @@ declare namespace Global {
     username: string;
     is_admin: boolean;
     full_name: string;
+    require_password_change: boolean;
     id: number;
   }
 }

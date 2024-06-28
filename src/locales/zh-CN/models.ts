@@ -11,5 +11,6 @@ export default {
   'models.form.replicas': '副本数',
   'models.form.s3address': 'S3 地址',
   'models.openinplayground': '在 Playground 中打开',
-  'models.instances': '实例'
+  'models.instances': '实例',
+  'model.form.ollama.model': 'Ollama 模型'
 };

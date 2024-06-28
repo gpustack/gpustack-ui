@@ -1,15 +1,18 @@
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
-import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table } from 'antd';
-import { useState } from 'react';
-import { Gpu } from '../config/types';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { queryGpuDevicesList } from '../apis';
+import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
 
-const dataSource: Gpu[] = [
+const dataSource: GPUDeviceItem[] = [
   {
     id: 1,
     name: 'bj-web-service-1',
@@ -101,23 +104,32 @@ const dataSource: Gpu[] = [
 ];
 
 const Models: React.FC = () => {
+  const intl = useIntl();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const [dataSource, setDataSource] = useState<GPUDeviceItem[]>([]);
   const [total, setTotal] = useState(10);
   const [loading, setLoading] = useState(false);
   const [queryParams, setQueryParams] = useState({
-    current: 1,
-    pageSize: 10,
-    name: ''
+    page: 1,
+    perPage: 10,
+    query: ''
   });
   const handleShowSizeChange = (current: number, size: number) => {
-    console.log(current, size);
+    setQueryParams({
+      ...queryParams,
+      perPage: size
+    });
   };
 
-  const handlePageChange = (page: number, pageSize: number | undefined) => {
-    console.log(page, pageSize);
+  const handlePageChange = (page: number, perPage: number | undefined) => {
+    console.log(page, perPage);
+    setQueryParams({
+      ...queryParams,
+      page: page
+    });
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -125,7 +137,20 @@ const Models: React.FC = () => {
   };
 
   const fetchData = async () => {
-    console.log('fetchData');
+    setLoading(true);
+    try {
+      const params = {
+        ..._.pickBy(queryParams, (val: any) => !!val)
+      };
+      const res = await queryGpuDevicesList(params);
+
+      setDataSource(res.items);
+      setTotal(res.pagination.total);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLoading(false);
+    }
   };
   const handleSearch = (e: any) => {
     fetchData();
@@ -134,9 +159,13 @@ const Models: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      name: e.target.value
+      query: e.target.value
     });
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [queryParams]);
 
   return (
     <>
@@ -146,7 +175,9 @@ const Models: React.FC = () => {
         left={
           <Space>
             <Input
-              placeholder="名称查询"
+              placeholder={intl.formatMessage({
+                id: 'common.filter.name'
+              })}
               style={{ width: 300 }}
               onChange={handleNameChange}
             ></Input>
@@ -166,46 +197,73 @@ const Models: React.FC = () => {
         onChange={handleTableChange}
         pagination={{
           showSizeChanger: true,
-          pageSize: 10,
-          current: 2,
+          pageSize: queryParams.perPage,
+          current: queryParams.page,
           total: total,
           hideOnSinglePage: true,
           onShowSizeChange: handleShowSizeChange,
           onChange: handlePageChange
         }}
       >
-        <Column title="GPU Name" dataIndex="hostname" key="hostname" />
+        <Column title="Name" dataIndex="name" key="name" />
         <Column
-          title="State"
-          dataIndex="state"
-          key="state"
-          render={(text, record) => {
-            return (
-              <StatusTag
-                statusValue={{
-                  status: 'success',
-                  text: 'ALIVE'
-                }}
-              ></StatusTag>
-            );
+          title="Index"
+          dataIndex="index"
+          key="index"
+          render={(text, record: GPUDeviceItem) => {
+            return <span>{record.index}</span>;
           }}
         />
-        <Column title="IP" dataIndex="address" key="address" />
+        <Column title="Worker Name" dataIndex="worker_name" key="worker_name" />
+        <Column title="Vendor" dataIndex="vendor" key="vendor" />
 
         <Column
           title="Temperature(˚C)"
-          dataIndex="Temperature"
+          dataIndex="temperature"
           key="Temperature"
+          render={(text, record: GPUDeviceItem) => {
+            return <span>{_.round(text, 1)}</span>;
+          }}
         />
-        <Column title="Core" dataIndex="core" key="Core" />
-        <Column title="GPU-Util" dataIndex="gpuUtil" key="gpuUtil" />
+        <Column
+          title="Core"
+          dataIndex="core"
+          key="Core"
+          render={(text, record: GPUDeviceItem) => {
+            return <span>{record.core?.total}</span>;
+          }}
+        />
+        <Column
+          title="GPU Utilization"
+          dataIndex="gpuUtil"
+          key="gpuUtil"
+          render={(text, record: GPUDeviceItem) => {
+            return (
+              <ProgressBar
+                percent={_.round(record.core?.utilization_rate, 2)}
+              ></ProgressBar>
+            );
+          }}
+        />
 
         <Column
           title="VRAM"
           dataIndex="GRAM"
           key="VRAM"
-          render={(text, record: Gpu) => {
-            return <ProgressBar percent={0}></ProgressBar>;
+          render={(text, record: GPUDeviceItem) => {
+            return (
+              <ProgressBar
+                percent={_.round(record.memory.utilization_rate, 0)}
+                label={
+                  <span className="flex-column">
+                    <span>
+                      Total: {convertFileSize(record.memory?.total, 0)}
+                    </span>
+                    <span>Used: {convertFileSize(record.memory?.used, 0)}</span>
+                  </span>
+                }
+              ></ProgressBar>
+            );
           }}
         />
       </Table>

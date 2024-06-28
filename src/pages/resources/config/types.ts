@@ -17,6 +17,29 @@ export interface Gpu {
   temperature: number;
 }
 
+export interface GPUDeviceItem {
+  uuid: string;
+  name: string;
+  vendor: string;
+  index: number;
+  core: {
+    total: number;
+    utilization_rate: number;
+  };
+  memory: {
+    total: number;
+    utilization_rate: number;
+    is_unified_memory: boolean;
+    used: number;
+    allocated: number;
+  };
+  temperature: number;
+  id: string;
+  worker_id: number;
+  worker_name: string;
+  worker_ip: string;
+}
+
 export interface Filesystem {
   name: string;
   mount_point: string;
@@ -52,7 +75,7 @@ export interface ListItem {
       used: number;
       allocated: number;
     };
-    gpu: Gpu[];
+    gpu_devices: GPUDeviceItem[];
     swap: {
       total: number;
       used: number;

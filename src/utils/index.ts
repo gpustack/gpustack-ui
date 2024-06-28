@@ -19,20 +19,21 @@ export const handleBatchRequest = async (
   return Promise.all(list.map((item) => fn(item)));
 };
 
-export const convertFileSize = (sizeInBytes: number) => {
+export const convertFileSize = (sizeInBytes: number, prec?: number) => {
+  const precision = prec ?? 2;
   if (!sizeInBytes) {
     return '0 B';
   }
   if (sizeInBytes < 1024) {
-    return `${sizeInBytes.toFixed(2)} B`;
+    return `${sizeInBytes.toFixed(precision)} B`;
   } else if (sizeInBytes < 1024 * 1024) {
-    return `${(sizeInBytes / 1024).toFixed(2)} KB`;
+    return `${(sizeInBytes / 1024).toFixed(precision)} KiB`;
   } else if (sizeInBytes < 1024 * 1024 * 1024) {
-    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(precision)} MiB`;
   } else if (sizeInBytes < 1024 * 1024 * 1024 * 1024) {
-    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(precision)} GiB`;
   } else {
-    return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(2)} TB`;
+    return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(precision)} TiB`;
   }
 };
 

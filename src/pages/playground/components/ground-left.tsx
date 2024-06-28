@@ -1,5 +1,6 @@
 import TransitionWrapper from '@/components/transition';
 import HotKeys from '@/config/hotkeys';
+import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
@@ -7,7 +8,7 @@ import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
 import { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { fetchChatStream, receiveChatStream } from '../apis';
+import { CHAT_API } from '../apis';
 import { Roles } from '../config';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
@@ -65,7 +66,12 @@ const MessageList: React.FC<MessageProps> = (props) => {
     setActiveIndex(messageList.length - 1);
   };
 
-  const joinMessage = (chunk: any) => {
+  const joinMessage = (str: any) => {
+    let data = str;
+    if (data.startsWith('data:')) {
+      data = data.substring('data:'.length);
+    }
+    const chunk = JSON.parse(data?.trim());
     if (_.get(chunk, 'choices.0.finish_reason')) {
       setTokenResult({
         ...chunk?.usage
@@ -104,14 +110,17 @@ const MessageList: React.FC<MessageProps> = (props) => {
         ...parameters,
         stream: true
       };
-      const result = await fetchChatStream(chatParams);
+      const result = await fetchChunkedData({
+        data: chatParams,
+        url: CHAT_API
+      });
 
       if (!result) {
         return;
       }
       const { reader, decoder } = result;
 
-      await receiveChatStream(reader, decoder, (data: any) => {
+      await readStreamData(reader, decoder, (data: any) => {
         joinMessage(data);
       });
       setLoading(false);
@@ -218,12 +227,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
           })}
           {loading && (
             <Spin>
-              <MessageItem
-                message={{ role: Roles.Assistant, content: '' }}
-                isFocus={false}
-                onDelete={() => {}}
-                updateMessage={() => {}}
-              />
+              <div style={{ height: '46px' }}></div>
             </Spin>
           )}
         </div>

@@ -23,27 +23,26 @@ import {
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import {
-  App,
   Button,
   Col,
   Input,
   Modal,
-  Progress,
   Row,
   Space,
+  Tag,
   Tooltip,
   message
 } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
+  MODEL_INSTANCE_API,
   createModel,
   createModelInstance,
   deleteModel,
   deleteModelInstance,
-  queryModelInstanceLogs,
   queryModelInstancesList,
   queryModelsList,
   updateModel
@@ -54,7 +53,7 @@ import { status } from './config';
 import { FormData, ListItem, ModelInstanceListItem } from './config/types';
 
 const Models: React.FC = () => {
-  const { modal } = App.useApp();
+  // const { modal } = App.useApp();
   const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
@@ -75,6 +74,9 @@ const Models: React.FC = () => {
   const [currentData, setCurrentData] = useState<ListItem | undefined>(
     undefined
   );
+  const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
+
+  const chunkRequedtRef = useRef<any>();
   const timer = useRef<any>();
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
@@ -152,8 +154,9 @@ const Models: React.FC = () => {
   };
 
   const createModelsChunkRequest = () => {
+    chunkRequedtRef.current?.current?.cancel?.();
     try {
-      setChunkRequest({
+      chunkRequedtRef.current = setChunkRequest({
         url: MODELS_API,
         params: {
           ..._.pickBy(
@@ -242,7 +245,6 @@ const Models: React.FC = () => {
   };
 
   const handleOpenPlayGround = (row: any) => {
-    console.log('handleOpenPlayGround', row);
     navigate(`/playground?model=${row.name}`);
   };
 
@@ -260,12 +262,34 @@ const Models: React.FC = () => {
     } catch (error) {}
   };
 
+  const handleStreamData = (data: any) => {
+    setLogContent(data);
+  };
+
   const handleViewLogs = async (row: any) => {
     try {
-      const data = await queryModelInstanceLogs(row.id);
-      setLogContent(data);
+      // const result = await fetchChunkedData({
+      //   url: `/v1${MODEL_INSTANCE_API}/${row.id}/logs`,
+      //   params: {
+      //     follow: false
+      //   },
+      //   method: 'GET'
+      // });
+      // if (!result) {
+      //   setLogContent('');
+      // } else {
+      //   const { reader, decoder } = result;
+      //   await readStreamData(reader, decoder, (chunk: any) => {
+      //     handleStreamData(chunk);
+      //   });
+      // }
+
+      setCurrentInstanceUrl(`${MODEL_INSTANCE_API}/${row.id}/logs`);
+
       setOpenLogModal(true);
-    } catch (error) {}
+    } catch (error) {
+      console.log('error:', error);
+    }
   };
   const handleDeleteInstace = (row: any) => {
     Modal.confirm({
@@ -293,7 +317,7 @@ const Models: React.FC = () => {
     setHoverChildIndex(-1);
   };
 
-  const getModelInstances = async (row: any) => {
+  const getModelInstances = useCallback(async (row: any) => {
     const params = {
       id: row.id,
       page: 1,
@@ -301,7 +325,7 @@ const Models: React.FC = () => {
     };
     const data = await queryModelInstancesList(params);
     return data.items || [];
-  };
+  }, []);
 
   const handleEdit = (row: ListItem) => {
     setCurrentData(row);
@@ -315,11 +339,11 @@ const Models: React.FC = () => {
   }, [queryParams]);
 
   useEffect(() => {
-    fetchDataByPolling();
+    createModelsChunkRequest();
     return () => {
-      clearInterval(timer.current);
+      chunkRequedtRef.current?.current?.cancel?.();
     };
-  }, []);
+  }, [queryParams]);
 
   const renderChildren = (list: any) => {
     return (
@@ -337,20 +361,19 @@ const Models: React.FC = () => {
             >
               <RowChildren>
                 <Row style={{ width: '100%' }} align="middle">
-                  <Col span={4}>
+                  <Col span={6}>
+                    <Tag>{item.gpu_index}</Tag>
                     {item.worker_ip}:{item.port}
                   </Col>
-                  <Col span={5}>
+                  <Col span={4}>
                     <span>{item.huggingface_filename}</span>
                   </Col>
-                  <Col span={4}>
-                    {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
-                  </Col>
+
                   <Col span={4}>
                     {item.state && (
                       <StatusTag
                         download={
-                          item.download_progress !== 100
+                          item.state !== 'Running'
                             ? { percent: item.download_progress }
                             : undefined
                         }
@@ -361,7 +384,10 @@ const Models: React.FC = () => {
                       ></StatusTag>
                     )}
                   </Col>
-                  <Col span={7}>
+                  <Col span={5}>
+                    {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
+                  </Col>
+                  <Col span={5}>
                     {hoverChildIndex === `${item.id}-${index}` && (
                       <Space size={20}>
                         <Tooltip
@@ -415,6 +441,7 @@ const Models: React.FC = () => {
               <Input
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
+                size="large"
                 allowClear
                 onChange={handleNameChange}
               ></Input>
@@ -455,7 +482,7 @@ const Models: React.FC = () => {
           rowKey="id"
           expandable={true}
           onChange={handleTableChange}
-          pollingChildren={true}
+          pollingChildren={false}
           loadChildren={getModelInstances}
           renderChildren={renderChildren}
           pagination={{
@@ -470,26 +497,32 @@ const Models: React.FC = () => {
         >
           <SealColumn
             title={intl.formatMessage({ id: 'models.table.name' })}
-            dataIndex="name"
-            key="name"
+            dataIndex="huggingface_repo_id"
+            key="huggingface_repo_id"
             width={400}
-            span={8}
+            span={6}
             render={(text, record) => {
               return (
                 <>
                   <Tooltip>{text}</Tooltip>
-                  {record.progress && (
-                    <Progress
-                      percent={record.progress}
-                      strokeColor="var(--ant-color-primary)"
-                    />
-                  )}
                 </>
               );
             }}
           />
           <SealColumn
-            span={8}
+            title={intl.formatMessage({ id: 'models.form.source' })}
+            dataIndex="source"
+            key="source"
+            span={4}
+          />
+          <SealColumn
+            title={intl.formatMessage({ id: 'models.form.replicas' })}
+            dataIndex="replicas"
+            key="replicas"
+            span={4}
+          />
+          <SealColumn
+            span={5}
             title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"
@@ -502,7 +535,7 @@ const Models: React.FC = () => {
             }}
           />
           <SealColumn
-            span={8}
+            span={5}
             title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
             render={(text, record) => {
@@ -558,8 +591,10 @@ const Models: React.FC = () => {
         onOk={handleModalOk}
       ></AddModal>
       <ViewLogsModal
+        url={currentInstanceUrl}
         title={intl.formatMessage({ id: 'common.button.viewlog' })}
         open={openLogModal}
+        content={logContent}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
     </>

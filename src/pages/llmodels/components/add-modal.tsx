@@ -223,7 +223,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         >
           <SealAutoComplete
             filterOption
-            label="Ollama Model"
+            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             required
             options={ollamaModelOptions}
           ></SealAutoComplete>

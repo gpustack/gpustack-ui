@@ -87,7 +87,6 @@ export default (props: any) => {
     loading: false,
     setInitialState: null
   };
-  console.log('initialInfo==========', initialInfo);
   const { initialState, loading, setInitialState } = initialInfo;
 
   const userConfig = {
@@ -97,7 +96,6 @@ export default (props: any) => {
   };
 
   const formatMessage = (args) => {
-    console.log('formatMessage', args);
     return intl.formatMessage({ id: args.id });
   };
 

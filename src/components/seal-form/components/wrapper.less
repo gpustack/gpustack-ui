@@ -2,6 +2,7 @@
   @wrapheight: 54px;
   @inputheight: 32px;
   @borderRadius: 8px;
+  @input-inner-padding: 12px;
 
   position: relative;
   display: flex;
@@ -115,7 +116,7 @@
   :global(.ant-select-selector) {
     border: none !important;
     padding-block: 5px;
-    padding-inline: 12px;
+    padding-inline: @input-inner-padding !important;
     box-shadow: none !important;
   }
 
@@ -167,7 +168,7 @@
     border: none;
     box-shadow: none;
     padding-block: 5px;
-    padding-inline: 12px;
+    padding-inline: @input-inner-padding;
     height: @inputheight !important;
 
     &.seal-textarea {
@@ -182,7 +183,7 @@
   :global(input.ant-input-number-input) {
     height: @inputheight !important;
     padding-block: 5px;
-    padding-inline: 12px;
+    padding-inline: @input-inner-padding;
   }
 
   :global(.ant-input-group) {

@@ -1,11 +1,11 @@
 import CardWrapper from '@/components/card-wrapper';
-import LiquidChart from '@/components/charts/liquid';
 import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { Col, DatePicker, Row } from 'antd';
 import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
+import UitilBar from '../../../components/util-bar';
 import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
@@ -64,40 +64,28 @@ const SystemLoad = () => {
             <CardWrapper style={{ height: largeChartHeight, width: '100%' }}>
               <Row style={{ height: largeChartHeight, width: '100%' }}>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <LiquidChart
+                  <UitilBar
                     title="GPU Compute Utilization"
-                    percent={_.round(data.gpu?.utilization_rate || 0, 2) / 100}
-                    thresholds={thresholds}
-                    rangColor={colors}
-                  ></LiquidChart>
+                    percent={_.round(data.gpu?.utilization_rate || 0, 1)}
+                  ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <LiquidChart
+                  <UitilBar
                     title="GPU Memory Utilization"
-                    percent={
-                      _.round(data.gpu_memory?.utilization_rate || 0, 2) / 100
-                    }
-                    thresholds={thresholds}
-                    rangColor={colors}
-                  ></LiquidChart>
+                    percent={_.round(data.gpu_memory?.utilization_rate || 0, 1)}
+                  ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <LiquidChart
+                  <UitilBar
                     title="CPU Compute Utilization"
-                    percent={_.round(data.cpu?.utilization_rate || 0, 2) / 100}
-                    thresholds={thresholds}
-                    rangColor={colors}
-                  ></LiquidChart>
+                    percent={_.round(data.cpu?.utilization_rate || 0, 1)}
+                  ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <LiquidChart
+                  <UitilBar
                     title="CPU Memory Utilization"
-                    percent={
-                      _.round(data.memory?.utilization_rate || 0, 2) / 100
-                    }
-                    thresholds={thresholds}
-                    rangColor={colors}
-                  ></LiquidChart>
+                    percent={_.round(data.memory?.utilization_rate || 0, 1)}
+                  ></UitilBar>
                 </Col>
               </Row>
             </CardWrapper>

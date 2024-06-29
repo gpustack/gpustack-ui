@@ -8,10 +8,12 @@ import type { PageActionType } from '@/config/types';
 import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
+import useEventSource from '@/hooks/use-event-source';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { handleBatchRequest } from '@/utils';
+import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -62,6 +64,7 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const { createEventSourceConnection, eventSourceRef } = useEventSource();
   const [logContent, setLogContent] = useState('');
   const [openLogModal, setOpenLogModal] = useState(false);
   const [hoverChildIndex, setHoverChildIndex] = useState<string | number>(-1);
@@ -157,18 +160,47 @@ const Models: React.FC = () => {
     chunkRequedtRef.current?.current?.cancel?.();
     try {
       chunkRequedtRef.current = setChunkRequest({
-        url: MODELS_API,
+        url: `${MODELS_API}`,
         params: {
-          ..._.pickBy(
-            _.omit(queryParams, ['page', 'perPage']),
-            (val: any) => !!val
-          )
+          ..._.pickBy(queryParams, (val: any) => !!val)
         },
         handler: updateHandler
       });
     } catch (error) {
       // ignore
     }
+  };
+
+  const createModelsDataByFetch = async () => {
+    const result = await fetchChunkedData({
+      params: {
+        ..._.pickBy(queryParams, (val: any) => !!val),
+        watch: true
+      },
+      method: 'GET',
+      url: `/v1${MODELS_API}`
+    });
+    if (!result) {
+      return;
+    }
+    const { reader, decoder } = result;
+
+    await readStreamData(reader, decoder, (data: any) => {
+      console.log('streamData=========', data);
+    });
+  };
+
+  const createModelEvent = () => {
+    createEventSourceConnection({
+      url: `v1${MODELS_API}`,
+      params: {
+        ..._.pickBy(queryParams, (val: any) => !!val),
+        watch: true
+      },
+      onmessage: (data: any) => {
+        console.log('event source message: ', data);
+      }
+    });
   };
 
   const handleSearch = (e: any) => {
@@ -327,6 +359,10 @@ const Models: React.FC = () => {
     return data.items || [];
   }, []);
 
+  const generateChildrenRequestAPI = (params: any) => {
+    return `${MODELS_API}/${params.id}/instances`;
+  };
+
   const handleEdit = (row: ListItem) => {
     setCurrentData(row);
     setOpenAddModal(true);
@@ -336,9 +372,12 @@ const Models: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+    // createModelsDataByFetch();
+    createModelEvent();
   }, [queryParams]);
 
   useEffect(() => {
+    // watch models list
     createModelsChunkRequest();
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
@@ -359,7 +398,7 @@ const Models: React.FC = () => {
                 item.download_progress !== 100 ? 'skeleton-loading' : ''
               }
             >
-              <RowChildren>
+              <RowChildren key={`${item.id}_row`}>
                 <Row style={{ width: '100%' }} align="middle">
                   <Col span={6}>
                     <Tag>{item.gpu_index}</Tag>
@@ -385,7 +424,9 @@ const Models: React.FC = () => {
                     )}
                   </Col>
                   <Col span={5}>
-                    {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
+                    <span style={{ paddingLeft: 36 }}>
+                      {dayjs(item.updated_at).format('YYYY-MM-DD HH:mm:ss')}
+                    </span>
                   </Col>
                   <Col span={5}>
                     {hoverChildIndex === `${item.id}-${index}` && (
@@ -483,7 +524,9 @@ const Models: React.FC = () => {
           expandable={true}
           onChange={handleTableChange}
           pollingChildren={false}
+          watchChildren={true}
           loadChildren={getModelInstances}
+          loadChildrenAPI={generateChildrenRequestAPI}
           renderChildren={renderChildren}
           pagination={{
             showSizeChanger: true,
@@ -497,17 +540,10 @@ const Models: React.FC = () => {
         >
           <SealColumn
             title={intl.formatMessage({ id: 'models.table.name' })}
-            dataIndex="huggingface_repo_id"
-            key="huggingface_repo_id"
+            dataIndex="name"
+            key="name"
             width={400}
             span={6}
-            render={(text, record) => {
-              return (
-                <>
-                  <Tooltip>{text}</Tooltip>
-                </>
-              );
-            }}
           />
           <SealColumn
             title={intl.formatMessage({ id: 'models.form.source' })}

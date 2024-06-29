@@ -11,6 +11,12 @@ export const ollamaModelOptions = [
   { label: 'deepseek-coder', value: 'deepseek-coder' }
 ];
 
+export const modelSourceMap = {
+  huggingface: 'huggingface',
+  ollama_library: 'ollama_library',
+  s3: 's3'
+};
+
 export const status: any = {
   Running: StatusMaps.success
 };

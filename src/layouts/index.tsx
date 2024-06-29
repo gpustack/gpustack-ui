@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { userAtom } from '@/atoms/user';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
@@ -15,6 +16,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
+import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import Exception from './Exception';
 import './Layout.css';
@@ -77,6 +79,7 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 };
 
 export default (props: any) => {
+  const [userInfo] = useAtom(userAtom);
   const location = useLocation();
   const navigate = useNavigate();
   const intl = useIntl();
@@ -149,9 +152,21 @@ export default (props: any) => {
           navigate('/');
         }}
         onPageChange={(route) => {
-          console.log('onRouteChange', initialState, route);
           const { location } = history;
+
+          // 如果没有修改密码，重定向到修改密码
+          console.log('onPageChange', initialState);
+          if (
+            location.pathname !== loginPath &&
+            userInfo?.require_password_change
+          ) {
+            history.push(loginPath);
+
+            return;
+          }
+
           // 如果没有登录，重定向到 login
+
           if (!initialState?.currentUser && location.pathname !== loginPath) {
             history.push(loginPath);
           } else if (location.pathname === '/') {

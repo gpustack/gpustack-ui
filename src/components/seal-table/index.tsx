@@ -15,9 +15,11 @@ const SealTable: React.FC<SealTableProps> = (props) => {
     loading,
     expandable,
     pollingChildren,
+    watchChildren,
     rowSelection,
     renderChildren,
-    loadChildren
+    loadChildren,
+    loadChildrenAPI
   } = props;
 
   const [selectAll, setSelectAll] = useState(false);
@@ -131,8 +133,10 @@ const SealTable: React.FC<SealTableProps> = (props) => {
               expandable={expandable}
               rowKey={rowKey}
               pollingChildren={pollingChildren}
+              watchChildren={watchChildren}
               renderChildren={renderChildren}
               loadChildren={loadChildren}
+              loadChildrenAPI={loadChildrenAPI}
               onExpand={onExpand}
             ></TableRow>
           );

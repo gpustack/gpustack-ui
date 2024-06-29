@@ -1,23 +1,20 @@
+import { userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
+import { PasswordReg } from '@/config';
 import { GlobalOutlined, LockOutlined } from '@ant-design/icons';
-import { SelectLang, history, useIntl, useModel } from '@umijs/max';
+import { SelectLang, history, useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
-import { useEffect } from 'react';
+import { useAtom } from 'jotai';
 import { updatePassword } from '../apis';
 
 const PasswordForm: React.FC = () => {
-  const { globalState, setGlobalState } = useModel('global');
-  const [currentUser, setCurrentUser] = useState(null);
   const intl = useIntl();
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    console.log('initstate===', {
-      globalState
-    });
-  }, []);
+  const [userInfo, setUserInfo] = useAtom(userAtom);
   const gotoDefaultPage = (userInfo: any) => {
-    const pathname = userInfo?.is_admin ? '/dashboard' : '/playground';
+    const pathname =
+      userInfo && userInfo?.is_admin ? '/dashboard' : '/playground';
     history.push(pathname);
   };
 
@@ -26,9 +23,14 @@ const PasswordForm: React.FC = () => {
     try {
       await updatePassword({
         new_password: values.new_password,
-        comfirm_password: values.comfirm_password
+        current_password: values.current_password
       });
-      gotoDefaultPage(currentUser);
+
+      await setUserInfo({
+        ...userInfo,
+        require_password_change: false
+      });
+      gotoDefaultPage(userInfo);
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       console.log('error====', error);
@@ -45,40 +47,45 @@ const PasswordForm: React.FC = () => {
         style={{ width: '400px', margin: '0 auto', paddingTop: '5%' }}
         onFinish={handleSubmit}
       >
-        <div>修改密码</div>
+        <h2 className="justify-center m-b-20">
+          {intl.formatMessage({ id: 'users.password.modify.title' })}
+        </h2>
 
+        <Form.Item
+          name="current_password"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: intl.formatMessage({ id: 'users.form.currentpassword' })
+                }
+              )
+            }
+          ]}
+        >
+          <SealInput.Password
+            prefix={<LockOutlined />}
+            label={intl.formatMessage({ id: 'users.form.currentpassword' })}
+          />
+        </Form.Item>
         <Form.Item
           name="new_password"
           rules={[
             {
               required: true,
+              pattern: PasswordReg,
               message: intl.formatMessage(
                 { id: 'common.form.rule.input' },
-                { name: intl.formatMessage({ id: 'common.form.password' }) }
+                { name: intl.formatMessage({ id: 'users.form.newpassword' }) }
               )
             }
           ]}
         >
           <SealInput.Password
             prefix={<LockOutlined />}
-            label={intl.formatMessage({ id: 'common.form.password' })}
-          />
-        </Form.Item>
-        <Form.Item
-          name="comfirm_password"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                { name: intl.formatMessage({ id: 'common.form.password' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Password
-            prefix={<LockOutlined />}
-            label={intl.formatMessage({ id: 'common.form.password' })}
+            label={intl.formatMessage({ id: 'users.form.newpassword' })}
           />
         </Form.Item>
 

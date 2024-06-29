@@ -39,9 +39,9 @@ export const StatusMaps = {
 };
 
 export const WatchEventType = {
-  CREATE: 'ADDED',
-  UPDATE: 'MODIFIED',
-  DELETE: 'DELETED'
+  CREATE: 1,
+  UPDATE: 2,
+  DELETE: 3
 };
 
 export const PasswordReg =

@@ -64,7 +64,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     title: {
       title,
       style: {
-        align: 'center',
+        align: 'start',
         titleFontSize: 14,
         titleFill: 'rgba(0,0,0,0.88)',
         titleFontWeight: 500
@@ -86,8 +86,8 @@ const BarChart: React.FC<BarChartProps> = (props) => {
           'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)'
         );
       },
-      radiusTopLeft: 12,
-      radiusTopRight: 12,
+      // radiusTopLeft: 12,
+      // radiusTopRight: 12,
       height: 20
     }
   };

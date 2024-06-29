@@ -66,12 +66,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
     setActiveIndex(messageList.length - 1);
   };
 
-  const joinMessage = (str: any) => {
-    let data = str;
-    if (data.startsWith('data:')) {
-      data = data.substring('data:'.length);
-    }
-    const chunk = JSON.parse(data?.trim());
+  const joinMessage = (chunk: any) => {
     if (_.get(chunk, 'choices.0.finish_reason')) {
       setTokenResult({
         ...chunk?.usage
@@ -80,7 +75,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
       return true;
     }
     contentRef.current =
-      contentRef.current + _.get(chunk, 'choices.0.delta.content');
+      contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
     setMessageList([
       ...messageList,
       {
@@ -120,11 +115,12 @@ const MessageList: React.FC<MessageProps> = (props) => {
       }
       const { reader, decoder } = result;
 
-      await readStreamData(reader, decoder, (data: any) => {
-        joinMessage(data);
+      await readStreamData(reader, decoder, (chunk: any) => {
+        joinMessage(chunk);
       });
       setLoading(false);
     } catch (error) {
+      console.log('error=====', error);
       setLoading(false);
     }
   };

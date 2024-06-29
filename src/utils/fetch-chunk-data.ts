@@ -1,5 +1,26 @@
 import qs from 'query-string';
 
+const extractJSON = (dataStr: string) => {
+  const regex = /data:\s*({.*?})(?=\n|$)/g;
+  let match;
+  const results: any[] = [];
+
+  if (!dataStr) {
+    return results;
+  }
+
+  while ((match = regex.exec(dataStr)) !== null) {
+    try {
+      results.push(JSON.parse(match[1]));
+    } catch (error) {
+      console.error('JSON parse error:', error, 'for match:', match[1]);
+
+      continue;
+    }
+  }
+
+  return results;
+};
 /**
  *
  * @param params data: for post request, params: for get request
@@ -48,6 +69,9 @@ export const readStreamData = async (
 
   let chunk = decoder.decode(value, { stream: true });
   console.log('chunk==========', chunk);
-  callback(chunk);
+  extractJSON(chunk).forEach((data) => {
+    callback?.(data);
+  });
+  // callback(chunk);
   await readStreamData(reader, decoder, callback);
 };

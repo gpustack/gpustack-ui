@@ -125,11 +125,21 @@ const useSetChunkRequest = () => {
   };
 
   const resetResultSchema = (result: any[]) => {
+    //  ============ handle list data ============
+    // return _.map(result, (data: any) => {
+    //   if (data.type === WatchEventType.DELETE) {
+    //     data.ids = _.map(data.items, (item: any) => item.id);
+    //   }
+    //   data.collection = data.items || [];
+    //   return data;
+    // });
+    // ============ handle list data ============
+
     return _.map(result, (data: any) => {
       if (data.type === WatchEventType.DELETE) {
-        data.ids = _.map(data.items, (item: any) => item.id);
+        data.ids = data.data?.id ? [data.data.id] : [];
       }
-      data.collection = data.items || [];
+      data.collection = data.data ? [data.data] : [];
       return data;
     });
   };

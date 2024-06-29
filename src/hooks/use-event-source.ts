@@ -37,8 +37,8 @@ export default function useEventSource() {
 
     eventSourceRef.current.onmessage = (res: any) => {
       try {
+        console.log('event source message: ', { res, resData: res });
         const data = JSON.parse(res.data);
-        console.log('event source message: ', { data, resData: res });
         onmessage(data);
       } catch (error) {
         // error

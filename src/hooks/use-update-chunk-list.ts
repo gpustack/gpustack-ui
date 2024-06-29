@@ -3,8 +3,9 @@ import _ from 'lodash';
 
 interface ChunkedCollection {
   ids: string[];
+  data: any;
   collection: any[];
-  type: string;
+  type: string | number;
 }
 // Only used to update lists without nested state
 export function useUpdateChunkedList(

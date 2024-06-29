@@ -374,14 +374,15 @@ const Models: React.FC = () => {
     fetchData();
     // createModelsDataByFetch();
     createModelEvent();
+    createModelsChunkRequest();
+
+    return () => {
+      chunkRequedtRef.current?.current?.cancel?.();
+    };
   }, [queryParams]);
 
   useEffect(() => {
     // watch models list
-    createModelsChunkRequest();
-    return () => {
-      chunkRequedtRef.current?.current?.cancel?.();
-    };
   }, [queryParams]);
 
   const renderChildren = (list: any) => {

@@ -17,7 +17,7 @@ export const requestConfig: RequestConfig = {
         message.error(errMsg);
       }
       console.log('errorHandler+++++++++++++++', error, opts);
-      if (response.status === 401) {
+      if (response?.status === 401) {
         clearAtomStorage(userAtom);
 
         history.push('/login', { replace: true });

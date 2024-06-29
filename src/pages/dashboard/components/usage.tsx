@@ -134,8 +134,7 @@ const Usage = () => {
       tokenList.push({
         time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
         name: 'completion_token',
-        color:
-          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+        color: 'rgba(84, 204, 152,0.8)',
         value: item.value
       });
     });
@@ -143,8 +142,7 @@ const Usage = () => {
       tokenList.push({
         time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
         name: 'prompt_token',
-        color:
-          'linear-gradient(90deg,rgba(0, 170, 173, 0.8) 0%,rgba(0, 109, 193, 0.7) 100%)',
+        color: 'rgba(0, 170, 173, 0.8)',
         value: item.value
       });
     });
@@ -153,15 +151,13 @@ const Usage = () => {
       userList.push({
         name: item.username,
         type: 'completion_token',
-        color:
-          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)',
+        color: 'rgba(84, 204, 152,0.8)',
         value: item.completion_token_count
       });
       userList.push({
         name: item.username,
         type: 'prompt_token',
-        color:
-          'linear-gradient(90deg,rgba(0, 170, 173, 0.8) 0%,rgba(0, 109, 193, 0.7) 100%)',
+        color: 'rgba(0, 170, 173, 0.8)',
         value: item.prompt_token_count
       });
     });

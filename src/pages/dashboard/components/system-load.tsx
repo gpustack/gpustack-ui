@@ -65,19 +65,19 @@ const SystemLoad = () => {
               <Row style={{ height: largeChartHeight, width: '100%' }}>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="GPU Compute Utilization"
+                    title="GPU Utilization"
                     percent={_.round(data.gpu?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="GPU Memory Utilization"
+                    title="VRAM Utilization"
                     percent={_.round(data.gpu_memory?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="CPU Compute Utilization"
+                    title="CPU Utilization"
                     percent={_.round(data.cpu?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>

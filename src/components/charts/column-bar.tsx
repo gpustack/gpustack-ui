@@ -83,14 +83,15 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     },
 
     style: {
-      fill: (params: any) => {
-        return (
-          params.color ||
-          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)'
-        );
-      },
-      radiusTopLeft: 12,
-      radiusTopRight: 12,
+      // fill: (params: any) => {
+      //   return (
+      //     params.color ||
+      //     'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)'
+      //   );
+      // },
+      // radiusTopLeft: 12,
+      // radiusTopRight: 12,
+      fill: 'rgba(84, 204, 152,0.8)',
       align: 'center',
       width: 20
     }

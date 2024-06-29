@@ -1,6 +1,6 @@
 export default {
   'menu.dashboard': '概览',
-  'menu.playground': '对话',
+  'menu.playground': '试验场',
   'menu.models': '模型',
   'menu.resources': '资源',
   'menu.apikeys': 'API 密钥',

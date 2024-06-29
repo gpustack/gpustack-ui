@@ -1,6 +1,6 @@
 export default {
   'playground.system.tips': '在这里输入系统消息...',
-  'playground.title': '对话',
+  'playground.title': '试验场',
   'playground.system': '系统',
   'playground.user': '用户',
   'playground.assistant': '助手',

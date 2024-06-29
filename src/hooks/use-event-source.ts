@@ -1,5 +1,5 @@
 import qs from 'query-string';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const createEventSourceURL = (url: string) => {
   const { host, protocol } = window.location;
@@ -42,7 +42,12 @@ export default function useEventSource() {
         onmessage(data);
       } catch (error) {
         // error
+        console.log('event source error: ', error);
       }
+    };
+
+    eventSourceRef.current.onclose = () => {
+      console.log('event source closed...');
     };
 
     eventSourceRef.current.onopen = () => {
@@ -53,6 +58,12 @@ export default function useEventSource() {
       console.log('event source error: ', error);
     };
   };
+
+  useEffect(() => {
+    return () => {
+      eventSourceRef.current?.close?.();
+    };
+  }, []);
 
   return {
     eventSourceRef: eventSourceRef,

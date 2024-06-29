@@ -12,7 +12,8 @@ export default function createProxyTable(target?: string) {
         ws: true,
         pathRewrite: (pth: string) => pth.replace(`/^/${api}/`, `/${api}`),
         headers: {
-          origin: newTarget
+          origin: newTarget,
+          Connection: 'keep-alive'
         }
       };
       return obj;

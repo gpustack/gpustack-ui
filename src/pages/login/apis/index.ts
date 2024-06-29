@@ -1,3 +1,5 @@
+import { userAtom } from '@/atoms/user';
+import { clearAtomStorage } from '@/atoms/utils';
 import { request } from '@umijs/max';
 import qs from 'query-string';
 
@@ -17,9 +19,11 @@ export const login = async (
 };
 
 export const logout = async (userInfo: any) => {
-  return request(`${AUTH_API}/logout`, {
+  await request(`${AUTH_API}/logout`, {
     method: 'POST'
   });
+  clearAtomStorage(userAtom);
+  return;
 };
 
 export const accessToken = async () => {

@@ -1,9 +1,10 @@
 import LogoIcon from '@/assets/images/logo.png';
+import { userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { GlobalOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { SelectLang, history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
-import { useEffect } from 'react';
+import { useAtom } from 'jotai';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
 
@@ -23,22 +24,16 @@ const renderLogo = () => {
     </div>
   );
 };
-const LoginForm: React.FC<{
-  setCurrentUser: (userInfo: any) => void;
-}> = ({ setCurrentUser }) => {
+const LoginForm = () => {
+  const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState');
   const { globalState, setGlobalState } = useModel('global');
   const intl = useIntl();
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    console.log('initstate===', {
-      initialState,
-      globalState
-    });
-  }, []);
   const gotoDefaultPage = (userInfo: any) => {
-    const pathname = userInfo?.is_admin ? '/dashboard' : '/playground';
+    const pathname =
+      userInfo && userInfo?.is_admin ? '/dashboard' : '/playground';
     history.push(pathname);
   };
   const fetchUserInfo = async () => {
@@ -66,13 +61,11 @@ const LoginForm: React.FC<{
       setGlobalState({
         userInfo
       });
-      // if (userInfo?.require_password_change) {
-      //   setCurrentUser(userInfo);
-      // } else {
-      //   setCurrentUser(null);
-      //   gotoDefaultPage(userInfo);
-      // }
-      gotoDefaultPage(userInfo);
+      setUserInfo(userInfo);
+      if (!userInfo?.require_password_change) {
+        gotoDefaultPage(userInfo);
+      }
+      // gotoDefaultPage(userInfo);
     } catch (error) {
       console.log('error====', error);
     }

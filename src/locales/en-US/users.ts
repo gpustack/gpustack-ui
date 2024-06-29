@@ -18,5 +18,6 @@ export default {
   'users.password.lowercase': 'At least one lowercase letter',
   'users.password.number': 'At least one number',
   'users.password.special': 'At least one special character',
-  'users.password.length': 'Length between 6 and 12 characters'
+  'users.password.length': 'Length between 6 and 12 characters',
+  'users.password.modify.title': 'Modify Password'
 };

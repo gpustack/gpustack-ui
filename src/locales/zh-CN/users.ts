@@ -18,5 +18,6 @@ export default {
   'users.password.lowercase': '至少包含一个小写字母',
   'users.password.number': '至少包含一个数字',
   'users.password.special': '至少包含一个特殊字符',
-  'users.password.length': '长度在6至12个字符之间'
+  'users.password.length': '长度在6至12个字符之间',
+  'users.password.modify.title': '修改密码'
 };

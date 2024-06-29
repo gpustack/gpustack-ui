@@ -1,3 +1,5 @@
+import { userAtom } from '@/atoms/user';
+import { clearAtomStorage } from '@/atoms/utils';
 import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 
@@ -9,14 +11,17 @@ export const requestConfig: RequestConfig = {
       // to do something
     },
     errorHandler: (error: any, opts: any) => {
-      if (opts?.skipErrorHandler) throw error;
       const { message: errorMessage, response } = error;
       const errMsg = response?.data?.message || errorMessage;
-      message.error(errMsg);
-      if (response.status === 401) {
-        history.push('/login', { replace: true });
+      if (!opts?.skipErrorHandler) {
+        message.error(errMsg);
       }
       console.log('errorHandler+++++++++++++++', error, opts);
+      if (response.status === 401) {
+        clearAtomStorage(userAtom);
+
+        history.push('/login', { replace: true });
+      }
     }
   },
   requestInterceptors: [

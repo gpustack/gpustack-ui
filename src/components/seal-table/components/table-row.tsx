@@ -1,3 +1,5 @@
+import useSetChunkRequest from '@/hooks/use-chunk-request';
+import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
 import classNames from 'classnames';
@@ -18,16 +20,23 @@ const TableRow: React.FC<
     rowKey,
     columns,
     pollingChildren,
+    watchChildren,
     onExpand,
     renderChildren,
-    loadChildren
+    loadChildren,
+    loadChildrenAPI
   } = props;
-
+  const { setChunkRequest } = useSetChunkRequest();
   const [expanded, setExpanded] = useState(false);
   const [checked, setChecked] = useState(false);
   const [childrenData, setChildrenData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const pollTimer = useRef<any>(null);
+  const chunkRequestRef = useRef<any>(null);
+
+  const { updateChunkedList } = useUpdateChunkedList(childrenData, {
+    setDataList: setChildrenData
+  });
 
   useEffect(() => {
     if (rowSelection) {
@@ -45,6 +54,7 @@ const TableRow: React.FC<
       if (pollTimer.current) {
         clearInterval(pollTimer.current);
       }
+      chunkRequestRef.current?.current?.cancel?.();
     };
   }, []);
 
@@ -71,6 +81,31 @@ const TableRow: React.FC<
     }
   };
 
+  const updateChildrenHandler = (list: any) => {
+    _.each(list, (data: any) => {
+      updateChunkedList(data);
+    });
+  };
+  const createChunkRequest = () => {
+    chunkRequestRef.current?.current?.cancel?.();
+    if (!watchChildren) {
+      return;
+    }
+    const url = loadChildrenAPI?.(record) as string;
+    try {
+      chunkRequestRef.current = setChunkRequest({
+        url,
+        params: {
+          page: 1,
+          perPage: 100
+        },
+        handler: updateChildrenHandler
+      });
+    } catch (error) {
+      // ignore
+    }
+  };
+
   const handleRowExpand = async () => {
     setExpanded(!expanded);
     onExpand?.(!expanded, record);
@@ -80,6 +115,7 @@ const TableRow: React.FC<
     }
 
     if (expanded) {
+      chunkRequestRef.current?.current?.cancel?.();
       return;
     }
 
@@ -88,6 +124,9 @@ const TableRow: React.FC<
       pollTimer.current = setInterval(() => {
         handlePolling();
       }, 1000);
+    } else if (watchChildren) {
+      await handleLoadChildren();
+      createChunkRequest();
     } else {
       handleLoadChildren();
     }
@@ -194,4 +233,4 @@ const TableRow: React.FC<
   );
 };
 
-export default TableRow;
+export default React.memo(TableRow);

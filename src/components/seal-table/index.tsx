@@ -99,7 +99,7 @@ const SealTable: React.FC<SealTableProps> = (props) => {
               columnProps as SealColumnProps;
             if (React.isValidElement(child)) {
               return (
-                <Col span={span}>
+                <Col span={span} key={i}>
                   <TableHeader
                     title={title}
                     style={headerStyle}

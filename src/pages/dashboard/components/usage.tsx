@@ -1,4 +1,5 @@
 import CardWrapper from '@/components/card-wrapper';
+import AreaChart from '@/components/charts/area';
 import ColumnBar from '@/components/charts/column-bar';
 import HBar from '@/components/charts/h-bar';
 import PageTools from '@/components/page-tools';
@@ -34,16 +35,16 @@ const projects = [
 
 const APIRequestData = generateRandomArray({
   length: times.length,
-  max: 100,
-  min: 0,
-  offset: 10
+  max: 1000,
+  min: 10,
+  offset: 0
 });
 
 const TokensData = generateRandomArray({
   length: times.length,
   max: 2000,
-  min: 200,
-  offset: 200
+  min: 0,
+  offset: 500
 });
 
 const usersData = generateRandomArray({
@@ -189,7 +190,11 @@ const Usage = () => {
           </span>
         }
         right={
-          <RangePicker onChange={handleSelectDate} style={{ width: 300 }} />
+          <RangePicker
+            onChange={handleSelectDate}
+            style={{ width: 300 }}
+            picker="month"
+          />
         }
       />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
@@ -204,13 +209,13 @@ const Usage = () => {
           <CardWrapper style={{ width: '100%' }}>
             <Row style={{ width: '100%' }}>
               <Col span={12}>
-                <ColumnBar
+                <AreaChart
                   title={intl.formatMessage({ id: 'dashboard.apirequest' })}
                   data={requestData}
                   xField="time"
                   yField="value"
                   height={360}
-                ></ColumnBar>
+                ></AreaChart>
               </Col>
               <Col span={12}>
                 <ColumnBar

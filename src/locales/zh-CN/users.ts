@@ -19,5 +19,9 @@ export default {
   'users.password.number': '至少包含一个数字',
   'users.password.special': '至少包含一个特殊字符',
   'users.password.length': '长度在6至12个字符之间',
-  'users.password.modify.title': '修改密码'
+  'users.password.modify.title': '修改密码',
+  'users.password.modify.description': '为了确保您的账户安全，请修改初始密码',
+  'users.password.confirm': '确认新密码',
+  'users.password.confirm.empty': '请确认新密码',
+  'users.password.confirm.error': '两次输入的密码不一致'
 };

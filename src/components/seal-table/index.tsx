@@ -118,7 +118,11 @@ const SealTable: React.FC<SealTableProps> = (props) => {
 
   const renderContent = () => {
     if (!props.dataSource.length) {
-      return <Empty></Empty>;
+      return (
+        <div className="empty-wrapper">
+          <Empty></Empty>
+        </div>
+      );
     }
     return (
       <div className="seal-table-content">

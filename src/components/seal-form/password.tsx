@@ -37,6 +37,7 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
   };
 
   const handleChange = (e: any) => {
+    e.target.value = e.target.value?.trim?.();
     props.onChange?.(e);
   };
 
@@ -46,6 +47,7 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
   };
 
   const handleOnBlur = (e: any) => {
+    e.target.value = e.target.value?.trim?.();
     if (!inputRef.current?.input?.value) {
       setIsFocus(false);
       props.onBlur?.(e);

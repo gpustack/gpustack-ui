@@ -44,10 +44,6 @@ export default defineConfig({
                 minRatio: 0.8
               }
             ]);
-        },
-        jsMinifierOptions: {
-          drop_console: true,
-          drop_debugger: true
         }
       }
     : {}),

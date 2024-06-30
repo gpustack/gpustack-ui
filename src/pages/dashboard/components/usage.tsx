@@ -79,14 +79,12 @@ const projectDataList = projectsData
   .sort((a, b) => b.value - a.value);
 
 const dataList = APIRequestData.map((val, i) => {
-  console.log('val', val);
   return {
     time: times[i],
     value: val
   };
 });
 const tokenUsage = TokensData.map((val, i) => {
-  console.log('val', val);
   return {
     time: times[i],
     value: val

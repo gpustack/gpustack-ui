@@ -45,15 +45,14 @@ export default defineConfig({
               }
             ]);
         },
-        terserOptions: {
-          compress: {
-            drop_console: true,
-            drop_debugger: true
-          }
+        jsMinifierOptions: {
+          drop_console: true,
+          drop_debugger: true
         }
       }
     : {}),
   // esbuildMinifyIIFE: true,
+
   favicons: ['/static/favicon.ico'],
   jsMinifier: 'terser',
   cssMinifier: 'cssnano',

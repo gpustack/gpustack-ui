@@ -1,5 +1,7 @@
 import { Column } from '@ant-design/plots';
 
+import EmptyData from './empty-data';
+
 interface BarChartProps {
   data: any[];
   xField: string;
@@ -99,7 +101,11 @@ const BarChart: React.FC<BarChartProps> = (props) => {
 
   return (
     <>
-      <Column {...config} />
+      {data.length > 0 ? (
+        <Column {...config} />
+      ) : (
+        <EmptyData height={height} title={title} />
+      )}
     </>
   );
 };

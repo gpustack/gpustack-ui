@@ -5,6 +5,7 @@ import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { generateRandomArray } from '@/utils';
+import { useIntl } from '@umijs/max';
 import { Col, DatePicker, Row } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -93,6 +94,7 @@ const tokenUsage = TokensData.map((val, i) => {
 });
 
 const Usage = () => {
+  const intl = useIntl();
   const { size } = useWindowResize();
   const [paddingRight, setPaddingRight] = useState<string>('20px');
   const [requestData, setRequestData] = useState<
@@ -125,14 +127,14 @@ const Usage = () => {
 
     _.each(data.api_request_history, (item: any) => {
       requestList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM'),
         value: item.value
       });
     });
 
     _.each(data.completion_token_history, (item: any) => {
       tokenList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM'),
         name: 'completion_token',
         color: 'rgba(84, 204, 152,0.8)',
         value: item.value
@@ -140,7 +142,7 @@ const Usage = () => {
     });
     _.each(data.prompt_token_history, (item: any) => {
       tokenList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM'),
         name: 'prompt_token',
         color: 'rgba(0, 170, 173, 0.8)',
         value: item.value
@@ -183,7 +185,11 @@ const Usage = () => {
     <>
       <PageTools
         style={{ margin: '32px 8px' }}
-        left={<span style={{ fontSize: 'var(--font-size-large)' }}>Usage</span>}
+        left={
+          <span style={{ fontSize: 'var(--font-size-large)' }}>
+            {intl.formatMessage({ id: 'dashboard.usage' })}
+          </span>
+        }
         right={
           <RangePicker onChange={handleSelectDate} style={{ width: 300 }} />
         }
@@ -201,7 +207,7 @@ const Usage = () => {
             <Row style={{ width: '100%' }}>
               <Col span={12}>
                 <ColumnBar
-                  title="API Request"
+                  title={intl.formatMessage({ id: 'dashboard.apirequest' })}
                   data={requestData}
                   xField="time"
                   yField="value"
@@ -210,7 +216,7 @@ const Usage = () => {
               </Col>
               <Col span={12}>
                 <ColumnBar
-                  title="Tokens"
+                  title={intl.formatMessage({ id: 'dashboard.tokens' })}
                   data={tokenData}
                   group={false}
                   colorField="name"
@@ -227,11 +233,12 @@ const Usage = () => {
         <Col xs={24} sm={24} md={24} lg={24} xl={8}>
           <CardWrapper>
             <HBar
-              title="Top Users"
+              title={intl.formatMessage({ id: 'dashboard.topusers' })}
               data={userData}
-              colorField="type"
               stack={true}
               legend={false}
+              showYAxis={false}
+              colorField="type"
               xField="name"
               yField="value"
               height={360}

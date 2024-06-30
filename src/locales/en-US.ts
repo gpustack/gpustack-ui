@@ -1,5 +1,6 @@
 import apikeys from './en-US/apikeys';
 import common from './en-US/common';
+import dashboard from './en-US/dashboard';
 import menu from './en-US/menu';
 import models from './en-US/models';
 import playground from './en-US/playground';
@@ -13,5 +14,6 @@ export default {
   ...playground,
   ...resources,
   ...apikeys,
-  ...users
+  ...users,
+  ...dashboard
 };

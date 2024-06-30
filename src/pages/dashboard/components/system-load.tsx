@@ -2,6 +2,7 @@ import CardWrapper from '@/components/card-wrapper';
 import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
+import { useIntl } from '@umijs/max';
 import { Col, DatePicker, Row } from 'antd';
 import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ const SystemLoad = () => {
     'linear-gradient(90deg, rgba(255, 214, 102,.8) 0%, rgba(255, 214, 102,0.5) 50%,  rgba(255, 214, 102,.8) 100%)',
     'linear-gradient(90deg, rgba(255, 120, 117,.8) 0%, rgba(255, 120, 117,0.5) 50%,  rgba(255, 120, 117,.8) 100%)'
   ];
+  const intl = useIntl();
   const data = useContext(DashboardContext)?.system_load?.current || {};
   const { size } = useWindowResize();
   const [paddingRight, setPaddingRight] = useState<string>('20px');
@@ -40,7 +42,7 @@ const SystemLoad = () => {
           style={{ margin: '32px 8px' }}
           left={
             <span style={{ fontSize: 'var(--font-size-large)' }}>
-              System Load
+              {intl.formatMessage({ id: 'dashboard.systemload' })}
             </span>
           }
           right={
@@ -65,25 +67,33 @@ const SystemLoad = () => {
               <Row style={{ height: largeChartHeight, width: '100%' }}>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="GPU Utilization"
+                    title={intl.formatMessage({
+                      id: 'dashboard.gpuutilization'
+                    })}
                     percent={_.round(data.gpu?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="VRAM Utilization"
+                    title={intl.formatMessage({
+                      id: 'dashboard.vramutilization'
+                    })}
                     percent={_.round(data.gpu_memory?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="CPU Utilization"
+                    title={intl.formatMessage({
+                      id: 'dashboard.cpuutilization'
+                    })}
                     percent={_.round(data.cpu?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <UitilBar
-                    title="CPU Memory Utilization"
+                    title={intl.formatMessage({
+                      id: 'dashboard.memoryutilization'
+                    })}
                     percent={_.round(data.memory?.utilization_rate || 0, 1)}
                   ></UitilBar>
                 </Col>

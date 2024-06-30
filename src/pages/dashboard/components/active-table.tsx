@@ -1,43 +1,10 @@
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
+import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
 import _ from 'lodash';
 import { useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
-
-const modelColumns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name'
-  },
-  {
-    title: 'GPU Utilization',
-    dataIndex: 'gpu_utilization',
-    key: 'gpu_utilization',
-    render: (text: any, record: any) => (
-      <ProgressBar percent={_.round(text, 0)}></ProgressBar>
-    )
-  },
-  {
-    title: 'VRAM Utilization',
-    dataIndex: 'gpu_memory_utilization',
-    key: 'gpu_memory_utilization',
-    render: (text: any, record: any) => (
-      <ProgressBar percent={_.round(text, 0)}></ProgressBar>
-    )
-  },
-  {
-    title: 'Running Instances',
-    dataIndex: 'instance_count',
-    key: 'instance_count'
-  },
-  {
-    title: 'Tokens',
-    dataIndex: 'token_count',
-    key: 'token_count'
-  }
-];
 
 const projectColumns = [
   {
@@ -102,7 +69,41 @@ const projectData = [
   }
 ];
 const ActiveTable = () => {
+  const intl = useIntl();
   const data = useContext(DashboardContext).active_models || [];
+  const modelColumns = [
+    {
+      title: intl.formatMessage({ id: 'dashboard.activeModels.name' }),
+      dataIndex: 'name',
+      key: 'name'
+    },
+    {
+      title: intl.formatMessage({ id: 'dashboard.gpuutilization' }),
+      dataIndex: 'gpu_utilization',
+      key: 'gpu_utilization',
+      render: (text: any, record: any) => (
+        <ProgressBar percent={_.round(text, 0)}></ProgressBar>
+      )
+    },
+    {
+      title: intl.formatMessage({ id: 'dashboard.vramutilization' }),
+      dataIndex: 'gpu_memory_utilization',
+      key: 'gpu_memory_utilization',
+      render: (text: any, record: any) => (
+        <ProgressBar percent={_.round(text, 0)}></ProgressBar>
+      )
+    },
+    {
+      title: intl.formatMessage({ id: 'dashboard.runninginstances' }),
+      dataIndex: 'instance_count',
+      key: 'instance_count'
+    },
+    {
+      title: 'Tokens',
+      dataIndex: 'token_count',
+      key: 'token_count'
+    }
+  ];
   return (
     <Row gutter={[20, 0]}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -112,7 +113,7 @@ const ActiveTable = () => {
             <span
               style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}
             >
-              Active Models
+              {intl.formatMessage({ id: 'dashboard.activeModels' })}
             </span>
           }
           right={false}

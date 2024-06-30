@@ -16,7 +16,7 @@ const UitilBar: React.FC<UitilBarProps> = (props) => {
     percent,
     steps = 10,
     gapDegree = 170,
-    strokeWidth = 12,
+    strokeWidth = 10,
     title,
     size = 160,
     strokeColor,

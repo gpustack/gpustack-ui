@@ -76,10 +76,9 @@ const PasswordForm: React.FC = () => {
             {
               required: true,
               pattern: PasswordReg,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                { name: intl.formatMessage({ id: 'users.form.newpassword' }) }
-              )
+              message: intl.formatMessage({
+                id: 'users.form.rule.password'
+              })
             }
           ]}
         >

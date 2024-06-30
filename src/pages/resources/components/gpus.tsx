@@ -12,97 +12,6 @@ import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
 
-const dataSource: GPUDeviceItem[] = [
-  {
-    id: 1,
-    name: 'bj-web-service-1',
-    address: '183.14.31.136',
-    hostname: 'bj-web-service-1',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 4,
-        gpu: 2,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 2.5,
-        gpu: 1.6,
-        memory: '64',
-        gram: '24 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  },
-  {
-    id: 2,
-    name: 'bj-db-service-2',
-    address: '172.24.1.36',
-    hostname: 'bj-db-service-2',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 4,
-        gpu: 2,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 2,
-        gpu: 1.5,
-        memory: '32 GiB',
-        gram: '12 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  },
-  {
-    id: 3,
-    name: 'guangzhou-computed-node-2',
-    address: '170.10.2.10',
-    hostname: 'guangzhou-computed-node-2',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 8,
-        gpu: 4,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 2,
-        gpu: 1.5,
-        memory: '32 GiB',
-        gram: '12 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  },
-  {
-    id: 4,
-    name: 'hangzhou-cache-node-1',
-    address: '115.2.21.10',
-    hostname: 'hangzhou-cache-node-1',
-    labels: {},
-    resources: {
-      capacity: {
-        cpu: 8,
-        gpu: 4,
-        memory: '64 GiB',
-        gram: '24 Gib'
-      },
-      allocable: {
-        cpu: 4,
-        gpu: 2.5,
-        memory: '40 GiB',
-        gram: '16 Gib'
-      }
-    },
-    state: 'ACTIVE'
-  }
-];
-
 const Models: React.FC = () => {
   const intl = useIntl();
   const rowSelection = useTableRowSelection();
@@ -205,20 +114,32 @@ const Models: React.FC = () => {
           onChange: handlePageChange
         }}
       >
-        <Column title="Name" dataIndex="name" key="name" />
         <Column
-          title="Index"
+          title={intl.formatMessage({ id: 'common.table.name' })}
+          dataIndex="name"
+          key="name"
+        />
+        <Column
+          title={intl.formatMessage({ id: 'resources.table.index' })}
           dataIndex="index"
           key="index"
           render={(text, record: GPUDeviceItem) => {
             return <span>{record.index}</span>;
           }}
         />
-        <Column title="Worker Name" dataIndex="worker_name" key="worker_name" />
-        <Column title="Vendor" dataIndex="vendor" key="vendor" />
+        <Column
+          title={intl.formatMessage({ id: 'resources.table.workername' })}
+          dataIndex="worker_name"
+          key="worker_name"
+        />
+        <Column
+          title={intl.formatMessage({ id: 'resources.table.vender' })}
+          dataIndex="vendor"
+          key="vendor"
+        />
 
         <Column
-          title="Temperature(˚C)"
+          title={`${intl.formatMessage({ id: 'resources.table.temperature' })} (°C)`}
           dataIndex="temperature"
           key="Temperature"
           render={(text, record: GPUDeviceItem) => {
@@ -226,7 +147,7 @@ const Models: React.FC = () => {
           }}
         />
         <Column
-          title="Core"
+          title={intl.formatMessage({ id: 'resources.table.core' })}
           dataIndex="core"
           key="Core"
           render={(text, record: GPUDeviceItem) => {
@@ -234,7 +155,7 @@ const Models: React.FC = () => {
           }}
         />
         <Column
-          title="GPU Utilization"
+          title={intl.formatMessage({ id: 'resources.table.gpuutilization' })}
           dataIndex="gpuUtil"
           key="gpuUtil"
           render={(text, record: GPUDeviceItem) => {
@@ -247,8 +168,8 @@ const Models: React.FC = () => {
         />
 
         <Column
-          title="VRAM"
-          dataIndex="GRAM"
+          title={intl.formatMessage({ id: 'resources.table.vramutilization' })}
+          dataIndex="VRAM"
           key="VRAM"
           render={(text, record: GPUDeviceItem) => {
             return (

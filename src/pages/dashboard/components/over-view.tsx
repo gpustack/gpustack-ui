@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { Card, Col, Row, Space } from 'antd';
 import _ from 'lodash';
 import React, { useContext } from 'react';
@@ -26,6 +27,7 @@ const renderCardItem = (data: {
   );
 };
 const Overview: React.FC = () => {
+  const intl = useIntl();
   const data = useContext(DashboardContext).resource_counts || {};
 
   const renderValue = (
@@ -61,7 +63,7 @@ const Overview: React.FC = () => {
             key={config.key}
           >
             {renderCardItem({
-              label: config.label,
+              label: intl.formatMessage({ id: config.label }),
               value: renderValue(_.get(data, config.key, 0)),
               bgColor: config.backgroundColor
             })}

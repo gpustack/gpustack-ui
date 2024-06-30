@@ -1,4 +1,5 @@
 import { Bar } from '@ant-design/plots';
+import EmptyData from './empty-data';
 
 interface BarChartProps {
   data: any[];
@@ -11,6 +12,7 @@ interface BarChartProps {
   seriesField?: string;
   stack?: boolean;
   legend?: any;
+  showYAxis?: boolean;
 }
 const BarChart: React.FC<BarChartProps> = (props) => {
   const {
@@ -23,6 +25,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     colorField,
     seriesField,
     stack,
+    showYAxis = true,
     legend = undefined
   } = props;
   const config = {
@@ -57,9 +60,11 @@ const BarChart: React.FC<BarChartProps> = (props) => {
         xAxis: true,
         tick: false
       },
-      y: {
-        tick: false
-      }
+      y: showYAxis
+        ? {
+            tick: false
+          }
+        : null
     },
     title: {
       title,
@@ -94,7 +99,11 @@ const BarChart: React.FC<BarChartProps> = (props) => {
 
   return (
     <>
-      <Bar {...config} />
+      {data.length === 0 ? (
+        <EmptyData height={height} title={title} />
+      ) : (
+        <Bar {...config} />
+      )}
     </>
   );
 };

@@ -1,4 +1,5 @@
 import { Line } from '@ant-design/plots';
+import EmptyData from './empty-data';
 
 interface LineChartProps {
   title?: string;
@@ -7,7 +8,7 @@ interface LineChartProps {
   color?: string[];
   xField?: string;
   yField?: string;
-  locale: string;
+  locale?: string;
   labelFormatter?: (v: any) => string;
   slider?: any;
 }
@@ -79,7 +80,11 @@ const LineChart: React.FC<LineChartProps> = (props) => {
   };
   return (
     <>
-      <Line data={data} {...config} />
+      {data.length === 0 ? (
+        <EmptyData height={height} title={title} />
+      ) : (
+        <Line data={data} {...config} />
+      )}
     </>
   );
 };

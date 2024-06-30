@@ -39,6 +39,7 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   };
 
   const handleChange = (e: any) => {
+    e.target.value = e.target.value?.trim?.();
     props.onChange?.(e);
   };
 
@@ -48,6 +49,7 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   };
 
   const handleOnBlur = (e: any) => {
+    e.target.value = e.target.value?.trim?.();
     if (!inputRef.current?.value) {
       setIsFocus(false);
       props.onBlur?.(e);

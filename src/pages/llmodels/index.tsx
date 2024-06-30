@@ -371,7 +371,7 @@ const Models: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    // fetchData();
     createModelsChunkRequest();
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();

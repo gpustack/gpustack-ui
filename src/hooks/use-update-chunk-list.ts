@@ -61,6 +61,7 @@ export function useUpdateChunkedList(
           dataList,
           (sItem: any) => sItem.id === item.id
         );
+        console.log('updateIndex===========', dataList, updateIndex, data);
         if (updateIndex > -1) {
           const updateItem = _.cloneDeep(item);
           dataList[updateIndex] = updateItem;

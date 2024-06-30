@@ -33,6 +33,7 @@ const TableRow: React.FC<
   const [loading, setLoading] = useState(false);
   const pollTimer = useRef<any>(null);
   const chunkRequestRef = useRef<any>(null);
+  const childrenRendered = useRef<any>(null);
 
   const { updateChunkedList } = useUpdateChunkedList(childrenData, {
     setDataList: setChildrenData
@@ -57,6 +58,10 @@ const TableRow: React.FC<
       chunkRequestRef.current?.current?.cancel?.();
     };
   }, []);
+
+  const renderChildrenData = () => {
+    return renderChildren?.(childrenData);
+  };
 
   const handlePolling = async () => {
     if (pollingChildren) {
@@ -110,12 +115,12 @@ const TableRow: React.FC<
     setExpanded(!expanded);
     onExpand?.(!expanded, record);
 
+    chunkRequestRef.current?.current?.cancel?.();
     if (pollTimer.current) {
       clearInterval(pollTimer.current);
     }
 
     if (expanded) {
-      chunkRequestRef.current?.current?.cancel?.();
       return;
     }
 
@@ -124,9 +129,6 @@ const TableRow: React.FC<
       pollTimer.current = setInterval(() => {
         handlePolling();
       }, 1000);
-    } else if (watchChildren) {
-      await handleLoadChildren();
-      createChunkRequest();
     } else {
       handleLoadChildren();
     }
@@ -145,6 +147,12 @@ const TableRow: React.FC<
       );
     }
   };
+
+  useEffect(() => {
+    if (childrenData.length) {
+      createChunkRequest();
+    }
+  }, [childrenData]);
 
   const renderRowPrefix = () => {
     if (expandable && rowSelection) {
@@ -220,11 +228,7 @@ const TableRow: React.FC<
         {expanded && (
           <div className="expanded-row">
             <Spin spinning={loading}>
-              {childrenData.length ? (
-                renderChildren?.(childrenData)
-              ) : (
-                <Empty></Empty>
-              )}
+              {childrenData.length ? renderChildrenData() : <Empty></Empty>}
             </Spin>
           </div>
         )}

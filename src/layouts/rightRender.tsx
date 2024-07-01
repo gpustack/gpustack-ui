@@ -77,6 +77,26 @@ export function getRightRenderContent(opts: {
   // 如果没有打开Locale，并且头像为空就取消掉这个返回的内容
   if (!avatar) return null;
 
+  const renderMenu = () => {
+    return (
+      <Menu triggerSubMenuAction="hover">
+        <Menu.Item title="admin" key="avatar">
+          <ul>
+            <Menu.SubMenu
+              key="settings"
+              icon={<SettingOutlined />}
+              title={intl?.formatMessage?.({ id: 'common.button.settings' })}
+            ></Menu.SubMenu>
+            <Menu.SubMenu
+              key="logout"
+              icon={<LogoutOutlined />}
+              title={intl?.formatMessage?.({ id: 'common.button.logout' })}
+            ></Menu.SubMenu>
+          </ul>
+        </Menu.Item>
+      </Menu>
+    );
+  };
   const langMenu = {
     className: 'umi-plugin-layout-menu',
     selectedKeys: [],
@@ -123,7 +143,7 @@ export function getRightRenderContent(opts: {
 
   let dropdownProps;
   if (version.startsWith('5.') || version.startsWith('4.24.')) {
-    dropdownProps = { menu: langMenu };
+    dropdownProps = { menu: langMenu, mode: 'vertical' };
   } else if (version.startsWith('3.')) {
     dropdownProps = {
       overlay: (
@@ -138,7 +158,7 @@ export function getRightRenderContent(opts: {
     };
   } else {
     // 需要 antd 4.20.0 以上版本
-    dropdownProps = { overlay: <Menu {...langMenu} /> };
+    dropdownProps = { overlay: <Menu {...langMenu} mode="vertical" /> };
   }
 
   return (
@@ -153,7 +173,6 @@ export function getRightRenderContent(opts: {
             >
               {avatar}
             </Dropdown>
-            <span></span>
           </>
         ) : (
           avatar

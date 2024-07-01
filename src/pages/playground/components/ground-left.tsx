@@ -2,7 +2,6 @@ import TransitionWrapper from '@/components/transition';
 import HotKeys from '@/config/hotkeys';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
@@ -185,7 +184,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
 
   return (
     <div className="ground-left">
-      <PageContainer title={false} className="message-list-wrap">
+      <div className="message-list-wrap">
         <div style={{ marginBottom: 40 }}>
           <TransitionWrapper
             header={renderLabel()}
@@ -227,7 +226,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
             </Spin>
           )}
         </div>
-      </PageContainer>
+      </div>
       <div className="ground-left-footer">
         <ChatFooter
           onClear={handleClear}

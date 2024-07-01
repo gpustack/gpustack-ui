@@ -95,6 +95,7 @@ const UtilizationOvertime: React.FC = () => {
       <LineChart
         data={result}
         locale={locale}
+        height={390}
         labelFormatter={labelFormatter}
         slider={sliderConfig}
       />

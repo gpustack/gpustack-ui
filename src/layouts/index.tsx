@@ -186,7 +186,6 @@ export default (props: any) => {
           }
           if (menuItemProps.path && location.pathname !== menuItemProps.path) {
             return (
-              // handle wildcard route path, for example /slave/* from qiankun
               <Link
                 to={menuItemProps.path.replace('/*', '')}
                 target={menuItemProps.target}

@@ -9,6 +9,8 @@ html {
   --color-fill-3: #f3f6fa;
   --color-logs-bg: #1e1e1e;
   --color-logs-text: #d4d4d4;
+  --layout-content-blockpadding: 32px;
+  --layout-content-inlinepadding: 32px;
   --menu-border-radius-base: 8px;
   --border-radius-base: 8px;
   --border-radius-middle: 20px;
@@ -40,7 +42,7 @@ html {
   --ant-input-active-shadow: 0 0 0 2px rgba(5, 255, 105, 6%);
   --ant-input-active-border-color: #2fbf85;
   --ant-input-hover-border-color: #54cc98;
-  --box-shadow-base: 0 4px 12px rgb(227, 232, 240);
+  --box-shadow-base: 0 4px 12px rgba(227, 232, 240, 70%);
 
   .css-var-rf {
     --ant-font-size: var(--font-size-base);
@@ -272,6 +274,14 @@ body {
 
 .ant-pro-layout {
   height: 100vh;
+  // .ant-pro-layout-content {
+  //   padding-block: var(--layout-content-blockpadding);
+  //   padding-inline: var(--layout-content-inlinepadding);
+  // }
+  .ant-pro-page-container-children-container {
+    padding-block: var(--layout-content-blockpadding);
+    padding-inline: var(--layout-content-inlinepadding);
+  }
 
   .ant-pro-sider-logo {
     padding-left: 22px;

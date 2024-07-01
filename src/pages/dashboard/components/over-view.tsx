@@ -57,9 +57,9 @@ const Overview: React.FC = () => {
           <Col
             xs={{ flex: '100%' }}
             sm={{ flex: '50%' }}
-            md={{ flex: '30%' }}
-            lg={{ flex: '20%' }}
-            xl={{ flex: '20%' }}
+            md={{ flex: '50%' }}
+            lg={{ flex: '25%' }}
+            xl={{ flex: '25%' }}
             key={config.key}
           >
             {renderCardItem({

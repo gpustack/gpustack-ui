@@ -31,6 +31,7 @@ export interface ModelInstanceListItem {
   gpu_index: number;
   pid: number;
   port: number;
+  name: string;
   state: string;
   download_progress: number;
   model_id: number;

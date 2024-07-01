@@ -1,5 +1,5 @@
 import LogoIcon from '@/assets/images/logo.png';
-import { userAtom } from '@/atoms/user';
+import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { GlobalOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { SelectLang, history, useIntl, useModel } from '@umijs/max';
@@ -26,6 +26,7 @@ const renderLogo = () => {
 };
 const LoginForm = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
+  const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState');
   const { globalState, setGlobalState } = useModel('global');
   const intl = useIntl();
@@ -62,6 +63,7 @@ const LoginForm = () => {
         userInfo
       });
       setUserInfo(userInfo);
+      setInitialPassword(values.password);
       if (!userInfo?.require_password_change) {
         gotoDefaultPage(userInfo);
       }

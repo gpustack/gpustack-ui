@@ -16,9 +16,10 @@ export default {
   'dashboard.gpuutilization': 'GPU 利用率',
   'dashboard.usage': '使用量',
   'dashboard.apirequest': 'API 请求',
-  'dashboard.tokens': 'Tokens',
+  'dashboard.tokens': 'Token 使用量',
   'dashboard.topusers': '用户排行',
   'dashboard.activeModels': '活跃模型',
   'dashboard.activeModels.name': '模型名称',
-  'dashboard.runninginstances': '运行实例'
+  'dashboard.runninginstances': '运行实例',
+  'dashboard.allocatevram': '已分配显存'
 };

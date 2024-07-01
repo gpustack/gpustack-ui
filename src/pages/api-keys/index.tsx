@@ -21,10 +21,9 @@ import {
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
-import { createApisKey, deleteApisKey, queryApisKeysList } from './apis';
+import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
-import { expirationOptions } from './config';
-import { FormData, ListItem } from './config/types';
+import { ListItem } from './config/types';
 
 const { Column } = Table;
 
@@ -67,24 +66,6 @@ const Models: React.FC = () => {
     setSortOrder(sorter.order);
   };
 
-  const getExpireValue = (val: number | null) => {
-    const expires_in = val;
-    if (expires_in === -1) {
-      return 0;
-    }
-    const selected = expirationOptions.find(
-      (item) => expires_in === item.value
-    );
-
-    const d1 = dayjs().add(
-      selected?.value as number,
-      `${selected?.type}` as never
-    );
-    const d2 = dayjs();
-    const res = d1.diff(d2, 'second');
-    return res;
-  };
-
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -118,19 +99,10 @@ const Models: React.FC = () => {
     setAction(PageAction.CREATE);
   };
 
-  const handleModalOk = async (data: FormData) => {
-    console.log('handleModalOk');
-
+  const handleModalOk = async () => {
     try {
-      const params = {
-        ...data,
-        expires_in: getExpireValue(data.expires_in)
-      };
-      const res = await createApisKey({ data: params });
       setOpenAddModal(false);
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
-      setDataSource([res, ...dataSource]);
-      setTotal(total + 1);
+      fetchData();
     } catch (error) {
       setOpenAddModal(false);
     }
@@ -273,9 +245,8 @@ const Models: React.FC = () => {
             key="name"
             width={400}
             ellipsis={{
-              showTitle: false
+              showTitle: true
             }}
-            render={renderSecrectKey}
           />
 
           <Column

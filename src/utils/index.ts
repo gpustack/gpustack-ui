@@ -20,9 +20,9 @@ export const handleBatchRequest = async (
 };
 
 export const convertFileSize = (sizeInBytes: number, prec?: number) => {
-  const precision = prec ?? 2;
+  const precision = prec ?? 1;
   if (!sizeInBytes) {
-    return '0 B';
+    return '0';
   }
   if (sizeInBytes < 1024) {
     return `${sizeInBytes.toFixed(precision)} B`;

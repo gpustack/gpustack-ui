@@ -11,12 +11,12 @@ export const overviewConfigs = [
     backgroundColor: 'var(--color-white-1)'
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
   },
-  {
-    key: 'allocatedGpus',
-    label: 'dashboard.allocategpus',
-    backgroundColor: 'var(--color-white-1)'
-    // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
-  },
+  // {
+  //   key: 'allocatedGpus',
+  //   label: 'dashboard.allocategpus',
+  //   backgroundColor: 'var(--color-white-1)'
+  //   // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
+  // },
   {
     key: 'model_count',
     label: 'dashboard.models',

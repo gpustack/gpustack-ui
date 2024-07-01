@@ -25,7 +25,6 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     labelFormatter
   } = props;
   const config = {
-    title,
     height,
     xField: xField || 'time',
     yField: yField || 'value',
@@ -49,6 +48,15 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     },
     style: {
       fill: 'rgba(84, 204, 152,0.8)'
+    },
+    title: {
+      title,
+      style: {
+        align: 'center',
+        titleFontSize: 14,
+        titleFill: 'rgba(0,0,0,0.88)',
+        titleFontWeight: 500
+      }
     },
     legend: {
       color: {

@@ -1,8 +1,7 @@
 import PageTools from '@/components/page-tools';
-import ProgressBar from '@/components/progress-bar';
+import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
-import _ from 'lodash';
 import { useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
@@ -77,21 +76,19 @@ const ActiveTable = () => {
       dataIndex: 'name',
       key: 'name'
     },
+    // {
+    //   title: intl.formatMessage({ id: 'dashboard.gpuutilization' }),
+    //   dataIndex: 'gpu_utilization',
+    //   key: 'gpu_utilization',
+    //   render: (text: any, record: any) => (
+    //     <ProgressBar percent={_.round(text, 0)}></ProgressBar>
+    //   )
+    // },
     {
-      title: intl.formatMessage({ id: 'dashboard.gpuutilization' }),
-      dataIndex: 'gpu_utilization',
-      key: 'gpu_utilization',
-      render: (text: any, record: any) => (
-        <ProgressBar percent={_.round(text, 0)}></ProgressBar>
-      )
-    },
-    {
-      title: intl.formatMessage({ id: 'dashboard.vramutilization' }),
-      dataIndex: 'gpu_memory_utilization',
+      title: intl.formatMessage({ id: 'dashboard.allocatevram' }),
+      dataIndex: 'allocate_gpu_memory_utilization',
       key: 'gpu_memory_utilization',
-      render: (text: any, record: any) => (
-        <ProgressBar percent={_.round(text, 0)}></ProgressBar>
-      )
+      render: (text: any, record: any) => <span>{convertFileSize(text)}</span>
     },
     {
       title: intl.formatMessage({ id: 'dashboard.runninginstances' }),
@@ -99,7 +96,7 @@ const ActiveTable = () => {
       key: 'instance_count'
     },
     {
-      title: 'Tokens',
+      title: intl.formatMessage({ id: 'dashboard.tokens' }),
       dataIndex: 'token_count',
       key: 'token_count'
     }

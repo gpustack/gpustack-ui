@@ -67,7 +67,7 @@ const UtilizationOvertime: React.FC = () => {
     const list: { value: number; time: string; type: string }[] = [];
     _.each(typeList, (type: any) => {
       const dataList = _.map(_.get(data, type, []), (item: any) => {
-        const value = _.get(item, 'value', 0);
+        const value = _.round(_.get(item, 'value', 0), 1);
         const time = dayjs(item.timestamp * 1000).format('HH:mm:ss');
         const itemtype = _.get(TypeKeyMap, [type, 'intl'], false)
           ? intl.formatMessage({

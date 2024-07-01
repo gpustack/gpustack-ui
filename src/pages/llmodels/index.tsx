@@ -1,3 +1,4 @@
+import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import RowChildren from '@/components/seal-table/components/row-children';
@@ -24,17 +25,7 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import {
-  Button,
-  Col,
-  Input,
-  Modal,
-  Row,
-  Space,
-  Tag,
-  Tooltip,
-  message
-} from 'antd';
+import { Button, Col, Input, Modal, Row, Space, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -79,6 +70,38 @@ const Models: React.FC = () => {
   );
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
 
+  const ActionList = [
+    {
+      label: intl.formatMessage({ id: 'common.button.edit' }),
+      key: 'edit',
+      icon: <EditOutlined />
+    },
+    {
+      label: intl.formatMessage({ id: 'models.openinplayground' }),
+      key: 'chat',
+      icon: <WechatWorkOutlined />
+    },
+    {
+      label: intl.formatMessage({ id: 'common.button.delete' }),
+      key: 'delete',
+      danger: true,
+      icon: <DeleteOutlined />
+    }
+  ];
+
+  const childActionList = [
+    {
+      label: intl.formatMessage({ id: 'common.button.viewlog' }),
+      key: 'viewlog',
+      icon: <FieldTimeOutlined />
+    },
+    {
+      label: intl.formatMessage({ id: 'common.button.delete' }),
+      key: 'delete',
+      danger: true,
+      icon: <DeleteOutlined />
+    }
+  ];
   const chunkRequedtRef = useRef<any>();
   const timer = useRef<any>();
   let axiosToken = createAxiosToken();
@@ -370,6 +393,27 @@ const Models: React.FC = () => {
     setTitle(intl.formatMessage({ id: 'models.title.edit' }));
   };
 
+  const handleSelect = (val: any, row: ListItem) => {
+    if (val === 'edit') {
+      handleEdit(row);
+    }
+    if (val === 'chat') {
+      handleOpenPlayGround(row);
+    }
+    if (val === 'delete') {
+      handleDelete(row);
+    }
+  };
+
+  const handleChildSelect = (val: any, row: ModelInstanceListItem) => {
+    if (val === 'delete') {
+      handleDeleteInstace(row);
+    }
+    if (val === 'viewlog') {
+      handleViewLogs(row);
+    }
+  };
+
   useEffect(() => {
     // fetchData();
     createModelsChunkRequest();
@@ -394,10 +438,7 @@ const Models: React.FC = () => {
             >
               <RowChildren key={`${item.id}_row`}>
                 <Row style={{ width: '100%' }} align="middle">
-                  <Col span={6}>
-                    <Tag>{item.gpu_index}</Tag>
-                    {item.worker_ip}:{item.port}
-                  </Col>
+                  <Col span={6}>{item.name}</Col>
                   <Col span={4}>
                     <span>{item.huggingface_filename}</span>
                   </Col>
@@ -423,33 +464,10 @@ const Models: React.FC = () => {
                     </span>
                   </Col>
                   <Col span={5}>
-                    {hoverChildIndex === `${item.id}-${index}` && (
-                      <Space size={20}>
-                        <Tooltip
-                          title={intl.formatMessage({
-                            id: 'common.button.delete'
-                          })}
-                        >
-                          <Button
-                            size="small"
-                            danger
-                            onClick={() => handleDeleteInstace(item)}
-                            icon={<DeleteOutlined></DeleteOutlined>}
-                          ></Button>
-                        </Tooltip>
-                        <Tooltip
-                          title={intl.formatMessage({
-                            id: 'common.button.viewlog'
-                          })}
-                        >
-                          <Button
-                            size="small"
-                            onClick={() => handleViewLogs(item)}
-                            icon={<FieldTimeOutlined />}
-                          ></Button>
-                        </Tooltip>
-                      </Space>
-                    )}
+                    <DropdownButtons
+                      items={childActionList}
+                      onSelect={(val) => handleChildSelect(val, item)}
+                    ></DropdownButtons>
                   </Col>
                 </Row>
               </RowChildren>
@@ -570,43 +588,10 @@ const Models: React.FC = () => {
             key="operation"
             render={(text, record) => {
               return !record.transition ? (
-                <Space size={20}>
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'common.button.edit'
-                    })}
-                  >
-                    <Button
-                      size="small"
-                      type="primary"
-                      onClick={() => handleEdit(record)}
-                      icon={<EditOutlined></EditOutlined>}
-                    ></Button>
-                  </Tooltip>
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'models.openinplayground'
-                    })}
-                  >
-                    <Button
-                      size="small"
-                      type="primary"
-                      onClick={() => handleOpenPlayGround(record)}
-                      icon={<WechatWorkOutlined />}
-                    ></Button>
-                  </Tooltip>
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'common.button.delete' })}
-                  >
-                    <Button
-                      size="small"
-                      type="primary"
-                      danger
-                      onClick={() => handleDelete(record)}
-                      icon={<DeleteOutlined></DeleteOutlined>}
-                    ></Button>
-                  </Tooltip>
-                </Space>
+                <DropdownButtons
+                  items={ActionList}
+                  onSelect={(val) => handleSelect(val, record)}
+                ></DropdownButtons>
               ) : null;
             }}
           />

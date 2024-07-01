@@ -1,4 +1,4 @@
-import { userAtom } from '@/atoms/user';
+import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
 import { GlobalOutlined, LockOutlined } from '@ant-design/icons';
@@ -12,6 +12,7 @@ const PasswordForm: React.FC = () => {
   const [form] = Form.useForm();
 
   const [userInfo, setUserInfo] = useAtom(userAtom);
+  const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const gotoDefaultPage = (userInfo: any) => {
     const pathname =
       userInfo && userInfo?.is_admin ? '/dashboard' : '/playground';
@@ -23,13 +24,14 @@ const PasswordForm: React.FC = () => {
     try {
       await updatePassword({
         new_password: values.new_password,
-        current_password: values.current_password
+        current_password: initialPassword
       });
 
       await setUserInfo({
         ...userInfo,
         require_password_change: false
       });
+      setInitialPassword('');
       gotoDefaultPage(userInfo);
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
@@ -63,7 +65,7 @@ const PasswordForm: React.FC = () => {
             {intl.formatMessage({ id: 'users.password.modify.description' })}
           </span>
         </h2>
-
+        {/* 
         <Form.Item
           name="current_password"
           rules={[
@@ -82,7 +84,7 @@ const PasswordForm: React.FC = () => {
             prefix={<LockOutlined />}
             label={intl.formatMessage({ id: 'users.form.currentpassword' })}
           />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item
           name="new_password"
           rules={[

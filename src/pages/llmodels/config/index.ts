@@ -1,4 +1,5 @@
 import { StatusMaps } from '@/config';
+import { EditOutlined } from '@ant-design/icons';
 
 export const ollamaModelOptions = [
   { label: 'llama3', value: 'llama3' },
@@ -20,3 +21,21 @@ export const modelSourceMap = {
 export const status: any = {
   Running: StatusMaps.success
 };
+
+export const ActionList = [
+  {
+    label: 'common.button.edit',
+    key: 'edit',
+    icon: EditOutlined
+  },
+  {
+    label: 'models.openinplayground',
+    key: 'chat',
+    icon: EditOutlined
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
+    icon: EditOutlined
+  }
+];

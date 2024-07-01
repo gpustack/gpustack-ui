@@ -92,6 +92,19 @@ const tokenUsage = TokensData.map((val, i) => {
   };
 });
 
+const getCurrentMonthDays = () => {
+  const now = dayjs();
+  const firstDayOfMonth = now.startOf('month');
+  const dateRange = [];
+  let currentDate = firstDayOfMonth;
+
+  while (currentDate.isBefore(now) || currentDate.isSame(now, 'day')) {
+    dateRange.push(currentDate.format('YYYY-MM-DD'));
+    currentDate = currentDate.add(1, 'day');
+  }
+  return dateRange;
+};
+
 const Usage = () => {
   const intl = useIntl();
   const { size } = useWindowResize();
@@ -105,8 +118,11 @@ const Usage = () => {
   const [userData, setUserData] = useState<{ name: string; value: number }[]>(
     []
   );
+  const [dateRange, setDateRange] = useState<string[]>(getCurrentMonthDays());
+
   const data = useContext(DashboardContext)?.model_usage || {};
 
+  console.log('dateRange', dateRange);
   const handleSelectDate = (dateString: string) => {};
 
   const generateData = () => {
@@ -126,26 +142,67 @@ const Usage = () => {
 
     _.each(data.api_request_history, (item: any) => {
       requestList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM'),
+        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
         value: item.value
       });
     });
 
-    _.each(data.completion_token_history, (item: any) => {
-      tokenList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM'),
-        name: 'completion_token',
-        color: 'rgba(84, 204, 152,0.8)',
-        value: item.value
+    _.each(dateRange, (date: string) => {
+      // tokens data
+      const item = _.find(data.completion_token_history, (item: any) => {
+        return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
       });
-    });
-    _.each(data.prompt_token_history, (item: any) => {
-      tokenList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM'),
-        name: 'prompt_token',
-        color: 'rgba(0, 170, 173, 0.8)',
-        value: item.value
+      if (!item) {
+        tokenList.push({
+          time: date,
+          name: 'completion_token',
+          color: 'rgba(84, 204, 152,0.8)',
+          value: 0
+        });
+      } else {
+        tokenList.push({
+          time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+          name: 'completion_token',
+          color: 'rgba(84, 204, 152,0.8)',
+          value: item.value
+        });
+      }
+
+      const promptItem = _.find(data.prompt_token_history, (item: any) => {
+        return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
       });
+      if (!promptItem) {
+        tokenList.push({
+          time: date,
+          name: 'prompt_token',
+          color: 'rgba(0, 170, 173, 0.8)',
+          value: 0
+        });
+      } else {
+        tokenList.push({
+          time: dayjs(promptItem.timestamp * 1000).format('YYYY-MM-DD'),
+          name: 'prompt_token',
+          color: 'rgba(0, 170, 173, 0.8)',
+          value: promptItem.value
+        });
+      }
+
+      // api request data
+      const requestItem = _.find(data.api_request_history, (item: any) => {
+        return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
+      });
+
+      if (!requestItem) {
+        requestList.push({
+          time: date,
+          value: 0
+        });
+      } else {
+        requestList.push({
+          time: dayjs(requestItem.timestamp * 1000).format('YYYY-MM-DD'),
+          value: requestItem.value
+        });
+      }
     });
 
     _.each(data.top_users, (item: any) => {
@@ -190,7 +247,7 @@ const Usage = () => {
           </span>
         }
         right={
-          <RangePicker
+          <DatePicker
             onChange={handleSelectDate}
             style={{ width: 300 }}
             picker="month"

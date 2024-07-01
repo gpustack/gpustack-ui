@@ -1,3 +1,4 @@
+import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
@@ -14,7 +15,7 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
+import { Button, Input, Modal, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -44,6 +45,19 @@ const Models: React.FC = () => {
     query: ''
   });
 
+  const ActionList = [
+    {
+      key: 'edit',
+      label: intl.formatMessage({ id: 'common.button.edit' }),
+      icon: <EditOutlined></EditOutlined>
+    },
+    {
+      key: 'delete',
+      danger: true,
+      label: intl.formatMessage({ id: 'common.button.delete' }),
+      icon: <DeleteOutlined></DeleteOutlined>
+    }
+  ];
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -172,6 +186,14 @@ const Models: React.FC = () => {
     setTitle(intl.formatMessage({ id: 'users.form.edit' }));
   };
 
+  const handleSelect = (val: any, row: ListItem) => {
+    if (val === 'edit') {
+      handleEditUser(row);
+    } else if (val === 'delete') {
+      handleDelete(row);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, [queryParams]);
@@ -296,29 +318,10 @@ const Models: React.FC = () => {
             width={200}
             render={(text, record: ListItem) => {
               return (
-                <Space size={20}>
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'common.button.edit' })}
-                  >
-                    <Button
-                      size="small"
-                      type="primary"
-                      onClick={() => handleEditUser(record)}
-                      icon={<EditOutlined></EditOutlined>}
-                    ></Button>
-                  </Tooltip>
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'common.button.delete' })}
-                  >
-                    <Button
-                      size="small"
-                      type="primary"
-                      danger
-                      onClick={() => handleDelete(record)}
-                      icon={<DeleteOutlined></DeleteOutlined>}
-                    ></Button>
-                  </Tooltip>
-                </Space>
+                <DropdownButtons
+                  items={ActionList}
+                  onSelect={(val) => handleSelect(val, record)}
+                ></DropdownButtons>
               );
             }}
           />

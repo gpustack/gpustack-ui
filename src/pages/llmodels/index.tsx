@@ -464,10 +464,12 @@ const Models: React.FC = () => {
                     </span>
                   </Col>
                   <Col span={5}>
-                    <DropdownButtons
-                      items={childActionList}
-                      onSelect={(val) => handleChildSelect(val, item)}
-                    ></DropdownButtons>
+                    <div style={{ paddingLeft: 39 }}>
+                      <DropdownButtons
+                        items={childActionList}
+                        onSelect={(val) => handleChildSelect(val, item)}
+                      ></DropdownButtons>
+                    </div>
                   </Col>
                 </Row>
               </RowChildren>

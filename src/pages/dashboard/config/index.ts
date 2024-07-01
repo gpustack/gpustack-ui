@@ -1,6 +1,6 @@
 export const overviewConfigs = [
   {
-    key: 'workworker_count',
+    key: 'worker_count',
     label: 'dashboard.workers',
     // backgroundColor: 'linear-gradient(135deg, #ffffff, rgb(232 249 240 / 60%))'
     backgroundColor: 'var(--color-white-1)'

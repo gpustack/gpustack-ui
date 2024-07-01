@@ -1,4 +1,4 @@
-import CardWrapper from '@/components/card-wrapper';
+import { PageContainer } from '@ant-design/pro-components';
 import { useSearchParams } from '@umijs/max';
 import { Divider } from 'antd';
 import { useState } from 'react';
@@ -27,8 +27,8 @@ const Playground: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '32px 40px' }}>
-      <CardWrapper>
+    <div>
+      <PageContainer ghost extra={[]}>
         <div className="play-ground">
           <div className="chat">
             <GroundLeft parameters={params}></GroundLeft>
@@ -45,7 +45,7 @@ const Playground: React.FC = () => {
             />
           </div>
         </div>
-      </CardWrapper>
+      </PageContainer>
     </div>
   );
 };

@@ -44,7 +44,10 @@ const Profile: React.FC = () => {
         extra={[]}
       >
         <CardWrapper
-          style={{ padding: '32px', marginTop: '70px', width: 'max-content' }}
+          style={{
+            padding: 'var(--layout-content-inlinepadding)',
+            width: 'max-content'
+          }}
         >
           <Form
             style={{ width: '524px' }}

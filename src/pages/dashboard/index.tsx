@@ -1,3 +1,4 @@
+import { PageContainer } from '@ant-design/pro-components';
 import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { queryDashboardData } from './apis';
@@ -27,14 +28,16 @@ const Dashboard: React.FC = () => {
     getDashboardData();
   }, []);
   return (
-    <Spin spinning={loading}>
-      <DashboardContext.Provider value={{ ...data }}>
-        <Overview></Overview>
-        <SystemLoad></SystemLoad>
-        <Usage></Usage>
-        <ActiveTable></ActiveTable>
-      </DashboardContext.Provider>
-    </Spin>
+    <PageContainer ghost extra={[]}>
+      <Spin spinning={loading}>
+        <DashboardContext.Provider value={{ ...data }}>
+          <Overview></Overview>
+          <SystemLoad></SystemLoad>
+          <Usage></Usage>
+          <ActiveTable></ActiveTable>
+        </DashboardContext.Provider>
+      </Spin>
+    </PageContainer>
   );
 };
 

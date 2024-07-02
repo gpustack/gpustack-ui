@@ -162,14 +162,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               field: 'temperature',
               label: 'Temperature'
             })}
-            style={{ paddingLeft: 0 }}
+            style={{ paddingInline: 0 }}
             variant="borderless"
           >
             <Slider
               defaultValue={1}
               max={2}
               step={0.1}
-              style={{ marginBottom: 0 }}
+              style={{ marginBottom: 0, marginTop: 16 }}
               tooltip={{ open: false }}
               value={form.getFieldValue('temperature') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'temperature')}
@@ -185,14 +185,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               field: 'max_tokens',
               label: 'Max Tokens'
             })}
-            style={{ paddingLeft: 0 }}
+            style={{ paddingInline: 0 }}
             variant="borderless"
           >
             <Slider
               defaultValue={1024}
               max={16384}
               step={1}
-              style={{ marginBottom: 0 }}
+              style={{ marginBottom: 0, marginTop: 16 }}
               tooltip={{ open: false }}
               value={form.getFieldValue('max_tokens') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'max_tokens')}
@@ -208,14 +208,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               field: 'top_p',
               label: 'Top P'
             })}
-            style={{ paddingLeft: 0 }}
+            style={{ paddingInline: 0 }}
             variant="borderless"
           >
             <Slider
               defaultValue={1}
               max={1}
               step={0.1}
-              style={{ marginBottom: 0 }}
+              style={{ marginBottom: 0, marginTop: 16 }}
               tooltip={{ open: false }}
               value={form.getFieldValue('top_p') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'top_p')}
@@ -231,7 +231,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               field: 'seed',
               label: 'Seed'
             })}
-            style={{ paddingLeft: 0 }}
+            style={{ paddingInline: 0 }}
             variant="borderless"
           >
             <Slider
@@ -240,13 +240,9 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
               tooltip={{ open: false }}
               value={form.getFieldValue('seed') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'seed')}
-              style={{ marginBottom: 0 }}
+              style={{ marginBottom: 0, marginTop: 16 }}
             ></Slider>
           </FieldWrapper>
-          {/* <SealInput.Number
-            label="Seed"
-            style={{ width: INPUT_WIDTH.mini }}
-          ></SealInput.Number> */}
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="stop"

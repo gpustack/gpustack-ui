@@ -25,13 +25,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      width={'max(50%, 600px)'}
       style={{ top: '80px' }}
       footer={null}
     >
       <LogsViewer
         content={content}
-        height={400}
+        height={500}
         url={url}
         params={{
           follow: false

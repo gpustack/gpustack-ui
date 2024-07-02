@@ -14,6 +14,16 @@ export default {
       iconSize: 16,
       iconMarginInlineEnd: 12,
       itemHeight: 44
+    },
+    Progress: {
+      lineBorderRadius: 4
+    },
+    Slider: {
+      handleSize: 8,
+      handleSizeHover: 10
+      // handleColor: '#007BFF'
+      // trackBg: '#007BFF',
+      // trackHoverBg: '#007BFF'
     }
   },
   token: {

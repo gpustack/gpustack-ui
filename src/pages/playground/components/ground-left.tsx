@@ -1,7 +1,7 @@
 import TransitionWrapper from '@/components/transition';
 import HotKeys from '@/config/hotkeys';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
-import { EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
@@ -39,6 +39,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
 
   const intl = useIntl();
   const [systemMessage, setSystemMessage] = useState('');
+  const [collapsed, setCollapsed] = useState(true);
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -56,7 +57,8 @@ const MessageList: React.FC<MessageProps> = (props) => {
   };
   const handleNewMessage = () => {
     messageList.push({
-      role: 'user',
+      role:
+        _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
       content: '',
       uid: messageId.current + 1
     });
@@ -95,7 +97,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
         messages: systemMessage
           ? [
               {
-                role: 'system',
+                role: Roles.System,
                 content: systemMessage
               },
               ...messageList
@@ -124,7 +126,8 @@ const MessageList: React.FC<MessageProps> = (props) => {
     }
   };
   const handleClear = () => {
-    setMessageList([]);
+    const headItem = _.get(messageList, '0');
+    setMessageList(headItem ? [headItem] : []);
   };
 
   const handleView = () => {
@@ -156,7 +159,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
           {intl.formatMessage({ id: 'playground.system' })}
         </span>
         <Button type="primary" size="small">
-          <EyeInvisibleOutlined />
+          {collapsed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
         </Button>
       </div>
     );
@@ -189,6 +192,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
           <TransitionWrapper
             header={renderLabel()}
             variant="filled"
+            setCollapsed={setCollapsed}
             ref={systemRef}
           >
             <Input.TextArea

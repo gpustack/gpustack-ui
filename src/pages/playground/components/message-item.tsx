@@ -1,7 +1,8 @@
+import CopyButton from '@/components/copy-button';
 import HotKeys from '@/config/hotkeys';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input } from 'antd';
+import { Button, Input, Space } from 'antd';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
@@ -129,14 +130,19 @@ const MessageItem: React.FC<{
         ></Input.TextArea>
       </div>
       <div className="delete-btn">
-        <Button
-          type="text"
-          shape="circle"
-          size="small"
-          style={{ color: 'var(--ant-color-primary)' }}
-          onClick={handleDelete}
-          icon={<MinusCircleOutlined />}
-        ></Button>
+        <Space size={5}>
+          {messageContent && (
+            <CopyButton text={messageContent} size="small"></CopyButton>
+          )}
+          <Button
+            type="text"
+            shape="circle"
+            size="small"
+            style={{ color: 'var(--ant-color-primary)' }}
+            onClick={handleDelete}
+            icon={<MinusCircleOutlined />}
+          ></Button>
+        </Space>
       </div>
     </div>
   );

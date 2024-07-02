@@ -9,12 +9,10 @@ import type { PageActionType } from '@/config/types';
 import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
-import useEventSource from '@/hooks/use-event-source';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { handleBatchRequest } from '@/utils';
-import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -33,7 +31,6 @@ import {
   MODELS_API,
   MODEL_INSTANCE_API,
   createModel,
-  createModelInstance,
   deleteModel,
   deleteModelInstance,
   queryModelInstancesList,
@@ -55,7 +52,6 @@ const Models: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const { createEventSourceConnection, eventSourceRef } = useEventSource();
   const [logContent, setLogContent] = useState('');
   const [openLogModal, setOpenLogModal] = useState(false);
   const [hoverChildIndex, setHoverChildIndex] = useState<string | number>(-1);
@@ -137,14 +133,6 @@ const Models: React.FC = () => {
     }
   };
 
-  // update data by polling
-  const fetchDataByPolling = () => {
-    clearInterval(timer.current);
-    timer.current = setInterval(() => {
-      fetchData(true);
-    }, 5000);
-  };
-
   const handleShowSizeChange = (page: number, size: number) => {
     console.log(page, size);
     setQueryParams({
@@ -192,38 +180,6 @@ const Models: React.FC = () => {
     } catch (error) {
       // ignore
     }
-  };
-
-  const createModelsDataByFetch = async () => {
-    const result = await fetchChunkedData({
-      params: {
-        ..._.pickBy(queryParams, (val: any) => !!val),
-        watch: true
-      },
-      method: 'GET',
-      url: `/v1${MODELS_API}`
-    });
-    if (!result) {
-      return;
-    }
-    const { reader, decoder } = result;
-
-    await readStreamData(reader, decoder, (data: any) => {
-      console.log('streamData=========', data);
-    });
-  };
-
-  const createModelEvent = () => {
-    createEventSourceConnection({
-      url: `v1${MODELS_API}`,
-      params: {
-        ..._.pickBy(queryParams, (val: any) => !!val),
-        watch: true
-      },
-      onmessage: (data: any) => {
-        console.log('event source message: ', data);
-      }
-    });
   };
 
   const handleSearch = (e: any) => {
@@ -303,44 +259,9 @@ const Models: React.FC = () => {
     navigate(`/playground?model=${row.name}`);
   };
 
-  const handleDeployInstance = async (row: any) => {
-    try {
-      const data = {
-        model_id: row.id,
-        model_name: row.name,
-        huggingface_repo_id: row.huggingface_repo_id,
-        huggingface_filename: row.huggingface_filename,
-        source: row.source
-      };
-      await createModelInstance({ data });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
-    } catch (error) {}
-  };
-
-  const handleStreamData = (data: any) => {
-    setLogContent(data);
-  };
-
   const handleViewLogs = async (row: any) => {
     try {
-      // const result = await fetchChunkedData({
-      //   url: `/v1${MODEL_INSTANCE_API}/${row.id}/logs`,
-      //   params: {
-      //     follow: false
-      //   },
-      //   method: 'GET'
-      // });
-      // if (!result) {
-      //   setLogContent('');
-      // } else {
-      //   const { reader, decoder } = result;
-      //   await readStreamData(reader, decoder, (chunk: any) => {
-      //     handleStreamData(chunk);
-      //   });
-      // }
-
       setCurrentInstanceUrl(`${MODEL_INSTANCE_API}/${row.id}/logs`);
-
       setOpenLogModal(true);
     } catch (error) {
       console.log('error:', error);
@@ -433,7 +354,9 @@ const Models: React.FC = () => {
               onMouseLeave={handleOnMouseLeave}
               style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
               className={
-                item.download_progress !== 100 ? 'skeleton-loading' : ''
+                item.download_progress !== 100 && item.state !== 'Running'
+                  ? 'skeleton-loading'
+                  : ''
               }
             >
               <RowChildren key={`${item.id}_row`}>
@@ -444,19 +367,21 @@ const Models: React.FC = () => {
                   </Col>
 
                   <Col span={4}>
-                    {item.state && (
-                      <StatusTag
-                        download={
-                          item.state !== 'Running'
-                            ? { percent: item.download_progress }
-                            : undefined
-                        }
-                        statusValue={{
-                          status: status[item.state] as any,
-                          text: item.state
-                        }}
-                      ></StatusTag>
-                    )}
+                    <span style={{ paddingLeft: '22px' }}>
+                      {item.state && (
+                        <StatusTag
+                          download={
+                            item.state !== 'Running'
+                              ? { percent: item.download_progress }
+                              : undefined
+                          }
+                          statusValue={{
+                            status: status[item.state] as any,
+                            text: item.state
+                          }}
+                        ></StatusTag>
+                      )}
+                    </span>
                   </Col>
                   <Col span={5}>
                     <span style={{ paddingLeft: 36 }}>

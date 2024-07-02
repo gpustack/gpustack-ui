@@ -30,7 +30,7 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     yField: yField || 'value',
     autoFit: true,
     slider,
-    shapeField: 'smooth',
+    // shapeField: 'smooth',
     axis: {
       x: {
         textStyle: {

@@ -135,7 +135,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         closeIcon={true}
         maskClosable={false}
         keyboard={false}
-        width={600}
+        width={'max(50%, 600px)'}
         style={{ top: '80px' }}
         footer={null}
       >
@@ -151,7 +151,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
             onChangeLang={handleOnChangeLang}
           >
             <Editor
-              height="400px"
+              height="500px"
               theme="vs-dark"
               className="monaco-editor"
               defaultLanguage="shell"

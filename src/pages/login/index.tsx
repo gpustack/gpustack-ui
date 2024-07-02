@@ -21,7 +21,7 @@ const Login = () => {
   }, [userInfo]);
 
   return (
-    <div>
+    <div className="login-wrapper">
       {userInfo?.require_password_change ? <PasswordForm /> : <LoginForm />}
     </div>
   );

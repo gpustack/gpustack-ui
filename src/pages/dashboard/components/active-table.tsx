@@ -105,7 +105,7 @@ const ActiveTable = () => {
     <Row gutter={[20, 0]}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
         <PageTools
-          style={{ margin: '32px 8px' }}
+          style={{ margin: '26px 0px' }}
           left={
             <span
               style={{ fontSize: 'var(--font-size-large)', padding: '9px 0' }}

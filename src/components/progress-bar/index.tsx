@@ -29,12 +29,12 @@ const RenderProgress = memo(
           <Tooltip title={label}>
             <Progress
               percentPosition={{ align: 'center', type: 'inner' }}
-              size={[undefined, 12]}
+              size={[undefined, 16]}
               format={() => {
                 return (
                   <span
                     style={{
-                      color: 'var(--ant-color-text)'
+                      color: '#fff'
                     }}
                   >
                     {percent}%
@@ -49,12 +49,12 @@ const RenderProgress = memo(
           <Progress
             type="line"
             percentPosition={{ align: 'center', type: 'inner' }}
-            size={[undefined, 12]}
+            size={[undefined, 16]}
             format={() => {
               return (
                 <span
                   style={{
-                    color: 'var(--ant-color-text)'
+                    color: '#fff'
                   }}
                 >
                   {percent}%

@@ -11,11 +11,6 @@ import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
 const SystemLoad = () => {
-  const colors = [
-    'linear-gradient(90deg, rgba(84, 204, 152,.8) 0%, rgba(84, 204, 152,0.5) 50%,  rgba(84, 204, 152,.8) 100%)',
-    'linear-gradient(90deg, rgba(255, 214, 102,.8) 0%, rgba(255, 214, 102,0.5) 50%,  rgba(255, 214, 102,.8) 100%)',
-    'linear-gradient(90deg, rgba(255, 120, 117,.8) 0%, rgba(255, 120, 117,0.5) 50%,  rgba(255, 120, 117,.8) 100%)'
-  ];
   const intl = useIntl();
   const data = useContext(DashboardContext)?.system_load?.current || {};
   const { size } = useWindowResize();
@@ -39,7 +34,7 @@ const SystemLoad = () => {
     <div>
       <div className="system-load">
         <PageTools
-          style={{ margin: '32px 8px' }}
+          style={{ margin: '26px 0px' }}
           left={
             <span style={{ fontSize: 'var(--font-size-large)' }}>
               {intl.formatMessage({ id: 'dashboard.systemload' })}

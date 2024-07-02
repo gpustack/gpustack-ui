@@ -13,6 +13,7 @@ interface BarChartProps {
   seriesField?: string;
   stack?: boolean;
   legend?: any;
+  labelFormatter?: (v: any) => string;
 }
 const BarChart: React.FC<BarChartProps> = (props) => {
   const {
@@ -25,7 +26,8 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     colorField,
     seriesField,
     stack,
-    legend = undefined
+    legend = undefined,
+    labelFormatter
   } = props;
   const config = {
     data,
@@ -57,7 +59,8 @@ const BarChart: React.FC<BarChartProps> = (props) => {
     axis: {
       x: {
         xAxis: true,
-        tick: false
+        tick: false,
+        labelFormatter
       },
       y: {
         tick: false,
@@ -86,10 +89,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
 
     style: {
       fill: (params: any) => {
-        return (
-          params.color ||
-          'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgb(0, 168, 143,.7) 100%)'
-        );
+        return params.color || 'rgba(84, 204, 152,0.8)';
       },
       // radiusTopLeft: 12,
       // radiusTopRight: 12,

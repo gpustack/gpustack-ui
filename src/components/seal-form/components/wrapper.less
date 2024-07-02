@@ -3,11 +3,12 @@
   @inputheight: 32px;
   @borderRadius: 8px;
   @input-inner-padding: 12px;
+  @bgColor: transparent;
 
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   height: 54px;
   border-width: var(--ant-line-width);
   border-style: var(--ant-line-type);
@@ -15,6 +16,7 @@
   border-radius: @borderRadius;
   padding-inline: 12px;
   padding-block: 20px 0;
+  background-color: var(--color-white-1);
 
   &.filled {
     border: none;
@@ -105,6 +107,7 @@
   }
 
   // ==================== select ==================
+
   :global(.ant-select) {
     display: flex;
     align-items: center;
@@ -118,6 +121,7 @@
     padding-block: 5px;
     padding-inline: @input-inner-padding !important;
     box-shadow: none !important;
+    background-color: @bgColor !important;
   }
 
   :global(.ant-select-selection-item) {
@@ -125,6 +129,10 @@
     padding-block: 5px !important;
     line-height: 22px !important;
     padding-inline-end: 0 !important;
+  }
+
+  :global(.ant-select-auto-complete) :global(.ant-select-selector) {
+    padding-inline: 0 !important;
   }
 
   :global(.ant-select-arrow) {
@@ -144,6 +152,7 @@
   // ==================== input ====================
   :global(.ant-input),
   :global(.ant-input-password) {
+    width: 100%;
     display: flex;
     align-items: center;
     border: none;
@@ -151,6 +160,11 @@
     padding-block: 5px;
     padding-inline: 12px;
     height: @inputheight !important;
+    background-color: @bgColor;
+  }
+
+  :global(.ant-input.seal-textarea) {
+    width: 100%;
   }
 
   :global(.ant-input-number) {
@@ -160,6 +174,7 @@
     box-shadow: none;
     padding: 0;
     height: @inputheight !important;
+    background-color: @bgColor;
   }
 
   :global(.ant-input-outlined) {
@@ -170,6 +185,7 @@
     padding-block: 5px;
     padding-inline: @input-inner-padding;
     height: @inputheight !important;
+    background-color: transparent;
 
     &.seal-textarea {
       min-height: 100px !important;
@@ -213,7 +229,7 @@
   :global(.ant-input-search-button) {
     position: absolute;
     top: -20px;
-    right: -11px;
+    right: 0;
     border-radius: 0 @borderRadius @borderRadius 0 !important;
     overflow: hidden;
     border: none;

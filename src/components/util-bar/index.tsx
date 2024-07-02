@@ -25,12 +25,12 @@ const UitilBar: React.FC<UitilBarProps> = (props) => {
 
   const strokeColorFunc = (percent: number) => {
     if (percent <= 50) {
-      return 'var(--ant-color-primary)';
+      return 'var(--color-chart-green)';
     }
     if (percent <= 80) {
-      return 'var(--ant-color-warning)';
+      return 'var(--color-chart-glod)';
     }
-    return 'var(--ant-color-error)';
+    return 'var(--color-chart-red)';
   };
   return (
     <div className="util-bar-box">

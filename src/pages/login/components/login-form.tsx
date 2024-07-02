@@ -1,12 +1,22 @@
 import LogoIcon from '@/assets/images/logo.png';
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
+import {
+  getRememberMe,
+  rememberMe,
+  removeRememberMe
+} from '@/utils/localstore/index';
 import { GlobalOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { SelectLang, history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
+import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
+import { useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
+
+const REMEMBER_ME_KEY = 'r_m';
+const CRYPT_TEXT = 'seal';
 
 const renderLogo = () => {
   return (
@@ -28,7 +38,6 @@ const LoginForm = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState');
-  const { globalState, setGlobalState } = useModel('global');
   const intl = useIntl();
   const [form] = Form.useForm();
 
@@ -51,27 +60,64 @@ const LoginForm = () => {
     return userInfo;
   };
 
+  const encryptPassword = (password: string) => {
+    const psw = CryptoJS.AES?.encrypt?.(password, CRYPT_TEXT).toString();
+    return psw;
+  };
+  const decryptPassword = (password: string) => {
+    const bytes = CryptoJS.AES?.decrypt?.(password, CRYPT_TEXT);
+    const res = bytes.toString(CryptoJS.enc.Utf8);
+    return res;
+  };
+
+  const callRememberMe = async (values: any) => {
+    const { autoLogin } = values;
+    if (autoLogin) {
+      await rememberMe(REMEMBER_ME_KEY, {
+        um: encryptPassword(values.username),
+        pw: encryptPassword(values.password),
+        f: true
+      });
+    } else {
+      await removeRememberMe(REMEMBER_ME_KEY);
+    }
+  };
+
+  const callGetRememberMe = async () => {
+    const rememberMe = await getRememberMe(REMEMBER_ME_KEY);
+
+    if (rememberMe?.f) {
+      const username = decryptPassword(rememberMe?.um);
+      const password = decryptPassword(rememberMe?.pw);
+      form.setFieldsValue({ username, password, autoLogin: true });
+    }
+  };
+
   const handleLogin = async (values: any) => {
-    console.log('values', values, form);
     try {
       await login({
         username: values.username,
         password: values.password
       });
       const userInfo = await fetchUserInfo();
-      setGlobalState({
-        userInfo
-      });
       setUserInfo(userInfo);
       setInitialPassword(values.password);
+      if (values.autoLogin) {
+        await callRememberMe(values);
+      } else {
+        await removeRememberMe(REMEMBER_ME_KEY);
+      }
       if (!userInfo?.require_password_change) {
         gotoDefaultPage(userInfo);
       }
-      // gotoDefaultPage(userInfo);
     } catch (error) {
-      console.log('error====', error);
+      // to do something
     }
   };
+
+  useEffect(() => {
+    callGetRememberMe();
+  }, []);
 
   return (
     <div>
@@ -119,12 +165,10 @@ const LoginForm = () => {
             label={intl.formatMessage({ id: 'common.form.password' })}
           />
         </Form.Item>
-        <Form.Item name="autoLogin">
-          <div style={{ paddingLeft: 10 }}>
-            <Checkbox>
-              {intl.formatMessage({ id: 'common.login.rember' })}
-            </Checkbox>
-          </div>
+        <Form.Item name="autoLogin" valuePropName="checked">
+          <Checkbox style={{ marginLeft: 10 }}>
+            {intl.formatMessage({ id: 'common.login.rember' })}
+          </Checkbox>
         </Form.Item>
         <Button htmlType="submit" type="primary" block>
           {intl.formatMessage({ id: 'menu.login' })}

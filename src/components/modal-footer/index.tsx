@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 
 type ModalFooterProps = {
@@ -18,10 +19,11 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   htmlType = 'button',
   form
 }) => {
+  const intl = useIntl();
   return (
     <Space size={20}>
       <Button onClick={onCancel} style={{ width: '88px' }} loading={loading}>
-        {cancelText || '取消'}
+        {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
       </Button>
       <Button
         type="primary"
@@ -30,7 +32,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
         loading={loading}
         htmlType={htmlType}
       >
-        {okText || '保存'}
+        {okText || intl.formatMessage({ id: 'common.button.save' })}
       </Button>
     </Space>
   );

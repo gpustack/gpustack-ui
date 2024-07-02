@@ -225,6 +225,10 @@ const Usage = () => {
     setUserData(userList);
   };
 
+  const labelFormatter = (v: any) => {
+    return dayjs(v).format('MM-DD');
+  };
+
   useEffect(() => {
     if (size.width < breakpoints.xl) {
       setPaddingRight('0');
@@ -240,7 +244,7 @@ const Usage = () => {
   return (
     <>
       <PageTools
-        style={{ margin: '32px 8px' }}
+        style={{ margin: '26px 0px' }}
         left={
           <span style={{ fontSize: 'var(--font-size-large)' }}>
             {intl.formatMessage({ id: 'dashboard.usage' })}
@@ -272,6 +276,7 @@ const Usage = () => {
                   xField="time"
                   yField="value"
                   height={360}
+                  labelFormatter={labelFormatter}
                 ></AreaChart>
               </Col>
               <Col span={12}>
@@ -285,6 +290,7 @@ const Usage = () => {
                   legend={false}
                   yField="value"
                   height={360}
+                  labelFormatter={labelFormatter}
                 ></ColumnBar>
               </Col>
             </Row>

@@ -35,15 +35,15 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       x: {
         textStyle: {
           autoRoate: true
-        }
+        },
+        labelFormatter
       },
       y: {
         tick: false,
         // size: 14,
         // title: '%',
         titlePosition: 'top',
-        titleFontSize: 12,
-        labelFormatter
+        titleFontSize: 12
       }
     },
     style: {

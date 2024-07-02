@@ -5,6 +5,7 @@ html {
   --ant-color-fill-tertiary: rgba(0, 0, 0, 4%);
   --color-fill-1: var(--ant-color-fill-tertiary);
   // --color-fill-1: #fff;
+  --ant-color-text: #000;
   --color-fill-2: #fff;
   --color-fill-3: #f3f6fa;
   --color-logs-bg: #1e1e1e;
@@ -16,11 +17,12 @@ html {
   --border-radius-middle: 20px;
   --border-radius-small: 8px;
   --color-white-1: rgba(255, 255, 255, 100%);
+  --color-fill-sider: #f4f5f4;
   --font-weight-normal: 500;
   --font-weight-medium: 600;
   --font-weight-bold: 700;
   --color-text-1: var(--ant-color-text);
-  --color-bg-light-1: #f0fff6;
+  --color-bg-light-1: #e6f6ff;
   --font-size-base: 12px;
   --font-size-large: 16px;
   --font-size-middle: 14px;
@@ -31,18 +33,19 @@ html {
   --ant-table-cell-padding-block: 8px;
   --ant-table-header-border-radius: 8px;
   --ant-table-header-split-color: #f0f0f0;
-  --ant-table-row-selected-bg: #f0fff6;
-  --ant-table-row-selected-hover-bg: #d8f2e4;
-  --ant-table-row-hover-bg: rgba(230, 230, 230, 70%);
-  --color-chart-red: #ff7875;
-  --color-chart-green: #54cc98;
-  --color-chart-glod: #ffd666;
+  --ant-table-row-selected-bg: #e6f6ff;
+  --ant-table-row-selected-hover-bg: #e6f6ff;
+  --ant-table-row-hover-bg: rgba(230, 230, 230, 88%);
+  --color-chart-red: rgba(255, 77, 79, 80%);
+  --color-chart-green: rgb(84, 204, 152, 80%);
+  --color-chart-glod: rgba(250, 173, 20, 80%);
   --seal-transition-func: cubic-bezier(0, 0, 1, 1);
   // ======== input ============
   --ant-input-active-shadow: 0 0 0 2px rgba(5, 255, 105, 6%);
-  --ant-input-active-border-color: #2fbf85;
-  --ant-input-hover-border-color: #54cc98;
-  --box-shadow-base: 0 4px 12px rgba(227, 232, 240, 70%);
+  --ant-input-active-border-color: #007bff;
+  --ant-input-hover-border-color: #2997ff;
+  --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
+  // --box-shadow-base: none;
 
   .css-var-rf {
     --ant-font-size: var(--font-size-base);
@@ -54,7 +57,6 @@ html {
     --ant-font-size: var(--font-size-base);
 
     &.ant-menu-css-var {
-      --ant-menu-item-height: 46px;
       --ant-menu-item-selected-bg: var(--color-white-1);
       --ant-menu-item-border-radius: 8px;
       --ant-menu-item-selected-color: var(--ant-color-primary);
@@ -72,6 +74,7 @@ html {
     --ant-font-size: var(--font-size-base);
     --ant-padding-sm: 14px;
     --ant-border-radius-lg: 8px;
+    --ant-color-text: #000;
     --ant-color-error: #ff4d4f;
     --ant-color-bg-mask: rgba(0, 0, 0, 35%);
     --ant-color-border: rgb(217 217 217 / 50%);
@@ -171,7 +174,7 @@ body {
     tr > td {
       // background-color: var(--color-fill-1);
       border-bottom: none;
-      height: 70px;
+      height: 68px;
 
       &:first-child {
         border-top-left-radius: var(--table-td-radius);
@@ -237,8 +240,9 @@ body {
     height: 100%;
 
     .ant-pro-sider .ant-layout-sider-children {
-      background-color: var(--color-white-1);
-      box-shadow: var(--box-shadow-base);
+      background-color: var(--color-fill-sider);
+      // box-shadow: var(--box-shadow-base);
+      border-right: 1px solid var(--ant-color-border);
     }
   }
 
@@ -254,8 +258,9 @@ body {
     .ant-table-tbody {
       .ant-table-row {
         border-radius: var(--table-td-radius);
-        background-color: var(--color-white-1);
-        box-shadow: var(--box-shadow-base);
+        // background-color: var(--color-white-1);
+        background-color: var(--color-fill-sider);
+        // box-shadow: var(--box-shadow-base);
 
         > td {
           background-color: unset;
@@ -297,10 +302,15 @@ body {
   }
 
   .ant-pro-layout-container {
+    min-height: 100vh;
     // background-color: var(--color-fill-2);
   }
 
   .ant-pro-sider {
+    .ant-pro-base-menu-inline-item-title {
+      gap: 12px;
+    }
+
     .ant-menu {
       .ant-menu-item {
         border-radius: var(--border-radius-small);
@@ -325,7 +335,7 @@ body {
 
       .ant-menu-item.ant-menu-item-selected {
         color: var(--ant-color-primary);
-        background-color: unset;
+        background-color: var(--ant-menu-item-selected-bg);
       }
     }
   }
@@ -343,8 +353,9 @@ body {
   left: 0;
   bottom: 0;
   right: 0;
-  background: url('./assets/images/bg-11.png') center center no-repeat;
-  background-size: cover;
+  // background: url('@/assets/images/bg-11.png') center center no-repeat;
+  // background-size: cover;
+  background-color: #fff;
 
   &::after {
     content: '';
@@ -357,6 +368,15 @@ body {
     height: 100%;
   }
 }
+// .login-wrapper {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   bottom: 0;
+//   right: 0;
+//   background: url('@/assets/images/bg-2.png') center center no-repeat;
+//   background-size: cover;
+// }
 
 .ant-pro-page-container {
   background: transparent;

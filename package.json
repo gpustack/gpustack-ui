@@ -27,6 +27,7 @@
     "dayjs": "^1.11.11",
     "has-ansi": "^5.0.1",
     "jotai": "^2.8.4",
+    "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",
     "query-string": "^9.0.0",

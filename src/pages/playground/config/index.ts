@@ -1,6 +1,7 @@
 export const Roles = {
   User: 'user',
-  Assistant: 'assistant'
+  Assistant: 'assistant',
+  System: 'system'
 };
 export const playGroundRoles = [
   {

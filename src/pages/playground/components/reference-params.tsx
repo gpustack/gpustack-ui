@@ -7,6 +7,7 @@ interface ReferenceParamsProps {
     completion_tokens: number;
     prompt_tokens: number;
     total_tokens: number;
+    time_per_output_token_ms: number;
   };
 }
 
@@ -37,6 +38,11 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
           {usage.total_tokens}
         </span>
       </Tooltip>
+
+      <span>
+        {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
+        {usage.time_per_output_token_ms} token/s
+      </span>
     </div>
   );
 };

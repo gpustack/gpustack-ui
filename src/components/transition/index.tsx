@@ -13,11 +13,18 @@ interface TransitionWrapProps {
   header?: React.ReactNode;
   variant?: 'bordered' | 'filled';
   children: React.ReactNode;
+  setCollapsed?: (val: boolean) => void;
   ref?: any;
 }
 const TransitionWrapper: React.FC<TransitionWrapProps> = forwardRef(
   (props, ref) => {
-    const { minHeight = 50, header, variant = 'bordered', children } = props;
+    const {
+      minHeight = 50,
+      header,
+      variant = 'bordered',
+      children,
+      setCollapsed
+    } = props;
     const [isOpen, setIsOpen] = useState(true);
     const [height, setHeight] = useState(0);
     const contentRef = useRef(null);
@@ -32,6 +39,7 @@ const TransitionWrapper: React.FC<TransitionWrapProps> = forwardRef(
 
     const toggleOpen = () => {
       setIsOpen(!isOpen);
+      setCollapsed?.(!isOpen);
     };
 
     const setHeightByContent = () => {

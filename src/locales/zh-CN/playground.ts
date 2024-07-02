@@ -12,5 +12,7 @@ export default {
     '你可以使用以下代码将当前的提示和设置集成到你的应用程序中。',
   'playground.completion': '补全',
   'playground.prompt': '提示',
-  'playground.tokenusage': 'Token 使用量'
+  'playground.tokenusage': 'Token 使用量',
+  'models.openinplayground': '试验场打开',
+  'playground.tokenoutput': '输出'
 };

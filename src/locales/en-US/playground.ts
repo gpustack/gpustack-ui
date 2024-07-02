@@ -13,5 +13,6 @@ export default {
   'playground.completion': 'Completion',
   'playground.prompt': 'Prompt',
   'playground.tokenusage': 'Token Usage',
-  'models.openinplayground': 'Open in Playground'
+  'models.openinplayground': 'Open in Playground',
+  'playground.tokenoutput': 'Output'
 };

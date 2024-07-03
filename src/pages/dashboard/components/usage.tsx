@@ -5,7 +5,6 @@ import LineChart from '@/components/echarts/line-chart';
 import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
-import { generateRandomArray } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Col, DatePicker, Row } from 'antd';
 import dayjs from 'dayjs';
@@ -21,83 +20,6 @@ const baseColorMap = {
   baseR2: 'rgba(48,0,255,0.8)',
   baseR3: 'rgba(85,167,255,0.8)'
 };
-const times = [
-  'june 1',
-  'june 2',
-  'june 3',
-  'june 4',
-  'june 5',
-  'june 6',
-  'june 7'
-];
-
-const users = ['Jim', 'Lucy', 'Lily', 'Tom', 'Jack', 'Rose', 'Jerry'];
-const projects = [
-  'copilot-dev',
-  'rag-wiki',
-  'smart-auto-agent',
-  'office-auto-docs',
-  'smart-customer-service'
-];
-
-const APIRequestData = generateRandomArray({
-  length: times.length,
-  max: 1000,
-  min: 10,
-  offset: 0
-});
-
-const TokensData = generateRandomArray({
-  length: times.length,
-  max: 2000,
-  min: 0,
-  offset: 500
-});
-
-const usersData = generateRandomArray({
-  length: users.length,
-  max: 100,
-  min: 0,
-  offset: 10
-});
-
-const projectsData = generateRandomArray({
-  length: projects.length,
-  max: 100,
-  min: 0,
-  offset: 10
-});
-
-const userDataList = usersData
-  .map((val, i) => {
-    return {
-      time: users[i],
-      value: val
-    };
-  })
-  .sort((a, b) => b.value - a.value);
-
-const projectDataList = projectsData
-  .map((val, i) => {
-    return {
-      time: projects[i],
-      value: val
-    };
-  })
-  .sort((a, b) => b.value - a.value);
-
-const dataList = APIRequestData.map((val, i) => {
-  return {
-    time: times[i],
-    value: val
-  };
-});
-const tokenUsage = TokensData.map((val, i) => {
-  return {
-    time: times[i],
-    value: val
-  };
-});
 
 const getCurrentMonthDays = () => {
   const now = dayjs();
@@ -133,7 +55,6 @@ const Usage = () => {
     []
   );
   const [xAxisData, setXAxisData] = useState<string[]>(currentMonthDays);
-  const [dateRange, setDateRange] = useState<string[]>(currentMonthDays);
   const [topUserList, setTopUseList] = useState<string[]>([]);
 
   const data = useContext(DashboardContext)?.model_usage || {};
@@ -176,7 +97,7 @@ const Usage = () => {
     };
     const users: string[] = [];
 
-    _.each(dateRange, (date: string) => {
+    _.each(xAxisData, (date: string) => {
       // tokens data
       const item = _.find(data.completion_token_history, (item: any) => {
         return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
@@ -295,10 +216,7 @@ const Usage = () => {
                   title={intl.formatMessage({ id: 'dashboard.apirequest' })}
                   seriesData={requestData}
                   xAxisData={xAxisData}
-                  xField="time"
-                  yField="value"
                   height={360}
-                  color={baseColorMap.baseR3}
                   labelFormatter={labelFormatter}
                 ></LineChart>
               </Col>

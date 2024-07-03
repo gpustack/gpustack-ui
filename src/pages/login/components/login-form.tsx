@@ -1,4 +1,4 @@
-import LogoIcon from '@/assets/images/logo.png';
+import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import {
@@ -22,15 +22,30 @@ const renderLogo = () => {
   return (
     <div
       style={{
-        width: '400px',
         display: 'flex',
-        marginBottom: 24,
+        marginBottom: 0,
+        padding: '15px 0',
         justifyContent: 'center',
         alignItems: 'center'
       }}
     >
-      <img src={LogoIcon} alt="logo" style={{ width: '44px' }} />
-      <span style={{ fontSize: 34, marginLeft: 12 }}>SEAL</span>
+      <img src={LogoIcon} alt="logo" style={{ height: '26px' }} />
+    </div>
+  );
+};
+
+const renderWelCome = (intl: any) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        marginBottom: 32,
+        fontSize: 24,
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <div>{intl?.formatMessage({ id: 'users.login.title' })}</div>
     </div>
   );
 };
@@ -121,15 +136,29 @@ const LoginForm = () => {
 
   return (
     <div>
-      <div style={{ position: 'fixed', right: 0, top: 0, padding: '0 20px' }}>
+      <div
+        style={{
+          position: 'fixed',
+          right: 0,
+          top: 0,
+          left: 0,
+          width: '100%',
+          padding: '0 20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <div>{renderLogo()}</div>
         <SelectLang icon={<GlobalOutlined />} reload={false} />
       </div>
+
       <Form
         form={form}
         style={{ width: '400px', margin: '0 auto', paddingTop: '5%' }}
         onFinish={handleLogin}
       >
-        <div>{renderLogo()}</div>
+        {renderWelCome(intl)}
         <Form.Item
           name="username"
           rules={[

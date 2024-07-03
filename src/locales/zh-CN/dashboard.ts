@@ -1,8 +1,8 @@
 export default {
   'dashboard.title': '概览',
-  'dashboard.workers': '节点',
+  'dashboard.workers': 'Workers',
   'dashboard.models': '模型',
-  'dashboard.totalgpus': '总 GPU 数量',
+  'dashboard.totalgpus': 'GPUs',
   'dashboard.allocategpus': '已分配 GPU 数量',
   'dashboard.instances': '实例',
   'dashboard.systemload': '系统负载',
@@ -21,5 +21,5 @@ export default {
   'dashboard.activeModels': '活跃模型',
   'dashboard.activeModels.name': '模型名称',
   'dashboard.runninginstances': '运行实例',
-  'dashboard.allocatevram': '已分配显存'
+  'dashboard.allocatevram': '已分配显存 / 内存'
 };

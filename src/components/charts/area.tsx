@@ -5,7 +5,7 @@ interface LineChartProps {
   title?: string;
   height?: number;
   data: any[];
-  color?: string[];
+  color?: string;
   xField?: string;
   yField?: string;
   locale?: string;
@@ -47,7 +47,14 @@ const LineChart: React.FC<LineChartProps> = (props) => {
       }
     },
     style: {
-      fill: 'rgba(84, 204, 152,0.8)'
+      fill: (params: any) => {
+        console.log('area param=========', params);
+        return color || 'rgba(84, 204, 152,0.8)';
+      },
+      stroke: (params: any) => {
+        console.log('area param========2=', params);
+        return color || 'rgba(84, 204, 152,0.8)';
+      }
     },
     title: {
       title,

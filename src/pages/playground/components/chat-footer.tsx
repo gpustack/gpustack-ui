@@ -39,13 +39,6 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
     },
     { enabled: !disabled }
   );
-  useHotkeys(
-    HotKeys.CREATE.join(','),
-    (e) => {
-      onNewMessage();
-    },
-    { enabled: !disabled }
-  );
 
   return (
     <div className="chat-footer">
@@ -59,7 +52,6 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               onClick={onNewMessage}
             >
               {intl.formatMessage({ id: 'playground.newMessage' })}
-              <span className="m-l-5 opct-7">CTRL+SHIFT+ N</span>
             </Button>
             <Button
               icon={<DeleteOutlined></DeleteOutlined>}

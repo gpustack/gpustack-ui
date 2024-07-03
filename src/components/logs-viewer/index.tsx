@@ -1,4 +1,5 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
+import useContainerScroll from '@/hooks/use-container-scorll';
 import Convert from 'ansi-to-html';
 import classNames from 'classnames';
 import hasAnsi from 'has-ansi';
@@ -17,8 +18,17 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const [logsContent, setLogsContent] = useState(content);
   const { setChunkRequest } = useSetChunkRequest();
   const chunkRequedtRef = useRef<any>(null);
+  const scroller = useRef<any>(null);
+  const { updateScrollerPosition, handleContentWheel } = useContainerScroll(
+    scroller,
+    { toBottom: true }
+  );
 
   const convert = new Convert();
+
+  useEffect(() => {
+    updateScrollerPosition();
+  }, [logsContent]);
 
   const updateContent = (newVal: string) => {
     if (hasAnsi(newVal)) {
@@ -51,7 +61,12 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   return (
     <div className="logs-viewer-wrap-w2">
-      <div className="wrap" style={{ height: height }}>
+      <div
+        className="wrap"
+        style={{ height: height }}
+        ref={scroller}
+        onWheel={handleContentWheel}
+      >
         <div className={classNames('content', { 'line-break': nowrap })}>
           <div className="text">{logsContent}</div>
         </div>

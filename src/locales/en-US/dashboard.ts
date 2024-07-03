@@ -2,7 +2,7 @@ export default {
   'dashboard.title': 'Dashboard',
   'dashboard.workers': 'Workers',
   'dashboard.models': 'Models',
-  'dashboard.totalgpus': 'Total GPUs',
+  'dashboard.totalgpus': 'GPUs',
   'dashboard.allocategpus': 'Allocated GPUs',
   'dashboard.instances': 'Instances',
   'dashboard.systemload': 'System Load',
@@ -21,5 +21,5 @@ export default {
   'dashboard.activeModels': 'Active Models',
   'dashboard.runninginstances': 'Running Instances',
   'dashboard.activeModels.name': 'Model Name',
-  'dashboard.allocatevram': 'Allocated VRAM'
+  'dashboard.allocatevram': 'Allocated VRAM / RAM'
 };

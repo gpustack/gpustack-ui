@@ -3,7 +3,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { INPUT_WIDTH } from '@/constants';
 import { useIntl } from '@umijs/max';
-import { Button, Form, InputNumber, Slider } from 'antd';
+import { Form, InputNumber, Slider } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { queryModelsList } from '../apis';
@@ -149,9 +149,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </Form.Item>
         <h3 className="m-b-20 m-l-10 flex-between flex-center">
           <span>{intl.formatMessage({ id: 'playground.parameters' })}</span>
-          <Button size="small" onClick={handleResetParams}>
-            {intl.formatMessage({ id: 'common.button.reset' })}
-          </Button>
         </h3>
         <Form.Item<ParamsSettingsFormProps>
           name="temperature"

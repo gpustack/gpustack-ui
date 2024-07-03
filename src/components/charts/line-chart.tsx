@@ -55,19 +55,19 @@ const LineChart: React.FC<LineChartProps> = (props) => {
     // },
     style: {
       lineWidth: 1.5,
-      opacity: 0.8
+      opacity: 0.7
+      // fill: (params: any) => {
+      //   return params.color;
+      // }
       // stroke: (params: any) => {
-      //   return (
-      //     params.color ||
-      //     'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgba(0, 168, 143,.7) 100%)'
-      //   );
+      //   console.log('line param=========', params.color);
+      //   return params.color;
       // }
     },
     legend: {
       color: {
         layout: { justifyContent: 'center' }
       },
-
       size: {
         itemLabelFontSize: 14,
         itemLabelFontWeight: 500

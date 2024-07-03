@@ -146,7 +146,7 @@ const Models: React.FC = () => {
         }}
       >
         <Column
-          title={intl.formatMessage({ id: 'resources.table.hostname' })}
+          title={intl.formatMessage({ id: 'common.table.name' })}
           dataIndex="hostname"
           key="hostname"
         />
@@ -211,7 +211,7 @@ const Models: React.FC = () => {
           key="GPU"
           render={(text, record: ListItem) => {
             return (
-              <span className="flex-column">
+              <span className="flex-column flex-gap-2">
                 {record?.status?.gpu_devices.map((item, index) => {
                   return (
                     <span className="flex-center" key={index}>

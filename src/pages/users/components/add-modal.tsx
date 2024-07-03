@@ -3,11 +3,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
-import {
-  SyncOutlined,
-  UserOutlined,
-  UserSwitchOutlined
-} from '@ant-design/icons';
+import { UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, Modal, Select } from 'antd';
 import { useEffect } from 'react';
@@ -32,14 +28,7 @@ const AddModal: React.FC<AddModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const intl = useIntl();
-  const suffix = (
-    <SyncOutlined
-      style={{
-        fontSize: 16,
-        color: '#1677ff'
-      }}
-    />
-  );
+
   const initFormValue = () => {
     if (action === PageAction.EDIT && open) {
       form.setFieldsValue({

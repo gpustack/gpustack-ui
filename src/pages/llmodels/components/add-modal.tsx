@@ -100,7 +100,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleOnSearchRepo = async (text: string) => {
     try {
       const params = {
-        q: `${text} gguf`,
+        q: `${text}`,
         type: 'model'
       };
       const res = await callHuggingfaceQuickSearch(params);

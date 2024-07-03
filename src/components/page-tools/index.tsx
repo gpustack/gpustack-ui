@@ -14,7 +14,7 @@ const PageTools: React.FC<PageToolsProps> = (props) => {
     left,
     right,
     marginBottom = 0,
-    marginTop = 60,
+    marginTop = 30,
     style: pageStyle
   } = props;
 

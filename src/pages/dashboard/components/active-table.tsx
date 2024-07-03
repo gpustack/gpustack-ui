@@ -72,7 +72,7 @@ const ActiveTable = () => {
   const data = useContext(DashboardContext).active_models || [];
   const modelColumns = [
     {
-      title: intl.formatMessage({ id: 'dashboard.activeModels.name' }),
+      title: intl.formatMessage({ id: 'common.table.name' }),
       dataIndex: 'name',
       key: 'name'
     },
@@ -86,9 +86,16 @@ const ActiveTable = () => {
     // },
     {
       title: intl.formatMessage({ id: 'dashboard.allocatevram' }),
-      dataIndex: 'allocate_gpu_memory_utilization',
-      key: 'gpu_memory_utilization',
-      render: (text: any, record: any) => <span>{convertFileSize(text)}</span>
+      dataIndex: 'resource_claim.memory',
+      key: 'gpu_memory',
+      render: (text: any, record: any) => {
+        return (
+          <span>
+            {convertFileSize(record.resource_claim?.gpu_memory || 0)} /{' '}
+            {convertFileSize(record.resource_claim?.memory || 0)}
+          </span>
+        );
+      }
     },
     {
       title: intl.formatMessage({ id: 'dashboard.runninginstances' }),

@@ -113,7 +113,6 @@ const Models: React.FC = () => {
   };
 
   const handleModalOk = async (data: FormData) => {
-    console.log('handleModalOk');
     const params = {
       ...data,
       is_admin: data.is_admin === 'admin'
@@ -131,7 +130,7 @@ const Models: React.FC = () => {
       }
       fetchData();
       setOpenAddModal(false);
-      message.success('');
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       setOpenAddModal(false);
     }
@@ -261,22 +260,9 @@ const Models: React.FC = () => {
           }}
         >
           <Column
-            title={intl.formatMessage({ id: 'users.table.username' })}
+            title={intl.formatMessage({ id: 'common.table.name' })}
             dataIndex="username"
             key="name"
-            width={200}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.createTime' })}
-            dataIndex="created_at"
-            key="createTime"
-            defaultSortOrder="descend"
-            sortOrder={sortOrder}
-            showSorterTooltip={false}
-            sorter={true}
-            render={(text, record) => {
-              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
-            }}
           />
           <Column
             title={intl.formatMessage({ id: 'users.table.role' })}
@@ -301,9 +287,9 @@ const Models: React.FC = () => {
             }}
           />
           <Column
-            title={intl.formatMessage({ id: 'common.table.updateTime' })}
-            dataIndex="updated_at"
-            key="updateTime"
+            title={intl.formatMessage({ id: 'common.table.createTime' })}
+            dataIndex="created_at"
+            key="createTime"
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}

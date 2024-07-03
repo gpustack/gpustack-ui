@@ -1,89 +1,174 @@
-import LineChart from '@/components/charts/line-chart';
+import Chart from '@/components/echarts/chart';
 import { getLocale, useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
+const chartColorMap = {
+  tickLineColor: 'rgba(217,217,217,0.5)',
+  axislabelColor: 'rgba(0, 0, 0, 0.4)'
+};
+
 const TypeKeyMap = {
   cpu: {
     label: 'CPU',
     type: 'CPU',
     intl: false,
-    color:
-      'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgba(0, 168, 143,.7) 100%)'
+    color: 'rgba(250, 173, 20,.8)'
   },
   memory: {
     label: 'dashboard.memory',
     type: 'Memory',
     intl: true,
-    color:
-      'linear-gradient(90deg,rgba(249, 248, 113,.8) 0%,rgba(255, 199, 92,0.7) 100%)'
+    color: 'rgba(114, 46, 209,.8)'
   },
   gpu: {
     label: 'GPU',
     type: 'GPU',
     intl: false,
-    color: 'rgba(84, 204, 152,0.8)'
+    color: 'rgba(84, 204, 152,.8)'
   },
   gpu_memory: {
     label: 'dashboard.vram',
     type: 'VRAM',
     intl: true,
-    color:
-      'linear-gradient(90deg,rgba(84, 204, 152,0.8) 0%,rgba(0, 168, 143,.7) 100%)'
+    color: 'rgba(255, 107, 179, 80%)'
   }
+};
+
+const option = {
+  title: {
+    text: ''
+  },
+  legend: {
+    itemWidth: 8,
+    itemHeight: 8,
+    data: []
+  },
+  grid: {
+    left: 0,
+    right: 20,
+    bottom: 20,
+    containLabel: true
+  },
+  tooltip: {
+    trigger: 'axis',
+    formatter(params: any) {
+      let result = `<span class="tooltip-x-name">${params[0].axisValue}</span>`;
+      params.forEach((item: any) => {
+        result += `<span class="tooltip-item">
+       <span class="tooltip-item-name">
+         <span style="display:inline-block;margin-right:5px;border-radius:8px;width:8px;height:8px;background-color:${item.color};"></span>
+         <span class="tooltip-title">${item.seriesName}</span>:
+       </span>
+        <span class="tooltip-value">${item.data.value}</span>
+        </span>`;
+      });
+      return `<div class="tooltip-wrapper">${result}</div>`;
+    }
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: true,
+    axisTick: {
+      show: true,
+      lineStyle: {
+        color: chartColorMap.tickLineColor
+      }
+    },
+    axisLabel: {
+      color: chartColorMap.axislabelColor,
+      // fontFamily: 'unset',
+      fontSize: 12
+    },
+    axisLine: {
+      show: false
+    },
+    data: []
+  },
+  yAxis: {
+    max: 100,
+    min: 0,
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: 'dashed'
+      }
+    },
+    axisLabel: {
+      color: chartColorMap.axislabelColor,
+      // fontFamily: 'unset',
+      fontSize: 12
+    },
+    axisTick: {
+      show: false
+    },
+    type: 'value'
+  },
+  series: []
 };
 
 const UtilizationOvertime: React.FC = () => {
   const intl = useIntl();
   const locale = getLocale();
+  const [dataOptions, setDataOptions] = useState<any>(option);
   const data = useContext(DashboardContext)?.system_load?.history || {};
-  const [result, setResult] = useState<
-    { time: string; value: number; type: string }[]
-  >([]);
 
   const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
-  const sliderConfig = {
-    y: false,
-    x: {
-      style: {
-        selectionFill: 'rgb(84, 204, 152)',
-        selectionFillOpacity: 0.1,
-        handleIconFill: 'rgb(84, 204, 152)',
-        handleIconFillOpacity: 0.15,
-        handleIconStrokeOpacity: 0,
-        sparklineType: 'line',
-        sparkline: true
-      },
-      sparkline: true
-    }
-  };
 
   const labelFormatter = (value: any) => {
     return `${value}%`;
   };
+
   const generateData = useCallback(() => {
-    const list: { value: number; time: string; type: string }[] = [];
-    _.each(typeList, (type: any) => {
-      const dataList = _.map(_.get(data, type, []), (item: any) => {
-        const value = _.round(_.get(item, 'value', 0), 1);
-        const time = dayjs(item.timestamp * 1000).format('HH:mm:ss');
-        const itemtype = _.get(TypeKeyMap, [type, 'intl'], false)
-          ? intl.formatMessage({
-              id: _.get(TypeKeyMap, [type, 'label'], '')
-            })
-          : _.get(TypeKeyMap, [type, 'label'], '');
-        return {
-          value,
-          time,
-          type: itemtype,
-          color: 'red'
-        };
-      });
-      list.push(...dataList);
+    const legendData: string[] = [];
+    const xAxisData: string[] = [];
+    let list: { value: number; time: string; type: string }[] = [];
+
+    list = _.map(typeList, (item: string) => {
+      const itemConfig = _.get(TypeKeyMap, item, {});
+      console.log('itemConfig', itemConfig);
+      const name = itemConfig.intl
+        ? intl.formatMessage({ id: itemConfig.label })
+        : itemConfig.label;
+      legendData.push(name);
+      const itemDataList = _.get(data, item, []);
+      return {
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        itemStyle: {
+          color: itemConfig.color
+        },
+        lineStyle: {
+          width: 1.5,
+          opacity: 0.7,
+          color: itemConfig.color
+        },
+        name: name,
+        data: _.map(itemDataList, (item: any) => {
+          xAxisData.push(dayjs(item.timestamp * 1000).format('HH:mm:ss'));
+          return {
+            time: dayjs(item.timestamp * 1000).format('HH:mm:ss'),
+            value: _.round(_.get(item, 'value', 0), 1)
+          };
+        })
+      };
     });
-    setResult(list);
+
+    setDataOptions({
+      ...option,
+      legend: {
+        ...option.legend,
+        data: legendData
+      },
+      xAxis: {
+        ...option.xAxis,
+        data: _.uniq(xAxisData)
+      },
+      series: list
+    });
   }, [data, locale]);
 
   useEffect(() => {
@@ -92,13 +177,7 @@ const UtilizationOvertime: React.FC = () => {
 
   return (
     <>
-      <LineChart
-        data={result}
-        locale={locale}
-        height={390}
-        labelFormatter={labelFormatter}
-        slider={sliderConfig}
-      />
+      <Chart height={390} options={dataOptions} width="100%"></Chart>
     </>
   );
 };

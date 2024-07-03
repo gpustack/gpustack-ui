@@ -1,7 +1,7 @@
 import CardWrapper from '@/components/card-wrapper';
-import AreaChart from '@/components/charts/area';
-import ColumnBar from '@/components/charts/column-bar';
-import HBar from '@/components/charts/h-bar';
+import BarChart from '@/components/echarts/bar-chart';
+import HBar from '@/components/echarts/h-bar';
+import LineChart from '@/components/echarts/line-chart';
 import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
@@ -13,7 +13,14 @@ import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
-const { RangePicker } = DatePicker;
+const baseColorMap = {
+  baseL2: 'rgba(13,171,219,0.8)',
+  baseL1: 'rgba(0,34,255,0.8)',
+  base: 'rgba(0,123,255,0.8)',
+  baseR1: 'rgba(0,255,233,0.8)',
+  baseR2: 'rgba(48,0,255,0.8)',
+  baseR3: 'rgba(85,167,255,0.8)'
+};
 const times = [
   'june 1',
   'june 2',
@@ -94,15 +101,15 @@ const tokenUsage = TokensData.map((val, i) => {
 
 const getCurrentMonthDays = () => {
   const now = dayjs();
-  const firstDayOfMonth = now.startOf('month');
-  const dateRange = [];
-  let currentDate = firstDayOfMonth;
+  const daysInMonth = now.daysInMonth();
+  const year = dayjs().year();
+  const month = dayjs().month() + 1;
 
-  while (currentDate.isBefore(now) || currentDate.isSame(now, 'day')) {
-    dateRange.push(currentDate.format('YYYY-MM-DD'));
-    currentDate = currentDate.add(1, 'day');
+  const dates = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    dates.push(dayjs(`${year}-${month}-${day}`).format('YYYY-MM-DD'));
   }
-  return dateRange;
+  return dates;
 };
 
 const Usage = () => {
@@ -110,42 +117,64 @@ const Usage = () => {
   const { size } = useWindowResize();
   const [paddingRight, setPaddingRight] = useState<string>('20px');
   const [requestData, setRequestData] = useState<
-    { time: string; value: number }[]
+    {
+      name: string;
+      color: string;
+      areaStyle: any;
+      data: { time: string; value: number }[];
+    }[]
   >([]);
+
+  const currentMonthDays = getCurrentMonthDays();
   const [tokenData, setTokenData] = useState<{ time: string; value: number }[]>(
     []
   );
   const [userData, setUserData] = useState<{ name: string; value: number }[]>(
     []
   );
-  const [dateRange, setDateRange] = useState<string[]>(getCurrentMonthDays());
+  const [xAxisData, setXAxisData] = useState<string[]>(currentMonthDays);
+  const [dateRange, setDateRange] = useState<string[]>(currentMonthDays);
+  const [topUserList, setTopUseList] = useState<string[]>([]);
 
   const data = useContext(DashboardContext)?.model_usage || {};
 
-  console.log('dateRange', dateRange);
   const handleSelectDate = (dateString: string) => {};
 
   const generateData = () => {
-    const requestList: { time: string; value: number }[] = [];
-    const tokenList: {
-      time: string;
-      value: number;
+    const requestList: {
       name: string;
       color: string;
-    }[] = [];
-    const userList: {
-      name: string;
-      value: number;
-      type: string;
-      color: string;
-    }[] = [];
+      areaStyle: any;
+      data: { time: string; value: number }[];
+    } = {
+      name: 'API Request',
+      areaStyle: {},
+      color: baseColorMap.base,
+      data: []
+    };
 
-    _.each(data.api_request_history, (item: any) => {
-      requestList.push({
-        time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
-        value: item.value
-      });
-    });
+    const completionData: any = {
+      name: 'completion_token',
+      color: baseColorMap.base,
+      data: []
+    };
+    const prompData: any = {
+      name: 'prompt_token',
+      color: baseColorMap.baseR3,
+      data: []
+    };
+
+    const topUserPrompt: any = {
+      name: 'prompt_token',
+      color: baseColorMap.baseR3,
+      data: []
+    };
+    const topUserCompletion: any = {
+      name: 'completion_token',
+      color: baseColorMap.base,
+      data: []
+    };
+    const users: string[] = [];
 
     _.each(dateRange, (date: string) => {
       // tokens data
@@ -153,18 +182,14 @@ const Usage = () => {
         return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
       });
       if (!item) {
-        tokenList.push({
-          time: date,
-          name: 'completion_token',
-          color: 'rgba(84, 204, 152,0.8)',
+        completionData.data.push({
+          titme: date,
           value: 0
         });
       } else {
-        tokenList.push({
-          time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
-          name: 'completion_token',
-          color: 'rgba(84, 204, 152,0.8)',
-          value: item.value
+        completionData.data.push({
+          value: item.value,
+          time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD')
         });
       }
 
@@ -172,57 +197,58 @@ const Usage = () => {
         return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
       });
       if (!promptItem) {
-        tokenList.push({
-          time: date,
-          name: 'prompt_token',
-          color: 'rgba(0, 170, 173, 0.8)',
-          value: 0
+        prompData.data.push({
+          value: 0,
+          time: date
         });
       } else {
-        tokenList.push({
-          time: dayjs(promptItem.timestamp * 1000).format('YYYY-MM-DD'),
-          name: 'prompt_token',
-          color: 'rgba(0, 170, 173, 0.8)',
-          value: promptItem.value
+        prompData.data.push({
+          value: promptItem.value,
+          time: dayjs(promptItem.timestamp * 1000).format('YYYY-MM-DD')
         });
       }
 
-      // api request data
+      // ============== api request data =================
       const requestItem = _.find(data.api_request_history, (item: any) => {
         return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
       });
 
       if (!requestItem) {
-        requestList.push({
+        requestList.data.push({
           time: date,
           value: 0
         });
       } else {
-        requestList.push({
+        requestList.data.push({
           time: dayjs(requestItem.timestamp * 1000).format('YYYY-MM-DD'),
           value: requestItem.value
         });
       }
     });
 
+    // ========== top users ============
+
     _.each(data.top_users, (item: any) => {
-      userList.push({
+      users.push(item.username);
+      topUserPrompt.data.push({
         name: item.username,
-        type: 'completion_token',
-        color: 'rgba(84, 204, 152,0.8)',
-        value: item.completion_token_count
-      });
-      userList.push({
-        name: item.username,
-        type: 'prompt_token',
-        color: 'rgba(0, 170, 173, 0.8)',
         value: item.prompt_token_count
+      });
+      topUserCompletion.data.push({
+        name: item.username,
+        value: item.completion_token_count
       });
     });
 
-    setRequestData(requestList);
-    setTokenData(tokenList);
-    setUserData(userList);
+    console.log('usage=============', {
+      requestList,
+      xAxisData
+    });
+
+    setRequestData([requestList]);
+    setUserData([topUserCompletion, topUserPrompt]);
+    setTopUseList(users);
+    setTokenData([completionData, prompData]);
   };
 
   const labelFormatter = (v: any) => {
@@ -270,28 +296,25 @@ const Usage = () => {
           <CardWrapper style={{ width: '100%' }}>
             <Row style={{ width: '100%' }}>
               <Col span={12}>
-                <AreaChart
+                <LineChart
                   title={intl.formatMessage({ id: 'dashboard.apirequest' })}
-                  data={requestData}
+                  seriesData={requestData}
+                  xAxisData={xAxisData}
                   xField="time"
                   yField="value"
                   height={360}
+                  color={baseColorMap.baseR3}
                   labelFormatter={labelFormatter}
-                ></AreaChart>
+                ></LineChart>
               </Col>
               <Col span={12}>
-                <ColumnBar
+                <BarChart
                   title={intl.formatMessage({ id: 'dashboard.tokens' })}
-                  data={tokenData}
-                  group={false}
-                  colorField="name"
-                  stack={true}
-                  xField="time"
-                  legend={false}
-                  yField="value"
+                  seriesData={tokenData}
+                  xAxisData={xAxisData}
                   height={360}
                   labelFormatter={labelFormatter}
-                ></ColumnBar>
+                ></BarChart>
               </Col>
             </Row>
           </CardWrapper>
@@ -300,13 +323,8 @@ const Usage = () => {
           <CardWrapper>
             <HBar
               title={intl.formatMessage({ id: 'dashboard.topusers' })}
-              data={userData}
-              stack={true}
-              legend={false}
-              showYAxis={false}
-              colorField="type"
-              xField="name"
-              yField="value"
+              seriesData={userData}
+              xAxisData={topUserList}
               height={360}
             ></HBar>
           </CardWrapper>

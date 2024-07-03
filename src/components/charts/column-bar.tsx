@@ -89,6 +89,7 @@ const BarChart: React.FC<BarChartProps> = (props) => {
 
     style: {
       fill: (params: any) => {
+        console.log('colbar=====', params);
         return params.color || 'rgba(84, 204, 152,0.8)';
       },
       // radiusTopLeft: 12,

@@ -104,6 +104,7 @@ const SealTable: React.FC<SealTableProps> = (props) => {
                     title={title}
                     style={headerStyle}
                     firstCell={i === 0}
+                    align={align}
                     lastCell={i === props.children.length - 1}
                   ></TableHeader>
                 </Col>

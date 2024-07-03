@@ -162,9 +162,6 @@ const Models: React.FC = () => {
     _.each(list, (data: any) => {
       updateChunkedList(data);
     });
-    if (!dataSource.length) {
-      handleFilter();
-    }
   };
 
   const createModelsChunkRequest = () => {
@@ -367,7 +364,10 @@ const Models: React.FC = () => {
                   </Col>
 
                   <Col span={4}>
-                    <span style={{ paddingLeft: '22px' }}>
+                    <span
+                      style={{ paddingLeft: '68px' }}
+                      className="flex justify-center"
+                    >
                       {item.state && (
                         <StatusTag
                           download={
@@ -478,7 +478,7 @@ const Models: React.FC = () => {
           }}
         >
           <SealColumn
-            title={intl.formatMessage({ id: 'models.table.name' })}
+            title={intl.formatMessage({ id: 'common.table.name' })}
             dataIndex="name"
             key="name"
             width={400}
@@ -494,6 +494,7 @@ const Models: React.FC = () => {
             title={intl.formatMessage({ id: 'models.form.replicas' })}
             dataIndex="replicas"
             key="replicas"
+            align="center"
             span={4}
           />
           <SealColumn

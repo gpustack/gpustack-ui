@@ -240,7 +240,7 @@ const Models: React.FC = () => {
           }}
         >
           <Column
-            title={intl.formatMessage({ id: 'apikeys.table.name' })}
+            title={intl.formatMessage({ id: 'common.table.name' })}
             dataIndex="name"
             key="name"
             width={400}
@@ -250,6 +250,14 @@ const Models: React.FC = () => {
           />
 
           <Column
+            title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
+            dataIndex="expires_at"
+            key="expiration"
+            render={(text, record) => {
+              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+            }}
+          />
+          <Column
             title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"
@@ -257,14 +265,6 @@ const Models: React.FC = () => {
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={true}
-            render={(text, record) => {
-              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
-            dataIndex="expires_at"
-            key="expiration"
             render={(text, record) => {
               return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
             }}
@@ -281,7 +281,6 @@ const Models: React.FC = () => {
                     <Button
                       onClick={() => handleDelete(record)}
                       size="small"
-                      type="primary"
                       danger
                       icon={<DeleteOutlined></DeleteOutlined>}
                     ></Button>

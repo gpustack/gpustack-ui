@@ -21,7 +21,7 @@ export const StatusColorMap: Record<StatusType, { text: string; bg: string }> =
       bg: `var(--ant-blue-1)`
     },
     success: {
-      text: `var(--ant-color-primary)`,
+      text: `var(--color-progress-green)`,
       bg: `var(--ant-green-1)`
     },
     inactive: {

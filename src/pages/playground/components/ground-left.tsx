@@ -126,8 +126,13 @@ const MessageList: React.FC<MessageProps> = (props) => {
     }
   };
   const handleClear = () => {
-    const headItem = _.get(messageList, '0');
-    setMessageList(headItem ? [headItem] : []);
+    setMessageList([
+      {
+        role: Roles.User,
+        content: '',
+        uid: messageId.current + 1
+      }
+    ]);
   };
 
   const handleView = () => {

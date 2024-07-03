@@ -16,7 +16,7 @@ import { DashboardContext } from '../config/dashboard-context';
 const baseColorMap = {
   baseL2: 'rgba(13,171,219,0.8)',
   baseL1: 'rgba(0,34,255,0.8)',
-  base: 'rgba(0,123,255,0.8)',
+  base: 'rgba(0,85,255,0.8)',
   baseR1: 'rgba(0,255,233,0.8)',
   baseR2: 'rgba(48,0,255,0.8)',
   baseR3: 'rgba(85,167,255,0.8)'
@@ -238,11 +238,6 @@ const Usage = () => {
         name: item.username,
         value: item.completion_token_count
       });
-    });
-
-    console.log('usage=============', {
-      requestList,
-      xAxisData
     });
 
     setRequestData([requestList]);

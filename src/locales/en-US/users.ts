@@ -24,5 +24,6 @@ export default {
     "For your account's security, please change your initial password.",
   'users.password.confirm': 'Confirm New Password',
   'users.password.confirm.empty': 'Please confirm the new password.',
-  'users.password.confirm.error': 'The two passwords entered do not match.'
+  'users.password.confirm.error': 'The two passwords entered do not match.',
+  'users.login.title': 'Login GPUStack'
 };

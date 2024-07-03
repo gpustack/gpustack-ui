@@ -45,24 +45,24 @@ export default defineConfig({
                 minRatio: 0.8
               }
             ]);
-          config.module
-            .rule('images')
-            .test(/\.(png|jpe?g|gif|svg|ico)(\?.*)?$/)
-            .use('url-loader')
-            .loader(require.resolve('url-loader'))
-            .tap((options: any) => {
-              console.log('iamges==options========', options);
-              return {
-                ...options,
-                limit: 8192, // 小于8KB的图片会被转为base64
-                fallback: {
-                  loader: require.resolve('file-loader'),
-                  options: {
-                    name: 'static/[name].[hash:8].[ext]' // 将所有图片输出到 static 目录
-                  }
-                }
-              };
-            });
+          // config.module
+          //   .rule('images')
+          //   .test(/\.(png|jpe?g|gif|svg|ico)(\?.*)?$/)
+          //   .use('url-loader')
+          //   .loader(require.resolve('url-loader'))
+          //   .tap((options: any) => {
+          //     console.log('iamges==options========', options);
+          //     return {
+          //       ...options,
+          //       limit: 8192, // 小于8KB的图片会被转为base64
+          //       fallback: {
+          //         loader: require.resolve('file-loader'),
+          //         options: {
+          //           name: 'static/[name].[hash:8].[ext]' // 将所有图片输出到 static 目录
+          //         }
+          //       }
+          //     };
+          //   });
         }
       }
     : {}),

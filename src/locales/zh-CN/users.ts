@@ -23,5 +23,6 @@ export default {
   'users.password.modify.description': '为了确保您的账户安全，请修改初始密码',
   'users.password.confirm': '确认新密码',
   'users.password.confirm.empty': '请确认新密码',
-  'users.password.confirm.error': '两次输入的密码不一致'
+  'users.password.confirm.error': '两次输入的密码不一致',
+  'users.login.title': '登录 GPUStack'
 };

@@ -1,21 +1,16 @@
-:local(.wrapper) {
-  @wrapheight: 54px;
-  @inputheight: 32px;
+:local(.wrapper-box) {
   @borderRadius: 8px;
-  @input-inner-padding: 12px;
-  @bgColor: transparent;
 
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
+  padding-inline: 12px;
   height: 54px;
   border-width: var(--ant-line-width);
   border-style: var(--ant-line-type);
   border-color: var(--ant-color-border);
   border-radius: @borderRadius;
-  padding-inline: 12px;
-  padding-block: 20px 0;
   background-color: var(--color-white-1);
 
   &.filled {
@@ -31,13 +26,6 @@
   &.borderless:focus-within {
     border: none;
     box-shadow: none;
-  }
-
-  .extra {
-    position: absolute;
-    right: 12px;
-    top: 8px;
-    z-index: 10;
   }
 
   &.seal-input-wrapper-disabled {
@@ -86,13 +74,48 @@
     background-color: var(--ant-input-active-bg);
   }
 
+  .add-after {
+    position: relative;
+    color: var(--ant-color-text-quaternary);
+    font-size: 14px;
+    padding-right: calc(var(--ant-padding-sm) - 1px);
+  }
+}
+
+:local(.wrapper) {
+  @wrapheight: 54px;
+  @inputheight: 32px;
+  @borderRadius: 8px;
+  @input-inner-padding: 12px;
+  @bgColor: transparent;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  padding-block: 20px 0;
+
+  .extra {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    z-index: 10;
+  }
+
+  .inner-wrapper {
+    width: 100%;
+  }
+
   .label {
     position: absolute;
-    left: 24px;
+    left: 12px;
     color: rgba(0, 0, 0, 45%);
     font-size: var(--font-size-base);
     line-height: 1;
     pointer-events: all;
+    display: flex;
+    width: max-content;
     z-index: 5;
 
     &.isfoucs-has-value {
@@ -116,6 +139,10 @@
     height: @inputheight !important;
   }
 
+  :global(.ant-input-number-input-wrap) {
+    flex: 1;
+  }
+
   :global(.ant-select-selector) {
     border: none !important;
     padding-block: 5px;
@@ -133,6 +160,7 @@
 
   :global(.ant-select-auto-complete) :global(.ant-select-selector) {
     padding-inline: 0 !important;
+    flex: 1;
   }
 
   :global(.ant-select-arrow) {
@@ -152,7 +180,8 @@
   // ==================== input ====================
   :global(.ant-input),
   :global(.ant-input-password) {
-    width: 100%;
+    // width: 100%;
+    flex: 1;
     display: flex;
     align-items: center;
     border: none;
@@ -164,7 +193,8 @@
   }
 
   :global(.ant-input.seal-textarea) {
-    width: 100%;
+    // width: 100%;
+    flex: 1;
   }
 
   :global(.ant-input-number) {
@@ -197,6 +227,7 @@
   }
 
   :global(input.ant-input-number-input) {
+    flex: 1;
     height: @inputheight !important;
     padding-block: 5px;
     padding-inline: @input-inner-padding;

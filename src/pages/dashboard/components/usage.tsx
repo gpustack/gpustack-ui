@@ -59,7 +59,7 @@ const Usage = () => {
 
   const data = useContext(DashboardContext)?.model_usage || {};
 
-  const handleSelectDate = (dateString: string) => {};
+  const handleSelectDate = (date: any) => {};
 
   const generateData = () => {
     const requestList: {
@@ -187,16 +187,13 @@ const Usage = () => {
     <>
       <PageTools
         style={{ margin: '26px 0px' }}
-        left={
-          <span style={{ fontSize: 'var(--font-size-large)' }}>
-            {intl.formatMessage({ id: 'dashboard.usage' })}
-          </span>
-        }
+        left={<span>{intl.formatMessage({ id: 'dashboard.usage' })}</span>}
         right={
           <DatePicker
             onChange={handleSelectDate}
             style={{ width: 300 }}
             picker="month"
+            defaultValue={dayjs()}
           />
         }
       />

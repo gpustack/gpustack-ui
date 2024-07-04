@@ -162,6 +162,9 @@ const Models: React.FC = () => {
     _.each(list, (data: any) => {
       updateChunkedList(data);
     });
+    if (!dataSource.length) {
+      fetchData();
+    }
   };
 
   const createModelsChunkRequest = () => {

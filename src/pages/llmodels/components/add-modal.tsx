@@ -5,6 +5,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
+import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, Input, Modal } from 'antd';
 import _ from 'lodash';
@@ -145,9 +146,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
+            addAfter={
+              <span style={{ position: 'relative', top: '2px' }}>
+                <SearchOutlined></SearchOutlined>
+              </span>
+            }
             description={intl.formatMessage({ id: 'models.form.repoid.desc' })}
           >
-            <Input.Search style={{ width: '520px' }}></Input.Search>
+            <Input></Input>
           </SealAutoComplete>
         </Form.Item>
         <Form.Item<FormData>

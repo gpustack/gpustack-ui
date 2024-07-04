@@ -152,57 +152,58 @@ const LoginForm = () => {
         <div>{renderLogo()}</div>
         <SelectLang icon={<GlobalOutlined />} reload={false} />
       </div>
-
-      <Form
-        form={form}
-        style={{ width: '400px', margin: '0 auto', paddingTop: '5%' }}
-        onFinish={handleLogin}
-      >
-        {renderWelCome(intl)}
-        <Form.Item
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                { name: intl.formatMessage({ id: 'common.form.username' }) }
-              )
-            }
-          ]}
+      <div>
+        <Form
+          form={form}
+          style={{ width: '400px', margin: '0 auto', paddingTop: '10%' }}
+          onFinish={handleLogin}
         >
-          <SealInput.Input
-            label={intl.formatMessage({ id: 'common.form.username' })}
-            prefix={<UserOutlined />}
-          />
-        </Form.Item>
+          {renderWelCome(intl)}
+          <Form.Item
+            name="username"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  { id: 'common.form.rule.input' },
+                  { name: intl.formatMessage({ id: 'common.form.username' }) }
+                )
+              }
+            ]}
+          >
+            <SealInput.Input
+              label={intl.formatMessage({ id: 'common.form.username' })}
+              prefix={<UserOutlined />}
+            />
+          </Form.Item>
 
-        <Form.Item
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                { name: intl.formatMessage({ id: 'common.form.password' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Password
-            prefix={<LockOutlined />}
-            label={intl.formatMessage({ id: 'common.form.password' })}
-          />
-        </Form.Item>
-        <Form.Item name="autoLogin" valuePropName="checked">
-          <Checkbox style={{ marginLeft: 10 }}>
-            {intl.formatMessage({ id: 'common.login.rember' })}
-          </Checkbox>
-        </Form.Item>
-        <Button htmlType="submit" type="primary" block>
-          {intl.formatMessage({ id: 'menu.login' })}
-        </Button>
-      </Form>
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  { id: 'common.form.rule.input' },
+                  { name: intl.formatMessage({ id: 'common.form.password' }) }
+                )
+              }
+            ]}
+          >
+            <SealInput.Password
+              prefix={<LockOutlined />}
+              label={intl.formatMessage({ id: 'common.form.password' })}
+            />
+          </Form.Item>
+          <Form.Item name="autoLogin" valuePropName="checked">
+            <Checkbox style={{ marginLeft: 10 }}>
+              {intl.formatMessage({ id: 'common.login.rember' })}
+            </Checkbox>
+          </Form.Item>
+          <Button htmlType="submit" type="primary" block>
+            {intl.formatMessage({ id: 'common.button.login' })}
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { isNotEmptyValue } from '@/utils/index';
 import type { InputNumberProps } from 'antd';
 import { Form, InputNumber } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -24,7 +25,7 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   }
 
   useEffect(() => {
-    if (props.value) {
+    if (isNotEmptyValue(props.value)) {
       setIsFocus(true);
     }
   }, [props.value]);

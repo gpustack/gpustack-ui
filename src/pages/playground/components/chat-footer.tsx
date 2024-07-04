@@ -47,7 +47,6 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
           <Space size={20}>
             <Button
               disabled={disabled}
-              type="primary"
               icon={<PlusOutlined />}
               onClick={onNewMessage}
             >

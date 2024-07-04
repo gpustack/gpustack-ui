@@ -164,7 +164,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
         <span className="title">
           {intl.formatMessage({ id: 'playground.system' })}
         </span>
-        <Button type="primary" size="small">
+        <Button size="small">
           {collapsed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
         </Button>
       </div>

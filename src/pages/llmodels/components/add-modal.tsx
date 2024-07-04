@@ -146,6 +146,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
+            disabled={action === PageAction.EDIT}
             addAfter={
               <span style={{ position: 'relative', top: '2px' }}>
                 <SearchOutlined></SearchOutlined>
@@ -176,6 +177,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             required
             options={fileOptions}
             onFocus={handleRepoOnBlur}
+            disabled={action === PageAction.EDIT}
           ></SealAutoComplete>
         </Form.Item>
       </>
@@ -229,6 +231,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         >
           <SealAutoComplete
             filterOption
+            disabled={action === PageAction.EDIT}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             required
             options={ollamaModelOptions}
@@ -314,6 +317,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           ]}
         >
           <SealSelect
+            disabled={action === PageAction.EDIT}
             label={intl.formatMessage({
               id: 'models.form.source'
             })}
@@ -343,7 +347,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               id: 'models.form.replicas'
             })}
             required
-            min={1}
+            min={0}
           ></SealInput.Number>
         </Form.Item>
         <Form.Item<FormData> name="description">

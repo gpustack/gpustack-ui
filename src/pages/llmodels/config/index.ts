@@ -19,7 +19,8 @@ export const modelSourceMap = {
 };
 
 export const status: any = {
-  Running: StatusMaps.success
+  Running: StatusMaps.success,
+  Pending: StatusMaps.transitioning
 };
 
 export const ActionList = [

@@ -16,6 +16,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     description,
     isInFormItems = true,
     variant,
+    addAfter,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -71,6 +72,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
       required={required}
       description={description}
       disabled={props.disabled}
+      addAfter={addAfter}
       onClick={handleClickWrapper}
     >
       <Input

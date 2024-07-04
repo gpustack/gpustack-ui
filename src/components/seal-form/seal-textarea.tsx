@@ -18,6 +18,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     description,
     variant,
     extra,
+    addAfter,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -85,6 +86,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
       className="seal-textarea-wrapper"
       extra={extra}
       disabled={props.disabled}
+      addAfter={addAfter}
       onClick={handleClickWrapper}
     >
       <Input.TextArea

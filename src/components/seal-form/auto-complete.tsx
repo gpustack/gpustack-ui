@@ -14,6 +14,9 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
     description,
     isInFormItems = true,
     onSelect,
+    extra,
+    style,
+    addAfter,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -64,11 +67,13 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
   return (
     <Wrapper
       status={status}
+      extra={extra}
       label={label || (placeholder as string)}
       isFocus={isFocus}
       required={required}
       description={description}
       disabled={props.disabled}
+      addAfter={addAfter}
       onClick={handleClickWrapper}
     >
       <AutoComplete

@@ -4,6 +4,7 @@ import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { useIntl } from '@umijs/max';
 import { Col, DatePicker, Row } from 'antd';
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import UitilBar from '../../../components/util-bar';
@@ -19,8 +20,9 @@ const SystemLoad = () => {
   const [largeChartHeight, setLargeChartHeight] = useState<number>(400);
   const thresholds = [0.5, 0.7, 1];
   const height = 400;
+  const currentDate = dayjs().format('YYYY-MM-DD');
 
-  const handleSelectDate = (date: string) => {};
+  const handleSelectDate = (date: any) => {};
 
   useEffect(() => {
     if (size.width < breakpoints.xl) {
@@ -36,12 +38,14 @@ const SystemLoad = () => {
         <PageTools
           style={{ margin: '26px 0px' }}
           left={
-            <span style={{ fontSize: 'var(--font-size-large)' }}>
-              {intl.formatMessage({ id: 'dashboard.systemload' })}
-            </span>
+            <span>{intl.formatMessage({ id: 'dashboard.systemload' })}</span>
           }
           right={
-            <DatePicker onChange={handleSelectDate} style={{ width: 300 }} />
+            <DatePicker
+              onChange={handleSelectDate}
+              style={{ width: 300 }}
+              defaultValue={dayjs()}
+            />
           }
         />
         <Row style={{ width: '100%' }} gutter={[0, 20]}>

@@ -87,7 +87,7 @@ html {
     }
 
     &.ant-btn {
-      --ant-button-content-font-size-lg: 13px;
+      --ant-button-content-font-size-lg: 12px;
       --ant-button-content-font-size: 12px;
       --ant-button-content-font-size-sm: 12px;
     }
@@ -133,12 +133,18 @@ body * {
 }
 
 body {
-  // .ant-slider:hover .ant-slider-handle::after {
-  //   box-shadow: 0 0 0 var(--ant-slider-handle-line-width)
-  //     var(--ant-slider-handle-color);
-  // }
+  font-family: 'noto sans', sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+
   .ant-modal-confirm-title {
     display: none;
+  }
+
+  .ant-select-selector {
+    .ant-select-selection-item {
+      font-weight: var(--font-weight-normal);
+    }
   }
 
   .ant-checkbox {

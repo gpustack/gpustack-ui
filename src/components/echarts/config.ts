@@ -76,7 +76,8 @@ export const title = {
   show: true,
   left: 'center',
   textStyle: {
-    fontSize: 14
+    fontSize: 12,
+    color: '#000'
   },
   text: ''
 };

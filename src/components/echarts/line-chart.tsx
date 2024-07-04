@@ -3,6 +3,7 @@ import {
   grid,
   legend,
   lineItemConfig,
+  title as titleConfig,
   tooltip,
   xAxis,
   yAxis
@@ -67,11 +68,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     const optionsConfig = {
       ...options,
       title: {
-        show: true,
-        left: 'center',
-        textStyle: {
-          fontSize: 14
-        },
+        ...titleConfig,
         text: title
       },
       yAxis: {

@@ -5,12 +5,14 @@ import { Button } from 'antd';
 type CopyButtonProps = {
   text: string;
   disabled?: boolean;
+  type?: 'text' | 'primary' | 'dashed' | 'link' | 'default';
   size?: 'small' | 'middle' | 'large';
 };
 
 const CopyButton: React.FC<CopyButtonProps> = ({
   text,
   disabled,
+  type = 'text',
   size = 'middle'
 }) => {
   const { copied, copyToClipboard } = useCopyToClipboard();
@@ -21,7 +23,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   };
   return (
     <Button
-      type="text"
+      type={type}
       shape="circle"
       size={size}
       onClick={handleCopy}

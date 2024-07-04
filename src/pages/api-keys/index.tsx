@@ -193,11 +193,12 @@ const Models: React.FC = () => {
               <Input
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
+                allowClear
                 onChange={handleNameChange}
               ></Input>
               <Button
                 type="text"
-                style={{ color: 'var(--ant-color-primary)' }}
+                style={{ color: 'var(--ant-color-text-tertiary)' }}
                 onClick={handleSearch}
                 icon={<SyncOutlined></SyncOutlined>}
               ></Button>

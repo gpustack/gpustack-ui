@@ -37,7 +37,6 @@ export const legend = {
 
 export const xAxis = {
   type: 'category',
-  boundaryGap: true,
   axisTick: {
     show: true,
     lineStyle: {

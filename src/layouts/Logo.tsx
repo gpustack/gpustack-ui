@@ -5,7 +5,7 @@ import GpustackLogo from '@/assets/images/gpustack-logo.png';
 import React from 'react';
 
 const LogoIcon: React.FC = () => {
-  return <img src={GpustackLogo} alt="logo" style={{ height: 24 }} />;
+  return <img src={GpustackLogo} alt="logo" style={{ height: 16 }} />;
 };
 
 export default LogoIcon;

@@ -334,9 +334,14 @@ const Models: React.FC = () => {
       handleViewLogs(row);
     }
   };
+  useEffect(() => {
+    fetchData();
+    return () => {
+      axiosToken?.cancel?.();
+    };
+  }, [queryParams]);
 
   useEffect(() => {
-    // fetchData();
     createModelsChunkRequest();
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
@@ -430,7 +435,7 @@ const Models: React.FC = () => {
               ></Input>
               <Button
                 type="text"
-                style={{ color: 'var(--ant-color-primary)' }}
+                style={{ color: 'var(--ant-color-text-tertiary)' }}
                 onClick={handleSearch}
                 icon={<SyncOutlined></SyncOutlined>}
               ></Button>

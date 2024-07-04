@@ -1,7 +1,3 @@
-import CardWrapper from '@/components/card-wrapper';
-import BarChart from '@/components/echarts/bar-chart';
-import HBar from '@/components/echarts/h-bar';
-import LineChart from '@/components/echarts/line-chart';
 import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
@@ -11,6 +7,8 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
+import RequestTokenInner from './usage-inner/request-token-inner';
+import TopUser from './usage-inner/top-user';
 
 const baseColorMap = {
   baseL2: 'rgba(13,171,219,0.8)',
@@ -38,28 +36,27 @@ const Usage = () => {
   const intl = useIntl();
   const { size } = useWindowResize();
   const [paddingRight, setPaddingRight] = useState<string>('20px');
-  const [requestData, setRequestData] = useState<
-    {
-      name: string;
-      color: string;
-      areaStyle: any;
-      data: { time: string; value: number }[];
-    }[]
-  >([]);
 
+  console.log('usage========');
+  const currentDate = dayjs();
   const currentMonthDays = getCurrentMonthDays();
-  const [tokenData, setTokenData] = useState<{ time: string; value: number }[]>(
-    []
-  );
-  const [userData, setUserData] = useState<{ name: string; value: number }[]>(
-    []
-  );
-  const [xAxisData, setXAxisData] = useState<string[]>(currentMonthDays);
-  const [topUserList, setTopUseList] = useState<string[]>([]);
+  let requestData: {
+    name: string;
+    color: string;
+    areaStyle: any;
+    data: { time: string; value: number }[];
+  }[] = [];
+  let tokenData: { time: string; value: number }[] = [];
+  let userData: { name: string; value: number }[] = [];
+  const xAxisData: string[] = currentMonthDays;
+  let topUserList: string[] = [];
 
-  const data = useContext(DashboardContext)?.model_usage || {};
+  const { model_usage, fetchData } = useContext(DashboardContext);
+  const data = model_usage || {};
 
-  const handleSelectDate = (date: any) => {};
+  const handleSelectDate = (date: any) => {
+    // fetchData?.();
+  };
 
   const generateData = () => {
     const requestList: {
@@ -68,30 +65,30 @@ const Usage = () => {
       areaStyle: any;
       data: { time: string; value: number }[];
     } = {
-      name: 'API Request',
+      name: 'API requests',
       areaStyle: {},
       color: baseColorMap.base,
       data: []
     };
 
     const completionData: any = {
-      name: 'completion_token',
+      name: 'Completion tokens',
       color: baseColorMap.base,
       data: []
     };
     const prompData: any = {
-      name: 'prompt_token',
+      name: 'Prompt tokens',
       color: baseColorMap.baseR3,
       data: []
     };
 
     const topUserPrompt: any = {
-      name: 'prompt_token',
+      name: 'Prompt tokens',
       color: baseColorMap.baseR3,
       data: []
     };
     const topUserCompletion: any = {
-      name: 'completion_token',
+      name: 'Completion tokens',
       color: baseColorMap.base,
       data: []
     };
@@ -161,14 +158,10 @@ const Usage = () => {
       });
     });
 
-    setRequestData([requestList]);
-    setUserData([topUserCompletion, topUserPrompt]);
-    setTopUseList(users);
-    setTokenData([completionData, prompData]);
-  };
-
-  const labelFormatter = (v: any) => {
-    return dayjs(v).format('MM-DD');
+    requestData = [requestList];
+    userData = [topUserCompletion, topUserPrompt];
+    topUserList = users;
+    tokenData = [completionData, prompData];
   };
 
   useEffect(() => {
@@ -179,9 +172,7 @@ const Usage = () => {
     }
   }, [size.width]);
 
-  useEffect(() => {
-    generateData();
-  }, [data]);
+  generateData();
 
   return (
     <>
@@ -193,7 +184,7 @@ const Usage = () => {
             onChange={handleSelectDate}
             style={{ width: 300 }}
             picker="month"
-            defaultValue={dayjs()}
+            defaultValue={currentDate}
           />
         }
       />
@@ -206,38 +197,14 @@ const Usage = () => {
           xl={16}
           style={{ paddingRight: paddingRight }}
         >
-          <CardWrapper style={{ width: '100%' }}>
-            <Row style={{ width: '100%' }}>
-              <Col span={12}>
-                <LineChart
-                  title={intl.formatMessage({ id: 'dashboard.apirequest' })}
-                  seriesData={requestData}
-                  xAxisData={xAxisData}
-                  height={360}
-                  labelFormatter={labelFormatter}
-                ></LineChart>
-              </Col>
-              <Col span={12}>
-                <BarChart
-                  title={intl.formatMessage({ id: 'dashboard.tokens' })}
-                  seriesData={tokenData}
-                  xAxisData={xAxisData}
-                  height={360}
-                  labelFormatter={labelFormatter}
-                ></BarChart>
-              </Col>
-            </Row>
-          </CardWrapper>
+          <RequestTokenInner
+            requestData={requestData}
+            xAxisData={xAxisData}
+            tokenData={tokenData}
+          ></RequestTokenInner>
         </Col>
         <Col xs={24} sm={24} md={24} lg={24} xl={8}>
-          <CardWrapper>
-            <HBar
-              title={intl.formatMessage({ id: 'dashboard.topusers' })}
-              seriesData={userData}
-              xAxisData={topUserList}
-              height={360}
-            ></HBar>
-          </CardWrapper>
+          <TopUser userData={userData} topUserList={topUserList}></TopUser>
         </Col>
       </Row>
     </>

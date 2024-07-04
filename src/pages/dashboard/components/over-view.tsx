@@ -29,7 +29,7 @@ const renderCardItem = (data: {
 const Overview: React.FC = () => {
   const intl = useIntl();
   const data = useContext(DashboardContext).resource_counts || {};
-
+  console.log('overview===');
   const renderValue = (
     value:
       | number

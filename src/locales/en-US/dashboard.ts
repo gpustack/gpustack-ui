@@ -15,7 +15,7 @@ export default {
   'dashboard.vramutilization': 'VRAM Utilization',
   'dashboard.gpuutilization': 'GPU Utilization',
   'dashboard.usage': 'Usage',
-  'dashboard.apirequest': 'API Request',
+  'dashboard.apirequest': 'API Requests',
   'dashboard.tokens': 'Token Usage',
   'dashboard.topusers': 'Top Users',
   'dashboard.activeModels': 'Active Models',

@@ -2,7 +2,7 @@ import Chart from '@/components/echarts/chart';
 import { getLocale, useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
 const chartColorMap = {
@@ -110,9 +110,11 @@ const option = {
 };
 
 const UtilizationOvertime: React.FC = () => {
+  console.log('systemload=====================');
   const intl = useIntl();
   const locale = getLocale();
-  const [dataOptions, setDataOptions] = useState<any>(option);
+  let dataOptions: any = {};
+  // const [dataOptions, setDataOptions] = useState<any>(option);
   const data = useContext(DashboardContext)?.system_load?.history || {};
 
   const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
@@ -121,7 +123,7 @@ const UtilizationOvertime: React.FC = () => {
     return `${value}%`;
   };
 
-  const generateData = useCallback(() => {
+  const generateData = () => {
     const legendData: string[] = [];
     const xAxisData: string[] = [];
     let list: { value: number; time: string; type: string }[] = [];
@@ -157,7 +159,7 @@ const UtilizationOvertime: React.FC = () => {
       };
     });
 
-    setDataOptions({
+    dataOptions = {
       ...option,
       legend: {
         ...option.legend,
@@ -168,12 +170,12 @@ const UtilizationOvertime: React.FC = () => {
         data: _.uniq(xAxisData)
       },
       series: list
-    });
-  }, [data, locale]);
-
-  useEffect(() => {
-    generateData();
-  }, [data, locale]);
+    };
+  };
+  generateData();
+  // useEffect(() => {
+  //   generateData();
+  // }, [data, locale]);
 
   return (
     <>

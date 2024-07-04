@@ -1,5 +1,6 @@
 import breakpoints from '@/config/breakpoints';
-import { useEffect, useState } from 'react';
+import _ from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function useWindowResize() {
   const [size, setSize] = useState<{ width: number; height: number }>({
@@ -11,7 +12,7 @@ export default function useWindowResize() {
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const [currentPoint, setCurrentPoint] = useState<string>('');
 
-  const checkBreakpoint = (width: number) => {
+  const checkBreakpoint = useCallback((width: number) => {
     if (width < breakpoints.sm) {
       setIsMobile(true);
       setIsTablet(false);
@@ -37,15 +38,15 @@ export default function useWindowResize() {
     setIsTablet(false);
     setIsDesktop(true);
     setCurrentPoint('xl');
-  };
+  }, []);
+  const handleResize = _.throttle(() => {
+    setSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+  }, 200);
 
   useEffect(() => {
-    const handleResize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);

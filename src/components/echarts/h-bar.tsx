@@ -8,7 +8,7 @@ import {
   yAxis
 } from '@/components/echarts/config';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { ChartProps } from './types';
 
 const BarChart: React.FC<ChartProps> = (props) => {
@@ -87,7 +87,6 @@ const BarChart: React.FC<ChartProps> = (props) => {
       },
       xAxis: {
         ...options.xAxis,
-        boundaryGap: true,
         type: 'value',
         splitLine: {
           show: false
@@ -113,4 +112,4 @@ const BarChart: React.FC<ChartProps> = (props) => {
   );
 };
 
-export default BarChart;
+export default memo(BarChart);

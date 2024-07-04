@@ -11,7 +11,6 @@ import { SelectLang, history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
 
@@ -40,12 +39,21 @@ const renderWelCome = (intl: any) => {
       style={{
         display: 'flex',
         marginBottom: 32,
-        fontSize: 24,
+        fontSize: 20,
         justifyContent: 'center',
         alignItems: 'center'
       }}
     >
-      <div>{intl?.formatMessage({ id: 'users.login.title' })}</div>
+      <div className="flex-center">
+        <span>
+          {intl?.formatMessage({ id: 'users.login.title' }, { name: '' })}
+        </span>
+        <img
+          src={LogoIcon}
+          alt="logo"
+          style={{ height: '24px', marginLeft: 10 }}
+        />
+      </div>
     </div>
   );
 };
@@ -130,9 +138,7 @@ const LoginForm = () => {
     }
   };
 
-  useEffect(() => {
-    callGetRememberMe();
-  }, []);
+  callGetRememberMe();
 
   return (
     <div>
@@ -141,15 +147,9 @@ const LoginForm = () => {
           position: 'fixed',
           right: 0,
           top: 0,
-          left: 0,
-          width: '100%',
-          padding: '0 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          padding: '0 20px'
         }}
       >
-        <div>{renderLogo()}</div>
         <SelectLang icon={<GlobalOutlined />} reload={false} />
       </div>
       <div>

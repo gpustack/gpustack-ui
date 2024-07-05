@@ -39,23 +39,26 @@ export default function useWindowResize() {
     setIsDesktop(true);
     setCurrentPoint('xl');
   }, []);
-  const handleResize = _.throttle(() => {
-    setSize({
-      width: window.innerWidth,
-      height: window.innerHeight
-    });
-  }, 200);
+  const handleResize = useCallback(
+    _.throttle(() => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    }, 200),
+    []
+  );
 
   useEffect(() => {
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [handleResize]);
 
   useEffect(() => {
     checkBreakpoint(size.width);
-  }, [size.width]);
+  }, [size.width, checkBreakpoint]);
 
   return { size, isMobile, isTablet, isDesktop, currentPoint };
 }

@@ -18,7 +18,7 @@ const UitilBar: React.FC<UitilBarProps> = (props) => {
     gapDegree = 170,
     strokeWidth = 10,
     title,
-    size = 160,
+    size = 150,
     strokeColor,
     trailColor = 'rgba(221,221,221,.5)'
   } = props;

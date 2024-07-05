@@ -65,6 +65,7 @@ const BarChart: React.FC<ChartProps> = (props) => {
     });
     const optionsConfig = {
       ...options,
+      animation: false,
       title: {
         ...titleConfig,
         text: title

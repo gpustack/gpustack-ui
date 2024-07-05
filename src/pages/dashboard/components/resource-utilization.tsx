@@ -2,7 +2,7 @@ import Chart from '@/components/echarts/chart';
 import { getLocale, useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
 const chartColorMap = {
@@ -114,14 +114,9 @@ const UtilizationOvertime: React.FC = () => {
   const intl = useIntl();
   const locale = getLocale();
   let dataOptions: any = {};
-  // const [dataOptions, setDataOptions] = useState<any>(option);
   const data = useContext(DashboardContext)?.system_load?.history || {};
 
   const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
-
-  const labelFormatter = (value: any) => {
-    return `${value}%`;
-  };
 
   const generateData = () => {
     const legendData: string[] = [];
@@ -130,7 +125,6 @@ const UtilizationOvertime: React.FC = () => {
 
     list = _.map(typeList, (item: string) => {
       const itemConfig = _.get(TypeKeyMap, item, {});
-      console.log('itemConfig', itemConfig);
       const name = itemConfig.intl
         ? intl.formatMessage({ id: itemConfig.label })
         : itemConfig.label;
@@ -161,6 +155,7 @@ const UtilizationOvertime: React.FC = () => {
 
     dataOptions = {
       ...option,
+      animation: false,
       legend: {
         ...option.legend,
         data: legendData
@@ -173,9 +168,6 @@ const UtilizationOvertime: React.FC = () => {
     };
   };
   generateData();
-  // useEffect(() => {
-  //   generateData();
-  // }, [data, locale]);
 
   return (
     <>
@@ -184,4 +176,4 @@ const UtilizationOvertime: React.FC = () => {
   );
 };
 
-export default UtilizationOvertime;
+export default memo(UtilizationOvertime);

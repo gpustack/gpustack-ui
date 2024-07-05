@@ -9,7 +9,7 @@ import {
   yAxis
 } from '@/components/echarts/config';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { memo } from 'react';
 import { ChartProps } from './types';
 
 const LineChart: React.FC<ChartProps> = (props) => {
@@ -23,7 +23,6 @@ const LineChart: React.FC<ChartProps> = (props) => {
     smooth,
     title
   } = props;
-  const [dataOptions, setDataOptions] = useState({});
 
   const options = {
     title: {
@@ -49,7 +48,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     series: []
   };
 
-  useEffect(() => {
+  const generateOptions = (): any => {
     const data = _.map(seriesData, (item: any) => {
       return {
         ...item,
@@ -67,6 +66,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     });
     const optionsConfig = {
       ...options,
+      animation: false,
       title: {
         ...titleConfig,
         text: title
@@ -80,9 +80,9 @@ const LineChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-    console.log('optionsConfig========line=', optionsConfig);
-    setDataOptions(optionsConfig);
-  }, [seriesData, xAxisData, title]);
+    return optionsConfig;
+  };
+  const dataOptions = generateOptions();
   return (
     <Chart
       height={height}
@@ -92,4 +92,4 @@ const LineChart: React.FC<ChartProps> = (props) => {
   );
 };
 
-export default LineChart;
+export default memo(LineChart);

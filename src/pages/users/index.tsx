@@ -69,6 +69,7 @@ const Models: React.FC = () => {
       setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
+      setDataSource([]);
       console.log('error', error);
     } finally {
       setLoading(false);
@@ -170,6 +171,7 @@ const Models: React.FC = () => {
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        rowSelection.clearSelections();
         fetchData();
       },
       onCancel() {

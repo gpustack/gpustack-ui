@@ -142,6 +142,7 @@ const Models: React.FC = () => {
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        rowSelection.clearSelections();
         fetchData();
       },
       onCancel() {

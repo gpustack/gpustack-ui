@@ -13,6 +13,6 @@ export default {
   'playground.completion': '补全',
   'playground.prompt': '提示',
   'playground.tokenusage': 'Token 使用量',
-  'models.openinplayground': '试验场打开',
+  'models.openinplayground': '打开试验场',
   'playground.tokenoutput': '输出'
 };

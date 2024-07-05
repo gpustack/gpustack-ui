@@ -19,29 +19,31 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
   }
   return (
     <div className="reference-params">
-      <Tooltip
-        title={
-          <Space>
-            <span>
-              {intl.formatMessage({ id: 'playground.completion' })}:{' '}
-              {usage.completion_tokens}
-            </span>
-            <span>
-              {intl.formatMessage({ id: 'playground.prompt' })}:{' '}
-              {usage.prompt_tokens}
-            </span>
-          </Space>
-        }
-      >
-        <span>
-          {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
-          {usage.total_tokens}
-        </span>
-      </Tooltip>
+      <span className="usage">
+        <Tooltip
+          title={
+            <Space>
+              <span>
+                {intl.formatMessage({ id: 'playground.completion' })}:{' '}
+                {usage.completion_tokens}
+              </span>
+              <span>
+                {intl.formatMessage({ id: 'playground.prompt' })}:{' '}
+                {usage.prompt_tokens}
+              </span>
+            </Space>
+          }
+        >
+          <span>
+            {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
+            {usage.total_tokens}
+          </span>
+        </Tooltip>
+      </span>
 
       <span>
         {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-        {usage.time_per_output_token_ms} token/ms
+        {usage.time_per_output_token_ms * 1000} Tokens/s
       </span>
     </div>
   );

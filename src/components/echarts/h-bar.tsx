@@ -7,8 +7,9 @@ import {
   xAxis,
   yAxis
 } from '@/components/echarts/config';
+import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { ChartProps } from './types';
 
 const BarChart: React.FC<ChartProps> = (props) => {
@@ -21,7 +22,9 @@ const BarChart: React.FC<ChartProps> = (props) => {
     legendData,
     title
   } = props;
-  const [dataOptions, setDataOptions] = useState({});
+  if (!seriesData.length) {
+    return <EmptyData height={height} title={title}></EmptyData>;
+  }
 
   const options = {
     title: titleConfig,
@@ -45,7 +48,7 @@ const BarChart: React.FC<ChartProps> = (props) => {
     series: []
   };
 
-  useEffect(() => {
+  const setDataOptions = () => {
     const data = _.map(seriesData, (item: any) => {
       return {
         ...item,
@@ -60,9 +63,8 @@ const BarChart: React.FC<ChartProps> = (props) => {
           color: item.color
         }
       };
-      return item;
     });
-    const optionsConfig = {
+    return {
       ...options,
       animation: false,
       title: {
@@ -101,9 +103,10 @@ const BarChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-    console.log('optionsConfig========h=', optionsConfig);
-    setDataOptions(optionsConfig);
-  }, [seriesData, xAxisData, title]);
+  };
+
+  const dataOptions: any = setDataOptions();
+
   return (
     <Chart
       height={height}

@@ -14,6 +14,7 @@ const RenderProgress = memo(
       if (download) {
         return 'var(--ant-color-primary)';
       }
+
       if (percent <= 50) {
         return 'var(--color-progress-green)';
       }

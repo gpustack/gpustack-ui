@@ -3,7 +3,7 @@ import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { useIntl } from '@umijs/max';
-import { Col, DatePicker, Row } from 'antd';
+import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
@@ -39,13 +39,6 @@ const SystemLoad = () => {
           style={{ margin: '26px 0px' }}
           left={
             <span>{intl.formatMessage({ id: 'dashboard.systemload' })}</span>
-          }
-          right={
-            <DatePicker
-              onChange={handleSelectDate}
-              style={{ width: 300 }}
-              defaultValue={dayjs()}
-            />
           }
         />
         <Row style={{ width: '100%' }} gutter={[0, 20]}>

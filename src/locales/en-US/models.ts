@@ -12,5 +12,6 @@ export default {
   'models.form.s3address': 'S3 Address',
   'models.openinplayground': 'Open in Playground',
   'models.instances': 'instances',
-  'model.form.ollama.model': 'Ollama Model'
+  'model.form.ollama.model': 'Ollama Model',
+  'model.form.ollamaholder': 'Please select or input model name'
 };

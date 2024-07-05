@@ -36,6 +36,7 @@ export interface SealTableProps {
   renderChildren?: (data: any) => React.ReactNode;
   loadChildren?: (record: any) => Promise<any[]>;
   loadChildrenAPI?: (record: any) => string;
+  contentRendered?: () => void;
   rowKey: string;
 }
 

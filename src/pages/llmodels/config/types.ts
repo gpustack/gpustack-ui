@@ -25,6 +25,7 @@ export interface ModelInstanceListItem {
   source: string;
   huggingface_repo_id: string;
   huggingface_filename: string;
+  ollama_library_model_name: string;
   s3_address: string;
   worker_id: number;
   worker_ip: string;

@@ -42,31 +42,38 @@ export function useUpdateChunkedList(
         );
         if (updateIndex === -1) {
           const updateItem = _.cloneDeep(item);
-          const list = _.concat(updateItem, dataList);
-          options.setDataList(list);
+          options.setDataList((preDataList: any) => {
+            return _.concat(updateItem, preDataList);
+          });
         }
       });
     }
     // DELETE
     if (data?.type === WatchEventType.DELETE) {
-      const list = _.filter(dataList, (item: any) => {
-        return !_.find(ids, (id: any) => id === item.id);
+      options.setDataList((prevDataList: any) => {
+        const updatedList = _.filter(prevDataList, (item: any) => {
+          return !_.find(ids, (id: any) => id === item.id);
+        });
+        return updatedList;
       });
-      options.setDataList(list);
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
-      _.each(collections, (item: any) => {
-        const updateIndex = _.findIndex(
-          dataList,
-          (sItem: any) => sItem.id === item.id
-        );
-        console.log('updateIndex===========', dataList, updateIndex, data);
-        if (updateIndex > -1) {
-          const updateItem = _.cloneDeep(item);
-          dataList[updateIndex] = updateItem;
-        }
-        options.setDataList(dataList);
+      options.setDataList((prevDataList: any[]) => {
+        const updatedDataList = _.cloneDeep(prevDataList);
+
+        _.each(collections, (item: any) => {
+          const updateIndex = _.findIndex(
+            updatedDataList,
+            (sItem: any) => sItem.id === item.id
+          );
+          if (updateIndex > -1) {
+            const updateItem = _.cloneDeep(item);
+            updatedDataList[updateIndex] = updateItem;
+          }
+        });
+
+        return updatedDataList;
       });
     }
     if (options?.callback) {

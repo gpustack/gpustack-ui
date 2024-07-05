@@ -18,8 +18,8 @@ export async function queryModelsList(
 ) {
   return request<Global.PageResponse<ListItem>>(`${MODELS_API}`, {
     methos: 'GET',
-    params,
-    ...options
+    ...options,
+    params
   });
 }
 

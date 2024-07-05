@@ -12,10 +12,10 @@ export const ollamaModelOptions = [
   { label: 'deepseek-coder', value: 'deepseek-coder' }
 ];
 
-export const modelSourceMap = {
-  huggingface: 'huggingface',
-  ollama_library: 'ollama_library',
-  s3: 's3'
+export const modelSourceMap: Record<string, string> = {
+  huggingface: 'Hugging Face',
+  ollama_library: 'Ollama Library',
+  s3: 'S3'
 };
 
 export const status: any = {
@@ -40,3 +40,12 @@ export const ActionList = [
     icon: EditOutlined
   }
 ];
+
+export const InstanceStatusMap = {
+  Initializing: 'Initializing',
+  Pending: 'Pending',
+  Running: 'Running',
+  Scheduled: 'Scheduled',
+  Error: 'Error',
+  Downloading: 'Downloading'
+};

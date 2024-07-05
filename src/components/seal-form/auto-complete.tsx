@@ -1,4 +1,4 @@
-import { AutoComplete, Form } from 'antd';
+import { AutoComplete, Form, Spin } from 'antd';
 import type { AutoCompleteProps } from 'antd/lib';
 import { useEffect, useRef, useState } from 'react';
 import Wrapper from './components/wrapper';
@@ -17,6 +17,7 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
     extra,
     style,
     addAfter,
+    loading,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -63,6 +64,12 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
   const handleOnSelect = (value: any, option: any) => {
     onSelect?.(value, option);
   };
+  const renderAfter = () => {
+    if (loading) {
+      return <Spin size="small"></Spin>;
+    }
+    return addAfter;
+  };
 
   return (
     <Wrapper
@@ -73,12 +80,19 @@ const SealAutoComplete: React.FC<AutoCompleteProps & SealFormItemProps> = (
       required={required}
       description={description}
       disabled={props.disabled}
-      addAfter={addAfter}
+      addAfter={renderAfter()}
       onClick={handleClickWrapper}
     >
       <AutoComplete
         {...rest}
         ref={inputRef}
+        placeholder={
+          isFocus ? (
+            <span style={{ paddingLeft: '12px' }}>{placeholder}</span>
+          ) : (
+            ''
+          )
+        }
         onSelect={handleOnSelect}
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}

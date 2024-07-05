@@ -8,6 +8,7 @@ import {
   xAxis,
   yAxis
 } from '@/components/echarts/config';
+import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
 import { memo } from 'react';
 import { ChartProps } from './types';
@@ -19,10 +20,13 @@ const LineChart: React.FC<ChartProps> = (props) => {
     height,
     width,
     labelFormatter,
-    legendData,
+    legendData = [],
     smooth,
     title
   } = props;
+  if (!seriesData.length) {
+    return <EmptyData height={height} title={title}></EmptyData>;
+  }
 
   const options = {
     title: {
@@ -42,7 +46,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     yAxis,
     legend: {
       ...legend,
-      data: []
+      data: legendData
     },
 
     series: []

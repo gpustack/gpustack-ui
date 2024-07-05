@@ -1,20 +1,18 @@
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
-import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
 
-const Models: React.FC = () => {
+const GPUList: React.FC = () => {
   const intl = useIntl();
-  const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -56,6 +54,7 @@ const Models: React.FC = () => {
       setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
+      setDataSource([]);
       console.log('error', error);
     } finally {
       setLoading(false);
@@ -193,4 +192,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default Models;
+export default memo(GPUList);

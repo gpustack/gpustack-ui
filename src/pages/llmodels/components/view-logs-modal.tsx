@@ -1,24 +1,25 @@
 import LogsViewer from '@/components/logs-viewer';
+import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React from 'react';
 
 type ViewModalProps = {
-  content: string;
-  title: string;
   open: boolean;
   url: string;
   onCancel: () => void;
 };
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const { title, open, url, onCancel, content = '' } = props || {};
+  console.log('viewlogs======');
+  const { open, url, onCancel } = props || {};
+  const intl = useIntl();
   if (!open) {
     return null;
   }
 
   return (
     <Modal
-      title={title}
+      title={intl.formatMessage({ id: 'common.button.viewlog' })}
       open={open}
       onCancel={onCancel}
       destroyOnClose={true}
@@ -30,15 +31,14 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       footer={null}
     >
       <LogsViewer
-        content={content}
         height={500}
         url={url}
         params={{
-          follow: false
+          follow: true
         }}
       ></LogsViewer>
     </Modal>
   );
 };
 
-export default ViewCodeModal;
+export default React.memo(ViewCodeModal);

@@ -9,7 +9,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, Input, Modal } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
   callHuggingfaceQuickSearch,
   queryHuggingfaceModelFiles
@@ -27,14 +27,16 @@ type AddModalProps = {
 };
 
 const sourceOptions = [
-  { label: 'Huggingface', value: 'huggingface', key: 'huggingface' },
+  { label: 'Hugging Face', value: 'huggingface', key: 'huggingface' },
   { label: 'Ollama Library', value: 'ollama_library', key: 'ollama_library' }
 ];
 
 const AddModal: React.FC<AddModalProps> = (props) => {
+  console.log('addmodel====');
   const { title, action, open, onOk, onCancel } = props || {};
   const [form] = Form.useForm();
   const intl = useIntl();
+  const [loading, setLoading] = useState(false);
   const modelSource = Form.useWatch('source', form);
   const [repoOptions, setRepoOptions] = useState<
     { label: string; value: string }[]
@@ -77,6 +79,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
   const handleFetchModelFiles = async (repo: string) => {
     try {
+      setLoading(true);
       const res = await queryHuggingfaceModelFiles({ repo });
       const list = _.filter(res, (file: any) => {
         return _.endsWith(file.path, '.gguf');
@@ -88,8 +91,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         };
       });
       setFileOptions(list);
+      setLoading(false);
     } catch (error) {
       setFileOptions([]);
+      setLoading(false);
     }
   };
 
@@ -143,6 +148,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             required
             showSearch
             onBlur={handleRepoOnBlur}
+            onSelect={handleRepoOnBlur}
             onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
@@ -176,6 +182,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             label={intl.formatMessage({ id: 'models.form.filename' })}
             required
             options={fileOptions}
+            loading={loading}
             onFocus={handleRepoOnBlur}
             disabled={action === PageAction.EDIT}
           ></SealAutoComplete>
@@ -233,6 +240,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             filterOption
             disabled={action === PageAction.EDIT}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
+            placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
             required
             options={ollamaModelOptions}
           ></SealAutoComplete>
@@ -362,4 +370,4 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   );
 };
 
-export default AddModal;
+export default memo(AddModal);

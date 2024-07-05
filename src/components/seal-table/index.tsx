@@ -1,7 +1,7 @@
 import { RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import TableHeader from './components/table-header';
 import TableRow from './components/table-row';
 import './styles/index.less';
@@ -21,9 +21,10 @@ const SealTable: React.FC<SealTableProps> = (props) => {
     loadChildren,
     loadChildrenAPI
   } = props;
-
+  console.log('sealtable====');
   const [selectAll, setSelectAll] = useState(false);
   const [indeterminate, setIndeterminate] = useState(false);
+  const tableContent = useRef(null);
 
   useEffect(() => {
     if (rowSelection) {
@@ -121,12 +122,12 @@ const SealTable: React.FC<SealTableProps> = (props) => {
     if (!props.dataSource.length) {
       return (
         <div className="empty-wrapper">
-          <Empty></Empty>
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>
         </div>
       );
     }
     return (
-      <div className="seal-table-content">
+      <div className="seal-table-content" ref={tableContent}>
         {props.dataSource.map((item, index) => {
           return (
             <TableRow
@@ -163,4 +164,4 @@ const SealTable: React.FC<SealTableProps> = (props) => {
   );
 };
 
-export default SealTable;
+export default React.memo(SealTable);

@@ -15,8 +15,8 @@ const EmptyData: React.FC<{
     >
       {title && (
         <h3
-          className="justify-center"
-          style={{ padding: '16px 0', marginBottom: 0 }}
+          className="justify-center font-size-12"
+          style={{ padding: '4px 0', marginBottom: 0 }}
         >
           {title}
         </h3>
@@ -25,7 +25,7 @@ const EmptyData: React.FC<{
         className="flex-center justify-center flex-column"
         style={{ height: '100%' }}
       >
-        <Empty />
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       </div>
     </div>
   );

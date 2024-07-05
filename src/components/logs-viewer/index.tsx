@@ -8,14 +8,14 @@ import './index.less';
 
 interface LogsViewerProps {
   height: number;
-  content: string;
+  content?: string;
   url: string;
   params?: object;
 }
 const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { height, content, url } = props;
   const [nowrap, setNowrap] = useState(false);
-  const [logsContent, setLogsContent] = useState(content);
+  const [logsContent, setLogsContent] = useState(content || '');
   const { setChunkRequest } = useSetChunkRequest();
   const chunkRequedtRef = useRef<any>(null);
   const scroller = useRef<any>(null);

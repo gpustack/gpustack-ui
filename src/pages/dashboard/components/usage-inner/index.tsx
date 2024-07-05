@@ -1,7 +1,7 @@
 import PageTools from '@/components/page-tools';
 
 import { useIntl } from '@umijs/max';
-import { Col, DatePicker, Row } from 'antd';
+import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { memo, useCallback, useContext } from 'react';
@@ -87,7 +87,6 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
       color: baseColorMap.base,
       data: []
     };
-    const users: string[] = [];
 
     _.each(xAxisData, (date: string) => {
       // tokens data
@@ -140,22 +139,27 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
     });
 
     // ========== top users ============
-
-    _.each(data.top_users, (item: any) => {
-      users.push(item.username);
-      topUserPrompt.data.push({
-        name: item.username,
-        value: item.prompt_token_count
+    if (!data.top_users?.length) {
+      userData = [];
+      topUserList = [];
+    } else {
+      const users: string[] = [];
+      _.each(data.top_users, (item: any) => {
+        users.push(item.username);
+        topUserPrompt.data.push({
+          name: item.username,
+          value: item.prompt_token_count
+        });
+        topUserCompletion.data.push({
+          name: item.username,
+          value: item.completion_token_count
+        });
       });
-      topUserCompletion.data.push({
-        name: item.username,
-        value: item.completion_token_count
-      });
-    });
+      topUserList = _.uniq(users);
+      userData = [topUserCompletion, topUserPrompt];
+    }
 
     requestData = [requestList];
-    userData = [topUserCompletion, topUserPrompt];
-    topUserList = users;
     tokenData = [completionData, prompData];
   }, [data, xAxisData]);
 
@@ -166,14 +170,6 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
       <PageTools
         style={{ margin: '26px 0px' }}
         left={<span>{intl.formatMessage({ id: 'dashboard.usage' })}</span>}
-        right={
-          <DatePicker
-            onChange={handleSelectDate}
-            style={{ width: 300 }}
-            picker="month"
-            defaultValue={currentDate}
-          />
-        }
       />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
         <Col

@@ -14,5 +14,7 @@ export default {
   'resources.table.temperature': 'Temperature',
   'resources.table.core': 'Core',
   'resources.table.gpuutilization': 'GPU Utilization',
-  'resources.table.vramutilization': 'VRAM Utilization'
+  'resources.table.vramutilization': 'VRAM Utilization',
+  'resources.table.total': 'Total',
+  'resources.table.used': 'Used'
 };

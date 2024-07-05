@@ -1,20 +1,20 @@
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
-import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { queryWorkersList } from '../apis';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 const { Column } = Table;
 
-const Models: React.FC = () => {
-  const rowSelection = useTableRowSelection();
+const Resources: React.FC = () => {
+  console.log('resources======workers');
+
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -39,6 +39,7 @@ const Models: React.FC = () => {
       setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
+      setDataSource([]);
       console.log('error', error);
     } finally {
       setLoading(false);
@@ -96,8 +97,14 @@ const Models: React.FC = () => {
     );
     return mountRoot ? (
       <span className="flex-column">
-        <span>Total: {convertFileSize(mountRoot?.total, 0)}</span>
-        <span>Used: {convertFileSize(mountRoot?.used, 0)}</span>
+        <span>
+          {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
+          {convertFileSize(mountRoot?.total, 0)}
+        </span>
+        <span>
+          {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
+          {convertFileSize(mountRoot?.used, 0)}
+        </span>
       </span>
     ) : (
       0
@@ -195,10 +202,12 @@ const Models: React.FC = () => {
                 label={
                   <span className="flex-column">
                     <span>
-                      Total: {convertFileSize(record?.status?.memory.total, 0)}
+                      {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
+                      {convertFileSize(record?.status?.memory.total, 0)}
                     </span>
                     <span>
-                      Used: {convertFileSize(record?.status?.memory.used, 0)}
+                      {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
+                      {convertFileSize(record?.status?.memory.used, 0)}
                     </span>
                   </span>
                 }
@@ -216,7 +225,12 @@ const Models: React.FC = () => {
                 {record?.status?.gpu_devices.map((item, index) => {
                   return (
                     <span className="flex-center" key={index}>
-                      <span className="m-r-5">[{index}]</span>
+                      <span
+                        className="m-r-5"
+                        style={{ display: 'flex', width: 25 }}
+                      >
+                        [{index}]
+                      </span>
                       <ProgressBar
                         key={index}
                         percent={_.round(item.core.utilization_rate, 0)}
@@ -244,19 +258,28 @@ const Models: React.FC = () => {
                           'Unified Memory'
                         ) : (
                           <span className="flex-center">
-                            <span className="m-r-5">[{index}]</span>
+                            <span
+                              className="m-r-5"
+                              style={{ display: 'flex', width: 25 }}
+                            >
+                              [{index}]
+                            </span>
                             <ProgressBar
                               key={index}
                               percent={_.round(item.memory.utilization_rate, 0)}
                               label={
                                 <span className="flex-column">
                                   <span>
-                                    Total:{' '}
-                                    {convertFileSize(item.memory?.total, 0)}
+                                    {intl.formatMessage({
+                                      id: 'resources.table.total'
+                                    })}
+                                    : {convertFileSize(item.memory?.total, 0)}
                                   </span>
                                   <span>
-                                    Used:{' '}
-                                    {convertFileSize(item.memory?.used, 0)}
+                                    {intl.formatMessage({
+                                      id: 'resources.table.used'
+                                    })}
+                                    : {convertFileSize(item.memory?.used, 0)}
                                   </span>
                                 </span>
                               }
@@ -289,4 +312,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default Models;
+export default memo(Resources);

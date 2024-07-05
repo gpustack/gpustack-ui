@@ -19,7 +19,8 @@ const items: TabsProps['items'] = [
   }
 ];
 const Resources = () => {
-  const [activeKey, setActiveKey] = useState('test');
+  console.log('resources======');
+  const [activeKey, setActiveKey] = useState('workers');
 
   const intl = useIntl();
 

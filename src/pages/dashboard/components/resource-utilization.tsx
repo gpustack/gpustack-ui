@@ -1,5 +1,5 @@
-import Chart from '@/components/echarts/chart';
-import { getLocale, useIntl } from '@umijs/max';
+import LineChart from '@/components/echarts/line-chart';
+import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { memo, useContext } from 'react';
@@ -112,8 +112,6 @@ const option = {
 const UtilizationOvertime: React.FC = () => {
   console.log('systemload=====================');
   const intl = useIntl();
-  const locale = getLocale();
-  let dataOptions: any = {};
   const data = useContext(DashboardContext)?.system_load?.history || {};
 
   const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
@@ -121,9 +119,8 @@ const UtilizationOvertime: React.FC = () => {
   const generateData = () => {
     const legendData: string[] = [];
     const xAxisData: string[] = [];
-    let list: { value: number; time: string; type: string }[] = [];
-
-    list = _.map(typeList, (item: string) => {
+    let seriesData: { value: number; time: string; type: string }[] = [];
+    seriesData = _.map(typeList, (item: string) => {
       const itemConfig = _.get(TypeKeyMap, item, {});
       const name = itemConfig.intl
         ? intl.formatMessage({ id: itemConfig.label })
@@ -131,18 +128,8 @@ const UtilizationOvertime: React.FC = () => {
       legendData.push(name);
       const itemDataList = _.get(data, item, []);
       return {
-        type: 'line',
-        smooth: true,
-        showSymbol: false,
-        itemStyle: {
-          color: itemConfig.color
-        },
-        lineStyle: {
-          width: 1.5,
-          opacity: 0.7,
-          color: itemConfig.color
-        },
         name: name,
+        color: itemConfig.color,
         data: _.map(itemDataList, (item: any) => {
           xAxisData.push(dayjs(item.timestamp * 1000).format('HH:mm:ss'));
           return {
@@ -152,26 +139,24 @@ const UtilizationOvertime: React.FC = () => {
         })
       };
     });
-
-    dataOptions = {
-      ...option,
-      animation: false,
-      legend: {
-        ...option.legend,
-        data: legendData
-      },
-      xAxis: {
-        ...option.xAxis,
-        data: _.uniq(xAxisData)
-      },
-      series: list
+    return {
+      seriesData,
+      legendData,
+      xAxisData: _.uniq(xAxisData)
     };
   };
-  generateData();
+  const { seriesData, legendData, xAxisData } = generateData();
 
   return (
     <>
-      <Chart height={390} options={dataOptions} width="100%"></Chart>
+      <LineChart
+        height={390}
+        seriesData={seriesData}
+        legendData={legendData}
+        xAxisData={xAxisData}
+        smooth={true}
+        width="100%"
+      ></LineChart>
     </>
   );
 };

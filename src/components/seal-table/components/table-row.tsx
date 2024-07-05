@@ -33,8 +33,8 @@ const TableRow: React.FC<
   const [loading, setLoading] = useState(false);
   const pollTimer = useRef<any>(null);
   const chunkRequestRef = useRef<any>(null);
-  const childrenRendered = useRef<any>(null);
 
+  console.log('table row====');
   const { updateChunkedList } = useUpdateChunkedList(childrenData, {
     setDataList: setChildrenData
   });
@@ -228,7 +228,11 @@ const TableRow: React.FC<
         {expanded && (
           <div className="expanded-row">
             <Spin spinning={loading}>
-              {childrenData.length ? renderChildrenData() : <Empty></Empty>}
+              {childrenData.length ? (
+                renderChildrenData()
+              ) : (
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>
+              )}
             </Spin>
           </div>
         )}

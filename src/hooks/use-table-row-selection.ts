@@ -7,8 +7,13 @@ export default function useTableRowSelection() {
     setSelectedRowKeys(selectedRowKeys);
   };
 
+  const clearSelections = () => {
+    setSelectedRowKeys([]);
+  };
+
   const rowSelection = {
     selectedRowKeys,
+    clearSelections,
     onChange: onSelectChange
   };
 

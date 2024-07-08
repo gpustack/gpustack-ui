@@ -22,6 +22,8 @@ html {
   --font-weight-medium: 600;
   --font-weight-bold: 700;
   --color-text-1: var(--ant-color-text);
+  --color-text-3: rgba(0, 0, 0, 45%);
+  --color-text-2: rgba(0, 0, 0, 65%);
   --color-bg-light-1: #e6f6ff;
   --font-size-base: 12px;
   --font-size-large: 16px;
@@ -59,7 +61,7 @@ html {
     --ant-font-size: var(--font-size-base);
 
     &.ant-menu-css-var {
-      --ant-menu-item-selected-bg: var(--color-white-1);
+      // --ant-menu-item-selected-bg: var(--color-white-1);
       --ant-menu-item-border-radius: 8px;
       --ant-menu-item-selected-color: var(--ant-color-primary);
       --ant-menu-item-hover-bg: var(--color-white-1);
@@ -107,7 +109,7 @@ html {
   .css-var-ri.ant-menu-css-var,
   .css-var-rh.ant-menu-css-var {
     --ant-menu-item-height: 46px;
-    --ant-menu-item-selected-bg: var(--color-white-1);
+    // --ant-menu-item-selected-bg: var(--color-white-1);
     --ant-menu-item-border-radius: 8px;
     --ant-menu-item-selected-color: var(--ant-color-primary);
     --ant-menu-item-hover-bg: var(--color-white-1);
@@ -265,6 +267,10 @@ body {
       padding-left: 20px;
     }
 
+    .ant-pro-sider-logo-collapsed {
+      padding-left: 12px;
+    }
+
     .ant-pro-sider .ant-layout-sider-children {
       background-color: var(--color-fill-sider);
       // box-shadow: var(--box-shadow-base);
@@ -394,15 +400,18 @@ body {
     height: 100%;
   }
 }
-// .login-wrapper {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   bottom: 0;
-//   right: 0;
-//   background: url('@/assets/images/bg-2.png') center center no-repeat;
-//   background-size: cover;
-// }
+
+.login-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  min-height: 100vh;
+  z-index: -1;
+  background: url('@/assets/images/bg-2.png') center center no-repeat;
+  background-size: cover;
+}
 
 .ant-pro-page-container {
   background: transparent;

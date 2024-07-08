@@ -1,9 +1,9 @@
+import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
 import {
   CodeOutlined,
   DeleteOutlined,
   EnterOutlined,
-  MacCommandOutlined,
   PlusOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -74,7 +74,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
             <Button disabled={disabled} type="primary" onClick={onSubmit}>
               {intl.formatMessage({ id: 'common.button.submit' })}
               <span className="m-l-5 opct-7">
-                <MacCommandOutlined /> + <EnterOutlined />
+                <IconFont type="icon-command"></IconFont> + <EnterOutlined />
               </span>
             </Button>
           </Space>

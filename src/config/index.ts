@@ -25,7 +25,7 @@ export const StatusColorMap: Record<StatusType, { text: string; bg: string }> =
       bg: `var(--ant-green-1)`
     },
     inactive: {
-      text: `var(--ant-color-border)`,
+      text: `var(--ant-color-text-secondary)`,
       bg: `var(--ant-color-fill)`
     }
   };

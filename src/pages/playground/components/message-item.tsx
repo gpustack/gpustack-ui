@@ -31,18 +31,6 @@ const MessageItem: React.FC<{
   const [currentIsFocus, setCurrentIsFocus] = useState(isFocus);
   const inputRef = useRef<any>(null);
 
-  useHotkeys(
-    HotKeys.SUBMIT,
-    () => {
-      onSubmit();
-    },
-    {
-      enabled: currentIsFocus && !loading,
-      enableOnFormTags: currentIsFocus && !loading,
-      preventDefault: true
-    }
-  );
-
   useEffect(() => {
     if (inputRef.current && isFocus) {
       inputRef.current.focus();
@@ -110,6 +98,20 @@ const MessageItem: React.FC<{
   const handleDelete = () => {
     onDelete();
   };
+
+  useHotkeys(
+    HotKeys.SUBMIT,
+    () => {
+      inputRef.current.blur();
+      onSubmit();
+    },
+    {
+      enabled: currentIsFocus,
+      enableOnFormTags: currentIsFocus,
+      preventDefault: true
+    }
+  );
+
   return (
     <div className="message-item">
       <div className="role-type">
@@ -124,6 +126,7 @@ const MessageItem: React.FC<{
           value={messageContent}
           autoSize={true}
           variant="filled"
+          readOnly={loading}
           onChange={handleMessageChange}
           onFocus={handleFocus}
           onBlur={handleBlur}

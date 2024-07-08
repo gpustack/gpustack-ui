@@ -51,17 +51,10 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
       className={classNames('status-tag', {
         download: download?.percent
       })}
-      style={
-        download
-          ? {
-              color: StatusColorMap['success']['text'],
-              border: `1px solid ${StatusColorMap['success']['text']}`
-            }
-          : {
-              color: statusColor?.text,
-              border: `1px solid ${statusColor?.text}`
-            }
-      }
+      style={{
+        color: statusColor?.text,
+        border: `1px solid ${statusColor?.text}`
+      }}
     >
       {renderContent()}
     </span>

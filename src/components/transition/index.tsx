@@ -73,7 +73,8 @@ const TransitionWrapper: React.FC<TransitionWrapProps> = forwardRef(
           className="transition-content-wrapper"
           style={{
             minHeight: isOpen ? height : 0,
-            height: isOpen ? 'auto' : 0
+            height: isOpen ? 'auto' : 0,
+            padding: isOpen ? '8px' : '0 8px'
           }}
           ref={contentRef}
         >

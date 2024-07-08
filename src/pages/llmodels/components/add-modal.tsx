@@ -276,6 +276,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     <Modal
       title={title}
       open={open}
+      centered={true}
       onOk={handleSumit}
       onCancel={onCancel}
       destroyOnClose={true}

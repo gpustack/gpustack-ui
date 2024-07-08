@@ -62,7 +62,7 @@ export const readStreamData = async (
   callback: (data: any) => void
 ) => {
   const { done, value } = await reader.read();
-
+  console.log('done====', done, value);
   if (done) {
     return;
   }

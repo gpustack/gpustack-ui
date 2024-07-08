@@ -18,9 +18,24 @@ export const modelSourceMap: Record<string, string> = {
   s3: 'S3'
 };
 
+export const InstanceStatusMap = {
+  Initializing: 'Initializing',
+  Pending: 'Pending',
+  Running: 'Running',
+  Scheduled: 'Scheduled',
+  Error: 'Error',
+  Downloading: 'Downloading',
+  Unknown: 'Unknown'
+};
+
 export const status: any = {
-  Running: StatusMaps.success,
-  Pending: StatusMaps.transitioning
+  [InstanceStatusMap.Running]: StatusMaps.success,
+  [InstanceStatusMap.Pending]: StatusMaps.transitioning,
+  [InstanceStatusMap.Initializing]: StatusMaps.transitioning,
+  [InstanceStatusMap.Scheduled]: StatusMaps.success,
+  [InstanceStatusMap.Error]: StatusMaps.error,
+  [InstanceStatusMap.Downloading]: StatusMaps.transitioning,
+  [InstanceStatusMap.Unknown]: StatusMaps.inactive
 };
 
 export const ActionList = [
@@ -40,12 +55,3 @@ export const ActionList = [
     icon: EditOutlined
   }
 ];
-
-export const InstanceStatusMap = {
-  Initializing: 'Initializing',
-  Pending: 'Pending',
-  Running: 'Running',
-  Scheduled: 'Scheduled',
-  Error: 'Error',
-  Downloading: 'Downloading'
-};

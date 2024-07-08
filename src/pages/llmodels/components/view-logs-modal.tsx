@@ -21,13 +21,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     <Modal
       title={intl.formatMessage({ id: 'common.button.viewlog' })}
       open={open}
+      centered={true}
       onCancel={onCancel}
       destroyOnClose={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={'max(50%, 600px)'}
-      style={{ top: '80px' }}
+      width={600}
       footer={null}
     >
       <LogsViewer

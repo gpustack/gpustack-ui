@@ -22,6 +22,9 @@ export default {
     Progress: {
       lineBorderRadius: 4
     },
+    Select: {
+      itemSelectedBg: 'rgba(0,0,0,0.06)'
+    },
     Slider: {
       handleSize: 8,
       handleSizeHover: 8,

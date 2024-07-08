@@ -89,6 +89,7 @@ const AddModal: React.FC<AddModalProps> = ({
     <Modal
       title={title}
       open={open}
+      centered={true}
       onOk={handleSumit}
       onCancel={onCancel}
       afterOpenChange={handleAfterOpenChange}

@@ -116,6 +116,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     },
     formatOnType: true,
     formatOnPaste: true,
+    fontWeight: '700',
     scrollbar: {
       verticalSliderSize: 8
     }
@@ -130,13 +131,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       <Modal
         title={title}
         open={open}
+        centered={true}
         onCancel={handleClose}
         destroyOnClose={true}
         closeIcon={true}
         maskClosable={false}
         keyboard={false}
-        width={'max(50%, 600px)'}
-        style={{ top: '80px' }}
+        width={660}
         footer={null}
       >
         <div style={{ marginBottom: '10px' }}>
@@ -151,7 +152,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
             onChangeLang={handleOnChangeLang}
           >
             <Editor
-              height="500px"
+              height="min(500px, 90vh)"
               theme="vs-dark"
               className="monaco-editor"
               defaultLanguage="shell"

@@ -179,5 +179,6 @@ export default {
   'common.filter.name': '名称查询',
   'common.form.password': '密码',
   'common.form.username': '用户名',
-  'common.login.rember': '记住我'
+  'common.login.rember': '记住我',
+  'settings.company': '数澈软件'
 };

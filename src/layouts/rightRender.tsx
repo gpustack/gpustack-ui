@@ -62,6 +62,7 @@ export function getRightRenderContent(opts: {
       <SelectLang
         style={{ padding: '10px 18px', marginBottom: '20px' }}
         reload={false}
+        mode="vertical"
         icon={
           <span style={{ fontSize: '12px' }}>
             <GlobalOutlined />
@@ -113,18 +114,6 @@ export function getRightRenderContent(opts: {
           history.push('/profile');
         }
       },
-      // {
-      //   key: 'theme',
-      //   label: (
-      //     <>
-      //       <SunOutlined />
-      //       外观
-      //     </>
-      //   ),
-      //   onClick: () => {
-      //     console.log('theme');
-      //   }
-      // },
       {
         key: 'logout',
         label: (
@@ -158,7 +147,9 @@ export function getRightRenderContent(opts: {
     };
   } else {
     // 需要 antd 4.20.0 以上版本
-    dropdownProps = { overlay: <Menu {...langMenu} mode="vertical" /> };
+    dropdownProps = {
+      overlay: <Menu {...langMenu} mode="vertical" />
+    };
   }
 
   return (

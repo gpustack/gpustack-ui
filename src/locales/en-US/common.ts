@@ -186,5 +186,6 @@ export default {
   'common.filter.name': 'Filter by name',
   'common.form.password': 'Password',
   'common.form.username': 'Username',
-  'common.login.rember': 'Remember me'
+  'common.login.rember': 'Remember me',
+  'settings.company': 'SEAL'
 };

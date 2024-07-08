@@ -35,6 +35,7 @@ const Wrapper: React.FC<WrapperProps> = ({
     <div
       className={classNames(
         wrapperStyle['wrapper-box'],
+        'field-wrapper',
         wrapperStyle[`validate-status-${status}`],
         addAfter ? wrapperStyle['seal-input-wrapper-addafter'] : '',
         disabled ? wrapperStyle['seal-input-wrapper-disabled'] : '',

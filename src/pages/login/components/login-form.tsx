@@ -155,7 +155,7 @@ const LoginForm = () => {
       <div>
         <Form
           form={form}
-          style={{ width: '400px', margin: '0 auto', paddingTop: '10%' }}
+          style={{ width: '400px', margin: '0 auto' }}
           onFinish={handleLogin}
         >
           {renderWelCome(intl)}

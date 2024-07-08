@@ -24,7 +24,8 @@ import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 const { Column } = Table;
 
-const Models: React.FC = () => {
+const Users: React.FC = () => {
+  console.log('users======');
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -328,4 +329,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default Models;
+export default Users;

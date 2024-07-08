@@ -4,6 +4,7 @@ import { userAtom } from '@/atoms/user';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
+
 import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
@@ -17,13 +18,12 @@ import {
   type IRoute
 } from '@umijs/max';
 import { useAtom } from 'jotai';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Exception from './Exception';
 import './Layout.css';
-import Logo from './Logo';
+import { LogoIcon, SLogoIcon } from './Logo';
 import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
-
 const loginPath = '/login';
 
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
@@ -84,6 +84,7 @@ export default (props: any) => {
   const navigate = useNavigate();
   const intl = useIntl();
   const { clientRoutes, pluginManager } = useAppData();
+  const [collapsed, setCollapsed] = useState(false);
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -94,7 +95,6 @@ export default (props: any) => {
 
   const userConfig = {
     title: '',
-    layout: 'mix',
     locale: true
   };
 
@@ -145,11 +145,17 @@ export default (props: any) => {
         location={location}
         title={userConfig.title}
         navTheme="light"
+        layout="side"
+        disableMobile={true}
         siderWidth={220}
         onMenuHeaderClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
           navigate('/');
+        }}
+        collapsed={collapsed}
+        onCollapse={(collapsed) => {
+          setCollapsed(collapsed);
         }}
         onPageChange={(route) => {
           const { location } = history;
@@ -178,9 +184,8 @@ export default (props: any) => {
         }}
         formatMessage={formatMessage}
         menu={{ locale: true }}
-        logo={Logo}
+        logo={collapsed ? SLogoIcon : LogoIcon}
         menuItemRender={(menuItemProps, defaultDom) => {
-          console.log('meurender=========', { defaultDom });
           if (menuItemProps.isUrl || menuItemProps.children) {
             return defaultDom;
           }

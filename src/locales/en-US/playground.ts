@@ -1,5 +1,5 @@
 export default {
-  'playground.system.tips': 'Enter system message here...',
+  'playground.system.tips': 'Enter system message here',
   'playground.title': 'Playground',
   'playground.system': 'System',
   'playground.user': 'User',

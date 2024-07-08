@@ -117,7 +117,8 @@ export function getRightRenderContent(opts: {
             <Avatar
               size={28}
               style={{
-                color: 'var(--ant-color-text)'
+                color: 'var(--ant-color-text)',
+                fontSize: 16
               }}
             >
               {_.toUpper(opts.initialState?.currentUser?.username?.charAt(0))}

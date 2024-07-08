@@ -85,6 +85,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
         uid: messageId.current
       }
     ]);
+    console.log('messageList=====', messageList, messageId.current, chunk);
     return false;
   };
   const submitMessage = async () => {
@@ -115,7 +116,6 @@ const MessageList: React.FC<MessageProps> = (props) => {
         return;
       }
       const { reader, decoder } = result;
-
       await readStreamData(reader, decoder, (chunk: any) => {
         joinMessage(chunk);
       });
@@ -207,7 +207,10 @@ const MessageList: React.FC<MessageProps> = (props) => {
               autoSize={true}
               onFocus={handleFocus}
               onBlur={handleBlur}
-              placeholder={intl.formatMessage({ id: 'playground.system.tips' })}
+              style={{ minHeight: 40 }}
+              placeholder={intl.formatMessage({
+                id: 'playground.system.tips'
+              })}
               onChange={handleSystemMessageChange}
             ></Input.TextArea>
           </TransitionWrapper>

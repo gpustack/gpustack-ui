@@ -50,26 +50,6 @@ const Profile: React.FC = () => {
           onFinish={handleOnFinish}
           onFinishFailed={handleOnFinishFailed}
         >
-          {/* <Form.Item<ProfileProps>
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  { id: 'common.form.rule.input' },
-                  {
-                    name: intl.formatMessage({ id: 'common.form.username' })
-                  }
-                )
-              }
-            ]}
-          >
-            <SealInput.Input
-              label={intl.formatMessage({ id: 'common.form.username' })}
-              required
-              style={{ width: INPUT_WIDTH.default }}
-            ></SealInput.Input>
-          </Form.Item> */}
           <Form.Item<ProfileProps>
             name="current_password"
             rules={[
@@ -135,6 +115,7 @@ const Profile: React.FC = () => {
             ]}
           >
             <SealInput.Password
+              required={true}
               label={intl.formatMessage({ id: 'users.password.confirm' })}
             />
           </Form.Item>

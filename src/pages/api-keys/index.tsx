@@ -260,6 +260,14 @@ const Models: React.FC = () => {
             }}
           />
           <Column
+            title={intl.formatMessage({ id: 'common.table.description' })}
+            dataIndex="description"
+            key="description"
+            ellipsis={{
+              showTitle: true
+            }}
+          />
+          <Column
             title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"

@@ -7,7 +7,7 @@ import { Col, Row, Space } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
-import { status } from '../config';
+import { InstanceStatusMap, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
 
 interface InstanceItemProps {
@@ -33,6 +33,15 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       icon: <DeleteOutlined />
     }
   ];
+  const testStatus = {
+    state: InstanceStatusMap.Scheduled
+  };
+  const getWorkerIp = (item: ModelInstanceListItem) => {
+    if (item.worker_ip) {
+      return item.port ? `${item.worker_ip}:${item.port}` : item.worker_ip;
+    }
+    return '-';
+  };
   return (
     <Space size={16} direction="vertical" style={{ width: '100%' }}>
       {_.map(list, (item: ModelInstanceListItem, index: number) => {
@@ -40,18 +49,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           <div
             key={`${item.id}`}
             style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
-            className={
-              item.download_progress !== 100 && item.state !== 'Running'
-                ? 'skeleton-loading'
-                : ''
-            }
           >
             <RowChildren key={`${item.id}_row`}>
               <Row style={{ width: '100%' }} align="middle">
                 <Col span={4}>{item.name}</Col>
-                <Col span={3}>
-                  {item.worker_ip ? `${item.worker_ip}:${item.port}` : '-'}
-                </Col>
+                <Col span={3}>{getWorkerIp(item)}</Col>
                 <Col span={4}>
                   <span>
                     {item.source === 'huggingface'
@@ -68,7 +70,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                     {item.state && (
                       <StatusTag
                         download={
-                          item.state !== 'Running'
+                          item.state === InstanceStatusMap.Downloading
                             ? { percent: item.download_progress }
                             : undefined
                         }

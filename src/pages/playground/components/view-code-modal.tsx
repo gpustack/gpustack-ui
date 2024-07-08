@@ -53,7 +53,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\ \n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
           messages: [...systemList, ...messageList]

@@ -7,7 +7,7 @@ interface ReferenceParamsProps {
     completion_tokens: number;
     prompt_tokens: number;
     total_tokens: number;
-    time_per_output_token_ms: number;
+    tokens_per_second: number;
   };
 }
 
@@ -43,7 +43,7 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
 
       <span>
         {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-        {usage.time_per_output_token_ms * 1000} Tokens/s
+        {usage.tokens_per_second * 1000} Tokens/s
       </span>
     </div>
   );

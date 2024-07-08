@@ -8,4 +8,5 @@ export interface SealFormItemProps {
   extra?: React.ReactNode;
   addAfter?: React.ReactNode;
   loading?: React.ReactNode;
+  trim?: boolean;
 }

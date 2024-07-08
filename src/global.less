@@ -49,6 +49,7 @@ html {
   --ant-input-active-border-color: #007bff;
   --ant-input-hover-border-color: #2997ff;
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
+  --ant-border-radius-lg: 8px;
   // --box-shadow-base: none;
 
   .css-var-rf {
@@ -64,10 +65,12 @@ html {
       // --ant-menu-item-selected-bg: var(--color-white-1);
       --ant-menu-item-border-radius: 8px;
       --ant-menu-item-selected-color: var(--ant-color-primary);
-      --ant-menu-item-hover-bg: var(--color-white-1);
       --ant-menu-item-color: var(--color-text-1);
-      --ant-menu-item-active-bg: var(--color-white-1);
     }
+  }
+
+  .css-var-rj.ant-menu-css-var {
+    --ant-menu-item-color: var(--color-text-1);
   }
 
   .css-var-r0 {
@@ -109,12 +112,10 @@ html {
   .css-var-ri.ant-menu-css-var,
   .css-var-rh.ant-menu-css-var {
     --ant-menu-item-height: 46px;
-    // --ant-menu-item-selected-bg: var(--color-white-1);
     --ant-menu-item-border-radius: 8px;
     --ant-menu-item-selected-color: var(--ant-color-primary);
-    --ant-menu-item-hover-bg: var(--color-white-1);
     --ant-menu-item-color: var(--color-text-1);
-    --ant-menu-item-active-bg: var(--color-white-1);
+    --ant-menu-item-active-bg: rgba(0, 0, 0, 4%);
   }
 
   .css-var-r0.ant-input-css-var {
@@ -263,6 +264,14 @@ body {
     background-color: var(--color-fill-1);
     height: 100%;
 
+    .ant-pro-sider-actions-list-item {
+      padding: 0;
+
+      &:hover {
+        background-color: unset;
+      }
+    }
+
     .ant-pro-sider-logo {
       padding-left: 20px;
     }
@@ -374,6 +383,37 @@ body {
 }
 // ======== menu style end ============
 
+.user-menu-container {
+  .user-avatar.ant-menu-submenu {
+    .ant-menu-submenu-title {
+      padding-left: 8px;
+    }
+  }
+
+  &.user-menu-collapsed {
+    .user-avatar.ant-menu-submenu {
+      .ant-menu-submenu-title {
+        padding: 0 !important;
+        display: flex;
+        justify-content: center;
+
+        .ant-menu-title-content {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .ant-menu-submenu-title {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+.ant-menu-submenu-popup > .ant-menu {
+  border-radius: var(--menu-border-radius-base);
+}
 // ======== monaco editor style ============
 .monaco-editor {
   border-radius: 16px;

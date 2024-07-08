@@ -3,7 +3,7 @@ import useContainerScroll from '@/hooks/use-container-scorll';
 import Convert from 'ansi-to-html';
 import classNames from 'classnames';
 import hasAnsi from 'has-ansi';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import './index.less';
 
 interface LogsViewerProps {
@@ -75,4 +75,4 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   );
 };
 
-export default LogsViewer;
+export default memo(LogsViewer);

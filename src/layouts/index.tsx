@@ -216,30 +216,19 @@ export default (props: any) => {
         fixSiderbar
         fixedHeader
         {...runtimeConfig}
-        rightContentRender={
-          runtimeConfig.rightContentRender !== false &&
-          ((layoutProps) => {
-            const dom = getRightRenderContent({
-              runtimeConfig,
-              loading,
-              initialState,
-              setInitialState,
-              intl
-            });
-            if (runtimeConfig.rightContentRender) {
-              return runtimeConfig.rightContentRender(layoutProps, dom, {
-                // BREAK CHANGE userConfig > runtimeConfig
-                userConfig,
-                runtimeConfig,
-                loading,
-                initialState,
-                setInitialState,
-                intl
-              });
-            }
-            return dom;
-          })
-        }
+        actionsRender={(layoutProps) => {
+          const dom = getRightRenderContent({
+            runtimeConfig,
+            loading,
+            initialState,
+            setInitialState,
+            intl,
+            siderWidth: layoutProps.siderWidth,
+            collapsed: layoutProps.collapsed
+          });
+
+          return dom;
+        }}
       >
         <Exception
           route={matchedRoute}

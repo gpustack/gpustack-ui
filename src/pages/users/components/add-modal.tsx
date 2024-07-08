@@ -88,6 +88,7 @@ const AddModal: React.FC<AddModalProps> = ({
         </Form.Item>
         <Form.Item<FormData> name="full_name" rules={[{ required: false }]}>
           <SealInput.Input
+            trim={false}
             label={intl.formatMessage({ id: 'users.form.fullname' })}
           ></SealInput.Input>
         </Form.Item>

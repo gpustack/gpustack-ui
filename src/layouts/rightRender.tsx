@@ -1,22 +1,27 @@
 // @ts-nocheck
 
 import avatarImg from '@/assets/images/avatar.png';
+import langConfigMap from '@/locales/lang-config-map';
 import {
   GlobalOutlined,
   LogoutOutlined,
   SettingOutlined
 } from '@ant-design/icons';
-import { SelectLang, history } from '@umijs/max';
-import { Avatar, Dropdown, Menu, Spin, version } from 'antd';
+import { getAllLocales, history, setLocale } from '@umijs/max';
+import { Avatar, Menu, Spin } from 'antd';
+import _ from 'lodash';
 
 export function getRightRenderContent(opts: {
   runtimeConfig: any;
   loading: boolean;
   initialState: any;
+  collapsed: boolean;
   setInitialState: any;
+  siderWidth: number;
   intl: any;
 }) {
-  const { intl } = opts;
+  const { intl, collapsed, siderWidth } = opts;
+  const allLocals = getAllLocales();
   if (opts.runtimeConfig.rightRender) {
     return opts.runtimeConfig.rightRender(
       opts.initialState,
@@ -57,118 +62,125 @@ export function getRightRenderContent(opts: {
     );
   }
 
-  const renderExtraActions = () => {
-    return (
-      <SelectLang
-        style={{ padding: '10px 18px', marginBottom: '20px' }}
-        reload={false}
-        mode="vertical"
-        icon={
-          <span style={{ fontSize: '12px' }}>
-            <GlobalOutlined />
-            <span className="m-l-8">
-              {intl?.formatMessage?.({ id: 'common.settings.language' })}
-            </span>
-          </span>
-        }
-      ></SelectLang>
-    );
-  };
-
-  // 如果没有打开Locale，并且头像为空就取消掉这个返回的内容
-  if (!avatar) return null;
-
-  const renderMenu = () => {
-    return (
-      <Menu triggerSubMenuAction="hover">
-        <Menu.Item title="admin" key="avatar">
-          <ul>
-            <Menu.SubMenu
-              key="settings"
-              icon={<SettingOutlined />}
-              title={intl?.formatMessage?.({ id: 'common.button.settings' })}
-            ></Menu.SubMenu>
-            <Menu.SubMenu
-              key="logout"
-              icon={<LogoutOutlined />}
-              title={intl?.formatMessage?.({ id: 'common.button.logout' })}
-            ></Menu.SubMenu>
-          </ul>
-        </Menu.Item>
-      </Menu>
-    );
-  };
   const langMenu = {
-    className: 'umi-plugin-layout-menu',
     selectedKeys: [],
+    className: collapsed
+      ? 'user-menu-container user-menu-collapsed'
+      : 'user-menu-container',
+    mode: 'vertical',
+    expandIcon: false,
+    inlineCollapsed: collapsed,
+    triggerSubMenuAction: 'hover',
     items: [
       {
-        key: 'settings',
+        key: 'lang',
+        icon: <GlobalOutlined />,
         label: (
-          <>
-            <SettingOutlined />
-            {intl?.formatMessage?.({ id: 'common.button.settings' })}
-          </>
+          <span>
+            {intl?.formatMessage?.({ id: 'common.settings.language' })}
+          </span>
         ),
-        onClick: () => {
-          history.push('/profile');
-        }
-      },
-      {
-        key: 'logout',
-        label: (
-          <>
-            <LogoutOutlined />
-            {intl?.formatMessage?.({ id: 'common.button.logout' })}
-          </>
-        ),
-        onClick: () => {
-          opts?.runtimeConfig?.logout?.(opts.initialState.currentUser);
-        }
+        children: allLocals.map((key) => ({
+          key,
+          label: (
+            <span className="flex flex-center">
+              <span>{_.get(langConfigMap, [key, 'icon'])}</span>
+              <span className="m-l-8">
+                {_.get(langConfigMap, [key, 'label'])}
+              </span>
+            </span>
+          ),
+          onClick: () => {
+            setLocale(key, false);
+          }
+        }))
       }
     ]
   };
-  // antd@5 和  4.24 之后推荐使用 menu，性能更好
 
-  let dropdownProps;
-  if (version.startsWith('5.') || version.startsWith('4.24.')) {
-    dropdownProps = { menu: langMenu, mode: 'vertical' };
-  } else if (version.startsWith('3.')) {
-    dropdownProps = {
-      overlay: (
-        <Menu>
-          {langMenu.items.map((item) => (
-            <Menu.Item key={item.key} onClick={item.onClick}>
-              {item.label}
-            </Menu.Item>
-          ))}
-        </Menu>
-      )
-    };
-  } else {
-    // 需要 antd 4.20.0 以上版本
-    dropdownProps = {
-      overlay: <Menu {...langMenu} mode="vertical" />
-    };
-  }
+  const userMenu = {
+    selectedKeys: [],
+    className: collapsed
+      ? 'user-menu-container user-menu-collapsed'
+      : 'user-menu-container',
+    mode: 'vertical',
+    expandIcon: false,
+    inlineCollapsed: collapsed,
+    triggerSubMenuAction: 'hover',
+    items: [
+      {
+        label: '',
+        key: 'user',
+        className: 'user-avatar',
+        icon: (
+          <span>
+            <Avatar
+              size={28}
+              style={{
+                color: 'var(--ant-color-text)'
+              }}
+            >
+              {_.toUpper(opts.initialState?.currentUser?.username?.charAt(0))}
+            </Avatar>
+            {!collapsed && (
+              <span
+                className="m-l-8 font-size-14"
+                style={{ fontWeight: 'var(--font-weight-normal)' }}
+              >
+                {opts.initialState?.currentUser?.username}
+              </span>
+            )}
+          </span>
+        ),
+        children: [
+          {
+            key: 'settings',
+            label: (
+              <span className="flex flex-center">
+                <SettingOutlined />
+                <span>
+                  {intl?.formatMessage?.({ id: 'common.button.settings' })}
+                </span>
+              </span>
+            ),
+            onClick: () => {
+              history.push('/profile');
+            }
+          },
+          {
+            key: 'logout',
+            label: (
+              <span className="flex flex-center">
+                <LogoutOutlined />
+                <span>
+                  {intl?.formatMessage?.({ id: 'common.button.logout' })}
+                </span>
+              </span>
+            ),
+            onClick: () => {
+              opts?.runtimeConfig?.logout?.(opts.initialState.currentUser);
+            }
+          }
+        ]
+      }
+    ]
+  };
 
   return (
-    <div style={{ width: '100%' }}>
-      {renderExtraActions()}
-      <div className="umi-plugin-layout-right anticon">
-        {opts.runtimeConfig.logout ? (
-          <>
-            <Dropdown
-              {...dropdownProps}
-              overlayClassName="umi-plugin-layout-container"
-            >
-              {avatar}
-            </Dropdown>
-          </>
-        ) : (
-          avatar
-        )}
-      </div>
+    <div>
+      <Menu
+        {...langMenu}
+        style={{
+          width: collapsed ? 64 : `calc(${siderWidth}px - 16px)`
+        }}
+      ></Menu>
+      <Menu
+        {...userMenu}
+        style={{
+          width: collapsed ? 64 : `calc(${siderWidth}px - 16px)`,
+          marginTop: 20
+        }}
+      ></Menu>
     </div>
   );
 }

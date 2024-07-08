@@ -17,6 +17,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     isInFormItems = true,
     variant,
     addAfter,
+    trim = true,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -43,7 +44,9 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
   };
 
   const handleChange = (e: any) => {
-    e.target.value = e.target.value?.trim?.();
+    if (trim) {
+      e.target.value = e.target.value?.trim?.();
+    }
     props.onChange?.(e);
   };
 

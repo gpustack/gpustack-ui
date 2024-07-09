@@ -13,6 +13,7 @@ import '../style/chat-footer.less';
 
 interface ChatFooterProps {
   onSubmit: () => void;
+  onStop: () => void;
   onClear: () => void;
   onNewMessage: () => void;
   onView: () => void;
@@ -26,6 +27,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
   const {
     onSubmit,
     onClear,
+    onStop,
     onNewMessage,
     onView,
     feedback,
@@ -40,6 +42,26 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
     { enabled: !disabled }
   );
 
+  const renderSubmitButton = () => {
+    if (disabled) {
+      return (
+        <>
+          {intl.formatMessage({ id: 'common.button.stop' })}
+          <span className="m-l-5">
+            <IconFont type="icon-stop"></IconFont>
+          </span>
+        </>
+      );
+    }
+    return (
+      <>
+        {intl.formatMessage({ id: 'common.button.submit' })}
+        <span className="m-l-5 opct-7">
+          <IconFont type="icon-command"></IconFont> + <EnterOutlined />
+        </span>
+      </>
+    );
+  };
   return (
     <div className="chat-footer">
       <Row style={{ width: '100%' }}>
@@ -71,12 +93,21 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
             >
               {intl.formatMessage({ id: 'playground.viewcode' })}
             </Button>
-            <Button disabled={disabled} type="primary" onClick={onSubmit}>
-              {intl.formatMessage({ id: 'common.button.submit' })}
-              <span className="m-l-5 opct-7">
-                <IconFont type="icon-command"></IconFont> + <EnterOutlined />
-              </span>
-            </Button>
+            {!disabled ? (
+              <Button type="primary" disabled={disabled} onClick={onSubmit}>
+                {intl.formatMessage({ id: 'common.button.submit' })}
+                <span className="m-l-5 opct-7">
+                  <IconFont type="icon-command"></IconFont> + <EnterOutlined />
+                </span>
+              </Button>
+            ) : (
+              <Button type="primary" onClick={onStop}>
+                {intl.formatMessage({ id: 'common.button.stop' })}
+                <span className="m-l-5">
+                  <IconFont type="icon-stop"></IconFont>
+                </span>
+              </Button>
+            )}
           </Space>
         </Col>
       </Row>

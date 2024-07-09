@@ -21,6 +21,9 @@ const Login = () => {
   useEffect(() => {
     gotoDefaultPage(userInfo);
   }, [userInfo]);
+  useEffect(() => {
+    document.title = 'GPUStack';
+  }, []);
 
   return (
     <>

@@ -17,6 +17,7 @@ const TableRow: React.FC<
     rowIndex,
     expandable,
     rowSelection,
+    expandedRowKeys,
     rowKey,
     columns,
     pollingChildren,
@@ -31,12 +32,14 @@ const TableRow: React.FC<
   const [checked, setChecked] = useState(false);
   const [childrenData, setChildrenData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(true);
   const pollTimer = useRef<any>(null);
   const chunkRequestRef = useRef<any>(null);
 
   console.log('table row====');
   const { updateChunkedList } = useUpdateChunkedList(childrenData, {
-    setDataList: setChildrenData
+    setDataList: setChildrenData,
+    callback: (list) => renderChildren?.(list)
   });
 
   useEffect(() => {
@@ -49,6 +52,14 @@ const TableRow: React.FC<
       }
     }
   }, [rowSelection]);
+
+  useEffect(() => {
+    if (expandedRowKeys?.includes(record[rowKey])) {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [expandedRowKeys]);
 
   useEffect(() => {
     return () => {
@@ -75,6 +86,7 @@ const TableRow: React.FC<
   };
 
   const handleLoadChildren = async () => {
+    console.log('first load=====', firstLoad);
     try {
       setLoading(true);
       const data = await loadChildren?.(record);
@@ -83,6 +95,8 @@ const TableRow: React.FC<
     } catch (error) {
       setChildrenData([]);
       setLoading(false);
+    } finally {
+      setFirstLoad(false);
     }
   };
 
@@ -113,9 +127,9 @@ const TableRow: React.FC<
 
   const handleRowExpand = async () => {
     setExpanded(!expanded);
-    onExpand?.(!expanded, record);
+    onExpand?.(!expanded, record, record[rowKey]);
+    console.log('expanded=====', record);
 
-    chunkRequestRef.current?.current?.cancel?.();
     if (pollTimer.current) {
       clearInterval(pollTimer.current);
     }
@@ -149,10 +163,15 @@ const TableRow: React.FC<
   };
 
   useEffect(() => {
-    if (childrenData.length) {
+    if (!firstLoad && expanded) {
       createChunkRequest();
+    } else {
+      chunkRequestRef.current?.current?.cancel?.();
     }
-  }, [childrenData]);
+    return () => {
+      chunkRequestRef.current?.current?.cancel?.();
+    };
+  }, [firstLoad, expanded]);
 
   const renderRowPrefix = () => {
     if (expandable && rowSelection) {

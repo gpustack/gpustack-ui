@@ -4,6 +4,7 @@ import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
+import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { handleBatchRequest } from '@/utils';
@@ -18,7 +19,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Modal, Space, message } from 'antd';
 import dayjs from 'dayjs';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -57,11 +58,9 @@ const Models: React.FC<ModelsProps> = ({
   handleSearch,
   handleShowSizeChange,
   handlePageChange,
-  createModelsChunkRequest,
   queryParams,
   loading,
-  total,
-  fetchData
+  total
 }) => {
   // const { modal } = App.useApp();
   console.log('model list====2');
@@ -69,6 +68,8 @@ const Models: React.FC<ModelsProps> = ({
   const intl = useIntl();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
+  const { handleExpandChange, updateExpandedRowKeys, expandedRowKeys } =
+    useExpandedRowKeys();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -145,6 +146,7 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await deleteModel(row.id);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        updateExpandedRowKeys([row.id]);
       },
       onCancel() {
         console.log('Cancel');
@@ -162,6 +164,7 @@ const Models: React.FC<ModelsProps> = ({
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection.clearSelections();
+        updateExpandedRowKeys(rowSelection.selectedRowKeys);
       },
       onCancel() {
         console.log('Cancel');
@@ -181,7 +184,7 @@ const Models: React.FC<ModelsProps> = ({
       console.log('error:', error);
     }
   };
-  const handleDeleteInstace = (row: any) => {
+  const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
     Modal.confirm({
       title: '',
       content: intl.formatMessage(
@@ -191,6 +194,9 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await deleteModelInstance(row.id);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        if (list.length === 1) {
+          updateExpandedRowKeys([row.model_id]);
+        }
       },
       onCancel() {
         console.log('Cancel');
@@ -232,9 +238,9 @@ const Models: React.FC<ModelsProps> = ({
   }, []);
 
   const handleChildSelect = useCallback(
-    (val: any, row: ModelInstanceListItem) => {
+    (val: any, row: ModelInstanceListItem, list: ModelInstanceListItem[]) => {
       if (val === 'delete') {
-        handleDeleteInstace(row);
+        handleDeleteInstace(row, list);
       }
       if (val === 'viewlog') {
         handleViewLogs(row);
@@ -251,10 +257,6 @@ const Models: React.FC<ModelsProps> = ({
       ></InstanceItem>
     );
   };
-
-  useEffect(() => {
-    createModelsChunkRequest();
-  }, []);
 
   return (
     <>
@@ -309,6 +311,8 @@ const Models: React.FC<ModelsProps> = ({
         <SealTable
           dataSource={dataSource}
           rowSelection={rowSelection}
+          expandedRowKeys={expandedRowKeys}
+          onExpand={handleExpandChange}
           loading={loading}
           rowKey="id"
           expandable={true}

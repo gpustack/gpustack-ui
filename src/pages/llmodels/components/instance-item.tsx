@@ -12,18 +12,24 @@ import { ModelInstanceListItem } from '../config/types';
 
 interface InstanceItemProps {
   list: ModelInstanceListItem[];
-  handleChildSelect: (val: string, item: ModelInstanceListItem) => void;
+  handleChildSelect: (
+    val: string,
+    item: ModelInstanceListItem,
+    list: ModelInstanceListItem[]
+  ) => void;
 }
 
 const InstanceItem: React.FC<InstanceItemProps> = ({
   list,
   handleChildSelect
 }) => {
+  console.log('instance item====');
   const intl = useIntl();
   const childActionList = [
     {
       label: intl.formatMessage({ id: 'common.button.viewlog' }),
       key: 'viewlog',
+      status: [InstanceStatusMap.Running, InstanceStatusMap.Error],
       icon: <FieldTimeOutlined />
     },
     {
@@ -33,9 +39,16 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       icon: <DeleteOutlined />
     }
   ];
-  const testStatus = {
-    state: InstanceStatusMap.Scheduled
+
+  const setChildActionList = (item: ModelInstanceListItem) => {
+    return _.filter(childActionList, (action: any) => {
+      if (action.key === 'viewlog') {
+        return InstanceStatusMap.Running.includes(item.state);
+      }
+      return true;
+    });
   };
+
   const getWorkerIp = (item: ModelInstanceListItem) => {
     if (item.worker_ip) {
       return item.port ? `${item.worker_ip}:${item.port}` : item.worker_ip;
@@ -90,8 +103,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 <Col span={5}>
                   <div style={{ paddingLeft: 39 }}>
                     <DropdownButtons
-                      items={childActionList}
-                      onSelect={(val: string) => handleChildSelect(val, item)}
+                      items={setChildActionList(item)}
+                      onSelect={(val: string) =>
+                        handleChildSelect(val, item, list)
+                      }
                     ></DropdownButtons>
                   </div>
                 </Col>

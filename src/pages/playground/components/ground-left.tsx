@@ -47,6 +47,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const [currentIsFocus, setCurrentIsFocus] = useState(false);
   const systemRef = useRef<any>(null);
   const contentRef = useRef<any>('');
+  const controllerRef = useRef<any>(null);
 
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
@@ -88,11 +89,21 @@ const MessageList: React.FC<MessageProps> = (props) => {
     console.log('messageList=====', messageList, messageId.current, chunk);
     return false;
   };
+  const handleStopConversation = () => {
+    controllerRef.current?.abort?.();
+    setLoading(false);
+  };
+
   const submitMessage = async () => {
     try {
       setLoading(true);
       setMessageId();
       setTokenResult(null);
+
+      controllerRef.current?.abort?.();
+      controllerRef.current = new AbortController();
+      const signal = controllerRef.current.signal;
+
       contentRef.current = '';
       const chatParams = {
         messages: systemMessage
@@ -109,7 +120,8 @@ const MessageList: React.FC<MessageProps> = (props) => {
       };
       const result = await fetchChunkedData({
         data: chatParams,
-        url: CHAT_API
+        url: CHAT_API,
+        signal
       });
 
       if (!result) {
@@ -246,6 +258,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
           onNewMessage={handleNewMessage}
           onSubmit={handleSubmit}
           onView={handleView}
+          onStop={handleStopConversation}
           disabled={loading}
           hasTokenResult={!!tokenResult}
           feedback={<ReferenceParams usage={tokenResult}></ReferenceParams>}

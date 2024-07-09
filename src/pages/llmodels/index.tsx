@@ -17,7 +17,9 @@ const Models: React.FC = () => {
   const [total, setTotal] = useState(100);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
+  const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
+  const dataSourceRef = useRef<any>();
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
     page: 1,
@@ -26,9 +28,13 @@ const Models: React.FC = () => {
   });
   // request data
 
-  const { updateChunkedList } = useUpdateChunkedList(dataSource, {
+  const { updateChunkedList } = useUpdateChunkedList({
     setDataList: setDataSource
   });
+
+  useEffect(() => {
+    dataSourceRef.current = dataSource;
+  }, [dataSource]);
 
   const fetchData = useCallback(async () => {
     axiosToken?.cancel?.();
@@ -49,6 +55,7 @@ const Models: React.FC = () => {
       console.log('error', error);
     } finally {
       setLoading(false);
+      setFirstLoad(false);
     }
   }, [queryParams]);
 
@@ -76,7 +83,7 @@ const Models: React.FC = () => {
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
-      updateChunkedList(data);
+      updateChunkedList(data, dataSourceRef.current);
     });
   };
 
@@ -110,9 +117,17 @@ const Models: React.FC = () => {
   );
 
   useEffect(() => {
-    fetchData();
+    if (!firstLoad) {
+      createModelsChunkRequest();
+    }
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
+    };
+  }, [firstLoad]);
+
+  useEffect(() => {
+    fetchData();
+    return () => {
       axiosToken?.cancel?.();
     };
   }, [queryParams]);

@@ -18,6 +18,12 @@ export default defineConfig({
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
+        jsMinifierOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true
+          }
+        },
         scripts: [
           {
             src: `/js/umi.${t}.js`

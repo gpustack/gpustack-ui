@@ -24,6 +24,7 @@ export interface RowSelectionProps {
   onChange: (selectedRowKeys: React.Key[]) => void;
 }
 export interface SealTableProps {
+  expandedRowKeys?: React.Key[];
   rowSelection?: RowSelectionProps;
   children: React.ReactNode[];
   empty?: React.ReactNode;
@@ -32,7 +33,7 @@ export interface SealTableProps {
   pollingChildren?: boolean;
   watchChildren?: boolean;
   loading?: boolean;
-  onExpand?: (expanded: boolean, record: any) => void;
+  onExpand?: (expanded: boolean, record: any, rowKey: any) => void;
   renderChildren?: (data: any) => React.ReactNode;
   loadChildren?: (record: any) => Promise<any[]>;
   loadChildrenAPI?: (record: any) => string;

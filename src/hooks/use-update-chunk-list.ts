@@ -8,17 +8,17 @@ interface ChunkedCollection {
   type: string | number;
 }
 // Only used to update lists without nested state
-export function useUpdateChunkedList(
-  dataList: { id: string | number }[],
-  options: {
-    setDataList: (args: any) => void;
-    callback?: (args: any) => void;
-    filterFun?: (args: any) => boolean;
-    mapFun?: (args: any) => any;
-    computedID?: (d: object) => string;
-  }
-) {
-  const updateChunkedList = (data: ChunkedCollection) => {
+export function useUpdateChunkedList(options: {
+  setDataList: (args: any) => void;
+  callback?: (args: any) => void;
+  filterFun?: (args: any) => boolean;
+  mapFun?: (args: any) => any;
+  computedID?: (d: object) => string;
+}) {
+  const updateChunkedList = (
+    data: ChunkedCollection,
+    dataList: { id: string | number }[]
+  ) => {
     let collections = data?.collection || [];
     if (options?.computedID) {
       collections = _.map(collections, (item: any) => {
@@ -42,16 +42,17 @@ export function useUpdateChunkedList(
         );
         if (updateIndex === -1) {
           const updateItem = _.cloneDeep(item);
-          options.setDataList((preDataList: any) => {
+          options.setDataList?.((preDataList: any) => {
             return _.concat(updateItem, preDataList);
           });
         }
+        console.log('create=========', updateIndex, dataList, collections);
       });
     }
     // DELETE
     if (data?.type === WatchEventType.DELETE) {
-      options.setDataList((prevDataList: any) => {
-        const updatedList = _.filter(prevDataList, (item: any) => {
+      options.setDataList?.(() => {
+        const updatedList = _.filter(dataList, (item: any) => {
           return !_.find(ids, (id: any) => id === item.id);
         });
         return updatedList;
@@ -59,8 +60,8 @@ export function useUpdateChunkedList(
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
-      options.setDataList((prevDataList: any[]) => {
-        const updatedDataList = _.cloneDeep(prevDataList);
+      options.setDataList?.(() => {
+        const updatedDataList = _.cloneDeep(dataList);
 
         _.each(collections, (item: any) => {
           const updateIndex = _.findIndex(

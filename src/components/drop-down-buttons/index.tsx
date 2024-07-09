@@ -31,11 +31,14 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   return (
     <>
       {items?.length === 1 ? (
-        <Button
-          icon={_.get(items, '0.icon')}
-          size={size}
-          onClick={handleButtonClick}
-        ></Button>
+        <Tooltip title={_.head(items)?.label}>
+          <Button
+            {..._.head(items)}
+            icon={_.get(items, '0.icon')}
+            size={size}
+            onClick={handleButtonClick}
+          ></Button>
+        </Tooltip>
       ) : (
         <Dropdown.Button
           menu={{

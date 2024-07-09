@@ -70,7 +70,7 @@ export function getRightRenderContent(opts: {
     mode: 'vertical',
     expandIcon: false,
     inlineCollapsed: collapsed,
-    triggerSubMenuAction: 'hover',
+    triggerSubMenuAction: 'click',
     items: [
       {
         key: 'lang',

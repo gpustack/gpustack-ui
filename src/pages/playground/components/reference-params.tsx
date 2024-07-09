@@ -43,7 +43,7 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
 
       <span>
         {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-        {usage.tokens_per_second * 1000} Tokens/s
+        {usage.tokens_per_second} Tokens/s
       </span>
     </div>
   );

@@ -25,7 +25,8 @@ export const InstanceStatusMap = {
   Scheduled: 'Scheduled',
   Error: 'Error',
   Downloading: 'Downloading',
-  Unknown: 'Unknown'
+  Unknown: 'Unknown',
+  Analyzing: 'Analyzing'
 };
 
 export const status: any = {
@@ -35,7 +36,8 @@ export const status: any = {
   [InstanceStatusMap.Scheduled]: StatusMaps.success,
   [InstanceStatusMap.Error]: StatusMaps.error,
   [InstanceStatusMap.Downloading]: StatusMaps.transitioning,
-  [InstanceStatusMap.Unknown]: StatusMaps.inactive
+  [InstanceStatusMap.Unknown]: StatusMaps.inactive,
+  [InstanceStatusMap.Analyzing]: StatusMaps.transitioning
 };
 
 export const ActionList = [

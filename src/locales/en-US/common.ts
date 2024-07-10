@@ -187,5 +187,9 @@ export default {
   'common.form.password': 'Password',
   'common.form.username': 'Username',
   'common.login.rember': 'Remember me',
-  'settings.company': 'SEAL'
+  'settings.company': 'SEAL',
+  'common.button.help': 'Help',
+  'common.button.feedback': 'Feedback',
+  'common.button.docs': 'Documentation',
+  'common.button.version': 'Version'
 };

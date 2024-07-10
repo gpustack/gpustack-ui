@@ -2,8 +2,9 @@ import FieldWrapper from '@/components/seal-form/field-wrapper';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { INPUT_WIDTH } from '@/constants';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form, InputNumber, Slider } from 'antd';
+import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { queryModelsList } from '../apis';
@@ -100,13 +101,27 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     form.setFieldsValue(initialValues);
     setParams(initialValues);
   };
-  const renderLabel = (args: { field: string; label: string }) => {
+  const renderLabel = (args: {
+    field: string;
+    label: string;
+    description: string;
+  }) => {
     return (
       <span
         className={CustomLabelStyles.label}
         style={{ width: INPUT_WIDTH.mini }}
       >
-        <span className="text">{args.label}</span>
+        <span className="text">
+          <span> {args.label}</span>
+          {args.description && (
+            <span className="m-l-5">
+              <Tooltip title={args.description}>
+                <InfoCircleOutlined />
+              </Tooltip>
+            </span>
+          )}
+        </span>
+
         <InputNumber
           className="label-val"
           variant="outlined"
@@ -150,7 +165,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           <FieldWrapper
             label={renderLabel({
               field: 'temperature',
-              label: 'Temperature'
+              label: 'Temperature',
+              description: intl.formatMessage({
+                id: 'playground.params.temperature.tips'
+              })
             })}
             style={{ paddingInline: 0 }}
             variant="borderless"
@@ -173,7 +191,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           <FieldWrapper
             label={renderLabel({
               field: 'max_tokens',
-              label: 'Max Tokens'
+              label: 'Max Tokens',
+              description: intl.formatMessage({
+                id: 'playground.params.maxtokens.tips'
+              })
             })}
             style={{ paddingInline: 0 }}
             variant="borderless"
@@ -196,7 +217,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           <FieldWrapper
             label={renderLabel({
               field: 'top_p',
-              label: 'Top P'
+              label: 'Top P',
+              description: intl.formatMessage({
+                id: 'playground.params.topp.tips'
+              })
             })}
             style={{ paddingInline: 0 }}
             variant="borderless"
@@ -219,7 +243,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           <FieldWrapper
             label={renderLabel({
               field: 'seed',
-              label: 'Seed'
+              label: 'Seed',
+              description: intl.formatMessage({
+                id: 'playground.params.seed.tips'
+              })
             })}
             style={{ paddingInline: 0 }}
             variant="borderless"
@@ -240,6 +267,9 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         >
           <SealInput.Input
             label="Stop Sequence"
+            description={intl.formatMessage({
+              id: 'playground.params.stop.tips'
+            })}
             style={{ width: INPUT_WIDTH.mini }}
           ></SealInput.Input>
         </Form.Item>

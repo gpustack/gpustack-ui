@@ -37,6 +37,7 @@ export interface ModelInstanceListItem {
   download_progress: number;
   model_id: number;
   model_name: string;
+  worker_name: string;
   id: number;
   created_at: string;
   updated_at: string;

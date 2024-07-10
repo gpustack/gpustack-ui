@@ -21,15 +21,14 @@ export default function useContainerScroll(
       scrollHeight > clientHeight + scrollTop
     ) {
       scroller.current.current.scrollTop = scrollHeight;
-      toBottomFlag.current = false;
+      // toBottomFlag.current = false;
       isWheeled.current = false;
-    }
-    if (
+    } else if (
       !isWheeled.current &&
       scrollHeight > clientHeight + scrollTop &&
       scroller.current?.current
     ) {
-      scroller.current.current.scrollTop += 5;
+      scroller.current.current.scrollTop += 10;
       window.requestAnimationFrame(scrollerRun);
     }
   };

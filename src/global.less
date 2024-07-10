@@ -273,7 +273,8 @@ body {
     }
 
     .ant-pro-sider-logo {
-      padding-left: 20px;
+      padding-left: 18px;
+      border-block-end: none;
     }
 
     .ant-pro-sider-logo-collapsed {
@@ -320,18 +321,10 @@ body {
 
 .ant-pro-layout {
   height: 100vh;
-  // .ant-pro-layout-content {
-  //   padding-block: var(--layout-content-blockpadding);
-  //   padding-inline: var(--layout-content-inlinepadding);
-  // }
+
   .ant-pro-page-container-children-container {
     padding-block: var(--layout-content-blockpadding);
     padding-inline: var(--layout-content-inlinepadding);
-  }
-
-  .ant-pro-sider-logo {
-    padding-left: 22px;
-    border-block-end: none;
   }
 
   .ant-layout {
@@ -382,6 +375,18 @@ body {
   }
 }
 // ======== menu style end ============
+.ant-menu-submenu-popup {
+  .ant-menu-sub {
+    .ant-menu-item-only-child {
+      height: 40px;
+      line-height: 40px;
+
+      .anticon {
+        font-size: var(--font-size-middle);
+      }
+    }
+  }
+}
 
 .user-menu-container {
   .user-avatar.ant-menu-submenu {
@@ -425,9 +430,7 @@ body {
   left: 0;
   bottom: 0;
   right: 0;
-  // background: url('@/assets/images/bg-11.png') center center no-repeat;
-  // background-size: cover;
-  background-color: #fff;
+  background-color: var(--color-white-1);
 
   &::after {
     content: '';

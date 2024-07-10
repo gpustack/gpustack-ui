@@ -168,12 +168,12 @@ export const gaugeItemConfig = {
     },
     rich: {
       value: {
-        fontSize: 20,
+        fontSize: 16,
         fontWeight: '500',
         color: 'rgba(0, 0, 0, 0.88)'
       },
       unit: {
-        fontSize: 16,
+        fontSize: 14,
         color: 'rgba(0, 0, 0, 0.88)',
         fontWeight: '500',
         padding: [0, 0, 0, 2]

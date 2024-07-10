@@ -8,7 +8,7 @@ import {
   PlusOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, Dropdown, Row, Space } from 'antd';
+import { Button, Col, Row, Space } from 'antd';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import '../style/chat-footer.less';
@@ -22,6 +22,7 @@ interface ChatFooterProps {
   disabled?: boolean;
   feedback?: React.ReactNode;
   hasTokenResult?: boolean;
+  selectedModel?: string;
 }
 
 const ChatFooter: React.FC<ChatFooterProps> = (props) => {
@@ -35,7 +36,8 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
     onView,
     feedback,
     disabled,
-    hasTokenResult
+    hasTokenResult,
+    selectedModel
   } = props;
   useHotkeys(
     HotKeys.SUBMIT.join(','),
@@ -58,15 +60,25 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
       <Row style={{ width: '100%' }}>
         <Col span={hasTokenResult ? 8 : 12}>
           <Space size={20}>
-            <Dropdown
+            {/* <Dropdown
               menu={{ items: MessageRoles, onClick: onNewMessage }}
               placement="topLeft"
             >
-              <Button disabled={disabled} icon={<PlusOutlined />}>
+              <Button
+                disabled={disabled}
+                icon={<PlusOutlined />}
+                onClick={onNewMessage}
+              >
                 {intl.formatMessage({ id: 'playground.newMessage' })}
               </Button>
-            </Dropdown>
-
+            </Dropdown> */}
+            <Button
+              disabled={disabled}
+              icon={<PlusOutlined />}
+              onClick={onNewMessage}
+            >
+              {intl.formatMessage({ id: 'playground.newMessage' })}
+            </Button>
             <Button
               icon={<DeleteOutlined></DeleteOutlined>}
               onClick={onClear}
@@ -87,7 +99,11 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               {intl.formatMessage({ id: 'playground.viewcode' })}
             </Button>
             {!disabled ? (
-              <Button type="primary" disabled={disabled} onClick={onSubmit}>
+              <Button
+                type="primary"
+                disabled={disabled || !selectedModel}
+                onClick={onSubmit}
+              >
                 {intl.formatMessage({ id: 'common.button.submit' })}
                 <span className="m-l-5 opct-7">
                   {platform.isMac ? (

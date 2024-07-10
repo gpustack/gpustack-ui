@@ -47,7 +47,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const setChildActionList = (item: ModelInstanceListItem) => {
     return _.filter(childActionList, (action: any) => {
       if (action.key === 'viewlog') {
-        return InstanceStatusMap.Running.includes(item.state);
+        return action.status.includes(item.state);
       }
       return true;
     });

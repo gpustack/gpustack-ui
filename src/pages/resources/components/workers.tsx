@@ -1,14 +1,15 @@
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
+import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import { convertFileSize } from '@/utils';
-import { SyncOutlined } from '@ant-design/icons';
+import { convertFileSize, handleBatchRequest } from '@/utils';
+import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space, Table } from 'antd';
+import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
 import { memo, useEffect, useState } from 'react';
-import { queryWorkersList } from '../apis';
+import { deleteWorker, queryWorkersList } from '../apis';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 const { Column } = Table;
 
@@ -18,6 +19,7 @@ const Resources: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const rowSelection = useTableRowSelection();
   const intl = useIntl();
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -90,6 +92,44 @@ const Resources: React.FC = () => {
     return mountRoot ? formateUtilazation(mountRoot.used, mountRoot.total) : 0;
   };
 
+  const handleDelete = (row: ListItem) => {
+    Modal.confirm({
+      title: '',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: ' worker ' }
+      ),
+      async onOk() {
+        console.log('OK');
+        await deleteWorker(row.id);
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        fetchData();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const handleDeleteBatch = () => {
+    Modal.confirm({
+      title: '',
+      content: intl.formatMessage(
+        { id: 'common.delete.confirm' },
+        { type: ` wokers ` }
+      ),
+      async onOk() {
+        await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        rowSelection.clearSelections();
+        fetchData();
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
   const renderStorageTooltip = (files: Filesystem[]) => {
     const mountRoot = _.find(
       files,
@@ -137,12 +177,23 @@ const Resources: React.FC = () => {
             ></Button>
           </Space>
         }
+        right={
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={handleDeleteBatch}
+            disabled={!rowSelection.selectedRowKeys.length}
+          >
+            {intl.formatMessage({ id: 'common.button.delete' })}
+          </Button>
+        }
       ></PageTools>
       <Table
         dataSource={dataSource}
         loading={loading}
         rowKey="id"
         onChange={handleTableChange}
+        rowSelection={rowSelection}
         pagination={{
           showSizeChanger: true,
           pageSize: queryParams.perPage,
@@ -304,6 +355,26 @@ const Resources: React.FC = () => {
                 percent={calcStorage(record.status?.filesystem)}
                 label={renderStorageTooltip(record.status.filesystem)}
               ></ProgressBar>
+            );
+          }}
+        />
+        <Column
+          title={intl.formatMessage({ id: 'common.table.operation' })}
+          key="operation"
+          render={(text, record: ListItem) => {
+            return (
+              <Space size={20}>
+                <Tooltip
+                  title={intl.formatMessage({ id: 'common.button.delete' })}
+                >
+                  <Button
+                    onClick={() => handleDelete(record)}
+                    size="small"
+                    danger
+                    icon={<DeleteOutlined></DeleteOutlined>}
+                  ></Button>
+                </Tooltip>
+              </Space>
             );
           }}
         />

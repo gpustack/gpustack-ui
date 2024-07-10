@@ -170,8 +170,6 @@ const TableRow: React.FC<
   useEffect(() => {
     if (!firstLoad && expanded) {
       createChunkRequest();
-    } else {
-      chunkRequestRef.current?.current?.cancel?.();
     }
     return () => {
       chunkRequestRef.current?.current?.cancel?.();

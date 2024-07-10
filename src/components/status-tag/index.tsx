@@ -1,5 +1,7 @@
 import { StatusColorMap } from '@/config';
 import { StatusType } from '@/config/types';
+import { InfoCircleOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import './index.less';
@@ -16,6 +18,7 @@ type StatusTagProps = {
   statusValue: {
     status: StatusType;
     text: string;
+    message?: string;
   };
   download?: {
     percent: number;
@@ -56,7 +59,16 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
         border: `1px solid ${statusColor?.text}`
       }}
     >
-      {renderContent()}
+      {statusValue.message ? (
+        <Tooltip title={statusValue.message}>
+          <span className="m-r-5">
+            <InfoCircleOutlined />
+          </span>
+          {renderContent()}
+        </Tooltip>
+      ) : (
+        renderContent()
+      )}
     </span>
   );
 };

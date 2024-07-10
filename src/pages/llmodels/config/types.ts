@@ -34,6 +34,7 @@ export interface ModelInstanceListItem {
   port: number;
   name: string;
   state: string;
+  state_message: string;
   download_progress: number;
   model_id: number;
   model_name: string;

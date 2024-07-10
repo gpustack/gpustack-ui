@@ -1,3 +1,4 @@
+import { isFunction } from 'lodash';
 const chartColorMap = {
   tickLineColor: 'rgba(217,217,217,0.5)',
   axislabelColor: 'rgba(0, 0, 0, 0.4)'
@@ -8,15 +9,18 @@ export const tooltip = {
   // axisPointer: {
   //   type: 'shadow'
   // }
-  formatter(params: any) {
+  formatter(params: any, callback?: (val: any) => any) {
     let result = `<span class="tooltip-x-name">${params[0].axisValue}</span>`;
     params.forEach((item: any) => {
+      let value = isFunction(callback)
+        ? callback?.(item.data.value)
+        : item.data.value;
       result += `<span class="tooltip-item">
      <span class="tooltip-item-name">
        <span style="display:inline-block;margin-right:5px;border-radius:8px;width:8px;height:8px;background-color:${item.color};"></span>
        <span class="tooltip-title">${item.seriesName}</span>:
      </span>
-      <span class="tooltip-value">${item.data.value}</span>
+      <span class="tooltip-value">${value}</span>
       </span>`;
     });
     return `<div class="tooltip-wrapper">${result}</div>`;
@@ -55,6 +59,9 @@ export const xAxis = {
 export const yAxis = {
   // max: 100,
   // min: 0,
+  nameTextStyle: {
+    padding: [0, 0, 0, -25]
+  },
   splitLine: {
     show: true,
     lineStyle: {

@@ -27,3 +27,9 @@ export async function queryGPUDeviceItem(id: string) {
     methos: 'GET'
   });
 }
+
+export async function deleteWorker(id: string | number) {
+  return request(`${WORKERS_API}/${id}`, {
+    method: 'DELETE'
+  });
+}

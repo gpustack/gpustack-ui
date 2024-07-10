@@ -17,9 +17,11 @@ const LineChart: React.FC<ChartProps> = (props) => {
   const {
     seriesData,
     xAxisData,
+    yAxisName,
     height,
     width,
     labelFormatter,
+    tooltipValueFormatter = null,
     legendData = [],
     smooth,
     title
@@ -34,7 +36,12 @@ const LineChart: React.FC<ChartProps> = (props) => {
     },
     grid,
     tooltip: {
-      ...tooltip
+      ...tooltip,
+      formatter(params: any) {
+        return tooltipValueFormatter
+          ? tooltip.formatter(params, tooltipValueFormatter)
+          : tooltip.formatter(params);
+      }
     },
     xAxis: {
       ...xAxis,
@@ -76,7 +83,8 @@ const LineChart: React.FC<ChartProps> = (props) => {
         text: title
       },
       yAxis: {
-        ...options.yAxis
+        ...options.yAxis,
+        name: yAxisName
       },
       xAxis: {
         ...options.xAxis,

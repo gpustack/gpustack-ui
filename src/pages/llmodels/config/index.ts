@@ -33,7 +33,7 @@ export const status: any = {
   [InstanceStatusMap.Running]: StatusMaps.success,
   [InstanceStatusMap.Pending]: StatusMaps.transitioning,
   [InstanceStatusMap.Initializing]: StatusMaps.transitioning,
-  [InstanceStatusMap.Scheduled]: StatusMaps.success,
+  [InstanceStatusMap.Scheduled]: StatusMaps.transitioning,
   [InstanceStatusMap.Error]: StatusMaps.error,
   [InstanceStatusMap.Downloading]: StatusMaps.transitioning,
   [InstanceStatusMap.Unknown]: StatusMaps.inactive,

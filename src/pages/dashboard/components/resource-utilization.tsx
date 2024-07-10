@@ -116,6 +116,9 @@ const UtilizationOvertime: React.FC = () => {
 
   const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
 
+  const tooltipValueFormatter = (value: any) => {
+    return !value ? value : `${value}%`;
+  };
   const generateData = () => {
     const legendData: string[] = [];
     const xAxisData: string[] = [];
@@ -154,8 +157,10 @@ const UtilizationOvertime: React.FC = () => {
         seriesData={seriesData}
         legendData={legendData}
         xAxisData={xAxisData}
+        tooltipValueFormatter={tooltipValueFormatter}
         smooth={true}
         width="100%"
+        yAxisName="(%)"
       ></LineChart>
     </>
   );

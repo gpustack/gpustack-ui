@@ -31,7 +31,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     >
       {copied ? (
         <CheckCircleFilled
-          style={{ color: 'var(--ant-color-primary)', fontSize: '14px' }}
+          style={{ color: 'var(--ant-color-success)', fontSize: '14px' }}
         />
       ) : (
         <CopyOutlined

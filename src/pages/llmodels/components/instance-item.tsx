@@ -93,7 +93,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         }
                         statusValue={{
                           status: status[item.state] as any,
-                          text: item.state
+                          text: item.state,
+                          message: item.state_message
                         }}
                       ></StatusTag>
                     )}

@@ -16,5 +16,6 @@ export default {
   'resources.table.gpuutilization': 'GPU 利用率',
   'resources.table.vramutilization': '显存利用率',
   'resources.table.total': '总量',
-  'resources.table.used': '已用'
+  'resources.table.used': '已用',
+  'resources.table.wokers': 'workers'
 };

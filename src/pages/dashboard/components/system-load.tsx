@@ -1,4 +1,5 @@
 import CardWrapper from '@/components/card-wrapper';
+import GaugeChart from '@/components/echarts/gauge';
 import PageTools from '@/components/page-tools';
 import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
@@ -7,9 +8,18 @@ import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useContext, useEffect, useState } from 'react';
-import UitilBar from '../../../components/util-bar';
 import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
+
+const strokeColorFunc = (percent: number) => {
+  if (percent <= 50) {
+    return 'rgb(84, 204, 152, 80%)';
+  }
+  if (percent <= 80) {
+    return 'rgba(250, 173, 20, 80%)';
+  }
+  return ' rgba(255, 77, 79, 80%)';
+};
 
 const SystemLoad = () => {
   const intl = useIntl();
@@ -58,36 +68,44 @@ const SystemLoad = () => {
             <CardWrapper style={{ height: largeChartHeight, width: '100%' }}>
               <Row style={{ height: largeChartHeight, width: '100%' }}>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <UitilBar
+                  <GaugeChart
+                    height={smallChartHeight}
+                    value={_.round(data.gpu?.utilization_rate || 0, 1)}
+                    color={strokeColorFunc(data.gpu?.utilization_rate)}
                     title={intl.formatMessage({
                       id: 'dashboard.gpuutilization'
                     })}
-                    percent={_.round(data.gpu?.utilization_rate || 0, 1)}
-                  ></UitilBar>
+                  ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <UitilBar
+                  <GaugeChart
                     title={intl.formatMessage({
                       id: 'dashboard.vramutilization'
                     })}
-                    percent={_.round(data.gpu_memory?.utilization_rate || 0, 1)}
-                  ></UitilBar>
+                    height={smallChartHeight}
+                    color={strokeColorFunc(data.gpu_memory?.utilization_rate)}
+                    value={_.round(data.gpu_memory?.utilization_rate || 0, 1)}
+                  ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <UitilBar
+                  <GaugeChart
                     title={intl.formatMessage({
                       id: 'dashboard.cpuutilization'
                     })}
-                    percent={_.round(data.cpu?.utilization_rate || 0, 1)}
-                  ></UitilBar>
+                    height={smallChartHeight}
+                    color={strokeColorFunc(data.cpu?.utilization_rate)}
+                    value={_.round(data.cpu?.utilization_rate || 0, 1)}
+                  ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
-                  <UitilBar
+                  <GaugeChart
                     title={intl.formatMessage({
                       id: 'dashboard.memoryutilization'
                     })}
-                    percent={_.round(data.memory?.utilization_rate || 0, 1)}
-                  ></UitilBar>
+                    height={smallChartHeight}
+                    color={strokeColorFunc(data.memory?.utilization_rate)}
+                    value={_.round(data.memory?.utilization_rate || 0, 1)}
+                  ></GaugeChart>
                 </Col>
               </Row>
             </CardWrapper>

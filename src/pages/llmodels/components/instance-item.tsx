@@ -29,7 +29,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     {
       label: intl.formatMessage({ id: 'common.button.viewlog' }),
       key: 'viewlog',
-      status: [InstanceStatusMap.Running, InstanceStatusMap.Error],
+      status: [
+        InstanceStatusMap.Running,
+        InstanceStatusMap.Error,
+        InstanceStatusMap.Downloading
+      ],
       icon: <FieldTimeOutlined />
     },
     {

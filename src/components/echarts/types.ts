@@ -6,7 +6,9 @@ export interface ChartProps {
   height: string | number;
   width?: string | number;
   title?: string;
+  value?: number;
   smooth?: boolean;
+  color?: string;
 }
 
 export interface AreaChartItemProps {

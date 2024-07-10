@@ -3,7 +3,7 @@ export default {
   'playground.title': '试验场',
   'playground.system': '系统',
   'playground.user': '用户',
-  'playground.assistant': '助手',
+  'playground.assistant': '小助手',
   'playground.newMessage': '新消息',
   'playground.viewcode': '查看代码',
   'playground.model': '模型',

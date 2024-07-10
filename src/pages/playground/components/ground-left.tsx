@@ -56,10 +56,11 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
-  const handleNewMessage = () => {
+  const handleNewMessage = (role: any) => {
     messageList.push({
-      role:
-        _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
+      // role:
+      //   _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
+      role: role.key,
       content: '',
       uid: messageId.current + 1
     });

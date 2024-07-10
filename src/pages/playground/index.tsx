@@ -8,23 +8,8 @@ import './style/play-ground.less';
 
 const Playground: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const [selectedModel, setSelectedModel] = useState('llama3:latest');
-  const [showPopover, setShowPopover] = useState(false);
   const selectModel = searchParams.get('model') || '';
   const [params, setParams] = useState({});
-
-  console.log('query======', searchParams, selectModel);
-  const handleSelectChange = (value: string) => {
-    setSelectedModel(value);
-  };
-
-  const handleTogglePopover = () => {
-    setShowPopover(!showPopover);
-  };
-
-  const handleClosePopover = () => {
-    setShowPopover(false);
-  };
 
   return (
     <div>
@@ -38,11 +23,7 @@ const Playground: React.FC = () => {
           </div>
 
           <div className="params">
-            <ParamsSettings
-              onClose={handleClosePopover}
-              setParams={setParams}
-              selectedModel={selectModel}
-            />
+            <ParamsSettings setParams={setParams} selectedModel={selectModel} />
           </div>
         </div>
       </PageContainer>

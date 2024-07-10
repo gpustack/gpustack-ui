@@ -5,11 +5,11 @@ export const Roles = {
 };
 export const playGroundRoles = [
   {
-    key: 'user',
+    key: Roles.User,
     label: 'playground.user'
   },
   {
-    key: 'assistant',
+    key: Roles.Assistant,
     label: 'playground.assitant'
   }
 ];

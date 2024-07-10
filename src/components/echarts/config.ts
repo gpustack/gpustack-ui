@@ -100,3 +100,84 @@ export const lineItemConfig = {
     opacity: 0.7
   }
 };
+
+export const gaugeItemConfig = {
+  type: 'gauge',
+  radius: '88%',
+  center: ['50%', '65%'],
+  startAngle: 190,
+  endAngle: -10,
+  min: 0,
+  max: 100,
+  splitNumber: 5,
+  progress: {
+    show: true,
+    roundCap: false,
+    width: 12
+  },
+  pointer: {
+    length: '80%',
+    width: 4,
+    itemStyle: {
+      color: 'auto'
+    }
+  },
+  axisLine: {
+    roundCap: false,
+    lineStyle: {
+      width: 12,
+      // color: [[1, 'rgba(221, 221, 221, 0.5)']],
+      color: [
+        [0.5, 'rgba(84, 204, 152, 80%)'],
+        [0.8, 'rgba(250, 173, 20, 80%)'],
+        [1, 'rgba(255, 77, 79, 80%)']
+      ]
+    }
+  },
+  axisTick: {
+    distance: -12,
+    length: 6,
+    splitNumber: 5,
+    lineStyle: {
+      width: 1.5,
+      color: 'rgba(255, 255, 255, 1)'
+    }
+  },
+  splitLine: {
+    distance: -12,
+    length: 12,
+    lineStyle: {
+      width: 1.5,
+      color: 'rgba(255, 255, 255, 1)'
+    }
+  },
+  axisLabel: {
+    distance: 14,
+    color: 'rgba(0, 0, 0, .5)',
+    fontSize: 12
+  },
+  detail: {
+    lineHeight: 40,
+    height: 40,
+    offsetCenter: [5, 30],
+    valueAnimation: false,
+    fontSize: 20,
+    color: 'rgba(0, 0, 0, 0.88)',
+    formatter(value: any) {
+      return '{value|' + value + '}{unit|%}';
+    },
+    rich: {
+      value: {
+        fontSize: 20,
+        fontWeight: '500',
+        color: 'rgba(0, 0, 0, 0.88)'
+      },
+      unit: {
+        fontSize: 16,
+        color: 'rgba(0, 0, 0, 0.88)',
+        fontWeight: '500',
+        padding: [0, 0, 0, 2]
+      }
+    }
+  }
+};

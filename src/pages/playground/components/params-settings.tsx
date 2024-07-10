@@ -19,14 +19,12 @@ type ParamsSettingsFormProps = {
 };
 
 type ParamsSettingsProps = {
-  onClose?: () => void;
   selectedModel?: string;
   params?: ParamsSettingsFormProps;
   setParams: (params: any) => void;
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
-  onClose,
   selectedModel,
   setParams
 }) => {
@@ -81,11 +79,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
 
   const handleOnFinishFailed = (errorInfo: any) => {
     console.log('handleOnFinishFailed', errorInfo);
-  };
-
-  const handleCancel = () => {
-    form.resetFields();
-    onClose?.();
   };
 
   const handleValuesChange = (changedValues: any, allValues: any) => {

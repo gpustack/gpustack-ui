@@ -1,9 +1,10 @@
 import type {
   // 系列类型的定义后缀都为 SeriesOption
   BarSeriesOption,
+  GaugeSeriesOption,
   LineSeriesOption
 } from 'echarts/charts';
-import { BarChart, LineChart } from 'echarts/charts';
+import { BarChart, GaugeChart, LineChart } from 'echarts/charts';
 import type {
   DatasetComponentOption,
   GridComponentOption,
@@ -34,6 +35,7 @@ type ECOption = ComposeOption<
   | TooltipComponentOption
   | GridComponentOption
   | DatasetComponentOption
+  | GaugeSeriesOption
 >;
 
 // 注册必须的组件
@@ -46,6 +48,7 @@ echarts.use([
   TransformComponent,
   BarChart,
   LineChart,
+  GaugeChart,
   LabelLayout,
   UniversalTransition,
   CanvasRenderer

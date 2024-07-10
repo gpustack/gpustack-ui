@@ -70,7 +70,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
             <RowChildren key={`${item.id}_row`}>
               <Row style={{ width: '100%' }} align="middle">
                 <Col span={4}>{item.name}</Col>
-                <Col span={3}>{getWorkerIp(item)}</Col>
+                <Col span={3}>{item.worker_name || '-'}</Col>
                 <Col span={4}>
                   <span>
                     {item.source === 'huggingface'

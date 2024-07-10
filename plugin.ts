@@ -2,6 +2,7 @@ import { IApi } from '@umijs/max';
 
 export default (api: IApi) => {
   api.modifyHTML(($) => {
+    console.log('pllugins=========modifyHTML', $);
     return $;
   });
   api.onStart(() => {

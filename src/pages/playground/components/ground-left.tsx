@@ -56,11 +56,10 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
-  const handleNewMessage = (role: any) => {
+  const handleNewMessage = (role?: any) => {
     messageList.push({
-      // role:
-      //   _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
-      role: role.key,
+      role:
+        _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
       content: '',
       uid: messageId.current + 1
     });
@@ -142,11 +141,14 @@ const MessageList: React.FC<MessageProps> = (props) => {
     if (!messageList.length) {
       return;
     }
-    const headItem = _.cloneDeep(_.get(messageList, '0'));
-    headItem.content = '';
-    headItem.role = Roles.User;
-    headItem.uid = messageId.current + 1;
-    setMessageList(headItem ? [headItem] : []);
+    setMessageId();
+    setMessageList([
+      {
+        role: Roles.User,
+        content: '',
+        uid: messageId.current
+      }
+    ]);
   };
 
   const handleView = () => {
@@ -261,6 +263,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
           onView={handleView}
           onStop={handleStopConversation}
           disabled={loading}
+          selectedModel={parameters.model}
           hasTokenResult={!!tokenResult}
           feedback={<ReferenceParams usage={tokenResult}></ReferenceParams>}
         ></ChatFooter>

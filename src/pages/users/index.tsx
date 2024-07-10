@@ -291,6 +291,11 @@ const Users: React.FC = () => {
             }}
           />
           <Column
+            title={intl.formatMessage({ id: 'users.form.fullname' })}
+            dataIndex="full_name"
+            key="full_name"
+          />
+          <Column
             title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
             key="createTime"

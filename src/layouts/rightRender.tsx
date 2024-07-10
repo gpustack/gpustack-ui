@@ -3,8 +3,14 @@
 import avatarImg from '@/assets/images/avatar.png';
 import langConfigMap from '@/locales/lang-config-map';
 import {
+  DiscordOutlined,
+  GithubOutlined,
   GlobalOutlined,
+  HomeOutlined,
+  InfoCircleOutlined,
   LogoutOutlined,
+  QuestionCircleOutlined,
+  ReadOutlined,
   SettingOutlined
 } from '@ant-design/icons';
 import { getAllLocales, history, setLocale } from '@umijs/max';
@@ -62,6 +68,66 @@ export function getRightRenderContent(opts: {
     );
   }
 
+  const helpList = [
+    {
+      key: 'site',
+      icon: <HomeOutlined />,
+      label: 'GPUStack',
+      url: 'https://gpustack.ai/'
+    },
+    {
+      key: 'github',
+      icon: <GithubOutlined />,
+      label: 'GitHub'
+    },
+    {
+      key: 'Discord',
+      icon: <DiscordOutlined />,
+      label: 'Discord'
+    },
+    {
+      key: 'docs',
+      icon: <ReadOutlined />,
+      label: intl.formatMessage({ id: 'common.button.docs' })
+    },
+    {
+      key: 'version',
+      icon: <InfoCircleOutlined />,
+      label: intl.formatMessage({ id: 'common.button.version' })
+    }
+  ];
+
+  const helpMenu = {
+    selectedKeys: [],
+    className: collapsed
+      ? 'user-menu-container user-menu-collapsed'
+      : 'user-menu-container',
+    mode: 'vertical',
+    expandIcon: false,
+    inlineCollapsed: collapsed,
+    triggerSubMenuAction: 'hover',
+    items: [
+      {
+        key: 'help',
+        icon: <QuestionCircleOutlined />,
+        label: (
+          <span>{intl?.formatMessage?.({ id: 'common.button.help' })}</span>
+        ),
+        children: helpList.map((item) => ({
+          key: item.key,
+          label: (
+            <span className="flex flex-center">
+              {item.icon}
+              <a className="m-l-8" href="#" target="_blank">
+                {item.label}
+              </a>
+            </span>
+          )
+        }))
+      }
+    ]
+  };
+
   const langMenu = {
     selectedKeys: [],
     className: collapsed
@@ -84,7 +150,9 @@ export function getRightRenderContent(opts: {
           key,
           label: (
             <span className="flex flex-center">
-              <span>{_.get(langConfigMap, [key, 'icon'])}</span>
+              <span className="font-size-14">
+                {_.get(langConfigMap, [key, 'icon'])}
+              </span>
               <span className="m-l-8">
                 {_.get(langConfigMap, [key, 'label'])}
               </span>
@@ -139,7 +207,7 @@ export function getRightRenderContent(opts: {
             label: (
               <span className="flex flex-center">
                 <SettingOutlined />
-                <span>
+                <span className="m-l-8" style={{ marginLeft: 8 }}>
                   {intl?.formatMessage?.({ id: 'common.button.settings' })}
                 </span>
               </span>
@@ -153,7 +221,7 @@ export function getRightRenderContent(opts: {
             label: (
               <span className="flex flex-center">
                 <LogoutOutlined />
-                <span>
+                <span className="m-l-8" style={{ marginLeft: 8 }}>
                   {intl?.formatMessage?.({ id: 'common.button.logout' })}
                 </span>
               </span>
@@ -169,6 +237,12 @@ export function getRightRenderContent(opts: {
 
   return (
     <div>
+      <Menu
+        {...helpMenu}
+        style={{
+          width: collapsed ? 64 : `calc(${siderWidth}px - 16px)`
+        }}
+      ></Menu>
       <Menu
         {...langMenu}
         style={{

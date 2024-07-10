@@ -60,7 +60,7 @@ const renderWelCome = (intl: any) => {
 const LoginForm = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { initialState, setInitialState } = useModel('@@initialState') || {};
   const intl = useIntl();
   const [form] = Form.useForm();
 

@@ -10,23 +10,38 @@ interface NoteInfoProps {
 }
 const NoteInfo: React.FC<NoteInfoProps> = (props) => {
   const { required, description, label } = props || {};
+
   return (
     <span className="label-text">
-      <span>{label}</span>
-      <span className="note-info">
-        {required && (
-          <span style={{ color: 'red' }} className="star">
-            *
-          </span>
-        )}
-        {description && (
-          <span style={{ marginLeft: 5, color: 'gray' }} className="desc">
-            <Tooltip title={description}>
+      {description ? (
+        <Tooltip title={description}>
+          <span>{label}</span>
+          <span className="note-info">
+            {required && (
+              <span style={{ color: 'red' }} className="star">
+                *
+              </span>
+            )}
+            <span
+              style={{ marginLeft: required ? 5 : 0, color: 'gray' }}
+              className="desc"
+            >
               <InfoCircleOutlined />
-            </Tooltip>
+            </span>
           </span>
-        )}
-      </span>
+        </Tooltip>
+      ) : (
+        <>
+          <span>{label}</span>
+          <span className="note-info">
+            {required && (
+              <span style={{ color: 'red' }} className="star">
+                *
+              </span>
+            )}
+          </span>
+        </>
+      )}
     </span>
   );
 };

@@ -26,6 +26,7 @@ interface ChatFooterProps {
 }
 
 const ChatFooter: React.FC<ChatFooterProps> = (props) => {
+  console.log('chat footer=====');
   const platform = platformCall();
   const intl = useIntl();
   const {

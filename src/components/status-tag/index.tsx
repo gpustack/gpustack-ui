@@ -27,7 +27,11 @@ type StatusTagProps = {
 
 const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
   const { text, status } = statusValue;
-  const [statusColor, setStatusColor] = useState<{ text: string; bg: string }>({
+  const [statusColor, setStatusColor] = useState<{
+    text: string;
+    bg: string;
+    border?: string;
+  }>({
     text: '',
     bg: ''
   });
@@ -56,7 +60,7 @@ const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
       })}
       style={{
         color: statusColor?.text,
-        border: `1px solid ${statusColor?.text}`
+        border: `1px solid ${statusColor?.border || statusColor?.text}`
       }}
     >
       {statusValue.message ? (

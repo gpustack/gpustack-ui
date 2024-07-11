@@ -19,11 +19,17 @@ interface InstanceItemProps {
   ) => void;
 }
 
+const testStatus = {
+  state: InstanceStatusMap.Downloading,
+  text: 'Downloading'
+};
+
 const InstanceItem: React.FC<InstanceItemProps> = ({
   list,
   handleChildSelect
 }) => {
   console.log('instance item====');
+
   const intl = useIntl();
   const childActionList = [
     {

@@ -39,8 +39,8 @@ const TableRow: React.FC<
 
   console.log('table row====');
   const { updateChunkedList } = useUpdateChunkedList({
-    setDataList: setChildrenData,
-    callback: (list) => renderChildren?.(list)
+    setDataList: setChildrenData
+    // callback: (list) => renderChildren?.(list)
   });
 
   useEffect(() => {
@@ -101,6 +101,7 @@ const TableRow: React.FC<
       setChildrenData([]);
       setLoading(false);
     } finally {
+      childrenDataRef.current = childrenData;
       setFirstLoad(false);
     }
   };

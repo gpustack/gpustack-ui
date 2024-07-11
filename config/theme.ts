@@ -15,7 +15,7 @@ export default {
       iconSize: 16,
       iconMarginInlineEnd: 12,
       itemHeight: 44,
-      // itemColor: 'rgba(0,0,0,.88)',
+      itemColor: 'rgba(0,0,0,1)',
       itemHoverBg: 'rgba(0,0,0,0.04)',
       itemActiveBg: 'rgba(0,0,0,0.04)'
     },

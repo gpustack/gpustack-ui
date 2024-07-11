@@ -6,29 +6,32 @@ export const PageAction: Record<string, PageActionType> = {
   VIEW: 'view'
 };
 
-export const StatusColorMap: Record<StatusType, { text: string; bg: string }> =
-  {
-    error: {
-      text: `var(--ant-red-6)`,
-      bg: `var(--ant-red-1)`
-    },
-    warning: {
-      text: `var(--ant-orange-6)`,
-      bg: `var(--ant-orange-1)`
-    },
-    transitioning: {
-      text: `var(--ant-blue-6)`,
-      bg: `var(--ant-blue-1)`
-    },
-    success: {
-      text: `var(--color-progress-green)`,
-      bg: `var(--ant-green-1)`
-    },
-    inactive: {
-      text: `var(--ant-color-text-secondary)`,
-      bg: `var(--ant-color-fill)`
-    }
-  };
+export const StatusColorMap: Record<
+  StatusType,
+  { text: string; bg: string; border?: string }
+> = {
+  error: {
+    text: `var(--ant-red-6)`,
+    bg: `var(--ant-red-1)`
+  },
+  warning: {
+    text: `var(--ant-orange-6)`,
+    bg: `var(--ant-orange-1)`
+  },
+  transitioning: {
+    text: `var(--ant-blue-6)`,
+    bg: `var(--ant-blue-1)`
+  },
+  success: {
+    text: `var(--color-progress-green)`,
+    bg: `var(--ant-green-1)`
+  },
+  inactive: {
+    text: `var(--ant-color-text-tertiary)`,
+    border: `rgba(200,200,200,1)`,
+    bg: `var(--ant-color-fill)`
+  }
+};
 
 export const StatusMaps = {
   error: 'error',

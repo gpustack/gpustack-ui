@@ -50,6 +50,7 @@ html {
   --ant-input-hover-border-color: #2997ff;
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
   --ant-border-radius-lg: 8px;
+  --ant-menu-item-color: var(--color-text-1);
   // --box-shadow-base: none;
 
   .css-var-rf {
@@ -283,7 +284,6 @@ body {
 
     .ant-pro-sider .ant-layout-sider-children {
       background-color: var(--color-fill-sider);
-      // box-shadow: var(--box-shadow-base);
       border-right: 1px solid var(--ant-color-border);
     }
   }
@@ -300,9 +300,7 @@ body {
     .ant-table-tbody {
       .ant-table-row {
         border-radius: var(--table-td-radius);
-        // background-color: var(--color-white-1);
         background-color: var(--color-fill-sider);
-        // box-shadow: var(--box-shadow-base);
 
         > td {
           background-color: unset;
@@ -348,6 +346,7 @@ body {
     .ant-menu {
       .ant-menu-item {
         border-radius: var(--border-radius-small);
+        color: var(--color-text-1) !important;
 
         &:active {
           background-color: var(--ant-menu-item-selected-bg);
@@ -363,12 +362,12 @@ body {
       }
 
       .ant-menu-item.ant-menu-item-selected:hover {
-        color: var(--ant-color-primary);
+        color: var(--ant-color-primary) !important;
         background-color: var(--ant-menu-item-selected-bg);
       }
 
       .ant-menu-item.ant-menu-item-selected {
-        color: var(--ant-color-primary);
+        color: var(--ant-color-primary) !important;
         background-color: var(--ant-menu-item-selected-bg);
       }
     }
@@ -380,6 +379,7 @@ body {
     .ant-menu-item-only-child {
       height: 40px;
       line-height: 40px;
+      color: var(--color-text-1);
 
       .anticon {
         font-size: var(--font-size-middle);
@@ -392,6 +392,7 @@ body {
   .user-avatar.ant-menu-submenu {
     .ant-menu-submenu-title {
       padding-left: 10px;
+      color: var(--color-text-1) !important;
     }
   }
 
@@ -413,6 +414,7 @@ body {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    color: var(--color-text-1) !important;
   }
 }
 

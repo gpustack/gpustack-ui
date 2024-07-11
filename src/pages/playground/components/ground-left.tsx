@@ -69,12 +69,14 @@ const MessageList: React.FC<MessageProps> = (props) => {
   };
 
   const joinMessage = (chunk: any) => {
+    if (!chunk) {
+      return;
+    }
     if (_.get(chunk, 'choices.0.finish_reason')) {
       setTokenResult({
         ...chunk?.usage
       });
-
-      return true;
+      return;
     }
     contentRef.current =
       contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
@@ -86,8 +88,6 @@ const MessageList: React.FC<MessageProps> = (props) => {
         uid: messageId.current
       }
     ]);
-    console.log('messageList=====', messageList, messageId.current, chunk);
-    return false;
   };
   const handleStopConversation = () => {
     controllerRef.current?.abort?.();

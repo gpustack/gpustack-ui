@@ -116,6 +116,7 @@ const Profile: React.FC = () => {
           >
             <SealInput.Password
               required={true}
+              style={{ width: INPUT_WIDTH.default }}
               label={intl.formatMessage({ id: 'users.password.confirm' })}
             />
           </Form.Item>

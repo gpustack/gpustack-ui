@@ -217,7 +217,7 @@ const Resources: React.FC = () => {
             return (
               <StatusTag
                 statusValue={{
-                  status: ['Inactive', 'unknown'].includes(record.state)
+                  status: ['Inactive', 'Unknown'].includes(record.state)
                     ? 'inactive'
                     : 'success',
                   text: record.state

@@ -3,7 +3,7 @@ import HotKeys from '@/config/hotkeys';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import '../style/message-item.less';
@@ -23,10 +23,7 @@ const MessageItem: React.FC<{
   onDelete: () => void;
 }> = ({ message, isFocus, onDelete, updateMessage, onSubmit, loading }) => {
   const intl = useIntl();
-  const [roleType, setRoleType] = useState(message.role);
   const [isTyping, setIsTyping] = useState(false);
-  const [messageContent, setMessageContent] = useState(message.content);
-  const isInitialRender = useRef(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentIsFocus, setCurrentIsFocus] = useState(isFocus);
   const inputRef = useRef<any>(null);
@@ -57,29 +54,20 @@ const MessageItem: React.FC<{
   //   return () => clearInterval(intervalId);
   // }, [message.content, isTyping]);
 
-  useEffect(() => {
-    setMessageContent(message.content);
-  }, [message.content]);
-
-  useEffect(() => {
-    if (!isInitialRender.current) {
-      updateMessage({
-        role: roleType,
-        content: messageContent,
-        uid: message.uid
-      });
-    } else {
-      isInitialRender.current = false;
-    }
-  }, [roleType, messageContent]);
-
+  const handleUpdateMessage = (params: { role: string; message: string }) => {
+    updateMessage({
+      role: params.role,
+      content: params.message,
+      uid: message.uid
+    });
+  };
   const handleMessageChange = (e: any) => {
-    setIsTyping(true);
-    setMessageContent(e.target.value);
+    // setIsTyping(true);
+    handleUpdateMessage({ role: message.role, message: e.target.value });
   };
 
   const handleBlur = () => {
-    setIsTyping(true);
+    // setIsTyping(true);
     setCurrentIsFocus(false);
   };
 
@@ -88,11 +76,10 @@ const MessageItem: React.FC<{
   };
 
   const handleRoleChange = () => {
-    setRoleType((prevRoleType) => {
-      const newRoleType =
-        prevRoleType === Roles.User ? Roles.Assistant : Roles.User;
-      return newRoleType;
-    });
+    const newRoleType =
+      message.role === Roles.User ? Roles.Assistant : Roles.User;
+
+    handleUpdateMessage({ role: newRoleType, message: message.content });
   };
 
   const handleDelete = () => {
@@ -116,14 +103,14 @@ const MessageItem: React.FC<{
     <div className="message-item">
       <div className="role-type">
         <Button onClick={handleRoleChange} type="text">
-          {intl.formatMessage({ id: `playground.${roleType}` })}
+          {intl.formatMessage({ id: `playground.${message.role}` })}
         </Button>
       </div>
       <div className="message-content-input">
         <Input.TextArea
           ref={inputRef}
           style={{ paddingBlock: '12px' }}
-          value={messageContent}
+          value={message.content}
           autoSize={true}
           variant="filled"
           readOnly={loading}
@@ -134,8 +121,8 @@ const MessageItem: React.FC<{
       </div>
       <div className="delete-btn">
         <Space size={5}>
-          {messageContent && (
-            <CopyButton text={messageContent} size="small"></CopyButton>
+          {message.content && (
+            <CopyButton text={message.content} size="small"></CopyButton>
           )}
           <Button
             type="text"
@@ -151,4 +138,4 @@ const MessageItem: React.FC<{
   );
 };
 
-export default memo(MessageItem);
+export default MessageItem;

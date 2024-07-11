@@ -30,10 +30,10 @@ const SealTable: React.FC<SealTableProps> = (props) => {
   useEffect(() => {
     if (rowSelection) {
       const { selectedRowKeys } = rowSelection;
-      if (selectedRowKeys.length === 0) {
+      if (selectedRowKeys?.length === 0) {
         setSelectAll(false);
         setIndeterminate(false);
-      } else if (selectedRowKeys.length === props.dataSource.length) {
+      } else if (selectedRowKeys?.length === props.dataSource.length) {
         setSelectAll(true);
         setIndeterminate(false);
       } else {
@@ -45,12 +45,10 @@ const SealTable: React.FC<SealTableProps> = (props) => {
 
   const handleSelectAllChange = (e: any) => {
     if (e.target.checked) {
-      // update selectedRowKeys
       rowSelection?.onChange(props.dataSource.map((record) => record[rowKey]));
       setSelectAll(true);
       setIndeterminate(false);
     } else {
-      // update selectedRowKeys
       rowSelection?.onChange([]);
       setSelectAll(false);
       setIndeterminate(false);

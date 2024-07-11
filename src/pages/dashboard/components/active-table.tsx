@@ -98,7 +98,7 @@ const ActiveTable = () => {
       }
     },
     {
-      title: intl.formatMessage({ id: 'dashboard.runninginstances' }),
+      title: intl.formatMessage({ id: 'models.form.replicas' }),
       dataIndex: 'instance_count',
       key: 'instance_count'
     },

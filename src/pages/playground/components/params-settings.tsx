@@ -112,13 +112,15 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         style={{ width: INPUT_WIDTH.mini }}
       >
         <span className="text">
-          <span> {args.label}</span>
-          {args.description && (
-            <span className="m-l-5">
-              <Tooltip title={args.description}>
+          {args.description ? (
+            <Tooltip title={args.description}>
+              <span> {args.label}</span>
+              <span className="m-l-5">
                 <InfoCircleOutlined />
-              </Tooltip>
-            </span>
+              </span>
+            </Tooltip>
+          ) : (
+            <span>{args.label}</span>
           )}
         </span>
 
@@ -240,26 +242,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           name="seed"
           rules={[{ required: true }]}
         >
-          <FieldWrapper
-            label={renderLabel({
-              field: 'seed',
-              label: 'Seed',
-              description: intl.formatMessage({
-                id: 'playground.params.seed.tips'
-              })
+          <SealInput.Number
+            label="Seed"
+            min={0}
+            description={intl.formatMessage({
+              id: 'playground.params.seed.tips'
             })}
-            style={{ paddingInline: 0 }}
-            variant="borderless"
-          >
-            <Slider
-              defaultValue={undefined}
-              step={1}
-              tooltip={{ open: false }}
-              value={form.getFieldValue('seed') || undefined}
-              onChange={(val) => handleFieldValueChange(val, 'seed')}
-              style={{ marginBottom: 0, marginTop: 16 }}
-            ></Slider>
-          </FieldWrapper>
+            style={{ width: INPUT_WIDTH.mini }}
+          ></SealInput.Number>
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="stop"

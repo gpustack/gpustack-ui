@@ -22,7 +22,7 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
   showHeader = true
 }) => {
   const handleChangeLang = (value: string) => {
-    onChangeLang && onChangeLang(value);
+    onChangeLang?.(value);
   };
   const renderHeader = () => {
     if (header) {
@@ -39,7 +39,13 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
             options={langOptions}
             onChange={handleChangeLang}
           ></Select>
-          <CopyButton text={copyText} />
+          <CopyButton
+            text={copyText}
+            size="small"
+            style={{
+              color: 'rgba(255,255,255,.7)'
+            }}
+          />
         </div>
       );
     }

@@ -1,0 +1,41 @@
+.version-box {
+  display: flex;
+  margin-bottom: 40px;
+  flex-direction: column;
+  align-items: center;
+
+  .img {
+    margin-top: 16px;
+    text-align: center;
+    height: 30px;
+
+    img {
+      height: 100%;
+    }
+  }
+
+  .title {
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    font-size: var(--font-size-middle);
+    margin-block: 30px 10px;
+  }
+
+  .ver {
+    line-height: 32px;
+    display: flex;
+    font-size: var(--font-size-middle);
+
+    .label {
+      display: flex;
+      justify-content: flex-start;
+      width: 60px;
+      font-size: var(--font-size-middle);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .val {
+      color: var(--ant-color-text-secondary);
+    }
+  }
+}

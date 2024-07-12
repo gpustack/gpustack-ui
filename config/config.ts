@@ -1,9 +1,13 @@
 import { defineConfig } from '@umijs/max';
-import theme from './theme';
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
-
 import proxy from './proxy';
 import routes from './routes';
+import theme from './theme';
+import { getBranchInfo } from './utils';
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+
+const versionInfo = getBranchInfo();
+process.env.VERSION = JSON.stringify(versionInfo);
+
 const env = process.env.NODE_ENV;
 const isProduction = env === 'production';
 
@@ -15,6 +19,7 @@ export default defineConfig({
   history: {
     type: 'hash'
   },
+
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {

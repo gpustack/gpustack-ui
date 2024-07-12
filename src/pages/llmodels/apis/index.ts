@@ -13,7 +13,7 @@ export const MODEL_INSTANCE_API = '/model-instances';
 
 // ===================== Models =====================
 export async function queryModelsList(
-  params: Global.Pagination & { query?: string },
+  params: Global.SearchParams,
   options?: any
 ) {
   return request<Global.PageResponse<ListItem>>(`${MODELS_API}`, {

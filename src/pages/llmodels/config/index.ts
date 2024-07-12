@@ -15,7 +15,10 @@ export const ollamaModelOptions = [
 export const modelSourceMap: Record<string, string> = {
   huggingface: 'Hugging Face',
   ollama_library: 'Ollama Library',
-  s3: 'S3'
+  s3: 'S3',
+  huggingface_value: 'huggingface',
+  ollama_library_value: 'ollama_library',
+  s3_value: 's3'
 };
 
 export const InstanceStatusMap = {

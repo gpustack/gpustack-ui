@@ -2,6 +2,8 @@ export interface ListItem {
   source: string;
   huggingface_repo_id: string;
   huggingface_file_name: string;
+  huggingface_filename: string;
+  ollama_library_model_name: string;
   s3Address: string;
   name: string;
   description: string;

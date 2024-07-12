@@ -27,7 +27,7 @@ const Resources: React.FC = () => {
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
-    query: ''
+    search: ''
   });
 
   const fetchData = async () => {
@@ -73,7 +73,7 @@ const Resources: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      query: e.target.value
+      search: e.target.value
     });
   };
 

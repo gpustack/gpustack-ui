@@ -24,7 +24,7 @@ const Models: React.FC = () => {
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
-    query: ''
+    search: ''
   });
   // request data
 
@@ -110,7 +110,7 @@ const Models: React.FC = () => {
     (e: any) => {
       setQueryParams({
         ...queryParams,
-        query: e.target.value
+        search: e.target.value
       });
     },
     [queryParams]

@@ -337,15 +337,21 @@ const Models: React.FC<ModelsProps> = ({
             dataIndex="name"
             key="name"
             width={400}
-            span={6}
+            span={5}
           />
           <SealColumn
             title={intl.formatMessage({ id: 'models.form.source' })}
             dataIndex="source"
             key="source"
-            span={4}
-            render={(text) => {
-              return modelSourceMap[text] || '-';
+            span={6}
+            render={(text, record: ListItem) => {
+              return (
+                <span>
+                  {record.source === modelSourceMap.huggingface_value
+                    ? `${modelSourceMap.huggingface} / ${record.huggingface_filename}`
+                    : `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`}
+                </span>
+              );
             }}
           />
           <SealColumn
@@ -369,7 +375,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
           />
           <SealColumn
-            span={5}
+            span={4}
             title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
             render={(text, record) => {

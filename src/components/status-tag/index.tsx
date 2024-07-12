@@ -20,12 +20,17 @@ type StatusTagProps = {
     text: string;
     message?: string;
   };
+  type?: 'tag' | 'circle';
   download?: {
     percent: number;
   };
 };
 
-const StatusTag: React.FC<StatusTagProps> = ({ statusValue, download }) => {
+const StatusTag: React.FC<StatusTagProps> = ({
+  statusValue,
+  download,
+  type = 'tag'
+}) => {
   const { text, status } = statusValue;
   const [statusColor, setStatusColor] = useState<{
     text: string;

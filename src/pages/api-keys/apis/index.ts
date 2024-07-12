@@ -3,9 +3,7 @@ import { FormData, ListItem } from '../config/types';
 
 export const APIS_KEYS_API = '/api-keys';
 
-export async function queryApisKeysList(
-  params: Global.Pagination & { query?: string }
-) {
+export async function queryApisKeysList(params: Global.SearchParams) {
   return request<Global.PageResponse<ListItem>>(`${APIS_KEYS_API}`, {
     method: 'GET',
     params

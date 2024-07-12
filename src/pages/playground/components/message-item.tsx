@@ -122,13 +122,16 @@ const MessageItem: React.FC<{
       <div className="delete-btn">
         <Space size={5}>
           {message.content && (
-            <CopyButton text={message.content} size="small"></CopyButton>
+            <CopyButton
+              text={message.content}
+              size="small"
+              shape="default"
+              type="default"
+              fontSize="12px"
+            ></CopyButton>
           )}
           <Button
-            type="text"
-            shape="circle"
             size="small"
-            style={{ color: 'var(--ant-color-primary)' }}
             onClick={handleDelete}
             icon={<MinusCircleOutlined />}
           ></Button>

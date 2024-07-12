@@ -3,9 +3,7 @@ import { FormData, ListItem } from '../config/types';
 
 export const USERS_API = '/users';
 
-export async function queryUsersList(
-  params: Global.Pagination & { query?: string }
-) {
+export async function queryUsersList(params: Global.SearchParams) {
   return request<Global.PageResponse<ListItem>>(`${USERS_API}`, {
     methos: 'GET',
     params

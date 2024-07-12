@@ -6,3 +6,9 @@ export async function queryCurrentUserState(opts?: Record<string, any>) {
     ...opts
   });
 }
+
+export async function queryVersionInfo() {
+  return request(`/version`, {
+    method: 'GET'
+  });
+}

@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import avatarImg from '@/assets/images/avatar.png';
+import externalLinks from '@/config/external-links';
 import langConfigMap from '@/locales/lang-config-map';
 import {
   DiscordOutlined,
@@ -27,6 +28,7 @@ export function getRightRenderContent(opts: {
   intl: any;
 }) {
   const { intl, collapsed, siderWidth } = opts;
+
   const allLocals = getAllLocales();
   if (opts.runtimeConfig.rightRender) {
     return opts.runtimeConfig.rightRender(
@@ -73,22 +75,25 @@ export function getRightRenderContent(opts: {
       key: 'site',
       icon: <HomeOutlined />,
       label: 'GPUStack',
-      url: 'https://gpustack.ai/'
+      url: externalLinks.site
     },
     {
       key: 'github',
       icon: <GithubOutlined />,
-      label: 'GitHub'
+      label: 'GitHub',
+      url: externalLinks.github
     },
     {
       key: 'Discord',
       icon: <DiscordOutlined />,
-      label: 'Discord'
+      label: 'Discord',
+      url: externalLinks.discord
     },
     {
       key: 'docs',
       icon: <ReadOutlined />,
-      label: intl.formatMessage({ id: 'common.button.docs' })
+      label: intl.formatMessage({ id: 'common.button.docs' }),
+      url: externalLinks.documentation
     },
     {
       key: 'version',
@@ -118,11 +123,26 @@ export function getRightRenderContent(opts: {
           label: (
             <span className="flex flex-center">
               {item.icon}
-              <a className="m-l-8" href="#" target="_blank">
-                {item.label}
-              </a>
+              {item.key === 'version' ? (
+                <a className="m-l-8">{item.label}</a>
+              ) : (
+                <a
+                  className="m-l-8"
+                  href={item.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {item.label}
+                </a>
+              )}
             </span>
-          )
+          ),
+          onClick() {
+            if (item.key === 'version') {
+              // opts.runtimeConfig.showVersion();
+              opts.runtimeConfig.showVersion();
+            }
+          }
         }))
       }
     ]

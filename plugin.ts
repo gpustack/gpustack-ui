@@ -6,7 +6,9 @@ export default (api: IApi) => {
     const env = process.env.NODE_ENV;
     $('html').attr(
       'data-version',
-      env === 'production' ? info.version : `${info.version}-${info.commitId}`
+      env === 'production'
+        ? info.version || info.commitId
+        : `dev-${info.commitId}`
     );
     return $;
   });

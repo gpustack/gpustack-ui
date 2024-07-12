@@ -36,8 +36,9 @@ const TableRow: React.FC<
   const pollTimer = useRef<any>(null);
   const chunkRequestRef = useRef<any>(null);
   const childrenDataRef = useRef<any[]>([]);
+  childrenDataRef.current = childrenData;
 
-  console.log('table row====');
+  console.log('table row====', record.name, firstLoad, expanded);
   const { updateChunkedList } = useUpdateChunkedList({
     setDataList: setChildrenData
     // callback: (list) => renderChildren?.(list)
@@ -53,10 +54,6 @@ const TableRow: React.FC<
       }
     }
   }, [rowSelection]);
-
-  useEffect(() => {
-    childrenDataRef.current = childrenData;
-  }, [childrenData]);
 
   // useEffect(() => {
   //   if (expandedRowKeys?.includes(record[rowKey])) {

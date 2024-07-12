@@ -1,11 +1,12 @@
 import TransitionWrapper from '@/components/transition';
 import HotKeys from '@/config/hotkeys';
+import useContainerScroll from '@/hooks/use-container-scorll';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Spin } from 'antd';
 import _ from 'lodash';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { CHAT_API } from '../apis';
 import { Roles } from '../config';
@@ -48,6 +49,15 @@ const MessageList: React.FC<MessageProps> = (props) => {
   const systemRef = useRef<any>(null);
   const contentRef = useRef<any>('');
   const controllerRef = useRef<any>(null);
+  const scroller = useRef<any>(null);
+  const { updateScrollerPosition, handleContentWheel } = useContainerScroll(
+    scroller,
+    { toBottom: true }
+  );
+
+  useEffect(() => {
+    updateScrollerPosition();
+  }, [messageList]);
 
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
@@ -208,7 +218,11 @@ const MessageList: React.FC<MessageProps> = (props) => {
 
   return (
     <div className="ground-left">
-      <div className="message-list-wrap">
+      <div
+        className="message-list-wrap"
+        ref={scroller}
+        onWheel={handleContentWheel}
+      >
         <div style={{ marginBottom: 40 }}>
           <TransitionWrapper
             header={renderLabel()}

@@ -28,13 +28,11 @@ const Models: React.FC = () => {
   });
   // request data
 
+  dataSourceRef.current = dataSource;
+
   const { updateChunkedList } = useUpdateChunkedList({
     setDataList: setDataSource
   });
-
-  useEffect(() => {
-    dataSourceRef.current = dataSource;
-  }, [dataSource]);
 
   const fetchData = useCallback(async () => {
     axiosToken?.cancel?.();
@@ -44,7 +42,7 @@ const Models: React.FC = () => {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
       };
-      const res = await queryModelsList(params, {
+      const res: any = await queryModelsList(params, {
         cancelToken: axiosToken.token
       });
       console.log('res=======', res);

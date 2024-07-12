@@ -69,7 +69,10 @@ const StatusTag: React.FC<StatusTagProps> = ({
       }}
     >
       {statusValue.message ? (
-        <Tooltip title={statusValue.message}>
+        <Tooltip
+          title={statusValue.message}
+          overlayInnerStyle={{ maxHeight: 200, overflow: 'auto' }}
+        >
           <span className="m-r-5">
             <InfoCircleOutlined />
           </span>

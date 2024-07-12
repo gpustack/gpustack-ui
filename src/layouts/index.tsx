@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { userAtom } from '@/atoms/user';
-import VersionInfo from '@/components/version-info';
+import VersionInfo, { modalConfig } from '@/components/version-info';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
@@ -105,9 +105,7 @@ export default (props: any) => {
 
   const showVersion = () => {
     Modal.info({
-      icon: null,
-      centered: false,
-      width: 500,
+      ...modalConfig,
       content: <VersionInfo intl={intl} />
     });
   };

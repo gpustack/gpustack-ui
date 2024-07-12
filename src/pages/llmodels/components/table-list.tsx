@@ -204,7 +204,7 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const getModelInstances = useCallback(async (row: any) => {
+  const getModelInstances = async (row: any) => {
     const params = {
       id: row.id,
       page: 1,
@@ -212,7 +212,7 @@ const Models: React.FC<ModelsProps> = ({
     };
     const data = await queryModelInstancesList(params);
     return data.items || [];
-  }, []);
+  };
 
   const generateChildrenRequestAPI = (params: any) => {
     return `${MODELS_API}/${params.id}/instances`;
@@ -249,14 +249,14 @@ const Models: React.FC<ModelsProps> = ({
     []
   );
 
-  const renderChildren = (list: any) => {
+  const renderChildren = useCallback((list: any) => {
     return (
       <InstanceItem
         list={list}
         handleChildSelect={handleChildSelect}
       ></InstanceItem>
     );
-  };
+  }, []);
 
   return (
     <>
@@ -371,6 +371,7 @@ const Models: React.FC<ModelsProps> = ({
             showSorterTooltip={false}
             sorter={true}
             render={(val, row) => {
+              console.log('val=====', val, row['created_at'], row.name);
               return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
             }}
           />

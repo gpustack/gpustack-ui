@@ -18,11 +18,11 @@ export default {
   'playground.params.temperature.tips':
     '控制随机性：降低温度会导致更少的随机完成。当温度接近零时，模型将变得确定性和重复性。',
   'playground.params.maxtokens.tips':
-    '生成的最大 token 数。输入标记和生成的标记的总长度受模型上下文长度的限制。',
+    '生成的最大 token 数。输入的 token 和生成的 token 的总长度受模型上下文长度的限制。',
   'playground.params.topp.tips':
     '通过核心采样控制多样性：0.5 表示考虑所有基于概率权重选项的一半。',
   'playground.params.seed.tips':
-    '如果指定，我们的系统将尽最大努力进行确定性采样，以便使用相同种子和参数的重复请求应返回相同的结果。',
+    '如果指定，我们的系统将尽最大努力进行确定性采样，以便使用相同 seed 和参数的重复请求应返回相同的结果。',
   'playground.params.stop.tips':
-    '停止序列是一个预定义或用户指定的文本字符串，当这些序列出现时，它会提示 AI 停止生成后续的标记。'
+    '停止序列是一个预定义或用户指定的文本字符串，当这些序列出现时，它会提示 AI 停止生成后续的 token。'
 };

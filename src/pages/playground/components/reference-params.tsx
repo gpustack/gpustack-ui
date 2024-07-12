@@ -1,5 +1,6 @@
 import { useIntl } from '@umijs/max';
 import { Space, Tooltip } from 'antd';
+import _ from 'lodash';
 import '../style/reference-params.less';
 
 interface ReferenceParamsProps {
@@ -43,7 +44,7 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
 
       <span>
         {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-        {usage.tokens_per_second} Tokens/s
+        {_.round(usage.tokens_per_second, 2)} Tokens/s
       </span>
     </div>
   );

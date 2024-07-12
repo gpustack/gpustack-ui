@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { useRef } from 'react';
 
 export default function useContainerScroll(
@@ -8,8 +9,14 @@ export default function useContainerScroll(
   const scroller = useRef(container);
   const optionsRef = useRef(options);
   const toBottomFlag = useRef(options?.toBottom);
+
+  const debunceResetWheeled = _.debounce(() => {
+    isWheeled.current = false;
+  }, 5000);
+
   const handleContentWheel = (e: any) => {
     isWheeled.current = true;
+    debunceResetWheeled();
   };
 
   const scrollerRun = () => {

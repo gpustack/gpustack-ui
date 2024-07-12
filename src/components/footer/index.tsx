@@ -1,6 +1,6 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { getAtomStorage } from '@/atoms/utils';
-import VersionInfo from '@/components/version-info';
+import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/config/external-links';
 import { useIntl } from '@umijs/max';
 import { Button, Modal, Space } from 'antd';
@@ -11,9 +11,7 @@ const Footer: React.FC = () => {
 
   const showVersion = () => {
     Modal.info({
-      icon: null,
-      centered: false,
-      width: 500,
+      ...modalConfig,
       content: <VersionInfo intl={intl} />
     });
   };

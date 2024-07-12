@@ -22,7 +22,7 @@ export default {
   'playground.params.topp.tips':
     'Controls diversity via nucleus sampling: 0.5 means half of all likelihood-weighted options are considered.',
   'playground.params.seed.tips':
-    'Specify a random seed to ensure deterministic sampling. Using the same seed and parameters will produce the same results for repeated requests.',
+    'If specified, our system will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result.',
   'playground.params.stop.tips':
     'A stop sequence is a predefined or user-specified text string that signals the AI to stop generating further tokens when these sequences appear.'
 };

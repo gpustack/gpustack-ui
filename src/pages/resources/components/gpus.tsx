@@ -22,7 +22,7 @@ const GPUList: React.FC = () => {
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
-    query: ''
+    search: ''
   });
   const handleShowSizeChange = (current: number, size: number) => {
     setQueryParams({
@@ -67,7 +67,7 @@ const GPUList: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
-      query: e.target.value
+      search: e.target.value
     });
   };
 

@@ -9,5 +9,5 @@ export const getBranchInfo = () => {
     .execSync(`git tag --contains ${latestCommit}`)
     .toString()
     .trim();
-  return { version: versionTag, commitId: latestCommit };
+  return { version: versionTag || 'dev', commitId: latestCommit.slice(0, 7) };
 };

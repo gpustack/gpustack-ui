@@ -1,6 +1,11 @@
+import { GPUStackVersionAtom } from '@/atoms/user';
+import { setAtomStorage } from '@/atoms/utils';
 import { RequestConfig, history } from '@umijs/max';
 import { requestConfig } from './request-config';
-import { queryCurrentUserState } from './services/profile/apis';
+import {
+  queryCurrentUserState,
+  queryVersionInfo
+} from './services/profile/apis';
 
 const loginPath = '/login';
 let currentUserInfo: any = {};
@@ -28,6 +33,18 @@ export async function getInitialState(): Promise<{
     return {} as Global.UserInfo;
   };
 
+  const getAppVersionInfo = async () => {
+    try {
+      const data = await queryVersionInfo();
+      console.log('versioninfo=========', data);
+      setAtomStorage(GPUStackVersionAtom, data);
+    } catch (error) {
+      console.error('queryVersionInfo error', error);
+    }
+  };
+
+  getAppVersionInfo();
+
   if (![loginPath].includes(location.pathname)) {
     const userInfo = await fetchUserInfo();
     currentUserInfo = {
@@ -42,6 +59,8 @@ export async function getInitialState(): Promise<{
     fetchUserInfo
   };
 }
+
+console.log('app.tsx');
 
 export const request: RequestConfig = {
   baseURL: ' /v1',

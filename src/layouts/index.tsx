@@ -1,10 +1,10 @@
 // @ts-nocheck
 
 import { userAtom } from '@/atoms/user';
+import VersionInfo from '@/components/version-info';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
-
 import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
@@ -17,6 +17,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
+import { Modal } from 'antd';
 import { useAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import Exception from './Exception';
@@ -102,12 +103,24 @@ export default (props: any) => {
     return intl.formatMessage({ id: args.id });
   };
 
+  const showVersion = () => {
+    Modal.info({
+      icon: null,
+      centered: false,
+      width: 500,
+      content: <VersionInfo intl={intl} />
+    });
+  };
+
   const runtimeConfig = {
     ...initialInfo,
     logout: async (userInfo) => {
       console.log('logout', userInfo);
       await logout();
       navigate(loginPath);
+    },
+    showVersion: () => {
+      return showVersion();
     },
     notFound: <span>404 not found</span>
   };

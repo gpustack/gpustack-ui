@@ -21,4 +21,6 @@ declare namespace Global {
     require_password_change: boolean;
     id: number;
   }
+
+  type SearchParams = Pagination & { search?: string };
 }

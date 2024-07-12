@@ -5,14 +5,20 @@ import { Button } from 'antd';
 type CopyButtonProps = {
   text: string;
   disabled?: boolean;
+  fontSize?: string;
   type?: 'text' | 'primary' | 'dashed' | 'link' | 'default';
   size?: 'small' | 'middle' | 'large';
+  shape?: 'circle' | 'round' | 'default';
+  style?: React.CSSProperties;
 };
 
 const CopyButton: React.FC<CopyButtonProps> = ({
   text,
   disabled,
   type = 'text',
+  shape = 'circle',
+  fontSize = '14px',
+  style,
   size = 'middle'
 }) => {
   const { copied, copyToClipboard } = useCopyToClipboard();
@@ -24,21 +30,20 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   return (
     <Button
       type={type}
-      shape="circle"
+      shape={shape}
       size={size}
       onClick={handleCopy}
       disabled={!!disabled}
-    >
-      {copied ? (
-        <CheckCircleFilled
-          style={{ color: 'var(--ant-color-success)', fontSize: '14px' }}
-        />
-      ) : (
-        <CopyOutlined
-          style={{ color: 'var(--ant-color-primary)', fontSize: '14px' }}
-        />
-      )}
-    </Button>
+      icon={
+        copied ? (
+          <CheckCircleFilled
+            style={{ color: 'var(--ant-color-success)', fontSize: fontSize }}
+          />
+        ) : (
+          <CopyOutlined style={{ fontSize: fontSize, ...style }} />
+        )
+      }
+    ></Button>
   );
 };
 

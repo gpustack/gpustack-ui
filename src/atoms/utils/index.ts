@@ -8,7 +8,14 @@ export const clearAtomStorage = (atom: any) => {
   store.set(atom, null);
 };
 
-export const getAtomStorage = (atom: any) => {
+export const setAtomStorage = (atom: any, value: any) => {
+  if (!atom) {
+    return;
+  }
+  const store = getDefaultStore();
+  store.set(atom, value);
+};
+export const getAtomStorage = (atom: any): any => {
   if (!atom) {
     return null;
   }

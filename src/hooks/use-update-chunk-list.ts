@@ -35,6 +35,7 @@ export function useUpdateChunkedList(options: {
     const ids = data?.ids || [];
     // CREATE
     if (data?.type === WatchEventType.CREATE) {
+      const newDataList = _.cloneDeep(dataList);
       _.each(collections, (item: any) => {
         const updateIndex = _.findIndex(
           dataList,
@@ -42,11 +43,12 @@ export function useUpdateChunkedList(options: {
         );
         if (updateIndex === -1) {
           const updateItem = _.cloneDeep(item);
-          options.setDataList?.((preDataList: any) => {
-            return _.concat(updateItem, preDataList);
-          });
+          newDataList.push(updateItem);
         }
         console.log('create=========', updateIndex, dataList, collections);
+      });
+      options.setDataList?.(() => {
+        return newDataList;
       });
     }
     // DELETE
@@ -71,6 +73,9 @@ export function useUpdateChunkedList(options: {
           if (updateIndex > -1) {
             const updateItem = _.cloneDeep(item);
             updatedDataList[updateIndex] = updateItem;
+          } else if (updateIndex === -1) {
+            const updateItem = _.cloneDeep(item);
+            updatedDataList.push(updateItem);
           }
         });
 

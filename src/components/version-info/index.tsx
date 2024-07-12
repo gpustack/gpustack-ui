@@ -13,9 +13,6 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
       <div className="img">
         <img src={Logo} alt="logo" />
       </div>
-      <div className="title">
-        {intl.formatMessage({ id: 'common.footer.version.title' })}
-      </div>
       <div>
         <div className="ver">
           <span className="label">
@@ -34,6 +31,14 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
       </div>
     </div>
   );
+};
+
+export const modalConfig = {
+  icon: null,
+  centered: false,
+  maskClosable: true,
+  footer: null,
+  width: 400
 };
 
 export default VersionInfo;

@@ -19,6 +19,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Modal, Space, message } from 'antd';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { memo, useCallback, useState } from 'react';
 import {
   MODELS_API,
@@ -100,6 +101,15 @@ const Models: React.FC<ModelsProps> = ({
       icon: <DeleteOutlined />
     }
   ];
+
+  const setActionList = (record: ListItem) => {
+    return _.filter(ActionList, (action: any) => {
+      if (action.key === 'chat') {
+        return record.ready_replicas > 0;
+      }
+      return true;
+    });
+  };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
     console.log('handleTableChange=======', pagination, filters, sorter);
@@ -315,6 +325,7 @@ const Models: React.FC<ModelsProps> = ({
           onExpand={handleExpandChange}
           loading={loading}
           rowKey="id"
+          childParentKey="model_id"
           expandable={true}
           onChange={handleTableChange}
           pollingChildren={false}
@@ -388,7 +399,7 @@ const Models: React.FC<ModelsProps> = ({
             render={(text, record) => {
               return !record.transition ? (
                 <DropdownButtons
-                  items={ActionList}
+                  items={setActionList(record)}
                   onSelect={(val) => handleSelect(val, record)}
                 ></DropdownButtons>
               ) : null;

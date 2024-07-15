@@ -24,6 +24,7 @@ export interface RowSelectionProps {
   onChange: (selectedRowKeys: React.Key[]) => void;
 }
 export interface SealTableProps {
+  childParentKey?: string;
   expandedRowKeys?: React.Key[];
   rowSelection?: RowSelectionProps;
   children: React.ReactNode[];

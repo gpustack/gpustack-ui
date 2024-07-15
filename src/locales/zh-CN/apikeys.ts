@@ -9,5 +9,5 @@ export default {
   'apikeys.form.expiration.7days': '7天',
   'apikeys.form.expiration.1month': '1个月',
   'apikeys.form.expiration.6months': '6个月',
-  'apikeys.form.expiration.never': '永不'
+  'apikeys.form.expiration.never': '永不过期'
 };

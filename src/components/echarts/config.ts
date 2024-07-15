@@ -60,7 +60,7 @@ export const yAxis = {
   // max: 100,
   // min: 0,
   nameTextStyle: {
-    padding: [0, 0, 0, -25]
+    padding: [0, 0, 0, -20]
   },
   splitLine: {
     show: true,

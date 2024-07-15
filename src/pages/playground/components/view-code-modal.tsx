@@ -2,7 +2,7 @@ import EditorWrap from '@/components/editor-wrap';
 import { BulbOutlined } from '@ant-design/icons';
 import Editor from '@monaco-editor/react';
 import { useIntl } from '@umijs/max';
-import { Button, Modal, Spin } from 'antd';
+import { Button, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -103,6 +103,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
     setLoaded(true);
+    console.log('loaded====');
   };
 
   const handleOnChangeLang = (value: string) => {
@@ -146,7 +147,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         <div style={{ marginBottom: '10px' }}>
           {intl.formatMessage({ id: 'playground.viewcode.info' })}
         </div>
-        <Spin spinning={!loaded}>
+        <div>
           <EditorWrap
             copyText={codeValue}
             langOptions={langOptions}
@@ -181,7 +182,9 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
                     >
                       <span>
                         {' '}
-                        {intl.formatMessage({ id: 'playground.viewcode.here' })}
+                        {intl.formatMessage({
+                          id: 'playground.viewcode.here'
+                        })}
                       </span>
                     </Button>
                   )
@@ -189,7 +192,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
               )}
             </span>
           </div>
-        </Spin>
+        </div>
       </Modal>
     </>
   );

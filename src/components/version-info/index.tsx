@@ -38,6 +38,9 @@ export const modalConfig = {
   centered: false,
   maskClosable: true,
   footer: null,
+  style: {
+    top: '30%'
+  },
   width: 400
 };
 

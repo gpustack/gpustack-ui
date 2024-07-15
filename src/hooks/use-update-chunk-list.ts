@@ -1,5 +1,6 @@
 import { WatchEventType } from '@/config';
 import _ from 'lodash';
+import { useRef } from 'react';
 
 interface ChunkedCollection {
   ids: string[];
@@ -9,16 +10,24 @@ interface ChunkedCollection {
 }
 // Only used to update lists without nested state
 export function useUpdateChunkedList(options: {
+  dataList?: any[];
   setDataList: (args: any) => void;
   callback?: (args: any) => void;
   filterFun?: (args: any) => boolean;
   mapFun?: (args: any) => any;
   computedID?: (d: object) => string;
 }) {
+  const cacheDataListRef = useRef<any[]>([]);
   const updateChunkedList = (
     data: ChunkedCollection,
     dataList: { id: string | number }[]
   ) => {
+    console.log('updateChunkedList=====', {
+      ids: data?.ids,
+      type: data?.type,
+      collection: data?.collection,
+      dataList: _.map(dataList, (o: any) => o.id)
+    });
     let collections = data?.collection || [];
     if (options?.computedID) {
       collections = _.map(collections, (item: any) => {
@@ -35,10 +44,10 @@ export function useUpdateChunkedList(options: {
     const ids = data?.ids || [];
     // CREATE
     if (data?.type === WatchEventType.CREATE) {
-      const newDataList = _.cloneDeep(dataList);
+      const newDataList: any[] = [];
       _.each(collections, (item: any) => {
         const updateIndex = _.findIndex(
-          dataList,
+          cacheDataListRef.current,
           (sItem: any) => sItem.id === item.id
         );
         if (updateIndex === -1) {
@@ -47,47 +56,46 @@ export function useUpdateChunkedList(options: {
         }
         console.log('create=========', updateIndex, dataList, collections);
       });
-      options.setDataList?.(() => {
-        return newDataList;
-      });
+      cacheDataListRef.current = [...newDataList, ...cacheDataListRef.current];
+      options.setDataList?.(cacheDataListRef.current);
     }
     // DELETE
     if (data?.type === WatchEventType.DELETE) {
-      options.setDataList?.(() => {
-        const updatedList = _.filter(dataList, (item: any) => {
-          return !_.find(ids, (id: any) => id === item.id);
-        });
-        return updatedList;
-      });
+      cacheDataListRef.current = _.filter(
+        cacheDataListRef.current,
+        (item: any) => {
+          return !_.includes(ids, item.id);
+        }
+      );
+      // console.log('updateChunkedList=====delete', updatedList);
+      // return updatedList;
+      options.setDataList?.(() => cacheDataListRef.current);
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
-      options.setDataList?.(() => {
-        const updatedDataList = _.cloneDeep(dataList);
-
-        _.each(collections, (item: any) => {
-          const updateIndex = _.findIndex(
-            updatedDataList,
-            (sItem: any) => sItem.id === item.id
-          );
-          if (updateIndex > -1) {
-            const updateItem = _.cloneDeep(item);
-            updatedDataList[updateIndex] = updateItem;
-          } else if (updateIndex === -1) {
-            const updateItem = _.cloneDeep(item);
-            updatedDataList.push(updateItem);
-          }
-        });
-
-        return updatedDataList;
+      // const updatedDataList = _.cloneDeep(dataList);
+      _.each(collections, (item: any) => {
+        const updateIndex = _.findIndex(
+          cacheDataListRef.current,
+          (sItem: any) => sItem.id === item.id
+        );
+        if (updateIndex > -1) {
+          const updateItem = _.cloneDeep(item);
+          cacheDataListRef.current[updateIndex] = updateItem;
+        } else if (updateIndex === -1) {
+          const updateItem = _.cloneDeep(item);
+          cacheDataListRef.current.push(updateItem);
+        }
       });
+      options.setDataList?.(() => cacheDataListRef.current);
     }
     if (options?.callback) {
-      options?.callback(dataList);
+      options?.callback(cacheDataListRef.current);
     }
   };
   return {
-    updateChunkedList
+    updateChunkedList,
+    cacheDataListRef
   };
 }
 

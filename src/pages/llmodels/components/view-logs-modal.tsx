@@ -15,7 +15,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const { open, url, onCancel } = props || {};
   const [modalSize, setModalSize] = useState<any>({
     width: 600,
-    height: 450
+    height: 420
   });
   const isFullScreenRef = React.useRef(false);
   const intl = useIntl();
@@ -24,7 +24,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     setModalSize((size: any) => {
       return {
         width: size.width === 600 ? '100%' : 600,
-        height: size.height === 450 ? 'calc(100vh - 100px)' : 450
+        height: size.height === 420 ? 'calc(100vh - 100px)' : 420
       };
     });
   };

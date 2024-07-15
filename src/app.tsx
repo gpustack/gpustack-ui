@@ -11,14 +11,10 @@ const loginPath = '/login';
 let currentUserInfo: any = {};
 
 // 运行时配置
-
-// 全局初始化数据配置，用于 Layout 用户信息和权限初始化
-// 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
 export async function getInitialState(): Promise<{
   fetchUserInfo: () => Promise<Global.UserInfo>;
   currentUser?: Global.UserInfo;
 }> {
-  // 如果不是登录页面，执行
   const { location } = history;
 
   const fetchUserInfo = async (): Promise<Global.UserInfo> => {
@@ -36,7 +32,6 @@ export async function getInitialState(): Promise<{
   const getAppVersionInfo = async () => {
     try {
       const data = await queryVersionInfo();
-      console.log('versioninfo=========', data);
       setAtomStorage(GPUStackVersionAtom, data);
     } catch (error) {
       console.error('queryVersionInfo error', error);

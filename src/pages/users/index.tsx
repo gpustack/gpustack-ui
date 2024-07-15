@@ -18,7 +18,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Modal, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
@@ -201,7 +201,7 @@ const Users: React.FC = () => {
   }, [queryParams]);
 
   return (
-    <>
+    <StrictMode>
       <PageContainer
         ghost
         header={{
@@ -330,7 +330,7 @@ const Users: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
-    </>
+    </StrictMode>
   );
 };
 

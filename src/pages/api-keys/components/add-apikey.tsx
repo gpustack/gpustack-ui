@@ -184,7 +184,13 @@ const AddModal: React.FC<AddModalProps> = ({
             <SealInput.Input
               label={intl.formatMessage({ id: 'apikeys.form.apikey' })}
               value={apikeyValue}
-              addAfter={<CopyButton text={apikeyValue}></CopyButton>}
+              addAfter={
+                <CopyButton
+                  text={apikeyValue}
+                  shape="default"
+                  size="small"
+                ></CopyButton>
+              }
             ></SealInput.Input>
           </Form.Item>
         )}

@@ -25,7 +25,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   };
 
   if (!items?.length) {
-    return null;
+    return <span></span>;
   }
 
   return (

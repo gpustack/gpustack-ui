@@ -25,6 +25,9 @@ export default {
     Select: {
       itemSelectedBg: 'rgba(0,0,0,0.06)'
     },
+    Message: {
+      contentPadding: '12px 16px'
+    },
     Slider: {
       handleSize: 8,
       handleSizeHover: 8,

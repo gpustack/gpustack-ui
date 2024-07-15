@@ -1,7 +1,7 @@
 import { PageContainer } from '@ant-design/pro-components';
 import { useSearchParams } from '@umijs/max';
 import { Divider } from 'antd';
-import { useState } from 'react';
+import { StrictMode, useState } from 'react';
 import GroundLeft from './components/ground-left';
 import ParamsSettings from './components/params-settings';
 import './style/play-ground.less';
@@ -12,7 +12,7 @@ const Playground: React.FC = () => {
   const [params, setParams] = useState({});
 
   return (
-    <div>
+    <StrictMode>
       <PageContainer ghost extra={[]}>
         <div className="play-ground">
           <div className="chat">
@@ -27,7 +27,7 @@ const Playground: React.FC = () => {
           </div>
         </div>
       </PageContainer>
-    </div>
+    </StrictMode>
   );
 };
 

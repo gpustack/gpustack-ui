@@ -4,7 +4,7 @@ import useSetChunkRequest, {
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { StrictMode, useCallback, useEffect, useRef, useState } from 'react';
 import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
@@ -168,24 +168,26 @@ const Models: React.FC = () => {
   }, [queryParams]);
 
   return (
-    <TableContext.Provider
-      value={{
-        allChildren: modelInstances
-      }}
-    >
-      <TableList
-        dataSource={dataSource}
-        handleNameChange={handleNameChange}
-        handleSearch={handleSearch}
-        handleShowSizeChange={handleShowSizeChange}
-        handlePageChange={handlePageChange}
-        createModelsChunkRequest={createModelsChunkRequest}
-        queryParams={queryParams}
-        loading={loading}
-        total={total}
-        fetchData={fetchData}
-      ></TableList>
-    </TableContext.Provider>
+    <StrictMode>
+      <TableContext.Provider
+        value={{
+          allChildren: modelInstances
+        }}
+      >
+        <TableList
+          dataSource={dataSource}
+          handleNameChange={handleNameChange}
+          handleSearch={handleSearch}
+          handleShowSizeChange={handleShowSizeChange}
+          handlePageChange={handlePageChange}
+          createModelsChunkRequest={createModelsChunkRequest}
+          queryParams={queryParams}
+          loading={loading}
+          total={total}
+          fetchData={fetchData}
+        ></TableList>
+      </TableContext.Provider>
+    </StrictMode>
   );
 };
 

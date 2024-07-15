@@ -20,7 +20,7 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
 import { ListItem } from './config/types';
@@ -179,7 +179,7 @@ const Models: React.FC = () => {
   }, [queryParams]);
 
   return (
-    <>
+    <StrictMode>
       <PageContainer
         ghost
         header={{
@@ -308,7 +308,7 @@ const Models: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>
-    </>
+    </StrictMode>
   );
 };
 

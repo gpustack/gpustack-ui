@@ -430,6 +430,41 @@ body {
   border-radius: 16px;
 }
 
+.ant-message-notice-wrapper {
+  .ant-message-notice-error {
+    .ant-message-notice-content {
+      background-color: var(--ant-color-error-bg);
+      color: var(--ant-color-error);
+    }
+  }
+
+  .ant-message-notice-success {
+    .ant-message-notice-content {
+      background-color: var(--ant-color-success-bg);
+      color: var(--ant-color-success);
+    }
+  }
+
+  .ant-message-notice-content {
+    border-radius: var(--border-radius-base) !important;
+    line-height: 2;
+    max-width: 300px;
+    text-align: left;
+    word-break: break-word;
+    box-shadow: var(--ant-box-shadow-secondary) !important;
+    max-height: 140px;
+    overflow-y: auto;
+
+    .anticon {
+      padding-top: 5px;
+    }
+  }
+
+  .ant-message-custom-content {
+    align-items: flex-start !important;
+  }
+}
+
 .background {
   position: fixed;
   top: 0;

@@ -9,6 +9,8 @@ interface ReferenceParamsProps {
     prompt_tokens: number;
     total_tokens: number;
     tokens_per_second: number;
+    time_per_output_token_ms: number;
+    time_to_first_token_ms: number;
   };
 }
 
@@ -43,8 +45,26 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
       </span>
 
       <span>
-        {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-        {_.round(usage.tokens_per_second, 2)} Tokens/s
+        <Tooltip
+          trigger={['click']}
+          title={
+            <Space>
+              <span>
+                {intl.formatMessage({ id: 'playground.timePerOutputToken' })}:{' '}
+                {_.round(usage.time_per_output_token_ms, 2)} ms
+              </span>
+              <span>
+                {intl.formatMessage({ id: 'playground.timeToFirstToken' })}:{' '}
+                {_.round(usage.time_to_first_token_ms, 2)} ms
+              </span>
+            </Space>
+          }
+        >
+          <span>
+            {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
+            {_.round(usage.tokens_per_second, 2)} Tokens/s
+          </span>
+        </Tooltip>
       </span>
     </div>
   );

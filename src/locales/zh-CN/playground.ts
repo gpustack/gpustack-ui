@@ -12,6 +12,8 @@ export default {
     '你可以使用以下代码将当前的提示和设置集成到你的应用程序中。',
   'playground.completion': '补全',
   'playground.prompt': '提示',
+  'playground.timeToFirstToken': '输出首个 token 时间',
+  'playground.timePerOutputToken': '生成每个 token 时间',
   'playground.tokenusage': 'Token 使用量',
   'models.openinplayground': '打开试验场',
   'playground.tokenoutput': '输出',

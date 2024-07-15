@@ -4,6 +4,8 @@ export interface ListItem {
   huggingface_file_name: string;
   huggingface_filename: string;
   ollama_library_model_name: string;
+  ready_replicas: number;
+  replicas: number;
   s3Address: string;
   name: string;
   description: string;

@@ -360,18 +360,26 @@ const Models: React.FC<ModelsProps> = ({
             key="replicas"
             align="center"
             span={4}
+            render={(text, record: ListItem) => {
+              return (
+                <span>
+                  {record.ready_replicas} / {record.replicas}
+                </span>
+              );
+            }}
           />
           <SealColumn
             span={5}
             title={intl.formatMessage({ id: 'common.table.createTime' })}
             dataIndex="created_at"
-            key="createTime"
+            key="created_at"
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={true}
-            render={(val, row) => {
-              return dayjs.utc(val).format('YYYY-MM-DD HH:mm:ss');
+            render={(text, row) => {
+              console.log('val=time===', text, row.name, row, row.created_at);
+              return dayjs(text).local().format('YYYY-MM-DD HH:mm:ss');
             }}
           />
           <SealColumn

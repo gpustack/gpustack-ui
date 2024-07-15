@@ -47,9 +47,10 @@ const Models: React.FC = () => {
         cancelToken: axiosToken.token
       });
       console.log('res=======', res);
-      if (!firstLoad) {
-        setDataSource(res.items);
-      }
+      // if (!firstLoad) {
+      //   setDataSource(res.items);
+      // }
+      setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
       setDataSource([]);

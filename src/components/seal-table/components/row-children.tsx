@@ -1,4 +1,3 @@
-import React from 'react';
 import '../styles/row-children.less';
 
 const RowChildren = (props: any) => {
@@ -7,4 +6,4 @@ const RowChildren = (props: any) => {
   return <div className="row-children">{children}</div>;
 };
 
-export default React.memo(RowChildren);
+export default RowChildren;

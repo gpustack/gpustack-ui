@@ -371,8 +371,7 @@ const Models: React.FC<ModelsProps> = ({
             showSorterTooltip={false}
             sorter={true}
             render={(val, row) => {
-              console.log('val=====', val, row['created_at'], row.name);
-              return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
+              return dayjs.utc(val).format('YYYY-MM-DD HH:mm:ss');
             }}
           />
           <SealColumn

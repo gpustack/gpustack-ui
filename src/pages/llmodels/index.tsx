@@ -30,7 +30,8 @@ const Models: React.FC = () => {
 
   dataSourceRef.current = dataSource;
 
-  const { updateChunkedList } = useUpdateChunkedList({
+  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
+    dataList: dataSource,
     setDataList: setDataSource
   });
 
@@ -46,7 +47,9 @@ const Models: React.FC = () => {
         cancelToken: axiosToken.token
       });
       console.log('res=======', res);
-      setDataSource(res.items);
+      if (!firstLoad) {
+        setDataSource(res.items);
+      }
       setTotal(res.pagination.total);
     } catch (error) {
       setDataSource([]);
@@ -118,8 +121,10 @@ const Models: React.FC = () => {
     if (!firstLoad) {
       createModelsChunkRequest();
     }
+    createModelsChunkRequest();
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
+      cacheDataListRef.current = [];
     };
   }, [firstLoad]);
 

@@ -20,7 +20,7 @@ export function useUpdateChunkedList(options: {
   const cacheDataListRef = useRef<any[]>(options.dataList || []);
   const updateChunkedList = (
     data: ChunkedCollection,
-    dataList: { id: string | number }[]
+    dataList?: { id: string | number }[]
   ) => {
     console.log('updateChunkedList=====', {
       ids: data?.ids,
@@ -54,7 +54,7 @@ export function useUpdateChunkedList(options: {
           const updateItem = _.cloneDeep(item);
           newDataList.push(updateItem);
         }
-        console.log('create=========', updateIndex, dataList, collections);
+        console.log('create=========', updateIndex, collections);
       });
       cacheDataListRef.current = [...newDataList, ...cacheDataListRef.current];
       options.setDataList?.([...cacheDataListRef.current]);

@@ -1,10 +1,11 @@
+import TableContext from '@/components/seal-table/table-context';
 import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { MODELS_API, queryModelsList } from './apis';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
@@ -13,12 +14,15 @@ const Models: React.FC = () => {
   console.log('model list====1');
 
   const { setChunkRequest } = useSetChunkRequest();
-
+  const { setChunkRequest: setModelInstanceChunkRequest } =
+    useSetChunkRequest();
   const [total, setTotal] = useState(100);
+  const [modelInstances, setModelInstances] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
+  const chunkInstanceRequedtRef = useRef<any>();
   const dataSourceRef = useRef<any>();
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
@@ -34,6 +38,13 @@ const Models: React.FC = () => {
     dataList: dataSource,
     setDataList: setDataSource
   });
+  const {
+    updateChunkedList: updateInstanceChunkList,
+    cacheDataListRef: cacheInstanceDataListRef
+  } = useUpdateChunkedList({
+    dataList: modelInstances,
+    setDataList: setModelInstances
+  });
 
   const fetchData = useCallback(async () => {
     axiosToken?.cancel?.();
@@ -47,9 +58,6 @@ const Models: React.FC = () => {
         cancelToken: axiosToken.token
       });
       console.log('res=======', res);
-      // if (!firstLoad) {
-      //   setDataSource(res.items);
-      // }
       setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
@@ -84,9 +92,18 @@ const Models: React.FC = () => {
   );
 
   const updateHandler = (list: any) => {
+    console.log('updateHandler=====', list);
     _.each(list, (data: any) => {
       updateChunkedList(data, dataSourceRef.current);
     });
+  };
+
+  const updateInstanceHandler = (list: any) => {
+    console.log('updateInstanceHandler=====', list);
+    setModelInstances(list);
+    // _.each(list, (data: any) => {
+    //   updateInstanceChunkList(data);
+    // });
   };
 
   const createModelsChunkRequest = () => {
@@ -98,6 +115,18 @@ const Models: React.FC = () => {
           ..._.pickBy(queryParams, (val: any) => !!val)
         },
         handler: updateHandler
+      });
+    } catch (error) {
+      // ignore
+    }
+  };
+  const createModelsInstanceChunkRequest = () => {
+    chunkInstanceRequedtRef.current?.current?.cancel?.();
+    try {
+      chunkInstanceRequedtRef.current = setModelInstanceChunkRequest({
+        url: `${MODEL_INSTANCE_API}`,
+        params: {},
+        handler: updateInstanceHandler
       });
     } catch (error) {
       // ignore
@@ -121,11 +150,13 @@ const Models: React.FC = () => {
   useEffect(() => {
     if (!firstLoad) {
       createModelsChunkRequest();
+      createModelsInstanceChunkRequest();
     }
-    createModelsChunkRequest();
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
+      chunkInstanceRequedtRef.current?.current?.cancel?.();
+      cacheInstanceDataListRef.current = [];
     };
   }, [firstLoad]);
 
@@ -137,19 +168,25 @@ const Models: React.FC = () => {
   }, [queryParams]);
 
   return (
-    <TableList
-      dataSource={dataSource}
-      handleNameChange={handleNameChange}
-      handleSearch={handleSearch}
-      handleShowSizeChange={handleShowSizeChange}
-      handlePageChange={handlePageChange}
-      createModelsChunkRequest={createModelsChunkRequest}
-      queryParams={queryParams}
-      loading={loading}
-      total={total}
-      fetchData={fetchData}
-    ></TableList>
+    <TableContext.Provider
+      value={{
+        allChildren: modelInstances
+      }}
+    >
+      <TableList
+        dataSource={dataSource}
+        handleNameChange={handleNameChange}
+        handleSearch={handleSearch}
+        handleShowSizeChange={handleShowSizeChange}
+        handlePageChange={handlePageChange}
+        createModelsChunkRequest={createModelsChunkRequest}
+        queryParams={queryParams}
+        loading={loading}
+        total={total}
+        fetchData={fetchData}
+      ></TableList>
+    </TableContext.Provider>
   );
 };
 
-export default memo(Models);
+export default Models;

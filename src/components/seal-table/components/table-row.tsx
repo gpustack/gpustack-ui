@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import RowContext from '../row-context';
+import TableContext from '../table-context';
 import { RowContextProps, SealTableProps } from '../types';
 
 const TableRow: React.FC<
@@ -19,6 +20,7 @@ const TableRow: React.FC<
     rowSelection,
     expandedRowKeys,
     rowKey,
+    childParentKey,
     columns,
     pollingChildren,
     watchChildren,
@@ -27,6 +29,9 @@ const TableRow: React.FC<
     loadChildren,
     loadChildrenAPI
   } = props;
+  const tableContext: any = React.useContext<{
+    allChildren?: any[];
+  }>(TableContext);
   const { setChunkRequest } = useSetChunkRequest();
   const [expanded, setExpanded] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -44,6 +49,7 @@ const TableRow: React.FC<
     setDataList: setChildrenData
     // callback: (list) => renderChildren?.(list)
   });
+
   useEffect(() => {
     if (rowSelection) {
       const { selectedRowKeys } = rowSelection;
@@ -55,13 +61,13 @@ const TableRow: React.FC<
     }
   }, [rowSelection]);
 
-  // useEffect(() => {
-  //   if (expandedRowKeys?.includes(record[rowKey])) {
-  //     setExpanded(true);
-  //   } else {
-  //     setExpanded(false);
-  //   }
-  // }, [expandedRowKeys]);
+  useEffect(() => {
+    if (expandedRowKeys?.includes(record[rowKey])) {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [expandedRowKeys]);
 
   useEffect(() => {
     return () => {
@@ -92,15 +98,23 @@ const TableRow: React.FC<
     try {
       setLoading(true);
       const data = await loadChildren?.(record);
+
       setChildrenData(data || []);
       setLoading(false);
     } catch (error) {
       setChildrenData([]);
       setLoading(false);
     } finally {
-      childrenDataRef.current = childrenData;
       setFirstLoad(false);
     }
+  };
+
+  const filterUpdateChildrenHandler = () => {
+    _.each(tableContext.allChildren || [], (data: any) => {
+      if (_.get(data, ['data', [childParentKey]]) === _.get(record, [rowKey])) {
+        updateChunkedList(data);
+      }
+    });
   };
 
   const updateChildrenHandler = (list: any) => {
@@ -108,6 +122,7 @@ const TableRow: React.FC<
       updateChunkedList(data, childrenDataRef.current);
     });
   };
+
   const createChunkRequest = () => {
     chunkRequestRef.current?.current?.cancel?.();
     if (!watchChildren) {
@@ -167,13 +182,19 @@ const TableRow: React.FC<
 
   useEffect(() => {
     if (!firstLoad && expanded) {
-      createChunkRequest();
+      console.log(
+        'update children=====',
+        record.name,
+        tableContext.allChildren
+      );
+      cacheDataListRef.current = childrenData;
+      filterUpdateChildrenHandler();
     }
     return () => {
       chunkRequestRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
     };
-  }, [firstLoad, expanded]);
+  }, [firstLoad, expanded, tableContext.allChildren]);
 
   const renderRowPrefix = () => {
     if (expandable && rowSelection) {

@@ -177,6 +177,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
                       size="small"
                       href="#/api-keys"
                       target="_blank"
+                      style={{ paddingInline: 2 }}
                     >
                       <span>
                         {' '}

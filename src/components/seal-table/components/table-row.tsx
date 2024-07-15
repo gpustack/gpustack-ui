@@ -61,13 +61,13 @@ const TableRow: React.FC<
     }
   }, [rowSelection]);
 
-  useEffect(() => {
-    if (expandedRowKeys?.includes(record[rowKey])) {
-      setExpanded(true);
-    } else {
-      setExpanded(false);
-    }
-  }, [expandedRowKeys]);
+  // useEffect(() => {
+  //   if (expandedRowKeys?.includes(record[rowKey])) {
+  //     setExpanded(true);
+  //   } else {
+  //     setExpanded(false);
+  //   }
+  // }, [expandedRowKeys]);
 
   useEffect(() => {
     return () => {

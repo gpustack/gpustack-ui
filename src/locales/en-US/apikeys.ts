@@ -10,5 +10,5 @@ export default {
   'apikeys.form.expiration.7days': '7 days',
   'apikeys.form.expiration.1month': '1 month',
   'apikeys.form.expiration.6months': '6 months',
-  'apikeys.form.expiration.never': 'never'
+  'apikeys.form.expiration.never': 'No expiration'
 };

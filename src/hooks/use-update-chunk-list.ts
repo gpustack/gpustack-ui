@@ -17,7 +17,7 @@ export function useUpdateChunkedList(options: {
   mapFun?: (args: any) => any;
   computedID?: (d: object) => string;
 }) {
-  const cacheDataListRef = useRef<any[]>([]);
+  const cacheDataListRef = useRef<any[]>(options.dataList || []);
   const updateChunkedList = (
     data: ChunkedCollection,
     dataList: { id: string | number }[]
@@ -57,7 +57,7 @@ export function useUpdateChunkedList(options: {
         console.log('create=========', updateIndex, dataList, collections);
       });
       cacheDataListRef.current = [...newDataList, ...cacheDataListRef.current];
-      options.setDataList?.(cacheDataListRef.current);
+      options.setDataList?.([...cacheDataListRef.current]);
     }
     // DELETE
     if (data?.type === WatchEventType.DELETE) {
@@ -69,7 +69,7 @@ export function useUpdateChunkedList(options: {
       );
       // console.log('updateChunkedList=====delete', updatedList);
       // return updatedList;
-      options.setDataList?.(() => cacheDataListRef.current);
+      options.setDataList?.([...cacheDataListRef.current]);
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
@@ -87,7 +87,8 @@ export function useUpdateChunkedList(options: {
           cacheDataListRef.current.push(updateItem);
         }
       });
-      options.setDataList?.(() => cacheDataListRef.current);
+      console.log('updateChunkedList=====update', cacheDataListRef.current);
+      options.setDataList?.([...cacheDataListRef.current]);
     }
     if (options?.callback) {
       options?.callback(cacheDataListRef.current);

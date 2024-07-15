@@ -4,7 +4,7 @@ import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import RowContext from '../row-context';
 import { RowContextProps, SealTableProps } from '../types';
 
@@ -38,13 +38,12 @@ const TableRow: React.FC<
   const childrenDataRef = useRef<any[]>([]);
   childrenDataRef.current = childrenData;
 
-  console.log('table row====', record.name, firstLoad, expanded);
+  console.log('table row====', childrenData, record.name, firstLoad, expanded);
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
     setDataList: setChildrenData
     // callback: (list) => renderChildren?.(list)
   });
-
   useEffect(() => {
     if (rowSelection) {
       const { selectedRowKeys } = rowSelection;
@@ -70,13 +69,12 @@ const TableRow: React.FC<
         clearInterval(pollTimer.current);
       }
       chunkRequestRef.current?.current?.cancel?.();
-      cacheDataListRef.current = [];
     };
   }, []);
 
-  const renderChildrenData = useCallback(() => {
+  const renderChildrenData = () => {
     return renderChildren?.(childrenData);
-  }, [childrenData]);
+  };
 
   const handlePolling = async () => {
     if (pollingChildren) {
@@ -93,8 +91,8 @@ const TableRow: React.FC<
     console.log('first load=====', firstLoad);
     try {
       setLoading(true);
-      // const data = await loadChildren?.(record);
-      // setChildrenData(data || []);
+      const data = await loadChildren?.(record);
+      setChildrenData(data || []);
       setLoading(false);
     } catch (error) {
       setChildrenData([]);

@@ -121,7 +121,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 </Col>
                 <Col span={5}>
                   <span style={{ paddingLeft: 38 }}>
-                    {dayjs.utc(item.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                    {dayjs(item.created_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm:ss')}
                   </span>
                 </Col>
                 <Col span={4}>

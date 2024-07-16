@@ -4,7 +4,7 @@ import useSetChunkRequest, {
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import _ from 'lodash';
-import { StrictMode, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
@@ -38,13 +38,6 @@ const Models: React.FC = () => {
     dataList: dataSource,
     setDataList: setDataSource
   });
-  const {
-    updateChunkedList: updateInstanceChunkList,
-    cacheDataListRef: cacheInstanceDataListRef
-  } = useUpdateChunkedList({
-    dataList: modelInstances,
-    setDataList: setModelInstances
-  });
 
   const fetchData = useCallback(async () => {
     axiosToken?.cancel?.();
@@ -57,7 +50,6 @@ const Models: React.FC = () => {
       const res: any = await queryModelsList(params, {
         cancelToken: axiosToken.token
       });
-      console.log('res=======', res);
       setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
@@ -69,41 +61,25 @@ const Models: React.FC = () => {
     }
   }, [queryParams]);
 
-  const handleShowSizeChange = useCallback(
-    (page: number, size: number) => {
-      console.log(page, size);
-      setQueryParams({
-        ...queryParams,
-        perPage: size
-      });
-    },
-    [queryParams]
-  );
-
   const handlePageChange = useCallback(
     (page: number, pageSize: number | undefined) => {
-      console.log(page, pageSize);
       setQueryParams({
         ...queryParams,
-        page: page
+        page: page,
+        perPage: pageSize || 10
       });
     },
     [queryParams]
   );
 
   const updateHandler = (list: any) => {
-    console.log('updateHandler=====', list);
     _.each(list, (data: any) => {
       updateChunkedList(data, dataSourceRef.current);
     });
   };
 
   const updateInstanceHandler = (list: any) => {
-    console.log('updateInstanceHandler=====', list);
     setModelInstances(list);
-    // _.each(list, (data: any) => {
-    //   updateInstanceChunkList(data);
-    // });
   };
 
   const createModelsChunkRequest = () => {
@@ -156,7 +132,6 @@ const Models: React.FC = () => {
       chunkRequedtRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
       chunkInstanceRequedtRef.current?.current?.cancel?.();
-      cacheInstanceDataListRef.current = [];
     };
   }, [firstLoad]);
 
@@ -168,26 +143,23 @@ const Models: React.FC = () => {
   }, [queryParams]);
 
   return (
-    <StrictMode>
-      <TableContext.Provider
-        value={{
-          allChildren: modelInstances
-        }}
-      >
-        <TableList
-          dataSource={dataSource}
-          handleNameChange={handleNameChange}
-          handleSearch={handleSearch}
-          handleShowSizeChange={handleShowSizeChange}
-          handlePageChange={handlePageChange}
-          createModelsChunkRequest={createModelsChunkRequest}
-          queryParams={queryParams}
-          loading={loading}
-          total={total}
-          fetchData={fetchData}
-        ></TableList>
-      </TableContext.Provider>
-    </StrictMode>
+    <TableContext.Provider
+      value={{
+        allChildren: modelInstances
+      }}
+    >
+      <TableList
+        dataSource={dataSource}
+        handleNameChange={handleNameChange}
+        handleSearch={handleSearch}
+        handlePageChange={handlePageChange}
+        createModelsChunkRequest={createModelsChunkRequest}
+        queryParams={queryParams}
+        loading={loading}
+        total={total}
+        fetchData={fetchData}
+      ></TableList>
+    </TableContext.Provider>
   );
 };
 

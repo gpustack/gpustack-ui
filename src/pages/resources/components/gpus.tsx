@@ -24,18 +24,13 @@ const GPUList: React.FC = () => {
     perPage: 10,
     search: ''
   });
-  const handleShowSizeChange = (current: number, size: number) => {
-    setQueryParams({
-      ...queryParams,
-      perPage: size
-    });
-  };
 
   const handlePageChange = (page: number, perPage: number | undefined) => {
     console.log(page, perPage);
     setQueryParams({
       ...queryParams,
-      page: page
+      page: page,
+      perPage: perPage || 10
     });
   };
 
@@ -109,8 +104,7 @@ const GPUList: React.FC = () => {
           pageSize: queryParams.perPage,
           current: queryParams.page,
           total: total,
-          hideOnSinglePage: true,
-          onShowSizeChange: handleShowSizeChange,
+          hideOnSinglePage: queryParams.perPage === 10,
           onChange: handlePageChange
         }}
       >

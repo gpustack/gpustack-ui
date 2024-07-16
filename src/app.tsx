@@ -1,11 +1,11 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
-import { RequestConfig, history } from '@umijs/max';
-import { requestConfig } from './request-config';
+import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
   queryVersionInfo
-} from './services/profile/apis';
+} from '@/services/profile/apis';
+import { RequestConfig, history } from '@umijs/max';
 
 const loginPath = '/login';
 let currentUserInfo: any = {};

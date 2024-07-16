@@ -2,7 +2,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
 import { Tabs } from 'antd';
-import { StrictMode, useState } from 'react';
+import { useState } from 'react';
 import GPUs from './components/gpus';
 import Workers from './components/workers';
 
@@ -29,7 +29,7 @@ const Resources = () => {
   };
 
   return (
-    <StrictMode>
+    <>
       <PageContainer
         ghost
         header={{
@@ -47,7 +47,7 @@ const Resources = () => {
           ></Tabs>
         </div>
       </PageContainer>
-    </StrictMode>
+    </>
   );
 };
 

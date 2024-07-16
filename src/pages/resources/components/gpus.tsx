@@ -137,7 +137,7 @@ const GPUList: React.FC = () => {
           dataIndex="temperature"
           key="Temperature"
           render={(text, record: GPUDeviceItem) => {
-            return <span>{_.round(text, 1)}</span>;
+            return <span>{text ? _.round(text, 1) : '-'}</span>;
           }}
         />
         <Column

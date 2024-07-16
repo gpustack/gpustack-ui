@@ -24,6 +24,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     rowKey,
     childParentKey,
     onExpand,
+    onSort,
     expandedRowKeys,
     loading,
     expandable,
@@ -117,12 +118,25 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
         <Row className="row">
           {React.Children.map(props.children, (child, i) => {
             const { props: columnProps } = child as any;
-            const { title, align, span, headerStyle } =
-              columnProps as SealColumnProps;
+            const {
+              title,
+              dataIndex,
+              align,
+              span,
+              headerStyle,
+              sortOrder,
+              sorter,
+              defaultSortOrder
+            } = columnProps as SealColumnProps;
             if (React.isValidElement(child)) {
               return (
                 <Col span={span} key={i}>
                   <TableHeader
+                    onSort={onSort}
+                    sorter={sorter}
+                    dataIndex={dataIndex}
+                    sortOrder={sortOrder}
+                    defaultSortOrder={defaultSortOrder}
                     title={title}
                     style={headerStyle}
                     firstCell={i === 0}

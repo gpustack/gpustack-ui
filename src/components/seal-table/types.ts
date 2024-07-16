@@ -8,9 +8,17 @@ export interface SealColumnProps {
   span: number;
   align?: 'left' | 'center' | 'right';
   headerStyle?: React.CSSProperties;
+  sorter?: boolean;
+  defaultSortOrder?: 'ascend' | 'descend';
+  sortOrder?: 'ascend' | 'descend' | null;
 }
 
 export interface TableHeaderProps {
+  sorter?: boolean;
+  defaultSortOrder?: 'ascend' | 'descend';
+  sortOrder?: 'ascend' | 'descend' | null;
+  dataIndex: string;
+  onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
   children?: React.ReactNode;
   title: string;
   style?: React.CSSProperties;
@@ -34,6 +42,7 @@ export interface SealTableProps {
   pollingChildren?: boolean;
   watchChildren?: boolean;
   loading?: boolean;
+  onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
   onExpand?: (expanded: boolean, record: any, rowKey: any) => void;
   renderChildren?: (data: any) => React.ReactNode;
   loadChildren?: (record: any) => Promise<any[]>;

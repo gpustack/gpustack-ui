@@ -31,7 +31,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const [codeValue, setCodeValue] = useState('');
   const [lang, setLang] = useState('shell');
 
-  const BaseURL = `${window.location.origin}/v1-openai/chat/completions`;
+  const BaseURL = `${window.location.origin}/v1-openai`;
 
   const langOptions = [
     { label: 'Curl', value: 'shell' },
@@ -69,14 +69,14 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `import OpenAI from "openai";\nconst openai = new OpenAI();\n\nconst baseURL = "${BaseURL}"\n\nasync function main(){\nconst params = ${JSON.stringify(
+      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n"apiKey": $\{GUPSTACK_API_KEY},\n"baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\nconst params = ${JSON.stringify(
         {
           ...parameters,
           messages: [...systemList, ...messageList]
         },
         null,
         2
-      )};\nconst chatCompletion = await openai.chat.completions.create(params);\nfor await (const chunk of chatCompletion) {\n  process.stdout.write(chunk.choices[0]?.delta?.content || '');\n}\n}\nmain();`;
+      )};\nconst chatCompletion = await openai.chat.completions.create(params);\nfor await (const chunk of chatCompletion) {\n  process.stdout.write(chunk.choices[0]?.message?.content || '');\n}\n}\nmain();`;
       setCodeValue(code);
     } else if (lang === 'python') {
       const formattedParams = _.keys(parameters).reduce(
@@ -95,7 +95,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `from openai import OpenAI\nclient = OpenAI()\n\nbaseURL = ${BaseURL}\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify([...systemList, ...messageList], null, 2)})\nprint(completion.choices[0].message)`;
+      const code = `from openai import OpenAI\n\nbaseURL = ${BaseURL}\n\nclient = OpenAI(\nbase_url=baseURL, \napi_key="$\{GUPSTACK_API_KEY}"\n)\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify([...systemList, ...messageList], null, 2)})\nprint(completion.choices[0].message.content)`;
       setCodeValue(code);
     }
     formatCode();
@@ -118,9 +118,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     minimap: {
       enabled: false
     },
+    readOnly: true,
     formatOnType: true,
     formatOnPaste: true,
-    fontWeight: '700',
+    fontWeight: 700,
     scrollbar: {
       verticalSliderSize: 8
     }

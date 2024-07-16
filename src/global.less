@@ -32,7 +32,7 @@ html {
   --ant-color-fill-secondary: rgba(0, 0, 0, 6%);
   --table-td-radius: 8px;
   --checkbox-border-radius: 4px;
-  --ant-table-cell-padding-inline: 8px;
+  --ant-table-cell-padding-inline: 16px;
   --ant-table-cell-padding-block: 8px;
   --ant-table-header-border-radius: 8px;
   --ant-table-header-split-color: #f0f0f0;
@@ -147,6 +147,11 @@ body {
 
   .ant-modal-confirm-title {
     display: none;
+  }
+
+  .ant-slider:hover .ant-slider-handle::after {
+    box-shadow: 0 0 0 var(--ant-slider-handle-line-width)
+      var(--ant-slider-track-hover-bg);
   }
 
   .ant-select-selector {

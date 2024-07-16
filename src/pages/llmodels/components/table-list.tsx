@@ -110,9 +110,9 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log('handleTableChange=======', pagination, filters, sorter);
-    setSortOrder(sorter.order);
+  const handleOnSort = (dataIndex: string, order: any) => {
+    console.log('handleTableChange=======', dataIndex, order);
+    setSortOrder(order);
   };
 
   const handleAddModal = () => {
@@ -326,7 +326,7 @@ const Models: React.FC<ModelsProps> = ({
           rowKey="id"
           childParentKey="model_id"
           expandable={true}
-          onChange={handleTableChange}
+          onSort={handleOnSort}
           pollingChildren={false}
           watchChildren={true}
           loadChildren={getModelInstances}
@@ -384,8 +384,7 @@ const Models: React.FC<ModelsProps> = ({
             key="created_at"
             defaultSortOrder="descend"
             sortOrder={sortOrder}
-            showSorterTooltip={false}
-            sorter={true}
+            sorter={false}
             render={(text, row) => {
               return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
             }}
@@ -394,6 +393,7 @@ const Models: React.FC<ModelsProps> = ({
             span={4}
             title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
+            dataIndex="operation"
             render={(text, record) => {
               return !record.transition ? (
                 <DropdownButtons

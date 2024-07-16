@@ -50,7 +50,8 @@ const Resources: React.FC = () => {
   const handleShowSizeChange = (current: number, size: number) => {
     setQueryParams({
       ...queryParams,
-      perPage: size
+      page: current,
+      perPage: size || 10
     });
   };
 
@@ -58,7 +59,8 @@ const Resources: React.FC = () => {
     console.log(page, perPage);
     setQueryParams({
       ...queryParams,
-      page: page
+      page: page,
+      perPage: perPage || 10
     });
   };
 
@@ -199,8 +201,7 @@ const Resources: React.FC = () => {
           pageSize: queryParams.perPage,
           current: queryParams.page,
           total: total,
-          hideOnSinglePage: true,
-          onShowSizeChange: handleShowSizeChange,
+          hideOnSinglePage: queryParams.perPage === 10,
           onChange: handlePageChange
         }}
       >

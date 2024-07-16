@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import avatarImg from '@/assets/images/avatar.png';
-import externalLinks from '@/config/external-links';
+import externalLinks from '@/constants/external-links';
 import langConfigMap from '@/locales/lang-config-map';
 import {
   DiscordOutlined,

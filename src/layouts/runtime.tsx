@@ -35,5 +35,5 @@ export function renderMenuIcon(icon: string) {
       icons[upperIcon] || icons[upperIcon + 'Outlined']
     );
   }
-  return null;
+  return <span></span>;
 }

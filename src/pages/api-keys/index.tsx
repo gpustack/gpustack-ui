@@ -1,4 +1,3 @@
-import CopyButton from '@/components/copy-button';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
@@ -8,19 +7,10 @@ import { handleBatchRequest } from '@/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Input,
-  Modal,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-  message
-} from 'antd';
+import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { StrictMode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
 import { ListItem } from './config/types';
@@ -38,26 +28,18 @@ const Models: React.FC = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
-  const [title, setTitle] = useState<string>('');
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
     search: ''
   });
 
-  const handleShowSizeChange = (page: number, size: number) => {
-    console.log(page, size);
+  const handlePageChange = (page: number, pageSize: number) => {
+    console.log('handlePageChange====', page, pageSize);
     setQueryParams({
       ...queryParams,
-      perPage: size
-    });
-  };
-
-  const handlePageChange = (page: number, pageSize: number | undefined) => {
-    console.log(page, pageSize);
-    setQueryParams({
-      ...queryParams,
-      page: page
+      page: page,
+      perPage: pageSize || 10
     });
   };
 
@@ -151,35 +133,12 @@ const Models: React.FC = () => {
     });
   };
 
-  const renderSecrectKey = (text: string, record: ListItem) => {
-    const { value } = record;
-
-    return (
-      <Space direction="vertical">
-        <span>{text}</span>
-        {value && (
-          <span>
-            <Tag color="error" style={{ padding: '10px 12px' }}>
-              {intl.formatMessage({ id: 'apikeys.table.save.tips' })}
-            </Tag>
-            <span className="flex-center">
-              <Tooltip
-                title={value}
-              >{`${value?.slice(0, 8)}...${value?.slice(-8, -1)}`}</Tooltip>
-              <CopyButton text={value}></CopyButton>
-            </span>
-          </span>
-        )}
-      </Space>
-    );
-  };
-
   useEffect(() => {
     fetchData();
   }, [queryParams]);
 
   return (
-    <StrictMode>
+    <>
       <PageContainer
         ghost
         header={{
@@ -236,8 +195,7 @@ const Models: React.FC = () => {
             pageSize: queryParams.perPage,
             current: queryParams.page,
             total: total,
-            hideOnSinglePage: true,
-            onShowSizeChange: handleShowSizeChange,
+            hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}
         >
@@ -308,7 +266,7 @@ const Models: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>
-    </StrictMode>
+    </>
   );
 };
 

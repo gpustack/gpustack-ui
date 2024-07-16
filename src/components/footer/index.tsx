@@ -1,7 +1,7 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { getAtomStorage } from '@/atoms/utils';
 import VersionInfo, { modalConfig } from '@/components/version-info';
-import externalLinks from '@/config/external-links';
+import externalLinks from '@/constants/external-links';
 import { useIntl } from '@umijs/max';
 import { Button, Modal, Space } from 'antd';
 import './index.less';

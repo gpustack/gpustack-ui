@@ -40,7 +40,7 @@ interface ModelsProps {
   handleSearch: (e: any) => void;
   handleNameChange: (e: any) => void;
   fetchData: () => Promise<any>;
-  handleShowSizeChange: (page: number, size: number) => void;
+  handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
   createModelsChunkRequest: () => void;
   queryParams: {
@@ -57,7 +57,6 @@ const Models: React.FC<ModelsProps> = ({
   dataSource,
   handleNameChange,
   handleSearch,
-  handleShowSizeChange,
   handlePageChange,
   queryParams,
   loading,
@@ -338,8 +337,7 @@ const Models: React.FC<ModelsProps> = ({
             pageSize: queryParams.perPage,
             current: queryParams.page,
             total: total,
-            hideOnSinglePage: true,
-            onShowSizeChange: handleShowSizeChange,
+            hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}
         >

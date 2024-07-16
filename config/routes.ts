@@ -1,10 +1,4 @@
 export default [
-  // {
-  //   path: '/',
-  //   key: 'root',
-  //   icon: 'home',
-  //   redirect: ''
-  // },
   {
     name: 'dashboard',
     path: '/dashboard',

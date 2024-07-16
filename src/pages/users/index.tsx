@@ -18,7 +18,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Modal, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { StrictMode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
@@ -77,17 +77,11 @@ const Users: React.FC = () => {
     }
   };
 
-  const handleShowSizeChange = (page: number, size: number) => {
-    setQueryParams({
-      ...queryParams,
-      perPage: size
-    });
-  };
-
   const handlePageChange = (page: number, pageSize: number | undefined) => {
     console.log(page, pageSize);
     setQueryParams({
       ...queryParams,
+      perPage: pageSize || 10,
       page: page
     });
   };
@@ -201,7 +195,7 @@ const Users: React.FC = () => {
   }, [queryParams]);
 
   return (
-    <StrictMode>
+    <>
       <PageContainer
         ghost
         header={{
@@ -258,8 +252,7 @@ const Users: React.FC = () => {
             pageSize: queryParams.perPage,
             current: queryParams.page,
             total: total,
-            hideOnSinglePage: true,
-            onShowSizeChange: handleShowSizeChange,
+            hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}
         >
@@ -330,7 +323,7 @@ const Users: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
-    </StrictMode>
+    </>
   );
 };
 

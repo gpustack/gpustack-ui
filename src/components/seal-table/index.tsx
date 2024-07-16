@@ -1,5 +1,14 @@
 import { RightOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Col,
+  Empty,
+  Pagination,
+  Row,
+  Spin,
+  type PaginationProps
+} from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import TableHeader from './components/table-header';
@@ -7,7 +16,9 @@ import TableRow from './components/table-row';
 import './styles/index.less';
 import { SealColumnProps, SealTableProps } from './types';
 
-const SealTable: React.FC<SealTableProps> = (props) => {
+const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
+  props
+) => {
   const {
     children,
     rowKey,
@@ -19,6 +30,7 @@ const SealTable: React.FC<SealTableProps> = (props) => {
     pollingChildren,
     watchChildren,
     rowSelection,
+    pagination,
     renderChildren,
     loadChildren,
     loadChildrenAPI
@@ -55,6 +67,15 @@ const SealTable: React.FC<SealTableProps> = (props) => {
       setIndeterminate(false);
     }
   };
+
+  const handlePageChange = (page: number, pageSize: number) => {
+    pagination?.onChange?.(page, pageSize);
+  };
+
+  const handlePageSizeChange = (current: number, size: number) => {
+    pagination?.onShowSizeChange?.(current, size);
+  };
+
   const renderHeaderPrefix = () => {
     if (expandable && rowSelection) {
       return (
@@ -153,16 +174,27 @@ const SealTable: React.FC<SealTableProps> = (props) => {
     );
   };
   return (
-    <div className="seal-table-container">
-      {renderHeader()}
-      {loading ? (
-        <div className="spin">
-          <Spin></Spin>
+    <>
+      <div className="seal-table-container">
+        {renderHeader()}
+        {loading ? (
+          <div className="spin">
+            <Spin></Spin>
+          </div>
+        ) : (
+          renderContent()
+        )}
+      </div>
+      {pagination && (
+        <div className="pagination-wrapper">
+          <Pagination
+            {...pagination}
+            onChange={handlePageChange}
+            onShowSizeChange={handlePageSizeChange}
+          ></Pagination>
         </div>
-      ) : (
-        renderContent()
       )}
-    </div>
+    </>
   );
 };
 

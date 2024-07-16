@@ -203,7 +203,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           >
             <Slider
               defaultValue={1024}
-              max={16384}
+              max={2048}
               step={1}
               style={{ marginBottom: 0, marginTop: 16 }}
               tooltip={{ open: false }}

@@ -14,8 +14,7 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     sortOrder,
     onSort,
     sorter,
-    dataIndex,
-    defaultSortOrder
+    dataIndex
   } = props;
 
   const handleOnSort = () => {

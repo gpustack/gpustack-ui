@@ -3,7 +3,7 @@ export default [
     name: 'dashboard',
     path: '/dashboard',
     key: 'dashboard',
-    icon: 'home',
+    icon: 'AppstoreOutlined',
     access: 'canSeeAdmin',
     component: './dashboard'
   },

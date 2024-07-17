@@ -1,6 +1,7 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
 import _ from 'lodash';
+import { memo, useCallback } from 'react';
 
 interface DropdownButtonsProps {
   items: MenuProps['items'];
@@ -13,16 +14,16 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   size = 'small',
   onSelect
 }) => {
-  const handleMenuClick = (item: any) => {
+  const handleMenuClick = useCallback((item: any) => {
     console.log('menu click', item.key);
     const selectItem = _.find(items, { key: item.key });
     onSelect(item.key, selectItem);
-  };
+  }, []);
 
-  const handleButtonClick = (e: any) => {
+  const handleButtonClick = useCallback((e: any) => {
     const headItem = _.head(items);
     onSelect(headItem.key, headItem);
-  };
+  }, []);
 
   if (!items?.length) {
     return <span></span>;
@@ -61,4 +62,4 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   );
 };
 
-export default DropdownButtons;
+export default memo(DropdownButtons);

@@ -44,9 +44,8 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
         </Tooltip>
       </span>
 
-      <span>
+      <span className="usage">
         <Tooltip
-          trigger={['click']}
           title={
             <Space>
               <span>

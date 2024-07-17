@@ -10,7 +10,7 @@ import { useIntl } from '@umijs/max';
 import { Col, Row, Space, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
 
@@ -49,14 +49,14 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     }
   ];
 
-  const setChildActionList = (item: ModelInstanceListItem) => {
+  const setChildActionList = useCallback((item: ModelInstanceListItem) => {
     return _.filter(childActionList, (action: any) => {
       if (action.key === 'viewlog') {
         return action.status.includes(item.state);
       }
       return true;
     });
-  };
+  }, []);
 
   const renderWorkerInfo = (item: ModelInstanceListItem) => {
     let workerIp = '-';

@@ -10,7 +10,7 @@ import {
   type PaginationProps
 } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import TableHeader from './components/table-header';
 import TableRow from './components/table-row';
 import './styles/index.less';
@@ -153,7 +153,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     );
   };
 
-  const renderContent = () => {
+  const renderContent = useCallback(() => {
     if (!props.dataSource.length) {
       return (
         <div className="empty-wrapper">
@@ -186,18 +186,20 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
         })}
       </div>
     );
-  };
+  }, [props.dataSource, expandedRowKeys, rowSelection, children]);
   return (
     <>
       <div className="seal-table-container">
         {renderHeader()}
-        {loading ? (
+        {/* {loading ? (
           <div className="spin">
             <Spin></Spin>
           </div>
         ) : (
           renderContent()
-        )}
+        )} */}
+
+        <Spin spinning={loading}>{renderContent()}</Spin>
       </div>
       {pagination && (
         <div className="pagination-wrapper">

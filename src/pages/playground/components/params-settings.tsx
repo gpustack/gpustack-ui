@@ -150,9 +150,20 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </h3>
         <Form.Item<ParamsSettingsFormProps>
           name="model"
-          rules={[{ required: false }]}
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.select'
+                },
+                { name: intl.formatMessage({ id: 'playground.model' }) }
+              )
+            }
+          ]}
         >
           <SealSelect
+            showSearch
             options={ModelList}
             label={intl.formatMessage({ id: 'playground.model' })}
           ></SealSelect>

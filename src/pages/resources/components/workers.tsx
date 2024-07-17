@@ -10,6 +10,7 @@ import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
 import { memo, useEffect, useState } from 'react';
 import { deleteWorker, queryWorkersList } from '../apis';
+import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 const { Column } = Table;
 
@@ -218,10 +219,9 @@ const Resources: React.FC = () => {
             return (
               <StatusTag
                 statusValue={{
-                  status: ['Inactive', 'Unknown'].includes(record.state)
-                    ? 'inactive'
-                    : 'success',
-                  text: record.state
+                  status: status[record.state] as any,
+                  text: WorkerStatusMapValue[record.state],
+                  message: record.state_message
                 }}
               ></StatusTag>
             );

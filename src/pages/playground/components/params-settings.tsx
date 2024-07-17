@@ -150,7 +150,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </h3>
         <Form.Item<ParamsSettingsFormProps>
           name="model"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
           <SealSelect
             options={ModelList}
@@ -162,7 +162,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </h3>
         <Form.Item<ParamsSettingsFormProps>
           name="temperature"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
           <FieldWrapper
             label={renderLabel({
@@ -188,7 +188,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="max_tokens"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
           <FieldWrapper
             label={renderLabel({
@@ -214,7 +214,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="top_p"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
           <FieldWrapper
             label={renderLabel({
@@ -240,7 +240,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="seed"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
           <SealInput.Number
             label="Seed"
@@ -253,7 +253,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         </Form.Item>
         <Form.Item<ParamsSettingsFormProps>
           name="stop"
-          rules={[{ required: true }]}
+          rules={[{ required: false }]}
         >
           <SealInput.Input
             label="Stop Sequence"

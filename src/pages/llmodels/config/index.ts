@@ -22,14 +22,25 @@ export const modelSourceMap: Record<string, string> = {
 };
 
 export const InstanceStatusMap = {
-  Initializing: 'Initializing',
-  Pending: 'Pending',
-  Running: 'Running',
-  Scheduled: 'Scheduled',
-  Error: 'Error',
-  Downloading: 'Downloading',
-  Unknown: 'Unknown',
-  Analyzing: 'Analyzing'
+  Initializing: 'initializing',
+  Pending: 'pending',
+  Running: 'running',
+  Scheduled: 'scheduled',
+  Error: 'error',
+  Downloading: 'downloading',
+  Unknown: 'unknown',
+  Analyzing: 'analyzing'
+};
+
+export const InstanceStatusMapValue = {
+  [InstanceStatusMap.Initializing]: 'Initializing',
+  [InstanceStatusMap.Pending]: 'Pending',
+  [InstanceStatusMap.Running]: 'Running',
+  [InstanceStatusMap.Scheduled]: 'Scheduled',
+  [InstanceStatusMap.Error]: 'Error',
+  [InstanceStatusMap.Downloading]: 'Downloading',
+  [InstanceStatusMap.Unknown]: 'Unknown',
+  [InstanceStatusMap.Analyzing]: 'Analyzing'
 };
 
 export const status: any = {

@@ -64,6 +64,7 @@ export interface ListItem {
   labels: object;
   state: string;
   ip: string;
+  state_message: string;
   status: {
     cpu: {
       total: number;

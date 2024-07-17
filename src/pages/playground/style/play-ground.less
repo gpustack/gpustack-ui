@@ -2,6 +2,28 @@
   display: flex;
   align-items: flex-start;
 
+  .left {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    width: 391px;
+
+    .collapse-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    transition: width 0.3s ease;
+
+    &.collapse {
+      width: 0;
+      padding-left: 32px;
+      transition: width 0.3s ease;
+    }
+  }
+
   .chat {
     flex: 1;
     display: flex;
@@ -9,16 +31,38 @@
   }
 
   .params {
-    padding: 20px;
-    padding-top: 0;
+    overflow: hidden;
+    height: calc(100vh - 136px);
+
+    .collapse {
+      width: 0;
+      overflow: hidden;
+    }
+  }
+
+  .params-box {
+    padding-inline: 32px;
+    height: 100%;
+    overflow-y: auto;
   }
 
   .divider-line {
     width: 1px;
 
+    &.collapse {
+      width: 0;
+      transition: width 0.3s;
+    }
+
     .ant-divider {
       margin: 0;
-      min-height: calc(100vh - 136px);
+      height: calc(100vh - 136px);
     }
+  }
+}
+
+.playground-container {
+  .ant-pro-page-container-children-container {
+    padding-right: 0;
   }
 }

@@ -11,7 +11,7 @@ import { Col, Row, Space, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
-import { InstanceStatusMap, status } from '../config';
+import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
 
 interface InstanceItemProps {
@@ -22,11 +22,6 @@ interface InstanceItemProps {
     list: ModelInstanceListItem[]
   ) => void;
 }
-
-const testStatus = {
-  state: InstanceStatusMap.Downloading,
-  text: 'Downloading'
-};
 
 const InstanceItem: React.FC<InstanceItemProps> = ({
   list,
@@ -112,7 +107,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         }
                         statusValue={{
                           status: status[item.state] as any,
-                          text: item.state,
+                          text: InstanceStatusMapValue[item.state],
                           message: item.state_message
                         }}
                       ></StatusTag>

@@ -22,15 +22,12 @@ const Models: React.FC = () => {
   const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
-  const dataSourceRef = useRef<any>();
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
     search: ''
   });
-
-  // dataSourceRef.current = dataSource;
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: dataSource,
@@ -51,7 +48,6 @@ const Models: React.FC = () => {
       if (!firstLoad) {
         setDataSource(res.items);
       }
-      // setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
       setDataSource([]);
@@ -154,11 +150,9 @@ const Models: React.FC = () => {
         handleNameChange={handleNameChange}
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
-        createModelsChunkRequest={createModelsChunkRequest}
         queryParams={queryParams}
         loading={loading}
         total={total}
-        fetchData={fetchData}
       ></TableList>
     </TableContext.Provider>
   );

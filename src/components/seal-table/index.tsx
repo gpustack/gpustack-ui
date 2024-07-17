@@ -2,19 +2,17 @@ import { RightOutlined } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
-  Col,
   Empty,
   Pagination,
-  Row,
   Spin,
   type PaginationProps
 } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import TableHeader from './components/table-header';
+import Header from './components/header';
 import TableRow from './components/table-row';
 import './styles/index.less';
-import { SealColumnProps, SealTableProps } from './types';
+import { SealTableProps } from './types';
 
 const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   props
@@ -111,48 +109,6 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     return null;
   };
 
-  const renderHeader = () => {
-    return (
-      <div className="header-row-wrapper">
-        {renderHeaderPrefix()}
-        <Row className="row">
-          {React.Children.map(props.children, (child, i) => {
-            const { props: columnProps } = child as any;
-            const {
-              title,
-              dataIndex,
-              align,
-              span,
-              headerStyle,
-              sortOrder,
-              sorter,
-              defaultSortOrder
-            } = columnProps as SealColumnProps;
-            if (React.isValidElement(child)) {
-              return (
-                <Col span={span} key={i}>
-                  <TableHeader
-                    onSort={onSort}
-                    sorter={sorter}
-                    dataIndex={dataIndex}
-                    sortOrder={sortOrder}
-                    defaultSortOrder={defaultSortOrder}
-                    title={title}
-                    style={headerStyle}
-                    firstCell={i === 0}
-                    align={align}
-                    lastCell={i === props.children.length - 1}
-                  ></TableHeader>
-                </Col>
-              );
-            }
-            return null;
-          })}
-        </Row>
-      </div>
-    );
-  };
-
   const renderContent = useCallback(() => {
     if (!props.dataSource.length) {
       return (
@@ -190,14 +146,12 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   return (
     <>
       <div className="seal-table-container">
-        {renderHeader()}
-        {/* {loading ? (
-          <div className="spin">
-            <Spin></Spin>
+        {
+          <div className="header-row-wrapper">
+            {renderHeaderPrefix()}
+            <Header onSort={onSort}>{children}</Header>
           </div>
-        ) : (
-          renderContent()
-        )} */}
+        }
 
         <Spin spinning={loading}>{renderContent()}</Spin>
       </div>

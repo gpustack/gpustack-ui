@@ -315,7 +315,7 @@ const Resources: React.FC = () => {
                             className="m-r-5"
                             style={{ display: 'flex', width: 25 }}
                           >
-                            [{index}]
+                            [{item.index}]
                           </span>
                           <ProgressBar
                             key={index}

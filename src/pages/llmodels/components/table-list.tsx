@@ -39,10 +39,8 @@ import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
   handleSearch: (e: any) => void;
   handleNameChange: (e: any) => void;
-  fetchData: () => Promise<any>;
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
-  createModelsChunkRequest: () => void;
   queryParams: {
     page: number;
     perPage: number;
@@ -101,14 +99,14 @@ const Models: React.FC<ModelsProps> = ({
     }
   ];
 
-  const setActionList = (record: ListItem) => {
+  const setActionList = useCallback((record: ListItem) => {
     return _.filter(ActionList, (action: any) => {
       if (action.key === 'chat') {
         return record.ready_replicas > 0;
       }
       return true;
     });
-  };
+  }, []);
 
   const handleOnSort = (dataIndex: string, order: any) => {
     console.log('handleTableChange=======', dataIndex, order);

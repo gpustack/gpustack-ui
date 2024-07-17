@@ -172,9 +172,13 @@ const GPUList: React.FC = () => {
                 label={
                   <span className="flex-column">
                     <span>
-                      Total: {convertFileSize(record.memory?.total, 0)}
+                      {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
+                      {convertFileSize(record.memory?.total, 0)}
                     </span>
-                    <span>Used: {convertFileSize(record.memory?.used, 0)}</span>
+                    <span>
+                      {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
+                      {convertFileSize(record.memory?.used, 0)}
+                    </span>
                   </span>
                 }
               ></ProgressBar>

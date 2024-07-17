@@ -17,5 +17,6 @@ export default {
   'resources.table.vramutilization': '显存利用率',
   'resources.table.total': '总量',
   'resources.table.used': '已用',
-  'resources.table.wokers': 'workers'
+  'resources.table.wokers': 'workers',
+  'resources.table.unified': '统一内存'
 };

@@ -10,7 +10,6 @@ import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
 const Models: React.FC = () => {
-  // const { modal } = App.useApp();
   console.log('model list====1');
 
   const { setChunkRequest } = useSetChunkRequest();
@@ -30,9 +29,8 @@ const Models: React.FC = () => {
     perPage: 10,
     search: ''
   });
-  // request data
 
-  dataSourceRef.current = dataSource;
+  // dataSourceRef.current = dataSource;
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: dataSource,
@@ -50,7 +48,10 @@ const Models: React.FC = () => {
       const res: any = await queryModelsList(params, {
         cancelToken: axiosToken.token
       });
-      setDataSource(res.items);
+      if (!firstLoad) {
+        setDataSource(res.items);
+      }
+      // setDataSource(res.items);
       setTotal(res.pagination.total);
     } catch (error) {
       setDataSource([]);
@@ -74,7 +75,7 @@ const Models: React.FC = () => {
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
-      updateChunkedList(data, dataSourceRef.current);
+      updateChunkedList(data);
     });
   };
 

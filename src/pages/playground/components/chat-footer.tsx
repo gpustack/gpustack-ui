@@ -59,20 +59,8 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
   return (
     <div className="chat-footer">
       <Row style={{ width: '100%' }}>
-        <Col span={hasTokenResult ? 8 : 12}>
+        <Col lg={hasTokenResult ? 8 : 12} xs={24} sm={24} md={12}>
           <Space size={20}>
-            {/* <Dropdown
-              menu={{ items: MessageRoles, onClick: onNewMessage }}
-              placement="topLeft"
-            >
-              <Button
-                disabled={disabled}
-                icon={<PlusOutlined />}
-                onClick={onNewMessage}
-              >
-                {intl.formatMessage({ id: 'playground.newMessage' })}
-              </Button>
-            </Dropdown> */}
             <Button
               disabled={disabled}
               icon={<PlusOutlined />}
@@ -120,18 +108,12 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
                 </span>
               </Button>
             ) : (
-              <Button type="primary" onClick={onStop}>
-                <div className="flex flex-center">
-                  <span>
-                    {intl.formatMessage({ id: 'common.button.stop' })}
-                  </span>
-                  <span className="m-l-5 flex flex-center">
-                    <IconFont
-                      type="icon-stop1"
-                      className="font-size-14"
-                    ></IconFont>
-                  </span>
-                </div>
+              <Button
+                type="primary"
+                onClick={onStop}
+                icon={<IconFont type="icon-stop1"></IconFont>}
+              >
+                <span>{intl.formatMessage({ id: 'common.button.stop' })}</span>
               </Button>
             )}
           </Space>

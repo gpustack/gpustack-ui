@@ -17,5 +17,6 @@ export default {
   'resources.table.vramutilization': 'VRAM Utilization',
   'resources.table.total': 'Total',
   'resources.table.used': 'Used',
-  'resources.table.wokers': 'workers'
+  'resources.table.wokers': 'workers',
+  'resources.table.unified': 'Unified Memory'
 };

@@ -4,7 +4,11 @@ import StatusTag from '@/components/status-tag';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize, handleBatchRequest } from '@/utils';
-import { DeleteOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  InfoCircleOutlined,
+  SyncOutlined
+} from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
@@ -306,38 +310,43 @@ const Resources: React.FC = () => {
                   (item: GPUDeviceItem, index) => {
                     return (
                       <span key={index}>
-                        {item.memory.is_unified_memory ? (
-                          'Unified Memory'
-                        ) : (
-                          <span className="flex-center">
-                            <span
-                              className="m-r-5"
-                              style={{ display: 'flex', width: 25 }}
-                            >
-                              [{index}]
-                            </span>
-                            <ProgressBar
-                              key={index}
-                              percent={_.round(item.memory.utilization_rate, 0)}
-                              label={
-                                <span className="flex-column">
-                                  <span>
-                                    {intl.formatMessage({
-                                      id: 'resources.table.total'
-                                    })}
-                                    : {convertFileSize(item.memory?.total, 0)}
-                                  </span>
-                                  <span>
-                                    {intl.formatMessage({
-                                      id: 'resources.table.used'
-                                    })}
-                                    : {convertFileSize(item.memory?.used, 0)}
-                                  </span>
-                                </span>
-                              }
-                            ></ProgressBar>
+                        <span className="flex-center">
+                          <span
+                            className="m-r-5"
+                            style={{ display: 'flex', width: 25 }}
+                          >
+                            [{index}]
                           </span>
-                        )}
+                          <ProgressBar
+                            key={index}
+                            percent={_.round(item.memory.utilization_rate, 0)}
+                            label={
+                              <span className="flex-column">
+                                <span>
+                                  {intl.formatMessage({
+                                    id: 'resources.table.total'
+                                  })}
+                                  : {convertFileSize(item.memory?.total, 0)}
+                                </span>
+                                <span>
+                                  {intl.formatMessage({
+                                    id: 'resources.table.used'
+                                  })}
+                                  : {convertFileSize(item.memory?.used, 0)}
+                                </span>
+                              </span>
+                            }
+                          ></ProgressBar>
+                          {item.memory.is_unified_memory && (
+                            <Tooltip
+                              title={intl.formatMessage({
+                                id: 'resources.table.unified'
+                              })}
+                            >
+                              <InfoCircleOutlined className="m-l-5" />
+                            </Tooltip>
+                          )}
+                        </span>
                       </span>
                     );
                   }

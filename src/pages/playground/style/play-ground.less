@@ -18,8 +18,9 @@
     transition: width 0.3s ease;
 
     &.collapse {
-      width: 0;
+      width: 33px;
       padding-left: 32px;
+      overflow: hidden;
       transition: width 0.3s ease;
     }
   }
@@ -43,7 +44,13 @@
   .params-box {
     padding-inline: 32px;
     height: 100%;
+    width: 390px;
     overflow-y: auto;
+    overflow-x: hidden;
+
+    &.collapse {
+      padding-inline: 0;
+    }
   }
 
   .divider-line {
@@ -51,7 +58,7 @@
 
     &.collapse {
       width: 0;
-      transition: width 0.3s;
+      transition: width 0.3s ease;
     }
 
     .ant-divider {

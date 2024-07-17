@@ -95,7 +95,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 <Col span={6}></Col>
                 <Col span={4}>
                   <span
-                    style={{ paddingLeft: '56px' }}
+                    style={{ paddingLeft: '68px' }}
                     className="flex justify-center"
                   >
                     {item.state && (
@@ -115,7 +115,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                   </span>
                 </Col>
                 <Col span={5}>
-                  <span style={{ paddingLeft: 38 }}>
+                  <span style={{ paddingLeft: 45 }}>
                     {dayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss')}
                   </span>
                 </Col>

@@ -2,7 +2,7 @@ import { MoreOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 
 interface DropdownButtonsProps {
   items: MenuProps['items'];
@@ -16,16 +16,16 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   onSelect
 }) => {
   const intl = useIntl();
-  const handleMenuClick = useCallback((item: any) => {
+  const handleMenuClick = (item: any) => {
     console.log('menu click', item.key);
     const selectItem = _.find(items, { key: item.key });
     onSelect(item.key, selectItem);
-  }, []);
+  };
 
-  const handleButtonClick = useCallback((e: any) => {
+  const handleButtonClick = (e: any) => {
     const headItem = _.head(items);
     onSelect(headItem.key, headItem);
-  }, []);
+  };
 
   if (!items?.length) {
     return <span></span>;

@@ -43,7 +43,14 @@ const TableRow: React.FC<
   const childrenDataRef = useRef<any[]>([]);
   childrenDataRef.current = childrenData;
 
-  console.log('table row====', childrenData, record.name, firstLoad, expanded);
+  console.log(
+    'table row====',
+    record,
+    childrenData,
+    record.name,
+    firstLoad,
+    expanded
+  );
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
     setDataList: setChildrenData

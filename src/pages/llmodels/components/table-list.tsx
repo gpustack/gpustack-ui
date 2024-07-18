@@ -1,9 +1,11 @@
+import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
+import useDeleteModal from '@/hooks/use-delete-modal';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -20,7 +22,7 @@ import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Modal, Space, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { memo, useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -60,10 +62,11 @@ const Models: React.FC<ModelsProps> = ({
   loading,
   total
 }) => {
-  // const { modal } = App.useApp();
   console.log('model list====2');
   const access = useAccess();
   const intl = useIntl();
+  const [modal, contextHolder] = Modal.useModal();
+  const { showDeleteModal } = useDeleteModal();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
   const { handleExpandChange, updateExpandedRowKeys, expandedRowKeys } =
@@ -79,22 +82,27 @@ const Models: React.FC<ModelsProps> = ({
     undefined
   );
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deletConfig, setDeletConfig] = useState<any>({});
+  const modalRef = useRef<any>(null);
 
   const ActionList = [
     {
-      label: intl.formatMessage({ id: 'common.button.edit' }),
+      label: 'common.button.edit',
       key: 'edit',
       icon: <EditOutlined />
     },
     {
-      label: intl.formatMessage({ id: 'models.openinplayground' }),
+      label: 'models.openinplayground',
       key: 'chat',
       icon: <WechatWorkOutlined />
     },
     {
-      label: intl.formatMessage({ id: 'common.button.delete' }),
+      label: 'common.button.delete',
       key: 'delete',
-      danger: true,
+      props: {
+        danger: true
+      },
       icon: <DeleteOutlined />
     }
   ];
@@ -144,7 +152,8 @@ const Models: React.FC<ModelsProps> = ({
     setOpenLogModal(false);
   }, []);
   const handleDelete = async (row: any) => {
-    Modal.confirm({
+    console.log('handleDelete=======111', row);
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -152,16 +161,27 @@ const Models: React.FC<ModelsProps> = ({
       ),
       async onOk() {
         await deleteModel(row.id);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         updateExpandedRowKeys([row.id]);
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
+    // setDeleteModalVisible(true);
+    // setDeletConfig({
+    //   title: '',
+    //   content: intl.formatMessage(
+    //     { id: 'common.delete.confirm' },
+    //     { type: intl.formatMessage({ id: 'models.table.models' }) }
+    //   ),
+    //   async onOk() {
+    //     await deleteModel(row.id);
+    //     updateExpandedRowKeys([row.id]);
+    //   },
+    //   onCancel: () => {
+    //     setDeleteModalVisible(false);
+    //   }
+    // });
   };
   const handleDeleteBatch = () => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -169,12 +189,8 @@ const Models: React.FC<ModelsProps> = ({
       ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection.clearSelections();
         updateExpandedRowKeys(rowSelection.selectedRowKeys);
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
@@ -192,7 +208,7 @@ const Models: React.FC<ModelsProps> = ({
     }
   };
   const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -200,13 +216,9 @@ const Models: React.FC<ModelsProps> = ({
       ),
       async onOk() {
         await deleteModelInstance(row.id);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         if (list.length === 1) {
           updateExpandedRowKeys([row.model_id]);
         }
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
@@ -234,6 +246,7 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleSelect = useCallback((val: any, row: ListItem) => {
     if (val === 'edit') {
+      console.log('row=======', row);
       handleEdit(row);
     }
     if (val === 'chat') {
@@ -393,12 +406,13 @@ const Models: React.FC<ModelsProps> = ({
             key="operation"
             dataIndex="operation"
             render={(text, record) => {
-              return !record.transition ? (
+              console.log('record====9999', record);
+              return (
                 <DropdownButtons
                   items={setActionList(record)}
                   onSelect={(val) => handleSelect(val, record)}
                 ></DropdownButtons>
-              ) : null;
+              );
             }}
           />
         </SealTable>
@@ -416,8 +430,13 @@ const Models: React.FC<ModelsProps> = ({
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
+      <DeleteModal
+        open={deleteModalVisible}
+        {...deletConfig}
+        ref={modalRef}
+      ></DeleteModal>
     </>
   );
 };
 
-export default memo(Models);
+export default Models;

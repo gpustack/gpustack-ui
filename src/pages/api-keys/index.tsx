@@ -1,13 +1,14 @@
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
+import useDeleteModal from '@/hooks/use-delete-modal';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { handleBatchRequest } from '@/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
+import { Button, Input, Space, Table, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ import { ListItem } from './config/types';
 const { Column } = Table;
 
 const Models: React.FC = () => {
+  const { showDeleteModal } = useDeleteModal();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -96,7 +98,7 @@ const Models: React.FC = () => {
   };
 
   const handleDelete = (row: ListItem) => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -105,17 +107,13 @@ const Models: React.FC = () => {
       async onOk() {
         console.log('OK');
         await deleteApisKey(row.id);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
 
   const handleDeleteBatch = () => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -123,12 +121,8 @@ const Models: React.FC = () => {
       ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection.clearSelections();
         fetchData();
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
@@ -214,7 +208,9 @@ const Models: React.FC = () => {
             dataIndex="expires_at"
             key="expiration"
             render={(text, record) => {
-              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+              return text
+                ? dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+                : intl.formatMessage({ id: 'apikeys.form.expiration.never' });
             }}
           />
           <Column
@@ -232,7 +228,7 @@ const Models: React.FC = () => {
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}
-            sorter={true}
+            sorter={false}
             render={(text, record) => {
               return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
             }}

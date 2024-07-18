@@ -30,9 +30,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   console.log('instance item====');
 
   const intl = useIntl();
+
   const childActionList = [
     {
-      label: intl.formatMessage({ id: 'common.button.viewlog' }),
+      label: 'common.button.viewlog',
       key: 'viewlog',
       status: [
         InstanceStatusMap.Running,
@@ -42,9 +43,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       icon: <FieldTimeOutlined />
     },
     {
-      label: intl.formatMessage({ id: 'common.button.delete' }),
+      label: 'common.button.delete',
       key: 'delete',
-      danger: true,
+      props: {
+        danger: true
+      },
       icon: <DeleteOutlined />
     }
   ];

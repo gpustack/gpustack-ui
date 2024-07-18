@@ -2,6 +2,7 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
+import useDeleteModal from '@/hooks/use-delete-modal';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { handleBatchRequest } from '@/utils';
@@ -15,7 +16,7 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Modal, Space, Table, message } from 'antd';
+import { Button, Input, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -30,6 +31,7 @@ const Users: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const { showDeleteModal } = useDeleteModal();
   const intl = useIntl();
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -49,13 +51,15 @@ const Users: React.FC = () => {
   const ActionList = [
     {
       key: 'edit',
-      label: intl.formatMessage({ id: 'common.button.edit' }),
+      label: 'common.button.edit',
       icon: <EditOutlined></EditOutlined>
     },
     {
       key: 'delete',
-      danger: true,
-      label: intl.formatMessage({ id: 'common.button.delete' }),
+      props: {
+        danger: true
+      },
+      label: 'common.button.delete',
       icon: <DeleteOutlined></DeleteOutlined>
     }
   ];
@@ -138,7 +142,7 @@ const Users: React.FC = () => {
   };
 
   const handleDelete = (row: ListItem) => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -147,17 +151,13 @@ const Users: React.FC = () => {
       async onOk() {
         console.log('OK');
         await deleteUser(row.id);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
 
   const handleDeleteBatch = () => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -165,12 +165,8 @@ const Users: React.FC = () => {
       ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection.clearSelections();
         fetchData();
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
@@ -295,7 +291,7 @@ const Users: React.FC = () => {
             defaultSortOrder="descend"
             sortOrder={sortOrder}
             showSorterTooltip={false}
-            sorter={true}
+            sorter={false}
             render={(text, record) => {
               return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
             }}

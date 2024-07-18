@@ -1,6 +1,7 @@
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
+import useDeleteModal from '@/hooks/use-delete-modal';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize, handleBatchRequest } from '@/utils';
@@ -10,7 +11,7 @@ import {
   SyncOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Modal, Space, Table, Tooltip, message } from 'antd';
+import { Button, Input, Space, Table, Tooltip } from 'antd';
 import _ from 'lodash';
 import { memo, useEffect, useState } from 'react';
 import { deleteWorker, queryWorkersList } from '../apis';
@@ -24,6 +25,7 @@ const Resources: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const { showDeleteModal } = useDeleteModal();
   const rowSelection = useTableRowSelection();
   const intl = useIntl();
   const [total, setTotal] = useState(0);
@@ -100,7 +102,7 @@ const Resources: React.FC = () => {
   };
 
   const handleDelete = (row: ListItem) => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -109,17 +111,13 @@ const Resources: React.FC = () => {
       async onOk() {
         console.log('OK');
         await deleteWorker(row.id);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         fetchData();
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };
 
   const handleDeleteBatch = () => {
-    Modal.confirm({
+    showDeleteModal({
       title: '',
       content: intl.formatMessage(
         { id: 'common.delete.confirm' },
@@ -127,12 +125,8 @@ const Resources: React.FC = () => {
       ),
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
         rowSelection.clearSelections();
         fetchData();
-      },
-      onCancel() {
-        console.log('Cancel');
       }
     });
   };

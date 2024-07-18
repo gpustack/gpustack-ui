@@ -1,4 +1,5 @@
 import { MoreOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback } from 'react';
@@ -14,6 +15,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   size = 'small',
   onSelect
 }) => {
+  const intl = useIntl();
   const handleMenuClick = useCallback((item: any) => {
     console.log('menu click', item.key);
     const selectItem = _.find(items, { key: item.key });
@@ -32,22 +34,52 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   return (
     <>
       {items?.length === 1 ? (
-        <Tooltip title={_.head(items)?.label}>
+        <Tooltip title={intl.formatMessage({ id: _.head(items)?.label })}>
           <Button
             {..._.head(items)}
             icon={_.get(items, '0.icon')}
             size={size}
+            {..._.get(items, '0.props')}
             onClick={handleButtonClick}
           ></Button>
         </Tooltip>
       ) : (
         <Dropdown.Button
-          menu={{
-            items: _.tail(items),
-            onClick: handleMenuClick
+          dropdownRender={(menus: any) => {
+            return (
+              <div
+                className="flex flex-column "
+                style={{
+                  backgroundColor: 'var(--color-white-1)',
+                  padding: 5,
+                  alignItems: 'flex-start',
+                  borderRadius: 'var(--border-radius-base)',
+                  boxShadow: 'var(--ant-box-shadow-secondary)'
+                }}
+              >
+                {_.map(_.tail(items), (item: any) => {
+                  return (
+                    <Button
+                      {...item.props}
+                      type="text"
+                      size="middle"
+                      icon={item.icon}
+                      key={item.key}
+                      onClick={() => handleMenuClick(item)}
+                      style={{ width: '100%', justifyContent: 'flex-start' }}
+                    >
+                      {intl.formatMessage({ id: item.label })}
+                    </Button>
+                  );
+                })}
+              </div>
+            );
           }}
           buttonsRender={([leftButton, rightButton]) => [
-            <Tooltip title={_.head(items)?.label} key="leftButton">
+            <Tooltip
+              title={intl.formatMessage({ id: _.head(items)?.label })}
+              key="leftButton"
+            >
               <Button
                 onClick={handleButtonClick}
                 size={size}

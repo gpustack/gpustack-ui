@@ -6,6 +6,7 @@ import { SealColumnProps } from '../types';
 
 const SealColumn: React.FC<SealColumnProps> = (props) => {
   const row: Record<string, any> = useContext(RowContext);
+  console.log('seal column====', row);
   const { dataIndex, render, align } = props;
   return (
     <div

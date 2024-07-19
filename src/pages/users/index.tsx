@@ -1,8 +1,8 @@
+import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
-import useDeleteModal from '@/hooks/use-delete-modal';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { handleBatchRequest } from '@/utils';
@@ -19,7 +19,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
@@ -31,8 +31,8 @@ const Users: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const { showDeleteModal } = useDeleteModal();
   const intl = useIntl();
+  const modalRef = useRef<any>(null);
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -142,12 +142,9 @@ const Users: React.FC = () => {
   };
 
   const handleDelete = (row: ListItem) => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'users.table.user' }) }
-      ),
+      content: 'users.table.user',
       async onOk() {
         console.log('OK');
         await deleteUser(row.id);
@@ -157,12 +154,9 @@ const Users: React.FC = () => {
   };
 
   const handleDeleteBatch = () => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'users.table.user' }) }
-      ),
+      content: 'users.table.user',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);
         rowSelection.clearSelections();
@@ -319,6 +313,7 @@ const Users: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
 };

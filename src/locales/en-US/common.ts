@@ -191,5 +191,6 @@ export default {
   'common.button.help': 'Help',
   'common.button.feedback': 'Feedback',
   'common.button.docs': 'Documentation',
-  'common.button.version': 'Version'
+  'common.button.version': 'Version',
+  'common.title.delete.confirm': 'Confirm delete'
 };

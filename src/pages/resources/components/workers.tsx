@@ -1,7 +1,7 @@
+import DeleteModal from '@/components/delete-modal';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
-import useDeleteModal from '@/hooks/use-delete-modal';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize, handleBatchRequest } from '@/utils';
@@ -13,7 +13,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table, Tooltip } from 'antd';
 import _ from 'lodash';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { deleteWorker, queryWorkersList } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
@@ -25,7 +25,7 @@ const Resources: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const { showDeleteModal } = useDeleteModal();
+  const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const intl = useIntl();
   const [total, setTotal] = useState(0);
@@ -102,12 +102,9 @@ const Resources: React.FC = () => {
   };
 
   const handleDelete = (row: ListItem) => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: ' worker ' }
-      ),
+      content: 'worker',
       async onOk() {
         console.log('OK');
         await deleteWorker(row.id);
@@ -117,12 +114,9 @@ const Resources: React.FC = () => {
   };
 
   const handleDeleteBatch = () => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: ` wokers ` }
-      ),
+      content: 'wokers',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);
         rowSelection.clearSelections();
@@ -279,7 +273,7 @@ const Resources: React.FC = () => {
                         className="m-r-5"
                         style={{ display: 'flex', width: 25 }}
                       >
-                        [{index}]
+                        [{item.index}]
                       </span>
                       <ProgressBar
                         key={index}
@@ -383,6 +377,7 @@ const Resources: React.FC = () => {
           }}
         />
       </Table>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
 };

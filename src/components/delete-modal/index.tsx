@@ -1,29 +1,77 @@
-import ModalFooter from '@/components/modal-footer';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Modal, type ModalFuncProps } from 'antd';
-import { forwardRef } from 'react';
+import { Button, Modal, Space, message, type ModalFuncProps } from 'antd';
+import { forwardRef, useImperativeHandle, useState } from 'react';
+import Styles from './index.less';
 
-const DeleteModal: React.FC<ModalFuncProps> = forwardRef((props, ref) => {
+const DeleteModal = forwardRef((props, ref) => {
   const intl = useIntl();
-  const { title, open, onOk, onCancel, content } = props;
+  const [visible, setVisible] = useState(false);
+  const [config, setConfig] = useState<ModalFuncProps & { content: string }>(
+    {}
+  );
+
+  useImperativeHandle(ref, () => ({
+    show: (data: ModalFuncProps & { content: string }) => {
+      setConfig(data);
+      setVisible(true);
+    },
+    hide: () => {
+      setVisible(false);
+    }
+  }));
+
+  const handleCancel = () => {
+    setVisible(false);
+    config.onCancel?.();
+  };
+
+  const handleOk = async () => {
+    await config.onOk?.();
+    message.success(intl.formatMessage({ id: 'common.message.success' }));
+    setVisible(false);
+  };
 
   return (
     <Modal
-      title={title}
-      simple={true}
-      open={open}
-      centered={true}
-      onOk={onOk}
-      onCancel={onCancel}
+      style={{
+        top: '20%'
+      }}
+      open={visible}
+      onOk={handleOk}
+      onCancel={handleCancel}
       destroyOnClose={true}
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      width={460}
       styles={{}}
-      footer={<ModalFooter onCancel={onCancel} onOk={onOk}></ModalFooter>}
+      footer={
+        <Space size={20}>
+          <Button onClick={handleCancel} size="middle">
+            {intl.formatMessage({ id: 'common.button.cancel' })}
+          </Button>
+          <Button type="primary" onClick={handleOk} size="middle">
+            {intl.formatMessage({ id: 'common.button.delete' })}
+          </Button>
+        </Space>
+      }
     >
-      {content}
+      <div className={Styles['delete-modal-content']}>
+        <span className="title">
+          <ExclamationCircleFilled />
+          <span>
+            {intl.formatMessage({ id: 'common.title.delete.confirm' })}
+          </span>
+        </span>
+      </div>
+      <div className={Styles['content']}>
+        {config.content &&
+          intl.formatMessage(
+            { id: 'common.delete.confirm' },
+            { type: intl.formatMessage({ id: config.content }) }
+          )}
+      </div>
     </Modal>
   );
 });

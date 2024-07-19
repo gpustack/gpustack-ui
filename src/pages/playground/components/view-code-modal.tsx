@@ -143,7 +143,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     readOnly: true,
     formatOnType: true,
     formatOnPaste: true,
-    fontWeight: 700,
+    fontWeight: 'bold',
     scrollbar: {
       verticalSliderSize: 8
     }

@@ -143,7 +143,6 @@ const Users: React.FC = () => {
 
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
-      title: '',
       content: 'users.table.user',
       async onOk() {
         console.log('OK');
@@ -155,7 +154,6 @@ const Users: React.FC = () => {
 
   const handleDeleteBatch = () => {
     modalRef.current.show({
-      title: '',
       content: 'users.table.user',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);

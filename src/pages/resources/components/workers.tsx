@@ -103,7 +103,6 @@ const Resources: React.FC = () => {
 
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
-      title: '',
       content: 'worker',
       async onOk() {
         console.log('OK');
@@ -115,7 +114,6 @@ const Resources: React.FC = () => {
 
   const handleDeleteBatch = () => {
     modalRef.current.show({
-      title: '',
       content: 'wokers',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);

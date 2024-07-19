@@ -18,7 +18,7 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Input, Modal, Space, message } from 'antd';
+import { Button, Input, Space, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useCallback, useRef, useState } from 'react';
@@ -64,7 +64,6 @@ const Models: React.FC<ModelsProps> = ({
   console.log('model list====2');
   const access = useAccess();
   const intl = useIntl();
-  const [modal, contextHolder] = Modal.useModal();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
   const { handleExpandChange, updateExpandedRowKeys, expandedRowKeys } =
@@ -149,7 +148,6 @@ const Models: React.FC<ModelsProps> = ({
   }, []);
   const handleDelete = async (row: any) => {
     modalRef.current.show({
-      title: '',
       content: 'models.table.models',
       async onOk() {
         await deleteModel(row.id);
@@ -159,7 +157,6 @@ const Models: React.FC<ModelsProps> = ({
   };
   const handleDeleteBatch = () => {
     modalRef.current.show({
-      title: '',
       content: 'models.table.models',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
@@ -183,7 +180,6 @@ const Models: React.FC<ModelsProps> = ({
   };
   const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
     modalRef.current.show({
-      title: '',
       content: 'models.instances',
       async onOk() {
         await deleteModelInstance(row.id);

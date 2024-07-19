@@ -7,26 +7,10 @@ export interface DashboardProps {
   };
   system_load: {
     current: {
-      cpu: {
-        total: number;
-        used: number;
-        utilization_rate: number;
-      };
-      memory: {
-        total: number;
-        used: number;
-        utilization_rate: number;
-      };
-      gpu: {
-        total: number;
-        used: number;
-        utilization_rate: number;
-      };
-      gpu_memory: {
-        total: number;
-        used: number;
-        utilization_rate: number;
-      };
+      cpu: number;
+      memory: number;
+      gpu: number;
+      gpu_memory: number;
     };
     history: {
       cpu: {

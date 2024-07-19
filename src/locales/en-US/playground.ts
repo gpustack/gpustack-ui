@@ -27,6 +27,7 @@ export default {
     'If specified, our system will make a best effort to sample deterministically, such that repeated requests with the same seed and parameters should return the same result.',
   'playground.params.stop.tips':
     'A stop sequence is a predefined or user-specified text string that signals the AI to stop generating further tokens when these sequences appear.',
-  'playground.viewcode.tips': 'Your API Key can be found {here}',
+  'playground.viewcode.tips':
+    'Your API Key can be found {here}.You should use environment variables or a secret management tool to expose your key to your applications.',
   'playground.viewcode.here': 'here'
 };

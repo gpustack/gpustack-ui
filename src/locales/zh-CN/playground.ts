@@ -27,6 +27,7 @@ export default {
     '如果指定，我们的系统将尽最大努力进行确定性采样，以便使用相同 seed 和参数的重复请求应返回相同的结果。',
   'playground.params.stop.tips':
     '停止序列是一个预定义或用户指定的文本字符串，当这些序列出现时，它会提示 AI 停止生成后续的 token。',
-  'playground.viewcode.tips': '{here} 查看 API 密钥。',
+  'playground.viewcode.tips':
+    '{here} 查看 API 密钥。您应该使用环境变量或秘密管理工具将您的密钥暴露给您的应用程序。',
   'playground.viewcode.here': '这里'
 };

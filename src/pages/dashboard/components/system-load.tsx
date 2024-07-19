@@ -70,8 +70,8 @@ const SystemLoad = () => {
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <GaugeChart
                     height={smallChartHeight}
-                    value={_.round(data.gpu?.utilization_rate || 0, 1)}
-                    color={strokeColorFunc(data.gpu?.utilization_rate)}
+                    value={_.round(data.gpu || 0, 1)}
+                    color={strokeColorFunc(data.gpu)}
                     title={intl.formatMessage({
                       id: 'dashboard.gpuutilization'
                     })}
@@ -83,8 +83,8 @@ const SystemLoad = () => {
                       id: 'dashboard.vramutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.gpu_memory?.utilization_rate)}
-                    value={_.round(data.gpu_memory?.utilization_rate || 0, 1)}
+                    color={strokeColorFunc(data.gpu_memory)}
+                    value={_.round(data.gpu_memory || 0, 1)}
                   ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
@@ -93,8 +93,8 @@ const SystemLoad = () => {
                       id: 'dashboard.cpuutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.cpu?.utilization_rate)}
-                    value={_.round(data.cpu?.utilization_rate || 0, 1)}
+                    color={strokeColorFunc(data.cpu)}
+                    value={_.round(data.cpu || 0, 1)}
                   ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
@@ -103,8 +103,8 @@ const SystemLoad = () => {
                       id: 'dashboard.memoryutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.memory?.utilization_rate)}
-                    value={_.round(data.memory?.utilization_rate || 0, 1)}
+                    color={strokeColorFunc(data.memory)}
+                    value={_.round(data.memory || 0, 1)}
                   ></GaugeChart>
                 </Col>
               </Row>

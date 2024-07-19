@@ -7,7 +7,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Modal, Select, Tag } from 'antd';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createApisKey } from '../apis';
 import { expirationOptions } from '../config';
 import { FormData } from '../config/types';
@@ -33,11 +33,17 @@ const AddModal: React.FC<AddModalProps> = ({
   const [apikeyValue, setAPIKeyValue] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (action === PageAction.CREATE && open) {
-    form.setFieldsValue({
-      expires_in: 1
-    });
-  }
+  const initValues = () => {
+    if (action === PageAction.CREATE && open) {
+      form.setFieldsValue({
+        expires_in: 1
+      });
+    }
+  };
+
+  useEffect(() => {
+    initValues();
+  }, [open]);
 
   const getExpireValue = (val: number | null) => {
     const expires_in = val;

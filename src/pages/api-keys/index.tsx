@@ -18,7 +18,7 @@ import { ListItem } from './config/types';
 
 const { Column } = Table;
 
-const Models: React.FC = () => {
+const APIKeys: React.FC = () => {
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -85,10 +85,10 @@ const Models: React.FC = () => {
 
   const handleModalOk = async () => {
     try {
+      await fetchData();
       setOpenAddModal(false);
-      fetchData();
     } catch (error) {
-      setOpenAddModal(false);
+      // do nothing
     }
   };
 
@@ -99,7 +99,6 @@ const Models: React.FC = () => {
 
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
-      title: '',
       content: 'apikeys.table.apikeys',
       async onOk() {
         console.log('OK');
@@ -111,7 +110,6 @@ const Models: React.FC = () => {
 
   const handleDeleteBatch = () => {
     modalRef.current.show({
-      title: '',
       content: 'apikeys.table.apikeys',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
@@ -261,4 +259,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default Models;
+export default APIKeys;

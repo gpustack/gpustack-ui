@@ -1,12 +1,7 @@
 import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
 import { platformCall } from '@/utils';
-import {
-  CodeOutlined,
-  DeleteOutlined,
-  EnterOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
+import { DeleteOutlined, EnterOutlined, PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Col, Row, Space } from 'antd';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -81,7 +76,9 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
         <Col span={hasTokenResult ? 8 : 12} style={{ textAlign: 'right' }}>
           <Space size={20}>
             <Button
-              icon={<CodeOutlined></CodeOutlined>}
+              icon={
+                <IconFont type="icon-code" className="font-size-16"></IconFont>
+              }
               onClick={onView}
               disabled={disabled}
             >

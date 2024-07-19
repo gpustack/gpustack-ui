@@ -149,6 +149,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleDelete = async (row: any) => {
     modalRef.current.show({
       content: 'models.table.models',
+      name: row.name,
       async onOk() {
         await deleteModel(row.id);
         updateExpandedRowKeys([row.id]);
@@ -158,6 +159,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'models.table.models',
+      selection: true,
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
         rowSelection.clearSelections();
@@ -181,6 +183,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
     modalRef.current.show({
       content: 'models.instances',
+      name: row.name,
       async onOk() {
         await deleteModelInstance(row.id);
         if (list.length === 1) {

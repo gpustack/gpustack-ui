@@ -28,6 +28,6 @@ export default {
   'playground.params.stop.tips':
     '停止序列是一个预定义或用户指定的文本字符串，当这些序列出现时，它会提示 AI 停止生成后续的 token。',
   'playground.viewcode.tips':
-    '{here} 查看 API 密钥。您应该使用环境变量或秘密管理工具将您的密钥暴露给您的应用程序。',
+    '{here} 查看 API 密钥。您应该使用环境变量或密钥管理工具将您的密钥暴露给您的应用程序。',
   'playground.viewcode.here': '这里'
 };

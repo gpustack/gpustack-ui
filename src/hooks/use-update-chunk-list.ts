@@ -18,6 +18,14 @@ export function useUpdateChunkedList(options: {
   computedID?: (d: object) => string;
 }) {
   const cacheDataListRef = useRef<any[]>(options.dataList || []);
+  const timerRef = useRef<any>(null);
+
+  const debounceUpdateChunckedList = () => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      options.setDataList?.([...cacheDataListRef.current]);
+    }, 100);
+  };
   const updateChunkedList = (
     data: ChunkedCollection,
     dataList?: { id: string | number }[]
@@ -25,7 +33,7 @@ export function useUpdateChunkedList(options: {
     console.log('updateChunkedList=====', {
       ids: data?.ids,
       type: data?.type,
-      collection: data?.collection,
+      collection: data?.collection.length,
       dataList: _.map(dataList, (o: any) => o.id)
     });
     let collections = data?.collection || [];
@@ -57,7 +65,7 @@ export function useUpdateChunkedList(options: {
         console.log('create=========', updateIndex, collections);
       });
       cacheDataListRef.current = [...newDataList, ...cacheDataListRef.current];
-      options.setDataList?.([...cacheDataListRef.current]);
+      // options.setDataList?.([...cacheDataListRef.current]);
     }
     // DELETE
     if (data?.type === WatchEventType.DELETE) {
@@ -69,7 +77,8 @@ export function useUpdateChunkedList(options: {
       );
       // console.log('updateChunkedList=====delete', updatedList);
       // return updatedList;
-      options.setDataList?.([...cacheDataListRef.current]);
+
+      // options.setDataList?.([...cacheDataListRef.current]);
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
@@ -88,8 +97,10 @@ export function useUpdateChunkedList(options: {
         }
       });
       console.log('updateChunkedList=====update', cacheDataListRef.current);
-      options.setDataList?.([...cacheDataListRef.current]);
+      // options.setDataList?.([...cacheDataListRef.current]);
     }
+
+    debounceUpdateChunckedList();
     if (options?.callback) {
       options?.callback(cacheDataListRef.current);
     }

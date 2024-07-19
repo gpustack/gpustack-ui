@@ -116,7 +116,7 @@ const AddModal: React.FC<AddModalProps> = ({
           name="password"
           rules={[
             {
-              required: true,
+              required: action === PageAction.CREATE,
               pattern: PasswordReg,
               message: intl.formatMessage({ id: 'users.form.rule.password' })
             }
@@ -124,7 +124,7 @@ const AddModal: React.FC<AddModalProps> = ({
         >
           <SealInput.Password
             label={intl.formatMessage({ id: 'common.form.password' })}
-            required
+            required={action === PageAction.CREATE}
           ></SealInput.Password>
         </Form.Item>
       </Form>

@@ -56,10 +56,15 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer {YOUR_GUPSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
-          messages: [...systemList, ...messageList]
+          messages: [
+            ...systemList,
+            ..._.map(messageList, (item: any) => {
+              return { role: item.role, content: item.content };
+            })
+          ]
         },
         null,
         2
@@ -69,10 +74,15 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n"apiKey": $\{GUPSTACK_API_KEY},\n"baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\nconst params = ${JSON.stringify(
+      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n"apiKey": "YOUR_GUPSTACK_API_KEY",\n"baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\nconst params = ${JSON.stringify(
         {
           ...parameters,
-          messages: [...systemList, ...messageList]
+          messages: [
+            ...systemList,
+            ..._.map(messageList, (item: any) => {
+              return { role: item.role, content: item.content };
+            })
+          ]
         },
         null,
         2
@@ -95,7 +105,16 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `from openai import OpenAI\n\nbaseURL = ${BaseURL}\n\nclient = OpenAI(\nbase_url=baseURL, \napi_key="$\{GUPSTACK_API_KEY}"\n)\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify([...systemList, ...messageList], null, 2)})\nprint(completion.choices[0].message.content)`;
+      const code = `from openai import OpenAI\n\nbaseURL = "${BaseURL}"\n\nclient = OpenAI(\nbase_url=baseURL, \napi_key="YOUR_GUPSTACK_API_KEY"\n)\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify(
+        [
+          ...systemList,
+          ..._.map(messageList, (item: any) => {
+            return { role: item.role, content: item.content };
+          })
+        ],
+        null,
+        2
+      )})\nprint(completion.choices[0].message.content)`;
       setCodeValue(code);
     }
     formatCode();

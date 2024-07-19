@@ -5,7 +5,6 @@ import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
-import useDeleteModal from '@/hooks/use-delete-modal';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -66,7 +65,6 @@ const Models: React.FC<ModelsProps> = ({
   const access = useAccess();
   const intl = useIntl();
   const [modal, contextHolder] = Modal.useModal();
-  const { showDeleteModal } = useDeleteModal();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
   const { handleExpandChange, updateExpandedRowKeys, expandedRowKeys } =
@@ -82,8 +80,6 @@ const Models: React.FC<ModelsProps> = ({
     undefined
   );
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
-  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [deletConfig, setDeletConfig] = useState<any>({});
   const modalRef = useRef<any>(null);
 
   const ActionList = [
@@ -152,41 +148,19 @@ const Models: React.FC<ModelsProps> = ({
     setOpenLogModal(false);
   }, []);
   const handleDelete = async (row: any) => {
-    console.log('handleDelete=======111', row);
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'models.table.models' }) }
-      ),
+      content: 'models.table.models',
       async onOk() {
         await deleteModel(row.id);
         updateExpandedRowKeys([row.id]);
       }
     });
-    // setDeleteModalVisible(true);
-    // setDeletConfig({
-    //   title: '',
-    //   content: intl.formatMessage(
-    //     { id: 'common.delete.confirm' },
-    //     { type: intl.formatMessage({ id: 'models.table.models' }) }
-    //   ),
-    //   async onOk() {
-    //     await deleteModel(row.id);
-    //     updateExpandedRowKeys([row.id]);
-    //   },
-    //   onCancel: () => {
-    //     setDeleteModalVisible(false);
-    //   }
-    // });
   };
   const handleDeleteBatch = () => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'models.table.models' }) }
-      ),
+      content: 'models.table.models',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
         rowSelection.clearSelections();
@@ -208,12 +182,9 @@ const Models: React.FC<ModelsProps> = ({
     }
   };
   const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'models.instances' }) }
-      ),
+      content: 'models.instances',
       async onOk() {
         await deleteModelInstance(row.id);
         if (list.length === 1) {
@@ -430,11 +401,7 @@ const Models: React.FC<ModelsProps> = ({
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
-      <DeleteModal
-        open={deleteModalVisible}
-        {...deletConfig}
-        ref={modalRef}
-      ></DeleteModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
 };

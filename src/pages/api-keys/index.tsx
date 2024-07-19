@@ -1,7 +1,7 @@
+import DeleteModal from '@/components/delete-modal';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
-import useDeleteModal from '@/hooks/use-delete-modal';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { handleBatchRequest } from '@/utils';
@@ -11,7 +11,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
 import { ListItem } from './config/types';
@@ -19,12 +19,12 @@ import { ListItem } from './config/types';
 const { Column } = Table;
 
 const Models: React.FC = () => {
-  const { showDeleteModal } = useDeleteModal();
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
   const intl = useIntl();
+  const modalRef = useRef<any>(null);
   const [dataSource, setDataSource] = useState([]);
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -98,12 +98,9 @@ const Models: React.FC = () => {
   };
 
   const handleDelete = (row: ListItem) => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'apikeys.table.apikeys' }) }
-      ),
+      content: 'apikeys.table.apikeys',
       async onOk() {
         console.log('OK');
         await deleteApisKey(row.id);
@@ -113,12 +110,9 @@ const Models: React.FC = () => {
   };
 
   const handleDeleteBatch = () => {
-    showDeleteModal({
+    modalRef.current.show({
       title: '',
-      content: intl.formatMessage(
-        { id: 'common.delete.confirm' },
-        { type: intl.formatMessage({ id: 'apikeys.table.apikeys' }) }
-      ),
+      content: 'apikeys.table.apikeys',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
         rowSelection.clearSelections();
@@ -262,6 +256,7 @@ const Models: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
 };

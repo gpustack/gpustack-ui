@@ -175,7 +175,7 @@ export default {
   'common.table.user': '用户',
   'common.settings.instructions': '操作指引',
   'common.settings.language': '语言',
-  'common.delete.confirm': '确定删除选中的{type}吗？',
+  'common.delete.confirm': '删除选中的{type}吗？',
   'common.filter.name': '名称查询',
   'common.form.password': '密码',
   'common.form.username': '用户名',
@@ -184,5 +184,6 @@ export default {
   'common.button.help': '帮助',
   'common.button.feedback': '反馈',
   'common.button.docs': '文档',
-  'common.button.version': '版本'
+  'common.button.version': '版本',
+  'common.title.delete.confirm': '确认删除'
 };

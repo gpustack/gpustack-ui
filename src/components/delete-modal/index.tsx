@@ -7,12 +7,18 @@ import Styles from './index.less';
 const DeleteModal = forwardRef((props, ref) => {
   const intl = useIntl();
   const [visible, setVisible] = useState(false);
-  const [config, setConfig] = useState<ModalFuncProps & { content: string }>(
-    {}
-  );
+  const [config, setConfig] = useState<
+    ModalFuncProps & { content: string; selection?: boolean; name?: string }
+  >({});
 
   useImperativeHandle(ref, () => ({
-    show: (data: ModalFuncProps & { content: string }) => {
+    show: (
+      data: ModalFuncProps & {
+        content: string;
+        selection?: boolean;
+        name?: string;
+      }
+    ) => {
       setConfig(data);
       setVisible(true);
     },
@@ -68,8 +74,15 @@ const DeleteModal = forwardRef((props, ref) => {
       <div className={Styles['content']}>
         {config.content &&
           intl.formatMessage(
-            { id: 'common.delete.confirm' },
-            { type: intl.formatMessage({ id: config.content }) }
+            {
+              id: config.selection
+                ? 'common.delete.confirm'
+                : 'common.delete.single.confirm'
+            },
+            {
+              type: intl.formatMessage({ id: config.content }),
+              name: config.name
+            }
           )}
       </div>
     </Modal>

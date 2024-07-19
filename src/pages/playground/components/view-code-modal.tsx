@@ -74,7 +74,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\nconst params = ${JSON.stringify(
+      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
           messages: [
@@ -85,8 +85,8 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
           ]
         },
         null,
-        2
-      )};\nconst chatCompletion = await openai.chat.completions.create(params);\n  console.log(chatCompletion.choices[0]);\n}\nmain();`;
+        4
+      )};\nconst chatCompletion = await openai.chat.completions.create(params);\n  console.log(chatCompletion.choices[0].message.content);\n}\nmain();`;
       setCodeValue(code);
     } else if (lang === 'python') {
       const formattedParams = _.keys(parameters).reduce(
@@ -135,6 +135,9 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   };
   const editorConfig = {
     minimap: {
+      enabled: false
+    },
+    hover: {
       enabled: false
     },
     readOnly: true,

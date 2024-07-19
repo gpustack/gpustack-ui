@@ -25,7 +25,7 @@ const APIKeys: React.FC = () => {
   });
   const intl = useIntl();
   const modalRef = useRef<any>(null);
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -100,6 +100,7 @@ const APIKeys: React.FC = () => {
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
       content: 'apikeys.table.apikeys',
+      name: row.name,
       async onOk() {
         console.log('OK');
         await deleteApisKey(row.id);
@@ -111,6 +112,7 @@ const APIKeys: React.FC = () => {
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'apikeys.table.apikeys',
+      selection: true,
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
         rowSelection.clearSelections();

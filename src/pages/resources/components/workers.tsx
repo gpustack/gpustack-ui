@@ -54,13 +54,6 @@ const Resources: React.FC = () => {
       setLoading(false);
     }
   };
-  const handleShowSizeChange = (current: number, size: number) => {
-    setQueryParams({
-      ...queryParams,
-      page: current,
-      perPage: size || 10
-    });
-  };
 
   const handlePageChange = (page: number, perPage: number | undefined) => {
     console.log(page, perPage);
@@ -104,6 +97,7 @@ const Resources: React.FC = () => {
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
       content: 'worker',
+      name: row.name,
       async onOk() {
         console.log('OK');
         await deleteWorker(row.id);
@@ -115,6 +109,7 @@ const Resources: React.FC = () => {
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'wokers',
+      selection: true,
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);
         rowSelection.clearSelections();

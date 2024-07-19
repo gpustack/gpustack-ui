@@ -56,7 +56,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer {YOUR_GUPSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
           messages: [
@@ -74,7 +74,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n"apiKey": "YOUR_GUPSTACK_API_KEY",\n"baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\nconst params = ${JSON.stringify(
+      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\nconst params = ${JSON.stringify(
         {
           ...parameters,
           messages: [
@@ -86,7 +86,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         },
         null,
         2
-      )};\nconst chatCompletion = await openai.chat.completions.create(params);\nfor await (const chunk of chatCompletion) {\n  process.stdout.write(chunk.choices[0]?.message?.content || '');\n}\n}\nmain();`;
+      )};\nconst chatCompletion = await openai.chat.completions.create(params);\n  console.log(chatCompletion.choices[0]);\n}\nmain();`;
       setCodeValue(code);
     } else if (lang === 'python') {
       const formattedParams = _.keys(parameters).reduce(
@@ -105,7 +105,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `from openai import OpenAI\n\nbaseURL = "${BaseURL}"\n\nclient = OpenAI(\nbase_url=baseURL, \napi_key="YOUR_GUPSTACK_API_KEY"\n)\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify(
+      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify(
         [
           ...systemList,
           ..._.map(messageList, (item: any) => {
@@ -186,7 +186,9 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
               onMount={handleEditorDidMount}
             />
           </EditorWrap>
-          <div style={{ marginTop: 10 }}>
+          <div
+            style={{ marginTop: 10, display: 'flex', alignItems: 'baseline' }}
+          >
             <BulbOutlined className="m-r-8" />
             <span>
               {intl.formatMessage(

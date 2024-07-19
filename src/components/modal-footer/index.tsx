@@ -26,12 +26,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   const intl = useIntl();
   return (
     <Space size={20}>
-      <Button
-        onClick={onCancel}
-        style={{ width: '88px' }}
-        loading={loading}
-        {...cancelBtnProps}
-      >
+      <Button onClick={onCancel} style={{ width: '88px' }} {...cancelBtnProps}>
         {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
       </Button>
       <Button

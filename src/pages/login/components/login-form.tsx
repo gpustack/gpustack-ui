@@ -194,12 +194,20 @@ const LoginForm = () => {
               label={intl.formatMessage({ id: 'common.form.password' })}
             />
           </Form.Item>
-          <Form.Item name="autoLogin" valuePropName="checked">
-            <Checkbox style={{ marginLeft: 10 }}>
-              {intl.formatMessage({ id: 'common.login.rember' })}
+          <Form.Item noStyle name="autoLogin" valuePropName="checked">
+            <Checkbox style={{ marginLeft: 5, marginBottom: 12 }}>
+              <span style={{ color: 'var(--ant-color-text-secondary)' }}>
+                {' '}
+                {intl.formatMessage({ id: 'common.login.rember' })}
+              </span>
             </Checkbox>
           </Form.Item>
-          <Button htmlType="submit" type="primary" block>
+          <Button
+            htmlType="submit"
+            type="primary"
+            block
+            style={{ height: '54px', fontSize: '16px' }}
+          >
             {intl.formatMessage({ id: 'common.button.login' })}
           </Button>
         </Form>

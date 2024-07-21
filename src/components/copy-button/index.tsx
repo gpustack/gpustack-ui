@@ -56,6 +56,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
 
   return (
     <Button
+      className="copy-button"
       ref={buttonRef}
       type={type}
       shape={shape}

@@ -24,7 +24,7 @@ export function useUpdateChunkedList(options: {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       options.setDataList?.([...cacheDataListRef.current]);
-    }, 100);
+    }, 80);
   };
   const updateChunkedList = (
     data: ChunkedCollection,

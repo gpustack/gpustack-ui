@@ -65,26 +65,6 @@ const PasswordForm: React.FC = () => {
             {intl.formatMessage({ id: 'users.password.modify.description' })}
           </span>
         </h2>
-        {/* 
-        <Form.Item
-          name="current_password"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: intl.formatMessage({ id: 'users.form.currentpassword' })
-                }
-              )
-            }
-          ]}
-        >
-          <SealInput.Password
-            prefix={<LockOutlined />}
-            label={intl.formatMessage({ id: 'users.form.currentpassword' })}
-          />
-        </Form.Item> */}
         <Form.Item
           name="new_password"
           rules={[
@@ -136,7 +116,7 @@ const PasswordForm: React.FC = () => {
           htmlType="submit"
           type="primary"
           block
-          style={{ marginTop: 20 }}
+          style={{ height: '54px', fontSize: '16px', marginTop: 10 }}
         >
           {intl.formatMessage({ id: 'common.button.submit' })}
         </Button>

@@ -1,6 +1,7 @@
 export default {
   'resources.title': 'Resources',
   'resources.nodes': 'Nodes',
+  'resources.button.create': 'Add Worker',
   'resources.table.hostname': 'Hostname',
   'resources.table.ip': 'IP',
   'resources.table.cpu': 'CPU',
@@ -18,5 +19,9 @@ export default {
   'resources.table.total': 'Total',
   'resources.table.used': 'Used',
   'resources.table.wokers': 'workers',
-  'resources.table.unified': 'Unified Memory'
+  'resources.table.unified': 'Unified Memory',
+  'resources.worker.add.step1': 'Get Token',
+  'resources.worker.add.step2': 'Register Worker',
+  'resources.worker.add.step3':
+    'Refresh worker list, you can see the newly added worker'
 };

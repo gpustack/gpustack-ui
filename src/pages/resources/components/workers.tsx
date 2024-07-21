@@ -8,6 +8,7 @@ import { convertFileSize, handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   InfoCircleOutlined,
+  PlusOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -17,6 +18,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { deleteWorker, queryWorkersList } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
+import AddWorker from './add-worker';
 const { Column } = Table;
 
 const Resources: React.FC = () => {
@@ -30,6 +32,7 @@ const Resources: React.FC = () => {
   const intl = useIntl();
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const [dataSource, setDataSource] = useState<ListItem[]>([]);
   const [queryParams, setQueryParams] = useState({
     page: 1,
@@ -92,6 +95,10 @@ const Resources: React.FC = () => {
       (item: Filesystem) => item.mount_point === '/'
     );
     return mountRoot ? formateUtilazation(mountRoot.used, mountRoot.total) : 0;
+  };
+
+  const handleAddWorker = () => {
+    setOpen(true);
   };
 
   const handleDelete = (row: ListItem) => {
@@ -166,14 +173,23 @@ const Resources: React.FC = () => {
           </Space>
         }
         right={
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={handleDeleteBatch}
-            disabled={!rowSelection.selectedRowKeys.length}
-          >
-            {intl.formatMessage({ id: 'common.button.delete' })}
-          </Button>
+          <Space size={20}>
+            <Button
+              icon={<PlusOutlined></PlusOutlined>}
+              type="primary"
+              onClick={handleAddWorker}
+            >
+              {intl.formatMessage({ id: 'resources.button.create' })}
+            </Button>
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={handleDeleteBatch}
+              disabled={!rowSelection.selectedRowKeys.length}
+            >
+              {intl.formatMessage({ id: 'common.button.delete' })}
+            </Button>
+          </Space>
         }
       ></PageTools>
       <Table
@@ -371,6 +387,7 @@ const Resources: React.FC = () => {
         />
       </Table>
       <DeleteModal ref={modalRef}></DeleteModal>
+      <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
     </>
   );
 };

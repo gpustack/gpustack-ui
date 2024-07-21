@@ -1,5 +1,6 @@
 export default {
   'resources.title': '资源',
+  'resources.button.create': '添加 Worker',
   'resources.nodes': '节点',
   'resources.table.hostname': '主机名',
   'resources.table.ip': 'IP',
@@ -18,5 +19,8 @@ export default {
   'resources.table.total': '总量',
   'resources.table.used': '已用',
   'resources.table.wokers': 'workers',
-  'resources.table.unified': '统一内存'
+  'resources.table.unified': '统一内存',
+  'resources.worker.add.step1': '获取 Token',
+  'resources.worker.add.step2': '注册 Worker',
+  'resources.worker.add.step3': '刷新 worker 列表，可以看到新添加的 worker'
 };

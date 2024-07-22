@@ -22,5 +22,7 @@ export default {
   'resources.table.unified': '统一内存',
   'resources.worker.add.step1': '获取 Token',
   'resources.worker.add.step2': '注册 Worker',
-  'resources.worker.add.step3': '刷新 worker 列表，可以看到新添加的 worker'
+  'resources.worker.add.step2.tips':
+    '注意：<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 Token',
+  'resources.worker.add.step3': '刷新 workers 列表，可以看到新添加的 worker'
 };

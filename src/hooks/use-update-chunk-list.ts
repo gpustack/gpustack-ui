@@ -75,14 +75,10 @@ export function useUpdateChunkedList(options: {
           return !_.includes(ids, item.id);
         }
       );
-      // console.log('updateChunkedList=====delete', updatedList);
-      // return updatedList;
-
-      // options.setDataList?.([...cacheDataListRef.current]);
+      options.setDataList?.([...cacheDataListRef.current]);
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
-      // const updatedDataList = _.cloneDeep(dataList);
       _.each(collections, (item: any) => {
         const updateIndex = _.findIndex(
           cacheDataListRef.current,

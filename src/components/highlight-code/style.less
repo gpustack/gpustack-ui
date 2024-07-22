@@ -5,6 +5,23 @@
     font-weight: var(--font-weight-normal);
     padding-inline: 0;
     padding-block: 1.2em;
+
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(211, 211, 220, 100%);
+      border-radius: 6px;
+
+      &:hover {
+        background-color: rgba(190, 190, 190, 100%);
+      }
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
   }
 
   .code-pre {

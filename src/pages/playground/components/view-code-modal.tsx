@@ -122,7 +122,15 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
     setLoaded(true);
-    console.log('loaded====');
+    console.log('loaded====', editor, monaco);
+  };
+
+  const handleBeforeMount = (monaco: any) => {
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+      diagnosticCodesToIgnore: [80001]
+    });
   };
 
   const handleOnChangeLang = (value: string) => {
@@ -186,6 +194,25 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
               language={lang}
               value={codeValue}
               options={editorConfig}
+              overrideServices={{
+                quickSuggestions: {
+                  other: false,
+                  comments: false,
+                  strings: false
+                },
+                disableLayerHinting: true,
+                languages: {
+                  typescript: {
+                    moduleKind: '2',
+                    diagnosticsOptions: {
+                      noSemanticValidation: false,
+                      noSyntaxValidation: false,
+                      diagnosticCodesToIgnore: [80001]
+                    }
+                  }
+                }
+              }}
+              beforeMount={handleBeforeMount}
               onMount={handleEditorDidMount}
             />
           </EditorWrap>

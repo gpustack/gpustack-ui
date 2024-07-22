@@ -22,6 +22,8 @@ export default {
   'resources.table.unified': 'Unified Memory',
   'resources.worker.add.step1': 'Get Token',
   'resources.worker.add.step2': 'Register Worker',
+  'resources.worker.add.step2.tips':
+    'Note: <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
-    'Refresh worker list, you can see the newly added worker'
+    'Refresh workers list, you can see the newly added worker.'
 };

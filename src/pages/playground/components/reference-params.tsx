@@ -48,14 +48,8 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
         <Tooltip
           title={
             <Space>
-              <span>
-                {intl.formatMessage({ id: 'playground.timePerOutputToken' })}:{' '}
-                {_.round(usage.time_per_output_token_ms, 2)} ms
-              </span>
-              <span>
-                {intl.formatMessage({ id: 'playground.timeToFirstToken' })}:{' '}
-                {_.round(usage.time_to_first_token_ms, 2)} ms
-              </span>
+              <span>TPOT: {_.round(usage.time_per_output_token_ms, 2)} ms</span>
+              <span>TTFT: {_.round(usage.time_to_first_token_ms, 2)} ms</span>
             </Space>
           }
         >

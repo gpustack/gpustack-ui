@@ -34,7 +34,18 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         <HighlightCode code={addWorkerGuide.mac.getToken}></HighlightCode>
         <h4>Windows </h4>
         <HighlightCode code={addWorkerGuide.win.getToken}></HighlightCode>
-        <h3>2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}</h3>
+        <h3>
+          2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
+          <span
+            className="font-size-12"
+            style={{ color: 'var(--ant-color-text-tertiary)' }}
+            dangerouslySetInnerHTML={{
+              __html: `(${intl.formatMessage({
+                id: 'resources.worker.add.step2.tips'
+              })})`
+            }}
+          ></span>
+        </h3>
         <h4>Linux Or MacOS </h4>
         <HighlightCode
           code={addWorkerGuide.mac.registerWorker(origin)}

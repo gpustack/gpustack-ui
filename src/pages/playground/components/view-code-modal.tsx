@@ -74,7 +74,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\n\nasync function main(){\n  const params = ${JSON.stringify(
+      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
           messages: [
@@ -194,24 +194,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
               language={lang}
               value={codeValue}
               options={editorConfig}
-              overrideServices={{
-                quickSuggestions: {
-                  other: false,
-                  comments: false,
-                  strings: false
-                },
-                disableLayerHinting: true,
-                languages: {
-                  typescript: {
-                    moduleKind: '2',
-                    diagnosticsOptions: {
-                      noSemanticValidation: false,
-                      noSyntaxValidation: false,
-                      diagnosticCodesToIgnore: [80001]
-                    }
-                  }
-                }
-              }}
               beforeMount={handleBeforeMount}
               onMount={handleEditorDidMount}
             />

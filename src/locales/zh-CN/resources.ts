@@ -20,6 +20,7 @@ export default {
   'resources.table.used': '已用',
   'resources.table.wokers': 'workers',
   'resources.table.unified': '统一内存',
+  'resources.worker.linuxormaxos': 'Linux 或 MacOS',
   'resources.worker.add.step1': '获取 Token',
   'resources.worker.add.step2': '注册 Worker',
   'resources.worker.add.step2.tips':

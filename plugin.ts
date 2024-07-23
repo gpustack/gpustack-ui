@@ -10,6 +10,9 @@ export default (api: IApi) => {
         ? info.version || info.commitId
         : `dev-${info.commitId}`
     );
+    if (env === 'production') {
+      $('script[src^="/js/umi"]').first?.().remove?.();
+    }
     return $;
   });
   api.onStart(() => {

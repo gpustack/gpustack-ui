@@ -65,7 +65,7 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
         }}
       ></code>
       <CopyButton
-        text={highlightedCode.value}
+        text={code}
         size="small"
         style={{ color: '#abb2bf' }}
       ></CopyButton>

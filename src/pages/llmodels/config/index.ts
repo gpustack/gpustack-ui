@@ -71,3 +71,41 @@ export const ActionList = [
     icon: EditOutlined
   }
 ];
+
+export const columns = [
+  {
+    title: 'models.name',
+    dataIndex: 'name',
+    key: 'name'
+  },
+  {
+    title: 'models.type',
+    dataIndex: 'type',
+    key: 'type'
+  },
+  {
+    title: 'models.source',
+    dataIndex: 'source',
+    key: 'source'
+  },
+  {
+    title: 'models.status',
+    dataIndex: 'status',
+    key: 'status'
+  },
+  {
+    title: 'models.createdat',
+    dataIndex: 'createdAt',
+    key: 'createdAt'
+  },
+  {
+    title: 'models.updatedat',
+    dataIndex: 'updatedAt',
+    key: 'updatedAt'
+  },
+  {
+    title: 'models.action',
+    dataIndex: 'action',
+    key: 'action'
+  }
+];

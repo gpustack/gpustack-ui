@@ -15,7 +15,7 @@ const Models: React.FC = () => {
   const { setChunkRequest } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
-  const [total, setTotal] = useState(100);
+  const [total, setTotal] = useState(0);
   const [modelInstances, setModelInstances] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<ListItem[]>([]);

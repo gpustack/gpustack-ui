@@ -19,6 +19,7 @@ export default {
   'resources.table.total': 'Total',
   'resources.table.used': 'Used',
   'resources.table.wokers': 'workers',
+  'resources.worker.linuxormaxos': 'Linux or MacOS',
   'resources.table.unified': 'Unified Memory',
   'resources.worker.add.step1': 'Get Token',
   'resources.worker.add.step2': 'Register Worker',

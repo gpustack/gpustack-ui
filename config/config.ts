@@ -19,9 +19,6 @@ export default defineConfig({
   history: {
     type: 'hash'
   },
-  // https: {
-  //   http2: true
-  // },
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {

@@ -30,7 +30,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     >
       <div>
         <h3>1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}</h3>
-        <h4>Linux Or MacOS </h4>
+        <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
         <HighlightCode code={addWorkerGuide.mac.getToken}></HighlightCode>
         <h4>Windows </h4>
         <HighlightCode code={addWorkerGuide.win.getToken}></HighlightCode>
@@ -46,7 +46,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
             }}
           ></span>
         </h3>
-        <h4>Linux Or MacOS </h4>
+        <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
         <HighlightCode
           code={addWorkerGuide.mac.registerWorker(origin)}
         ></HighlightCode>

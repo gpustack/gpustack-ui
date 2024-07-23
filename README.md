@@ -17,7 +17,7 @@ npm install -g pnpm
 3. Setup
 
 ```
-git clone https://github.com/seal-io/gpustack-ui/
+git clone https://github.com/gpustack/gpustack-ui/
 ```
 
 4. Install dependencies

@@ -26,5 +26,5 @@ export default {
   'resources.worker.add.step2.tips':
     'Note: <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
-    'Refresh workers list, you can see the newly added worker.'
+    'Refresh workers list, you will see the new worker.'
 };

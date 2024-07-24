@@ -71,20 +71,24 @@ const DeleteModal = forwardRef((props, ref) => {
           </span>
         </span>
       </div>
-      <div className={Styles['content']}>
-        {config.content &&
-          intl.formatMessage(
-            {
-              id: config.selection
-                ? 'common.delete.confirm'
-                : 'common.delete.single.confirm'
-            },
-            {
-              type: intl.formatMessage({ id: config.content }),
-              name: config.name
-            }
-          )}
-      </div>
+      <div
+        className={Styles['content']}
+        dangerouslySetInnerHTML={{
+          __html:
+            config.content &&
+            intl.formatMessage(
+              {
+                id: config.selection
+                  ? 'common.delete.confirm'
+                  : 'common.delete.single.confirm'
+              },
+              {
+                type: intl.formatMessage({ id: config.content }),
+                name: config.name
+              }
+            )
+        }}
+      ></div>
     </Modal>
   );
 });

@@ -176,7 +176,8 @@ export default {
   'common.settings.instructions': '操作指引',
   'common.settings.language': '语言',
   'common.delete.confirm': '删除选中的{type}，确定吗？',
-  'common.delete.single.confirm': '删除 {name}，确定吗？',
+  'common.delete.single.confirm':
+    '删除 <span style="font-size: 13px;font-weight: 700">{name}</span>，确定吗？',
   'common.filter.name': '名称查询',
   'common.form.password': '密码',
   'common.form.username': '用户名',

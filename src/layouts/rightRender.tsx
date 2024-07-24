@@ -170,12 +170,7 @@ export function getRightRenderContent(opts: {
           key,
           label: (
             <span className="flex flex-center">
-              <span className="font-size-14">
-                {_.get(langConfigMap, [key, 'icon'])}
-              </span>
-              <span className="m-l-8">
-                {_.get(langConfigMap, [key, 'label'])}
-              </span>
+              <span>{_.get(langConfigMap, [key, 'label'])}</span>
             </span>
           ),
           onClick: () => {

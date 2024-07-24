@@ -4,7 +4,7 @@ import useContainerScroll from '@/hooks/use-container-scorll';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Spin } from 'antd';
+import { Button, Input, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -189,9 +189,17 @@ const MessageList: React.FC<MessageProps> = (props) => {
         <span className="title">
           {intl.formatMessage({ id: 'playground.system' })}
         </span>
-        <Button size="small">
-          {collapsed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-        </Button>
+        <Tooltip
+          title={
+            collapsed
+              ? intl.formatMessage({ id: 'common.button.collapse' })
+              : intl.formatMessage({ id: 'common.button.expand' })
+          }
+        >
+          <Button size="small">
+            {collapsed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+          </Button>
+        </Tooltip>
       </div>
     );
   };

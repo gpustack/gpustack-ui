@@ -1,3 +1,5 @@
+import IconFont from '@/components/icon-font';
+
 export default {
   'ar-EG': {
     lang: 'ar-EG',
@@ -62,7 +64,7 @@ export default {
   'en-US': {
     lang: 'en-US',
     label: 'English',
-    icon: '🇺🇸',
+    icon: <IconFont type="icon-English" />,
     title: 'Language'
   },
   'es-ES': {
@@ -314,7 +316,7 @@ export default {
   'zh-CN': {
     lang: 'zh-CN',
     label: '简体中文',
-    icon: '🇨🇳',
+    icon: <IconFont type="icon-chinese" />,
     title: '语言'
   },
   'zh-TW': {

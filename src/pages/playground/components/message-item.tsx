@@ -2,7 +2,7 @@ import CopyButton from '@/components/copy-button';
 import HotKeys from '@/config/hotkeys';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space } from 'antd';
+import { Button, Input, Space, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
@@ -130,11 +130,13 @@ const MessageItem: React.FC<{
               fontSize="12px"
             ></CopyButton>
           )}
-          <Button
-            size="small"
-            onClick={handleDelete}
-            icon={<MinusCircleOutlined />}
-          ></Button>
+          <Tooltip title={intl.formatMessage({ id: 'common.button.delete' })}>
+            <Button
+              size="small"
+              onClick={handleDelete}
+              icon={<MinusCircleOutlined />}
+            ></Button>
+          </Tooltip>
         </Space>
       </div>
     </div>

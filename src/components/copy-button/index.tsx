@@ -1,6 +1,6 @@
 import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, message } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import ClipboardJS from 'clipboard';
 import { useEffect, useRef, useState } from 'react';
 
@@ -55,24 +55,26 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   }, [buttonRef]);
 
   return (
-    <Button
-      className="copy-button"
-      ref={buttonRef}
-      type={type}
-      shape={shape}
-      size={size}
-      disabled={!!disabled}
-      data-clipboard-text={text}
-      icon={
-        copied ? (
-          <CheckCircleFilled
-            style={{ color: 'var(--ant-color-success)', fontSize: fontSize }}
-          />
-        ) : (
-          <CopyOutlined style={{ fontSize: fontSize, ...style }} />
-        )
-      }
-    ></Button>
+    <Tooltip title={intl.formatMessage({ id: 'common.button.copy' })}>
+      <Button
+        className="copy-button"
+        ref={buttonRef}
+        type={type}
+        shape={shape}
+        size={size}
+        disabled={!!disabled}
+        data-clipboard-text={text}
+        icon={
+          copied ? (
+            <CheckCircleFilled
+              style={{ color: 'var(--ant-color-success)', fontSize: fontSize }}
+            />
+          ) : (
+            <CopyOutlined style={{ fontSize: fontSize, ...style }} />
+          )
+        }
+      ></Button>
+    </Tooltip>
   );
 };
 

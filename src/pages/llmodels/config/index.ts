@@ -2,11 +2,11 @@ import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
 
 export const ollamaModelOptions = [
+  { label: 'llama3.1', value: 'llama3.1' },
   { label: 'llama3', value: 'llama3' },
-  { label: 'gemma', value: 'gemma' },
+  { label: 'gemma2', value: 'gemma2' },
   { label: 'mistral', value: 'mistral' },
-  { label: 'qwen', value: 'qwen' },
-  { label: 'llama2', value: 'llama2' },
+  { label: 'qwen2', value: 'qwen2' },
   { label: 'phi3', value: 'phi3' },
   { label: 'codellama', value: 'codellama' },
   { label: 'deepseek-coder', value: 'deepseek-coder' }
@@ -69,43 +69,5 @@ export const ActionList = [
     label: 'common.button.delete',
     key: 'delete',
     icon: EditOutlined
-  }
-];
-
-export const columns = [
-  {
-    title: 'models.name',
-    dataIndex: 'name',
-    key: 'name'
-  },
-  {
-    title: 'models.type',
-    dataIndex: 'type',
-    key: 'type'
-  },
-  {
-    title: 'models.source',
-    dataIndex: 'source',
-    key: 'source'
-  },
-  {
-    title: 'models.status',
-    dataIndex: 'status',
-    key: 'status'
-  },
-  {
-    title: 'models.createdat',
-    dataIndex: 'createdAt',
-    key: 'createdAt'
-  },
-  {
-    title: 'models.updatedat',
-    dataIndex: 'updatedAt',
-    key: 'updatedAt'
-  },
-  {
-    title: 'models.action',
-    dataIndex: 'action',
-    key: 'action'
   }
 ];

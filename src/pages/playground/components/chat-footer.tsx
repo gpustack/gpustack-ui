@@ -54,7 +54,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
   return (
     <div className="chat-footer">
       <Row style={{ width: '100%' }}>
-        <Col lg={hasTokenResult ? 8 : 12} xs={24} sm={24} md={12}>
+        <Col lg={hasTokenResult ? 8 : 12} xs={24} sm={24} md={24}>
           <Space size={20}>
             <Button
               disabled={disabled}
@@ -72,8 +72,21 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
             </Button>
           </Space>
         </Col>
-        <Col span={hasTokenResult ? 8 : 0}>{feedback}</Col>
-        <Col span={hasTokenResult ? 8 : 12} style={{ textAlign: 'right' }}>
+        <Col
+          lg={hasTokenResult ? 8 : 0}
+          xs={hasTokenResult ? 24 : 0}
+          sm={hasTokenResult ? 24 : 0}
+          md={hasTokenResult ? 24 : 0}
+        >
+          {feedback}
+        </Col>
+        <Col
+          lg={hasTokenResult ? 8 : 12}
+          xs={24}
+          sm={24}
+          md={24}
+          style={{ textAlign: 'right' }}
+        >
           <Space size={20}>
             <Button
               icon={

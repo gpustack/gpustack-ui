@@ -1,13 +1,14 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
+import LangSelect from '@/components/lang-select';
 import SealInput from '@/components/seal-form/seal-input';
 import {
   getRememberMe,
   rememberMe,
   removeRememberMe
 } from '@/utils/localstore/index';
-import { GlobalOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
-import { SelectLang, history, useIntl, useModel } from '@umijs/max';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
@@ -147,10 +148,10 @@ const LoginForm = () => {
           position: 'fixed',
           right: 0,
           top: 0,
-          padding: '0 20px'
+          padding: '20px'
         }}
       >
-        <SelectLang icon={<GlobalOutlined />} reload={false} />
+        <LangSelect />
       </div>
       <div>
         <Form

@@ -105,6 +105,7 @@ const MessageList: React.FC<MessageProps> = (props) => {
   };
 
   const submitMessage = async () => {
+    if (!parameters.model) return;
     try {
       setLoading(true);
       setMessageId();

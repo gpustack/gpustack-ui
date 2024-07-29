@@ -265,8 +265,12 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         <Form.Item<ParamsSettingsFormProps>
           name="stop"
           rules={[{ required: false }]}
+          normalize={(value) => {
+            return value || null;
+          }}
         >
           <SealInput.Input
+            allowClear
             label="Stop Sequence"
             description={intl.formatMessage({
               id: 'playground.params.stop.tips'

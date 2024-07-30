@@ -88,7 +88,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
           style={{ textAlign: 'right' }}
         >
           <Space size={20}>
-            <Button
+            {/* <Button
               icon={
                 <IconFont type="icon-code" className="font-size-16"></IconFont>
               }
@@ -96,7 +96,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               disabled={disabled}
             >
               {intl.formatMessage({ id: 'playground.viewcode' })}
-            </Button>
+            </Button> */}
             {!disabled ? (
               <Button
                 type="primary"

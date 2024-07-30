@@ -6,7 +6,13 @@ import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { CHAT_API } from '../apis';
 import { Roles } from '../config';
@@ -19,6 +25,7 @@ import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
   parameters: any;
+  ref?: any;
 }
 
 interface MessageItemProps {
@@ -27,7 +34,7 @@ interface MessageItemProps {
   uid: number;
 }
 
-const MessageList: React.FC<MessageProps> = (props) => {
+const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { parameters } = props;
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<MessageItemProps[]>([
@@ -59,6 +66,13 @@ const MessageList: React.FC<MessageProps> = (props) => {
     updateScrollerPosition();
   }, [messageList]);
 
+  useImperativeHandle(ref, () => {
+    return {
+      viewCode() {
+        setShow(true);
+      }
+    };
+  });
   const handleSystemMessageChange = (e: any) => {
     setSystemMessage(e.target.value);
   };
@@ -301,6 +315,6 @@ const MessageList: React.FC<MessageProps> = (props) => {
       ></ViewCodeModal>
     </div>
   );
-};
+});
 
 export default MessageList;

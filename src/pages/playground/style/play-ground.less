@@ -7,6 +7,8 @@
     display: flex;
     justify-content: flex-start;
     width: 391px;
+    overflow-x: hidden;
+    transition: width 0.3s ease;
 
     .collapse-btn {
       position: absolute;
@@ -15,12 +17,9 @@
       z-index: 1;
     }
 
-    transition: width 0.3s ease;
-
     &.collapse {
-      width: 33px;
-      padding-left: 32px;
-      // overflow: hidden;
+      width: 0;
+      overflow: hidden;
       transition: width 0.3s ease;
     }
   }

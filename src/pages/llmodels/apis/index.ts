@@ -1,4 +1,4 @@
-import { listFiles } from '@huggingface/hub';
+import { listFiles, listModels } from '@huggingface/hub';
 import { request } from '@umijs/max';
 import {
   FormData,
@@ -114,6 +114,23 @@ export async function callHuggingfaceQuickSearch(params: any) {
     method: 'GET',
     params
   });
+}
+
+export async function queryHuggingfaceModels(params: {
+  search: {
+    query: string;
+    tags: string[];
+  };
+}) {
+  const result = [];
+  for await (const model of listModels({
+    ...params,
+    limit: 100,
+    additionalFields: ['author']
+  })) {
+    result.push(model);
+  }
+  return result;
 }
 
 export async function queryHuggingfaceModelFiles(params: { repo: string }) {

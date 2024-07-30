@@ -10,10 +10,7 @@ import { useIntl } from '@umijs/max';
 import { Form, Input, Modal } from 'antd';
 import _ from 'lodash';
 import { memo, useEffect, useState } from 'react';
-import {
-  callHuggingfaceQuickSearch,
-  queryHuggingfaceModelFiles
-} from '../apis';
+import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
 import { ollamaModelOptions } from '../config';
 import { FormData, ListItem } from '../config/types';
 
@@ -106,14 +103,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleOnSearchRepo = async (text: string) => {
     try {
       const params = {
-        q: `${text}`,
-        type: 'model'
+        search: {
+          query: text,
+          tags: ['gguf']
+        }
       };
-      const res = await callHuggingfaceQuickSearch(params);
-      const list = _.map(res.models || [], (item: any) => {
+      const models = await queryHuggingfaceModels(params);
+      const list = _.map(models || [], (item: any) => {
         return {
-          value: item.id,
-          label: item.id
+          ...item,
+          value: item.name,
+          label: item.name
         };
       });
       setRepoOptions(list);

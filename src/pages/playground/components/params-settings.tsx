@@ -43,7 +43,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   useEffect(() => {
     const getModelList = async () => {
       try {
-        const res = await queryModelsList();
+        const params = {
+          embedding_only: false
+        };
+        const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,

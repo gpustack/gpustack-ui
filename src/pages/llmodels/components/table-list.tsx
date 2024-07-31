@@ -18,7 +18,7 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Input, Space, message } from 'antd';
+import { Button, Input, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useCallback, useRef, useState } from 'react';
@@ -336,10 +336,17 @@ const Models: React.FC<ModelsProps> = ({
             span={6}
             render={(text, record: ListItem) => {
               return (
-                <span>
-                  {record.source === modelSourceMap.huggingface_value
-                    ? `${modelSourceMap.huggingface} / ${record.huggingface_filename}`
-                    : `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`}
+                <span className="flex flex-column">
+                  <span>
+                    {record.source === modelSourceMap.huggingface_value
+                      ? `${modelSourceMap.huggingface} / ${record.huggingface_filename}`
+                      : `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`}
+                  </span>
+                  <span>
+                    {record.embedding_only && (
+                      <Tag style={{ marginTop: 6 }}>Embedding Only</Tag>
+                    )}
+                  </span>
                 </span>
               );
             }}
@@ -376,7 +383,6 @@ const Models: React.FC<ModelsProps> = ({
             key="operation"
             dataIndex="operation"
             render={(text, record) => {
-              console.log('record====9999', record);
               return (
                 <DropdownButtons
                   items={setActionList(record)}

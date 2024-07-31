@@ -11,6 +11,9 @@ export async function execChatCompletions(params: any) {
   });
 }
 
-export const queryModelsList = async () => {
-  return request(`${OPENAI_MODELS}`);
+export const queryModelsList = async (params: any) => {
+  return request(`${OPENAI_MODELS}`, {
+    method: 'GET',
+    params
+  });
 };

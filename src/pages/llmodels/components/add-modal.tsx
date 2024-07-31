@@ -9,10 +9,11 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, Input, Modal } from 'antd';
 import _ from 'lodash';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
-import { ollamaModelOptions } from '../config';
+import { modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
+import SearchInput from './search-input';
 
 type AddModalProps = {
   title: string;
@@ -24,8 +25,16 @@ type AddModalProps = {
 };
 
 const sourceOptions = [
-  { label: 'Hugging Face', value: 'huggingface', key: 'huggingface' },
-  { label: 'Ollama Library', value: 'ollama_library', key: 'ollama_library' }
+  {
+    label: 'Hugging Face',
+    value: modelSourceMap.huggingface_value,
+    key: 'huggingface'
+  },
+  {
+    label: 'Ollama Library',
+    value: modelSourceMap.ollama_library_value,
+    key: 'ollama_library'
+  }
 ];
 
 const AddModal: React.FC<AddModalProps> = (props) => {
@@ -41,17 +50,21 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [fileOptions, setFileOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [ollamaTags, setOllamaTags] = useState<string[]>([]);
 
   const initFormValue = () => {
     if (action === PageAction.CREATE && open) {
       form.setFieldsValue({
-        source: 'huggingface',
+        source: modelSourceMap.huggingface_value,
         replicas: 1
       });
     }
     if (action === PageAction.EDIT && open) {
+      const list = _.split(props.data?.ollama_library_model_name, ':');
       form.setFieldsValue({
-        ...props.data
+        ...props.data,
+        ollama_library_model_name: _.get(list, '0'),
+        tag: _.get(list, '1')
       });
     }
   };
@@ -59,8 +72,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   useEffect(() => {
     initFormValue();
   }, [open]);
-
-  const handleInputRepoChange = (value: string) => {};
 
   const fileNamLabel = (item: any) => {
     return (
@@ -149,15 +160,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             showSearch
             onBlur={handleRepoOnBlur}
             onSelect={handleRepoOnBlur}
-            onChange={handleInputRepoChange}
             onSearch={debounceSearch}
             options={repoOptions}
-            disabled={action === PageAction.EDIT}
             addAfter={
               <span style={{ position: 'relative', top: '2px' }}>
                 <SearchOutlined></SearchOutlined>
               </span>
             }
+            disabled={true}
             description={intl.formatMessage({ id: 'models.form.repoid.desc' })}
           >
             <Input></Input>
@@ -236,14 +246,26 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             }
           ]}
         >
-          <SealAutoComplete
+          {/* <SealAutoComplete
             filterOption
             disabled={action === PageAction.EDIT}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
             required
             options={ollamaModelOptions}
-          ></SealAutoComplete>
+          ></SealAutoComplete> */}
+          <SealInput.Input
+            disabled={action === PageAction.EDIT}
+            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
+            placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
+            required
+          ></SealInput.Input>
+        </Form.Item>
+        <Form.Item name="tag">
+          <SealInput.Input
+            label="Tag"
+            placeholder={`${_.join(ollamaTags, ',')} or another...`}
+          ></SealInput.Input>
         </Form.Item>
       </>
     );
@@ -251,27 +273,36 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const renderFieldsBySource = () => {
     switch (modelSource) {
-      case 'huggingface':
+      case modelSourceMap.huggingface_value:
         return renderHuggingfaceFields();
-      case 'ollama_library':
+      case modelSourceMap.ollama_library_value:
         return renderOllamaModelFields();
-      case 's3':
+      case modelSourceMap.s3_value:
         return renderS3Fields();
       default:
         return null;
     }
   };
 
-  const handleSourceChange = (value: string) => {
-    console.log('source change', value);
-  };
+  const handleOnSelectModel = useCallback((item: any) => {
+    const repo = item.name;
+    setOllamaTags(_.map(item.tags, (tag: string) => _.toLower(tag)));
+    if (form.getFieldValue('source') === modelSourceMap.huggingface_value) {
+      form.setFieldValue('huggingface_repo_id', repo);
+      handleFetchModelFiles(repo);
+    } else {
+      form.setFieldValue('ollama_library_model_name', repo);
+    }
+  }, []);
+
+  const handleSourceChange = useCallback((value: string) => {
+    form.setFieldValue('source', value);
+  }, []);
+
   const handleSumit = () => {
     form.submit();
   };
-  const handleOnFinish = (values: FormData) => {
-    console.log('onFinish', values);
-    onOk(values);
-  };
+
   return (
     <Modal
       title={title}
@@ -280,7 +311,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       onOk={handleSumit}
       onCancel={onCancel}
       destroyOnClose={true}
-      closeIcon={false}
+      closeIcon={true}
       maskClosable={false}
       keyboard={false}
       width={600}
@@ -289,6 +320,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         <ModalFooter onCancel={onCancel} onOk={handleSumit}></ModalFooter>
       }
     >
+      {action === PageAction.CREATE && (
+        <SearchInput
+          modelSource={modelSource}
+          onSourceChange={handleSourceChange}
+          onSelectModel={handleOnSelectModel}
+        ></SearchInput>
+      )}
       <Form name="addModalForm" form={form} onFinish={onOk} preserve={false}>
         <Form.Item<FormData>
           name="name"
@@ -324,16 +362,18 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               )
             }
           ]}
+          noStyle={action === PageAction.CREATE}
         >
-          <SealSelect
-            disabled={action === PageAction.EDIT}
-            label={intl.formatMessage({
-              id: 'models.form.source'
-            })}
-            options={sourceOptions}
-            required
-            onChange={handleSourceChange}
-          ></SealSelect>
+          {action === PageAction.EDIT && (
+            <SealSelect
+              disabled={true}
+              label={intl.formatMessage({
+                id: 'models.form.source'
+              })}
+              options={sourceOptions}
+              required
+            ></SealSelect>
+          )}
         </Form.Item>
         {renderFieldsBySource()}
         <Form.Item<FormData>

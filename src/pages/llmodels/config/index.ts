@@ -2,14 +2,45 @@ import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
 
 export const ollamaModelOptions = [
-  { label: 'llama3.1', value: 'llama3.1' },
-  { label: 'llama3', value: 'llama3' },
-  { label: 'gemma2', value: 'gemma2' },
-  { label: 'mistral', value: 'mistral' },
-  { label: 'qwen2', value: 'qwen2' },
-  { label: 'phi3', value: 'phi3' },
-  { label: 'codellama', value: 'codellama' },
-  { label: 'deepseek-coder', value: 'deepseek-coder' }
+  {
+    label: 'llama3.1',
+    value: 'llama3.1',
+    name: 'llama3.1',
+    tags: ['Tools', '8B', '70B', '405B']
+  },
+  { label: 'llama3', value: 'llama3', name: 'llama3', tags: ['8B', '70B'] },
+  { label: 'gemma2', value: 'gemma2', name: 'gemma2', tags: ['9B', '27B'] },
+  {
+    label: 'mistral',
+    value: 'mistral',
+    name: 'mistral',
+    tags: ['Tools', '7B']
+  },
+  {
+    label: 'llava',
+    value: 'llava',
+    name: 'llava',
+    tags: ['Vision', '7B', '13B', '34B']
+  },
+  {
+    label: 'qwen2',
+    value: 'qwen2',
+    name: 'qwen2',
+    tags: ['0.5B', '1.5B', '7B', '72B']
+  },
+  { label: 'phi3', value: 'phi3', name: 'phi3', tags: ['3B', '14B'] },
+  {
+    label: 'codellama',
+    value: 'codellama',
+    name: 'codellama',
+    tags: ['Code', '7B', '13B', '34B', '70B']
+  },
+  {
+    label: 'deepseek-coder',
+    value: 'deepseek-coder',
+    name: 'deepseek-coder',
+    tags: ['Code', '1B', '7B', '33B']
+  }
 ];
 
 export const modelSourceMap: Record<string, string> = {

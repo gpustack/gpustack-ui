@@ -81,6 +81,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     >
       <Input
         {...rest}
+        placeholder={isFocus ? placeholder : ''}
         ref={inputRef}
         autoComplete="off"
         onInput={handleInput}

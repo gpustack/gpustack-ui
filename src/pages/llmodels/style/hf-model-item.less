@@ -1,0 +1,26 @@
+.hf-model-item {
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--border-radius-base);
+  padding: 12px;
+
+  &:hover {
+    background-color: var(--color-fill-sider);
+  }
+
+  &.active {
+    background-color: var(--color-fill-sider);
+  }
+
+  .title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+  }
+
+  .info {
+    color: var(--ant-color-text-tertiary);
+  }
+}

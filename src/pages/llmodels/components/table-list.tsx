@@ -140,6 +140,11 @@ const Models: React.FC<ModelsProps> = ({
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
+        console.log('data:', data);
+
+        if (data.source === modelSourceMap.ollama_library_value) {
+          data.ollama_library_model_name = `${data.ollama_library_model_name}:${data.tag}`;
+        }
         if (action === PageAction.CREATE) {
           await createModel({ data });
         }

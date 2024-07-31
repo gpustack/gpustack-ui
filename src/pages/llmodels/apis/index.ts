@@ -116,17 +116,21 @@ export async function callHuggingfaceQuickSearch(params: any) {
   });
 }
 
-export async function queryHuggingfaceModels(params: {
-  search: {
-    query: string;
-    tags: string[];
-  };
-}) {
+export async function queryHuggingfaceModels(
+  params: {
+    search: {
+      query: string;
+      tags: string[];
+    };
+  },
+  options?: any
+) {
   const result = [];
   for await (const model of listModels({
     ...params,
-    limit: 100,
-    additionalFields: ['author']
+    ...options,
+    limit: 50,
+    additionalFields: ['cardData']
   })) {
     result.push(model);
   }

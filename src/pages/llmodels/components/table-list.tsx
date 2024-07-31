@@ -328,6 +328,20 @@ const Models: React.FC<ModelsProps> = ({
             key="name"
             width={400}
             span={5}
+            render={(text, record: ListItem) => {
+              return (
+                <span>
+                  <span className="m-r-5">{text}</span>
+                  <span>
+                    {record.embedding_only && (
+                      <Tag style={{ marginTop: 6 }} color="geekblue">
+                        Embedding Only
+                      </Tag>
+                    )}
+                  </span>
+                </span>
+              );
+            }}
           />
           <SealColumn
             title={intl.formatMessage({ id: 'models.form.source' })}
@@ -341,11 +355,6 @@ const Models: React.FC<ModelsProps> = ({
                     {record.source === modelSourceMap.huggingface_value
                       ? `${modelSourceMap.huggingface} / ${record.huggingface_filename}`
                       : `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`}
-                  </span>
-                  <span>
-                    {record.embedding_only && (
-                      <Tag style={{ marginTop: 6 }}>Embedding Only</Tag>
-                    )}
                   </span>
                 </span>
               );

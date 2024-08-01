@@ -116,6 +116,14 @@ export async function callHuggingfaceQuickSearch(params: any) {
   });
 }
 
+const HUGGINGFACE_API = 'https://huggingface.co/api/models';
+
+export async function queryHuggingfaceModelDetail(params: { repo: string }) {
+  return request(`${HUGGINGFACE_API}/${params.repo}`, {
+    method: 'GET'
+  });
+}
+
 export async function queryHuggingfaceModels(
   params: {
     search: {
@@ -130,7 +138,18 @@ export async function queryHuggingfaceModels(
     ...params,
     ...options,
     limit: 50,
-    additionalFields: ['cardData']
+    additionalFields: ['sha'],
+    fetch(url: string, config: any) {
+      try {
+        return fetch(`${url}`, {
+          ...config,
+          signal: options.signal
+        });
+      } catch (error) {
+        // ignore
+        return [];
+      }
+    }
   })) {
     result.push(model);
   }
@@ -139,7 +158,9 @@ export async function queryHuggingfaceModels(
 
 export async function queryHuggingfaceModelFiles(params: { repo: string }) {
   const result = [];
-  for await (const fileInfo of listFiles(params)) {
+  for await (const fileInfo of listFiles({
+    ...params
+  })) {
     result.push(fileInfo);
   }
   return result;

@@ -1,0 +1,35 @@
+.hf-model-file {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--border-radius-base);
+
+  &:hover {
+    background-color: var(--color-fill-sider);
+  }
+
+  &.active {
+    background-color: var(--color-fill-sider);
+  }
+
+  .title {
+    margin-bottom: 10px;
+  }
+
+  .tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    border: 1px solid var(--ant-color-border);
+    color: var(--ant-color-text-secondary);
+  }
+
+  .btn {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

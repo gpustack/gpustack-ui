@@ -5,7 +5,6 @@ import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
-import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -13,14 +12,14 @@ import ViewCodeModal from '@/pages/playground/components/view-code-modal';
 import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
+  DownOutlined,
   EditOutlined,
-  PlusOutlined,
   SyncOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Input, Space, Tag, message } from 'antd';
+import { Button, Dropdown, Input, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useCallback, useRef, useState } from 'react';
@@ -36,6 +35,7 @@ import {
 import { modelSourceMap } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import AddModal from './add-modal';
+import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
 import ViewLogsModal from './view-logs-modal';
 
@@ -80,13 +80,37 @@ const Models: React.FC<ModelsProps> = ({
   const [openViewCodeModal, setOpenViewCodeModal] = useState(false);
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
+  const [openDeployModal, setOpenDeployModal] = useState(false);
   const [title, setTitle] = useState<string>('');
   const [currentData, setCurrentData] = useState<ListItem | undefined>(
     undefined
   );
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
   const modalRef = useRef<any>(null);
+  const sourceRef = useRef<any>(null);
+
+  const sourceOptions = [
+    {
+      label: 'Hugging Face',
+      value: modelSourceMap.huggingface_value,
+      key: 'huggingface',
+      icon: <IconFont type="icon-huggingface"></IconFont>,
+      onClick: () => {
+        sourceRef.current = modelSourceMap.huggingface_value;
+        setOpenDeployModal(true);
+      }
+    },
+    {
+      label: 'Ollama Library',
+      value: modelSourceMap.ollama_library_value,
+      key: 'ollama_library',
+      icon: <IconFont type="icon-ollama"></IconFont>,
+      onClick: () => {
+        sourceRef.current = modelSourceMap.ollama_library_value;
+        setOpenDeployModal(true);
+      }
+    }
+  ];
 
   const ActionList = [
     {
@@ -133,7 +157,6 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleAddModal = () => {
     setOpenAddModal(true);
-    setAction(PageAction.CREATE);
     setTitle(intl.formatMessage({ id: 'models.button.deploy' }));
   };
 
@@ -141,26 +164,31 @@ const Models: React.FC<ModelsProps> = ({
     async (data: FormData) => {
       try {
         console.log('data:', data);
-
-        if (data.source === modelSourceMap.ollama_library_value) {
-          data.ollama_library_model_name = `${data.ollama_library_model_name}:${data.tag}`;
-        }
-        if (action === PageAction.CREATE) {
-          await createModel({ data });
-        }
-        if (action === PageAction.EDIT) {
-          await updateModel({ data, id: currentData?.id as number });
-        }
+        await updateModel({ data, id: currentData?.id as number });
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       } catch (error) {}
     },
-    [action, currentData]
+    [currentData]
   );
 
   const handleModalCancel = useCallback(() => {
     console.log('handleModalCancel');
     setOpenAddModal(false);
+  }, []);
+
+  const handleDeployModalCancel = useCallback(() => {
+    setOpenDeployModal(false);
+  }, []);
+
+  const handleCreateModel = useCallback(async (data: FormData) => {
+    try {
+      console.log('data:', data);
+
+      await createModel({ data });
+      setOpenDeployModal(false);
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {}
   }, []);
 
   const handleLogModalCancel = useCallback(() => {
@@ -230,7 +258,6 @@ const Models: React.FC<ModelsProps> = ({
   const handleEdit = (row: ListItem) => {
     setCurrentData(row);
     setOpenAddModal(true);
-    setAction(PageAction.EDIT);
     setTitle(intl.formatMessage({ id: 'models.title.edit' }));
   };
 
@@ -314,13 +341,15 @@ const Models: React.FC<ModelsProps> = ({
           }
           right={
             <Space size={20}>
-              <Button
-                icon={<PlusOutlined></PlusOutlined>}
-                type="primary"
-                onClick={handleAddModal}
-              >
-                {intl?.formatMessage?.({ id: 'models.button.deploy' })}
-              </Button>
+              <Dropdown menu={{ items: sourceOptions }}>
+                <Button
+                  icon={<DownOutlined></DownOutlined>}
+                  type="primary"
+                  iconPosition="end"
+                >
+                  {intl?.formatMessage?.({ id: 'models.button.deploy' })}
+                </Button>
+              </Dropdown>
               <Access accessible={access.canDelete}>
                 <Button
                   icon={<DeleteOutlined />}
@@ -440,12 +469,21 @@ const Models: React.FC<ModelsProps> = ({
       </PageContainer>
       <AddModal
         open={openAddModal}
-        action={action}
+        action={PageAction.EDIT}
         title={title}
         data={currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
+      <DeployModal
+        open={openDeployModal}
+        action={PageAction.CREATE}
+        title="Deploy Model"
+        data={currentData}
+        source={sourceRef.current}
+        onCancel={handleDeployModalCancel}
+        onOk={handleCreateModel}
+      ></DeployModal>
       <ViewLogsModal
         url={currentInstanceUrl}
         open={openLogModal}

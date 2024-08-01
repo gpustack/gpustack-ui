@@ -13,6 +13,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
     "@ant-design/pro-components": "^2.7.1",
+    "@huggingface/gguf": "^0.1.7",
     "@huggingface/hub": "^0.15.1",
     "@monaco-editor/react": "^4.6.0",
     "@types/lodash": "^4.17.4",

@@ -11,6 +11,9 @@ dependencies:
   '@ant-design/pro-components':
     specifier: ^2.7.1
     version: 2.7.1(antd@5.18.3)(rc-field-form@1.44.0)(react-dom@18.2.0)(react@18.2.0)
+  '@huggingface/gguf':
+    specifier: ^0.1.7
+    version: 0.1.7
   '@huggingface/hub':
     specifier: ^0.15.1
     version: 0.15.1
@@ -4028,6 +4031,11 @@ packages:
   /@formatjs/intl-utils@2.3.0:
     resolution: {integrity: sha512-KWk80UPIzPmUg+P0rKh6TqspRw0G6eux1PuJr+zz47ftMaZ9QDwbGzHZbtzWkl5hgayM/qrKRutllRC7D/vVXQ==}
     deprecated: the package is rather renamed to @formatjs/ecma-abstract with some changes in functionality (primarily selectUnit is removed and we don't plan to make any further changes to this package
+    dev: false
+
+  /@huggingface/gguf@0.1.7:
+    resolution: {integrity: sha512-RQN1WwuusLjiBTNFuAJCUlhRejIhKt395ywnTmc+Jy8dajGwk8k7EsfgtxVqkBSTWy9D55XzCII7jUjkHEv3JA==, tarball: https://registry.npmjs.org/@huggingface/gguf/-/gguf-0.1.7.tgz}
+    engines: {node: '>=20'}
     dev: false
 
   /@huggingface/hub@0.15.1:

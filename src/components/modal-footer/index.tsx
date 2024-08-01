@@ -9,8 +9,10 @@ type ModalFooterProps = {
   htmlType?: 'button' | 'submit';
   okBtnProps?: any;
   cancelBtnProps?: any;
+  align?: 'start' | 'end' | 'center' | 'baseline';
   form?: any;
   loading?: boolean;
+  style?: React.CSSProperties;
 };
 const ModalFooter: React.FC<ModalFooterProps> = ({
   onOk,
@@ -21,11 +23,13 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   cancelBtnProps,
   loading,
   htmlType = 'button',
+  align = 'end',
+  style,
   form
 }) => {
   const intl = useIntl();
   return (
-    <Space size={20}>
+    <Space size={20} style={{ ...style }}>
       <Button onClick={onCancel} style={{ width: '88px' }} {...cancelBtnProps}>
         {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
       </Button>

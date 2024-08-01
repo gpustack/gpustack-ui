@@ -1,23 +1,25 @@
 import ModalFooter from '@/components/modal-footer';
-import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
-import { Form, Modal } from 'antd';
+import { Divider, Drawer, Form } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
 import { modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
+import HFModelFile from './hf-model-file';
+import SearchModel from './search-model';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
   data?: ListItem;
+  source: string;
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -37,11 +39,12 @@ const sourceOptions = [
 
 const AddModal: React.FC<AddModalProps> = (props) => {
   console.log('addmodel====');
-  const { title, action, open, onOk, onCancel } = props || {};
+  const { title, action, open, source, onOk, onCancel } = props || {};
   const [form] = Form.useForm();
   const intl = useIntl();
-  const [loading, setLoading] = useState(false);
   const modelSource = Form.useWatch('source', form);
+  const huggingfaceRepoId = Form.useWatch('huggingface_repo_id', form);
+  const [loading, setLoading] = useState(false);
   const [repoOptions, setRepoOptions] = useState<
     { label: string; value: string }[]
   >([]);
@@ -50,24 +53,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   >([]);
 
   const initFormValue = () => {
-    if (action === PageAction.CREATE && open) {
-      form.setFieldsValue({
-        source: modelSourceMap.huggingface_value,
-        replicas: 1
-      });
-    }
-    if (action === PageAction.EDIT && open) {
-      const list = _.split(props.data?.ollama_library_model_name, ':');
-      form.setFieldsValue({
-        ...props.data,
-        ollama_library_model_name: _.get(list, '0'),
-        tag: _.get(list, '1')
-      });
-    }
+    form.setFieldsValue({
+      source: props.source,
+      replicas: 1
+    });
   };
 
   useEffect(() => {
     initFormValue();
+    console.log('source========', props.source);
   }, [open]);
 
   const fileNamLabel = (item: any) => {
@@ -107,6 +101,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     const repo = form.getFieldValue('huggingface_repo_id');
     handleFetchModelFiles(repo);
   };
+
+  const handleSelectModelFile = useCallback((item: any) => {
+    form.setFieldValue('huggingface_filename', item.path);
+  }, []);
 
   const handleOnSearchRepo = async (text: string) => {
     try {
@@ -171,15 +169,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             }
           ]}
         >
-          <SealAutoComplete
-            filterOption
+          <SealInput.Input
             label={intl.formatMessage({ id: 'models.form.filename' })}
             required
-            options={fileOptions}
-            loading={loading}
-            onFocus={handleRepoOnBlur}
-            disabled={action === PageAction.EDIT}
-          ></SealAutoComplete>
+            disabled={true}
+          ></SealInput.Input>
         </Form.Item>
       </>
     );
@@ -242,7 +236,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const renderFieldsBySource = () => {
-    switch (modelSource) {
+    switch (props.source) {
       case modelSourceMap.huggingface_value:
         return renderHuggingfaceFields();
       case modelSourceMap.ollama_library_value:
@@ -258,14 +252,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     const repo = item.name;
     if (form.getFieldValue('source') === modelSourceMap.huggingface_value) {
       form.setFieldValue('huggingface_repo_id', repo);
-      handleFetchModelFiles(repo);
     } else {
       form.setFieldValue('ollama_library_model_name', repo);
     }
-  }, []);
-
-  const handleSourceChange = useCallback((value: string) => {
-    form.setFieldValue('source', value);
   }, []);
 
   const handleSumit = () => {
@@ -273,102 +262,133 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   return (
-    <Modal
+    <Drawer
       title={title}
       open={open}
-      centered={true}
-      onOk={handleSumit}
-      onCancel={onCancel}
+      onClose={onCancel}
       destroyOnClose={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={600}
-      styles={{}}
+      styles={{
+        body: {
+          height: 'calc(100vh - 110px)'
+        }
+      }}
+      width="90%"
       footer={
-        <ModalFooter onCancel={onCancel} onOk={handleSumit}></ModalFooter>
+        <ModalFooter
+          onCancel={onCancel}
+          onOk={handleSumit}
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}
+        ></ModalFooter>
       }
     >
-      <Form name="addModalForm" form={form} onFinish={onOk} preserve={false}>
-        <Form.Item<FormData>
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
+      <div style={{ display: 'flex' }}>
+        <div style={{ flex: 1 }}>
+          <SearchModel
+            modelSource={modelSource}
+            onSelectModel={handleOnSelectModel}
+          ></SearchModel>
+        </div>
+
+        <Divider type="vertical"></Divider>
+        <div style={{ flex: 1 }}>
+          <HFModelFile
+            repo={huggingfaceRepoId}
+            onSelectFile={handleSelectModelFile}
+          ></HFModelFile>
+        </div>
+        <Divider type="vertical"></Divider>
+        <div style={{ width: 450 }}>
+          <h3 className="flex-between font-size-14">
+            <span>Configuration</span>
+          </h3>
+          <Form name="deployModel" form={form} onFinish={onOk} preserve={false}>
+            <Form.Item<FormData>
+              name="name"
+              rules={[
                 {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'common.table.name' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({
-              id: 'common.table.name'
-            })}
-            required
-          ></SealInput.Input>
-        </Form.Item>
-        <Form.Item<FormData>
-          name="source"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
+                  required: true,
+                  message: intl.formatMessage(
+                    {
+                      id: 'common.form.rule.input'
+                    },
+                    { name: intl.formatMessage({ id: 'common.table.name' }) }
+                  )
+                }
+              ]}
+            >
+              <SealInput.Input
+                label={intl.formatMessage({
+                  id: 'common.table.name'
+                })}
+                required
+              ></SealInput.Input>
+            </Form.Item>
+            <Form.Item<FormData>
+              name="source"
+              rules={[
                 {
-                  id: 'common.form.rule.select'
-                },
-                { name: intl.formatMessage({ id: 'models.form.source' }) }
-              )
-            }
-          ]}
-        >
-          {action === PageAction.EDIT && (
-            <SealSelect
-              disabled={true}
-              label={intl.formatMessage({
-                id: 'models.form.source'
-              })}
-              options={sourceOptions}
-              required
-            ></SealSelect>
-          )}
-        </Form.Item>
-        {renderFieldsBySource()}
-        <Form.Item<FormData>
-          name="replicas"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
+                  required: true,
+                  message: intl.formatMessage(
+                    {
+                      id: 'common.form.rule.select'
+                    },
+                    { name: intl.formatMessage({ id: 'models.form.source' }) }
+                  )
+                }
+              ]}
+            >
+              {
+                <SealSelect
+                  disabled={true}
+                  label={intl.formatMessage({
+                    id: 'models.form.source'
+                  })}
+                  options={sourceOptions}
+                  required
+                ></SealSelect>
+              }
+            </Form.Item>
+            {renderFieldsBySource()}
+            <Form.Item<FormData>
+              name="replicas"
+              rules={[
                 {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.replicas' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Number
-            style={{ width: '100%' }}
-            label={intl.formatMessage({
-              id: 'models.form.replicas'
-            })}
-            required
-            min={0}
-          ></SealInput.Number>
-        </Form.Item>
-        <Form.Item<FormData> name="description">
-          <SealInput.TextArea
-            label={intl.formatMessage({
-              id: 'common.table.description'
-            })}
-          ></SealInput.TextArea>
-        </Form.Item>
-      </Form>
-    </Modal>
+                  required: true,
+                  message: intl.formatMessage(
+                    {
+                      id: 'common.form.rule.input'
+                    },
+                    { name: intl.formatMessage({ id: 'models.form.replicas' }) }
+                  )
+                }
+              ]}
+            >
+              <SealInput.Number
+                style={{ width: '100%' }}
+                label={intl.formatMessage({
+                  id: 'models.form.replicas'
+                })}
+                required
+                min={0}
+              ></SealInput.Number>
+            </Form.Item>
+            <Form.Item<FormData> name="description">
+              <SealInput.TextArea
+                label={intl.formatMessage({
+                  id: 'common.table.description'
+                })}
+              ></SealInput.TextArea>
+            </Form.Item>
+          </Form>
+        </div>
+      </div>
+    </Drawer>
   );
 };
 

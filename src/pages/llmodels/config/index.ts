@@ -6,7 +6,7 @@ export const ollamaModelOptions = [
     label: 'llama3.1',
     value: 'llama3.1',
     name: 'llama3.1',
-    tags: ['Tools', '8B', '70B', '405B']
+    tags: ['8B', '70B', '405B']
   },
   { label: 'llama3', value: 'llama3', name: 'llama3', tags: ['8B', '70B'] },
   { label: 'gemma2', value: 'gemma2', name: 'gemma2', tags: ['9B', '27B'] },
@@ -14,13 +14,13 @@ export const ollamaModelOptions = [
     label: 'mistral',
     value: 'mistral',
     name: 'mistral',
-    tags: ['Tools', '7B']
+    tags: ['7B']
   },
   {
     label: 'llava',
     value: 'llava',
     name: 'llava',
-    tags: ['Vision', '7B', '13B', '34B']
+    tags: ['7B', '13B', '34B']
   },
   {
     label: 'qwen2',
@@ -33,13 +33,13 @@ export const ollamaModelOptions = [
     label: 'codellama',
     value: 'codellama',
     name: 'codellama',
-    tags: ['Code', '7B', '13B', '34B', '70B']
+    tags: ['7B', '13B', '34B', '70B']
   },
   {
     label: 'deepseek-coder',
     value: 'deepseek-coder',
     name: 'deepseek-coder',
-    tags: ['Code', '1B', '7B', '33B']
+    tags: ['1B', '7B', '33B']
   }
 ];
 

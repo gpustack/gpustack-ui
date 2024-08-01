@@ -1,5 +1,5 @@
 export default {
-  'models.button.deploy': 'Deploy Model',
+  'models.button.deploy': 'Deploy Model From',
   'models.title': 'Models',
   'models.title.edit': 'Edit Model',
   'models.table.models': 'models',

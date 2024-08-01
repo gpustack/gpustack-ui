@@ -26,7 +26,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
         {resultList.length ? (
           <Row gutter={[10, 10]}>
             {resultList.map((item, index) => (
-              <Col span={12} key={item.name}>
+              <Col span={24} key={item.name}>
                 <div onClick={(e) => handleSelect(e, item)}>
                   <HFModelItem
                     source={source}

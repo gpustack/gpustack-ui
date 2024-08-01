@@ -1,9 +1,8 @@
 import IconFont from '@/components/icon-font';
-import RadioButtons from '@/components/radio-buttons';
 import { SearchOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import _ from 'lodash';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels } from '../apis';
 import { modelSourceMap, ollamaModelOptions } from '../config';
 import SearchStyle from '../style/search-result.less';
@@ -11,7 +10,7 @@ import SearchResult from './search-result';
 
 interface SearchInputProps {
   modelSource: string;
-  onSourceChange: (source: string) => void;
+  onSourceChange?: (source: string) => void;
   onSelectModel: (model: any) => void;
 }
 
@@ -37,6 +36,12 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   const [loading, setLoading] = useState(false);
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
+  const [current, setCurrent] = useState<string>('');
+
+  const handleOnSelectModel = (item: any) => {
+    onSelectModel(item);
+    setCurrent(item.id);
+  };
 
   const handleOnSearchRepo = async (text: string) => {
     axiosTokenRef.current?.abort?.();
@@ -67,8 +72,10 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
       ).reverse();
       cacheRepoOptions.current = sortedList;
       setRepoOptions(sortedList);
+      handleOnSelectModel(sortedList[0]);
     } catch (error) {
       setRepoOptions([]);
+      handleOnSelectModel({});
       cacheRepoOptions.current = [];
     } finally {
       setLoading(false);
@@ -81,7 +88,6 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   };
 
   const handleOnFocus = () => {
-    setShowSearch(true);
     if (
       !repoOptions.length &&
       !cacheRepoOptions.current.length &&
@@ -93,17 +99,6 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
       setRepoOptions(ollamaModelOptions);
       cacheRepoOptions.current = ollamaModelOptions;
     }
-  };
-
-  const handleOnSelectModel = (item: any) => {
-    onSelectModel(item);
-    setShowSearch(false);
-  };
-
-  const handleOnBlur = () => {
-    setTimeout(() => {
-      setShowSearch(false);
-    }, 200);
   };
 
   const handleFilterModels = (e: any) => {
@@ -121,26 +116,30 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
 
   const handleSourceChange = (source: string) => {
     axiosTokenRef.current?.abort?.();
-    onSourceChange(source);
+    onSourceChange?.(source);
     setRepoOptions([]);
     cacheRepoOptions.current = [];
   };
 
+  useEffect(() => {
+    handleOnFocus();
+    return () => {
+      axiosTokenRef.current?.abort?.();
+    };
+  }, [modelSource]);
+
   return (
-    <>
+    <div style={{ flex: 1 }}>
       <div className={SearchStyle['search-bar']}>
-        <RadioButtons
+        {/* <RadioButtons
           options={sourceList}
           value={modelSource}
           onChange={handleSourceChange}
-        ></RadioButtons>
+        ></RadioButtons> */}
         <Input
           onPressEnter={handlerSearchModels}
           onChange={debounceFilter}
           allowClear
-          onFocus={handleOnFocus}
-          onBlur={() => handleOnBlur()}
-          className="m-l-20"
           placeholder={
             modelSource === 'huggingface'
               ? 'Search models from hugging face '
@@ -156,17 +155,16 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
           }
         ></Input>
       </div>
-      {showSearch && (
+      {
         <SearchResult
           loading={loading}
           resultList={repoOptions}
-          current=""
+          current={current}
           source={modelSource}
           onSelect={handleOnSelectModel}
         ></SearchResult>
-      )}
-      <div style={{ height: '81px' }}></div>
-    </>
+      }
+    </div>
   );
 };
 

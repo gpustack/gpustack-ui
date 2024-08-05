@@ -10,6 +10,7 @@ export default {
   'common.button.save': 'Save',
   'common.button.saverun': 'Save and Run',
   'common.button.run': 'Run',
+  'common.button.viewcode': 'View Code',
   'common.button.copy': 'Copy',
   'common.button.collapse': 'Collapse',
   'common.button.expand': 'Expand',

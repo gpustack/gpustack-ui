@@ -209,8 +209,8 @@ const Resources: React.FC = () => {
       >
         <Column
           title={intl.formatMessage({ id: 'common.table.name' })}
-          dataIndex="hostname"
-          key="hostname"
+          dataIndex="name"
+          key="name"
         />
         <Column
           title={intl.formatMessage({ id: 'common.table.status' })}

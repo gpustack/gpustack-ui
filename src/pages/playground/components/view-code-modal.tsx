@@ -12,6 +12,7 @@ type ViewModalProps = {
   parameters: any;
   title: string;
   open: boolean;
+  apiType?: string;
   onCancel: () => void;
 };
 
@@ -22,7 +23,8 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     onCancel,
     systemMessage,
     messageList,
-    parameters = {}
+    parameters = {},
+    apiType = 'chat'
   } = props || {};
 
   const intl = useIntl();
@@ -32,6 +34,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const [lang, setLang] = useState('shell');
 
   const BaseURL = `${window.location.origin}/v1-openai`;
+  const ClientType = apiType === 'chat' ? 'chat.completions' : 'embeddings';
+  const api = apiType === 'chat' ? 'chat/completions' : 'embeddings';
+  const logcommand =
+    apiType === 'chat' ? 'choices[0].message.content' : 'data[0].embedding';
 
   const langOptions = [
     { label: 'Curl', value: 'shell' },
@@ -56,15 +62,16 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `curl ${window.location.origin}/v1-openai/chat/completions \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const messages = [
+        ...systemList,
+        ..._.map(messageList, (item: any) => {
+          return { role: item.role, content: item.content };
+        })
+      ];
+      const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
-          messages: [
-            ...systemList,
-            ..._.map(messageList, (item: any) => {
-              return { role: item.role, content: item.content };
-            })
-          ]
+          ...(messages.length > 0 ? { messages } : {})
         },
         null,
         2
@@ -74,19 +81,20 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
+      const messages = [
+        ...systemList,
+        ..._.map(messageList, (item: any) => {
+          return { role: item.role, content: item.content };
+        })
+      ];
       const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
-          messages: [
-            ...systemList,
-            ..._.map(messageList, (item: any) => {
-              return { role: item.role, content: item.content };
-            })
-          ]
+          ...(messages.length > 0 ? { messages } : {})
         },
         null,
         4
-      )};\nconst chatCompletion = await openai.chat.completions.create(params);\n  console.log(chatCompletion.choices[0].message.content);\n}\nmain();`;
+      )};\nconst response = await openai.${ClientType}.create(params);\n  console.log(response.${logcommand});\n}\nmain();`;
       setCodeValue(code);
     } else if (lang === 'python') {
       const formattedParams = _.keys(parameters).reduce(
@@ -105,16 +113,20 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const systemList = systemMessage
         ? [{ role: 'system', content: systemMessage }]
         : [];
-      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\ncompletion = client.chat.completions.create(\n${formattedParams}  messages=${JSON.stringify(
-        [
-          ...systemList,
-          ..._.map(messageList, (item: any) => {
-            return { role: item.role, content: item.content };
-          })
-        ],
-        null,
-        2
-      )})\nprint(completion.choices[0].message.content)`;
+      const messages =
+        apiType === 'chat'
+          ? `messages=${JSON.stringify(
+              [
+                ...systemList,
+                ..._.map(messageList, (item: any) => {
+                  return { role: item.role, content: item.content };
+                })
+              ],
+              null,
+              2
+            )}`
+          : '';
+      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${ClientType}.create(\n${formattedParams}  ${messages})\nprint(response.${logcommand})`;
       setCodeValue(code);
     }
     formatCode();

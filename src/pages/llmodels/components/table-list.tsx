@@ -1,5 +1,6 @@
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
@@ -8,6 +9,7 @@ import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import ViewCodeModal from '@/pages/playground/components/view-code-modal';
 import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
@@ -71,6 +73,11 @@ const Models: React.FC<ModelsProps> = ({
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const [embeddingParams, setEmbeddingParams] = useState<any>({
+    params: {},
+    show: false
+  });
+  const [openViewCodeModal, setOpenViewCodeModal] = useState(false);
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
@@ -93,6 +100,11 @@ const Models: React.FC<ModelsProps> = ({
       icon: <WechatWorkOutlined />
     },
     {
+      label: 'common.button.viewcode',
+      key: 'embedding',
+      icon: <IconFont type="icon-code" />
+    },
+    {
       label: 'common.button.delete',
       key: 'delete',
       props: {
@@ -106,6 +118,9 @@ const Models: React.FC<ModelsProps> = ({
     return _.filter(ActionList, (action: any) => {
       if (action.key === 'chat') {
         return record.ready_replicas > 0 && !record.embedding_only;
+      }
+      if (action.key === 'embedding') {
+        return record.embedding_only;
       }
       return true;
     });
@@ -225,6 +240,15 @@ const Models: React.FC<ModelsProps> = ({
     if (val === 'delete') {
       handleDelete(row);
     }
+    if (val === 'embedding') {
+      setEmbeddingParams({
+        params: {
+          input: 'Your text string goes here',
+          model: row.name
+        },
+        show: true
+      });
+    }
   }, []);
 
   const handleChildSelect = useCallback(
@@ -246,6 +270,13 @@ const Models: React.FC<ModelsProps> = ({
         handleChildSelect={handleChildSelect}
       ></InstanceItem>
     );
+  }, []);
+
+  const handleCloseViewCode = useCallback(() => {
+    setEmbeddingParams({
+      params: {},
+      show: false
+    });
   }, []);
 
   return (
@@ -416,6 +447,14 @@ const Models: React.FC<ModelsProps> = ({
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
+      <ViewCodeModal
+        apiType="embedding"
+        open={embeddingParams.show}
+        messageList={[]}
+        parameters={embeddingParams.params}
+        onCancel={handleCloseViewCode}
+        title={intl.formatMessage({ id: 'playground.viewcode' })}
+      ></ViewCodeModal>
     </>
   );
 };

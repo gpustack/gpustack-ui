@@ -10,6 +10,7 @@ export default {
   'common.button.save': '保存',
   'common.button.saverun': '保存并运行',
   'common.button.run': '运行',
+  'common.button.viewcode': '查看代码',
   'common.button.copy': '复制',
   'common.button.collapse': '折叠',
   'common.button.expand': '展开',

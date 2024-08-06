@@ -120,7 +120,7 @@ const Models: React.FC<ModelsProps> = ({
         return record.ready_replicas > 0 && !record.embedding_only;
       }
       if (action.key === 'embedding') {
-        return record.embedding_only;
+        return record.embedding_only && record.ready_replicas > 0;
       }
       return true;
     });

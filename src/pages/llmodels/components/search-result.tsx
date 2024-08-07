@@ -24,10 +24,10 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     <div style={{ ...props.style }} className="search-result-wrap">
       <Spin spinning={props.loading} style={{ minHeight: 100 }}>
         {resultList.length ? (
-          <Row gutter={[10, 10]}>
+          <Row gutter={[16, 16]}>
             {resultList.map((item, index) => (
               <Col span={24} key={item.name}>
-                <div onClick={(e) => handleSelect(e, item)}>
+                <div onClick={(e) => handleSelect(e, item)} tabIndex={0}>
                   <HFModelItem
                     source={source}
                     tags={item.tags}
@@ -35,7 +35,8 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                     title={item.name}
                     downloads={item.downloads}
                     likes={item.likes}
-                    lastModified={item.lastModified}
+                    task={item.task}
+                    updatedAt={item.updatedAt}
                     active={item.id === props.current}
                   />
                 </div>

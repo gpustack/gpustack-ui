@@ -17,6 +17,9 @@ dependencies:
   '@huggingface/hub':
     specifier: ^0.15.1
     version: 0.15.1
+  '@huggingface/tasks':
+    specifier: ^0.11.6
+    version: 0.11.6
   '@monaco-editor/react':
     specifier: ^4.6.0
     version: 4.6.0(monaco-editor@0.50.0)(react-dom@18.2.0)(react@18.2.0)
@@ -4048,6 +4051,10 @@ packages:
 
   /@huggingface/tasks@0.10.14:
     resolution: {integrity: sha512-8Q3aqTO+ldTTqtK4OfMz/h5DiiMBzUnZKdV0Dq2+JX+UXvqnTDVOk+bJd0QVytJYyNeZgKsj7XQHvEQGyo9cFg==, tarball: https://registry.npmjs.org/@huggingface/tasks/-/tasks-0.10.14.tgz}
+    dev: false
+
+  /@huggingface/tasks@0.11.6:
+    resolution: {integrity: sha512-jIPlnJjSOqQCTpyCyIZCyamw3vOvMZrlaEdoB/PInHLnoaoqJKVIc0ijULKJxC3ClkgmehdoOu4J/yU+eGQLRw==, tarball: https://registry.npmjs.org/@huggingface/tasks/-/tasks-0.11.6.tgz}
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:

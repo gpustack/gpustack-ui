@@ -5,14 +5,17 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
-import { Divider, Drawer, Form } from 'antd';
+import { Drawer, Form } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
 import { modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
+import ColumnWrapper from './column-wrapper';
 import HFModelFile from './hf-model-file';
+import ModelCard from './model-card';
 import SearchModel from './search-model';
+import TitleWrapper from './title-wrapper';
 
 type AddModalProps = {
   title: string;
@@ -250,10 +253,20 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleOnSelectModel = useCallback((item: any) => {
     const repo = item.name;
+    let name = _.split(item.name, '/').slice(-1)[0];
+    const reg = /(-gguf)$/i;
+    name = _.toLower(name).replace(reg, '');
+
     if (form.getFieldValue('source') === modelSourceMap.huggingface_value) {
-      form.setFieldValue('huggingface_repo_id', repo);
+      form.setFieldsValue({
+        huggingface_repo_id: repo,
+        name: name
+      });
     } else {
-      form.setFieldValue('ollama_library_model_name', repo);
+      form.setFieldsValue({
+        ollama_library_model_name: repo,
+        name: name
+      });
     }
   }, []);
 
@@ -272,42 +285,50 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       keyboard={false}
       styles={{
         body: {
-          height: 'calc(100vh - 110px)'
+          height: 'calc(100vh - 53px)',
+          padding: '16px 0'
         }
       }}
       width="90%"
-      footer={
-        <ModalFooter
-          onCancel={onCancel}
-          onOk={handleSumit}
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end'
-          }}
-        ></ModalFooter>
-      }
+      footer={false}
     >
       <div style={{ display: 'flex' }}>
-        <div style={{ flex: 1 }}>
+        <ColumnWrapper>
           <SearchModel
             modelSource={modelSource}
             onSelectModel={handleOnSelectModel}
           ></SearchModel>
-        </div>
-
-        <Divider type="vertical"></Divider>
-        <div style={{ flex: 1 }}>
-          <HFModelFile
-            repo={huggingfaceRepoId}
-            onSelectFile={handleSelectModelFile}
-          ></HFModelFile>
-        </div>
-        <Divider type="vertical"></Divider>
-        <div style={{ width: 450 }}>
-          <h3 className="flex-between font-size-14">
-            <span>Configuration</span>
-          </h3>
-          <Form name="deployModel" form={form} onFinish={onOk} preserve={false}>
+        </ColumnWrapper>
+        {modelSource === modelSourceMap.huggingface_value && (
+          <ColumnWrapper>
+            <ModelCard repo={huggingfaceRepoId}></ModelCard>
+            <HFModelFile
+              repo={huggingfaceRepoId}
+              onSelectFile={handleSelectModelFile}
+            ></HFModelFile>
+          </ColumnWrapper>
+        )}
+        <ColumnWrapper
+          footer={
+            <ModalFooter
+              onCancel={onCancel}
+              onOk={handleSumit}
+              style={{
+                padding: '16px 20px',
+                display: 'flex',
+                justifyContent: 'flex-end'
+              }}
+            ></ModalFooter>
+          }
+        >
+          <TitleWrapper>Configuration</TitleWrapper>
+          <Form
+            name="deployModel"
+            form={form}
+            onFinish={onOk}
+            preserve={false}
+            style={{ padding: '16px 20px' }}
+          >
             <Form.Item<FormData>
               name="name"
               rules={[
@@ -386,7 +407,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               ></SealInput.TextArea>
             </Form.Item>
           </Form>
-        </div>
+        </ColumnWrapper>
       </div>
     </Drawer>
   );

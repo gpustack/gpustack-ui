@@ -1,4 +1,5 @@
 import { listFiles, listModels } from '@huggingface/hub';
+import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import {
   FormData,
@@ -129,6 +130,7 @@ export async function queryHuggingfaceModels(
     search: {
       query: string;
       tags: string[];
+      task?: PipelineType;
     };
   },
   options?: any
@@ -137,7 +139,7 @@ export async function queryHuggingfaceModels(
   for await (const model of listModels({
     ...params,
     ...options,
-    limit: 50,
+    limit: 100,
     additionalFields: ['sha'],
     fetch(url: string, config: any) {
       try {

@@ -10,5 +10,6 @@ export default {
   REFRESH: ['ctrl+r', 'meta+r'],
   EDIT: ['ctrl+e', 'meta+e'],
   SEARCH: ['ctrl+f', 'meta+f'],
-  RESET: ['ctrl+shift+r', 'meta+shift+r']
+  RESET: ['ctrl+shift+r', 'meta+shift+r'],
+  INPUT: ['ctrl+k', 'meta+k']
 };

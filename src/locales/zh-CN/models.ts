@@ -13,5 +13,7 @@ export default {
   'models.openinplayground': '在 Playground 中打开',
   'models.instances': '实例',
   'model.form.ollama.model': 'Ollama 模型',
-  'model.form.ollamaholder': '请选择或输入模型名称'
+  'model.form.ollamaholder': '请选择或输入模型名称',
+  'model.form.ollamatips':
+    '提示：以下为 GPUStack 预设的 Ollama 模型，请选择你想要的模型或者直接在右侧表单 【{name}】 输入框中输入你要部署的模型。'
 };

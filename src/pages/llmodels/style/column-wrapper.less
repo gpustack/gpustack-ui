@@ -1,0 +1,27 @@
+.column-wrapper {
+  flex: 1;
+  height: calc(100vh - 85px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-left: 1px solid var(--ant-color-split);
+}
+
+.column-wrapper-footer {
+  flex: 1;
+  position: relative;
+  border-left: 1px solid var(--ant-color-split);
+
+  .column-wrapper {
+    padding-bottom: 50px;
+    border-left: none;
+  }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--color-white-1);
+  }
+}

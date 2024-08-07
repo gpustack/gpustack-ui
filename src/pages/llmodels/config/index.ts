@@ -6,40 +6,64 @@ export const ollamaModelOptions = [
     label: 'llama3.1',
     value: 'llama3.1',
     name: 'llama3.1',
+    id: 'llama3.1',
     tags: ['8B', '70B', '405B']
   },
-  { label: 'llama3', value: 'llama3', name: 'llama3', tags: ['8B', '70B'] },
-  { label: 'gemma2', value: 'gemma2', name: 'gemma2', tags: ['9B', '27B'] },
+  {
+    label: 'llama3',
+    value: 'llama3',
+    name: 'llama3',
+    tags: ['8B', '70B'],
+    id: 'llama3'
+  },
+  {
+    label: 'gemma2',
+    value: 'gemma2',
+    name: 'gemma2',
+    tags: ['9B', '27B'],
+    id: 'gemma2'
+  },
   {
     label: 'mistral',
     value: 'mistral',
     name: 'mistral',
-    tags: ['7B']
+    tags: ['7B'],
+    id: 'mistral'
   },
   {
     label: 'llava',
     value: 'llava',
     name: 'llava',
-    tags: ['7B', '13B', '34B']
+    tags: ['7B', '13B', '34B'],
+    id: 'llava'
   },
   {
     label: 'qwen2',
     value: 'qwen2',
     name: 'qwen2',
-    tags: ['0.5B', '1.5B', '7B', '72B']
+    tags: ['0.5B', '1.5B', '7B', '72B'],
+    id: 'qwen2'
   },
-  { label: 'phi3', value: 'phi3', name: 'phi3', tags: ['3B', '14B'] },
+  {
+    label: 'phi3',
+    value: 'phi3',
+    name: 'phi3',
+    tags: ['3B', '14B'],
+    id: 'phi3'
+  },
   {
     label: 'codellama',
     value: 'codellama',
     name: 'codellama',
-    tags: ['7B', '13B', '34B', '70B']
+    tags: ['7B', '13B', '34B', '70B'],
+    id: 'codellama'
   },
   {
     label: 'deepseek-coder',
     value: 'deepseek-coder',
     name: 'deepseek-coder',
-    tags: ['1B', '7B', '33B']
+    tags: ['1B', '7B', '33B'],
+    id: 'deepseek-coder'
   }
 ];
 
@@ -101,4 +125,11 @@ export const ActionList = [
     key: 'delete',
     icon: EditOutlined
   }
+];
+
+export const modelFilesSortOptions = [
+  // { label: 'Trending', value: 'trendingScore' },
+  { label: 'Likes', value: 'likes' },
+  { label: 'Downloads', value: 'downloads' },
+  { label: 'Updated', value: 'updatedAt' }
 ];

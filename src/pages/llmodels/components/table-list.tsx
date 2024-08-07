@@ -341,7 +341,7 @@ const Models: React.FC<ModelsProps> = ({
           }
           right={
             <Space size={20}>
-              <Dropdown menu={{ items: sourceOptions }}>
+              <Dropdown menu={{ items: sourceOptions }} placement="bottomRight">
                 <Button
                   icon={<DownOutlined></DownOutlined>}
                   type="primary"

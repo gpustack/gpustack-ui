@@ -1,11 +1,16 @@
 import IconFont from '@/components/icon-font';
-import { SearchOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Button, Input, Select } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels } from '../apis';
-import { modelSourceMap, ollamaModelOptions } from '../config';
+import {
+  modelFilesSortOptions,
+  modelSourceMap,
+  ollamaModelOptions
+} from '../config';
 import SearchStyle from '../style/search-result.less';
+import SearchInput from './search-input';
 import SearchResult from './search-result';
 
 interface SearchInputProps {
@@ -29,14 +34,16 @@ const sourceList = [
   }
 ];
 
-const SearchInput: React.FC<SearchInputProps> = (props) => {
+const SearchModel: React.FC<SearchInputProps> = (props) => {
+  const intl = useIntl();
   const { modelSource, onSourceChange, onSelectModel } = props;
-  const [showSearch, setShowSearch] = useState(false);
   const [repoOptions, setRepoOptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [current, setCurrent] = useState<string>('');
+  const [sortType, setSortType] = useState<string>('downloads');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
-  const [current, setCurrent] = useState<string>('');
+  const customOllamaModelRef = useRef<any>(null);
 
   const handleOnSelectModel = (item: any) => {
     onSelectModel(item);
@@ -68,7 +75,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
       });
       const sortedList = _.sortBy(
         list,
-        (item: any) => item.downloads
+        (item: any) => item[sortType]
       ).reverse();
       cacheRepoOptions.current = sortedList;
       setRepoOptions(sortedList);
@@ -82,12 +89,12 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
     }
   };
 
-  const handlerSearchModels = async (e: any) => {
+  const handlerSearchModels = useCallback(async (e: any) => {
     const text = e.target.value;
     handleOnSearchRepo(text);
-  };
+  }, []);
 
-  const handleOnFocus = () => {
+  const handleOnOpen = () => {
     if (
       !repoOptions.length &&
       !cacheRepoOptions.current.length &&
@@ -98,6 +105,7 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
     if (modelSourceMap.ollama_library_value === modelSource) {
       setRepoOptions(ollamaModelOptions);
       cacheRepoOptions.current = ollamaModelOptions;
+      handleOnSelectModel(ollamaModelOptions[0]);
     }
   };
 
@@ -107,7 +115,6 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
       return item.name.includes(text);
     });
     setRepoOptions(list);
-    console.log('handleFilterModels', text);
   };
 
   const debounceFilter = _.debounce((e: any) => {
@@ -121,8 +128,73 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
     cacheRepoOptions.current = [];
   };
 
+  const handleInputChange = (e: any) => {
+    const value = e.target.value;
+    customOllamaModelRef.current = value;
+  };
+
+  const handleConfirm = () => {
+    const model = {
+      label: customOllamaModelRef.current,
+      value: customOllamaModelRef.current,
+      name: customOllamaModelRef.current,
+      id: ''
+    };
+    onSelectModel(model);
+    setCurrent('');
+  };
+
+  const handleSortChange = (value: string) => {
+    const sortedList = _.sortBy(
+      repoOptions,
+      (item: any) => item[value]
+    ).reverse();
+    setSortType(value);
+    setRepoOptions(sortedList);
+  };
+
+  const renderHFSearch = () => {
+    return (
+      <>
+        <SearchInput onSearch={handlerSearchModels}></SearchInput>
+        <div className={SearchStyle.filter}>
+          <span>
+            <span className="value">{repoOptions.length}</span>results
+          </span>
+          <Select
+            value={sortType}
+            onChange={handleSortChange}
+            labelRender={({ label }) => {
+              return <span>Sort: {label}</span>;
+            }}
+            options={modelFilesSortOptions}
+            size="middle"
+            style={{ width: '150px' }}
+          ></Select>
+        </div>
+      </>
+    );
+  };
+
+  const renderOllamaCustom = () => {
+    return (
+      <>
+        <Input
+          allowClear
+          placeholder="Input ollama model name"
+          onChange={handleInputChange}
+        ></Input>
+        <div className={SearchStyle.filter}>
+          <Button type="primary" onClick={handleConfirm}>
+            {intl.formatMessage({ id: 'common.button.confirm' })}
+          </Button>
+        </div>
+      </>
+    );
+  };
+
   useEffect(() => {
-    handleOnFocus();
+    handleOnOpen();
     return () => {
       axiosTokenRef.current?.abort?.();
     };
@@ -136,24 +208,16 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
           value={modelSource}
           onChange={handleSourceChange}
         ></RadioButtons> */}
-        <Input
-          onPressEnter={handlerSearchModels}
-          onChange={debounceFilter}
-          allowClear
-          placeholder={
-            modelSource === 'huggingface'
-              ? 'Search models from hugging face '
-              : ''
-          }
-          prefix={
-            <SearchOutlined
-              style={{
-                fontSize: '16px',
-                color: 'var(--ant-color-text-quaternary)'
-              }}
-            />
-          }
-        ></Input>
+        {modelSource === modelSourceMap.huggingface_value ? (
+          renderHFSearch()
+        ) : (
+          <div style={{ lineHeight: '18px' }}>
+            {intl.formatMessage(
+              { id: 'model.form.ollamatips' },
+              { name: intl.formatMessage({ id: 'model.form.ollama.model' }) }
+            )}
+          </div>
+        )}
       </div>
       {
         <SearchResult
@@ -168,4 +232,4 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
   );
 };
 
-export default React.memo(SearchInput);
+export default React.memo(SearchModel);

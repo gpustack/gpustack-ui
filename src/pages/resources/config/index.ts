@@ -26,7 +26,7 @@ export const addWorkerGuide = {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
     registerWorker(server: string) {
-      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } -ServerURL ${server} -Token mytoken"`;
+      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } --server-url ${server} --token mytoken"`;
     }
   }
 };

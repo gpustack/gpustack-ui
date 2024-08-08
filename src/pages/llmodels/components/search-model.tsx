@@ -165,7 +165,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             value={sortType}
             onChange={handleSortChange}
             labelRender={({ label }) => {
-              return <span>Sort: {label}</span>;
+              return (
+                <span>
+                  {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
+                </span>
+              );
             }}
             options={modelFilesSortOptions}
             size="middle"
@@ -203,11 +207,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   return (
     <div style={{ flex: 1 }}>
       <div className={SearchStyle['search-bar']}>
-        {/* <RadioButtons
-          options={sourceList}
-          value={modelSource}
-          onChange={handleSourceChange}
-        ></RadioButtons> */}
         {modelSource === modelSourceMap.huggingface_value ? (
           renderHFSearch()
         ) : (

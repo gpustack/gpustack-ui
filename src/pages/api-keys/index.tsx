@@ -19,16 +19,23 @@ import { ListItem } from './config/types';
 const { Column } = Table;
 
 const APIKeys: React.FC = () => {
+  console.log('APIKeys========');
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
   const intl = useIntl();
   const modalRef = useRef<any>(null);
-  const [dataSource, setDataSource] = useState<ListItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const [dataSource, setDataSource] = useState<{
+    dataList: ListItem[];
+    loading: boolean;
+    total: number;
+  }>({
+    dataList: [],
+    loading: false,
+    total: 0
+  });
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [queryParams, setQueryParams] = useState({
     page: 1,
@@ -51,20 +58,28 @@ const APIKeys: React.FC = () => {
   };
 
   const fetchData = async () => {
-    setLoading(true);
+    setDataSource((pre) => {
+      pre.loading = true;
+      return pre;
+    });
     try {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
       };
       const res = await queryApisKeysList(params);
-      console.log('res=======', res);
-      setDataSource(res.items || []);
-      setTotal(res.pagination.total);
+
+      setDataSource({
+        dataList: res.items || [],
+        loading: false,
+        total: res.pagination.total
+      });
     } catch (error) {
       console.log('error', error);
-      setDataSource([]);
-    } finally {
-      setLoading(false);
+      setDataSource({
+        dataList: [],
+        loading: false,
+        total: dataSource.total
+      });
     }
   };
   const handleSearch = (e: any) => {
@@ -173,16 +188,16 @@ const APIKeys: React.FC = () => {
           }
         ></PageTools>
         <Table
-          dataSource={dataSource}
+          dataSource={dataSource.dataList}
           rowSelection={rowSelection}
-          loading={loading}
+          loading={dataSource.loading}
           rowKey="id"
           onChange={handleTableChange}
           pagination={{
             showSizeChanger: true,
             pageSize: queryParams.perPage,
             current: queryParams.page,
-            total: total,
+            total: dataSource.total,
             hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}

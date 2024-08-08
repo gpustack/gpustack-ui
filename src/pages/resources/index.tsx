@@ -2,7 +2,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
 import { Tabs } from 'antd';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import GPUs from './components/gpus';
 import Workers from './components/workers';
 
@@ -19,14 +19,13 @@ const items: TabsProps['items'] = [
   }
 ];
 const Resources = () => {
-  console.log('resources======');
   const [activeKey, setActiveKey] = useState('workers');
 
   const intl = useIntl();
 
-  const handleChangeTab = (key: string) => {
+  const handleChangeTab = useCallback((key: string) => {
     setActiveKey(key);
-  };
+  }, []);
 
   return (
     <>

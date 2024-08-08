@@ -12,13 +12,20 @@ import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
 
 const GPUList: React.FC = () => {
+  console.log('GPUList======');
   const intl = useIntl();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const [dataSource, setDataSource] = useState<GPUDeviceItem[]>([]);
-  const [total, setTotal] = useState(10);
-  const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState<{
+    dataList: GPUDeviceItem[];
+    loading: boolean;
+    total: number;
+  }>({
+    dataList: [],
+    loading: false,
+    total: 0
+  });
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
@@ -39,20 +46,28 @@ const GPUList: React.FC = () => {
   };
 
   const fetchData = async () => {
-    setLoading(true);
+    setDataSource((pre) => {
+      pre.loading = true;
+      return pre;
+    });
     try {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
       };
       const res = await queryGpuDevicesList(params);
 
-      setDataSource(res.items);
-      setTotal(res.pagination.total);
+      setDataSource({
+        dataList: res.items || [],
+        loading: false,
+        total: res.pagination.total
+      });
     } catch (error) {
-      setDataSource([]);
+      setDataSource({
+        dataList: [],
+        loading: false,
+        total: dataSource.total
+      });
       console.log('error', error);
-    } finally {
-      setLoading(false);
     }
   };
   const handleSearch = (e: any) => {
@@ -95,15 +110,15 @@ const GPUList: React.FC = () => {
         }
       ></PageTools>
       <Table
-        dataSource={dataSource}
-        loading={loading}
+        dataSource={dataSource.dataList}
+        loading={dataSource.loading}
         rowKey="id"
         onChange={handleTableChange}
         pagination={{
           showSizeChanger: true,
           pageSize: queryParams.perPage,
           current: queryParams.page,
-          total: total,
+          total: dataSource.total,
           hideOnSinglePage: queryParams.perPage === 10,
           onChange: handlePageChange
         }}

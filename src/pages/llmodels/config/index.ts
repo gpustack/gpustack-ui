@@ -24,6 +24,20 @@ export const ollamaModelOptions = [
     id: 'gemma2'
   },
   {
+    label: 'mistral-nemo',
+    value: 'mistral-nemo',
+    name: 'mistral-nemo',
+    tags: ['12B'],
+    id: 'mistral-nemo'
+  },
+  {
+    label: 'mistral-large',
+    value: 'mistral-large',
+    name: 'mistral-large',
+    tags: ['123B'],
+    id: 'mistral-large'
+  },
+  {
     label: 'mistral',
     value: 'mistral',
     name: 'mistral',

@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import hotkeys from '@/config/hotkeys';
 import { platformCall } from '@/utils';
 import { SearchOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Input, Tag } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -10,6 +11,7 @@ const SearchInput: React.FC<{
   onSearch: (e: any) => void;
 }> = (props) => {
   const { onSearch } = props;
+  const intl = useIntl();
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   const platform = platformCall();
@@ -26,7 +28,9 @@ const SearchInput: React.FC<{
       onFocus={() => setIsFocus(true)}
       onBlur={() => setIsFocus(false)}
       allowClear
-      placeholder="Search models from Hugging Face"
+      placeholder={intl.formatMessage({
+        id: 'model.deploy.search.placeholder'
+      })}
       suffix={
         !isFocus && (
           <Tag style={{ marginRight: 0 }}>

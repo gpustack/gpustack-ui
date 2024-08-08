@@ -16,9 +16,17 @@ const Models: React.FC = () => {
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
   const [total, setTotal] = useState(0);
-  const [modelInstances, setModelInstances] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [dataSource, setDataSource] = useState<ListItem[]>([]);
+  const [modelInstances, setModelInstances] = useState<any[]>([]);
+  const [dataSource, setDataSource] = useState<{
+    dataList: ListItem[];
+    loading: boolean;
+    total: number;
+  }>({
+    dataList: [],
+    loading: false,
+    total: 0
+  });
   const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
@@ -30,14 +38,23 @@ const Models: React.FC = () => {
   });
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
-    dataList: dataSource,
-    setDataList: setDataSource
+    dataList: dataSource.dataList,
+    setDataList(list) {
+      setDataSource({
+        total: dataSource.total,
+        loading: false,
+        dataList: list
+      });
+    }
   });
 
   const fetchData = useCallback(async () => {
     axiosToken?.cancel?.();
     axiosToken = createAxiosToken();
-    setLoading(true);
+    setDataSource((pre) => {
+      pre.loading = true;
+      return pre;
+    });
     try {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
@@ -46,14 +63,20 @@ const Models: React.FC = () => {
         cancelToken: axiosToken.token
       });
       if (!firstLoad) {
-        setDataSource(res.items);
+        setDataSource({
+          dataList: res.items || [],
+          loading: false,
+          total: res.pagination.total
+        });
       }
-      setTotal(res.pagination.total);
     } catch (error) {
-      setDataSource([]);
+      setDataSource({
+        dataList: [],
+        loading: false,
+        total: dataSource.total
+      });
       console.log('error', error);
     } finally {
-      setLoading(false);
       setFirstLoad(false);
     }
   }, [queryParams]);
@@ -146,13 +169,13 @@ const Models: React.FC = () => {
       }}
     >
       <TableList
-        dataSource={dataSource}
+        dataSource={dataSource.dataList}
         handleNameChange={handleNameChange}
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
         queryParams={queryParams}
-        loading={loading}
-        total={total}
+        loading={dataSource.loading}
+        total={dataSource.total}
       ></TableList>
     </TableContext.Provider>
   );

@@ -25,6 +25,7 @@ interface HFModelItemProps {
 const HFModelItem: React.FC<HFModelItemProps> = (props) => {
   return (
     <div
+      tabIndex={0}
       className={classNames('hf-model-item', {
         active: props.active
       })}
@@ -41,8 +42,8 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
           <Space size={16}>
             {props.task && (
               <Tag
-                color="rgb(236, 240, 242)"
                 style={{
+                  backgroundColor: 'var(--color-white-1)',
                   marginRight: 0
                 }}
               >
@@ -68,9 +69,10 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
         ) : (
           <div className="flex-between">
             <Space size={10}>
-              {_.map(props.tags, (tag: string) => {
+              {_.map(props.tags, (tag: string, index: string) => {
                 return (
                   <Tag
+                    key={index}
                     style={{
                       backgroundColor: 'var(--color-white-1)',
                       marginRight: 0

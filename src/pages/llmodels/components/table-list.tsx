@@ -22,7 +22,7 @@ import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button, Dropdown, Input, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -502,4 +502,4 @@ const Models: React.FC<ModelsProps> = ({
   );
 };
 
-export default Models;
+export default memo(Models);

@@ -72,7 +72,7 @@ const Users: React.FC = () => {
   const fetchData = async () => {
     setDataSource((pre) => {
       pre.loading = true;
-      return pre;
+      return { ...pre };
     });
     try {
       const params = {

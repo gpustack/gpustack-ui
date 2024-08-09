@@ -34,9 +34,9 @@ import {
 } from '../apis';
 import { modelSourceMap } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
-import AddModal from './add-modal';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
+import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
 
 interface ModelsProps {
@@ -467,14 +467,14 @@ const Models: React.FC<ModelsProps> = ({
           />
         </SealTable>
       </PageContainer>
-      <AddModal
+      <UpdateModel
         open={openAddModal}
         action={PageAction.EDIT}
         title={title}
         data={currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
-      ></AddModal>
+      ></UpdateModel>
       <DeployModal
         open={openDeployModal}
         action={PageAction.CREATE}

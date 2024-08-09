@@ -4,8 +4,9 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
+import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Drawer, Form } from 'antd';
+import { Button, Drawer, Form } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
@@ -276,17 +277,35 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   return (
     <Drawer
-      title={title}
+      title={
+        <div className="flex-between flex-center">
+          <span
+            style={{
+              color: 'var(--ant-color-text)',
+              fontWeight: 'var(--font-weight-medium)',
+              fontSize: 'var(--font-size-middle)'
+            }}
+          >
+            {title}
+          </span>
+          <Button type="text" size="small" onClick={onCancel}>
+            <CloseOutlined></CloseOutlined>
+          </Button>
+        </div>
+      }
       open={open}
       onClose={onCancel}
       destroyOnClose={true}
-      closeIcon={true}
+      closeIcon={false}
       maskClosable={false}
       keyboard={false}
       styles={{
         body: {
-          height: 'calc(100vh - 53px)',
+          height: 'calc(100vh - 57px)',
           padding: '16px 0'
+        },
+        content: {
+          borderRadius: '8px 0 0 8px'
         }
       }}
       width="90%"

@@ -4,7 +4,7 @@ import useSetChunkRequest, {
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
@@ -15,8 +15,6 @@ const Models: React.FC = () => {
   const { setChunkRequest } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [modelInstances, setModelInstances] = useState<any[]>([]);
   const [dataSource, setDataSource] = useState<{
     dataList: ListItem[];
@@ -53,7 +51,7 @@ const Models: React.FC = () => {
     axiosToken = createAxiosToken();
     setDataSource((pre) => {
       pre.loading = true;
-      return pre;
+      return { ...pre };
     });
     try {
       const params = {
@@ -68,6 +66,11 @@ const Models: React.FC = () => {
           loading: false,
           total: res.pagination.total
         });
+      } else {
+        setDataSource({
+          ...dataSource,
+          total: res.pagination.total
+        });
       }
     } catch (error) {
       setDataSource({
@@ -79,7 +82,7 @@ const Models: React.FC = () => {
     } finally {
       setFirstLoad(false);
     }
-  }, [queryParams]);
+  }, [queryParams, firstLoad]);
 
   const handlePageChange = useCallback(
     (page: number, pageSize: number | undefined) => {
@@ -129,9 +132,12 @@ const Models: React.FC = () => {
     }
   };
 
-  const handleSearch = useCallback((e: any) => {
-    fetchData();
-  }, []);
+  const handleSearch = useCallback(
+    (e: any) => {
+      fetchData();
+    },
+    [fetchData]
+  );
 
   const handleNameChange = useCallback(
     (e: any) => {
@@ -181,4 +187,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default Models;
+export default memo(Models);

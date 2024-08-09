@@ -35,75 +35,97 @@ const sourceList = [
 ];
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
+  console.log('SearchModel======');
   const intl = useIntl();
   const { modelSource, onSourceChange, onSelectModel } = props;
-  const [repoOptions, setRepoOptions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [dataSource, setDataSource] = useState<{
+    repoOptions: any[];
+    loading: boolean;
+  }>({
+    repoOptions: [],
+    loading: false
+  });
   const [current, setCurrent] = useState<string>('');
   const [sortType, setSortType] = useState<string>('downloads');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const customOllamaModelRef = useRef<any>(null);
 
-  const handleOnSelectModel = (item: any) => {
+  const handleOnSelectModel = useCallback((item: any) => {
     onSelectModel(item);
     setCurrent(item.id);
-  };
-
-  const handleOnSearchRepo = async (text: string) => {
-    axiosTokenRef.current?.abort?.();
-    axiosTokenRef.current = new AbortController();
-    if (loading) return;
-    try {
-      setLoading(true);
-      cacheRepoOptions.current = [];
-      const params = {
-        search: {
-          query: text,
-          tags: ['gguf']
-        }
-      };
-      const models = await queryHuggingfaceModels(params, {
-        signal: axiosTokenRef.current.signal
-      });
-      const list = _.map(models || [], (item: any) => {
-        return {
-          ...item,
-          value: item.name,
-          label: item.name
-        };
-      });
-      const sortedList = _.sortBy(
-        list,
-        (item: any) => item[sortType]
-      ).reverse();
-      cacheRepoOptions.current = sortedList;
-      setRepoOptions(sortedList);
-      handleOnSelectModel(sortedList[0]);
-    } catch (error) {
-      setRepoOptions([]);
-      handleOnSelectModel({});
-      cacheRepoOptions.current = [];
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlerSearchModels = useCallback(async (e: any) => {
-    const text = e.target.value;
-    handleOnSearchRepo(text);
   }, []);
+
+  const handleOnSearchRepo = useCallback(
+    async (text: string) => {
+      axiosTokenRef.current?.abort?.();
+      axiosTokenRef.current = new AbortController();
+      if (dataSource.loading) return;
+      try {
+        setDataSource((pre) => {
+          pre.loading = true;
+          return { ...pre };
+        });
+        cacheRepoOptions.current = [];
+        const params = {
+          search: {
+            query: text,
+            tags: ['gguf']
+          }
+        };
+        const models = await queryHuggingfaceModels(params, {
+          signal: axiosTokenRef.current.signal
+        });
+        const list = _.map(models || [], (item: any) => {
+          return {
+            ...item,
+            value: item.name,
+            label: item.name
+          };
+        });
+        const sortedList = _.sortBy(
+          list,
+          (item: any) => item[sortType]
+        ).reverse();
+        cacheRepoOptions.current = sortedList;
+        setDataSource({
+          repoOptions: sortedList,
+          loading: false
+        });
+        handleOnSelectModel(sortedList[0]);
+      } catch (error) {
+        setDataSource({
+          repoOptions: [],
+          loading: false
+        });
+        handleOnSelectModel({});
+        cacheRepoOptions.current = [];
+      }
+    },
+    [dataSource]
+  );
+
+  const handlerSearchModels = useCallback(
+    async (e: any) => {
+      const text = e.target.value;
+      handleOnSearchRepo(text);
+    },
+    [handleOnSearchRepo]
+  );
 
   const handleOnOpen = () => {
     if (
-      !repoOptions.length &&
+      !dataSource.repoOptions.length &&
       !cacheRepoOptions.current.length &&
       modelSource === modelSourceMap.huggingface_value
     ) {
       handleOnSearchRepo('');
     }
     if (modelSourceMap.ollama_library_value === modelSource) {
-      setRepoOptions(ollamaModelOptions);
+      setDataSource({
+        repoOptions: ollamaModelOptions,
+        loading: false
+      });
       cacheRepoOptions.current = ollamaModelOptions;
       handleOnSelectModel(ollamaModelOptions[0]);
     }
@@ -114,7 +136,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     const list = _.filter(cacheRepoOptions.current, (item: any) => {
       return item.name.includes(text);
     });
-    setRepoOptions(list);
+    setDataSource({
+      repoOptions: list,
+      loading: false
+    });
   };
 
   const debounceFilter = _.debounce((e: any) => {
@@ -124,7 +149,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const handleSourceChange = (source: string) => {
     axiosTokenRef.current?.abort?.();
     onSourceChange?.(source);
-    setRepoOptions([]);
+    setDataSource({
+      repoOptions: [],
+      loading: false
+    });
     cacheRepoOptions.current = [];
   };
 
@@ -146,11 +174,14 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const handleSortChange = (value: string) => {
     const sortedList = _.sortBy(
-      repoOptions,
+      dataSource.repoOptions,
       (item: any) => item[value]
     ).reverse();
     setSortType(value);
-    setRepoOptions(sortedList);
+    setDataSource({
+      repoOptions: sortedList,
+      loading: false
+    });
   };
 
   const renderHFSearch = () => {
@@ -159,7 +190,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         <SearchInput onSearch={handlerSearchModels}></SearchInput>
         <div className={SearchStyle.filter}>
           <span>
-            <span className="value">{repoOptions.length}</span>results
+            <span className="value">{dataSource.repoOptions.length}</span>
+            results
           </span>
           <Select
             value={sortType}
@@ -220,8 +252,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       </div>
       {
         <SearchResult
-          loading={loading}
-          resultList={repoOptions}
+          loading={dataSource.loading}
+          resultList={dataSource.repoOptions}
           current={current}
           source={modelSource}
           onSelect={handleOnSelectModel}

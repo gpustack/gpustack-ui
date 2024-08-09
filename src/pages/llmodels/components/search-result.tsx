@@ -14,6 +14,7 @@ interface SearchResultProps {
 }
 
 const SearchResult: React.FC<SearchResultProps> = (props) => {
+  console.log('SearchResult======');
   const { resultList, onSelect, source } = props;
 
   const handleSelect = (e: any, item: any) => {
@@ -22,41 +23,43 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
   };
   return (
     <div style={{ ...props.style }} className="search-result-wrap">
-      <Spin spinning={props.loading} style={{ minHeight: 100 }}>
-        {resultList.length ? (
-          <Row gutter={[16, 16]}>
-            {resultList.map((item, index) => (
-              <Col span={24} key={item.name}>
-                <div onClick={(e) => handleSelect(e, item)}>
-                  <HFModelItem
-                    source={source}
-                    tags={item.tags}
-                    key={index}
-                    title={item.name}
-                    downloads={item.downloads}
-                    likes={item.likes}
-                    task={item.task}
-                    updatedAt={item.updatedAt}
-                    active={item.id === props.current}
-                  />
-                </div>
-              </Col>
-            ))}
-          </Row>
-        ) : (
-          !props.loading && (
-            <Empty
-              imageStyle={{ height: 'auto', marginTop: '20px' }}
-              image={
-                <SearchOutlined
-                  className="font-size-16"
-                  style={{ color: 'var(--ant-color-text-tertiary)' }}
-                ></SearchOutlined>
-              }
-              description="No models found"
-            />
-          )
-        )}
+      <Spin spinning={props.loading}>
+        <div style={{ minHeight: 200 }}>
+          {resultList.length ? (
+            <Row gutter={[16, 16]}>
+              {resultList.map((item, index) => (
+                <Col span={24} key={item.name}>
+                  <div onClick={(e) => handleSelect(e, item)}>
+                    <HFModelItem
+                      source={source}
+                      tags={item.tags}
+                      key={index}
+                      title={item.name}
+                      downloads={item.downloads}
+                      likes={item.likes}
+                      task={item.task}
+                      updatedAt={item.updatedAt}
+                      active={item.id === props.current}
+                    />
+                  </div>
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            !props.loading && (
+              <Empty
+                imageStyle={{ height: 'auto', marginTop: '20px' }}
+                image={
+                  <SearchOutlined
+                    className="font-size-16"
+                    style={{ color: 'var(--ant-color-text-tertiary)' }}
+                  ></SearchOutlined>
+                }
+                description="No models found"
+              />
+            )
+          )}
+        </div>
       </Spin>
     </div>
   );

@@ -6,5 +6,6 @@ export default {
   'menu.apikeys': 'API Keys',
   'menu.users': 'Users',
   'menu.profile': 'Profile',
-  'menu.login': 'Login'
+  'menu.login': 'Login',
+  'menu.usage': 'Usage'
 };

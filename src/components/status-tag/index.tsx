@@ -3,7 +3,9 @@ import { StatusType } from '@/config/types';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import CopyButton from '../copy-button';
+import CopyStyle from './copy.less';
 import './index.less';
 
 export const StatusMaps = {
@@ -58,6 +60,20 @@ const StatusTag: React.FC<StatusTagProps> = ({
     }
     return <span>{text}</span>;
   };
+  const renderTitle = useMemo(() => {
+    return (
+      <div className={CopyStyle['status-content-wrapper']}>
+        <div className="copy-button-wrapper">
+          <CopyButton
+            style={{ color: 'rgba(255,255,255,.8)' }}
+            text={statusValue.message || ''}
+            size="small"
+          ></CopyButton>
+        </div>
+        <div>{statusValue.message}</div>
+      </div>
+    );
+  }, [statusValue]);
   return (
     <span
       className={classNames('status-tag', {
@@ -70,7 +86,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
     >
       {statusValue.message ? (
         <Tooltip
-          title={statusValue.message}
+          title={renderTitle}
           overlayInnerStyle={{ maxHeight: 200, overflow: 'auto' }}
         >
           <span className="m-r-5">

@@ -1,6 +1,6 @@
 import IconFont from '@/components/icon-font';
 
-export default {
+const langConfigMap = {
   'ar-EG': {
     lang: 'ar-EG',
     label: 'العربية',
@@ -326,3 +326,7 @@ export default {
     title: '語言'
   }
 };
+
+export type LangConfigType = keyof typeof langConfigMap;
+
+export default langConfigMap;

@@ -308,16 +308,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           borderRadius: '8px 0 0 8px'
         }
       }}
-      width="90%"
+      width={
+        modelSource === modelSourceMap.huggingface_value
+          ? 'calc(100vw - 220px)'
+          : 600
+      }
       footer={false}
     >
       <div style={{ display: 'flex' }}>
-        <ColumnWrapper>
-          <SearchModel
-            modelSource={modelSource}
-            onSelectModel={handleOnSelectModel}
-          ></SearchModel>
-        </ColumnWrapper>
+        {modelSource === modelSourceMap.huggingface_value && (
+          <ColumnWrapper>
+            <SearchModel
+              modelSource={modelSource}
+              onSelectModel={handleOnSelectModel}
+            ></SearchModel>
+          </ColumnWrapper>
+        )}
         {modelSource === modelSourceMap.huggingface_value && (
           <ColumnWrapper>
             <ModelCard repo={huggingfaceRepoId}></ModelCard>

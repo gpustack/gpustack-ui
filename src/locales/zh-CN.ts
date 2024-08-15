@@ -5,6 +5,7 @@ import menu from './zh-CN/menu';
 import models from './zh-CN/models';
 import playground from './zh-CN/playground';
 import resources from './zh-CN/resources';
+import usage from './zh-CN/usage';
 import users from './zh-CN/users';
 
 export default {
@@ -15,5 +16,6 @@ export default {
   ...resources,
   ...apikeys,
   ...users,
-  ...dashboard
+  ...dashboard,
+  ...usage
 };

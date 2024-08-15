@@ -1,0 +1,20 @@
+:local(.status-content-wrapper) {
+  // padding-top: 24px;
+  &:hover {
+    :global(.copy-button-wrapper) {
+      display: block;
+    }
+  }
+
+  :global {
+    .copy-button-wrapper {
+      display: none;
+      background-color: #383838;
+      position: absolute;
+      z-index: 10;
+      right: 0;
+      top: 0;
+      border-radius: 0 8px 0 4px;
+    }
+  }
+}

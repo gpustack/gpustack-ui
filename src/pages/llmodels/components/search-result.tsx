@@ -21,6 +21,12 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     e.stopPropagation();
     onSelect?.(item);
   };
+  const handleOnEnter = (e: any, item: any) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      onSelect?.(item);
+    }
+  };
   return (
     <div style={{ ...props.style }} className="search-result-wrap">
       <Spin spinning={props.loading}>
@@ -29,7 +35,10 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
             <Row gutter={[16, 16]}>
               {resultList.map((item, index) => (
                 <Col span={24} key={item.name}>
-                  <div onClick={(e) => handleSelect(e, item)}>
+                  <div
+                    onClick={(e) => handleSelect(e, item)}
+                    onKeyDown={(e) => handleOnEnter(e, item)}
+                  >
                     <HFModelItem
                       source={source}
                       tags={item.tags}

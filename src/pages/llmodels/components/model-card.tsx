@@ -1,4 +1,5 @@
 import IconFont from '@/components/icon-font';
+import { downloadFile } from '@huggingface/hub';
 import { Button, Empty, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { queryHuggingfaceModelDetail } from '../apis';
@@ -9,6 +10,13 @@ const ModelCard: React.FC<{ repo: string }> = (props) => {
   const { repo } = props;
   const [modelData, setModelData] = useState<any>({});
 
+  const loadFile = async (repo: string, sha: string) => {
+    const res = await (
+      await downloadFile({ repo, revision: sha, path: 'README.md' })
+    )?.text();
+    return res;
+  };
+
   const getModelCardData = async () => {
     if (!repo) {
       setModelData(null);
@@ -16,6 +24,12 @@ const ModelCard: React.FC<{ repo: string }> = (props) => {
     }
     try {
       const res = await queryHuggingfaceModelDetail({ repo });
+      const modelConfig = await loadFile(repo, res.sha);
+      console.log('modelcard=======', {
+        res,
+        repo,
+        modelConfig
+      });
       setModelData(res);
     } catch (error) {
       setModelData({});

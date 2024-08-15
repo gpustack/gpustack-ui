@@ -6,5 +6,6 @@ export default {
   'menu.apikeys': 'API 密钥',
   'menu.users': '用户',
   'menu.profile': '个人信息',
-  'menu.login': '登录'
+  'menu.login': '登录',
+  'menu.usage': '使用量'
 };

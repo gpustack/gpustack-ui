@@ -14,7 +14,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table, Tooltip } from 'antd';
 import _ from 'lodash';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { deleteWorker, queryWorkersList } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
@@ -46,7 +46,7 @@ const Resources: React.FC = () => {
     search: ''
   });
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setDataSource((pre) => {
       pre.loading = true;
       return { ...pre };
@@ -70,7 +70,7 @@ const Resources: React.FC = () => {
       });
       console.log('error', error);
     }
-  };
+  }, [queryParams]);
 
   const handlePageChange = (page: number, perPage: number | undefined) => {
     console.log(page, perPage);
@@ -81,9 +81,12 @@ const Resources: React.FC = () => {
     });
   };
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setSortOrder(sorter.order);
-  };
+  const handleTableChange = useCallback(
+    (pagination: any, filters: any, sorter: any) => {
+      setSortOrder(sorter.order);
+    },
+    []
+  );
 
   const handleSearch = (e: any) => {
     fetchData();
@@ -207,6 +210,7 @@ const Resources: React.FC = () => {
         }
       ></PageTools>
       <Table
+        style={{ width: '100%' }}
         dataSource={dataSource.dataList}
         loading={dataSource.loading}
         rowKey="id"

@@ -1,4 +1,5 @@
 import IconFont from '@/components/icon-font';
+import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Select } from 'antd';
 import _ from 'lodash';
@@ -243,6 +244,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           renderHFSearch()
         ) : (
           <div style={{ lineHeight: '18px' }}>
+            <BulbOutlined className="font-size-14 m-r-5" />
             {intl.formatMessage(
               { id: 'model.form.ollamatips' },
               { name: intl.formatMessage({ id: 'model.form.ollama.model' }) }

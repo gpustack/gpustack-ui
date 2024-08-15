@@ -50,7 +50,7 @@ const Chart: React.FC<{
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [resize, chart]);
+  }, [resize]);
 
   return <div ref={container} style={{ width: width, height }}></div>;
 };

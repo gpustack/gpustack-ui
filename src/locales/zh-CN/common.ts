@@ -5,6 +5,8 @@ export default {
   'common.button.editmode': '编辑模式',
   'common.button.add': '添加',
   'common.button.login': '登录',
+  'common.button.select': '选择',
+  'common.button.selected': '已选择',
   'common.button.continue': '继续',
   'common.button.upload': '上传',
   'common.button.save': '保存',

@@ -5,6 +5,7 @@ import menu from './en-US/menu';
 import models from './en-US/models';
 import playground from './en-US/playground';
 import resources from './en-US/resources';
+import usage from './en-US/usage';
 import users from './en-US/users';
 
 export default {
@@ -15,5 +16,6 @@ export default {
   ...resources,
   ...apikeys,
   ...users,
-  ...dashboard
+  ...dashboard,
+  ...usage
 };

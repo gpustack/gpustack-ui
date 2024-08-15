@@ -1,7 +1,7 @@
 import IconFont from '@/components/icon-font';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { useRef, useState } from 'react';
 import GroundLeft from './components/ground-left';
@@ -24,7 +24,7 @@ const Playground: React.FC = () => {
     <PageContainer
       ghost
       extra={[
-        <>
+        <Space key="buttons">
           <Button
             size="middle"
             onClick={handleViewCode}
@@ -45,7 +45,7 @@ const Playground: React.FC = () => {
               ></IconFont>
             }
           ></Button>
-        </>
+        </Space>
       ]}
       className="playground-container"
     >
@@ -58,14 +58,6 @@ const Playground: React.FC = () => {
             collapse: collapse
           })}
         >
-          {/* <Button
-            onClick={() => setCollapse(!collapse)}
-            icon={collapse ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-            style={{ color: 'var(--ant-color-text-tertiary)' }}
-            size="small"
-            type="text"
-            className="collapse-btn"
-          ></Button> */}
           <div
             className={classNames('divider-line', {
               collapse: collapse

@@ -1,6 +1,7 @@
 import { convertFileSize } from '@/utils';
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Col, Empty, Row, Space, Spin } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Col, Empty, Row, Space, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ interface HFModelFileProps {
   onSelectFile?: (file: any) => void;
 }
 const HFModelFile: React.FC<HFModelFileProps> = (props) => {
+  const intl = useIntl();
   const [dataSource, setDataSource] = useState<any>({
     fileList: [],
     loading: false
@@ -61,6 +63,13 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
     return null;
   };
 
+  const handleOnEnter = (e: any, item: any) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      handleSelectModelFile(item);
+    }
+  };
+
   useEffect(() => {
     handleFetchModelFiles();
   }, [props.repo]);
@@ -72,16 +81,17 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       <div style={{ padding: '16px 20px' }}>
         <Spin spinning={dataSource.loading} style={{ minHeight: 100 }}>
           {dataSource.fileList.length ? (
-            <Row gutter={[16, 16]}>
+            <Row gutter={[16, 24]}>
               {_.map(dataSource.fileList, (item: any) => {
                 return (
                   <Col span={24} key={item.path}>
                     <div
-                      tabIndex={0}
                       className={classNames('hf-model-file', {
                         active: item.path === current
                       })}
+                      tabIndex={0}
                       onClick={() => handleSelectModelFile(item)}
+                      onKeyDown={(e) => handleOnEnter(e, item)}
                     >
                       <div className="title">{item.path}</div>
                       <Space className="tags">
@@ -91,9 +101,15 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
                         {getModelQuantizationType(item)}
                       </Space>
                       <div className="btn">
-                        <Button size="middle">
-                          {item.path === current ? 'Selected' : 'Select'}
-                        </Button>
+                        {/* <Button size="middle">
+                          {item.path === current
+                            ? intl.formatMessage({
+                                id: 'common.button.selected'
+                              })
+                            : intl.formatMessage({
+                                id: 'common.button.select'
+                              })}
+                        </Button> */}
                       </div>
                     </div>
                   </Col>

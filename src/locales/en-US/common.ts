@@ -5,6 +5,8 @@ export default {
   'common.button.editmode': 'Edit mode',
   'common.button.add': 'Add',
   'common.button.login': 'Log In',
+  'common.button.select': 'Select',
+  'common.button.selected': 'Selected',
   'common.button.continue': 'Continue',
   'common.button.upload': 'Upload',
   'common.button.save': 'Save',

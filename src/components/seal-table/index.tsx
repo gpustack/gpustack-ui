@@ -8,7 +8,7 @@ import {
   type PaginationProps
 } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Header from './components/header';
 import TableRow from './components/table-row';
 import './styles/index.less';
@@ -75,7 +75,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     pagination?.onShowSizeChange?.(current, size);
   };
 
-  const renderHeaderPrefix = () => {
+  const renderHeaderPrefix = useMemo(() => {
     if (expandable && rowSelection) {
       return (
         <div className="header-row-prefix-wrapper">
@@ -107,9 +107,9 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
       );
     }
     return null;
-  };
+  }, [expandable, rowSelection, selectAll, indeterminate]);
 
-  const renderContent = useCallback(() => {
+  const renderContent = useMemo(() => {
     if (!props.dataSource.length) {
       return (
         <div className="empty-wrapper">
@@ -148,12 +148,12 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
       <div className="seal-table-container">
         {
           <div className="header-row-wrapper">
-            {renderHeaderPrefix()}
+            {renderHeaderPrefix}
             <Header onSort={onSort}>{children}</Header>
           </div>
         }
 
-        <Spin spinning={loading}>{renderContent()}</Spin>
+        <Spin spinning={loading}>{renderContent}</Spin>
       </div>
       {pagination && (
         <div className="pagination-wrapper">

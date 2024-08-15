@@ -4,7 +4,7 @@ import {
   FolderOutlined,
   HeartOutlined
 } from '@ant-design/icons';
-import { Button, Space, Tag } from 'antd';
+import { Space, Tag } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -42,14 +42,12 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
           <Space size={16}>
             {props.task && (
               <Tag
+                color="geekblue"
                 style={{
-                  backgroundColor: 'var(--color-white-1)',
                   marginRight: 0
                 }}
               >
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                  {props.task}
-                </span>
+                <span style={{ opacity: 0.65 }}>{props.task}</span>
               </Tag>
             )}
             <span>
@@ -86,9 +84,9 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
               })}
             </Space>
             <div className="btn">
-              <Button size="middle">
+              {/* <Button size="middle">
                 {props.active ? 'Selected' : 'Select'}
-              </Button>
+              </Button> */}
             </div>
           </div>
         )}

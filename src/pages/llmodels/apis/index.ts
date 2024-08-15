@@ -143,7 +143,7 @@ export async function queryHuggingfaceModels(
     additionalFields: ['sha'],
     fetch(url: string, config: any) {
       try {
-        return fetch(`${url}`, {
+        return fetch(url, {
           ...config,
           signal: options.signal
         });

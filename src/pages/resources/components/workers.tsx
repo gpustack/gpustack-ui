@@ -254,7 +254,7 @@ const Resources: React.FC = () => {
           render={(text, record: ListItem) => {
             return (
               <ProgressBar
-                percent={_.round(record?.status?.cpu.utilization_rate, 0)}
+                percent={_.round(record?.status?.cpu?.utilization_rate, 0)}
               ></ProgressBar>
             );
           }}
@@ -267,18 +267,18 @@ const Resources: React.FC = () => {
             return (
               <ProgressBar
                 percent={formateUtilazation(
-                  record?.status?.memory.used,
-                  record?.status?.memory.total
+                  record?.status?.memory?.used,
+                  record?.status?.memory?.total
                 )}
                 label={
                   <span className="flex-column">
                     <span>
                       {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
-                      {convertFileSize(record?.status?.memory.total, 0)}
+                      {convertFileSize(record?.status?.memory?.total, 0)}
                     </span>
                     <span>
                       {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-                      {convertFileSize(record?.status?.memory.used, 0)}
+                      {convertFileSize(record?.status?.memory?.used, 0)}
                     </span>
                   </span>
                 }
@@ -293,22 +293,25 @@ const Resources: React.FC = () => {
           render={(text, record: ListItem) => {
             return (
               <span className="flex-column flex-gap-2">
-                {record?.status?.gpu_devices.map((item, index) => {
-                  return (
-                    <span className="flex-center" key={index}>
-                      <span
-                        className="m-r-5"
-                        style={{ display: 'flex', width: 25 }}
-                      >
-                        [{item.index}]
+                {_.map(
+                  record?.status?.gpu_devices,
+                  (item: GPUDeviceItem, index: string) => {
+                    return (
+                      <span className="flex-center" key={index}>
+                        <span
+                          className="m-r-5"
+                          style={{ display: 'flex', width: 25 }}
+                        >
+                          [{item.index}]
+                        </span>
+                        <ProgressBar
+                          key={index}
+                          percent={_.round(item.core?.utilization_rate, 0)}
+                        ></ProgressBar>
                       </span>
-                      <ProgressBar
-                        key={index}
-                        percent={_.round(item.core.utilization_rate, 0)}
-                      ></ProgressBar>
-                    </span>
-                  );
-                })}
+                    );
+                  }
+                )}
               </span>
             );
           }}
@@ -321,8 +324,9 @@ const Resources: React.FC = () => {
           render={(text, record: ListItem) => {
             return (
               <span className="flex-column">
-                {record?.status?.gpu_devices.map(
-                  (item: GPUDeviceItem, index) => {
+                {_.map(
+                  record?.status?.gpu_devices,
+                  (item: GPUDeviceItem, index: string) => {
                     return (
                       <span key={index}>
                         <span className="flex-center">
@@ -334,7 +338,7 @@ const Resources: React.FC = () => {
                           </span>
                           <ProgressBar
                             key={index}
-                            percent={_.round(item.memory.utilization_rate, 0)}
+                            percent={_.round(item.memory?.utilization_rate, 0)}
                             label={
                               <span className="flex-column">
                                 <span>

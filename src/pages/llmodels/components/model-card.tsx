@@ -24,12 +24,7 @@ const ModelCard: React.FC<{ repo: string }> = (props) => {
     }
     try {
       const res = await queryHuggingfaceModelDetail({ repo });
-      const modelConfig = await loadFile(repo, res.sha);
-      console.log('modelcard=======', {
-        res,
-        repo,
-        modelConfig
-      });
+
       setModelData(res);
     } catch (error) {
       setModelData({});

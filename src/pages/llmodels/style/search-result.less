@@ -12,12 +12,18 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--ant-color-fill);
+    background-color: transparent;
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: var(--color-white-1);
+    background-color: transparent;
+  }
+
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--ant-color-fill);
+    }
   }
 }
 

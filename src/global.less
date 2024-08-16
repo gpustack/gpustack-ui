@@ -446,6 +446,26 @@ body {
     .ant-message-notice-content {
       background-color: var(--ant-color-error-bg);
       color: var(--ant-color-error);
+      // custom scrollbar
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--ant-color-fill);
+          border-radius: 4px;
+        }
+      }
     }
   }
 

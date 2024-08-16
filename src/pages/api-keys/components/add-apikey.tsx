@@ -93,7 +93,9 @@ const AddModal: React.FC<AddModalProps> = ({
 
   return (
     <Modal
-      title={title}
+      title={
+        !showKey ? title : intl.formatMessage({ id: 'apikeys.title.save' })
+      }
       open={open}
       centered={true}
       onOk={handleSumit}
@@ -180,13 +182,15 @@ const AddModal: React.FC<AddModalProps> = ({
             </Form.Item>
           </>
         ) : (
-          <Form.Item
-            extra={
-              <Tag color="error" style={{ padding: '6px 8px', marginTop: 10 }}>
+          <Form.Item>
+            <div>
+              <Tag
+                color="error"
+                style={{ padding: '6px 8px', marginBottom: 16 }}
+              >
                 {intl.formatMessage({ id: 'apikeys.table.save.tips' })}
               </Tag>
-            }
-          >
+            </div>
             <SealInput.Input
               label={intl.formatMessage({ id: 'apikeys.form.apikey' })}
               value={apikeyValue}
@@ -194,7 +198,8 @@ const AddModal: React.FC<AddModalProps> = ({
                 <CopyButton
                   text={apikeyValue}
                   shape="default"
-                  size="small"
+                  size="middle"
+                  type="text"
                 ></CopyButton>
               }
             ></SealInput.Input>

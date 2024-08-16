@@ -32,7 +32,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
       <Spin spinning={props.loading}>
         <div style={{ minHeight: 200 }}>
           {resultList.length ? (
-            <Row gutter={[16, 16]}>
+            <Row gutter={[16, 24]}>
               {resultList.map((item, index) => (
                 <Col span={24} key={item.name}>
                   <div

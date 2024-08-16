@@ -339,7 +339,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               onCancel={onCancel}
               onOk={handleSumit}
               style={{
-                padding: '16px 20px',
+                padding: '16px 24px',
                 display: 'flex',
                 justifyContent: 'flex-end'
               }}
@@ -352,7 +352,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             form={form}
             onFinish={onOk}
             preserve={false}
-            style={{ padding: '16px 20px' }}
+            style={{ padding: '16px 24px' }}
           >
             <Form.Item<FormData>
               name="name"

@@ -42,6 +42,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
           <Space size={16}>
             {props.task && (
               <Tag
+                className="tag-item"
                 color="geekblue"
                 style={{
                   marginRight: 0

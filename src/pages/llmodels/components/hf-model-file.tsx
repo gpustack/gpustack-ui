@@ -1,7 +1,7 @@
 import { convertFileSize } from '@/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, Empty, Row, Space, Spin } from 'antd';
+import { Col, Empty, Row, Space, Spin, Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -58,7 +58,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
     }
     console.log('quanType', quanType, FileType[quanType]);
     if (FileType[quanType] !== undefined) {
-      return <span className="tag-item">{quanType}</span>;
+      return <Tag className="tag-item">{quanType}</Tag>;
     }
     return null;
   };
@@ -78,7 +78,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       <TitleWrapper>
         <span>Available Files ({dataSource.fileList.length || 0})</span>
       </TitleWrapper>
-      <div style={{ padding: '16px 20px' }}>
+      <div style={{ padding: '16px 24px' }}>
         <Spin spinning={dataSource.loading} style={{ minHeight: 100 }}>
           {dataSource.fileList.length ? (
             <Row gutter={[16, 24]}>
@@ -95,9 +95,20 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
                     >
                       <div className="title">{item.path}</div>
                       <Space className="tags">
-                        <span className="tag-item">
+                        {/* <span className="tag-item">
                           {convertFileSize(item.size)}
-                        </span>
+                        </span> */}
+                        <Tag
+                          className="tag-item"
+                          color="geekblue"
+                          style={{
+                            marginRight: 0
+                          }}
+                        >
+                          <span style={{ opacity: 0.65 }}>
+                            {convertFileSize(item.size)}
+                          </span>
+                        </Tag>
                         {getModelQuantizationType(item)}
                       </Space>
                       <div className="btn">

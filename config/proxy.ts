@@ -11,18 +11,6 @@ export default function createProxyTable(target?: string) {
         secure: false,
         ws: true,
         pathRewrite: (pth: string) => pth.replace(`/^/${api}`, `/${api}`),
-        // onProxyRes: (proxyRes: any, req: any, res: any) => {
-        //   if (req.headers.accept === 'text/event-stream') {
-        //     res.writeHead(res.statusCode, {
-        //       'Content-Type': 'text/event-stream',
-        //       'Cache-Control': 'no-transform',
-        //       Connection: 'keep-alive',
-        //       'X-Accel-Buffering': 'no',
-        //       'Access-Control-Allow-Origin': '*'
-        //     });
-        //     proxyRes.pipe(res);
-        //   }
-        // },
         headers: {
           origin: newTarget,
           Connection: 'keep-alive'

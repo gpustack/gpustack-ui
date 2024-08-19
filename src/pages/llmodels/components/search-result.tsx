@@ -1,6 +1,8 @@
 import { SearchOutlined } from '@ant-design/icons';
 import { Col, Empty, Row, Spin } from 'antd';
 import React from 'react';
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 import '../style/search-result.less';
 import HFModelItem from './hf-model-item';
 
@@ -28,49 +30,51 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     }
   };
   return (
-    <div style={{ ...props.style }} className="search-result-wrap">
-      <Spin spinning={props.loading}>
-        <div style={{ minHeight: 200 }}>
-          {resultList.length ? (
-            <Row gutter={[16, 24]}>
-              {resultList.map((item, index) => (
-                <Col span={24} key={item.name}>
-                  <div
-                    onClick={(e) => handleSelect(e, item)}
-                    onKeyDown={(e) => handleOnEnter(e, item)}
-                  >
-                    <HFModelItem
-                      source={source}
-                      tags={item.tags}
-                      key={index}
-                      title={item.name}
-                      downloads={item.downloads}
-                      likes={item.likes}
-                      task={item.task}
-                      updatedAt={item.updatedAt}
-                      active={item.id === props.current}
-                    />
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          ) : (
-            !props.loading && (
-              <Empty
-                imageStyle={{ height: 'auto', marginTop: '20px' }}
-                image={
-                  <SearchOutlined
-                    className="font-size-16"
-                    style={{ color: 'var(--ant-color-text-tertiary)' }}
-                  ></SearchOutlined>
-                }
-                description="No models found"
-              />
-            )
-          )}
-        </div>
-      </Spin>
-    </div>
+    <SimpleBar style={{ height: 'calc(100vh - 194px)' }}>
+      <div style={{ ...props.style }} className="search-result-wrap">
+        <Spin spinning={props.loading}>
+          <div style={{ minHeight: 200 }}>
+            {resultList.length ? (
+              <Row gutter={[16, 24]}>
+                {resultList.map((item, index) => (
+                  <Col span={24} key={item.name}>
+                    <div
+                      onClick={(e) => handleSelect(e, item)}
+                      onKeyDown={(e) => handleOnEnter(e, item)}
+                    >
+                      <HFModelItem
+                        source={source}
+                        tags={item.tags}
+                        key={index}
+                        title={item.name}
+                        downloads={item.downloads}
+                        likes={item.likes}
+                        task={item.task}
+                        updatedAt={item.updatedAt}
+                        active={item.id === props.current}
+                      />
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            ) : (
+              !props.loading && (
+                <Empty
+                  imageStyle={{ height: 'auto', marginTop: '20px' }}
+                  image={
+                    <SearchOutlined
+                      className="font-size-16"
+                      style={{ color: 'var(--ant-color-text-tertiary)' }}
+                    ></SearchOutlined>
+                  }
+                  description="No models found"
+                />
+              )
+            )}
+          </div>
+        </Spin>
+      </div>
+    </SimpleBar>
   );
 };
 

@@ -86,6 +86,9 @@ dependencies:
   react-hotkeys-hook:
     specifier: ^4.5.0
     version: 4.5.0(react-dom@18.2.0)(react@18.2.0)
+  simplebar-react:
+    specifier: ^3.2.6
+    version: 3.2.6(react@18.2.0)
   umi-presets-pro:
     specifier: ^2.0.3
     version: 2.0.3(@babel/core@7.24.9)(@types/react-dom@18.3.0)(@types/react@18.3.1)(antd@5.18.3)(dva@2.5.0-beta.2)(rc-field-form@1.44.0)(react-dom@18.2.0)(react@18.2.0)(umi@4.3.6)
@@ -4456,7 +4459,7 @@ packages:
     dependencies:
       '@babel/core': 7.24.5
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -4497,7 +4500,7 @@ packages:
       postcss-syntax: '>=0.36.2'
     dependencies:
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
       remark: 13.0.0
       unist-util-find-all-after: 3.0.2
     transitivePeerDependencies:
@@ -4819,6 +4822,12 @@ packages:
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==, tarball: https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.15.tgz}
+
+  /@types/lodash-es@4.17.12:
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==, tarball: https://registry.npmjs.org/@types/lodash-es/-/lodash-es-4.17.12.tgz}
+    dependencies:
+      '@types/lodash': 4.17.4
+    dev: false
 
   /@types/lodash@4.17.4:
     resolution: {integrity: sha512-wYCP26ZLxaT3R39kiN2+HcJ4kTd3U1waI/cY7ivWYqFP6pW3ZNpvi6Wd6PHZx7T/t8z0vlkXMg3QYLa7DZ/IJQ==}
@@ -13116,7 +13125,7 @@ packages:
     dependencies:
       htmlparser2: 3.10.1
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
     dev: false
 
   /postcss-image-set-function@4.0.7(postcss@8.4.38):
@@ -13589,30 +13598,6 @@ packages:
     dependencies:
       lodash: 4.17.21
       postcss: 8.4.38
-
-  /postcss-syntax@0.36.2(postcss@7.0.39):
-    resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
-    peerDependencies:
-      postcss: '>=5.0.0'
-      postcss-html: '*'
-      postcss-jsx: '*'
-      postcss-less: '*'
-      postcss-markdown: '*'
-      postcss-scss: '*'
-    peerDependenciesMeta:
-      postcss-html:
-        optional: true
-      postcss-jsx:
-        optional: true
-      postcss-less:
-        optional: true
-      postcss-markdown:
-        optional: true
-      postcss-scss:
-        optional: true
-    dependencies:
-      postcss: 7.0.39
-    dev: false
 
   /postcss-syntax@0.36.2(postcss@8.4.38):
     resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
@@ -16262,6 +16247,23 @@ packages:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
 
+  /simplebar-core@1.2.6:
+    resolution: {integrity: sha512-H5NYU+O+uvqOH5VXw3+lgoc1vTI6jL8LOZJsw4xgRpV7uIPjRpmLPdz0TrouxwKHBhpVLzVIlyKhaRLelIThMw==, tarball: https://registry.npmjs.org/simplebar-core/-/simplebar-core-1.2.6.tgz}
+    dependencies:
+      '@types/lodash-es': 4.17.12
+      lodash: 4.17.21
+      lodash-es: 4.17.21
+    dev: false
+
+  /simplebar-react@3.2.6(react@18.2.0):
+    resolution: {integrity: sha512-8jDiBuVCG86JmOrsmkA+4q77iFAEbhU9EX62PohLisg3dnxdLXFFhkxnx2Es3Cxt8IlZFlJsF9GaobFL3ukwiA==, tarball: https://registry.npmjs.org/simplebar-react/-/simplebar-react-3.2.6.tgz}
+    peerDependencies:
+      react: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      simplebar-core: 1.2.6
+    dev: false
+
   /single-spa@5.9.5:
     resolution: {integrity: sha512-9SQdmsyz4HSP+3gs6PJzhkaMEg+6zTlu9oxIghnwUX3eq+ajq4ft5egl0iyR55LAmO/UwvU8NgIWs/ZyQMa6dw==}
     dev: false
@@ -16771,7 +16773,7 @@ packages:
       postcss-sass: 0.4.4
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.0.16
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
       slash: 3.0.0

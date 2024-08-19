@@ -1,38 +1,19 @@
 .column-wrapper {
   flex: 1;
-  height: calc(100vh - 89px);
-  overflow-y: auto;
-  overflow-x: hidden;
   border-left: 1px solid var(--ant-color-split);
-  // custom scrollbar
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
+}
 
-  &::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  &:hover {
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--ant-color-fill);
-      border-radius: 4px;
-    }
-  }
+.simplebar-scrollbar::before {
+  background: rgba(0, 0, 0, 50%);
 }
 
 .column-wrapper-footer {
   flex: 1;
+  display: flex;
   position: relative;
   border-left: 1px solid var(--ant-color-split);
 
   .column-wrapper {
-    padding-bottom: 50px;
     border-left: none;
   }
 

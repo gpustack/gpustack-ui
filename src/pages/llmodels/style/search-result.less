@@ -4,27 +4,12 @@
   background-color: rgba(255, 255, 255, 100%);
   padding: 16px @padding;
   border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
-  overflow-y: auto;
-  height: calc(100vh - 194px);
-  // custom scrollbar
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
+  // overflow-y: auto;
+  // height: calc(100vh - 194px);
+}
 
-  &::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  &:hover {
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--ant-color-fill);
-    }
-  }
+.simplebar-scrollbar::before {
+  background: rgba(0, 0, 0, 50%);
 }
 
 .search-bar {

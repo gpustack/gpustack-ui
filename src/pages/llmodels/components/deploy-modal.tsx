@@ -302,21 +302,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       styles={{
         body: {
           height: 'calc(100vh - 57px)',
-          padding: '16px 0'
+          padding: '16px 0',
+          overflowX: 'hidden'
         },
         content: {
           borderRadius: '8px 0 0 8px'
         }
       }}
       width={
-        modelSource === modelSourceMap.huggingface_value
+        props.source === modelSourceMap.huggingface_value
           ? 'calc(100vw - 220px)'
           : 600
       }
       footer={false}
     >
       <div style={{ display: 'flex' }}>
-        {modelSource === modelSourceMap.huggingface_value && (
+        {props.source === modelSourceMap.huggingface_value && (
           <ColumnWrapper>
             <SearchModel
               modelSource={modelSource}
@@ -324,7 +325,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             ></SearchModel>
           </ColumnWrapper>
         )}
-        {modelSource === modelSourceMap.huggingface_value && (
+        {props.source === modelSourceMap.huggingface_value && (
           <ColumnWrapper>
             <ModelCard repo={huggingfaceRepoId}></ModelCard>
             <HFModelFile
@@ -346,92 +347,96 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             ></ModalFooter>
           }
         >
-          <TitleWrapper>Configuration</TitleWrapper>
-          <Form
-            name="deployModel"
-            form={form}
-            onFinish={onOk}
-            preserve={false}
-            style={{ padding: '16px 24px' }}
-          >
-            <Form.Item<FormData>
-              name="name"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    {
-                      id: 'common.form.rule.input'
-                    },
-                    { name: intl.formatMessage({ id: 'common.table.name' }) }
-                  )
-                }
-              ]}
+          <>
+            <TitleWrapper>Configuration</TitleWrapper>
+            <Form
+              name="deployModel"
+              form={form}
+              onFinish={onOk}
+              preserve={false}
+              style={{ padding: '16px 24px' }}
             >
-              <SealInput.Input
-                label={intl.formatMessage({
-                  id: 'common.table.name'
-                })}
-                required
-              ></SealInput.Input>
-            </Form.Item>
-            <Form.Item<FormData>
-              name="source"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    {
-                      id: 'common.form.rule.select'
-                    },
-                    { name: intl.formatMessage({ id: 'models.form.source' }) }
-                  )
-                }
-              ]}
-            >
-              {
-                <SealSelect
-                  disabled={true}
+              <Form.Item<FormData>
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: intl.formatMessage(
+                      {
+                        id: 'common.form.rule.input'
+                      },
+                      { name: intl.formatMessage({ id: 'common.table.name' }) }
+                    )
+                  }
+                ]}
+              >
+                <SealInput.Input
                   label={intl.formatMessage({
-                    id: 'models.form.source'
+                    id: 'common.table.name'
                   })}
-                  options={sourceOptions}
                   required
-                ></SealSelect>
-              }
-            </Form.Item>
-            {renderFieldsBySource()}
-            <Form.Item<FormData>
-              name="replicas"
-              rules={[
+                ></SealInput.Input>
+              </Form.Item>
+              <Form.Item<FormData>
+                name="source"
+                rules={[
+                  {
+                    required: true,
+                    message: intl.formatMessage(
+                      {
+                        id: 'common.form.rule.select'
+                      },
+                      { name: intl.formatMessage({ id: 'models.form.source' }) }
+                    )
+                  }
+                ]}
+              >
                 {
-                  required: true,
-                  message: intl.formatMessage(
-                    {
-                      id: 'common.form.rule.input'
-                    },
-                    { name: intl.formatMessage({ id: 'models.form.replicas' }) }
-                  )
+                  <SealSelect
+                    disabled={true}
+                    label={intl.formatMessage({
+                      id: 'models.form.source'
+                    })}
+                    options={sourceOptions}
+                    required
+                  ></SealSelect>
                 }
-              ]}
-            >
-              <SealInput.Number
-                style={{ width: '100%' }}
-                label={intl.formatMessage({
-                  id: 'models.form.replicas'
-                })}
-                required
-                min={0}
-              ></SealInput.Number>
-            </Form.Item>
-            <Form.Item<FormData> name="description">
-              <SealInput.TextArea
-                label={intl.formatMessage({
-                  id: 'common.table.description'
-                })}
-              ></SealInput.TextArea>
-            </Form.Item>
-          </Form>
+              </Form.Item>
+              {renderFieldsBySource()}
+              <Form.Item<FormData>
+                name="replicas"
+                rules={[
+                  {
+                    required: true,
+                    message: intl.formatMessage(
+                      {
+                        id: 'common.form.rule.input'
+                      },
+                      {
+                        name: intl.formatMessage({ id: 'models.form.replicas' })
+                      }
+                    )
+                  }
+                ]}
+              >
+                <SealInput.Number
+                  style={{ width: '100%' }}
+                  label={intl.formatMessage({
+                    id: 'models.form.replicas'
+                  })}
+                  required
+                  min={0}
+                ></SealInput.Number>
+              </Form.Item>
+              <Form.Item<FormData> name="description">
+                <SealInput.TextArea
+                  label={intl.formatMessage({
+                    id: 'common.table.description'
+                  })}
+                ></SealInput.TextArea>
+              </Form.Item>
+            </Form>
+          </>
         </ColumnWrapper>
       </div>
     </Drawer>

@@ -39,7 +39,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
     try {
       const res = await queryHuggingfaceModelFiles({ repo: props.repo });
       const list = _.filter(res, (file: any) => {
-        return _.endsWith(file.path, '.gguf');
+        return _.endsWith(file.path, '.gguf') || _.includes(file.path, '.gguf');
       });
       const sortList = _.sortBy(list, (item: any) => item.size);
       setDataSource({ fileList: sortList, loading: false });
@@ -58,7 +58,11 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
     }
     console.log('quanType', quanType, FileType[quanType]);
     if (FileType[quanType] !== undefined) {
-      return <Tag className="tag-item">{quanType}</Tag>;
+      return (
+        <Tag className="tag-item" color="cyan">
+          {quanType}
+        </Tag>
+      );
     }
     return null;
   };
@@ -100,7 +104,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
                         </span> */}
                         <Tag
                           className="tag-item"
-                          color="geekblue"
+                          color="green"
                           style={{
                             marginRight: 0
                           }}

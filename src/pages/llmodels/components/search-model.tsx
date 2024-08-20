@@ -232,6 +232,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   useEffect(() => {
     handleOnOpen();
+    console.log('SearchModel useEffect', modelSource);
     return () => {
       axiosTokenRef.current?.abort?.();
     };

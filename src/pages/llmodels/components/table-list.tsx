@@ -80,14 +80,17 @@ const Models: React.FC<ModelsProps> = ({
   const [openViewCodeModal, setOpenViewCodeModal] = useState(false);
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [openDeployModal, setOpenDeployModal] = useState(false);
+  const [openDeployModal, setOpenDeployModal] = useState<any>({
+    show: false,
+    width: 600,
+    source: modelSourceMap.huggingface_value
+  });
   const [title, setTitle] = useState<string>('');
   const [currentData, setCurrentData] = useState<ListItem | undefined>(
     undefined
   );
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
   const modalRef = useRef<any>(null);
-  const sourceRef = useRef<any>(null);
 
   const sourceOptions = [
     {
@@ -96,8 +99,11 @@ const Models: React.FC<ModelsProps> = ({
       key: 'huggingface',
       icon: <IconFont type="icon-huggingface"></IconFont>,
       onClick: () => {
-        sourceRef.current = modelSourceMap.huggingface_value;
-        setOpenDeployModal(true);
+        setOpenDeployModal({
+          show: true,
+          width: 'calc(100vw - 220px)',
+          source: modelSourceMap.huggingface_value
+        });
       }
     },
     {
@@ -106,8 +112,11 @@ const Models: React.FC<ModelsProps> = ({
       key: 'ollama_library',
       icon: <IconFont type="icon-ollama"></IconFont>,
       onClick: () => {
-        sourceRef.current = modelSourceMap.ollama_library_value;
-        setOpenDeployModal(true);
+        setOpenDeployModal({
+          show: true,
+          width: 600,
+          source: modelSourceMap.ollama_library_value
+        });
       }
     }
   ];
@@ -177,16 +186,22 @@ const Models: React.FC<ModelsProps> = ({
     setOpenAddModal(false);
   }, []);
 
-  const handleDeployModalCancel = useCallback(() => {
-    setOpenDeployModal(false);
-  }, []);
+  const handleDeployModalCancel = () => {
+    setOpenDeployModal({
+      ...openDeployModal,
+      show: false
+    });
+  };
 
   const handleCreateModel = useCallback(async (data: FormData) => {
     try {
       console.log('data:', data);
 
       await createModel({ data });
-      setOpenDeployModal(false);
+      setOpenDeployModal({
+        ...openDeployModal,
+        show: false
+      });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   }, []);
@@ -476,11 +491,12 @@ const Models: React.FC<ModelsProps> = ({
         onOk={handleModalOk}
       ></UpdateModel>
       <DeployModal
-        open={openDeployModal}
+        open={openDeployModal.show}
         action={PageAction.CREATE}
-        title="Deploy Model"
+        title={intl.formatMessage({ id: 'models.button.deploy' })}
         data={currentData}
-        source={sourceRef.current}
+        source={openDeployModal.source}
+        width={openDeployModal.width}
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>

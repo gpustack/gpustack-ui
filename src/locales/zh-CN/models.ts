@@ -9,6 +9,7 @@ export default {
   'models.form.repoid.desc': '只支持 .gguf 格式',
   'models.form.filename': '文件名',
   'models.form.replicas': '副本数',
+  'models.form.configurations': '配置',
   'models.form.s3address': 'S3 地址',
   'models.openinplayground': '在 Playground 中打开',
   'models.instances': '实例',

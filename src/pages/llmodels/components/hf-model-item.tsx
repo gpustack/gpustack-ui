@@ -43,7 +43,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
             {props.task && (
               <Tag
                 className="tag-item"
-                color="geekblue"
+                color="gold"
                 style={{
                   marginRight: 0
                 }}

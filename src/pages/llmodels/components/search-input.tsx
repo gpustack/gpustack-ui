@@ -45,12 +45,14 @@ const SearchInput: React.FC<{
         )
       }
       prefix={
-        <SearchOutlined
-          style={{
-            fontSize: '16px',
-            color: 'var(--ant-color-text-quaternary)'
-          }}
-        />
+        <>
+          <SearchOutlined
+            style={{
+              fontSize: '16px',
+              color: 'var(--ant-color-text-quaternary)'
+            }}
+          />
+        </>
       }
     ></Input>
   );

@@ -1,4 +1,4 @@
-import { listFiles, listModels } from '@huggingface/hub';
+import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import {
@@ -119,9 +119,13 @@ export async function callHuggingfaceQuickSearch(params: any) {
 
 const HUGGINGFACE_API = 'https://huggingface.co/api/models';
 
-export async function queryHuggingfaceModelDetail(params: { repo: string }) {
+export async function queryHuggingfaceModelDetail(
+  params: { repo: string },
+  options?: any
+) {
   return request(`${HUGGINGFACE_API}/${params.repo}`, {
-    method: 'GET'
+    method: 'GET',
+    cancelToken: options?.token
   });
 }
 
@@ -139,7 +143,7 @@ export async function queryHuggingfaceModels(
   for await (const model of listModels({
     ...params,
     ...options,
-    limit: 100,
+    limit: 500,
     additionalFields: ['sha'],
     fetch(url: string, config: any) {
       try {
@@ -148,6 +152,7 @@ export async function queryHuggingfaceModels(
           signal: options.signal
         });
       } catch (error) {
+        console.log('queryHuggingfaceModels error===', error);
         // ignore
         return [];
       }
@@ -158,12 +163,48 @@ export async function queryHuggingfaceModels(
   return result;
 }
 
-export async function queryHuggingfaceModelFiles(params: { repo: string }) {
+export async function queryHuggingfaceModelFiles(
+  params: { repo: string },
+  options?: any
+) {
   const result = [];
   for await (const fileInfo of listFiles({
-    ...params
+    ...params,
+    fetch(url: string, config: any) {
+      try {
+        return fetch(url, {
+          ...config,
+          signal: options?.signal
+        });
+      } catch (error) {
+        console.log('queryHuggingfaceModels error===', error);
+        // ignore
+        return [];
+      }
+    }
   })) {
     result.push(fileInfo);
   }
   return result;
+}
+
+export async function downloadModelFile(
+  params: { repo: string; revision: string; path: string },
+  options?: any
+) {
+  const { repo, revision, path } = params;
+  const res = await (
+    await downloadFile({
+      repo,
+      revision: revision,
+      path: path,
+      fetch(url: string, config: any) {
+        return fetch(url, {
+          ...config,
+          signal: options?.signal
+        });
+      }
+    })
+  )?.text();
+  return res;
 }

@@ -8,6 +8,9 @@
 
   .title {
     margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .tag-item {
@@ -18,12 +21,24 @@
     border-radius: 4px;
     font-size: 12px;
     height: 20px;
-    border: 1px solid var(--ant-color-border);
-    color: var(--ant-color-text-secondary);
   }
 
   .btn {
     display: flex;
     justify-content: flex-end;
+  }
+
+  .mkd-title {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 80%);
+    border-bottom: 1px solid rgba(255, 255, 255, 10%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .simplebar-scrollbar::before {
+    background: var(--color-scroll-bg);
   }
 }

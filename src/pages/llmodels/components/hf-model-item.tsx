@@ -40,7 +40,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
       <div className="info">
         {props.source === modelSourceMap.huggingface_value ? (
           <Space size={16}>
-            {props.task && (
+            {/* {props.task && (
               <Tag
                 className="tag-item"
                 color="gold"
@@ -50,7 +50,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
               >
                 <span style={{ opacity: 0.65 }}>{props.task}</span>
               </Tag>
-            )}
+            )} */}
             <span>
               {dayjs().to(
                 dayjs(dayjs(props.updatedAt).format('YYYY-MM-DD HH:mm:ss'))

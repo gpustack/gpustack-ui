@@ -5,11 +5,12 @@ import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
+import HotKeys from '@/config/hotkeys';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import ViewCodeModal from '@/pages/playground/components/view-code-modal';
-import { handleBatchRequest } from '@/utils';
+import { handleBatchRequest, platformCall } from '@/utils';
 import {
   DeleteOutlined,
   DownOutlined,
@@ -23,6 +24,7 @@ import { Button, Dropdown, Input, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { memo, useCallback, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -64,6 +66,7 @@ const Models: React.FC<ModelsProps> = ({
   total
 }) => {
   console.log('model list====2');
+  const platform = platformCall();
   const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
@@ -77,7 +80,6 @@ const Models: React.FC<ModelsProps> = ({
     params: {},
     show: false
   });
-  const [openViewCodeModal, setOpenViewCodeModal] = useState(false);
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<any>({
@@ -92,9 +94,46 @@ const Models: React.FC<ModelsProps> = ({
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
   const modalRef = useRef<any>(null);
 
+  useHotkeys(
+    HotKeys.NEW1.join(','),
+    () => {
+      setOpenDeployModal({
+        show: true,
+        width: 'calc(100vw - 220px)',
+        source: modelSourceMap.huggingface_value
+      });
+    },
+    { preventDefault: true }
+  );
+
+  useHotkeys(
+    HotKeys.NEW2.join(','),
+    () => {
+      setOpenDeployModal({
+        show: true,
+        width: 600,
+        source: modelSourceMap.ollama_library_value
+      });
+    },
+    { preventDefault: true }
+  );
+
   const sourceOptions = [
     {
-      label: 'Hugging Face',
+      label: (
+        <span className="flex-center flex-between">
+          <span>Hugging Face</span>
+          <Tag style={{ marginRight: 0 }} className="m-l-10">
+            {platform.isMac ? (
+              <>
+                <IconFont type="icon-command"></IconFont> + 1
+              </>
+            ) : (
+              <>CTRL + 1</>
+            )}
+          </Tag>
+        </span>
+      ),
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
       icon: <IconFont type="icon-huggingface"></IconFont>,
@@ -107,7 +146,20 @@ const Models: React.FC<ModelsProps> = ({
       }
     },
     {
-      label: 'Ollama Library',
+      label: (
+        <span className="flex-center flex-between">
+          <span>Ollama Library</span>
+          <Tag style={{ marginRight: 0 }} className="m-l-10">
+            {platform.isMac ? (
+              <>
+                <IconFont type="icon-command"></IconFont> + 2
+              </>
+            ) : (
+              <>CTRL + 2</>
+            )}
+          </Tag>
+        </span>
+      ),
       value: modelSourceMap.ollama_library_value,
       key: 'ollama_library',
       icon: <IconFont type="icon-ollama"></IconFont>,

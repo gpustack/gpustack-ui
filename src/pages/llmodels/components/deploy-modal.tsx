@@ -3,7 +3,7 @@ import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import ColumnWrapper from './column-wrapper';
@@ -38,6 +38,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const form = useRef<any>({});
   const intl = useIntl();
   const [huggingfaceRepoId, setHuggingfaceRepoId] = useState<string>('');
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [loadingModel, setLoadingModel] = useState<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldValue?.('huggingface_filename', item.path);
@@ -100,15 +102,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             <SearchModel
               modelSource={props.source}
               onSelectModel={handleOnSelectModel}
+              setLoadingModel={setLoadingModel}
             ></SearchModel>
           </ColumnWrapper>
         )}
         {props.source === modelSourceMap.huggingface_value && (
           <ColumnWrapper>
-            <ModelCard repo={huggingfaceRepoId}></ModelCard>
+            <ModelCard
+              repo={huggingfaceRepoId}
+              onCollapse={setCollapsed}
+              collapsed={collapsed}
+            ></ModelCard>
             <HFModelFile
               repo={huggingfaceRepoId}
               onSelectFile={handleSelectModelFile}
+              collapsed={collapsed}
+              loadingModel={loadingModel}
             ></HFModelFile>
           </ColumnWrapper>
         )}
@@ -126,9 +135,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           }
         >
           <>
-            <TitleWrapper>
-              {intl.formatMessage({ id: 'models.form.configurations' })}
-            </TitleWrapper>
+            {source === modelSourceMap.huggingface_value && (
+              <TitleWrapper>
+                {intl.formatMessage({ id: 'models.form.configurations' })}
+              </TitleWrapper>
+            )}
             <DataForm
               source={source}
               action={action}
@@ -143,4 +154,4 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   );
 };
 
-export default AddModal;
+export default memo(AddModal);

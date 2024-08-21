@@ -69,6 +69,7 @@ const Models: React.FC = () => {
       } else {
         setDataSource({
           ...dataSource,
+          loading: !!res.items.length,
           total: res.pagination.total
         });
       }

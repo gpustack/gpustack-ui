@@ -5,17 +5,14 @@ import { Button, Input, Select } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels } from '../apis';
-import {
-  modelFilesSortOptions,
-  modelSourceMap,
-  ollamaModelOptions
-} from '../config';
+import { modelSourceMap, ollamaModelOptions } from '../config';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
 
 interface SearchInputProps {
   modelSource: string;
+  setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any) => void;
 }
@@ -38,7 +35,7 @@ const sourceList = [
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   console.log('SearchModel======');
   const intl = useIntl();
-  const { modelSource, onSourceChange, onSelectModel } = props;
+  const { modelSource, setLoadingModel, onSourceChange, onSelectModel } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
     loading: boolean;
@@ -51,6 +48,17 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const customOllamaModelRef = useRef<any>(null);
+  const modelFilesSortOptions = useRef<any[]>([
+    { label: intl.formatMessage({ id: 'models.sort.likes' }), value: 'likes' },
+    {
+      label: intl.formatMessage({ id: 'models.sort.downloads' }),
+      value: 'downloads'
+    },
+    {
+      label: intl.formatMessage({ id: 'models.sort.updated' }),
+      value: 'updatedAt'
+    }
+  ]);
 
   const handleOnSelectModel = useCallback((item: any) => {
     onSelectModel(item);
@@ -67,6 +75,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           pre.loading = true;
           return { ...pre };
         });
+        setLoadingModel?.(true);
         cacheRepoOptions.current = [];
         const params = {
           search: {
@@ -93,12 +102,15 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           repoOptions: sortedList,
           loading: false
         });
+        setLoadingModel?.(false);
         handleOnSelectModel(sortedList[0]);
       } catch (error) {
+        console.log('queryHuggingfaceModels error===', error);
         setDataSource({
           repoOptions: [],
           loading: false
         });
+        setLoadingModel?.(false);
         handleOnSelectModel({});
         cacheRepoOptions.current = [];
       }
@@ -184,15 +196,18 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       loading: false
     });
   };
-
   const renderHFSearch = () => {
     return (
       <>
         <SearchInput onSearch={handlerSearchModels}></SearchInput>
         <div className={SearchStyle.filter}>
           <span>
-            <span className="value">{dataSource.repoOptions.length}</span>
-            results
+            <span className="value">
+              {intl.formatMessage(
+                { id: 'models.search.result' },
+                { count: dataSource.repoOptions.length }
+              )}
+            </span>
           </span>
           <Select
             value={sortType}
@@ -204,7 +219,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                 </span>
               );
             }}
-            options={modelFilesSortOptions}
+            options={modelFilesSortOptions.current}
             size="middle"
             style={{ width: '150px' }}
           ></Select>
@@ -233,10 +248,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   useEffect(() => {
     handleOnOpen();
     console.log('SearchModel useEffect', modelSource);
+  }, [modelSource]);
+
+  useEffect(() => {
     return () => {
       axiosTokenRef.current?.abort?.();
     };
-  }, [modelSource]);
+  }, []);
 
   return (
     <div style={{ flex: 1 }}>

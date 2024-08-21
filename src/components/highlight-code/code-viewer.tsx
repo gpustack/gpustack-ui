@@ -1,5 +1,6 @@
 import hljs from 'highlight.js';
 import 'highlight.js/styles/atom-one-dark.css';
+import { memo, useMemo } from 'react';
 import CopyButton from '../copy-button';
 import { escapeHtml } from './utils';
 
@@ -19,7 +20,7 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
     copyable = true
   } = props || {};
 
-  const renderCode = () => {
+  const highlightedCode = useMemo(() => {
     const autodetectLang = autodetect && !lang;
     const cannotDetectLanguage = !autodetectLang && !hljs.getLanguage(lang);
     let className = '';
@@ -52,9 +53,7 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
       value: result.value,
       className: className
     };
-  };
-
-  const highlightedCode = renderCode();
+  }, [code, lang, autodetect, ignoreIllegals]);
 
   return (
     <pre className="code-pre">
@@ -64,13 +63,15 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
           __html: highlightedCode.value
         }}
       ></code>
-      <CopyButton
-        text={code}
-        size="small"
-        style={{ color: '#abb2bf' }}
-      ></CopyButton>
+      {copyable && (
+        <CopyButton
+          text={code}
+          size="small"
+          style={{ color: '#abb2bf' }}
+        ></CopyButton>
+      )}
     </pre>
   );
 };
 
-export default CodeViewer;
+export default memo(CodeViewer);

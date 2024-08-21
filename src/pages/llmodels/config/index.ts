@@ -44,13 +44,13 @@ export const ollamaModelOptions = [
     tags: ['7B'],
     id: 'mistral'
   },
-  {
-    label: 'llava',
-    value: 'llava',
-    name: 'llava',
-    tags: ['7B', '13B', '34B'],
-    id: 'llava'
-  },
+  // {
+  //   label: 'llava',
+  //   value: 'llava',
+  //   name: 'llava',
+  //   tags: ['7B', '13B', '34B'],
+  //   id: 'llava'
+  // },
   {
     label: 'qwen2',
     value: 'qwen2',
@@ -59,11 +59,11 @@ export const ollamaModelOptions = [
     id: 'qwen2'
   },
   {
-    label: 'phi3',
-    value: 'phi3',
-    name: 'phi3',
-    tags: ['3B', '14B'],
-    id: 'phi3'
+    label: 'phi3.5',
+    value: 'phi3.5',
+    name: 'phi3.5',
+    tags: ['3B'],
+    id: 'phi3.5'
   },
   {
     label: 'codellama',
@@ -73,11 +73,11 @@ export const ollamaModelOptions = [
     id: 'codellama'
   },
   {
-    label: 'deepseek-coder',
-    value: 'deepseek-coder',
-    name: 'deepseek-coder',
-    tags: ['1B', '7B', '33B'],
-    id: 'deepseek-coder'
+    label: 'deepseek-coder-v2',
+    value: 'deepseek-coder-v2',
+    name: 'deepseek-coder-v2',
+    tags: ['16B', '236B'],
+    id: 'deepseek-coder-v2'
   }
 ];
 
@@ -143,7 +143,7 @@ export const ActionList = [
 
 export const modelFilesSortOptions = [
   // { label: 'Trending', value: 'trendingScore' },
-  { label: 'Likes', value: 'likes' },
-  { label: 'Downloads', value: 'downloads' },
-  { label: 'Updated', value: 'updatedAt' }
+  { label: 'models.sort.likes', value: 'likes' },
+  { label: 'models.sort.downloads', value: 'downloads' },
+  { label: 'models.sort.updated', value: 'updatedAt' }
 ];

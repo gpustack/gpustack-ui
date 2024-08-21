@@ -18,5 +18,15 @@ export default {
   'model.deploy.sort': 'Sort',
   'model.deploy.search.placeholder': 'Search models from Hugging Face',
   'model.form.ollamatips':
-    'Tip: The following are the preconfigured Ollama models in GPUStack. Please select the model you want, or directly enter the model you wish to deploy in the 【{name}】 input box on the right.'
+    'Tip: The following are the preconfigured Ollama models in GPUStack. Please select the model you want, or directly enter the model you wish to deploy in the 【{name}】 input box on the right.',
+  'models.sort.name': 'Name',
+  'models.sort.size': 'Size',
+  'models.sort.likes': 'Likes',
+  'models.sort.downloads': 'Downloads',
+  'models.sort.updated': 'Updated',
+  'models.search.result': '{count} results',
+  'models.data.card': 'Model Card',
+  'models.available.files': 'Available Files',
+  'models.viewin.hf': 'View in Hugging Face',
+  'models.architecture': 'Architecture'
 };

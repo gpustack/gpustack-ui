@@ -11,5 +11,7 @@ export default {
   EDIT: ['ctrl+e', 'meta+e'],
   SEARCH: ['ctrl+f', 'meta+f'],
   RESET: ['ctrl+shift+r', 'meta+shift+r'],
-  INPUT: ['ctrl+k', 'meta+k']
+  INPUT: ['ctrl+k', 'meta+k'],
+  NEW1: ['ctrl+1', 'meta+1'],
+  NEW2: ['ctrl+2', 'meta+2']
 };

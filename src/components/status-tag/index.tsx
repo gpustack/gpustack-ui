@@ -4,6 +4,8 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 import CopyButton from '../copy-button';
 import CopyStyle from './copy.less';
 import './index.less';
@@ -70,7 +72,14 @@ const StatusTag: React.FC<StatusTagProps> = ({
             size="small"
           ></CopyButton>
         </div>
-        <div>{statusValue.message}</div>
+
+        <SimpleBar style={{ maxHeight: 200 }}>
+          <div
+            style={{ width: 'max-content', maxWidth: 250, paddingInline: 10 }}
+          >
+            {statusValue.message}
+          </div>
+        </SimpleBar>
       </div>
     );
   }, [statusValue]);
@@ -87,15 +96,18 @@ const StatusTag: React.FC<StatusTagProps> = ({
       {statusValue.message ? (
         <Tooltip
           title={renderTitle}
-          overlayInnerStyle={{ maxHeight: 200, overflow: 'auto' }}
+          destroyTooltipOnHide={true}
+          overlayInnerStyle={{ paddingInline: 0 }}
         >
-          <span className="m-r-5">
-            <InfoCircleOutlined />
+          <span className="txt err">
+            <span className="m-r-5">
+              <InfoCircleOutlined />
+            </span>
+            {renderContent()}
           </span>
-          {renderContent()}
         </Tooltip>
       ) : (
-        renderContent()
+        <span className="txt">{renderContent()}</span>
       )}
     </span>
   );

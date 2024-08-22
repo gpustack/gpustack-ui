@@ -1,5 +1,7 @@
+import IconFont from '@/components/icon-font';
 import { SearchOutlined } from '@ant-design/icons';
-import { Col, Empty, Row, Spin } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Button, Col, Empty, Row, Spin } from 'antd';
 import React from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -13,11 +15,13 @@ interface SearchResultProps {
   source?: string;
   style?: React.CSSProperties;
   loading?: boolean;
+  networkError?: boolean;
 }
 
 const SearchResult: React.FC<SearchResultProps> = (props) => {
   console.log('SearchResult======');
-  const { resultList, onSelect, source } = props;
+  const { resultList, onSelect, source, networkError } = props;
+  const intl = useIntl();
 
   const handleSelect = (e: any, item: any) => {
     e.stopPropagation();
@@ -28,6 +32,57 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     if (e.key === 'Enter') {
       onSelect?.(item);
     }
+  };
+
+  const renderEmpty = () => {
+    if (networkError) {
+      return (
+        <Empty
+          imageStyle={{ height: 'auto', marginTop: '20px' }}
+          image={
+            <IconFont
+              type="icon-networkerror"
+              style={{
+                color: 'var(--ant-color-text-tertiary)',
+                fontSize: '66px'
+              }}
+            ></IconFont>
+          }
+          description={
+            <div className="flex-column gap-5">
+              <span>
+                {intl.formatMessage({ id: 'models.search.networkerror' })}
+              </span>
+              <span>
+                <span>
+                  {intl.formatMessage({ id: 'models.search.hfvisit' })}
+                </span>
+                <Button
+                  type="link"
+                  size="small"
+                  href="https://huggingface.co/"
+                  target="_blank"
+                >
+                  Hugging Face
+                </Button>
+              </span>
+            </div>
+          }
+        />
+      );
+    }
+    return (
+      <Empty
+        imageStyle={{ height: 'auto', marginTop: '20px' }}
+        image={
+          <SearchOutlined
+            className="font-size-16"
+            style={{ color: 'var(--ant-color-text-tertiary)' }}
+          ></SearchOutlined>
+        }
+        description={intl.formatMessage({ id: 'models.search.noresult' })}
+      />
+    );
   };
   return (
     <SimpleBar style={{ height: 'calc(100vh - 194px)' }}>
@@ -58,18 +113,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                 ))}
               </Row>
             ) : (
-              !props.loading && (
-                <Empty
-                  imageStyle={{ height: 'auto', marginTop: '20px' }}
-                  image={
-                    <SearchOutlined
-                      className="font-size-16"
-                      style={{ color: 'var(--ant-color-text-tertiary)' }}
-                    ></SearchOutlined>
-                  }
-                  description="No models found"
-                />
-              )
+              !props.loading && renderEmpty()
             )}
           </div>
         </Spin>

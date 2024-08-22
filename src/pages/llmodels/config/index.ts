@@ -141,9 +141,9 @@ export const ActionList = [
   }
 ];
 
-export const modelFilesSortOptions = [
-  // { label: 'Trending', value: 'trendingScore' },
-  { label: 'models.sort.likes', value: 'likes' },
-  { label: 'models.sort.downloads', value: 'downloads' },
-  { label: 'models.sort.updated', value: 'updatedAt' }
-];
+export const ModelSortType = {
+  trendingScore: 'trendingScore',
+  likes: 'likes',
+  downloads: 'downloads',
+  lastModified: 'lastModified'
+};

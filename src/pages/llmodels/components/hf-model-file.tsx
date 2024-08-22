@@ -1,5 +1,4 @@
 import { convertFileSize } from '@/utils';
-import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Col, Empty, Row, Select, Space, Spin, Tag } from 'antd';
 import classNames from 'classnames';
@@ -62,7 +61,11 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
           signal: axiosTokenRef.current.signal
         }
       );
-      const list = _.filter(res, (file: any) => {
+      const fileList = _.filter(res, (file: any) => {
+        return file.type === 'file';
+      });
+
+      const list = _.filter(fileList, (file: any) => {
         return _.endsWith(file.path, '.gguf') || _.includes(file.path, '.gguf');
       });
       const sortList = _.sortBy(list, (item: any) => {
@@ -182,16 +185,14 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
                 })}
               </Row>
             ) : (
-              !dataSource.loading && (
+              !dataSource.loading &&
+              !loadingModel && (
                 <Empty
                   imageStyle={{ height: 'auto', marginTop: '20px' }}
-                  image={
-                    <SearchOutlined
-                      className="font-size-16"
-                      style={{ color: 'var(--ant-color-text-tertiary)' }}
-                    ></SearchOutlined>
-                  }
-                  description="No files found"
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={intl.formatMessage({
+                    id: 'models.search.nofiles'
+                  })}
                 />
               )
             )}

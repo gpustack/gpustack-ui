@@ -134,6 +134,7 @@ export async function queryHuggingfaceModels(
     search: {
       query: string;
       tags: string[];
+      sort?: string;
       task?: PipelineType;
     };
   },
@@ -143,16 +144,15 @@ export async function queryHuggingfaceModels(
   for await (const model of listModels({
     ...params,
     ...options,
-    limit: 500,
+    limit: 100,
     additionalFields: ['sha'],
     fetch(url: string, config: any) {
       try {
-        return fetch(url, {
+        return fetch(`${url}&sort=${params.search.sort}`, {
           ...config,
           signal: options.signal
         });
       } catch (error) {
-        console.log('queryHuggingfaceModels error===', error);
         // ignore
         return [];
       }
@@ -170,6 +170,7 @@ export async function queryHuggingfaceModelFiles(
   const result = [];
   for await (const fileInfo of listFiles({
     ...params,
+    recursive: true,
     fetch(url: string, config: any) {
       try {
         return fetch(url, {

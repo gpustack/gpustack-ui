@@ -1,11 +1,10 @@
-import IconFont from '@/components/icon-font';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Select } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels } from '../apis';
-import { modelSourceMap, ollamaModelOptions } from '../config';
+import { ModelSortType, modelSourceMap, ollamaModelOptions } from '../config';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -17,21 +16,6 @@ interface SearchInputProps {
   onSelectModel: (model: any) => void;
 }
 
-const sourceList = [
-  {
-    label: (
-      <IconFont type="icon-huggingface" className="font-size-14"></IconFont>
-    ),
-    value: 'huggingface',
-    key: 'huggingface'
-  },
-  {
-    label: <IconFont type="icon-ollama" className="font-size-14"></IconFont>,
-    value: 'ollama_library',
-    key: 'ollama_library'
-  }
-];
-
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   console.log('SearchModel======');
   const intl = useIntl();
@@ -39,24 +23,35 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
     loading: boolean;
+    networkError: boolean;
+    sortType: string;
   }>({
     repoOptions: [],
-    loading: false
+    loading: false,
+    networkError: false,
+    sortType: ModelSortType.trendingScore
   });
   const [current, setCurrent] = useState<string>('');
-  const [sortType, setSortType] = useState<string>('downloads');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const customOllamaModelRef = useRef<any>(null);
+  const searchInputRef = useRef<any>('');
   const modelFilesSortOptions = useRef<any[]>([
-    { label: intl.formatMessage({ id: 'models.sort.likes' }), value: 'likes' },
+    {
+      label: intl.formatMessage({ id: 'models.sort.trending' }),
+      value: ModelSortType.trendingScore
+    },
+    {
+      label: intl.formatMessage({ id: 'models.sort.likes' }),
+      value: ModelSortType.likes
+    },
     {
       label: intl.formatMessage({ id: 'models.sort.downloads' }),
-      value: 'downloads'
+      value: ModelSortType.downloads
     },
     {
       label: intl.formatMessage({ id: 'models.sort.updated' }),
-      value: 'updatedAt'
+      value: ModelSortType.lastModified
     }
   ]);
 
@@ -66,7 +61,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   }, []);
 
   const handleOnSearchRepo = useCallback(
-    async (text: string) => {
+    async (sortType?: string) => {
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
       if (dataSource.loading) return;
@@ -79,7 +74,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         cacheRepoOptions.current = [];
         const params = {
           search: {
-            query: text,
+            query: searchInputRef.current || '',
+            sort: sortType || dataSource.sortType,
             tags: ['gguf']
           }
         };
@@ -93,22 +89,22 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             label: item.name
           };
         });
-        const sortedList = _.sortBy(
-          list,
-          (item: any) => item[sortType]
-        ).reverse();
-        cacheRepoOptions.current = sortedList;
+
+        cacheRepoOptions.current = list;
         setDataSource({
-          repoOptions: sortedList,
-          loading: false
+          repoOptions: list,
+          loading: false,
+          networkError: false,
+          sortType: sortType || dataSource.sortType
         });
         setLoadingModel?.(false);
-        handleOnSelectModel(sortedList[0]);
-      } catch (error) {
-        console.log('queryHuggingfaceModels error===', error);
+        handleOnSelectModel(list[0]);
+      } catch (error: any) {
         setDataSource({
           repoOptions: [],
-          loading: false
+          loading: false,
+          sortType: sortType || dataSource.sortType,
+          networkError: error?.message === 'Failed to fetch'
         });
         setLoadingModel?.(false);
         handleOnSelectModel({});
@@ -120,8 +116,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const handlerSearchModels = useCallback(
     async (e: any) => {
-      const text = e.target.value;
-      handleOnSearchRepo(text);
+      searchInputRef.current = e.target.value;
+      handleOnSearchRepo();
     },
     [handleOnSearchRepo]
   );
@@ -132,12 +128,14 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       !cacheRepoOptions.current.length &&
       modelSource === modelSourceMap.huggingface_value
     ) {
-      handleOnSearchRepo('');
+      handleOnSearchRepo();
     }
     if (modelSourceMap.ollama_library_value === modelSource) {
       setDataSource({
         repoOptions: ollamaModelOptions,
-        loading: false
+        loading: false,
+        networkError: false,
+        sortType: dataSource.sortType
       });
       cacheRepoOptions.current = ollamaModelOptions;
       handleOnSelectModel(ollamaModelOptions[0]);
@@ -151,7 +149,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     });
     setDataSource({
       repoOptions: list,
-      loading: false
+      loading: false,
+      networkError: false,
+      sortType: dataSource.sortType
     });
   };
 
@@ -164,7 +164,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     onSourceChange?.(source);
     setDataSource({
       repoOptions: [],
-      loading: false
+      loading: false,
+      networkError: false,
+      sortType: dataSource.sortType
     });
     cacheRepoOptions.current = [];
   };
@@ -186,15 +188,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   const handleSortChange = (value: string) => {
-    const sortedList = _.sortBy(
-      dataSource.repoOptions,
-      (item: any) => item[value]
-    ).reverse();
-    setSortType(value);
-    setDataSource({
-      repoOptions: sortedList,
-      loading: false
-    });
+    handleOnSearchRepo(value);
   };
   const renderHFSearch = () => {
     return (
@@ -210,7 +204,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             </span>
           </span>
           <Select
-            value={sortType}
+            value={dataSource.sortType}
             onChange={handleSortChange}
             labelRender={({ label }) => {
               return (
@@ -275,6 +269,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         <SearchResult
           loading={dataSource.loading}
           resultList={dataSource.repoOptions}
+          networkError={dataSource.networkError}
           current={current}
           source={modelSource}
           onSelect={handleOnSelectModel}

@@ -22,11 +22,16 @@ export default {
   'models.sort.name': 'Name',
   'models.sort.size': 'Size',
   'models.sort.likes': 'Likes',
+  'models.sort.trending': 'Trending',
   'models.sort.downloads': 'Downloads',
   'models.sort.updated': 'Updated',
   'models.search.result': '{count} results',
   'models.data.card': 'Model Card',
   'models.available.files': 'Available Files',
   'models.viewin.hf': 'View in Hugging Face',
-  'models.architecture': 'Architecture'
+  'models.architecture': 'Architecture',
+  'models.search.noresult': 'No related models found',
+  'models.search.nofiles': 'No available files',
+  'models.search.networkerror': 'Network connection exception!',
+  'models.search.hfvisit': 'Please make sure you can visit'
 };

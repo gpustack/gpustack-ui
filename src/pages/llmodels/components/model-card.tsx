@@ -19,8 +19,9 @@ const ModelCard: React.FC<{
   repo: string;
   onCollapse: (flag: boolean) => void;
   collapsed: boolean;
+  loadingModel?: boolean;
 }> = (props) => {
-  const { repo, onCollapse, collapsed } = props;
+  const { repo, onCollapse, collapsed, loadingModel } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [modelData, setModelData] = useState<any>({});
@@ -138,7 +139,7 @@ const ModelCard: React.FC<{
               >
                 <span className="mkd-title" onClick={handleCollapse}>
                   <span>
-                    <FileTextOutlined className="m-r-5" /> README.md
+                    <FileTextOutlined className="m-r-2" /> README.md
                   </span>
                   <span>
                     {collapsed ? <DownOutlined /> : <RightOutlined />}

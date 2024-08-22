@@ -22,11 +22,16 @@ export default {
   'models.sort.name': '名称',
   'models.sort.size': '大小',
   'models.sort.likes': '喜欢',
+  'models.sort.trending': '趋势',
   'models.sort.downloads': '下载',
   'models.sort.updated': '更新时间',
   'models.search.result': '{count} 个结果',
   'models.data.card': '模型简介',
   'models.available.files': '可用文件',
   'models.viewin.hf': '在 Hugging Face 中查看',
-  'models.architecture': '架构'
+  'models.architecture': '架构',
+  'models.search.noresult': '未找到相关模型',
+  'models.search.nofiles': '无可用文件',
+  'models.search.networkerror': '网络连接异常!',
+  'models.search.hfvisit': '请确保您可以访问'
 };

@@ -33,5 +33,7 @@ export default {
   'models.search.noresult': 'No related models found',
   'models.search.nofiles': 'No available files',
   'models.search.networkerror': 'Network connection exception!',
-  'models.search.hfvisit': 'Please make sure you can visit'
+  'models.search.hfvisit': 'Please make sure you can visit',
+  'models.search.unsupport':
+    'This model is not supported and may be unusable after deployment.'
 };

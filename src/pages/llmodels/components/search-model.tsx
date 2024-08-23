@@ -65,6 +65,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
       if (dataSource.loading) return;
+      const sort = sortType ?? dataSource.sortType;
       try {
         setDataSource((pre) => {
           pre.loading = true;
@@ -72,17 +73,19 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         });
         setLoadingModel?.(true);
         cacheRepoOptions.current = [];
+        const task: any = searchInputRef.current ? '' : 'text-generation';
         const params = {
           search: {
             query: searchInputRef.current || '',
-            sort: sortType || dataSource.sortType,
-            tags: ['gguf']
+            sort: sort,
+            tags: ['gguf'],
+            task
           }
         };
         const models = await queryHuggingfaceModels(params, {
           signal: axiosTokenRef.current.signal
         });
-        const list = _.map(models || [], (item: any) => {
+        let list = _.map(models || [], (item: any) => {
           return {
             ...item,
             value: item.name,
@@ -95,7 +98,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           repoOptions: list,
           loading: false,
           networkError: false,
-          sortType: sortType || dataSource.sortType
+          sortType: sort
         });
         setLoadingModel?.(false);
         handleOnSelectModel(list[0]);
@@ -103,7 +106,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         setDataSource({
           repoOptions: [],
           loading: false,
-          sortType: sortType || dataSource.sortType,
+          sortType: sort,
           networkError: error?.message === 'Failed to fetch'
         });
         setLoadingModel?.(false);
@@ -188,8 +191,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   const handleSortChange = (value: string) => {
-    handleOnSearchRepo(value);
+    handleOnSearchRepo(value || '');
   };
+
   const renderHFSearch = () => {
     return (
       <>
@@ -204,6 +208,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             </span>
           </span>
           <Select
+            allowClear
             value={dataSource.sortType}
             onChange={handleSortChange}
             labelRender={({ label }) => {

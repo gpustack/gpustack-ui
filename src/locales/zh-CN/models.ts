@@ -33,5 +33,6 @@ export default {
   'models.search.noresult': '未找到相关模型',
   'models.search.nofiles': '无可用文件',
   'models.search.networkerror': '网络连接异常!',
-  'models.search.hfvisit': '请确保您可以访问'
+  'models.search.hfvisit': '请确保您可以访问',
+  'models.search.unsupport': '暂不支持该模型，部署后可能无法使用'
 };

@@ -1,13 +1,10 @@
 .model-card-wrap {
   display: flex;
   flex-direction: column;
-  min-height: 72px;
-  padding: 10px;
-  border: 1px solid var(--ant-color-border);
   border-radius: var(--border-radius-base);
 
   .title {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -30,15 +27,17 @@
 
   .mkd-title {
     cursor: pointer;
-    color: rgba(255, 255, 255, 80%);
+    background-color: var(--color-fill-sider);
     border-bottom: 1px solid rgba(255, 255, 255, 10%);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+    height: 36px;
   }
+}
 
-  .simplebar-scrollbar::before {
-    background: var(--color-scroll-bg);
-  }
+.card-wrapper {
+  padding: 16px 24px;
+  padding-top: 0;
 }

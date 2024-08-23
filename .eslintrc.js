@@ -3,6 +3,7 @@ module.exports = {
   rules: {
     'react/no-unstable-nested-components': 1,
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'off'
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/class-name-casing': 'off'
   }
 };

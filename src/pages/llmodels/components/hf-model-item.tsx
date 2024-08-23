@@ -2,9 +2,11 @@ import { formatNumber } from '@/utils';
 import {
   DownloadOutlined,
   FolderOutlined,
-  HeartOutlined
+  HeartOutlined,
+  WarningOutlined
 } from '@ant-design/icons';
-import { Space, Tag } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -21,8 +23,18 @@ interface HFModelItemProps {
   source?: string;
   tags?: string[];
 }
+const warningTask = ['image', 'audio', 'video'];
 
 const HFModelItem: React.FC<HFModelItemProps> = (props) => {
+  const intl = useIntl();
+  const isExcludeTask = () => {
+    if (!props.task) {
+      return false;
+    }
+    return _.some(warningTask, (item: string) => {
+      return props.task?.toLowerCase().includes(item);
+    });
+  };
   return (
     <div
       tabIndex={0}
@@ -36,10 +48,17 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
           style={{ color: 'var(--ant-color-text-tertiary)' }}
         />
         {props.title}
+        {isExcludeTask() && (
+          <Tooltip
+            title={intl.formatMessage({ id: 'models.search.unsupport' })}
+          >
+            <WarningOutlined className="m-l-2" style={{ color: 'orange' }} />
+          </Tooltip>
+        )}
       </div>
       <div className="info">
         {props.source === modelSourceMap.huggingface_value ? (
-          <Space size={16}>
+          <div className="info-item">
             {/* {props.task && (
               <Tag
                 className="tag-item"
@@ -64,10 +83,10 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
               <DownloadOutlined className="m-r-5" />
               {formatNumber(props.downloads)}
             </span>
-          </Space>
+          </div>
         ) : (
           <div className="flex-between">
-            <Space size={10}>
+            <div className="tags">
               {_.map(props.tags, (tag: string, index: string) => {
                 return (
                   <Tag
@@ -83,11 +102,6 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
                   </Tag>
                 );
               })}
-            </Space>
-            <div className="btn">
-              {/* <Button size="middle">
-                {props.active ? 'Selected' : 'Select'}
-              </Button> */}
             </div>
           </div>
         )}

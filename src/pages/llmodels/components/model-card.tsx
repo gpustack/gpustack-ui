@@ -98,24 +98,23 @@ const ModelCard: React.FC<{
   return (
     <>
       <TitleWrapper>
-        <span>{intl.formatMessage({ id: 'models.data.card' })}</span>
+        <div className="title">{modelData?.id} </div>
+        {modelData?.id && (
+          <Tooltip title={intl.formatMessage({ id: 'models.viewin.hf' })}>
+            <Button
+              size="small"
+              type="link"
+              target="_blank"
+              href={`https://huggingface.co/${modelData.id}`}
+            >
+              <IconFont type="icon-external-link"></IconFont>
+            </Button>
+          </Tooltip>
+        )}
       </TitleWrapper>
-      <div className="wrapper">
+      <div className="card-wrapper">
         {modelData ? (
           <div className="model-card-wrap">
-            <div className="title">
-              {modelData.id}{' '}
-              <Tooltip title={intl.formatMessage({ id: 'models.viewin.hf' })}>
-                <Button
-                  size="small"
-                  type="link"
-                  target="_blank"
-                  href={`https://huggingface.co/${modelData.id}`}
-                >
-                  <IconFont type="icon-external-link"></IconFont>
-                </Button>
-              </Tooltip>
-            </div>
             <div className="flex-between flex-center">
               {modelData.config?.model_type && (
                 <Tag className="tag-item" color="gold">
@@ -132,7 +131,6 @@ const ModelCard: React.FC<{
               <div
                 style={{
                   borderRadius: 4,
-                  backgroundColor: '#282c34',
                   marginTop: 16,
                   overflow: 'hidden'
                 }}
@@ -154,6 +152,7 @@ const ModelCard: React.FC<{
                     code={readmeText}
                     lang="markdown"
                     copyable={false}
+                    theme="light"
                   ></HighlightCode>
                 </SimpleBar>
               </div>

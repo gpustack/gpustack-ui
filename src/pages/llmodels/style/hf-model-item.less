@@ -5,7 +5,7 @@
   justify-content: space-between;
   border: 1px solid var(--ant-color-border);
   border-radius: var(--border-radius-base);
-  padding: 12px;
+  padding: 12px 14px;
   cursor: pointer;
 
   &:hover {
@@ -24,6 +24,12 @@
   .info {
     color: var(--ant-color-text-tertiary);
 
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
     .tag-item {
       display: flex;
       align-items: center;
@@ -36,5 +42,11 @@
       // border: 1px solid var(--ant-color-border);
       // color: var(--ant-color-text-secondary);
     }
+  }
+
+  .tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
   }
 }

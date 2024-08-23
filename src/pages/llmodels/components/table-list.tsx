@@ -103,7 +103,10 @@ const Models: React.FC<ModelsProps> = ({
         source: modelSourceMap.huggingface_value
       });
     },
-    { preventDefault: true }
+    {
+      preventDefault: true,
+      enabled: !openAddModal && !openDeployModal.show && !openLogModal
+    }
   );
 
   useHotkeys(
@@ -115,25 +118,15 @@ const Models: React.FC<ModelsProps> = ({
         source: modelSourceMap.ollama_library_value
       });
     },
-    { preventDefault: true }
+    {
+      preventDefault: true,
+      enabled: !openAddModal && !openDeployModal.show && !openLogModal
+    }
   );
 
   const sourceOptions = [
     {
-      label: (
-        <span className="flex-center flex-between">
-          <span>Hugging Face</span>
-          <Tag style={{ marginRight: 0 }} className="m-l-10">
-            {platform.isMac ? (
-              <>
-                <IconFont type="icon-command"></IconFont> + 1
-              </>
-            ) : (
-              <>CTRL + 1</>
-            )}
-          </Tag>
-        </span>
-      ),
+      label: 'Hugging Face',
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
       icon: <IconFont type="icon-huggingface"></IconFont>,
@@ -146,20 +139,7 @@ const Models: React.FC<ModelsProps> = ({
       }
     },
     {
-      label: (
-        <span className="flex-center flex-between">
-          <span>Ollama Library</span>
-          <Tag style={{ marginRight: 0 }} className="m-l-10">
-            {platform.isMac ? (
-              <>
-                <IconFont type="icon-command"></IconFont> + 2
-              </>
-            ) : (
-              <>CTRL + 2</>
-            )}
-          </Tag>
-        </span>
-      ),
+      label: 'Ollama Library',
       value: modelSourceMap.ollama_library_value,
       key: 'ollama_library',
       icon: <IconFont type="icon-ollama"></IconFont>,

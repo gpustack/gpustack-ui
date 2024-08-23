@@ -31,9 +31,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       <div>
         <h3>1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}</h3>
         <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
-        <HighlightCode code={addWorkerGuide.mac.getToken}></HighlightCode>
+        <HighlightCode
+          code={addWorkerGuide.mac.getToken}
+          theme="dark"
+        ></HighlightCode>
         <h4>Windows </h4>
-        <HighlightCode code={addWorkerGuide.win.getToken}></HighlightCode>
+        <HighlightCode
+          code={addWorkerGuide.win.getToken}
+          theme="dark"
+        ></HighlightCode>
         <h3>
           2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
           <span
@@ -49,9 +55,11 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
         <HighlightCode
           code={addWorkerGuide.mac.registerWorker(origin)}
+          theme="dark"
         ></HighlightCode>
         <h4>Windows </h4>
         <HighlightCode
+          theme="dark"
           code={addWorkerGuide.win.registerWorker(origin)}
         ></HighlightCode>
         <h3>3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}</h3>

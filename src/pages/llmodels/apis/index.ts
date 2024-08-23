@@ -148,7 +148,10 @@ export async function queryHuggingfaceModels(
     additionalFields: ['sha'],
     fetch(url: string, config: any) {
       try {
-        return fetch(`${url}&sort=${params.search.sort}`, {
+        const newUrl = params.search.sort
+          ? `${url}&sort=${params.search.sort}`
+          : url;
+        return fetch(`${newUrl}`, {
           ...config,
           signal: options.signal
         });

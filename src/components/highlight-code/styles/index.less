@@ -27,13 +27,20 @@
   .code-pre {
     padding-inline: 12px 32px;
     position: relative;
-    background-color: #282c34;
     border-radius: var(--border-radius-mini);
 
     .copy-button {
       position: absolute;
       top: 6px;
       right: 6px;
+    }
+
+    &.dark {
+      background-color: #282c34;
+    }
+
+    &.light {
+      background-color: rgb(250, 250, 250);
     }
   }
 }

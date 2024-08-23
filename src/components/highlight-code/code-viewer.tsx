@@ -1,7 +1,7 @@
+import classNames from 'classnames';
 import hljs from 'highlight.js';
 import { memo, useMemo } from 'react';
 import CopyButton from '../copy-button';
-import './styles/dark.less';
 import { escapeHtml } from './utils';
 
 interface CodeViewerProps {
@@ -10,6 +10,7 @@ interface CodeViewerProps {
   autodetect?: boolean;
   ignoreIllegals?: boolean;
   copyable?: boolean;
+  theme?: 'light' | 'dark';
 }
 const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   const {
@@ -56,7 +57,13 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   }, [code, lang, autodetect, ignoreIllegals]);
 
   return (
-    <pre className="code-pre dark">
+    <pre
+      className={classNames('code-pre', {
+        dark: props.theme === 'dark',
+        light: props.theme === 'light',
+        copyable: copyable
+      })}
+    >
       <code
         className={highlightedCode.className}
         dangerouslySetInnerHTML={{

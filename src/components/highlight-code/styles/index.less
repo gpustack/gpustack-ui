@@ -25,9 +25,13 @@
   }
 
   .code-pre {
-    padding-inline: 12px 32px;
+    padding-inline: 12px 12px;
     position: relative;
     border-radius: var(--border-radius-mini);
+
+    &.copyable {
+      padding-inline: 12px 32px;
+    }
 
     .copy-button {
       position: absolute;

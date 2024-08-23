@@ -8,17 +8,19 @@ const FileParts: React.FC<{
 }> = ({ fileList }) => {
   return (
     <SimpleBar style={{ maxHeight: 200 }}>
-      {fileList.map((file, index) => {
-        return (
-          <div key={index} className="flex-between m-b-5">
-            <span>
-              {' '}
-              Part {file.part} of {file.total}
-            </span>
-            <span>{convertFileSize(file.size)}</span>
-          </div>
-        );
-      })}
+      <div style={{ padding: 10 }}>
+        {fileList.map((file, index) => {
+          return (
+            <div key={index} className="flex-between m-b-5">
+              <span>
+                {' '}
+                Part {file.part} of {file.total}
+              </span>
+              <span>{convertFileSize(file.size)}</span>
+            </div>
+          );
+        })}
+      </div>
     </SimpleBar>
   );
 };

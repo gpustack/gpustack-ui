@@ -137,7 +137,8 @@ const ModelCard: React.FC<{
               >
                 <span className="mkd-title" onClick={handleCollapse}>
                   <span>
-                    <FileTextOutlined className="m-r-2" /> README.md
+                    <FileTextOutlined className="m-r-2 text-tertiary" />{' '}
+                    README.md
                   </span>
                   <span>
                     {collapsed ? <DownOutlined /> : <RightOutlined />}

@@ -1,4 +1,4 @@
-import CodeViewer from './code-viewer';
+import CodeViewerDark from './code-viewer-dark';
 import CodeViewerLight from './code-viewer-light';
 import './styles/index.less';
 
@@ -13,7 +13,7 @@ const HighlightCode: React.FC<{
   return (
     <div className="high-light-wrapper">
       {theme === 'dark' ? (
-        <CodeViewer lang={lang} code={code} copyable={copyable} />
+        <CodeViewerDark lang={lang} code={code} copyable={copyable} />
       ) : (
         <CodeViewerLight lang={lang} code={code} copyable={copyable} />
       )}

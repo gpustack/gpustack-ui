@@ -117,10 +117,9 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
         return _.endsWith(file.path, '.gguf') || _.includes(file.path, '.gguf');
       });
 
-      const newList = generateGroupByFilename(list);
+      // const newList = generateGroupByFilename(list);
 
-      console.log('newList==========', newList);
-      const sortList = _.sortBy(newList, (item: any) => {
+      const sortList = _.sortBy(list, (item: any) => {
         return sortType === 'size' ? item.size : item.path;
       });
       setDataSource({ fileList: sortList, loading: false });
@@ -245,6 +244,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
                               color="var(--color-white-1)"
                               overlayInnerStyle={{
                                 width: 150,
+                                padding: 0,
                                 color: 'var(--ant-color-text-secondary)'
                               }}
                               title={

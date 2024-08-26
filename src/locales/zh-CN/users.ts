@@ -13,7 +13,7 @@ export default {
   'users.form.currentpassword': '当前密码',
   'users.form.updatepassword': '修改密码',
   'users.form.rule.password':
-    '包含大小写字母、数字和!@#$%^&*_+，6至12个字符，不允许有空格',
+    '包含大小写字母、数字和特殊字符（!@#$%^&*_+），6至12个字符，不允许有空格',
   'users.password.uppcase': '至少包含一个大写字母',
   'users.password.lowercase': '至少包含一个小写字母',
   'users.password.number': '至少包含一个数字',

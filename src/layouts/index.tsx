@@ -1,6 +1,9 @@
 // @ts-nocheck
 
 import { userAtom } from '@/atoms/user';
+import ShortCuts, {
+  modalConfig as ShortCutsConfig
+} from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
@@ -55,13 +58,11 @@ const filterRoutes = (
   return newRoutes;
 };
 
-// 格式化路由 处理因 wrapper 导致的 菜单 path 不一致
 const mapRoutes = (routes: IRoute[], role: string) => {
   if (routes.length === 0) {
     return [];
   }
   return routes.map((route) => {
-    // 需要 copy 一份, 否则会污染原始数据
     const newRoute = { ...route, role };
     if (route.originPath) {
       newRoute.path = route.originPath;
@@ -110,6 +111,13 @@ export default (props: any) => {
     });
   };
 
+  const showShortcuts = () => {
+    Modal.info({
+      ...ShortCutsConfig,
+      content: <ShortCuts intl={intl} />
+    });
+  };
+
   const runtimeConfig = {
     ...initialInfo,
     logout: async (userInfo) => {
@@ -120,10 +128,12 @@ export default (props: any) => {
     showVersion: () => {
       return showVersion();
     },
+    showShortcuts: () => {
+      return showShortcuts();
+    },
     notFound: <span>404 not found</span>
   };
 
-  // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级, proLayout 消费时, 无法正确展示菜单, 这里对冗余数据进行过滤操作
   const newRoutes = filterRoutes(
     clientRoutes.filter((route) => route.id === '@@/global-layout'),
     (route) => {

@@ -3,6 +3,7 @@ export default {
   'common.button.perview': 'Preview',
   'common.button.readonly': 'Readonly',
   'common.button.editmode': 'Edit mode',
+  'common.button.shortcut': 'Keyboard Shortcut',
   'common.button.add': 'Add',
   'common.button.login': 'Log In',
   'common.button.select': 'Select',

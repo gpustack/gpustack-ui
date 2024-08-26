@@ -100,6 +100,11 @@ export function getRightRenderContent(opts: {
       icon: <InfoCircleOutlined />,
       label: intl.formatMessage({ id: 'common.button.version' })
     }
+    // {
+    //   key: 'shortcuts',
+    //   icon: <IconFont type="icon-keyboard"></IconFont>,
+    //   label: intl.formatMessage({ id: 'common.button.shortcut' })
+    // }
   ];
 
   const helpMenu = {
@@ -141,6 +146,10 @@ export function getRightRenderContent(opts: {
             if (item.key === 'version') {
               // opts.runtimeConfig.showVersion();
               opts.runtimeConfig.showVersion();
+            }
+            if (item.key === 'shortcuts') {
+              // opts.runtimeConfig.showShortcuts();
+              opts.runtimeConfig.showShortcuts();
             }
           }
         }))

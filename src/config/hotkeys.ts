@@ -1,5 +1,5 @@
 export default {
-  CREATE: ['ctrl+shift+n', 'meta+shift+n'],
+  CREATE: ['ctrl+alt+n', 'option+meta+n'],
   SAVE: ['ctrl+s', 'meta+s'],
   SUBMIT: ['ctrl+enter', 'meta+enter'],
   SAVEAS: ['ctrl+shift+s', 'meta+shift+s'],

@@ -11,6 +11,7 @@ import DataForm from './data-form';
 import HFModelFile from './hf-model-file';
 import ModelCard from './model-card';
 import SearchModel from './search-model';
+import Separator from './separator';
 import TitleWrapper from './title-wrapper';
 
 type AddModalProps = {
@@ -98,27 +99,33 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     >
       <div style={{ display: 'flex' }}>
         {props.source === modelSourceMap.huggingface_value && (
-          <ColumnWrapper>
-            <SearchModel
-              modelSource={props.source}
-              onSelectModel={handleOnSelectModel}
-              setLoadingModel={setLoadingModel}
-            ></SearchModel>
-          </ColumnWrapper>
+          <div style={{ display: 'flex', flex: 1 }}>
+            <ColumnWrapper>
+              <SearchModel
+                modelSource={props.source}
+                onSelectModel={handleOnSelectModel}
+                setLoadingModel={setLoadingModel}
+              ></SearchModel>
+            </ColumnWrapper>
+            <Separator></Separator>
+          </div>
         )}
         {props.source === modelSourceMap.huggingface_value && (
-          <ColumnWrapper>
-            <ModelCard
-              repo={huggingfaceRepoId}
-              onCollapse={setCollapsed}
-              collapsed={collapsed}
-            ></ModelCard>
-            <HFModelFile
-              repo={huggingfaceRepoId}
-              onSelectFile={handleSelectModelFile}
-              collapsed={collapsed}
-            ></HFModelFile>
-          </ColumnWrapper>
+          <div style={{ display: 'flex', flex: 1 }}>
+            <ColumnWrapper>
+              <ModelCard
+                repo={huggingfaceRepoId}
+                onCollapse={setCollapsed}
+                collapsed={collapsed}
+              ></ModelCard>
+              <HFModelFile
+                repo={huggingfaceRepoId}
+                onSelectFile={handleSelectModelFile}
+                collapsed={collapsed}
+              ></HFModelFile>
+            </ColumnWrapper>
+            <Separator></Separator>
+          </div>
         )}
         <ColumnWrapper
           footer={
@@ -137,6 +144,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             {source === modelSourceMap.huggingface_value && (
               <TitleWrapper>
                 {intl.formatMessage({ id: 'models.form.configurations' })}
+                <span style={{ display: 'flex', height: 24 }}></span>
               </TitleWrapper>
             )}
             <DataForm

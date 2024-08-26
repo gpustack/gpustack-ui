@@ -4,11 +4,11 @@ import { useIntl } from '@umijs/max';
 import { Col, Empty, Row, Select, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryHuggingfaceModelFiles } from '../apis';
-import FileType from '../config/file-type';
+import { getFileType } from '../config/file-type';
 import '../style/hf-model-file.less';
 import FileParts from './file-parts';
 import TitleWrapper from './title-wrapper';
@@ -122,8 +122,8 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       const sortList = _.sortBy(list, (item: any) => {
         return sortType === 'size' ? item.size : item.path;
       });
-      setDataSource({ fileList: sortList, loading: false });
       handleSelectModelFile(sortList[0]);
+      setDataSource({ fileList: sortList, loading: false });
     } catch (error) {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
@@ -139,18 +139,8 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
   };
 
   const getModelQuantizationType = useCallback((item: any) => {
-    let itemPath = item.path;
-    let path = _.split(itemPath, '/').pop();
-
-    if (!_.endsWith(path, '.gguf') && !_.includes(path, '.gguf')) {
-      path = `${path}.gguf`;
-    }
-    const name = _.split(path, '.').slice(0, -1).join('.');
-    let quanType = _.toUpper(name.split('-').slice(-1)[0]);
-    if (quanType.indexOf('.') > -1) {
-      quanType = _.split(quanType, '.').pop();
-    }
-    if (FileType[quanType] !== undefined) {
+    const quanType = getFileType(item.path);
+    if (quanType) {
       return (
         <Tag
           className="tag-item"
@@ -159,7 +149,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
             marginRight: 0
           }}
         >
-          {quanType}
+          {_.toUpper(quanType)}
         </Tag>
       );
     }
@@ -182,6 +172,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       axiosTokenRef.current?.abort?.();
     };
   }, []);
+
   return (
     <div>
       <TitleWrapper>
@@ -205,13 +196,12 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
         ></Select>
       </TitleWrapper>
       <SimpleBar
-        style={{ maxHeight: collapsed ? 'max-content' : 'calc(100vh - 300px)' }}
+        style={{
+          height: collapsed ? 'max-content' : 'calc(100vh - 300px)'
+        }}
       >
         <div style={{ padding: '16px 24px' }}>
-          <Spin
-            spinning={dataSource.loading || loadingModel}
-            style={{ minHeight: 100 }}
-          >
+          <Spin spinning={dataSource.loading} style={{ minHeight: 100 }}>
             {dataSource.fileList.length ? (
               <Row gutter={[16, 24]}>
                 {_.map(dataSource.fileList, (item: any) => {
@@ -273,7 +263,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
               </Row>
             ) : (
               !dataSource.loading &&
-              !loadingModel && (
+              !dataSource.fileList.length && (
                 <Empty
                   imageStyle={{ height: 'auto', marginTop: '20px' }}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -290,4 +280,4 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
   );
 };
 
-export default HFModelFile;
+export default memo(HFModelFile);

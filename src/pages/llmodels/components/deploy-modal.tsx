@@ -117,7 +117,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               repo={huggingfaceRepoId}
               onSelectFile={handleSelectModelFile}
               collapsed={collapsed}
-              loadingModel={loadingModel}
             ></HFModelFile>
           </ColumnWrapper>
         )}

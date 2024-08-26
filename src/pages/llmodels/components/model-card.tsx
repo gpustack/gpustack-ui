@@ -160,7 +160,10 @@ const ModelCard: React.FC<{
             )}
           </div>
         ) : (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ marginBlock: 20 }}
+          ></Empty>
         )}
       </div>
     </>

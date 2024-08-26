@@ -48,7 +48,7 @@ export const WatchEventType = {
 };
 
 export const PasswordReg =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])(?=\S+$).{6,12}$/;
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_+])[a-zA-Z\d!@#$%^&*_+]{6,12}$/;
 
 export const uppercaseReg = /(?=.*[A-Z])/;
 

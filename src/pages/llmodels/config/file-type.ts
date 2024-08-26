@@ -32,4 +32,45 @@ enum FileType {
   BF16 = 32
 }
 
+export const fileTypeList = [
+  'F32',
+  'F16',
+  'Q4_0',
+  'Q4_1',
+  'Q4_1_SOME_F16',
+  'Q8_0',
+  'Q5_0',
+  'Q5_1',
+  'Q2_K',
+  'Q3_K_S',
+  'Q3_K_M',
+  'Q3_K_L',
+  'Q4_K_S',
+  'Q4_K_M',
+  'Q5_K_S',
+  'Q5_K_M',
+  'Q6_K',
+  'IQ2_XXS',
+  'IQ2_XS',
+  'Q2_K_S',
+  'IQ3_XS',
+  'IQ3_XXS',
+  'IQ1_S',
+  'IQ4_NL',
+  'IQ3_S',
+  'IQ3_M',
+  'IQ2_S',
+  'IQ2_M',
+  'IQ4_XS',
+  'IQ1_M',
+  'BF16'
+];
+
+export const getFileType = (fileName: string): string | null => {
+  const pattern = new RegExp(`[._-](${fileTypeList.join('|')})\\.gguf$`, 'i');
+  const match = fileName.match(pattern);
+
+  return match ? match[1].toUpperCase() : null;
+};
+
 export default FileType;

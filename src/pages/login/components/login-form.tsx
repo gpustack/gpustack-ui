@@ -125,7 +125,6 @@ const LoginForm = () => {
       });
       const userInfo = await fetchUserInfo();
       setUserInfo(userInfo);
-      setInitialPassword(values.password);
       if (values.autoLogin) {
         await callRememberMe(values);
       } else {
@@ -133,6 +132,8 @@ const LoginForm = () => {
       }
       if (!userInfo?.require_password_change) {
         gotoDefaultPage(userInfo);
+      } else {
+        setInitialPassword(encryptPassword(values.password));
       }
     } catch (error) {
       // to do something

@@ -3,6 +3,7 @@ export default {
   'common.button.perview': '预览',
   'common.button.readonly': '只读',
   'common.button.editmode': '编辑模式',
+  'common.button.shortcut': '快捷键',
   'common.button.add': '添加',
   'common.button.login': '登录',
   'common.button.select': '选择',

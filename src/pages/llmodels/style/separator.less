@@ -1,0 +1,28 @@
+.separator {
+  position: relative;
+
+  .shape {
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--ant-color-split);
+    transform: rotate(45deg);
+    border-left: none;
+    border-bottom: none;
+    background-color: var(--color-white-1);
+    z-index: 100;
+  }
+
+  .shape-s {
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    width: 30px;
+    height: 30px;
+    border: 16px solid transparent;
+    border-left: 16px solid var(--color-fill-sider);
+    z-index: 100;
+  }
+}

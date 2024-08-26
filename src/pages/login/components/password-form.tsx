@@ -4,8 +4,11 @@ import { PasswordReg } from '@/config';
 import { GlobalOutlined, LockOutlined } from '@ant-design/icons';
 import { SelectLang, history, useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
+import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
 import { updatePassword } from '../apis';
+
+const CRYPT_TEXT = 'seal';
 
 const PasswordForm: React.FC = () => {
   const intl = useIntl();
@@ -19,12 +22,18 @@ const PasswordForm: React.FC = () => {
     history.push(pathname);
   };
 
+  const decryptPassword = (password: string) => {
+    const bytes = CryptoJS.AES?.decrypt?.(password, CRYPT_TEXT);
+    const res = bytes.toString(CryptoJS.enc.Utf8);
+    return res;
+  };
+
   const handleSubmit = async (values: any) => {
     console.log('values', values, form);
     try {
       await updatePassword({
         new_password: values.new_password,
-        current_password: initialPassword
+        current_password: decryptPassword(initialPassword)
       });
 
       await setUserInfo({

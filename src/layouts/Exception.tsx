@@ -14,6 +14,7 @@ const Exception: React.FC<{
 }> = (props) => {
   const intl = useIntl();
   // render custom 404
+  console.log('exception====', props.route);
   return (
     (!props.route && (props.noFound || props.notFound)) ||
     // render custom 403

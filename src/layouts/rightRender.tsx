@@ -144,11 +144,9 @@ export function getRightRenderContent(opts: {
           ),
           onClick() {
             if (item.key === 'version') {
-              // opts.runtimeConfig.showVersion();
               opts.runtimeConfig.showVersion();
             }
             if (item.key === 'shortcuts') {
-              // opts.runtimeConfig.showShortcuts();
               opts.runtimeConfig.showShortcuts();
             }
           }

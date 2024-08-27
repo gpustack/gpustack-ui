@@ -1,6 +1,6 @@
 import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
-import { history } from '@umijs/max';
+import { history, useModel } from '@umijs/max';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import LoginForm from './components/login-form';
@@ -9,10 +9,17 @@ import styles from './components/styles.less';
 
 const Login = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
+  const { initialState, setInitialState } = useModel('@@initialState') || {};
 
   const gotoDefaultPage = (userInfo: any) => {
     if (!userInfo || userInfo?.require_password_change) {
       return;
+    }
+    if (!initialState?.currentUser) {
+      setInitialState((s: any) => ({
+        ...s,
+        currentUser: userInfo
+      }));
     }
     const pathname = userInfo?.is_admin ? '/dashboard' : '/playground';
 

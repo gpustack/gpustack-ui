@@ -8,7 +8,6 @@ import {
 import { RequestConfig, history } from '@umijs/max';
 
 const loginPath = '/login';
-let currentUserInfo: any = {};
 
 // 运行时配置
 export async function getInitialState(): Promise<{
@@ -42,9 +41,7 @@ export async function getInitialState(): Promise<{
 
   if (![loginPath].includes(location.pathname)) {
     const userInfo = await fetchUserInfo();
-    currentUserInfo = {
-      ...userInfo
-    };
+
     return {
       fetchUserInfo,
       currentUser: userInfo
@@ -54,8 +51,6 @@ export async function getInitialState(): Promise<{
     fetchUserInfo
   };
 }
-
-console.log('app.tsx');
 
 export const request: RequestConfig = {
   baseURL: ' /v1',

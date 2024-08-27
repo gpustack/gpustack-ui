@@ -12,58 +12,45 @@ import { history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
+import { memo, useEffect, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
 
 const REMEMBER_ME_KEY = 'r_m';
 const CRYPT_TEXT = 'seal';
 
-const renderLogo = () => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        marginBottom: 0,
-        padding: '15px 0',
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <img src={LogoIcon} alt="logo" style={{ height: '26px' }} />
-    </div>
-  );
-};
-
-const renderWelCome = (intl: any) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        marginBottom: 32,
-        fontSize: 20,
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
-      <div className="flex-center">
-        <span>
-          {intl?.formatMessage({ id: 'users.login.title' }, { name: '' })}
-        </span>
-        <img
-          src={LogoIcon}
-          alt="logo"
-          style={{ height: '24px', marginLeft: 10 }}
-        />
-      </div>
-    </div>
-  );
-};
 const LoginForm = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
   const intl = useIntl();
   const [form] = Form.useForm();
+
+  console.log('initialState+++++++=login', userInfo, initialState);
+  const renderWelCome = useMemo(() => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          marginBottom: 32,
+          fontSize: 20,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        <div className="flex-center">
+          <span>
+            {intl?.formatMessage({ id: 'users.login.title' }, { name: '' })}
+          </span>
+          <img
+            src={LogoIcon}
+            alt="logo"
+            style={{ height: '24px', marginLeft: 10 }}
+          />
+        </div>
+      </div>
+    );
+  }, []);
 
   const gotoDefaultPage = (userInfo: any) => {
     const pathname =
@@ -140,7 +127,9 @@ const LoginForm = () => {
     }
   };
 
-  callGetRememberMe();
+  useEffect(() => {
+    callGetRememberMe();
+  }, []);
 
   return (
     <div>
@@ -160,7 +149,7 @@ const LoginForm = () => {
           style={{ width: '400px', margin: '0 auto' }}
           onFinish={handleLogin}
         >
-          {renderWelCome(intl)}
+          {renderWelCome}
           <Form.Item
             name="username"
             rules={[
@@ -218,4 +207,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default memo(LoginForm);

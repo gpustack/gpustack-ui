@@ -30,6 +30,11 @@ import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
 const loginPath = '/login';
 
+type InitialStateType = {
+  fetchUserInfo: () => Promise<Global.UserInfo>;
+  currentUser?: Global.UserInfo;
+};
+
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
 const filterRoutes = (
   routes: IRoute[],
@@ -93,6 +98,9 @@ export default (props: any) => {
     loading: false,
     setInitialState: null
   };
+
+  // initialState: InitialStateType
+
   const { initialState, loading, setInitialState } = initialInfo;
 
   const userConfig = {
@@ -121,7 +129,6 @@ export default (props: any) => {
   const runtimeConfig = {
     ...initialInfo,
     logout: async (userInfo) => {
-      console.log('logout', userInfo);
       await logout();
       navigate(loginPath);
     },
@@ -181,8 +188,7 @@ export default (props: any) => {
         onPageChange={(route) => {
           const { location } = history;
 
-          // 如果没有修改密码，重定向到修改密码
-          console.log('onPageChange', initialState);
+          console.log('onPageChange', userInfo, initialState);
           if (
             location.pathname !== loginPath &&
             userInfo?.require_password_change

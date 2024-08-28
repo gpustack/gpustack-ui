@@ -239,6 +239,30 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   );
 
+  useHotkeys(
+    HotKeys.CREATE.join(','),
+    () => {
+      handleNewMessage();
+    },
+    {
+      enabled: !loading,
+      enableOnFormTags: !loading,
+      preventDefault: true
+    }
+  );
+
+  useHotkeys(
+    HotKeys.CLEAR.join(','),
+    () => {
+      handleClear();
+    },
+    {
+      enabled: !loading,
+      enableOnFormTags: !loading,
+      preventDefault: true
+    }
+  );
+
   return (
     <div className="ground-left">
       <div

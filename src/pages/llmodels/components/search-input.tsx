@@ -1,5 +1,4 @@
 import hotkeys from '@/config/hotkeys';
-import { platformCall } from '@/utils';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Input } from 'antd';
@@ -13,7 +12,6 @@ const SearchInput: React.FC<{
   const intl = useIntl();
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const platform = platformCall();
 
   useHotkeys(hotkeys.INPUT.join(','), () => {
     inputRef.current?.focus?.();

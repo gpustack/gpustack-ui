@@ -35,7 +35,7 @@ type InitialStateType = {
   currentUser?: Global.UserInfo;
 };
 
-// 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
+// Filter out the routes that need to be displayed, where filterFn indicates the levels that should not be shown
 const filterRoutes = (
   routes: IRoute[],
   filterFn: (route: IRoute) => boolean
@@ -98,8 +98,6 @@ export default (props: any) => {
     loading: false,
     setInitialState: null
   };
-
-  // initialState: InitialStateType
 
   const { initialState, loading, setInitialState } = initialInfo;
 
@@ -189,6 +187,8 @@ export default (props: any) => {
           const { location } = history;
 
           console.log('onPageChange', userInfo, initialState);
+
+          // if user is not change password, redirect to change password page
           if (
             location.pathname !== loginPath &&
             userInfo?.require_password_change
@@ -198,8 +198,7 @@ export default (props: any) => {
             return;
           }
 
-          // 如果没有登录，重定向到 login
-
+          // if user is not logged in, redirect to login page
           if (!initialState?.currentUser && location.pathname !== loginPath) {
             history.push(loginPath);
           } else if (location.pathname === '/') {

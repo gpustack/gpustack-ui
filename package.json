@@ -33,6 +33,7 @@
     "jotai": "^2.8.4",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
+    "marked": "^14.1.0",
     "numeral": "^2.0.6",
     "query-string": "^9.0.0",
     "react": "^18.2.0",
@@ -42,6 +43,7 @@
     "umi-presets-pro": "^2.0.3"
   },
   "devDependencies": {
+    "@types/marked": "^6.0.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@umijs/case-sensitive-paths-webpack-plugin": "^1.0.1",

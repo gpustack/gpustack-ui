@@ -2,6 +2,7 @@ import DeleteModal from '@/components/delete-modal';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
+import Hotkeys from '@/config/hotkeys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize, handleBatchRequest } from '@/utils';
@@ -15,6 +16,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table, Tooltip } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteWorker, queryWorkersList } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
@@ -165,6 +167,10 @@ const Resources: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [queryParams]);
+
+  useHotkeys(Hotkeys.CREATE.join(','), handleAddWorker, {
+    enabled: !open
+  });
 
   return (
     <>

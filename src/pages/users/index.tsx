@@ -2,6 +2,7 @@ import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
+import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -20,6 +21,7 @@ import { Button, Input, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
@@ -196,6 +198,16 @@ const Users: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [queryParams]);
+
+  useHotkeys(
+    HotKeys.CREATE,
+    () => {
+      handleAddUser();
+    },
+    {
+      enabled: !openAddModal
+    }
+  );
 
   return (
     <>

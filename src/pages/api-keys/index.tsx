@@ -1,6 +1,7 @@
 import DeleteModal from '@/components/delete-modal';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
+import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -12,6 +13,7 @@ import { Button, Input, Space, Table, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
 import { ListItem } from './config/types';
@@ -139,6 +141,16 @@ const APIKeys: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, [queryParams]);
+
+  useHotkeys(
+    HotKeys.CREATE,
+    () => {
+      handleAddUser();
+    },
+    {
+      enabled: !openAddModal
+    }
+  );
 
   return (
     <>

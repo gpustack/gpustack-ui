@@ -10,7 +10,6 @@ const Separator: React.FC = () => {
         style={{ height: 'calc(100vh - 89px)', marginInline: '0px' }}
       ></Divider>
       <span className="shape"></span>
-      {/* <span className="shape-s"></span> */}
     </div>
   );
 };

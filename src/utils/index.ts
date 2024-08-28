@@ -48,9 +48,8 @@ export const generateRandomArray = (config?: {
   let prevValue = Math.floor(Math.random() * (max - min + 1)) + min;
 
   for (let i = 0; i < length; i++) {
-    // 确保波动不太大
-    let newValue = prevValue + Math.floor(Math.random() * 21) - offset; // 波动范围 [-10, 10]
-    newValue = Math.max(min, Math.min(max, newValue)); // 保证在 [10, 100] 范围内
+    let newValue = prevValue + Math.floor(Math.random() * 21) - offset; // Fluctuation range [-10, 10]
+    newValue = Math.max(min, Math.min(max, newValue)); // Ensure within [10, 100]
     data.push(newValue);
     prevValue = newValue;
   }
@@ -68,15 +67,15 @@ export const generateFluctuatingData2 = ({
   const y = [];
 
   for (let i = 0; i < total; i++) {
-    // 生成一个基本的线性趋势，使用正弦函数
+    // Generate a basic linear trend using a sine function
     const phaseShift = Math.random() * 2 * Math.PI;
     const trend =
       max * Math.sin((3 * Math.PI * i + phaseShift) / total) + max / 2;
 
-    // 生成噪声
+    // Generate noise
     const noise = (Math.random() * 2 - 1) * noiseLevel;
 
-    // 叠加趋势和噪声
+    // Add trend and noise
     const value = trend + noise;
     x.push(i);
     y.push(Math.max(min, value));
@@ -94,19 +93,19 @@ export const generateFluctuatingData = ({
   min = 0
 }) => {
   /**
-   * 生成一组用于折线图的数据,具有自然且美观的趋势。
+   * Generate a set of data for a line chart with a natural and aesthetically pleasing trend.
    *
-   * 参数:
-   * total (number): 生成数据点的数量
-   * trendType (string): 数据趋势类型, 可选'linear', 'sine', 'exponential'
-   * max (number): 波动幅度
-   * f (number): 波动频率
-   * phase (number): 波动相位
-   * min (number): 数据的最小值
+   * Parameters:
+   * total (number): Number of data points to generate
+   * trendType (string): Type of data trend, options are 'linear', 'sine', 'exponential'
+   * max (number): Fluctuation amplitude
+   * f (number): Fluctuation frequency
+   * phase (number): Fluctuation phase
+   * min (number): Minimum value of the data
    *
-   * 返回:
-   * x (number[]): x轴数据
-   * y (number[]): y轴数据
+   * Returns:
+   * x (number[]): x-axis data
+   * y (number[]): y-axis data
    */
   const x = Array.from({ length: total }, (_, i) => (i * 10) / (total - 1));
 
@@ -131,11 +130,11 @@ export const generateFluctuatingData = ({
       break;
     default:
       throw new Error(
-        '无效的trendType参数,请选择"linear", "sine"或"exponential".'
+        'Invalid trendType parameter. Please choose "linear", "sine", or "exponential".'
       );
   }
 
-  // 将数据调整到最小值
+  // Adjust the data to the minimum value
   const minY = Math.min(...y);
   y = y.map((val) => _.round(val - minY + min, 2));
 

@@ -1,9 +1,11 @@
 import IconFont from '@/components/icon-font';
+import HotKeys from '@/config/hotkeys';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Divider, Space } from 'antd';
 import classNames from 'classnames';
 import { useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import GroundLeft from './components/ground-left';
 import ParamsSettings from './components/params-settings';
 import './style/play-ground.less';
@@ -19,6 +21,18 @@ const Playground: React.FC = () => {
   const handleViewCode = () => {
     groundLeftRef.current?.viewCode?.();
   };
+
+  useHotkeys(
+    HotKeys.RIGHT.join(','),
+    () => {
+      setCollapse((pre) => {
+        return !pre;
+      });
+    },
+    {
+      preventDefault: true
+    }
+  );
 
   return (
     <PageContainer

@@ -9,7 +9,7 @@ import { RequestConfig, history } from '@umijs/max';
 
 const loginPath = '/login';
 
-// 运行时配置
+// runtime configuration
 export async function getInitialState(): Promise<{
   fetchUserInfo: () => Promise<Global.UserInfo>;
   currentUser?: Global.UserInfo;

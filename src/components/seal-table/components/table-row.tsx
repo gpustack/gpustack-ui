@@ -24,6 +24,7 @@ const TableRow: React.FC<
     columns,
     pollingChildren,
     watchChildren,
+    onCell,
     onExpand,
     renderChildren,
     loadChildren,
@@ -43,14 +44,6 @@ const TableRow: React.FC<
   const childrenDataRef = useRef<any[]>([]);
   childrenDataRef.current = childrenData;
 
-  console.log(
-    'table row====',
-    record,
-    childrenData,
-    record.name,
-    firstLoad,
-    expanded
-  );
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
     setDataList: setChildrenData
@@ -101,7 +94,6 @@ const TableRow: React.FC<
   };
 
   const handleLoadChildren = async () => {
-    console.log('first load=====', firstLoad);
     try {
       setLoading(true);
       const data = await loadChildren?.(record);
@@ -153,7 +145,6 @@ const TableRow: React.FC<
   const handleRowExpand = async () => {
     setExpanded(!expanded);
     onExpand?.(!expanded, record, record[rowKey]);
-    console.log('expanded=====', record);
 
     if (pollTimer.current) {
       clearInterval(pollTimer.current);
@@ -189,11 +180,6 @@ const TableRow: React.FC<
 
   useEffect(() => {
     if (!firstLoad && expanded) {
-      console.log(
-        'update children=====',
-        record.name,
-        tableContext.allChildren
-      );
       cacheDataListRef.current = childrenData;
       filterUpdateChildrenHandler();
     }
@@ -249,7 +235,7 @@ const TableRow: React.FC<
   };
 
   return (
-    <RowContext.Provider value={{ ...record, rowIndex }}>
+    <RowContext.Provider value={{ row: { ...record, rowIndex }, onCell }}>
       <div className="row-box">
         <div
           className={classNames('row-wrapper', {

@@ -4,8 +4,9 @@ import LabelInfo from './label-info';
 import wrapperStyle from './wrapper.less';
 interface WrapperProps {
   children: React.ReactNode;
-  label: React.ReactNode;
-  isFocus: boolean;
+  label?: React.ReactNode;
+  noWrapperStyle?: boolean;
+  isFocus?: boolean;
   status?: string;
   required?: boolean;
   description?: React.ReactNode;
@@ -29,6 +30,7 @@ const Wrapper: React.FC<WrapperProps> = ({
   extra,
   variant,
   addAfter,
+  noWrapperStyle,
   onClick
 }) => {
   return (
@@ -42,7 +44,12 @@ const Wrapper: React.FC<WrapperProps> = ({
         className ? wrapperStyle[className] : ''
       )}
     >
-      <div className={classNames(wrapperStyle.wrapper)} onClick={onClick}>
+      <div
+        className={classNames(wrapperStyle.wrapper, {
+          [wrapperStyle['no-wrapper-style']]: noWrapperStyle
+        })}
+        onClick={onClick}
+      >
         <label
           onClick={onClick}
           className={classNames(

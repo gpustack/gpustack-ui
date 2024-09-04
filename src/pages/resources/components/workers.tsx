@@ -1,4 +1,6 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
+import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import StatusTag from '@/components/status-tag';
@@ -10,18 +12,36 @@ import {
   DeleteOutlined,
   InfoCircleOutlined,
   PlusOutlined,
-  SyncOutlined
+  SyncOutlined,
+  TagsOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space, Table, Tooltip } from 'antd';
+import { Button, Input, Space, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { deleteWorker, queryWorkersList } from '../apis';
+import { deleteWorker, queryWorkersList, updateWorker } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import AddWorker from './add-worker';
+import UpdateLabels from './update-labels';
 const { Column } = Table;
+
+const ActionList = [
+  {
+    label: 'resources.button.edittags',
+    key: 'edit',
+    icon: <TagsOutlined />
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    icon: <DeleteOutlined />
+  }
+];
 
 const Resources: React.FC = () => {
   console.log('resources======workers');
@@ -46,6 +66,13 @@ const Resources: React.FC = () => {
     page: 1,
     perPage: 10,
     search: ''
+  });
+  const [updateLabelsData, setUpdateLabelsData] = useState<{
+    open: boolean;
+    data: ListItem;
+  }>({
+    open: false,
+    data: {} as ListItem
   });
 
   const fetchData = useCallback(async () => {
@@ -164,6 +191,52 @@ const Resources: React.FC = () => {
       0
     );
   };
+
+  const handleUpdateLabelsOk = useCallback(
+    async (values: Record<string, any>) => {
+      try {
+        console.log('updateLabelsData.data', updateLabelsData.data);
+        await updateWorker(updateLabelsData.data.id, {
+          ...updateLabelsData.data,
+          labels: values.labels
+        });
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        fetchData();
+        setUpdateLabelsData({ open: false, data: {} as ListItem });
+      } catch (error) {
+        console.log('error', error);
+      }
+    },
+    [updateLabelsData, fetchData]
+  );
+
+  const handleCancelUpdateLabels = useCallback(() => {
+    setUpdateLabelsData({
+      ...updateLabelsData,
+      open: false
+    });
+  }, []);
+
+  const handleUpdateLabels = (record: ListItem) => {
+    console.log('record', record);
+    setUpdateLabelsData({
+      open: true,
+      data: {
+        ...record
+      }
+    });
+  };
+
+  const handleSelect = (val: any, record: ListItem) => {
+    if (val === 'edit') {
+      handleUpdateLabels(record);
+      return;
+    }
+    if (val === 'delete') {
+      handleDelete(record);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, [queryParams]);
@@ -235,6 +308,32 @@ const Resources: React.FC = () => {
           title={intl.formatMessage({ id: 'common.table.name' })}
           dataIndex="name"
           key="name"
+        />
+        <Column
+          title={intl.formatMessage({ id: 'resources.table.labels' })}
+          dataIndex="labels"
+          key="labels"
+          width={200}
+          render={(text, record: ListItem) => {
+            return (
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 6,
+                  maxWidth: 200
+                }}
+              >
+                {_.map(record.labels, (item: any, index: string) => {
+                  return (
+                    <AutoTooltip key={index} className="m-r-0" maxWidth={120}>
+                      {index}:{item}
+                    </AutoTooltip>
+                  );
+                })}
+              </div>
+            );
+          }}
         />
         <Column
           title={intl.formatMessage({ id: 'common.table.status' })}
@@ -398,24 +497,25 @@ const Resources: React.FC = () => {
           key="operation"
           render={(text, record: ListItem) => {
             return (
-              <Space size={20}>
-                <Tooltip
-                  title={intl.formatMessage({ id: 'common.button.delete' })}
-                >
-                  <Button
-                    onClick={() => handleDelete(record)}
-                    size="small"
-                    danger
-                    icon={<DeleteOutlined></DeleteOutlined>}
-                  ></Button>
-                </Tooltip>
-              </Space>
+              <DropdownButtons
+                items={ActionList}
+                onSelect={(val) => handleSelect(val, record)}
+              ></DropdownButtons>
             );
           }}
         />
       </Table>
       <DeleteModal ref={modalRef}></DeleteModal>
       <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
+      <UpdateLabels
+        open={updateLabelsData.open}
+        onOk={handleUpdateLabelsOk}
+        onCancel={handleCancelUpdateLabels}
+        data={{
+          name: updateLabelsData.data.name,
+          labels: updateLabelsData.data.labels
+        }}
+      ></UpdateLabels>
     </>
   );
 };

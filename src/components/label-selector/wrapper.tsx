@@ -4,13 +4,14 @@ import styles from './styles/wrapper.less';
 
 const Wrapper: React.FC<{
   label?: string;
+  description?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ children, label }) => {
+}> = ({ children, label, description }) => {
   return (
     <div className={styles['wrapper']}>
       {label && (
         <span className="label">
-          <LabelInfo label={label}></LabelInfo>
+          <LabelInfo label={label} description={description}></LabelInfo>
         </span>
       )}
       {children}

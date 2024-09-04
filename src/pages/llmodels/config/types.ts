@@ -21,6 +21,10 @@ export interface FormData {
   huggingface_filename: string;
   s3_address: string;
   ollama_library_model_name: 'string';
+  distributed_inference_across_workers?: boolean;
+  placement_strategy?: string;
+  partial_offload?: boolean;
+  worker_selector?: object;
   name: string;
   replicas: number;
   description: string;

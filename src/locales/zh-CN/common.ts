@@ -194,5 +194,6 @@ export default {
   'common.button.feedback': '反馈',
   'common.button.docs': '文档',
   'common.button.version': '版本',
-  'common.title.delete.confirm': '确认删除'
+  'common.title.delete.confirm': '确认删除',
+  'common.button.addLabel': '添加标签'
 };

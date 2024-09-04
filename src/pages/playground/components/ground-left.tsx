@@ -128,6 +128,12 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
+      const messages = _.map(messageList, (item: MessageItemProps) => {
+        return {
+          role: item.role,
+          content: item.content
+        };
+      });
 
       contentRef.current = '';
       const chatParams = {
@@ -137,9 +143,9 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
                 role: Roles.System,
                 content: systemMessage
               },
-              ...messageList
+              ...messages
             ]
-          : [...messageList],
+          : [...messages],
         ...parameters,
         stream: true
       };

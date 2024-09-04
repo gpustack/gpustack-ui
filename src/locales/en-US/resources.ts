@@ -2,7 +2,23 @@ export default {
   'resources.title': 'Resources',
   'resources.nodes': 'Nodes',
   'resources.button.create': 'Add Worker',
+  'resources.button.edittags': 'Edit Labels',
+  'resources.button.update': 'Update Labels',
+  'resources.table.labels': 'Labels',
   'resources.table.hostname': 'Hostname',
+  'resources.table.key.tips': 'The same key exists.',
+  'resources.form.advanced': 'Advanced',
+  'resources.form.enablePartialOffload': 'Enable Partial Offload',
+  'resources.form.placementStrategy': 'Placement Strategy',
+  'resources.form.workerSelector': 'Matching Worker Labels',
+  'resources.form.enableDistributedInferenceAcrossWorkers':
+    'Enable Distributed Inference Across Workers',
+  'resources.form.spread.tips':
+    'Make the resources of the entire cluster relatively evenly distributed among all workers. It may produce more resource fragmentation on a single worker.',
+  'resources.form.binpack.tips':
+    'Prioritize the overall utilization of cluster resources, reducing resource fragmentation on Workers/GPUs.',
+  'resources.form.workerSelector.description':
+    'The scheduling system selects the most suitable GPU or Worker for deploying model instances based on predefined labels.',
   'resources.table.ip': 'IP',
   'resources.table.cpu': 'CPU',
   'resources.table.memory': 'RAM',

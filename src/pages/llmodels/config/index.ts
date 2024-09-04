@@ -147,3 +147,14 @@ export const ModelSortType = {
   downloads: 'downloads',
   lastModified: 'lastModified'
 };
+
+export const placementStrategyOptions = [
+  {
+    label: 'Spread',
+    value: 'spread'
+  },
+  {
+    label: 'Binpack',
+    value: 'binpack'
+  }
+];

@@ -29,3 +29,10 @@ export async function deleteWorker(id: string | number) {
     method: 'DELETE'
   });
 }
+
+export async function updateWorker(id: string | number, data: any) {
+  return request(`${WORKERS_API}/${id}`, {
+    method: 'PUT',
+    data
+  });
+}

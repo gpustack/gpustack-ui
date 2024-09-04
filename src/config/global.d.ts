@@ -22,5 +22,15 @@ declare namespace Global {
     id: number;
   }
 
+  interface BaseListItem {
+    key: string;
+    value: string | number;
+  }
+
+  interface BaseOption {
+    label: string;
+    value: string | number;
+  }
+
   type SearchParams = Pagination & { search?: string };
 }

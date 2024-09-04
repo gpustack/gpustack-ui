@@ -91,6 +91,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     >
       <Input.TextArea
         {...rest}
+        autoSize={rest.autoSize || { minRows: 2, maxRows: 5 }}
         ref={inputRef}
         style={{ minHeight: '80px', ...style }}
         className="seal-textarea"

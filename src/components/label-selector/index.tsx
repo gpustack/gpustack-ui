@@ -1,99 +1,58 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
 import _ from 'lodash';
-import React, { useEffect } from 'react';
-import LabelItem from './label-item';
-import Wrapper from './wrapper';
+import React, { useCallback, useEffect, useState } from 'react';
+import Inner from './inner';
 
 interface LabelSelectorProps {
   labels: Record<string, any>;
   label?: string;
+  description?: React.ReactNode;
   onChange?: (labels: Record<string, any>) => void;
 }
 
 const LabelSelector: React.FC<LabelSelectorProps> = ({
   labels,
   onChange,
-  label
+  label,
+  description
 }) => {
-  const [labelList, setLabelList] = React.useState<any[]>([]);
+  const [labelsData, setLabelsData] = useState({});
+  const [labelList, setLabelList] = useState<{ key: string; value: string }[]>(
+    []
+  );
 
   useEffect(() => {
-    const list = _.map(_.keys(labels), (key: string) => {
-      return {
-        key,
-        value: labels[key]
-      };
-    });
-    setLabelList(list);
+    if (!_.isEqual(labels, labelsData)) {
+      setLabelsData(labels || {});
+      const list = _.map(_.keys(labels), (key: string) => {
+        return {
+          key,
+          value: labels[key]
+        };
+      });
+      setLabelList(list);
+    }
   }, [labels]);
 
-  const handleOnChange = (index: string, label: any) => {
-    const list = _.cloneDeep(labelList);
-    list[index] = label;
-    const newLabels = _.reduce(
-      list,
-      (result: any, item: any) => {
-        result[item.key] = item.value;
-        return result;
-      },
-      {}
-    );
-    onChange?.(newLabels);
-  };
-
-  const handleAddLabel = () => {
-    setLabelList([
-      ...labelList,
-      {
-        key: '',
-        value: ''
-      }
-    ]);
-  };
-
-  const handleOnDelete = (index: string) => {
-    const list = _.cloneDeep(labelList);
-    list.splice(parseInt(index), 1);
-    setLabelList(list);
-    const newLabels = _.reduce(
-      list,
-      (result: any, item: any) => {
-        result[item.key] = item.value;
-        return result;
-      },
-      {}
-    );
-    onChange?.(newLabels);
+  const handleLabelListChange = useCallback(
+    (list: { key: string; value: string }[]) => {
+      setLabelList(list);
+    },
+    [setLabelList]
+  );
+  const handleLabelsChange = (data: Record<string, any>) => {
+    setLabelsData(data);
+    onChange?.(data);
   };
 
   return (
-    <Wrapper label={label}>
-      {_.map(labelList, (item: any, index: string) => {
-        return (
-          <LabelItem
-            key={index}
-            label={{
-              key: item.key,
-              value: item.value
-            }}
-            seperator=":"
-            onDelete={() => handleOnDelete(index)}
-            onChange={(obj) => handleOnChange(index, obj)}
-          />
-        );
-      })}
-      <div>
-        <Button
-          size="small"
-          type="default"
-          shape="circle"
-          style={{ marginTop: 16 }}
-        >
-          <PlusOutlined className="font-size-14" onClick={handleAddLabel} />
-        </Button>
-      </div>
-    </Wrapper>
+    <Inner
+      label={label}
+      description={description}
+      labels={labelsData}
+      labelList={labelList}
+      onChange={handleLabelsChange}
+      onLabelListChange={handleLabelListChange}
+    />
   );
 };
 

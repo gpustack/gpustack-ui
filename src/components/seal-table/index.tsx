@@ -23,6 +23,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     childParentKey,
     onExpand,
     onSort,
+    onCell,
     expandedRowKeys,
     loading,
     expandable,
@@ -135,6 +136,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
               renderChildren={renderChildren}
               loadChildren={loadChildren}
               loadChildrenAPI={loadChildrenAPI}
+              onCell={onCell}
               onExpand={onExpand}
               expandedRowKeys={expandedRowKeys}
             ></TableRow>

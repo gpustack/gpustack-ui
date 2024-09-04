@@ -74,6 +74,7 @@ export default {
   'common.button.next': '下一步',
   'common.button.prev': '上一步',
   'common.button.back': '返回',
+  'common.button.undo': '撤销',
   'common.button.discardChange': '放弃',
   'common.tips.save': '您有未保存的更改，离开此页面将放弃更改。',
   'common.tips.cancel': '您有未保存的更改。确定放弃更改？',

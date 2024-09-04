@@ -196,6 +196,21 @@ const Models: React.FC<ModelsProps> = ({
     setSortOrder(order);
   };
 
+  const handleOnCell = async (record: any, dataIndex: string) => {
+    const params = {
+      id: record.id,
+      data: _.omit(record, [
+        'id',
+        'ready_replicas',
+        'created_at',
+        'updated_at',
+        'rowIndex'
+      ])
+    };
+    await updateModel(params);
+    message.success(intl.formatMessage({ id: 'common.message.success' }));
+  };
+
   const handleAddModal = () => {
     setOpenAddModal(true);
     setTitle(intl.formatMessage({ id: 'models.button.deploy' }));
@@ -420,6 +435,7 @@ const Models: React.FC<ModelsProps> = ({
           childParentKey="model_id"
           expandable={true}
           onSort={handleOnSort}
+          onCell={handleOnCell}
           pollingChildren={false}
           watchChildren={true}
           loadChildren={getModelInstances}
@@ -478,6 +494,8 @@ const Models: React.FC<ModelsProps> = ({
             key="replicas"
             align="center"
             span={4}
+            editable
+            valueType="number"
             render={(text, record: ListItem) => {
               return (
                 <span>

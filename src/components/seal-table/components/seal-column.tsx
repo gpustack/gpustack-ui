@@ -1,3 +1,6 @@
+import { CheckOutlined, FormOutlined, UndoOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
+import { Button, Input, InputNumber, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { useContext } from 'react';
 import RowContext from '../row-context';
@@ -5,9 +8,59 @@ import '../styles/cell.less';
 import { SealColumnProps } from '../types';
 
 const SealColumn: React.FC<SealColumnProps> = (props) => {
-  const row: Record<string, any> = useContext(RowContext);
-  console.log('seal column====', row);
-  const { dataIndex, render, align } = props;
+  const intl = useIntl();
+  const { row, onCell } = useContext(RowContext);
+  const { dataIndex, render, align, editable, valueType, title } = props;
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [current, setCurrent] = React.useState(row[dataIndex]);
+  const cachedValue = React.useRef(row[dataIndex]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSubmit = async () => {
+    cachedValue.current = current;
+    await onCell?.(
+      {
+        ...row,
+        [dataIndex]: current
+      },
+      dataIndex
+    );
+    setIsEditing(false);
+  };
+
+  const handleUndo = () => {
+    setCurrent(cachedValue.current);
+    setIsEditing(false);
+  };
+
+  const renderContent = () => {
+    if (isEditing && editable) {
+      return valueType === 'number' ? (
+        <InputNumber
+          style={{ width: '100%' }}
+          min={0}
+          value={current}
+          onChange={(val) => {
+            setCurrent(val as any);
+          }}
+        />
+      ) : (
+        <Input
+          value={current}
+          onChange={(e) => {
+            setCurrent(e.target.value);
+          }}
+        />
+      );
+    }
+    if (render) {
+      return render(current, row);
+    }
+    return current;
+  };
   return (
     <div
       className={classNames('cell', {
@@ -16,11 +69,60 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
         'cell-right': align === 'right'
       })}
     >
-      <span className="cell-content">
-        {render
-          ? render(row[dataIndex], { ...row, dataIndex })
-          : row[dataIndex]}
-      </span>
+      <span className="cell-content">{renderContent()}</span>
+      {editable && (
+        <>
+          {isEditing ? (
+            <>
+              <Tooltip
+                key="confirm"
+                title={intl.formatMessage({ id: 'common.button.confirm' })}
+              >
+                <Button
+                  type="text"
+                  size="small"
+                  className="m-l-10"
+                  onClick={handleSubmit}
+                >
+                  <CheckOutlined />
+                </Button>
+              </Tooltip>
+              <Tooltip
+                title={intl.formatMessage({ id: 'common.button.undo' })}
+                key="undo"
+              >
+                <Button
+                  type="text"
+                  size="small"
+                  className="m-l-10"
+                  onClick={handleUndo}
+                >
+                  <UndoOutlined />
+                </Button>
+              </Tooltip>
+            </>
+          ) : (
+            <Tooltip
+              key="edit"
+              title={
+                <span>
+                  {intl.formatMessage({ id: 'common.button.edit' })}
+                  <span className="m-l-5">{title}</span>
+                </span>
+              }
+            >
+              <Button
+                type="text"
+                size="small"
+                className="m-l-10"
+                onClick={handleEdit}
+              >
+                <FormOutlined />
+              </Button>
+            </Tooltip>
+          )}
+        </>
+      )}
     </div>
   );
 };

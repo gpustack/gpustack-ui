@@ -29,5 +29,9 @@ export default {
     'A stop sequence is a predefined or user-specified text string that signals the AI to stop generating further tokens when these sequences appear.',
   'playground.viewcode.tips':
     'Your API Key can be found {here}.You should use environment variables or a secret management tool to expose your key to your applications.',
-  'playground.viewcode.here': 'here'
+  'playground.viewcode.here': 'here',
+  'playground.delete.img': 'Delete Image',
+  'playground.img.upload': 'Upload Image',
+  'playground.img.upload.success': 'Upload Success',
+  'playground.img.upload.error': 'Upload Error'
 };

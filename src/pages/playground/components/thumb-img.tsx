@@ -1,34 +1,41 @@
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { Space } from 'antd';
+import { Image } from 'antd';
 import _ from 'lodash';
-import React from 'react';
+import React, { useCallback } from 'react';
 import '../style/thumb-img.less';
 
 const ThumbImg: React.FC<{
   dataList: any[];
   onDelete: (uid: number) => void;
 }> = ({ dataList, onDelete }) => {
-  const handleOnDelete = (uid: number) => {
-    onDelete(uid);
-  };
+  const handleOnDelete = useCallback(
+    (uid: number) => {
+      onDelete(uid);
+    },
+    [onDelete]
+  );
+
+  if (_.isEmpty(dataList)) {
+    return null;
+  }
 
   return (
-    <Space wrap size={10} className="thumb-list-wrap">
+    <div className="thumb-list-wrap">
       {_.map(dataList, (item: any) => {
         return (
           <span key={item.uid} className="thumb-img">
-            <span
-              style={{ backgroundImage: `url(${item.dataUrl})` }}
-              className="img"
-            ></span>
+            <span className="img">
+              <Image src={item.dataUrl} width={56} height={56} />
+            </span>
+
             <span className="del" onClick={() => handleOnDelete(item.uid)}>
               <CloseCircleOutlined />
             </span>
           </span>
         );
       })}
-    </Space>
+    </div>
   );
 };
 
-export default ThumbImg;
+export default React.memo(ThumbImg);

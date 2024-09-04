@@ -2,7 +2,7 @@ import { platformCall } from '@/utils';
 const platform = platformCall();
 const KeybindingsMap = {
   CREATE: ['alt+ctrl+N', 'alt+meta+N'],
-  CLEAR: ['alt+ctrl+W', 'alt+meta+W'],
+  CLEAR: ['alt+ctrl+K', 'alt+meta+K'],
   RIGHT: ['ctrl+RIGHT', 'meta+RIGHT'],
   SAVE: ['ctrl+S', 'meta+S'],
   SUBMIT: ['ctrl+enter', 'meta+enter'],
@@ -36,7 +36,7 @@ const KeybiningList: KeybindingValue[] = Object.entries(KeybindingsMap).map(
       keybinding: keybinding,
       command: key,
       textKeybinding: platform.isMac
-        ? keybinding.replace('meta', 'Command').replace('alt', 'Option')
+        ? keybinding.replace('meta', 'Cmd').replace('alt', 'Option')
         : keybinding.replace('ctrl', 'Ctrl'),
       iconKeybinding: platform.isMac
         ? keybinding.replace('meta', '⌘').replace('alt', '⌥')

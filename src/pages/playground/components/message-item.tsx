@@ -1,14 +1,16 @@
 import CopyButton from '@/components/copy-button';
 import HotKeys from '@/config/hotkeys';
-import { MinusCircleOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Tooltip } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import '../style/message-item.less';
 import ThumbImg from './thumb-img';
+import UploadImg from './upload-img';
 interface MessageItemProps {
   role: string;
   content: string;
@@ -25,12 +27,10 @@ const MessageItem: React.FC<{
   onDelete: () => void;
 }> = ({ message, isFocus, onDelete, updateMessage, onSubmit, loading }) => {
   const intl = useIntl();
-  const [isTyping, setIsTyping] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [currentIsFocus, setCurrentIsFocus] = useState(isFocus);
-  const [imgList, setImgList] = useState<{ uid: number; dataUrl: string }[]>(
-    []
-  );
+  const [imgList, setImgList] = useState<
+    { uid: number | string; dataUrl: string }[]
+  >([]);
   const imgCountRef = useRef(0);
 
   const inputRef = useRef<any>(null);
@@ -40,26 +40,6 @@ const MessageItem: React.FC<{
       inputRef.current.focus();
     }
   }, [isFocus]);
-
-  // useEffect(() => {
-  //   if (isTyping) return;
-  //   let index = 0;
-  //   const text = message.content;
-  //   if (!text.length) {
-  //     return;
-  //   }
-  //   setMessageContent('');
-  //   setIsAnimating(true);
-  //   const intervalId = setInterval(() => {
-  //     setMessageContent((prev) => prev + text[index]);
-  //     index += 1;
-  //     if (index === text.length) {
-  //       setIsAnimating(false);
-  //       clearInterval(intervalId);
-  //     }
-  //   }, 20);
-  //   return () => clearInterval(intervalId);
-  // }, [message.content, isTyping]);
 
   const handleUpdateMessage = (params: { role: string; message: string }) => {
     updateMessage({
@@ -118,7 +98,7 @@ const MessageItem: React.FC<{
   }, []);
 
   const handleDeleteImg = useCallback(
-    (uid: number) => {
+    (uid: number | string) => {
       const list = imgList.filter((item) => item.uid !== uid);
       setImgList(list);
     },
@@ -126,16 +106,24 @@ const MessageItem: React.FC<{
   );
 
   const handleMessageChange = (e: any) => {
-    // setIsTyping(true);
+    console.log('e.target.value:', e.target.value);
+
     handleUpdateMessage({ role: message.role, message: e.target.value });
   };
 
   const handleBlur = () => {
-    // setIsTyping(true);
     setCurrentIsFocus(false);
   };
 
   const handleFocus = () => {
+    setCurrentIsFocus(true);
+  };
+
+  const handleClickWrapper = (e: any) => {
+    console.log('e===========', e);
+    e.stopPropagation();
+    e.preventDefault();
+    inputRef.current.focus();
     setCurrentIsFocus(true);
   };
 
@@ -150,15 +138,54 @@ const MessageItem: React.FC<{
     onDelete();
   };
 
-  const handleOnPaste = (e: any) => {
-    e.preventDefault();
-    const text = e.clipboardData.getData('text');
-    if (text) {
-      handleUpdateMessage({ role: message.role, message: text });
-    } else {
-      getPasteContent(e);
+  const handleOnPaste = useCallback(
+    (e: any) => {
+      const text = e.clipboardData.getData('text');
+      if (text) {
+        handleUpdateMessage({
+          role: message.role,
+          message: inputRef.current?.resizableTextArea?.textArea?.value || ''
+        });
+      } else {
+        getPasteContent(e);
+      }
+    },
+    [getPasteContent, message.role, message.content, handleUpdateMessage]
+  );
+
+  const handleUpdateImgList = useCallback(
+    (list: { uid: number | string; dataUrl: string }[]) => {
+      setImgList((preList) => {
+        return [...preList, ...list];
+      });
+    },
+    [imgList]
+  );
+
+  const handleDeleteLastImage = useCallback(() => {
+    if (imgList.length > 0) {
+      const newImgList = [...imgList];
+      const lastImage = newImgList.pop();
+      if (lastImage) {
+        handleDeleteImg(lastImage.uid);
+      }
     }
-  };
+  }, [imgList, handleDeleteImg]);
+
+  const handleKeyDown = useCallback(
+    (event: any) => {
+      if (
+        event.key === 'Backspace' &&
+        message.content === '' &&
+        imgList.length > 0
+      ) {
+        // inputref blur
+        event.preventDefault();
+        handleDeleteLastImage();
+      }
+    },
+    [message.content, imgList, handleDeleteLastImage]
+  );
 
   useHotkeys(
     HotKeys.SUBMIT,
@@ -180,36 +207,45 @@ const MessageItem: React.FC<{
           {intl.formatMessage({ id: `playground.${message.role}` })}
         </Button>
       </div>
-      <div className="message-content-input">
+      <div
+        className={classNames('message-content-input', {
+          'has-img': imgList.length
+        })}
+        onClick={handleClickWrapper}
+      >
         <ThumbImg dataList={imgList} onDelete={handleDeleteImg}></ThumbImg>
         <Input.TextArea
           ref={inputRef}
-          style={{ paddingBlock: '12px' }}
+          style={{ paddingBlock: '12px', paddingTop: 20 }}
           value={message.content}
           autoSize={true}
           variant="filled"
           readOnly={loading}
+          onKeyDown={handleKeyDown}
           onChange={handleMessageChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onPaste={handleOnPaste}
         ></Input.TextArea>
       </div>
       <div className="delete-btn">
         <Space size={5}>
+          <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>
           {message.content && (
             <CopyButton
               text={message.content}
               size="small"
               shape="default"
-              type="default"
+              type="text"
               fontSize="12px"
             ></CopyButton>
           )}
           <Tooltip title={intl.formatMessage({ id: 'common.button.delete' })}>
             <Button
               size="small"
+              type="text"
               onClick={handleDelete}
-              icon={<MinusCircleOutlined />}
+              icon={<CloseOutlined />}
             ></Button>
           </Tooltip>
         </Space>

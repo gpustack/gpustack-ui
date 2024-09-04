@@ -20,15 +20,28 @@
       text-align: left;
       width: 100px;
       background-color: var(--ant-button-text-hover-bg);
-      height: 46px;
+      height: 54px;
     }
   }
 
   .message-content-input {
     flex: 1;
+    cursor: pointer;
 
-    .ant-input {
-      padding-right: 40px;
+    &.has-img {
+      border: 1px solid var(--ant-color-fill-secondary);
+      border-radius: var(--border-radius-base);
+      overflow: hidden;
+
+      .ant-input {
+        border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
+        border-color: transparent;
+        background-color: transparent;
+      }
+
+      &:focus-within {
+        border-color: var(--ant-color-primary);
+      }
     }
   }
 

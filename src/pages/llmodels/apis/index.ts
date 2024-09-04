@@ -152,7 +152,7 @@ export async function queryHuggingfaceModels(
     ...params,
     ...options,
     limit: 100,
-    additionalFields: ['sha'],
+    additionalFields: ['sha', 'tags'],
     fetch(url: string, config: any) {
       try {
         const newUrl = params.search.sort

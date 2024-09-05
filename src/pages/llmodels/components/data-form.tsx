@@ -50,6 +50,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
+  const [scheduleType, setScheduleType] = React.useState('auto');
 
   const handleSumit = () => {
     form.submit();
@@ -251,47 +252,49 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             min={0}
           ></SealInput.Number>
         </Form.Item>
-        <Form.Item<FormData> name="placement_strategy">
-          <SealSelect
-            label={intl.formatMessage({
-              id: 'resources.form.placementStrategy'
-            })}
-            options={placementStrategyOptions}
-            description={
-              <div>
-                <div className="m-b-8">
-                  <Typography.Title
-                    level={5}
-                    style={{
-                      color: 'var(--color-white-1)',
-                      marginRight: 10
-                    }}
-                  >
-                    Spread:
-                  </Typography.Title>
-                  <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.spread.tips'
-                    })}
-                  </Typography.Text>
-                </div>
+        {scheduleType === 'auto' && (
+          <Form.Item<FormData> name="placement_strategy">
+            <SealSelect
+              label={intl.formatMessage({
+                id: 'resources.form.placementStrategy'
+              })}
+              options={placementStrategyOptions}
+              description={
                 <div>
-                  <Typography.Title
-                    level={5}
-                    style={{ color: 'var(--color-white-1)', marginRight: 10 }}
-                  >
-                    Binpack:
-                  </Typography.Title>
-                  <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.binpack.tips'
-                    })}
-                  </Typography.Text>
+                  <div className="m-b-8">
+                    <Typography.Title
+                      level={5}
+                      style={{
+                        color: 'var(--color-white-1)',
+                        marginRight: 10
+                      }}
+                    >
+                      Spread:
+                    </Typography.Title>
+                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
+                      {intl.formatMessage({
+                        id: 'resources.form.spread.tips'
+                      })}
+                    </Typography.Text>
+                  </div>
+                  <div>
+                    <Typography.Title
+                      level={5}
+                      style={{ color: 'var(--color-white-1)', marginRight: 10 }}
+                    >
+                      Binpack:
+                    </Typography.Title>
+                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
+                      {intl.formatMessage({
+                        id: 'resources.form.binpack.tips'
+                      })}
+                    </Typography.Text>
+                  </div>
                 </div>
-              </div>
-            }
-          ></SealSelect>
-        </Form.Item>
+              }
+            ></SealSelect>
+          </Form.Item>
+        )}
         <div style={{ marginBottom: 24 }}>
           <FormItemWrapper noWrapperStyle>
             <Form.Item<FormData>
@@ -309,39 +312,43 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             </Form.Item>
           </FormItemWrapper>
         </div>
-        <div style={{ marginBottom: 24 }}>
-          <FormItemWrapper noWrapperStyle>
-            <Form.Item<FormData>
-              name="distributed_inference_across_workers"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-            >
-              <Checkbox>
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+        {scheduleType === 'auto' && (
+          <div style={{ marginBottom: 24 }}>
+            <FormItemWrapper noWrapperStyle>
+              <Form.Item<FormData>
+                name="distributed_inference_across_workers"
+                valuePropName="checked"
+                style={{ padding: '0 10px', marginBottom: 0 }}
+              >
+                <Checkbox>
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    {intl.formatMessage({
+                      id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                    })}
+                  </span>
+                </Checkbox>
+              </Form.Item>
+            </FormItemWrapper>
+          </div>
+        )}
+        {scheduleType === 'auto' && (
+          <Form.Item<FormData> name="worker_selector">
+            <LabelSelector
+              label={intl.formatMessage({
+                id: 'resources.form.workerSelector'
+              })}
+              labels={wokerSelector}
+              onChange={handleWorkerLabelsChange}
+              description={
+                <span>
                   {intl.formatMessage({
-                    id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                    id: 'resources.form.workerSelector.description'
                   })}
                 </span>
-              </Checkbox>
-            </Form.Item>
-          </FormItemWrapper>
-        </div>
-        <Form.Item<FormData> name="worker_selector">
-          <LabelSelector
-            label={intl.formatMessage({
-              id: 'resources.form.workerSelector'
-            })}
-            labels={wokerSelector}
-            onChange={handleWorkerLabelsChange}
-            description={
-              <span>
-                {intl.formatMessage({
-                  id: 'resources.form.workerSelector.description'
-                })}
-              </span>
-            }
-          ></LabelSelector>
-        </Form.Item>
+              }
+            ></LabelSelector>
+          </Form.Item>
+        )}
       </>
     );
     return [
@@ -355,7 +362,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         children
       }
     ];
-  }, []);
+  }, [scheduleType]);
 
   useEffect(() => {
     handleOnSelectModel();

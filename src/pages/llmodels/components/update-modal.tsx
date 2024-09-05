@@ -11,7 +11,7 @@ import { RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Checkbox, Collapse, Form, Modal, Typography } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
@@ -287,139 +287,136 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     form.submit();
   };
 
-  const collapseItems = useMemo(() => {
-    const children = (
-      <>
-        <Form.Item<FormData>
-          name="replicas"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                {
-                  name: intl.formatMessage({ id: 'models.form.replicas' })
-                }
-              )
-            }
-          ]}
-        >
-          <SealInput.Number
-            style={{ width: '100%' }}
-            label={intl.formatMessage({
-              id: 'models.form.replicas'
-            })}
-            required
-            min={0}
-          ></SealInput.Number>
-        </Form.Item>
-        <Form.Item<FormData> name="placement_strategy">
-          <SealSelect
-            label={intl.formatMessage({
-              id: 'resources.form.placementStrategy'
-            })}
-            options={placementStrategyOptions}
-            description={
-              <div>
-                <div className="m-b-8">
-                  <Typography.Title
-                    level={5}
-                    style={{
-                      color: 'var(--color-white-1)',
-                      marginRight: 10
-                    }}
-                  >
-                    Spread:
-                  </Typography.Title>
-                  <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.spread.tips'
-                    })}
-                  </Typography.Text>
-                </div>
+  const collapseItems = [
+    {
+      key: '1',
+      label: (
+        <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
+          {intl.formatMessage({ id: 'resources.form.advanced' })}
+        </span>
+      ),
+      children: (
+        <>
+          <Form.Item<FormData>
+            name="replicas"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.input'
+                  },
+                  {
+                    name: intl.formatMessage({ id: 'models.form.replicas' })
+                  }
+                )
+              }
+            ]}
+          >
+            <SealInput.Number
+              style={{ width: '100%' }}
+              label={intl.formatMessage({
+                id: 'models.form.replicas'
+              })}
+              required
+              min={0}
+            ></SealInput.Number>
+          </Form.Item>
+          <Form.Item<FormData> name="placement_strategy">
+            <SealSelect
+              label={intl.formatMessage({
+                id: 'resources.form.placementStrategy'
+              })}
+              options={placementStrategyOptions}
+              description={
                 <div>
-                  <Typography.Title
-                    level={5}
-                    style={{ color: 'var(--color-white-1)', marginRight: 10 }}
-                  >
-                    Binpack:
-                  </Typography.Title>
-                  <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.binpack.tips'
-                    })}
-                  </Typography.Text>
+                  <div className="m-b-8">
+                    <Typography.Title
+                      level={5}
+                      style={{
+                        color: 'var(--color-white-1)',
+                        marginRight: 10
+                      }}
+                    >
+                      Spread:
+                    </Typography.Title>
+                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
+                      {intl.formatMessage({
+                        id: 'resources.form.spread.tips'
+                      })}
+                    </Typography.Text>
+                  </div>
+                  <div>
+                    <Typography.Title
+                      level={5}
+                      style={{ color: 'var(--color-white-1)', marginRight: 10 }}
+                    >
+                      Binpack:
+                    </Typography.Title>
+                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
+                      {intl.formatMessage({
+                        id: 'resources.form.binpack.tips'
+                      })}
+                    </Typography.Text>
+                  </div>
                 </div>
-              </div>
-            }
-          ></SealSelect>
-        </Form.Item>
-        <div style={{ marginBottom: 24 }}>
-          <FormItemWrapper noWrapperStyle>
-            <Form.Item<FormData>
-              name="partial_offload"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-            >
-              <Checkbox>
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+              }
+            ></SealSelect>
+          </Form.Item>
+          <div style={{ marginBottom: 24 }}>
+            <FormItemWrapper noWrapperStyle>
+              <Form.Item<FormData>
+                name="partial_offload"
+                valuePropName="checked"
+                style={{ padding: '0 10px', marginBottom: 0 }}
+              >
+                <Checkbox>
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    {intl.formatMessage({
+                      id: 'resources.form.enablePartialOffload'
+                    })}
+                  </span>
+                </Checkbox>
+              </Form.Item>
+            </FormItemWrapper>
+          </div>
+          <div style={{ marginBottom: 24 }}>
+            <FormItemWrapper noWrapperStyle>
+              <Form.Item<FormData>
+                name="distributed_inference_across_workers"
+                valuePropName="checked"
+                style={{ padding: '0 10px', marginBottom: 0 }}
+              >
+                <Checkbox>
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    {intl.formatMessage({
+                      id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                    })}
+                  </span>
+                </Checkbox>
+              </Form.Item>
+            </FormItemWrapper>
+          </div>
+          <Form.Item<FormData> name="worker_selector">
+            <LabelSelector
+              label={intl.formatMessage({
+                id: 'resources.form.workerSelector'
+              })}
+              labels={form.getFieldValue('worker_selector')}
+              onChange={handleWorkerLabelsChange}
+              description={
+                <span>
                   {intl.formatMessage({
-                    id: 'resources.form.enablePartialOffload'
+                    id: 'resources.form.workerSelector.description'
                   })}
                 </span>
-              </Checkbox>
-            </Form.Item>
-          </FormItemWrapper>
-        </div>
-        <div style={{ marginBottom: 24 }}>
-          <FormItemWrapper noWrapperStyle>
-            <Form.Item<FormData>
-              name="distributed_inference_across_workers"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-            >
-              <Checkbox>
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                  {intl.formatMessage({
-                    id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                  })}
-                </span>
-              </Checkbox>
-            </Form.Item>
-          </FormItemWrapper>
-        </div>
-        <Form.Item<FormData> name="worker_selector">
-          <LabelSelector
-            label={intl.formatMessage({
-              id: 'resources.form.workerSelector'
-            })}
-            labels={form.getFieldValue('worker_selector')}
-            onChange={handleWorkerLabelsChange}
-            description={
-              <span>
-                {intl.formatMessage({
-                  id: 'resources.form.workerSelector.description'
-                })}
-              </span>
-            }
-          ></LabelSelector>
-        </Form.Item>
-      </>
-    );
-    return [
-      {
-        key: '1',
-        label: (
-          <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
-            {intl.formatMessage({ id: 'resources.form.advanced' })}
-          </span>
-        ),
-        children
-      }
-    ];
-  }, []);
+              }
+            ></LabelSelector>
+          </Form.Item>
+        </>
+      )
+    }
+  ];
 
   return (
     <Modal

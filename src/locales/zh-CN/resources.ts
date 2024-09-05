@@ -13,7 +13,7 @@ export default {
   'resources.form.workerSelector': '匹配的 Worker 标签',
   'resources.form.enableDistributedInferenceAcrossWorkers': '跨节点分布式推理',
   'resources.form.spread.tips':
-    '使得集群整体的资源在所有 Worker 之间分配地相对均匀。可能会在单个 Worker 上产生较多资源碎片。',
+    '使得集群整体的资源在所有 Worker 之间分配得相对均匀。可能会在单个 Worker 上产生较多资源碎片。',
   'resources.form.binpack.tips':
     '优先考虑整体集群的资源最大化利用，减少 Worker/GPU 上的资源碎片。',
   'resources.form.workerSelector.description':

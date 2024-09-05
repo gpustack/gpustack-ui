@@ -5,9 +5,9 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { RightOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Collapse, Form, Typography } from 'antd';
+import { Checkbox, Collapse, Form, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -303,11 +303,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               style={{ padding: '0 10px', marginBottom: 0 }}
             >
               <Checkbox>
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                  {intl.formatMessage({
-                    id: 'resources.form.enablePartialOffload'
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'models.form.partialoffload.tips'
                   })}
-                </span>
+                >
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    {intl.formatMessage({
+                      id: 'resources.form.enablePartialOffload'
+                    })}
+                  </span>
+                  <InfoCircleOutlined
+                    className="m-l-2"
+                    style={{ color: 'var(--ant-color-text-tertiary)' }}
+                  />
+                </Tooltip>
               </Checkbox>
             </Form.Item>
           </FormItemWrapper>
@@ -321,11 +331,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                 style={{ padding: '0 10px', marginBottom: 0 }}
               >
                 <Checkbox>
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'models.form.distribution.tips'
                     })}
-                  </span>
+                  >
+                    <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                      {intl.formatMessage({
+                        id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                      })}
+                    </span>
+                    <InfoCircleOutlined
+                      className="m-l-2"
+                      style={{ color: 'var(--ant-color-text-tertiary)' }}
+                    />
+                  </Tooltip>
                 </Checkbox>
               </Form.Item>
             </FormItemWrapper>

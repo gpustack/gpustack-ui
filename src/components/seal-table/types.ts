@@ -10,7 +10,12 @@ export interface SealColumnProps {
   headerStyle?: React.CSSProperties;
   sorter?: boolean;
   defaultSortOrder?: 'ascend' | 'descend';
-  editable?: boolean;
+  editable?:
+    | boolean
+    | {
+        valueType?: 'text' | 'number' | 'date' | 'datetime' | 'time';
+        title?: string;
+      };
   valueType?: 'text' | 'number' | 'date' | 'datetime' | 'time';
   sortOrder?: 'ascend' | 'descend' | null;
 }

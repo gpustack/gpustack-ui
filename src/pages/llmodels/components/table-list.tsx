@@ -494,8 +494,10 @@ const Models: React.FC<ModelsProps> = ({
             key="replicas"
             align="center"
             span={4}
-            editable
-            valueType="number"
+            editable={{
+              valueType: 'number',
+              title: intl.formatMessage({ id: 'models.table.replicas.edit' })
+            }}
             render={(text, record: ListItem) => {
               return (
                 <span>

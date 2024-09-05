@@ -10,7 +10,7 @@ import { SealColumnProps } from '../types';
 const SealColumn: React.FC<SealColumnProps> = (props) => {
   const intl = useIntl();
   const { row, onCell } = useContext(RowContext);
-  const { dataIndex, render, align, editable, valueType, title } = props;
+  const { dataIndex, render, align, editable } = props;
   const [isEditing, setIsEditing] = React.useState(false);
   const [current, setCurrent] = React.useState(row[dataIndex]);
   const cachedValue = React.useRef(row[dataIndex]);
@@ -38,9 +38,11 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
 
   const renderContent = () => {
     if (isEditing && editable) {
-      return valueType === 'number' ? (
+      const isNumType =
+        typeof editable === 'object' && editable.valueType === 'number';
+      return isNumType ? (
         <InputNumber
-          style={{ minWidth: '100px', width: '100%' }}
+          style={{ width: '80px' }}
           min={0}
           value={current}
           onChange={(val) => {
@@ -72,7 +74,7 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
       <span className="cell-content flex-center">
         {renderContent()}
         {editable && (
-          <span>
+          <span className="flex-column">
             {isEditing ? (
               <>
                 <Tooltip
@@ -103,15 +105,7 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
                 </Tooltip>
               </>
             ) : (
-              <Tooltip
-                key="edit"
-                title={
-                  <span>
-                    {intl.formatMessage({ id: 'common.button.edit' })}
-                    <span className="m-l-5">{title}</span>
-                  </span>
-                }
-              >
+              <Tooltip key="edit" title={<span>{editable?.title}</span>}>
                 <Button
                   type="text"
                   size="small"

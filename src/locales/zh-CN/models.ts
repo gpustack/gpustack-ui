@@ -11,8 +11,13 @@ export default {
   'models.form.replicas': '副本数',
   'models.form.configurations': '配置',
   'models.form.s3address': 'S3 地址',
+  'models.form.partialoffload.tips':
+    '部分卸载指的是根据可用资源将尽可能多的模型层卸载到GPU的策略，但完全卸载所有层是不可能的。',
+  'models.form.distribution.tips':
+    '当单个 GPU 或 worker 的资源不足时，允许将部分计算卸载给单个或多个远程 worker。',
   'models.openinplayground': '在 Playground 中打开',
   'models.instances': '实例',
+  'models.table.replicas.edit': '调整副本数',
   'model.form.ollama.model': 'Ollama 模型',
   'model.form.ollamaholder': '请选择或输入模型名称',
   'model.deploy.sort': '排序',

@@ -11,8 +11,13 @@ export default {
   'models.form.replicas': 'Replicas',
   'models.form.configurations': 'Configurations',
   'models.form.s3address': 'S3 Address',
+  'models.form.partialoffload.tips':
+    'refers to the strategy of offloading as many layers of a model to the GPU as possible based on available resources, while offload all layers completely is not possible.',
+  'models.form.distribution.tips':
+    'allows for offloading part of the computation to single or multiple remote workers when the resources of a single GPU or worker are insufficient.',
   'models.openinplayground': 'Open in Playground',
   'models.instances': 'instances',
+  'models.table.replicas.edit': 'Edit Replicas',
   'model.form.ollama.model': 'Ollama Model',
   'model.form.ollamaholder': 'Please select or input model name',
   'model.deploy.sort': 'Sort',

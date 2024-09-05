@@ -40,7 +40,7 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
     if (isEditing && editable) {
       return valueType === 'number' ? (
         <InputNumber
-          style={{ width: '100%' }}
+          style={{ minWidth: '100px', width: '100%' }}
           min={0}
           value={current}
           onChange={(val) => {
@@ -69,60 +69,62 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
         'cell-right': align === 'right'
       })}
     >
-      <span className="cell-content">{renderContent()}</span>
-      {editable && (
-        <>
-          {isEditing ? (
-            <>
+      <span className="cell-content flex-center">
+        {renderContent()}
+        {editable && (
+          <span>
+            {isEditing ? (
+              <>
+                <Tooltip
+                  key="confirm"
+                  title={intl.formatMessage({ id: 'common.button.confirm' })}
+                >
+                  <Button
+                    type="text"
+                    size="small"
+                    className="m-l-10"
+                    onClick={handleSubmit}
+                  >
+                    <CheckOutlined />
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  title={intl.formatMessage({ id: 'common.button.cancel' })}
+                  key="undo"
+                >
+                  <Button
+                    type="text"
+                    size="small"
+                    className="m-l-10"
+                    onClick={handleUndo}
+                  >
+                    <UndoOutlined />
+                  </Button>
+                </Tooltip>
+              </>
+            ) : (
               <Tooltip
-                key="confirm"
-                title={intl.formatMessage({ id: 'common.button.confirm' })}
+                key="edit"
+                title={
+                  <span>
+                    {intl.formatMessage({ id: 'common.button.edit' })}
+                    <span className="m-l-5">{title}</span>
+                  </span>
+                }
               >
                 <Button
                   type="text"
                   size="small"
                   className="m-l-10"
-                  onClick={handleSubmit}
+                  onClick={handleEdit}
                 >
-                  <CheckOutlined />
+                  <FormOutlined />
                 </Button>
               </Tooltip>
-              <Tooltip
-                title={intl.formatMessage({ id: 'common.button.undo' })}
-                key="undo"
-              >
-                <Button
-                  type="text"
-                  size="small"
-                  className="m-l-10"
-                  onClick={handleUndo}
-                >
-                  <UndoOutlined />
-                </Button>
-              </Tooltip>
-            </>
-          ) : (
-            <Tooltip
-              key="edit"
-              title={
-                <span>
-                  {intl.formatMessage({ id: 'common.button.edit' })}
-                  <span className="m-l-5">{title}</span>
-                </span>
-              }
-            >
-              <Button
-                type="text"
-                size="small"
-                className="m-l-10"
-                onClick={handleEdit}
-              >
-                <FormOutlined />
-              </Button>
-            </Tooltip>
-          )}
-        </>
-      )}
+            )}
+          </span>
+        )}
+      </span>
     </div>
   );
 };

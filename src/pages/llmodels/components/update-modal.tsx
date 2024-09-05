@@ -382,7 +382,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                       })}
                     </span>
                     <InfoCircleOutlined
-                      className="m-l-2"
+                      className="m-l-4"
                       style={{ color: 'var(--ant-color-text-tertiary)' }}
                     />
                   </Tooltip>
@@ -409,7 +409,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                       })}
                     </span>
                     <InfoCircleOutlined
-                      className="m-l-2"
+                      className="m-l-4"
                       style={{ color: 'var(--ant-color-text-tertiary)' }}
                     />
                   </Tooltip>

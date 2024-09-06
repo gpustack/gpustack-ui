@@ -25,6 +25,7 @@ export interface FormData {
   placement_strategy?: string;
   partial_offload?: boolean;
   worker_selector?: object;
+  scheduleType?: string;
   name: string;
   replicas: number;
   description: string;

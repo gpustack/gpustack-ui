@@ -148,7 +148,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       onFinishFailed={handleOnFinishFailed}
     >
       <div>
-        <h3 className="m-b-20 m-l-10 font-size-14">
+        <h3 className="m-b-15 m-l-10 font-size-14">
           {intl.formatMessage({ id: 'playground.model' })}
         </h3>
         <Form.Item<ParamsSettingsFormProps>
@@ -165,11 +165,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             }
           ]}
         >
-          <SealSelect
-            showSearch
-            options={ModelList}
-            label={intl.formatMessage({ id: 'playground.model' })}
-          ></SealSelect>
+          <SealSelect showSearch options={ModelList}></SealSelect>
         </Form.Item>
         <h3 className="m-b-20 m-l-10 flex-between flex-center font-size-14">
           <span>{intl.formatMessage({ id: 'playground.parameters' })}</span>

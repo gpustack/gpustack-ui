@@ -294,31 +294,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       ),
       children: (
         <>
-          <Form.Item<FormData>
-            name="replicas"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  {
-                    name: intl.formatMessage({ id: 'models.form.replicas' })
-                  }
-                )
-              }
-            ]}
-          >
-            <SealInput.Number
-              style={{ width: '100%' }}
-              label={intl.formatMessage({
-                id: 'models.form.replicas'
-              })}
-              required
-              min={0}
-            ></SealInput.Number>
-          </Form.Item>
           <Form.Item<FormData> name="placement_strategy">
             <SealSelect
               label={intl.formatMessage({
@@ -528,6 +503,31 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             )}
           </Form.Item>
           {renderFieldsBySource()}
+          <Form.Item<FormData>
+            name="replicas"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.input'
+                  },
+                  {
+                    name: intl.formatMessage({ id: 'models.form.replicas' })
+                  }
+                )
+              }
+            ]}
+          >
+            <SealInput.Number
+              style={{ width: '100%' }}
+              label={intl.formatMessage({
+                id: 'models.form.replicas'
+              })}
+              required
+              min={0}
+            ></SealInput.Number>
+          </Form.Item>
           <Form.Item<FormData> name="description">
             <SealInput.TextArea
               label={intl.formatMessage({

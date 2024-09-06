@@ -10,6 +10,7 @@ interface NoteInfoProps {
 }
 const NoteInfo: React.FC<NoteInfoProps> = (props) => {
   const { required, description, label } = props || {};
+  if (!label) return null;
 
   return (
     <span className="label-text">

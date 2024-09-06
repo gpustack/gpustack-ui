@@ -1,13 +1,12 @@
 import LabelSelector from '@/components/label-selector';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
-import FormItemWrapper from '@/components/seal-form/components/wrapper';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Collapse, Form, Tooltip, Typography } from 'antd';
+import { Checkbox, Collapse, Form, Select, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -23,6 +22,7 @@ import {
 } from '../config';
 import { FormData } from '../config/types';
 import dataformStyles from '../style/data-form.less';
+import GPUCard from './gpu-card';
 
 interface DataFormProps {
   ref?: any;
@@ -45,12 +45,109 @@ const sourceOptions = [
   }
 ];
 
+const gpuOptions = [
+  {
+    label: 'NVIDIA A100',
+    value: '1',
+    index: 0,
+    worker_name: 'mbp-1.local',
+    worker: {
+      GPU: {
+        name: 'A100',
+        count: 1,
+        memory: 16384
+      },
+      CPU: {
+        count: 16,
+        memory: 16384
+      },
+      os: {
+        name: 'Ubuntu 20.04',
+        version: '20.04'
+      },
+      name: 'mbp-1.local',
+      address: '192.168.1.1'
+    }
+  },
+  {
+    label: 'NVIDIA H100',
+    value: '2',
+    index: 1,
+    worker_name: 'mbp-2.local',
+    worker: {
+      GPU: {
+        name: 'H100',
+        count: 1,
+        memory: 16384
+      },
+      CPU: {
+        count: 16,
+        memory: 16384
+      },
+      os: {
+        name: 'Ubuntu 20.04',
+        version: '20.04'
+      },
+      name: 'mbp-2.local',
+      address: '192.168.1.2'
+    }
+  },
+  {
+    label: 'NVIDIA A100',
+    value: '3',
+    index: 2,
+    worker_name: 'mbp-3.local',
+    worker: {
+      GPU: {
+        name: 'A100',
+        count: 1,
+        memory: 16384
+      },
+      CPU: {
+        count: 16,
+        memory: 16384
+      },
+      os: {
+        name: 'Ubuntu 20.04',
+        version: '20.04'
+      },
+      name: 'mbp-3.local',
+      address: '192.168.1.3'
+    }
+  },
+  {
+    label: 'NVIDIA H100',
+    value: '4',
+    index: 3,
+    worker_name: 'mbp-4.local',
+    worker: {
+      GPU: {
+        name: 'H100',
+        count: 1,
+        memory: 16384
+      },
+      CPU: {
+        count: 16,
+        memory: 16384
+      },
+      os: {
+        name: 'Ubuntu 20.04',
+        version: '20.04'
+      },
+      name: 'mbp-4.local',
+      address: '192.168.1.4'
+    }
+  }
+];
+
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const { action, repo, onOk } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
-  const [scheduleType, setScheduleType] = React.useState('auto');
+  // const [scheduleType, setScheduleType] = React.useState(false); // false: auto, true: manual
+
+  const scheduleType = Form.useWatch('scheduleType', form);
 
   const handleSumit = () => {
     form.submit();
@@ -74,6 +171,40 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     },
     []
   );
+
+  const placementStrategyTips = [
+    {
+      title: 'Spread',
+      tips: intl.formatMessage({
+        id: 'resources.form.spread.tips'
+      })
+    },
+    {
+      title: 'Binpack',
+      tips: intl.formatMessage({
+        id: 'resources.form.binpack.tips'
+      })
+    }
+  ];
+
+  const scheduleTypeTips = [
+    {
+      title: intl.formatMessage({
+        id: 'models.form.scheduletype.auto'
+      }),
+      tips: intl.formatMessage({
+        id: 'models.form.scheduletype.auto.tips'
+      })
+    },
+    {
+      title: intl.formatMessage({
+        id: 'models.form.scheduletype.manual'
+      }),
+      tips: intl.formatMessage({
+        id: 'models.form.scheduletype.manual.tips'
+      })
+    }
+  ];
 
   const handleOnSelectModel = () => {
     console.log('repo=============', repo);
@@ -224,33 +355,53 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
+  const renderSelectTips = (list: Array<{ title: string; tips: string }>) => {
+    return (
+      <div>
+        {list.map((item, index) => {
+          return (
+            <div className="m-b-8" key={index}>
+              <Typography.Title
+                level={5}
+                style={{
+                  color: 'var(--color-white-1)',
+                  marginRight: 10
+                }}
+              >
+                {item.title}:
+              </Typography.Title>
+              <Typography.Text style={{ color: 'var(--color-white-1)' }}>
+                {item.tips}
+              </Typography.Text>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const collapseItems = useMemo(() => {
     const children = (
       <>
-        <Form.Item<FormData>
-          name="replicas"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                {
-                  name: intl.formatMessage({ id: 'models.form.replicas' })
-                }
-              )
-            }
-          ]}
-        >
-          <SealInput.Number
-            style={{ width: '100%' }}
-            label={intl.formatMessage({
-              id: 'models.form.replicas'
-            })}
-            required
-            min={0}
-          ></SealInput.Number>
+        <Form.Item name="scheduleType">
+          <SealSelect
+            label={intl.formatMessage({ id: 'models.form.scheduletype' })}
+            description={renderSelectTips(scheduleTypeTips)}
+            options={[
+              {
+                label: intl.formatMessage({
+                  id: 'models.form.scheduletype.auto'
+                }),
+                value: 'auto'
+              },
+              {
+                label: intl.formatMessage({
+                  id: 'models.form.scheduletype.manual'
+                }),
+                value: 'manual'
+              }
+            ]}
+          ></SealSelect>
         </Form.Item>
         {scheduleType === 'auto' && (
           <Form.Item<FormData> name="placement_strategy">
@@ -259,97 +410,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                 id: 'resources.form.placementStrategy'
               })}
               options={placementStrategyOptions}
-              description={
-                <div>
-                  <div className="m-b-8">
-                    <Typography.Title
-                      level={5}
-                      style={{
-                        color: 'var(--color-white-1)',
-                        marginRight: 10
-                      }}
-                    >
-                      Spread:
-                    </Typography.Title>
-                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.spread.tips'
-                      })}
-                    </Typography.Text>
-                  </div>
-                  <div>
-                    <Typography.Title
-                      level={5}
-                      style={{ color: 'var(--color-white-1)', marginRight: 10 }}
-                    >
-                      Binpack:
-                    </Typography.Title>
-                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.binpack.tips'
-                      })}
-                    </Typography.Text>
-                  </div>
-                </div>
-              }
+              description={renderSelectTips(placementStrategyTips)}
             ></SealSelect>
           </Form.Item>
-        )}
-        <div style={{ marginBottom: 24 }}>
-          <FormItemWrapper noWrapperStyle>
-            <Form.Item<FormData>
-              name="partial_offload"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-            >
-              <Checkbox>
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'models.form.partialoffload.tips'
-                  })}
-                >
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.enablePartialOffload'
-                    })}
-                  </span>
-                  <InfoCircleOutlined
-                    className="m-l-4"
-                    style={{ color: 'var(--ant-color-text-tertiary)' }}
-                  />
-                </Tooltip>
-              </Checkbox>
-            </Form.Item>
-          </FormItemWrapper>
-        </div>
-        {scheduleType === 'auto' && (
-          <div style={{ marginBottom: 24 }}>
-            <FormItemWrapper noWrapperStyle>
-              <Form.Item<FormData>
-                name="distributed_inference_across_workers"
-                valuePropName="checked"
-                style={{ padding: '0 10px', marginBottom: 0 }}
-              >
-                <Checkbox>
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'models.form.distribution.tips'
-                    })}
-                  >
-                    <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                      })}
-                    </span>
-                    <InfoCircleOutlined
-                      className="m-l-4"
-                      style={{ color: 'var(--ant-color-text-tertiary)' }}
-                    />
-                  </Tooltip>
-                </Checkbox>
-              </Form.Item>
-            </FormItemWrapper>
-          </div>
         )}
         {scheduleType === 'auto' && (
           <Form.Item<FormData> name="worker_selector">
@@ -368,6 +431,71 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               }
             ></LabelSelector>
           </Form.Item>
+        )}
+        {scheduleType === 'manual' && (
+          <Form.Item<FormData> name="gpu_selector">
+            <SealSelect label="GPU Selector">
+              {gpuOptions.map((item) => (
+                <Select.Option key={item.value} value={item.value}>
+                  <GPUCard data={item}></GPUCard>
+                </Select.Option>
+              ))}
+            </SealSelect>
+          </Form.Item>
+        )}
+        <div style={{ marginBottom: 22, paddingLeft: 10 }}>
+          <Form.Item<FormData>
+            name="partial_offload"
+            valuePropName="checked"
+            style={{ padding: '0 10px', marginBottom: 0 }}
+            noStyle
+          >
+            <Checkbox className="p-l-6">
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'models.form.partialoffload.tips'
+                })}
+              >
+                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                  {intl.formatMessage({
+                    id: 'resources.form.enablePartialOffload'
+                  })}
+                </span>
+                <InfoCircleOutlined
+                  className="m-l-4"
+                  style={{ color: 'var(--ant-color-text-tertiary)' }}
+                />
+              </Tooltip>
+            </Checkbox>
+          </Form.Item>
+        </div>
+        {scheduleType === 'auto' && (
+          <div style={{ marginBottom: 22, paddingLeft: 10 }}>
+            <Form.Item<FormData>
+              name="distributed_inference_across_workers"
+              valuePropName="checked"
+              style={{ padding: '0 10px', marginBottom: 0 }}
+              noStyle
+            >
+              <Checkbox className="p-l-6">
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'models.form.distribution.tips'
+                  })}
+                >
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    {intl.formatMessage({
+                      id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                    })}
+                  </span>
+                  <InfoCircleOutlined
+                    className="m-l-4"
+                    style={{ color: 'var(--ant-color-text-tertiary)' }}
+                  />
+                </Tooltip>
+              </Checkbox>
+            </Form.Item>
+          </div>
         )}
       </>
     );
@@ -401,6 +529,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         source: props.source,
         placement_strategy: 'spread',
         partial_offload: true,
+        scheduleType: 'auto',
         distributed_inference_across_workers: true
       }}
     >
@@ -451,6 +580,31 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         }
       </Form.Item>
       {renderFieldsBySource()}
+      <Form.Item<FormData>
+        name="replicas"
+        rules={[
+          {
+            required: true,
+            message: intl.formatMessage(
+              {
+                id: 'common.form.rule.input'
+              },
+              {
+                name: intl.formatMessage({ id: 'models.form.replicas' })
+              }
+            )
+          }
+        ]}
+      >
+        <SealInput.Number
+          style={{ width: '100%' }}
+          label={intl.formatMessage({
+            id: 'models.form.replicas'
+          })}
+          required
+          min={0}
+        ></SealInput.Number>
+      </Form.Item>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           label={intl.formatMessage({
@@ -467,7 +621,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         expandIcon={({ isActive }) => (
           <RightOutlined
             rotate={isActive ? 90 : 0}
-            style={{ fontSize: '12px' }}
+            style={{ fontSize: '12px', marginLeft: -8 }}
           />
         )}
         items={collapseItems}

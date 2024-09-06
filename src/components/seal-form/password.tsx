@@ -62,6 +62,7 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
       required={required}
       description={description}
       disabled={props.disabled}
+      hasPrefix={!!props.prefix}
       onClick={handleClickWrapper}
     >
       <Input.Password

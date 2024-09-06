@@ -5,7 +5,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding-inline: 12px;
+  padding-inline: 8px 12px;
   height: 54px;
   border-width: var(--ant-line-width);
   border-style: var(--ant-line-type);
@@ -13,12 +13,12 @@
   border-radius: @borderRadius;
   background-color: var(--color-white-1);
 
-  &.filled {
+  &.borderless {
     border: none;
     box-shadow: none;
   }
 
-  &.borderless {
+  &.filled {
     border: none;
     box-shadow: none;
   }
@@ -86,7 +86,7 @@
   @wrapheight: 54px;
   @inputheight: 32px;
   @borderRadius: 8px;
-  @input-inner-padding: 12px;
+  @input-inner-padding: 6px;
   @bgColor: transparent;
 
   position: relative;
@@ -113,7 +113,7 @@
 
   .label {
     position: absolute;
-    left: 12px;
+    left: 6px;
     color: rgba(0, 0, 0, 45%);
     font-size: var(--font-size-base);
     line-height: 1;
@@ -130,6 +130,10 @@
     &.blur-no-value {
       top: 21px;
       transition: all 0.2s var(--seal-transition-func);
+    }
+
+    &.has-prefix {
+      top: 10px !important;
     }
   }
 
@@ -171,6 +175,16 @@
     top: 10px;
   }
 
+  &.no-label {
+    padding-block: 0;
+
+    :global {
+      .ant-select-arrow {
+        top: 50%;
+      }
+    }
+  }
+
   :global(
       .ant-select-outlined.ant-select-disabled:not(.ant-select-customize-input)
         .ant-select-selector
@@ -191,7 +205,7 @@
     border: none;
     box-shadow: none;
     padding-block: 5px;
-    padding-inline: 12px;
+    padding-inline: @input-inner-padding;
     height: @inputheight !important;
     background-color: @bgColor;
   }
@@ -278,9 +292,9 @@
     height: @wrapheight - 2px;
   }
 
-  :global(.ant-input-prefix) {
-    position: absolute;
-    top: 1px;
-    left: -4px;
-  }
+  // :global(.ant-input-prefix) {
+  //   position: absolute;
+  //   top: 1px;
+  //   left: -4px;
+  // }
 }

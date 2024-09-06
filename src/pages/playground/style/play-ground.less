@@ -2,6 +2,10 @@
   display: flex;
   align-items: flex-start;
 
+  .ant-tabs-nav {
+    display: none;
+  }
+
   .left {
     position: relative;
     display: flex;
@@ -70,5 +74,12 @@
 .playground-container {
   .ant-pro-page-container-children-container {
     padding-right: 0;
+  }
+
+  &.compare {
+    .ant-pro-page-container-children-container {
+      padding-inline: 0;
+      padding-block: 0;
+    }
   }
 }

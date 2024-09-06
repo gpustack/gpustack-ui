@@ -12,9 +12,9 @@ export default {
   'models.form.configurations': 'Configurations',
   'models.form.s3address': 'S3 Address',
   'models.form.partialoffload.tips':
-    'refers to the strategy of offloading as many layers of a model to the GPU as possible based on available resources, while offload all layers completely is not possible.',
+    'Refers to the strategy of offloading as many layers of a model to the GPU as possible based on available resources, while offload all layers completely is not possible.',
   'models.form.distribution.tips':
-    'allows for offloading part of the computation to single or multiple remote workers when the resources of a single GPU or worker are insufficient.',
+    'Allows for offloading part of the computation to single or multiple remote workers when the resources of a single GPU or worker are insufficient.',
   'models.openinplayground': 'Open in Playground',
   'models.instances': 'instances',
   'models.table.replicas.edit': 'Edit Replicas',
@@ -40,5 +40,13 @@ export default {
   'models.search.networkerror': 'Network connection exception!',
   'models.search.hfvisit': 'Please make sure you can visit',
   'models.search.unsupport':
-    'This model is not supported and may be unusable after deployment.'
+    'This model is not supported and may be unusable after deployment.',
+  'models.form.scheduletype': 'Schedule Type',
+  'models.form.scheduletype.auto': 'Auto',
+  'models.form.scheduletype.manual': 'Manual',
+  'models.form.scheduletype.auto.tips':
+    'Automatically deploys model instances to appropriate GPUs/Workers based on current resource conditions.',
+  'models.form.scheduletype.manual.tips':
+    'Allows you to manually specify the GPUs/Workers to deploy the model instances to.',
+  'models.form.manual.schedule': 'Manual Schedule'
 };

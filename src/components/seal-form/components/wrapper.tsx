@@ -15,6 +15,7 @@ interface WrapperProps {
   extra?: React.ReactNode;
   addAfter?: React.ReactNode;
   variant?: string;
+  hasPrefix?: boolean;
   onClick?: () => void;
 }
 
@@ -30,6 +31,7 @@ const Wrapper: React.FC<WrapperProps> = ({
   extra,
   variant,
   addAfter,
+  hasPrefix,
   noWrapperStyle,
   onClick
 }) => {
@@ -41,12 +43,14 @@ const Wrapper: React.FC<WrapperProps> = ({
         wrapperStyle[`validate-status-${status}`],
         addAfter ? wrapperStyle['seal-input-wrapper-addafter'] : '',
         disabled ? wrapperStyle['seal-input-wrapper-disabled'] : '',
-        className ? wrapperStyle[className] : ''
+        className ? wrapperStyle[className] : '',
+        variant ? wrapperStyle[variant] : ''
       )}
     >
       <div
         className={classNames(wrapperStyle.wrapper, {
-          [wrapperStyle['no-wrapper-style']]: noWrapperStyle
+          [wrapperStyle['no-wrapper-style']]: noWrapperStyle,
+          [wrapperStyle['no-label']]: !label
         })}
         onClick={onClick}
       >
@@ -56,7 +60,10 @@ const Wrapper: React.FC<WrapperProps> = ({
             wrapperStyle['label'],
             isFocus
               ? wrapperStyle['isfoucs-has-value']
-              : wrapperStyle['blur-no-value']
+              : wrapperStyle['blur-no-value'],
+            {
+              [wrapperStyle['has-prefix']]: hasPrefix
+            }
           )}
         >
           <LabelInfo

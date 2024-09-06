@@ -97,7 +97,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
           >
             <PlusOutlined className="font-size-14" />{' '}
             {intl.formatMessage({
-              id: 'common.button.addLabel'
+              id: 'common.button.addSelector'
             })}
           </Button>
         </div>

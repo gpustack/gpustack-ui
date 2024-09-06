@@ -39,5 +39,13 @@ export default {
   'models.search.nofiles': '无可用文件',
   'models.search.networkerror': '网络连接异常!',
   'models.search.hfvisit': '请确保您可以访问',
-  'models.search.unsupport': '暂不支持该模型，部署后可能无法使用'
+  'models.search.unsupport': '暂不支持该模型，部署后可能无法使用',
+  'models.form.scheduletype': '调度方式',
+  'models.form.scheduletype.auto': '自动',
+  'models.form.scheduletype.manual': '手动',
+  'models.form.scheduletype.auto.tips':
+    '自动根据当前资源情况部署模型实例到合适的 GPU/Worker。',
+  'models.form.scheduletype.manual.tips':
+    '手动调度可指定模型实例部署的 GPU/Worker。',
+  'models.form.manual.schedule': '手动调度'
 };

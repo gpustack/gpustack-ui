@@ -77,6 +77,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
       description={description}
       disabled={props.disabled}
       addAfter={addAfter}
+      hasPrefix={!!props.prefix}
       onClick={handleClickWrapper}
     >
       <Input

@@ -44,6 +44,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
   const axiosTokenRef = useRef<any>(null);
 
   const handleSelectModelFile = (item: any) => {
+    console.log('handleSelectModelFile', item);
     props.onSelectFile?.(item);
     setCurrent(item.path);
   };
@@ -70,8 +71,13 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
 
     // general file
     if (!data) {
-      return list;
+      return _.map(list, (item: any) => {
+        item.fakeName = item.path;
+        return item;
+      });
     }
+
+    // shard file
 
     const newList = _.map(list, (item: any) => {
       const parsed = parseFilename(item.path);
@@ -83,9 +89,10 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
 
     const group = _.groupBy(newList, 'filename');
 
-    return _.map(group, (value: any[], key: string) => {
+    return _.map(group, (value: any[], filename: string) => {
       return {
-        path: key,
+        path: filename,
+        fakeName: `${filename}*.gguf`,
         size: _.sumBy(value, 'size'),
         parts: value
       };
@@ -117,9 +124,9 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
         return _.endsWith(file.path, '.gguf') || _.includes(file.path, '.gguf');
       });
 
-      // const newList = generateGroupByFilename(list);
+      const newList = generateGroupByFilename(list);
 
-      const sortList = _.sortBy(list, (item: any) => {
+      const sortList = _.sortBy(newList, (item: any) => {
         return sortType === 'size' ? item.size : item.path;
       });
       handleSelectModelFile(sortList[0]);

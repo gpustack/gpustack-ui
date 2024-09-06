@@ -64,11 +64,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       });
     }
     if (action === PageAction.EDIT && open) {
-      const list = _.split(props.data?.ollama_library_model_name, ':');
       form.setFieldsValue({
-        ...props.data,
-        ollama_library_model_name: _.get(list, '0'),
-        tag: _.get(list, '1')
+        ...props.data
       });
     }
   };

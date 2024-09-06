@@ -43,7 +43,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [loadingModel, setLoadingModel] = useState<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
-    form.current?.setFieldValue?.('huggingface_filename', item.path);
+    form.current?.setFieldValue?.('huggingface_filename', item.fakeName);
   }, []);
 
   const handleOnSelectModel = (item: any) => {

@@ -62,6 +62,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const handleOnSearchRepo = useCallback(
     async (sortType?: string) => {
+      if (modelSource === modelSourceMap.ollama_library_value) {
+        return;
+      }
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
       if (dataSource.loading) return;

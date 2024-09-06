@@ -69,17 +69,26 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       return !!parsed;
     });
 
-    // general file
-    if (!data) {
-      return _.map(list, (item: any) => {
-        item.fakeName = item.path;
-        return item;
-      });
-    }
+    const generalFileList = _.filter(list, (item: any) => {
+      const parsed = parseFilename(item.path);
+      return !parsed;
+    });
+
+    const newGeneralFileList = _.map(generalFileList, (item: any) => {
+      return {
+        ...item,
+        fakeName: item.path
+      };
+    });
 
     // shard file
 
-    const newList = _.map(list, (item: any) => {
+    const shardFileList = _.filter(list, (item: any) => {
+      const parsed = parseFilename(item.path);
+      return !!parsed;
+    });
+
+    const newShardFileList = _.map(shardFileList, (item: any) => {
       const parsed = parseFilename(item.path);
       return {
         ...item,
@@ -87,16 +96,21 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       };
     });
 
-    const group = _.groupBy(newList, 'filename');
+    const group = _.groupBy(newShardFileList, 'filename');
 
-    return _.map(group, (value: any[], filename: string) => {
-      return {
-        path: filename,
-        fakeName: `${filename}*.gguf`,
-        size: _.sumBy(value, 'size'),
-        parts: value
-      };
-    });
+    const shardFileListResult = _.map(
+      group,
+      (value: any[], filename: string) => {
+        return {
+          path: filename,
+          fakeName: `${filename}*.gguf`,
+          size: _.sumBy(value, 'size'),
+          parts: value
+        };
+      }
+    );
+
+    return [...shardFileListResult, ...newGeneralFileList];
   }, []);
 
   const handleFetchModelFiles = async () => {
@@ -125,6 +139,8 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       });
 
       const newList = generateGroupByFilename(list);
+
+      console.log('newList==========', newList);
 
       const sortList = _.sortBy(newList, (item: any) => {
         return sortType === 'size' ? item.size : item.path;

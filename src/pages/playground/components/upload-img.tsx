@@ -1,4 +1,4 @@
-import { FileImageOutlined } from '@ant-design/icons';
+import { PictureOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload';
@@ -71,11 +71,7 @@ const UploadImg: React.FC<UploadImgProps> = ({ handleUpdateImgList }) => {
         onChange={handleChange}
       >
         <Tooltip title={intl.formatMessage({ id: 'playground.img.upload' })}>
-          <Button
-            size="small"
-            type="text"
-            icon={<FileImageOutlined />}
-          ></Button>
+          <Button size="small" type="text" icon={<PictureOutlined />}></Button>
         </Tooltip>
       </Upload>
     </>

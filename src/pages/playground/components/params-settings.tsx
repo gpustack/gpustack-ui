@@ -6,7 +6,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { queryModelsList } from '../apis';
 import CustomLabelStyles from '../style/custom-label.less';
 
@@ -15,19 +15,27 @@ type ParamsSettingsFormProps = {
   stop?: number;
   temperature?: number;
   top_p?: number;
-  model?: string;
   max_tokens?: number;
+  model?: string;
 };
 
 type ParamsSettingsProps = {
   selectedModel?: string;
+  showModelSelector?: boolean;
   params?: ParamsSettingsFormProps;
+  model?: string;
+  onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   setParams: (params: any) => void;
+  globalParams?: ParamsSettingsFormProps;
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   selectedModel,
-  setParams
+  setParams,
+  globalParams,
+  onValuesChange,
+  model,
+  showModelSelector = true
 }) => {
   const intl = useIntl();
   const [ModelList, setModelList] = useState([]);
@@ -36,9 +44,11 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     stop: null,
     temperature: 1,
     top_p: 1,
-    max_tokens: 1024
+    max_tokens: 1024,
+    ...globalParams
   };
   const [form] = Form.useForm();
+  const formId = useId();
 
   useEffect(() => {
     const getModelList = async () => {
@@ -86,7 +96,9 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   };
 
   const handleValuesChange = (changedValues: any, allValues: any) => {
+    console.log('changedValues===', changedValues);
     setParams?.(allValues);
+    onValuesChange?.(changedValues, allValues);
   };
   const handleFieldValueChange = (val: any, field: string) => {
     const values = form.getFieldsValue();
@@ -98,12 +110,24 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       ...values,
       [field]: val
     });
+    onValuesChange?.(
+      { [field]: val },
+      {
+        ...values,
+        [field]: val
+      }
+    );
   };
 
   const handleResetParams = () => {
     form.setFieldsValue(initialValues);
     setParams(initialValues);
   };
+
+  useEffect(() => {
+    form.setFieldsValue(globalParams);
+    console.log('globalParams=========11111', model, globalParams);
+  }, [globalParams]);
   const renderLabel = (args: {
     field: string;
     label: string;
@@ -141,32 +165,40 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
 
   return (
     <Form
-      name="modelparams"
+      name={formId}
       form={form}
       onValuesChange={handleValuesChange}
       onFinish={handleOnFinish}
       onFinishFailed={handleOnFinishFailed}
     >
       <div>
-        <h3 className="m-b-15 m-l-10 font-size-14">
-          {intl.formatMessage({ id: 'playground.model' })}
-        </h3>
-        <Form.Item<ParamsSettingsFormProps>
-          name="model"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
+        {showModelSelector && (
+          <>
+            <h3 className="m-b-20 m-l-10 font-size-14">
+              {intl.formatMessage({ id: 'playground.model' })}
+            </h3>
+            <Form.Item<ParamsSettingsFormProps>
+              name="model"
+              rules={[
                 {
-                  id: 'common.form.rule.select'
-                },
-                { name: intl.formatMessage({ id: 'playground.model' }) }
-              )
-            }
-          ]}
-        >
-          <SealSelect showSearch options={ModelList}></SealSelect>
-        </Form.Item>
+                  required: true,
+                  message: intl.formatMessage(
+                    {
+                      id: 'common.form.rule.select'
+                    },
+                    { name: intl.formatMessage({ id: 'playground.model' }) }
+                  )
+                }
+              ]}
+            >
+              <SealSelect
+                showSearch
+                options={ModelList}
+                label={intl.formatMessage({ id: 'playground.model' })}
+              ></SealSelect>
+            </Form.Item>
+          </>
+        )}
         <h3 className="m-b-20 m-l-10 flex-between flex-center font-size-14">
           <span>{intl.formatMessage({ id: 'playground.parameters' })}</span>
         </h3>

@@ -8,6 +8,7 @@ import { Button, Input, Spin, Tooltip } from 'antd';
 import _ from 'lodash';
 import {
   forwardRef,
+  memo,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -347,4 +348,4 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default MessageList;
+export default memo(MessageList);

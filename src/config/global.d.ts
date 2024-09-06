@@ -22,14 +22,14 @@ declare namespace Global {
     id: number;
   }
 
-  interface BaseListItem {
+  interface BaseListItem<T> {
     key: string;
-    value: string | number;
+    value: T;
   }
 
-  interface BaseOption {
+  interface BaseOption<T> {
     label: string;
-    value: string | number;
+    value: T;
   }
 
   type SearchParams = Pagination & { search?: string };

@@ -1,7 +1,7 @@
 import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
 import { platformCall } from '@/utils';
-import { DeleteOutlined, EnterOutlined, PlusOutlined } from '@ant-design/icons';
+import { ClearOutlined, EnterOutlined, PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Col, Row, Space } from 'antd';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -64,7 +64,7 @@ const ChatFooter: React.FC<ChatFooterProps> = (props) => {
               {intl.formatMessage({ id: 'playground.newMessage' })}
             </Button>
             <Button
-              icon={<DeleteOutlined></DeleteOutlined>}
+              icon={<ClearOutlined />}
               onClick={onClear}
               disabled={disabled}
             >

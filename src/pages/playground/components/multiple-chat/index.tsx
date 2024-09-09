@@ -1,24 +1,21 @@
-import { Col, Row } from 'antd';
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import _ from 'lodash';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CompareContext from '../../config/compare-context';
 import '../../style/multiple-chat.less';
 import MessageInput from '../message-input';
-import ModelItem from './model-item';
+import ActiveModels from './active-models';
 
 interface MultiCompareProps {
   modelList: Global.BaseOption<string>[];
-  parmasSettings?: Record<string, any>;
   spans?: number;
 }
 
 const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
-  const [loadingStatus, setLoadingStatus] = useState<boolean[]>([]);
-  const [parmasSettings, setParamsSettings] = useState<Record<string, any>>({});
-  const [systemMessage, setSystemMessage] = useState<string>('');
-  const [currentMessage, setCurrentMessage] = useState<
-    {
-      role: 'user' | 'assistant';
-      content: string;
-    }[]
+  const [loadingStatus, setLoadingStatus] = useState<Record<string, boolean>>(
+    {}
+  );
+  const [modelSelections, setModelSelections] = useState<
+    Global.BaseOption<string>[]
   >([]);
   const [globalParams, setGlobalParams] = useState<Record<string, any>>({
     seed: null,
@@ -34,88 +31,127 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     span: 12,
     count: 2
   });
-  const modelRefs = useRef<any[]>([]);
+  const modelRefs = useRef<any>({});
+  const boxHeight = 'calc(100vh - 72px)';
 
   const isLoading = useMemo(() => {
-    return loadingStatus.some((status) => status);
+    console.log('loadingStatus========2', loadingStatus);
+    return _.keys(loadingStatus).some(
+      (modelname: string) => loadingStatus[modelname]
+    );
   }, [loadingStatus]);
 
-  const modelSelections = useMemo(() => {
+  useEffect(() => {
     const list = modelList.slice?.(0, spans.count);
-    return list;
+    setModelSelections(list);
   }, [modelList, spans.count]);
 
   useEffect(() => {
-    modelRefs.current = modelSelections.map(() => {
-      return {};
+    modelRefs.current = {};
+    modelSelections.forEach((item) => {
+      modelRefs.current[item.value] = null;
     });
   }, [modelSelections]);
 
-  const handleSubmit = (message: string) => {
-    let msg: any[] = [];
-    if (message) {
-      msg = [
-        {
-          role: 'user',
-          content: message
-        }
-      ];
-    }
-    modelRefs.current.forEach(async (ref, index) => {
-      ref?.setMessageList((preList: any) => {
-        return [...preList, ...msg];
-      });
-      setLoadingStatus((preStatus) => {
-        const newState = [...preStatus];
-        newState[index] = true;
-        return newState;
-      });
-      await ref?.submit();
-      setLoadingStatus((preStatus) => {
-        const newState = [...preStatus];
-        newState[index] = false;
-        return newState;
-      });
+  const handleSubmit = (currentMessage: { role: string; content: string }) => {
+    const modelRefList = _.keys(modelRefs.current);
+    modelRefList.forEach(async (modelname: any, index: number) => {
+      const ref = modelRefs.current[modelname];
+      ref?.submit(currentMessage);
     });
   };
 
   const handleAbortFetch = () => {
-    modelRefs.current.forEach((ref) => {
+    _.keys(modelRefs.current).forEach((modelname: string) => {
+      const ref = modelRefs.current[modelname];
       ref?.abortFetch();
     });
   };
 
-  const setModelRefs = (index: number, ref: any) => {
-    modelRefs.current[index] = ref;
+  const setModelRefs = useCallback(
+    (modelname: string, el: React.MutableRefObject<any>) => {
+      modelRefs.current[modelname] = el;
+    },
+    []
+  );
+
+  const handleSetLoadingStatus = (modeName: string, status: boolean) => {
+    setLoadingStatus((preStatus) => {
+      const newState = { ...preStatus };
+      newState[modeName] = status;
+      return newState;
+    });
+  };
+
+  const handleClearAll = () => {
+    _.keys(modelRefs.current).forEach((modelname: string) => {
+      const ref = modelRefs.current[modelname];
+      ref?.clear();
+    });
+  };
+
+  const handleDeleteModel = (modelname: string) => {
+    const newModelList = modelSelections.filter(
+      (model) => model.value !== modelname
+    );
+    const span = Math.floor(24 / (24 / spans.span - 1));
+    setSpans({
+      span,
+      count: spans.count
+    });
+    setModelSelections(newModelList);
+  };
+
+  const handleUpdateModelSelections = (list: Global.BaseOption<string>[]) => {
+    // set spans.span
+    const span = Math.floor(24 / list.length);
+    setSpans({
+      span: span < 8 ? 8 : span,
+      count: spans.count
+    });
+    setModelSelections(list);
+  };
+
+  const handlePresetPrompt = (list: { role: string; content: string }[]) => {
+    const sysMsg = list.filter((item) => item.role === 'system');
+    const userMsg = list.filter((item) => item.role === 'user');
+    const modelRefList = _.keys(modelRefs.current);
+    modelRefList.forEach(async (modelname: any) => {
+      const ref = modelRefs.current[modelname];
+      ref?.presetPrompt(userMsg);
+      ref?.setSystemMessage(_.get(sysMsg, '0.content', ''));
+    });
   };
 
   return (
-    <div className="multiple-chat">
+    <div className="multiple-chat" style={{ height: boxHeight }}>
       <div className="chat-list">
-        <Row gutter={[16, 16]} style={{ height: '100%' }}>
-          {modelSelections.map((model, index) => (
-            <Col span={spans.span} key={model.value}>
-              <ModelItem
-                ref={(el: any) => setModelRefs(index, el)}
-                modelList={modelSelections}
-                globalParams={{
-                  ...globalParams,
-                  model: model.value
-                }}
-                systemMessage={systemMessage}
-                setGlobalParams={setGlobalParams}
-              />
-            </Col>
-          ))}
-        </Row>
+        <CompareContext.Provider
+          value={{
+            spans,
+            globalParams,
+            loadingStatus,
+            setGlobalParams,
+            setLoadingStatus: handleSetLoadingStatus,
+            handleDeleteModel: handleDeleteModel
+          }}
+        >
+          <ActiveModels
+            spans={spans}
+            modelSelections={modelSelections}
+            setModelRefs={setModelRefs}
+          ></ActiveModels>
+        </CompareContext.Provider>
       </div>
       <div>
         <MessageInput
           loading={isLoading}
           handleSubmit={handleSubmit}
           handleAbortFetch={handleAbortFetch}
-          setParamsSettings={setParamsSettings}
+          clearAll={handleClearAll}
           setSpans={setSpans}
+          setModelSelections={handleUpdateModelSelections}
+          presetPrompt={handlePresetPrompt}
           modelList={modelList}
         />
       </div>

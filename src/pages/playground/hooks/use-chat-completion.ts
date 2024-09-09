@@ -10,19 +10,10 @@ interface MessageItemProps {
   uid: number;
 }
 
-const useChatCompletion = (
-  systemMessage: string,
-  parameters: Record<string, any>
-) => {
+const useChatCompletion = () => {
   const [loading, setLoading] = useState(false);
   const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItemProps[]>([
-    {
-      role: 'user',
-      content: '',
-      uid: messageId.current
-    }
-  ]);
+  const [messageList, setMessageList] = useState<MessageItemProps[]>([]);
   const contentRef = useRef<any>('');
   const controllerRef = useRef<any>(null);
 
@@ -53,12 +44,16 @@ const useChatCompletion = (
     ]);
   };
 
-  const submitMessage = async () => {
+  const submitMessage = async (pramas: {
+    parameters: Record<string, any>;
+    systemMessage: string;
+  }) => {
+    const { parameters, systemMessage } = pramas;
     if (!parameters.model) return;
     try {
       setLoading(true);
       setMessageId();
-
+      console.log('messagelist=========2=', messageList);
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;

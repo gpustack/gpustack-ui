@@ -1,0 +1,46 @@
+.prompt-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .text {
+      font-weight: var(--font-weight-bold);
+    }
+  }
+
+  .prompt-item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--border-radius-base);
+    min-height: 150px;
+    padding: 10px 12px;
+    gap: 8px;
+
+    .data-item {
+      display: flex;
+      justify-content: flex-start;
+      align-items: start;
+    }
+
+    .role {
+      display: flex;
+      width: 60px;
+      flex-basis: 60px;
+      font-weight: var(--font-weight-bold);
+      margin-bottom: 8px;
+    }
+
+    .prompt {
+      flex: 1;
+      padding: 8px;
+      border-radius: var(--border-radius-mini);
+      background-color: var(--ant-color-fill-tertiary);
+    }
+  }
+}

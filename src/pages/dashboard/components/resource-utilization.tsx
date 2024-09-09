@@ -17,7 +17,7 @@ const TypeKeyMap = {
     intl: false,
     color: 'rgba(250, 173, 20,.8)'
   },
-  memory: {
+  ram: {
     label: 'dashboard.memory',
     type: 'Memory',
     intl: true,
@@ -29,7 +29,7 @@ const TypeKeyMap = {
     intl: false,
     color: 'rgba(84, 204, 152,.8)'
   },
-  gpu_memory: {
+  vram: {
     label: 'dashboard.vram',
     type: 'VRAM',
     intl: true,
@@ -114,7 +114,7 @@ const UtilizationOvertime: React.FC = () => {
   const intl = useIntl();
   const data = useContext(DashboardContext)?.system_load?.history || {};
 
-  const typeList = ['gpu', 'cpu', 'memory', 'gpu_memory'];
+  const typeList = ['gpu', 'cpu', 'ram', 'vram'];
 
   const tooltipValueFormatter = (value: any) => {
     return !value ? value : `${value}%`;

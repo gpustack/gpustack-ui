@@ -8,16 +8,16 @@ export interface DashboardProps {
   system_load: {
     current: {
       cpu: number;
-      memory: number;
+      ram: number;
       gpu: number;
-      gpu_memory: number;
+      vram: number;
     };
     history: {
       cpu: {
         timestamp: number;
         value: number;
       }[];
-      memory: {
+      ram: {
         timestamp: number;
         value: number;
       }[];
@@ -25,7 +25,7 @@ export interface DashboardProps {
         timestamp: number;
         value: number;
       }[];
-      gpu_memory: {
+      vram: {
         timestamp: number;
         value: number;
       }[];

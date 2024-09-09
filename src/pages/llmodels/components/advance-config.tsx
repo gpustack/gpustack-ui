@@ -240,7 +240,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         children
       }
     ];
-  }, [scheduleType]);
+  }, [form, intl, gpuOptions, scheduleType, wokerSelector]);
 
   return (
     <Collapse

@@ -1,23 +1,20 @@
-import LabelSelector from '@/components/label-selector';
 import ModalFooter from '@/components/modal-footer';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
-import FormItemWrapper from '@/components/seal-form/components/wrapper';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { convertFileSize } from '@/utils';
-import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Collapse, Form, Modal, Tooltip, Typography } from 'antd';
+import { Form, Modal } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { queryHuggingfaceModelFiles, queryHuggingfaceModels } from '../apis';
-import { modelSourceMap, placementStrategyOptions } from '../config';
-import { FormData, ListItem } from '../config/types';
-import dataformStyles from '../style/data-form.less';
+import { queryGPUList, queryHuggingfaceModelFiles } from '../apis';
+import { modelSourceMap } from '../config';
+import { FormData, GPUListItem, ListItem } from '../config/types';
+import AdvanceConfig from './advance-config';
 
 type AddModalProps = {
   title: string;
@@ -46,15 +43,24 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const { title, action, open, onOk, onCancel } = props || {};
   const [form] = Form.useForm();
   const intl = useIntl();
+  const [gpuOptions, setGpuOptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const modelSource = Form.useWatch('source', form);
-  const wokerSelector = Form.useWatch('worker_selector', form);
-  const [repoOptions, setRepoOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
   const [fileOptions, setFileOptions] = useState<
     { label: string; value: string }[]
   >([]);
+
+  const getGPUList = async () => {
+    const data = await queryGPUList();
+    const list = _.map(data.items, (item: GPUListItem) => {
+      return {
+        ...item,
+        label: item.name,
+        value: item.name
+      };
+    });
+    setGpuOptions(list);
+  };
 
   const initFormValue = () => {
     if (action === PageAction.CREATE && open) {
@@ -65,7 +71,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     if (action === PageAction.EDIT && open) {
       form.setFieldsValue({
-        ...props.data
+        ...props.data,
+        scheduleType: props.data?.gpu_selector ? 'manual' : 'auto'
       });
     }
   };
@@ -111,32 +118,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     const repo = form.getFieldValue('huggingface_repo_id');
     handleFetchModelFiles(repo);
   };
-
-  const handleOnSearchRepo = async (text: string) => {
-    try {
-      const params = {
-        search: {
-          query: text,
-          tags: ['gguf']
-        }
-      };
-      const models = await queryHuggingfaceModels(params);
-      const list = _.map(models || [], (item: any) => {
-        return {
-          ...item,
-          value: item.name,
-          label: item.name
-        };
-      });
-      setRepoOptions(list);
-    } catch (error) {
-      setRepoOptions([]);
-    }
-  };
-
-  const debounceSearch = _.debounce((text: string) => {
-    handleOnSearchRepo(text);
-  }, 300);
 
   const renderHuggingfaceFields = () => {
     return (
@@ -258,157 +239,33 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
-  const handleWorkerLabelsChange = useCallback(
-    (labels: Record<string, any>) => {
-      console.log('labels========', labels);
-      form.setFieldValue('worker_selector', labels);
-    },
-    []
-  );
-
-  const handleOnSelectModel = useCallback((item: any) => {
-    const repo = item.name;
-    if (form.getFieldValue('source') === modelSourceMap.huggingface_value) {
-      form.setFieldValue('huggingface_repo_id', repo);
-      handleFetchModelFiles(repo);
-    } else {
-      form.setFieldValue('ollama_library_model_name', repo);
-    }
-  }, []);
-
-  const handleSourceChange = useCallback((value: string) => {
-    form.setFieldValue('source', value);
-  }, []);
-
   const handleSumit = () => {
     form.submit();
   };
 
-  const collapseItems = [
-    {
-      key: '1',
-      label: (
-        <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
-          {intl.formatMessage({ id: 'resources.form.advanced' })}
-        </span>
-      ),
-      children: (
-        <>
-          <Form.Item<FormData> name="placement_strategy">
-            <SealSelect
-              label={intl.formatMessage({
-                id: 'resources.form.placementStrategy'
-              })}
-              options={placementStrategyOptions}
-              description={
-                <div>
-                  <div className="m-b-8">
-                    <Typography.Title
-                      level={5}
-                      style={{
-                        color: 'var(--color-white-1)',
-                        marginRight: 10
-                      }}
-                    >
-                      Spread:
-                    </Typography.Title>
-                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.spread.tips'
-                      })}
-                    </Typography.Text>
-                  </div>
-                  <div>
-                    <Typography.Title
-                      level={5}
-                      style={{ color: 'var(--color-white-1)', marginRight: 10 }}
-                    >
-                      Binpack:
-                    </Typography.Title>
-                    <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.binpack.tips'
-                      })}
-                    </Typography.Text>
-                  </div>
-                </div>
-              }
-            ></SealSelect>
-          </Form.Item>
-          <div style={{ marginBottom: 24 }}>
-            <FormItemWrapper noWrapperStyle>
-              <Form.Item<FormData>
-                name="partial_offload"
-                valuePropName="checked"
-                style={{ padding: '0 10px', marginBottom: 0 }}
-              >
-                <Checkbox>
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'models.form.partialoffload.tips'
-                    })}
-                  >
-                    <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.enablePartialOffload'
-                      })}
-                    </span>
-                    <InfoCircleOutlined
-                      className="m-l-4"
-                      style={{ color: 'var(--ant-color-text-tertiary)' }}
-                    />
-                  </Tooltip>
-                </Checkbox>
-              </Form.Item>
-            </FormItemWrapper>
-          </div>
-          <div style={{ marginBottom: 24 }}>
-            <FormItemWrapper noWrapperStyle>
-              <Form.Item<FormData>
-                name="distributed_inference_across_workers"
-                valuePropName="checked"
-                style={{ padding: '0 10px', marginBottom: 0 }}
-              >
-                <Checkbox>
-                  <Tooltip
-                    title={intl.formatMessage({
-                      id: 'models.form.distribution.tips'
-                    })}
-                  >
-                    <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                      {intl.formatMessage({
-                        id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                      })}
-                    </span>
-                    <InfoCircleOutlined
-                      className="m-l-4"
-                      style={{ color: 'var(--ant-color-text-tertiary)' }}
-                    />
-                  </Tooltip>
-                </Checkbox>
-              </Form.Item>
-            </FormItemWrapper>
-          </div>
-          <Form.Item<FormData> name="worker_selector">
-            <LabelSelector
-              label={intl.formatMessage({
-                id: 'resources.form.workerSelector'
-              })}
-              labels={form.getFieldValue('worker_selector')}
-              onChange={handleWorkerLabelsChange}
-              description={
-                <span>
-                  {intl.formatMessage({
-                    id: 'resources.form.workerSelector.description'
-                  })}
-                </span>
-              }
-            ></LabelSelector>
-          </Form.Item>
-        </>
-      )
+  const handleOk = (formdata: FormData) => {
+    const gpu = _.find(gpuOptions, (item: any) => {
+      return item.value === formdata.gpu_selector;
+    });
+    if (gpu) {
+      onOk({
+        ..._.omit(formdata, ['scheduleType']),
+        gpu_selector: {
+          gpu_name: gpu.name,
+          gpu_index: gpu.index,
+          worker_name: gpu.worker_name
+        }
+      });
+    } else {
+      onOk({
+        ..._.omit(formdata, ['scheduleType'])
+      });
     }
-  ];
+  };
+
+  useEffect(() => {
+    getGPUList();
+  }, []);
 
   return (
     <Modal
@@ -449,7 +306,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         <Form
           name="addModalForm"
           form={form}
-          onFinish={onOk}
+          onFinish={handleOk}
           preserve={false}
           style={{
             padding: 'var(--ant-modal-content-padding)',
@@ -535,19 +392,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               })}
             ></SealInput.TextArea>
           </Form.Item>
-          <Collapse
-            expandIconPosition="start"
-            bordered={false}
-            ghost
-            className={dataformStyles['advanced-collapse']}
-            expandIcon={({ isActive }) => (
-              <RightOutlined
-                rotate={isActive ? 90 : 0}
-                style={{ fontSize: '12px' }}
-              />
-            )}
-            items={collapseItems}
-          ></Collapse>
+
+          <AdvanceConfig form={form} gpuOptions={gpuOptions}></AdvanceConfig>
         </Form>
       </SimpleBar>
     </Modal>

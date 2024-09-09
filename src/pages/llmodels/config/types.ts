@@ -13,6 +13,12 @@ export interface ListItem {
   id: number;
   created_at: string;
   updated_at: string;
+  gpu_selector?: {
+    worker_name: string;
+    gpu_index: number;
+    gpu_name: string;
+  };
+  worker_selector?: object;
 }
 
 export interface FormData {
@@ -22,6 +28,11 @@ export interface FormData {
   s3_address: string;
   ollama_library_model_name: 'string';
   distributed_inference_across_workers?: boolean;
+  gpu_selector?: {
+    worker_name: string;
+    gpu_index: number;
+    gpu_name: string;
+  };
   placement_strategy?: string;
   partial_offload?: boolean;
   worker_selector?: object;
@@ -60,4 +71,27 @@ export interface ModelInstanceFormData {
   source: string;
   huggingface_repo_id: 'string';
   huggingface_filename: 'string';
+}
+
+export interface GPUListItem {
+  name: string;
+  uuid: string;
+  vendor: string;
+  index: number;
+  core: {
+    total: number;
+    utilization_rate: number;
+  };
+  memory: {
+    total: number;
+    utilization_rate: number;
+    is_unified_memory: boolean;
+    used: number;
+    allocated: number;
+  };
+  temperature: number;
+  id: string;
+  worker_id: number;
+  worker_name: string;
+  worker_ip: string;
 }

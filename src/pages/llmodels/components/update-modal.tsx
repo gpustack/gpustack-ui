@@ -77,8 +77,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ? props.data?.gpu_selector.gpu_name
           : null
       });
-
-      console.log('form.setFieldsValue', props.data, form.getFieldsValue());
     }
   };
 

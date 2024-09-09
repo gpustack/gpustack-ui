@@ -13,9 +13,11 @@ const GPUCard: React.FC<{
       </div>
       <div className="info">
         <span>VRAM:</span>
-        <span>Total {convertFileSize(22906503168)}</span>
-        <span>Used {convertFileSize(3322640640)}</span>
-        <span>Utilization {_.round(3.79, 2)}%</span>
+        <span>Total {convertFileSize(data?.memory?.total || 0)}</span>
+        <span>Used {convertFileSize(data?.memory?.used || 0)}</span>
+        <span>
+          Utilization {_.round(data?.memory?.utilization_rate || 0, 2)}%
+        </span>
       </div>
     </div>
   );

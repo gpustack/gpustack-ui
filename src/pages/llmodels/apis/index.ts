@@ -3,6 +3,7 @@ import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import {
   FormData,
+  GPUListItem,
   ListItem,
   ModelInstanceFormData,
   ModelInstanceListItem
@@ -21,6 +22,12 @@ export async function queryModelsList(
     methos: 'GET',
     ...options,
     params
+  });
+}
+
+export async function queryGPUList() {
+  return request<Global.PageResponse<GPUListItem>>(`/gpu-devices`, {
+    methos: 'GET'
   });
 }
 

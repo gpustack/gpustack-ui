@@ -1,28 +1,21 @@
-import LabelSelector from '@/components/label-selector';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Collapse, Form, Select, Tooltip, Typography } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo
+  useState
 } from 'react';
-import {
-  modelSourceMap,
-  ollamaModelOptions,
-  placementStrategyOptions
-} from '../config';
-import { FormData } from '../config/types';
-import dataformStyles from '../style/data-form.less';
-import GPUCard from './gpu-card';
+import { queryGPUList } from '../apis';
+import { modelSourceMap, ollamaModelOptions } from '../config';
+import { FormData, GPUListItem } from '../config/types';
+import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
   ref?: any;
@@ -45,109 +38,29 @@ const sourceOptions = [
   }
 ];
 
-const gpuOptions = [
-  {
-    label: 'NVIDIA A100',
-    value: '1',
-    index: 0,
-    worker_name: 'mbp-1.local',
-    worker: {
-      GPU: {
-        name: 'A100',
-        count: 1,
-        memory: 16384
-      },
-      CPU: {
-        count: 16,
-        memory: 16384
-      },
-      os: {
-        name: 'Ubuntu 20.04',
-        version: '20.04'
-      },
-      name: 'mbp-1.local',
-      address: '192.168.1.1'
-    }
-  },
-  {
-    label: 'NVIDIA H100',
-    value: '2',
-    index: 1,
-    worker_name: 'mbp-2.local',
-    worker: {
-      GPU: {
-        name: 'H100',
-        count: 1,
-        memory: 16384
-      },
-      CPU: {
-        count: 16,
-        memory: 16384
-      },
-      os: {
-        name: 'Ubuntu 20.04',
-        version: '20.04'
-      },
-      name: 'mbp-2.local',
-      address: '192.168.1.2'
-    }
-  },
-  {
-    label: 'NVIDIA A100',
-    value: '3',
-    index: 2,
-    worker_name: 'mbp-3.local',
-    worker: {
-      GPU: {
-        name: 'A100',
-        count: 1,
-        memory: 16384
-      },
-      CPU: {
-        count: 16,
-        memory: 16384
-      },
-      os: {
-        name: 'Ubuntu 20.04',
-        version: '20.04'
-      },
-      name: 'mbp-3.local',
-      address: '192.168.1.3'
-    }
-  },
-  {
-    label: 'NVIDIA H100',
-    value: '4',
-    index: 3,
-    worker_name: 'mbp-4.local',
-    worker: {
-      GPU: {
-        name: 'H100',
-        count: 1,
-        memory: 16384
-      },
-      CPU: {
-        count: 16,
-        memory: 16384
-      },
-      os: {
-        name: 'Ubuntu 20.04',
-        version: '20.04'
-      },
-      name: 'mbp-4.local',
-      address: '192.168.1.4'
-    }
-  }
-];
-
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const { action, repo, onOk } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
-  const wokerSelector = Form.useWatch('worker_selector', form);
-  // const [scheduleType, setScheduleType] = React.useState(false); // false: auto, true: manual
+  const [gpuOptions, setGpuOptions] = useState<
+    Array<GPUListItem & { label: string; value: string }>
+  >([]);
 
-  const scheduleType = Form.useWatch('scheduleType', form);
+  const getGPUList = async () => {
+    const data = await queryGPUList();
+    const list = _.map(data.items, (item: GPUListItem) => {
+      return {
+        ...item,
+        label: item.name,
+        value: item.name
+      };
+    });
+    setGpuOptions(list);
+  };
+
+  useEffect(() => {
+    getGPUList();
+  }, []);
 
   const handleSumit = () => {
     form.submit();
@@ -172,40 +85,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     []
   );
 
-  const placementStrategyTips = [
-    {
-      title: 'Spread',
-      tips: intl.formatMessage({
-        id: 'resources.form.spread.tips'
-      })
-    },
-    {
-      title: 'Binpack',
-      tips: intl.formatMessage({
-        id: 'resources.form.binpack.tips'
-      })
-    }
-  ];
-
-  const scheduleTypeTips = [
-    {
-      title: intl.formatMessage({
-        id: 'models.form.scheduletype.auto'
-      }),
-      tips: intl.formatMessage({
-        id: 'models.form.scheduletype.auto.tips'
-      })
-    },
-    {
-      title: intl.formatMessage({
-        id: 'models.form.scheduletype.manual'
-      }),
-      tips: intl.formatMessage({
-        id: 'models.form.scheduletype.manual.tips'
-      })
-    }
-  ];
-
   const handleOnSelectModel = () => {
     console.log('repo=============', repo);
     if (!repo) {
@@ -227,13 +106,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       });
     }
   };
-
-  const handleWorkerLabelsChange = useCallback(
-    (labels: Record<string, any>) => {
-      form.setFieldValue('worker_selector', labels);
-    },
-    []
-  );
 
   const renderHuggingfaceFields = () => {
     return (
@@ -355,162 +227,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
-  const renderSelectTips = (list: Array<{ title: string; tips: string }>) => {
-    return (
-      <div>
-        {list.map((item, index) => {
-          return (
-            <div className="m-b-8" key={index}>
-              <Typography.Title
-                level={5}
-                style={{
-                  color: 'var(--color-white-1)',
-                  marginRight: 10
-                }}
-              >
-                {item.title}:
-              </Typography.Title>
-              <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                {item.tips}
-              </Typography.Text>
-            </div>
-          );
-        })}
-      </div>
-    );
+  const handleOk = (formdata: FormData) => {
+    const gpu = _.find(gpuOptions, (item: any) => {
+      return item.value === formdata.gpu_selector;
+    });
+    if (gpu) {
+      onOk({
+        ..._.omit(formdata, ['scheduleType']),
+        gpu_selector: {
+          gpu_name: gpu.name,
+          gpu_index: gpu.index,
+          worker_name: gpu.worker_name
+        }
+      });
+    } else {
+      onOk({
+        ..._.omit(formdata, ['scheduleType'])
+      });
+    }
   };
-
-  const collapseItems = useMemo(() => {
-    const children = (
-      <>
-        <Form.Item name="scheduleType">
-          <SealSelect
-            label={intl.formatMessage({ id: 'models.form.scheduletype' })}
-            description={renderSelectTips(scheduleTypeTips)}
-            options={[
-              {
-                label: intl.formatMessage({
-                  id: 'models.form.scheduletype.auto'
-                }),
-                value: 'auto'
-              },
-              {
-                label: intl.formatMessage({
-                  id: 'models.form.scheduletype.manual'
-                }),
-                value: 'manual'
-              }
-            ]}
-          ></SealSelect>
-        </Form.Item>
-        {scheduleType === 'auto' && (
-          <Form.Item<FormData> name="placement_strategy">
-            <SealSelect
-              label={intl.formatMessage({
-                id: 'resources.form.placementStrategy'
-              })}
-              options={placementStrategyOptions}
-              description={renderSelectTips(placementStrategyTips)}
-            ></SealSelect>
-          </Form.Item>
-        )}
-        {scheduleType === 'auto' && (
-          <Form.Item<FormData> name="worker_selector">
-            <LabelSelector
-              label={intl.formatMessage({
-                id: 'resources.form.workerSelector'
-              })}
-              labels={wokerSelector}
-              onChange={handleWorkerLabelsChange}
-              description={
-                <span>
-                  {intl.formatMessage({
-                    id: 'resources.form.workerSelector.description'
-                  })}
-                </span>
-              }
-            ></LabelSelector>
-          </Form.Item>
-        )}
-        {scheduleType === 'manual' && (
-          <Form.Item<FormData> name="gpu_selector">
-            <SealSelect label="GPU Selector">
-              {gpuOptions.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  <GPUCard data={item}></GPUCard>
-                </Select.Option>
-              ))}
-            </SealSelect>
-          </Form.Item>
-        )}
-        <div style={{ marginBottom: 22, paddingLeft: 10 }}>
-          <Form.Item<FormData>
-            name="partial_offload"
-            valuePropName="checked"
-            style={{ padding: '0 10px', marginBottom: 0 }}
-            noStyle
-          >
-            <Checkbox className="p-l-6">
-              <Tooltip
-                title={intl.formatMessage({
-                  id: 'models.form.partialoffload.tips'
-                })}
-              >
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                  {intl.formatMessage({
-                    id: 'resources.form.enablePartialOffload'
-                  })}
-                </span>
-                <InfoCircleOutlined
-                  className="m-l-4"
-                  style={{ color: 'var(--ant-color-text-tertiary)' }}
-                />
-              </Tooltip>
-            </Checkbox>
-          </Form.Item>
-        </div>
-        {scheduleType === 'auto' && (
-          <div style={{ marginBottom: 22, paddingLeft: 10 }}>
-            <Form.Item<FormData>
-              name="distributed_inference_across_workers"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-              noStyle
-            >
-              <Checkbox className="p-l-6">
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'models.form.distribution.tips'
-                  })}
-                >
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                    })}
-                  </span>
-                  <InfoCircleOutlined
-                    className="m-l-4"
-                    style={{ color: 'var(--ant-color-text-tertiary)' }}
-                  />
-                </Tooltip>
-              </Checkbox>
-            </Form.Item>
-          </div>
-        )}
-      </>
-    );
-    return [
-      {
-        key: '1',
-        label: (
-          <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
-            {intl.formatMessage({ id: 'resources.form.advanced' })}
-          </span>
-        ),
-        children
-      }
-    ];
-  }, [scheduleType]);
 
   useEffect(() => {
     handleOnSelectModel();
@@ -520,7 +255,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     <Form
       name="deployModel"
       form={form}
-      onFinish={onOk}
+      onFinish={handleOk}
       preserve={false}
       style={{ padding: '16px 24px' }}
       clearOnDestroy={true}
@@ -528,9 +263,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         replicas: 1,
         source: props.source,
         placement_strategy: 'spread',
-        partial_offload: true,
+        partial_offload: false,
         scheduleType: 'auto',
-        distributed_inference_across_workers: true
+        distributed_inference_across_workers: false
       }}
     >
       <Form.Item<FormData>
@@ -612,20 +347,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           })}
         ></SealInput.TextArea>
       </Form.Item>
-
-      <Collapse
-        expandIconPosition="start"
-        bordered={false}
-        ghost
-        className={dataformStyles['advanced-collapse']}
-        expandIcon={({ isActive }) => (
-          <RightOutlined
-            rotate={isActive ? 90 : 0}
-            style={{ fontSize: '12px', marginLeft: -8 }}
-          />
-        )}
-        items={collapseItems}
-      ></Collapse>
+      <AdvanceConfig form={form} gpuOptions={gpuOptions}></AdvanceConfig>
     </Form>
   );
 });

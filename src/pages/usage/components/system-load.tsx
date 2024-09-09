@@ -83,8 +83,8 @@ const SystemLoad = () => {
                       id: 'dashboard.vramutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.gpu_memory)}
-                    value={_.round(data.gpu_memory || 0, 1)}
+                    color={strokeColorFunc(data.vram)}
+                    value={_.round(data.vram || 0, 1)}
                   ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
@@ -103,8 +103,8 @@ const SystemLoad = () => {
                       id: 'dashboard.memoryutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.memory)}
-                    value={_.round(data.memory || 0, 1)}
+                    color={strokeColorFunc(data.ram)}
+                    value={_.round(data.ram || 0, 1)}
                   ></GaugeChart>
                 </Col>
               </Row>

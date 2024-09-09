@@ -87,12 +87,12 @@ const ActiveTable = () => {
     {
       title: intl.formatMessage({ id: 'dashboard.allocatevram' }),
       dataIndex: 'resource_claim.memory',
-      key: 'gpu_memory',
+      key: 'vram',
       render: (text: any, record: any) => {
         return (
           <span>
-            {convertFileSize(record.resource_claim?.gpu_memory || 0)} /{' '}
-            {convertFileSize(record.resource_claim?.memory || 0)}
+            {convertFileSize(record.resource_claim?.vram || 0)} /{' '}
+            {convertFileSize(record.resource_claim?.ram || 0)}
           </span>
         );
       }

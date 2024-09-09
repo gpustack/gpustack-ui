@@ -30,6 +30,7 @@ export default {
   'resources.table.vender': 'Vender',
   'resources.table.temperature': 'Temperature',
   'resources.table.core': 'Core',
+  'resources.table.utilization': 'Utilization',
   'resources.table.gpuutilization': 'GPU Utilization',
   'resources.table.vramutilization': 'VRAM Utilization',
   'resources.table.total': 'Total',

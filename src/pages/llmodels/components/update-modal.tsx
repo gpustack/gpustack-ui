@@ -72,8 +72,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     if (action === PageAction.EDIT && open) {
       form.setFieldsValue({
         ...props.data,
-        scheduleType: props.data?.gpu_selector ? 'manual' : 'auto'
+        scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
+        gpu_selector: props.data?.gpu_selector
+          ? props.data?.gpu_selector.gpu_name
+          : null
       });
+
+      console.log('form.setFieldsValue', props.data, form.getFieldsValue());
     }
   };
 
@@ -258,7 +263,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       });
     } else {
       onOk({
-        ..._.omit(formdata, ['scheduleType'])
+        ..._.omit(formdata, ['scheduleType']),
+        gpu_selector: null
       });
     }
   };

@@ -12,9 +12,9 @@ export default {
   'models.form.configurations': '配置',
   'models.form.s3address': 'S3 地址',
   'models.form.partialoffload.tips':
-    '部分卸载指的是根据可用资源将尽可能多的模型层卸载到GPU的策略，但完全卸载所有层是不可能的。',
+    '半卸载是指根据可用资源将模型的尽可能多的层卸载到 GPU 上的一种策略，当无法完全卸载所有层时，采用这种方式。',
   'models.form.distribution.tips':
-    '当单个 GPU 或 worker 的资源不足时，允许将部分计算卸载给单个或多个远程 worker。',
+    '允许在单个 GPU 或 worker 资源不足时，将部分计算卸载到一个或多个远程 woker。',
   'models.openinplayground': '在 Playground 中打开',
   'models.instances': '实例',
   'models.table.replicas.edit': '调整副本数',

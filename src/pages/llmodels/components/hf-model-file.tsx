@@ -64,11 +64,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
   };
 
   const generateGroupByFilename = useCallback((list: any[]) => {
-    const data = _.find(list, (item: any) => {
-      const parsed = parseFilename(item.path);
-      return !!parsed;
-    });
-
+    // general file
     const generalFileList = _.filter(list, (item: any) => {
       const parsed = parseFilename(item.path);
       return !parsed;
@@ -139,12 +135,10 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       });
 
       const newList = generateGroupByFilename(list);
-
-      console.log('newList==========', newList);
-
       const sortList = _.sortBy(newList, (item: any) => {
         return sortType === 'size' ? item.size : item.path;
       });
+
       handleSelectModelFile(sortList[0]);
       setDataSource({ fileList: sortList, loading: false });
     } catch (error) {
@@ -162,7 +156,11 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
   };
 
   const getModelQuantizationType = useCallback((item: any) => {
-    const quanType = getFileType(item.path);
+    let path = item.path;
+    if (item?.parts?.length) {
+      path = `${item.path}.gguf`;
+    }
+    const quanType = getFileType(path);
     if (quanType) {
       return (
         <Tag

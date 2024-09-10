@@ -12,7 +12,7 @@ export default {
   'models.form.configurations': 'Configurations',
   'models.form.s3address': 'S3 Address',
   'models.form.partialoffload.tips':
-    'Refers to the strategy of offloading as many layers of a model to the GPU as possible based on available resources, while offload all layers completely is not possible.',
+    'After enabling CPU offloading, GPUStack prioritizes loading as many layers as possible onto the GPU to maximize performance. If GPU resources are limited, some layers will be offloaded to the CPU, with full CPU inference used only when no GPU is available.',
   'models.form.distribution.tips':
     'Allows for offloading part of the computation to single or multiple remote workers when the resources of a single GPU or worker are insufficient.',
   'models.openinplayground': 'Open in Playground',

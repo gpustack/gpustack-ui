@@ -175,7 +175,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         )}
         <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
           <Form.Item<FormData>
-            name="partial_offload"
+            name="cpu_offloading"
             valuePropName="checked"
             style={{ padding: '0 10px', marginBottom: 0 }}
             noStyle

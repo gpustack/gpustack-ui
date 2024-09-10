@@ -12,7 +12,7 @@ export default {
   'models.form.configurations': '配置',
   'models.form.s3address': 'S3 地址',
   'models.form.partialoffload.tips':
-    '半卸载是指根据可用资源将模型的尽可能多的层卸载到 GPU 上的一种策略，当无法完全卸载所有层时，采用这种方式。',
+    '在启用 CPU 卸载后，GPUStack 优先将尽可能多的层加载到 GPU 上，以最大化性能。如果 GPU 资源有限，则某些层将被卸载到 CPU 上，只有在没有 GPU 可用时，才会完全使用 CPU 进行推理。',
   'models.form.distribution.tips':
     '允许在单个 GPU 或 worker 资源不足时，将部分计算卸载到一个或多个远程 woker。',
   'models.openinplayground': '在 Playground 中打开',

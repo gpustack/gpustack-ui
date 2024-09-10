@@ -8,7 +8,7 @@ export default {
   'resources.table.key.tips': '存在相同的 key.',
   'resources.table.labels': '标签',
   'resources.form.advanced': '高级',
-  'resources.form.enablePartialOffload': '允许半卸载',
+  'resources.form.enablePartialOffload': '允许 CPU 卸载',
   'resources.form.placementStrategy': '放置策略',
   'resources.form.workerSelector': 'Worker 选择器',
   'resources.form.enableDistributedInferenceAcrossWorkers':

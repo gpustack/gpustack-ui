@@ -65,6 +65,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       if (modelSource === modelSourceMap.ollama_library_value) {
         return;
       }
+      console.log('handleOnSearchRepo', dataSource.loading);
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
       if (dataSource.loading) return;
@@ -120,13 +121,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     [dataSource]
   );
 
-  const handlerSearchModels = useCallback(
-    async (e: any) => {
-      searchInputRef.current = e.target.value;
-      handleOnSearchRepo();
-    },
-    [handleOnSearchRepo]
-  );
+  const handlerSearchModels = async (e: any) => {
+    searchInputRef.current = e.target.value;
+    handleOnSearchRepo();
+  };
 
   const handleOnOpen = () => {
     if (

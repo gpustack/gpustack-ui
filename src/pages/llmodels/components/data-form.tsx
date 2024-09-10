@@ -263,7 +263,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         replicas: 1,
         source: props.source,
         placement_strategy: 'spread',
-        partial_offload: false,
+        cpu_offloading: false,
         scheduleType: 'auto',
         distributed_inference_across_workers: false
       }}

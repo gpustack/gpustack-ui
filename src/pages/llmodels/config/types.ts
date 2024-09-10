@@ -34,7 +34,7 @@ export interface FormData {
     gpu_name: string;
   };
   placement_strategy?: string;
-  partial_offload?: boolean;
+  cpu_offloading?: boolean;
   worker_selector?: object;
   scheduleType?: string;
   name: string;

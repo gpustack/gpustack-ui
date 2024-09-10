@@ -15,17 +15,19 @@ const GPUCard: React.FC<{
         {intl.formatMessage({ id: 'resources.table.index' })}:{data.index}]
       </div>
       <div className="info">
-        <span>{intl.formatMessage({ id: 'resources.table.vram' })}:</span>
         <span>
-          {intl.formatMessage({ id: 'resources.table.total' })}{' '}
-          {convertFileSize(data?.memory?.total || 0)}
+          {intl.formatMessage({ id: 'resources.table.vram' })}(
+          {intl.formatMessage({ id: 'resources.table.used' })}/
+          {intl.formatMessage({ id: 'resources.table.total' })}):{' '}
+          <span>
+            {convertFileSize(data?.memory?.used || 0)} /{' '}
+            {convertFileSize(data?.memory?.total || 0)}
+          </span>
         </span>
         <span>
-          {intl.formatMessage({ id: 'resources.table.used' })}{' '}
-          {convertFileSize(data?.memory?.used || 0)}
-        </span>
-        <span>
-          {intl.formatMessage({ id: 'resources.table.utilization' })}{' '}
+          <span>
+            {intl.formatMessage({ id: 'resources.table.gpuutilization' })}:{' '}
+          </span>
           {_.round(data?.memory?.utilization_rate || 0, 2)}%
         </span>
       </div>

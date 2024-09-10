@@ -119,33 +119,33 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           ></SealSelect>
         </Form.Item>
         {scheduleType === 'auto' && (
-          <Form.Item<FormData> name="placement_strategy">
-            <SealSelect
-              label={intl.formatMessage({
-                id: 'resources.form.placementStrategy'
-              })}
-              options={placementStrategyOptions}
-              description={renderSelectTips(placementStrategyTips)}
-            ></SealSelect>
-          </Form.Item>
-        )}
-        {scheduleType === 'auto' && (
-          <Form.Item<FormData> name="worker_selector">
-            <LabelSelector
-              label={intl.formatMessage({
-                id: 'resources.form.workerSelector'
-              })}
-              labels={wokerSelector}
-              onChange={handleWorkerLabelsChange}
-              description={
-                <span>
-                  {intl.formatMessage({
-                    id: 'resources.form.workerSelector.description'
-                  })}
-                </span>
-              }
-            ></LabelSelector>
-          </Form.Item>
+          <>
+            <Form.Item<FormData> name="placement_strategy">
+              <SealSelect
+                label={intl.formatMessage({
+                  id: 'resources.form.placementStrategy'
+                })}
+                options={placementStrategyOptions}
+                description={renderSelectTips(placementStrategyTips)}
+              ></SealSelect>
+            </Form.Item>
+            <Form.Item<FormData> name="worker_selector">
+              <LabelSelector
+                label={intl.formatMessage({
+                  id: 'resources.form.workerSelector'
+                })}
+                labels={wokerSelector}
+                onChange={handleWorkerLabelsChange}
+                description={
+                  <span>
+                    {intl.formatMessage({
+                      id: 'resources.form.workerSelector.description'
+                    })}
+                  </span>
+                }
+              ></LabelSelector>
+            </Form.Item>
+          </>
         )}
         {scheduleType === 'manual' && (
           <Form.Item<FormData>
@@ -173,7 +173,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </SealSelect>
           </Form.Item>
         )}
-        <div style={{ marginBottom: 22, paddingLeft: 10 }}>
+        <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
           <Form.Item<FormData>
             name="partial_offload"
             valuePropName="checked"
@@ -200,7 +200,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           </Form.Item>
         </div>
         {scheduleType === 'auto' && (
-          <div style={{ marginBottom: 22, paddingLeft: 10 }}>
+          <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>
               name="distributed_inference_across_workers"
               valuePropName="checked"

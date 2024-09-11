@@ -5,6 +5,7 @@ import Inner from './inner';
 interface LabelSelectorProps {
   labels: Record<string, any>;
   label?: string;
+  btnText?: string;
   description?: React.ReactNode;
   onChange?: (labels: Record<string, any>) => void;
 }
@@ -13,6 +14,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   labels,
   onChange,
   label,
+  btnText,
   description
 }) => {
   const [labelsData, setLabelsData] = useState({});
@@ -48,6 +50,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   return (
     <Inner
       label={label}
+      btnText={btnText}
       description={description}
       labels={labelsData}
       labelList={labelList}

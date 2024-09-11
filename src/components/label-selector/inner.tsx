@@ -8,6 +8,7 @@ import Wrapper from './wrapper';
 interface LabelSelectorProps {
   labels: Record<string, any>;
   label?: string;
+  btnText?: string;
   labelList: Array<{ key: string; value: string }>;
   onLabelListChange: (list: { key: string; value: string }[]) => void;
   onChange?: (labels: Record<string, any>) => void;
@@ -20,6 +21,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
   onChange,
   onLabelListChange,
   label,
+  btnText,
   description
 }) => {
   const intl = useIntl();
@@ -97,7 +99,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
           >
             <PlusOutlined className="font-size-14" />{' '}
             {intl.formatMessage({
-              id: 'common.button.addSelector'
+              id: btnText || 'common.button.addSelector'
             })}
           </Button>
         </div>

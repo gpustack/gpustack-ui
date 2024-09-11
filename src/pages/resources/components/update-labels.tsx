@@ -99,6 +99,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
                 id: 'resources.table.labels'
               })}
               labels={labels}
+              btnText="common.button.addLabel"
               onChange={handleLabelsChange}
             ></LabelSelector>
           </Form.Item>

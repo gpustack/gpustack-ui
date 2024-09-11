@@ -2,7 +2,6 @@ import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useContainerScroll from '@/hooks/use-container-scorll';
 import Convert from 'ansi-to-html';
 import classNames from 'classnames';
-import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import './index.less';
 
@@ -26,47 +25,59 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   const convert = new Convert({
     newline: true,
-    escapeXML: true
+    escapeXML: true,
+    stream: false
   });
 
   useEffect(() => {
     updateScrollerPosition();
   }, [logsContent]);
 
-  const getTrailingACount = useCallback((str: string) => {
-    const match = str.match(/A+$/);
-    return match ? match[0].length : 0;
+  const endsWithAnsiEscapeSequence = useCallback((str: string) => {
+    const ansiEscapeRegex = /\x1B\[[0-9;]*[A-Za-z]$/;
+    return ansiEscapeRegex.test(str);
   }, []);
-  const parseHtmlStr = useCallback((htmlStr: string) => {
-    const result: string[] = [];
-    const htmlStrArr = _.filter(
-      htmlStr?.split?.('<br/>'),
-      (item: string) => item
-    );
+  const getCursorUpLines = useCallback((str: string) => {
+    const match = str.match(/\x1B\[(\d*)A$/);
 
-    htmlStrArr.forEach((item: string, index: number) => {
-      const aCount = getTrailingACount(item);
-      if (aCount > 0) {
-        console.log('aCount========', {
-          htmlStrArr,
-          aCount,
-          item,
-          length: result.length,
-          result: [...result]
-        });
-        const placeIndex = result.length - aCount;
-        result[placeIndex] = item.slice(0, -aCount);
+    if (match) {
+      return match[1] === '' ? 1 : parseInt(match[1], 10);
+    } else {
+      return null;
+    }
+  }, []);
+
+  const parseHtmlStr = useCallback((logStr: string) => {
+    const result: string[] = [];
+    const lines = logStr?.split?.('\n');
+
+    lines.forEach((line: string, index: number) => {
+      const upCount = getCursorUpLines(line);
+      if (endsWithAnsiEscapeSequence(line)) {
+        if (upCount) {
+          const placeIndex = result.length - upCount;
+          result[placeIndex] = line;
+        } else {
+          result.push(line);
+        }
       } else {
-        result.push(item);
+        if (line.includes('\r')) {
+          const parts = line.split('\r');
+          const lastLine = parts[parts.length - 1];
+          result.push(lastLine);
+        } else {
+          result.push(line);
+        }
       }
     });
 
-    return result;
+    return result.map((item) => {
+      return convert.toHtml(item);
+    });
   }, []);
 
   const updateContent = (newVal: string) => {
-    const htmlStr = `${convert.toHtml(newVal)}`;
-    const list = parseHtmlStr(htmlStr);
+    const list = parseHtmlStr(newVal);
     setLogsContent(list);
   };
 

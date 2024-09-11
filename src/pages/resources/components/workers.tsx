@@ -29,7 +29,7 @@ const { Column } = Table;
 
 const ActionList = [
   {
-    label: 'resources.button.edittags',
+    label: 'common.button.edit',
     key: 'edit',
     icon: <TagsOutlined />
   },

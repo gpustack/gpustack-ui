@@ -8,7 +8,7 @@ export default {
   'resources.table.hostname': 'Hostname',
   'resources.table.key.tips': 'The same key exists.',
   'resources.form.advanced': 'Advanced',
-  'resources.form.enablePartialOffload': 'Allow Partial Offload',
+  'resources.form.enablePartialOffload': 'Allow CPU Offload',
   'resources.form.placementStrategy': 'Placement Strategy',
   'resources.form.workerSelector': 'Worker Selector',
   'resources.form.enableDistributedInferenceAcrossWorkers':

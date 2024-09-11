@@ -130,7 +130,7 @@ const Models: React.FC<ModelsProps> = ({
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
       icon: <IconFont type="icon-huggingface"></IconFont>,
-      onClick: () => {
+      onClick: (e: any) => {
         setOpenDeployModal({
           show: true,
           width: 'calc(100vw - 220px)',
@@ -143,11 +143,13 @@ const Models: React.FC<ModelsProps> = ({
       value: modelSourceMap.ollama_library_value,
       key: 'ollama_library',
       icon: <IconFont type="icon-ollama"></IconFont>,
-      onClick: () => {
-        setOpenDeployModal({
-          show: true,
-          width: 600,
-          source: modelSourceMap.ollama_library_value
+      onClick: (e: any) => {
+        setOpenDeployModal(() => {
+          return {
+            show: true,
+            width: 600,
+            source: modelSourceMap.ollama_library_value
+          };
         });
       }
     }
@@ -242,7 +244,7 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleCreateModel = useCallback(async (data: FormData) => {
     try {
-      console.log('data:', data);
+      console.log('data:', data, openDeployModal);
 
       await createModel({ data });
       setOpenDeployModal({

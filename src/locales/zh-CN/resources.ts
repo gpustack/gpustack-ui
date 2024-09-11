@@ -1,6 +1,7 @@
 export default {
   'resources.title': '资源',
   'resources.button.create': '添加 Worker',
+  'resources.button.edit': '编辑 Worker',
   'resources.button.edittags': '编辑标签',
   'resources.button.update': '更新标签',
   'resources.nodes': '节点',

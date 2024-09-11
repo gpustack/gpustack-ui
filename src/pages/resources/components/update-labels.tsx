@@ -37,7 +37,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
 
   return (
     <Modal
-      title={intl.formatMessage({ id: 'resources.button.edittags' })}
+      title={intl.formatMessage({ id: 'resources.button.edit' })}
       open={open}
       centered={true}
       onCancel={onCancel}

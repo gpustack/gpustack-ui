@@ -33,44 +33,67 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     updateScrollerPosition();
   }, [logsContent]);
 
+  const ansiEscapeRegex = /(\x1B\[[0-9;]*[A-Za-z])+$/;
+
   const endsWithAnsiEscapeSequence = useCallback((str: string) => {
-    const ansiEscapeRegex = /\x1B\[[0-9;]*[A-Za-z]$/;
     return ansiEscapeRegex.test(str);
   }, []);
   const getCursorUpLines = useCallback((str: string) => {
-    const match = str.match(/\x1B\[(\d*)A$/);
+    const matches = str.match(/(?:\x1B\[A)+$/);
 
-    if (match) {
-      return match[1] === '' ? 1 : parseInt(match[1], 10);
-    } else {
-      return null;
+    return matches ? matches[0].length / 3 : 0;
+  }, []);
+
+  const removeDot = useCallback((str: string) => {
+    return str.replace(/^\(.*?\)/, '');
+  }, []);
+  const replaceAnsiEscapeSequence = useCallback((str: string) => {
+    const res = str.replace(ansiEscapeRegex, '');
+    return removeDot(res);
+  }, []);
+
+  const handleRControl = useCallback((str: string) => {
+    if (str.includes('\r')) {
+      const parts = str.split('\r');
+      const lastLine = parts[parts.length - 1];
+      return lastLine;
     }
+    return str;
   }, []);
 
   const parseHtmlStr = useCallback((logStr: string) => {
     const result: string[] = [];
-    const lines = logStr?.split?.('\n');
-
+    const lines = logStr.split('\n').filter((line) => line.trim() !== '');
+    // const lines = text;
     lines.forEach((line: string, index: number) => {
       const upCount = getCursorUpLines(line);
+      console.log('line=========1', {
+        line,
+        upCount,
+        result
+      });
       if (endsWithAnsiEscapeSequence(line)) {
+        const newLine = handleRControl(line);
+        const val = removeDot(newLine);
+        if (result.length < upCount) {
+          result.push('');
+        }
         if (upCount) {
+          console.log('line=========0', {
+            line,
+            upCount,
+            result
+          });
           const placeIndex = result.length - upCount;
-          result[placeIndex] = line;
+          result[placeIndex] = replaceAnsiEscapeSequence(val);
         } else {
-          result.push(line);
+          result.push(val);
         }
       } else {
-        if (line.includes('\r')) {
-          const parts = line.split('\r');
-          const lastLine = parts[parts.length - 1];
-          result.push(lastLine);
-        } else {
-          result.push(line);
-        }
+        const val = handleRControl(line);
+        result.push(val);
       }
     });
-
     return result.map((item) => {
       return convert.toHtml(item);
     });

@@ -10,10 +10,10 @@ import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize, handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
+  EditOutlined,
   InfoCircleOutlined,
   PlusOutlined,
-  SyncOutlined,
-  TagsOutlined
+  SyncOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Space, Table, Tooltip, message } from 'antd';
@@ -31,7 +31,7 @@ const ActionList = [
   {
     label: 'common.button.edit',
     key: 'edit',
-    icon: <TagsOutlined />
+    icon: <EditOutlined />
   },
   {
     label: 'common.button.delete',

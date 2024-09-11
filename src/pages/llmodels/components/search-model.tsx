@@ -121,10 +121,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     [dataSource]
   );
 
-  const handlerSearchModels = async (e: any) => {
-    searchInputRef.current = e.target.value;
-    handleOnSearchRepo();
-  };
+  const handlerSearchModels = useCallback(
+    async (e: any) => {
+      searchInputRef.current = e.target.value;
+      handleOnSearchRepo();
+    },
+    [handleOnSearchRepo]
+  );
 
   const handleOnOpen = () => {
     if (

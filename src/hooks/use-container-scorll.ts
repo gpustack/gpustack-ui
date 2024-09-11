@@ -9,6 +9,7 @@ export default function useContainerScroll(
   const scroller = useRef(container);
   const optionsRef = useRef(options);
   const toBottomFlag = useRef(options?.toBottom);
+  const timerRef = useRef<any>(null);
 
   const debunceResetWheeled = _.debounce(() => {
     isWheeled.current = false;
@@ -16,6 +17,7 @@ export default function useContainerScroll(
 
   const handleContentWheel = (e: any) => {
     isWheeled.current = true;
+    debunceResetWheeled.cancel?.();
     debunceResetWheeled();
   };
 

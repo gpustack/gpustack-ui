@@ -56,7 +56,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       return {
         ...item,
         label: item.name,
-        value: item.name
+        value: `${item.worker_name}-${item.name}-${item.index}`
       };
     });
     setGpuOptions(list);

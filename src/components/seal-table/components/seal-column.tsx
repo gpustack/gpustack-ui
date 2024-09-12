@@ -2,7 +2,7 @@ import { CheckOutlined, FormOutlined, UndoOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, InputNumber, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import RowContext from '../row-context';
 import '../styles/cell.less';
 import { SealColumnProps } from '../types';
@@ -35,6 +35,12 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
     setCurrent(cachedValue.current);
     setIsEditing(false);
   };
+  useEffect(() => {
+    if (editable) {
+      cachedValue.current = row[dataIndex];
+      setCurrent(row[dataIndex]);
+    }
+  }, [row[dataIndex], editable]);
 
   const renderContent = () => {
     if (isEditing && editable) {

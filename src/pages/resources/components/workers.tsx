@@ -25,6 +25,7 @@ import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import AddWorker from './add-worker';
 import UpdateLabels from './update-labels';
+
 const { Column } = Table;
 
 const ActionList = [

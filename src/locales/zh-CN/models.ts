@@ -47,5 +47,10 @@ export default {
     '自动根据当前资源情况部署模型实例到合适的 GPU/Worker。',
   'models.form.scheduletype.manual.tips':
     '手动调度可指定模型实例部署的 GPU/Worker。',
-  'models.form.manual.schedule': '手动调度'
+  'models.form.manual.schedule': '手动调度',
+  'models.table.gpuindex': 'GPU 序号',
+  'models.table.backend': '后端',
+  'models.table.acrossworker': '跨 worker 推理',
+  'models.table.cpuoffload': 'CPU 卸载',
+  'models.table.layers': '层'
 };

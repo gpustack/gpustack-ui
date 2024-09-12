@@ -1,13 +1,18 @@
 import DropdownButtons from '@/components/drop-down-buttons';
 import RowChildren from '@/components/seal-table/components/row-children';
+import SimpleTabel from '@/components/simple-table';
 import StatusTag from '@/components/status-tag';
+import {
+  GPUDeviceItem,
+  ListItem as WorkerListItem
+} from '@/pages/resources/config/types';
 import {
   DeleteOutlined,
   FieldTimeOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, Row, Space, Tooltip } from 'antd';
+import { Col, Divider, Row, Space, Tag, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
@@ -16,6 +21,8 @@ import { ModelInstanceListItem } from '../config/types';
 
 interface InstanceItemProps {
   list: ModelInstanceListItem[];
+  gpuDeviceList: GPUDeviceItem[];
+  workerList: WorkerListItem[];
   handleChildSelect: (
     val: string,
     item: ModelInstanceListItem,
@@ -25,11 +32,28 @@ interface InstanceItemProps {
 
 const InstanceItem: React.FC<InstanceItemProps> = ({
   list,
+  workerList,
   handleChildSelect
 }) => {
-  console.log('instance item====');
-
   const intl = useIntl();
+
+  const distributeCols = [
+    {
+      title: 'Worker',
+      key: 'worker_name'
+    },
+    {
+      title: 'IP',
+      key: 'worker_ip',
+      render: ({ row }: { row: ModelInstanceListItem }) => {
+        return row.port ? `${row.worker_ip}:${row.port}` : row.worker_ip;
+      }
+    },
+    {
+      title: intl.formatMessage({ id: 'models.table.gpuindex' }),
+      key: 'gpu_index'
+    }
+  ];
 
   const childActionList = [
     {
@@ -70,6 +94,44 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       <div>
         <div>{item.worker_name}</div>
         <div>{workerIp}</div>
+        <div>
+          {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
+          {_.join(item.gpu_indexes, ',')}]
+        </div>
+      </div>
+    );
+  };
+
+  const renderDistributionInfo = (item: ModelInstanceListItem) => {
+    const rpcServerList = item.distributed_servers?.rpc_servers || [];
+    const list = _.map(rpcServerList, (item: any) => {
+      const data = _.find(workerList, { id: item.worker_id });
+      return {
+        woker_name: data?.name,
+        work_ip: data.ip,
+        port: item.port,
+        gpu_index: item.gpu_index
+      };
+    });
+
+    const mainWorker = [
+      {
+        worker_name: `${item.worker_name}`,
+        worker_ip: `${item.worker_ip}`,
+        port: item.port,
+        gpu_index: `${item.gpu_indexes} (main)`
+      }
+    ];
+
+    return (
+      <div>
+        <h3 style={{ margin: 0 }}>
+          {intl.formatMessage({ id: 'models.table.backend' })}
+        </h3>
+        <SimpleTabel
+          columns={distributeCols}
+          dataSource={[...mainWorker, ...list]}
+        ></SimpleTabel>
       </div>
     );
   };
@@ -95,10 +157,81 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                     <InfoCircleOutlined />
                   </Tooltip>
                 </Col>
-                <Col span={6}></Col>
+                <Col span={6}>
+                  <span
+                    style={{ paddingLeft: '58px' }}
+                    className="flex align-center"
+                  >
+                    {item.computed_resource_claim?.total_layers !==
+                      item.computed_resource_claim?.offload_layers && (
+                      <Tooltip
+                        title={
+                          <span className="flex flex-center">
+                            <span>
+                              CPU:{' '}
+                              {_.subtract(
+                                item.computed_resource_claim?.total_layers,
+                                item.computed_resource_claim?.offload_layers
+                              ) || 0}{' '}
+                              {intl.formatMessage({
+                                id: 'models.table.layers'
+                              })}
+                            </span>
+                            <Divider
+                              type="vertical"
+                              style={{
+                                borderColor: '#fff',
+                                opacity: 0.5
+                              }}
+                            ></Divider>
+                            <span>
+                              GPU:{' '}
+                              {item.computed_resource_claim?.offload_layers}{' '}
+                              {intl.formatMessage({
+                                id: 'models.table.layers'
+                              })}
+                            </span>
+                          </span>
+                        }
+                      >
+                        <Tag
+                          color="cyan"
+                          style={{
+                            opacity: 0.75
+                          }}
+                        >
+                          <InfoCircleOutlined className="m-r-5" />
+                          {intl.formatMessage({
+                            id: 'models.table.cpuoffload'
+                          })}
+                        </Tag>
+                      </Tooltip>
+                    )}
+                    {item?.distributed_servers?.rpc_servers?.length && (
+                      <Tooltip
+                        overlayInnerStyle={{
+                          width: '400px'
+                        }}
+                        title={renderDistributionInfo(item)}
+                      >
+                        <Tag
+                          color="processing"
+                          style={{
+                            opacity: 0.75
+                          }}
+                        >
+                          <InfoCircleOutlined className="m-r-5" />
+                          {intl.formatMessage({
+                            id: 'models.table.acrossworker'
+                          })}
+                        </Tag>
+                      </Tooltip>
+                    )}
+                  </span>
+                </Col>
                 <Col span={4}>
                   <span
-                    style={{ paddingLeft: '68px' }}
+                    style={{ paddingLeft: '62px' }}
                     className="flex justify-center"
                   >
                     {item.state && (

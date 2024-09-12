@@ -14,12 +14,14 @@ interface AutoTooltipProps extends React.ComponentProps<typeof Tag> {
   color?: string;
   style?: React.CSSProperties;
   ghost?: boolean;
+  showTitle?: boolean;
 }
 
 const AutoTooltip: React.FC<AutoTooltipProps> = ({
   children,
   maxWidth = '100%',
   ghost = false,
+  showTitle = false,
   ...tagProps
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -62,7 +64,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   );
 
   return (
-    <Tooltip title={isOverflowing ? children : ''}>
+    <Tooltip title={isOverflowing || showTitle ? children : ''}>
       {ghost ? (
         <div ref={contentRef} style={tagStyle}>
           {children}

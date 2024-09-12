@@ -29,7 +29,12 @@ enum FileType {
   IQ2_M = 29,
   IQ4_XS = 30,
   IQ1_M = 31,
-  BF16 = 32
+  BF16 = 32,
+  Q4_0_4_4 = 33,
+  Q4_0_4_8 = 34,
+  Q4_0_8_8 = 35,
+  TQ1_0 = 36,
+  TQ2_0 = 37
 }
 
 export const fileTypeList = [
@@ -63,7 +68,12 @@ export const fileTypeList = [
   'IQ2_M',
   'IQ4_XS',
   'IQ1_M',
-  'BF16'
+  'BF16',
+  'Q4_0_4_4',
+  'Q4_0_4_8',
+  'Q4_0_8_8',
+  'TQ1_0',
+  'TQ2_0'
 ];
 
 export const getFileType = (fileName: string): string | null => {

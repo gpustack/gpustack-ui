@@ -10,7 +10,11 @@ import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import ViewCodeModal from '@/pages/playground/components/view-code-modal';
-import { handleBatchRequest, platformCall } from '@/utils';
+import {
+  GPUDeviceItem,
+  ListItem as WorkerListItem
+} from '@/pages/resources/config/types';
+import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   DownOutlined,
@@ -51,22 +55,24 @@ interface ModelsProps {
     perPage: number;
     query?: string;
   };
+  gpuDeviceList: GPUDeviceItem[];
+  workerList: WorkerListItem[];
   dataSource: ListItem[];
   loading: boolean;
   total: number;
 }
 
 const Models: React.FC<ModelsProps> = ({
-  dataSource,
   handleNameChange,
   handleSearch,
   handlePageChange,
+  dataSource,
+  gpuDeviceList,
+  workerList,
   queryParams,
   loading,
   total
 }) => {
-  console.log('model list====2');
-  const platform = platformCall();
   const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
@@ -80,6 +86,7 @@ const Models: React.FC<ModelsProps> = ({
     params: {},
     show: false
   });
+
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<any>({
@@ -194,7 +201,6 @@ const Models: React.FC<ModelsProps> = ({
   }, []);
 
   const handleOnSort = (dataIndex: string, order: any) => {
-    console.log('handleTableChange=======', dataIndex, order);
     setSortOrder(order);
   };
 
@@ -213,15 +219,9 @@ const Models: React.FC<ModelsProps> = ({
     message.success(intl.formatMessage({ id: 'common.message.success' }));
   };
 
-  const handleAddModal = () => {
-    setOpenAddModal(true);
-    setTitle(intl.formatMessage({ id: 'models.button.deploy' }));
-  };
-
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
-        console.log('data:', data);
         await updateModel({ data, id: currentData?.id as number });
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
@@ -242,18 +242,21 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const handleCreateModel = useCallback(async (data: FormData) => {
-    try {
-      console.log('data:', data, openDeployModal);
+  const handleCreateModel = useCallback(
+    async (data: FormData) => {
+      try {
+        console.log('data:', data, openDeployModal);
 
-      await createModel({ data });
-      setOpenDeployModal({
-        ...openDeployModal,
-        show: false
-      });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
-    } catch (error) {}
-  }, []);
+        await createModel({ data });
+        setOpenDeployModal({
+          ...openDeployModal,
+          show: false
+        });
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+      } catch (error) {}
+    },
+    [openDeployModal]
+  );
 
   const handleLogModalCancel = useCallback(() => {
     setOpenLogModal(false);
@@ -327,7 +330,6 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleSelect = useCallback((val: any, row: ListItem) => {
     if (val === 'edit') {
-      console.log('row=======', row);
       handleEdit(row);
     }
     if (val === 'chat') {
@@ -363,6 +365,8 @@ const Models: React.FC<ModelsProps> = ({
     return (
       <InstanceItem
         list={list}
+        gpuDeviceList={gpuDeviceList}
+        workerList={workerList}
         handleChildSelect={handleChildSelect}
       ></InstanceItem>
     );
@@ -502,7 +506,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             render={(text, record: ListItem) => {
               return (
-                <span>
+                <span style={{ paddingLeft: 7 }}>
                   {record.ready_replicas} / {record.replicas}
                 </span>
               );

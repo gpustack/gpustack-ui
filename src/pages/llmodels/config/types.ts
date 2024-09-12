@@ -47,8 +47,16 @@ export interface ModelInstanceListItem {
   huggingface_repo_id: string;
   huggingface_filename: string;
   ollama_library_model_name: string;
+  distributed_servers?: {
+    rpc_servers: any[];
+  };
+  computed_resource_claim?: {
+    offload_layers: number;
+    total_layers: number;
+  };
   s3_address: string;
   worker_id: number;
+  gpu_indexes?: number[];
   worker_ip: string;
   gpu_index: number;
   pid: number;

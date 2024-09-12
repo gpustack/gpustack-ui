@@ -74,7 +74,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         ...props.data,
         scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
         gpu_selector: props.data?.gpu_selector
-          ? props.data?.gpu_selector.gpu_name
+          ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
           : null
       });
     }

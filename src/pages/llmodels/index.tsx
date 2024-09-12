@@ -3,6 +3,11 @@ import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
+import { queryGpuDevicesList, queryWorkersList } from '@/pages/resources/apis';
+import {
+  GPUDeviceItem,
+  ListItem as WokerListItem
+} from '@/pages/resources/config/types';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
@@ -25,6 +30,8 @@ const Models: React.FC = () => {
     loading: false,
     total: 0
   });
+  const [gpuDeviceList, setGpuDeviceList] = useState<GPUDeviceItem[]>([]);
+  const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
   const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
@@ -45,6 +52,26 @@ const Models: React.FC = () => {
       });
     }
   });
+
+  const getDeviceList = async () => {
+    try {
+      const data = await queryGpuDevicesList({ page: 1, perPage: 100 });
+      const gpuDeviceMap = _.groupBy(data.items, 'worker_name');
+      setGpuDeviceList(data.items || []);
+    } catch (error) {
+      // ingore
+    }
+  };
+
+  const getWorkerList = async () => {
+    try {
+      const data = await queryWorkersList({ page: 1, perPage: 100 });
+      setWorkerList(data.items || []);
+    } catch (error) {
+      // ingore
+      setWorkerList([]);
+    }
+  };
 
   const fetchData = useCallback(async () => {
     axiosToken?.cancel?.();
@@ -169,6 +196,10 @@ const Models: React.FC = () => {
     };
   }, [queryParams]);
 
+  useEffect(() => {
+    getWorkerList();
+  }, []);
+
   return (
     <TableContext.Provider
       value={{
@@ -183,6 +214,8 @@ const Models: React.FC = () => {
         queryParams={queryParams}
         loading={dataSource.loading}
         total={dataSource.total}
+        gpuDeviceList={gpuDeviceList}
+        workerList={workerList}
       ></TableList>
     </TableContext.Provider>
   );

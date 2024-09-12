@@ -1,0 +1,33 @@
+.simple-table {
+  table-layout: auto;
+  width: 100%;
+  text-align: left;
+
+  &.simple-table-bordered {
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    td {
+      border-bottom: 1px solid rgba(255, 255, 255, 10%);
+    }
+
+    th {
+      border-bottom: 1px solid rgba(255, 255, 255, 10%);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  th {
+    height: 36px;
+    font-weight: 600;
+  }
+
+  .cell-span {
+    display: flex;
+    padding: 4px 6px;
+    min-height: 32px;
+  }
+}

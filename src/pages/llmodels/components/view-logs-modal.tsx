@@ -2,7 +2,7 @@ import LogsViewer from '@/components/logs-viewer';
 import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
   open: boolean;
@@ -11,7 +11,6 @@ type ViewModalProps = {
 };
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  console.log('viewlogs======');
   const { open, url, onCancel } = props || {};
   const [modalSize, setModalSize] = useState<any>({
     width: 600,
@@ -28,6 +27,16 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       };
     });
   };
+
+  useEffect(() => {
+    if (open) {
+      isFullScreenRef.current = false;
+      setModalSize({
+        width: '100%',
+        height: 'calc(100vh - 100px)'
+      });
+    }
+  }, [open]);
 
   return (
     <Modal
@@ -49,7 +58,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       destroyOnClose={true}
       closeIcon={true}
       maskClosable={false}
-      keyboard={false}
+      keyboard={true}
       width={modalSize.width}
       footer={null}
     >

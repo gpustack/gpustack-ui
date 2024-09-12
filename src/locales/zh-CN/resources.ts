@@ -13,7 +13,7 @@ export default {
   'resources.form.placementStrategy': '放置策略',
   'resources.form.workerSelector': 'Worker 选择器',
   'resources.form.enableDistributedInferenceAcrossWorkers':
-    '允许跨节点分布式推理',
+    '允许跨 worker 分布式推理',
   'resources.form.spread.tips':
     '使得集群整体的资源在所有 Worker 之间分配得相对均匀。可能会在单个 Worker 上产生较多资源碎片。',
   'resources.form.binpack.tips':

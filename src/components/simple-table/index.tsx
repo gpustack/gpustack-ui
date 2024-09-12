@@ -10,9 +10,10 @@ interface SimpleTableProps {
   columns: any[];
   dataSource: any[];
   bordered?: boolean;
+  rowKey?: string;
 }
 const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
-  const { columns, dataSource, bordered = true } = props;
+  const { columns, dataSource, rowKey, bordered = true } = props;
   return (
     <SimpleBar style={{ maxHeight: 200 }}>
       <table
@@ -26,7 +27,11 @@ const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
         <tbody>
           {dataSource.map((item: any, index: number) => {
             return (
-              <TableRow row={item} columns={columns} key="index"></TableRow>
+              <TableRow
+                row={item}
+                columns={columns}
+                key={rowKey ? item[rowKey] : index}
+              ></TableRow>
             );
           })}
         </tbody>

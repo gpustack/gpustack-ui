@@ -361,16 +361,19 @@ const Models: React.FC<ModelsProps> = ({
     []
   );
 
-  const renderChildren = useCallback((list: any) => {
-    return (
-      <InstanceItem
-        list={list}
-        gpuDeviceList={gpuDeviceList}
-        workerList={workerList}
-        handleChildSelect={handleChildSelect}
-      ></InstanceItem>
-    );
-  }, []);
+  const renderChildren = useCallback(
+    (list: any) => {
+      return (
+        <InstanceItem
+          list={list}
+          gpuDeviceList={gpuDeviceList}
+          workerList={workerList}
+          handleChildSelect={handleChildSelect}
+        ></InstanceItem>
+      );
+    },
+    [workerList]
+  );
 
   const handleCloseViewCode = useCallback(() => {
     setEmbeddingParams({

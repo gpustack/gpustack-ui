@@ -102,24 +102,24 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     );
   };
 
-  const renderDistributionInfo = (item: ModelInstanceListItem) => {
-    const rpcServerList = item.distributed_servers?.rpc_servers || [];
+  const renderDistributionInfo = (row: ModelInstanceListItem) => {
+    const rpcServerList = row.distributed_servers?.rpc_servers || [];
     const list = _.map(rpcServerList, (item: any) => {
       const data = _.find(workerList, { id: item.worker_id });
       return {
-        woker_name: data?.name,
-        work_ip: data.ip,
-        port: item.port,
+        worker_name: data?.name,
+        worker_ip: data?.ip,
+        port: data?.port,
         gpu_index: item.gpu_index
       };
     });
 
     const mainWorker = [
       {
-        worker_name: `${item.worker_name}`,
-        worker_ip: `${item.worker_ip}`,
-        port: item.port,
-        gpu_index: `${item.gpu_indexes} (main)`
+        worker_name: `${row.worker_name}`,
+        worker_ip: `${row.worker_ip}`,
+        port: row.port,
+        gpu_index: `${row.gpu_indexes} (main)`
       }
     ];
 
@@ -135,6 +135,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       </div>
     );
   };
+
   return (
     <Space size={16} direction="vertical" style={{ width: '100%' }}>
       {_.map(list, (item: ModelInstanceListItem, index: number) => {

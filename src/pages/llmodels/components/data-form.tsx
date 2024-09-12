@@ -52,7 +52,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return {
         ...item,
         label: item.name,
-        value: item.name
+        value: `${item.worker_name}-${item.name}-${item.index}`
       };
     });
     setGpuOptions(list);

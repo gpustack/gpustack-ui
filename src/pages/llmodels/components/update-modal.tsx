@@ -247,17 +247,21 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleOk = (formdata: FormData) => {
-    const gpu = _.find(gpuOptions, (item: any) => {
-      return item.value === formdata.gpu_selector;
-    });
-    if (gpu) {
+    if (formdata.scheduleType === 'manual') {
+      const gpu = _.find(gpuOptions, (item: any) => {
+        return item.value === formdata.gpu_selector;
+      });
+
       onOk({
         ..._.omit(formdata, ['scheduleType']),
-        gpu_selector: {
-          gpu_name: gpu.name,
-          gpu_index: gpu.index,
-          worker_name: gpu.worker_name
-        }
+        worker_selector: null,
+        gpu_selector: gpu
+          ? {
+              gpu_name: gpu.name,
+              gpu_index: gpu.index,
+              worker_name: gpu.worker_name
+            }
+          : null
       });
     } else {
       onOk({

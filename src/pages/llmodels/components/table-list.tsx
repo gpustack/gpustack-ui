@@ -222,7 +222,12 @@ const Models: React.FC<ModelsProps> = ({
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
-        await updateModel({ data, id: currentData?.id as number });
+        await updateModel({
+          data: {
+            ...data
+          },
+          id: currentData?.id as number
+        });
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       } catch (error) {}

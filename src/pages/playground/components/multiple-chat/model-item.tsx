@@ -23,6 +23,7 @@ import React, {
   useContext,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -30,6 +31,7 @@ import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
 import { Roles } from '../../config';
 import CompareContext from '../../config/compare-context';
+import { ModelSelectionItem } from '../../config/types';
 import '../../style/model-item.less';
 import ParamsSettings from '../params-settings';
 import ReferenceParams from '../reference-params';
@@ -38,7 +40,8 @@ import MessageContent from './message-content';
 
 interface ModelItemProps {
   model: string;
-  modelList: Global.BaseOption<string>[];
+  modelList: ModelSelectionItem[];
+  instanceId: symbol;
   ref: any;
 }
 
@@ -49,7 +52,7 @@ interface MessageItemProps {
 }
 
 const ModelItem: React.FC<ModelItemProps> = forwardRef(
-  ({ model, modelList }, ref) => {
+  ({ model, modelList, instanceId }, ref) => {
     const {
       spans,
       globalParams,
@@ -63,7 +66,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const [autoSize, setAutoSize] = useState<{
       minRows: number;
       maxRows: number;
-    }>({ minRows: 1, maxRows: 1 });
+      focus: boolean;
+    }>({ minRows: 1, maxRows: 1, focus: false });
     const [systemMessage, setSystemMessage] = useState<string>('');
     const [params, setParams] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
@@ -74,6 +78,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const contentRef = useRef<any>('');
     const controllerRef = useRef<any>(null);
     const currentMessageRef = useRef<MessageItemProps>({} as MessageItemProps);
+    const systemMessageRef = useRef<any>(null);
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
@@ -81,7 +86,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
 
     const abortFetch = () => {
       controllerRef.current?.abort?.();
-      setLoadingStatus(params.model, false);
+      setLoadingStatus(instanceId, false);
     };
 
     const joinMessage = (chunk: any) => {
@@ -118,7 +123,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       const { parameters, currentMessage } = currentParams;
       if (!parameters.model) return;
       try {
-        setLoadingStatus(parameters.model, true);
+        setLoadingStatus(instanceId, true);
         setMessageId();
 
         controllerRef.current?.abort?.();
@@ -179,16 +184,15 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         await readStreamData(reader, decoder, (chunk: any) => {
           joinMessage(chunk);
         });
-        setLoadingStatus(params.model, false);
+        setLoadingStatus(instanceId, false);
       } catch (error) {
-        console.log('error=====', error);
-        setLoadingStatus(params.model, false);
+        setLoadingStatus(instanceId, false);
       }
     };
     const handleDropdownAction = useCallback(({ key }: { key: string }) => {
-      console.log('key:', key);
       if (key === 'clear') {
         setMessageList([]);
+        setSystemMessage('');
       }
       if (key === 'viewCode') {
         setShow(true);
@@ -239,7 +243,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setTokenResult(null);
       setSystemMessage('');
       currentMessageRef.current = {} as MessageItemProps;
+      console.log('clear message', systemMessage);
     };
+
     const handleCloseViewCode = () => {
       setShow(false);
     };
@@ -270,22 +276,39 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     };
 
     const handleDelete = () => {
-      handleDeleteModel(params.model);
+      handleDeleteModel(instanceId);
     };
 
     const handleFocus = () => {
       setAutoSize({
         minRows: 4,
-        maxRows: 4
+        maxRows: 4,
+        focus: true
       });
+      setTimeout(() => {
+        systemMessageRef.current?.focus?.({
+          cursor: 'end'
+        });
+      }, 100);
     };
 
     const handleBlur = () => {
       setAutoSize({
         minRows: 1,
-        maxRows: 1
+        maxRows: 1,
+        focus: false
       });
     };
+
+    const handleClearSystemMessage = () => {
+      setSystemMessage('');
+    };
+
+    const modelOptions = useMemo(() => {
+      return modelList.filter((item) => {
+        return item.type !== 'empty';
+      });
+    }, [modelList]);
 
     useEffect(() => {
       console.log('globalParams:', globalParams.model, globalParams);
@@ -319,8 +342,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         <div className="header">
           <span className="title">
             <Select
+              style={{ minWidth: '100px' }}
               variant="borderless"
-              options={modelList}
+              options={modelOptions}
               onChange={handleModelChange}
               value={params.model}
             ></Select>
@@ -390,19 +414,50 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
             ></Button>
           </span>
         </div>
-        <div>
-          <Input.TextArea
-            variant="filled"
-            placeholder="Type system message here"
-            style={{ borderRadius: '0', border: 'none' }}
-            value={systemMessage}
-            autoSize={autoSize}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            allowClear={false}
-            onChange={(e) => setSystemMessage(e.target.value)}
-          ></Input.TextArea>
-          <Divider style={{ margin: '0' }}></Divider>
+        <div className="sys-message">
+          {
+            <div style={{ display: autoSize.focus ? 'block' : 'none' }}>
+              <Input.TextArea
+                ref={systemMessageRef}
+                variant="filled"
+                placeholder="Type system message here"
+                style={{
+                  borderRadius: '0',
+                  border: 'none'
+                }}
+                value={systemMessage}
+                autoSize={{
+                  minRows: autoSize.minRows,
+                  maxRows: autoSize.maxRows
+                }}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                allowClear={false}
+                onChange={(e) => setSystemMessage(e.target.value)}
+              ></Input.TextArea>
+              <Divider style={{ margin: '0' }}></Divider>
+            </div>
+          }
+          {!autoSize.focus && (
+            <div className="sys-content-wrap" onClick={handleFocus}>
+              <div className="sys-content">
+                {systemMessage || (
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    Type system message here
+                  </span>
+                )}
+              </div>
+              {systemMessage && (
+                <Button
+                  className="clear-btn"
+                  type="text"
+                  icon={<CloseOutlined />}
+                  size="small"
+                  onClick={handleClearSystemMessage}
+                ></Button>
+              )}
+            </div>
+          )}
         </div>
         <div className="content">
           <MessageContent

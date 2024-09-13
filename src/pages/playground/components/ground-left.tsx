@@ -19,13 +19,13 @@ import { CHAT_API } from '../apis';
 import { Roles } from '../config';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
-import ChatFooter from './chat-footer';
+import MessageInput from './message-input';
 import MessageItem from './message-item';
-import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
   parameters: any;
+  modelList: Global.BaseOption<string>[];
   ref?: any;
 }
 
@@ -36,7 +36,7 @@ interface MessageItemProps {
 }
 
 const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
-  const { parameters } = props;
+  const { parameters, modelList } = props;
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<MessageItemProps[]>([
     {
@@ -81,11 +81,14 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
-  const handleNewMessage = (role?: any) => {
-    messageList.push({
+  const handleNewMessage = (message?: { role: string; content: string }) => {
+    const newMessage = message || {
       role:
         _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
-      content: '',
+      content: ''
+    };
+    messageList.push({
+      ...newMessage,
       uid: messageId.current + 1
     });
     setMessageId();
@@ -234,6 +237,10 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
     setCurrentIsFocus(false);
   };
 
+  const handleSelectModel = () => {};
+
+  const handlePresetPrompt = () => {};
+
   useHotkeys(
     HotKeys.SUBMIT,
     () => {
@@ -324,7 +331,17 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <div className="ground-left-footer">
-        <ChatFooter
+        <MessageInput
+          loading={loading}
+          handleSubmit={handleSubmit}
+          addMessage={handleNewMessage}
+          handleAbortFetch={handleStopConversation}
+          clearAll={handleClear}
+          setModelSelections={handleSelectModel}
+          presetPrompt={handlePresetPrompt}
+          modelList={modelList}
+        />
+        {/* <ChatFooter
           onClear={handleClear}
           onNewMessage={handleNewMessage}
           onSubmit={handleSubmit}
@@ -334,7 +351,7 @@ const MessageList: React.FC<MessageProps> = forwardRef((props, ref) => {
           selectedModel={parameters.model}
           hasTokenResult={!!tokenResult}
           feedback={<ReferenceParams usage={tokenResult}></ReferenceParams>}
-        ></ChatFooter>
+        ></ChatFooter> */}
       </div>
       <ViewCodeModal
         open={show}

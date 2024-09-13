@@ -36,7 +36,7 @@
 
   .params {
     overflow: hidden;
-    height: calc(100vh - 136px);
+    height: calc(100vh - 72px);
 
     .collapse {
       width: 0;
@@ -50,6 +50,7 @@
     width: 390px;
     overflow-y: auto;
     overflow-x: hidden;
+    border-left: 1px solid var(--ant-color-split);
 
     &.collapse {
       padding-inline: 0;
@@ -73,7 +74,8 @@
 
 .playground-container {
   .ant-pro-page-container-children-container {
-    padding-right: 0;
+    padding-inline: 0;
+    padding-block: 0;
   }
 
   &.compare {

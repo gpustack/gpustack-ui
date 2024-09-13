@@ -5,7 +5,6 @@ import {
   ClearOutlined,
   ControlOutlined,
   PictureOutlined,
-  SendOutlined,
   SwapOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -59,10 +58,15 @@ interface MessageInputProps {
   modelList: Global.BaseOption<string>[];
   handleSubmit: (params: { role: string; content: string }) => void;
   handleAbortFetch: () => void;
-  setSpans: (value: { span: number; count: number }) => void;
+  updateLayout?: (value: { span: number; count: number }) => void;
   clearAll: () => void;
-  setModelSelections: (modelList: Global.BaseOption<string>[]) => void;
+  setModelSelections: (
+    modelList: (Global.BaseOption<string> & {
+      instanceId: symbol;
+    })[]
+  ) => void;
   presetPrompt: (list: { role: string; content: string }[]) => void;
+  addMessage: (message: { role: string; content: string }) => void;
   loading: boolean;
 }
 
@@ -74,7 +78,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   loading,
   modelList,
   clearAll,
-  setSpans
+  updateLayout,
+  addMessage
 }) => {
   const { TextArea } = Input;
   const intl = useIntl();
@@ -105,7 +110,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
   const handleLayoutChange = (value: { span: number; count: number }) => {
     console.log('layout change:', value);
-    setSpans(value);
+    updateLayout?.(value);
   };
 
   const handleToggleRole = () => {
@@ -125,7 +130,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
     const list = value?.map?.((val) => {
       return {
         value: val,
-        label: val
+        label: val,
+        instanceId: Symbol(val)
       };
     });
     setModelSelections(list);
@@ -134,6 +140,16 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleOpenPrompt = () => {
     setOpen(true);
   };
+
+  const handleAddMessage = () => {
+    console.log('add message');
+    addMessage({ ...message });
+    setMessage({
+      ...message,
+      content: ''
+    });
+  };
+
   useHotkeys(
     HotKeys.SUBMIT.join(','),
     () => {
@@ -167,21 +183,25 @@ const MessageInput: React.FC<MessageInputProps> = ({
             size="middle"
             onClick={handleOpenPrompt}
           ></Button>
-          <Divider type="vertical" style={{ margin: 0 }} />
-          {layoutOptions.map((option) => (
-            <Button
-              key={option.icon}
-              type="text"
-              icon={<IconFont type={option.icon}></IconFont>}
-              size="middle"
-              onClick={() => handleLayoutChange(option.value)}
-            ></Button>
-          ))}
+          {updateLayout && (
+            <>
+              <Divider type="vertical" style={{ margin: 0 }} />
+              {layoutOptions.map((option) => (
+                <Button
+                  key={option.icon}
+                  type="text"
+                  icon={<IconFont type={option.icon}></IconFont>}
+                  size="middle"
+                  onClick={() => handleLayoutChange(option.value)}
+                ></Button>
+              ))}
+            </>
+          )}
         </div>
         <div className="actions">
           <Select
             variant="borderless"
-            style={{ width: 200 }}
+            style={{ width: 180 }}
             placeholder="select models"
             options={modelList}
             mode="multiple"
@@ -190,14 +210,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
             maxTagTextLength={15}
             onChange={handleUpdateModelSelections}
           ></Select>
+          <Button type="default" size="middle" onClick={handleAddMessage}>
+            {intl.formatMessage({ id: 'common.button.add' })}
+          </Button>
           {!loading ? (
-            <Button
-              style={{ width: 44 }}
-              type="primary"
-              onClick={handleSendMessage}
-              size="middle"
-            >
-              <SendOutlined />
+            <Button type="primary" onClick={handleSendMessage} size="middle">
+              {intl.formatMessage({ id: 'common.button.submit' })}
             </Button>
           ) : (
             <Button

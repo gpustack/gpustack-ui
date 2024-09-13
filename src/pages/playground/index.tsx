@@ -3,7 +3,7 @@ import HotKeys from '@/config/hotkeys';
 import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Divider, Segmented, Space, Tabs, TabsProps } from 'antd';
+import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -45,7 +45,11 @@ const Playground: React.FC = () => {
       key: 'chat',
       label: 'Chat',
       children: (
-        <GroundLeft parameters={params} ref={groundLeftRef}></GroundLeft>
+        <GroundLeft
+          parameters={params}
+          ref={groundLeftRef}
+          modelList={modelList}
+        ></GroundLeft>
       )
     },
     {
@@ -146,13 +150,6 @@ const Playground: React.FC = () => {
               collapse: collapse
             })}
           >
-            <div
-              className={classNames('divider-line', {
-                collapse: collapse
-              })}
-            >
-              <Divider type="vertical" />
-            </div>
             <div className={classNames('params')}>
               <div
                 className={classNames('params-box', {

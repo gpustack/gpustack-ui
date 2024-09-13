@@ -8,10 +8,10 @@ interface CompareContextProps {
   systemMessage?: string;
   globalParams: Record<string, any>;
   loadingStatus: Record<string, boolean>;
-  handleDeleteModel: (modelname: string) => void;
+  handleDeleteModel: (instanceId: symbol) => void;
   setSystemMessage?: (message: string) => void;
   setGlobalParams: (value: Record<string, any>) => void;
-  setLoadingStatus: (modeName: string, status: boolean) => void;
+  setLoadingStatus: (instanceId: symbol, status: boolean) => void;
 }
 const CompareContext = React.createContext<CompareContextProps>(
   {} as CompareContextProps

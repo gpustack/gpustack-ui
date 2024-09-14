@@ -38,8 +38,8 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
   useEffect(() => {
     if (editable) {
       cachedValue.current = row[dataIndex];
-      setCurrent(row[dataIndex]);
     }
+    setCurrent(row[dataIndex]);
   }, [row[dataIndex], editable]);
 
   const renderContent = () => {

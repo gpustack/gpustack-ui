@@ -4,7 +4,7 @@ import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import './index.less';
 import useSize from './use-size';
 
@@ -26,11 +26,14 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const cacheDatARef = useRef<any>(null);
   const size = useSize(scroller);
 
-  const updateContent = (newVal: string) => {
-    cacheDatARef.current = newVal;
-    termRef.current?.reset();
-    termRef.current?.write?.(newVal);
-  };
+  const updateContent = useCallback(
+    _.throttle((data: string) => {
+      cacheDatARef.current = data;
+      termRef.current?.reset();
+      termRef.current?.write?.(data);
+    }, 600),
+    []
+  );
 
   const fitTerm = () => {
     fitAddonRef.current.fit();
@@ -52,13 +55,14 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     termRef.current?.dispose?.();
     termRef.current = new Terminal({
       lineHeight: 1.2,
-      fontSize: 12,
+      fontSize: 13,
       fontFamily:
         "monospace,Menlo,Courier,'Courier New',Consolas,Monaco, 'Liberation Mono'",
       disableStdin: true,
       convertEol: true,
       theme: {
-        background: '#1e1e1e'
+        background: '#1e1e1e',
+        foreground: 'rgba(255,255,255,0.8)'
       },
       cursorInactiveStyle: 'none'
       // windowOptions: {
@@ -74,10 +78,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   };
 
   const handleResize = _.throttle(() => {
-    termRef.current?.clear();
-    if (cacheDatARef.current) {
-      updateContent(cacheDatARef.current);
-    }
     fitTerm();
   }, 100);
 
@@ -92,20 +92,17 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     if (termInsRef.current) {
       initTerm();
     }
-  }, []);
+  }, [termInsRef.current]);
 
   useEffect(() => {
     handleResize();
-    console.log('size======', size);
   }, [size]);
 
   return (
     <div className="logs-viewer-wrap-w2">
       <div className="wrap" style={{ height: height }} ref={scroller}>
         <div className={classNames('content', { 'line-break': nowrap })}>
-          <div className="text">
-            <div ref={termInsRef}></div>
-          </div>
+          <div className="text" ref={termInsRef}></div>
         </div>
       </div>
     </div>

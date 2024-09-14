@@ -7,9 +7,14 @@
 
     .content {
       word-wrap: break-word;
+      height: 100%;
 
       &.line-break {
         word-wrap: break-word;
+      }
+
+      .text {
+        height: 100%;
       }
 
       color: var(--color-logs-text);
@@ -20,7 +25,26 @@
     }
   }
 
-  .xterm .xterm-viewport {
-    overflow-y: hidden !important;
+  .xterm {
+    height: 100% !important;
+
+    .xterm-viewport {
+      overflow-y: auto !important;
+      // custom scrollbar
+      &::-webkit-scrollbar {
+        width: 8px;
+        height: 6px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: var(--color-scrollbar-track);
+        border-radius: 4px;
+      }
+    }
   }
 }

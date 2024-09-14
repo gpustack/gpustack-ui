@@ -23,7 +23,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const termwrapRef = useRef<any>({});
   const fitAddonRef = useRef<any>({});
   const cacheDataRef = useRef<any>(null);
-  const isScorlling = useRef<boolean>(false);
   const size = useSize(scroller);
 
   const updateContent = useCallback(
@@ -53,11 +52,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     });
   };
 
-  const scrollAnimation = () => {
-    window.requestAnimationFrame(() => {
-      termRef.current?.scrollToBottom();
-    });
-  };
   const initTerm = () => {
     termRef.current?.dispose?.();
     termRef.current = new Terminal({
@@ -72,7 +66,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
         foreground: 'rgba(255,255,255,0.8)'
       },
       cursorInactiveStyle: 'none',
-      smoothScrollDuration: 600
+      smoothScrollDuration: 0
     });
     fitAddonRef.current = new FitAddon();
     termRef.current.loadAddon(fitAddonRef.current);
@@ -82,7 +76,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
     termRef.current.onWriteParsed((e: any) => {
       if (cacheDataRef.current) {
-        window.requestAnimationFrame(scrollAnimation);
+        termRef.current?.scrollToBottom();
       }
     });
   };

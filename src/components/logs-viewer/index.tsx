@@ -4,7 +4,7 @@ import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import './index.less';
 import useSize from './use-size';
 
@@ -16,12 +16,11 @@ interface LogsViewerProps {
 }
 const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { height, content, url } = props;
-  const [nowrap, setNowrap] = useState(false);
   const { setChunkRequest } = useSetChunkRequest();
   const chunkRequedtRef = useRef<any>(null);
   const scroller = useRef<any>(null);
   const termRef = useRef<any>(null);
-  const termInsRef = useRef<any>(null);
+  const termwrapRef = useRef<any>(null);
   const fitAddonRef = useRef<any>(null);
   const cacheDatARef = useRef<any>(null);
   const size = useSize(scroller);
@@ -29,9 +28,9 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const updateContent = useCallback(
     _.throttle((data: string) => {
       cacheDatARef.current = data;
-      termRef.current?.reset();
+      termRef.current?.clear?.();
       termRef.current?.write?.(data);
-    }, 600),
+    }, 100),
     []
   );
 
@@ -65,15 +64,10 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
         foreground: 'rgba(255,255,255,0.8)'
       },
       cursorInactiveStyle: 'none'
-      // windowOptions: {
-      //   setWinPosition: true,
-      //   setWinSizePixels: true,
-      //   refreshWin: true
-      // }
     });
     fitAddonRef.current = new FitAddon();
     termRef.current.loadAddon(fitAddonRef.current);
-    termRef.current.open(termInsRef.current);
+    termRef.current.open(termwrapRef.current);
     fitAddonRef.current?.fit();
   };
 
@@ -89,10 +83,10 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   }, [url, props.params]);
 
   useEffect(() => {
-    if (termInsRef.current) {
+    if (termwrapRef.current) {
       initTerm();
     }
-  }, [termInsRef.current]);
+  }, [termwrapRef.current]);
 
   useEffect(() => {
     handleResize();
@@ -101,8 +95,8 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   return (
     <div className="logs-viewer-wrap-w2">
       <div className="wrap" style={{ height: height }} ref={scroller}>
-        <div className={classNames('content', { 'line-break': nowrap })}>
-          <div className="text" ref={termInsRef}></div>
+        <div className={classNames('content')}>
+          <div className="text" ref={termwrapRef}></div>
         </div>
       </div>
     </div>

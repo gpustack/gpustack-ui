@@ -7,6 +7,7 @@ export default {
   'resources.nodes': '节点',
   'resources.table.hostname': '主机名',
   'resources.table.key.tips': '存在相同的 key.',
+  'resources.form.label': '标签',
   'resources.table.labels': '标签',
   'resources.form.advanced': '高级',
   'resources.form.enablePartialOffload': '允许 CPU 卸载',

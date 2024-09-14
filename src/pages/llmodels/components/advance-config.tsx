@@ -146,7 +146,9 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                               id: 'common.validate.value'
                             },
                             {
-                              name: 'models.form.selector'
+                              name: intl.formatMessage({
+                                id: 'models.form.selector'
+                              })
                             }
                           )
                         );

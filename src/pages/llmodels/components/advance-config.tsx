@@ -11,6 +11,7 @@ import {
   Tooltip,
   Typography
 } from 'antd';
+import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { placementStrategyOptions } from '../config';
 import { FormData } from '../config/types';
@@ -129,7 +130,33 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 description={renderSelectTips(placementStrategyTips)}
               ></SealSelect>
             </Form.Item>
-            <Form.Item<FormData> name="worker_selector">
+            <Form.Item<FormData>
+              name="worker_selector"
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(rule, value) {
+                    if (
+                      getFieldValue('scheduleType') === 'auto' &&
+                      _.keys(value).length > 0
+                    ) {
+                      if (_.some(_.keys(value), (k: string) => !value[k])) {
+                        return Promise.reject(
+                          intl.formatMessage(
+                            {
+                              id: 'common.validate.value'
+                            },
+                            {
+                              name: 'models.form.selector'
+                            }
+                          )
+                        );
+                      }
+                    }
+                    return Promise.resolve();
+                  }
+                })
+              ]}
+            >
               <LabelSelector
                 label={intl.formatMessage({
                   id: 'resources.form.workerSelector'

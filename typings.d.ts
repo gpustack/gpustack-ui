@@ -17,5 +17,7 @@ declare module 'react-fittext';
 declare module 'lodash';
 declare module 'crypto-js';
 declare module 'has-ansi';
+declare module 'terminal-kit';
+declare module 'monaco-vim';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;

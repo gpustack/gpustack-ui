@@ -46,6 +46,7 @@ export default {
   'common.button.disabled': 'Disabled',
   'common.button.upgrade': 'Upgrade',
   'common.input.holder': 'Please enter',
+  'common.validate.value': 'value is required',
   'common.button.edit': 'Edit',
   'common.button.authorize': 'Role Authorization',
   'common.button.confirm': 'Confirm',

@@ -109,6 +109,7 @@ export default {
   'common.ws.reconnect': '重新连接',
   'common.input.key': '键',
   'common.input.value': '值',
+  'common.validate.value': '值必填',
   'common.input.type': '类型',
   'common.input.visible': '是否可见',
   'common.input.description': '描述',

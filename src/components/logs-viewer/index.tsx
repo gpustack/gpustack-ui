@@ -1,9 +1,12 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
-import useContainerScroll from '@/hooks/use-container-scorll';
-import Convert from 'ansi-to-html';
+import { FitAddon } from '@xterm/addon-fit';
+import { Terminal } from '@xterm/xterm';
+import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
+import { memo, useEffect, useRef, useState } from 'react';
 import './index.less';
+import useSize from './use-size';
 
 interface LogsViewerProps {
   height: number;
@@ -14,94 +17,23 @@ interface LogsViewerProps {
 const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { height, content, url } = props;
   const [nowrap, setNowrap] = useState(false);
-  const [logsContent, setLogsContent] = useState<string[]>([]);
   const { setChunkRequest } = useSetChunkRequest();
   const chunkRequedtRef = useRef<any>(null);
   const scroller = useRef<any>(null);
-  const { updateScrollerPosition, handleContentWheel } = useContainerScroll(
-    scroller,
-    { toBottom: true }
-  );
-
-  const convert = new Convert({
-    newline: true,
-    escapeXML: true,
-    stream: false
-  });
-
-  useEffect(() => {
-    updateScrollerPosition();
-  }, [logsContent]);
-
-  const ansiEscapeRegex = /(\x1B\[[0-9;]*[A-Za-z])+$/;
-
-  const endsWithAnsiEscapeSequence = useCallback((str: string) => {
-    return ansiEscapeRegex.test(str);
-  }, []);
-  const getCursorUpLines = useCallback((str: string) => {
-    const matches = str.match(/(?:\x1B\[A)+$/);
-
-    return matches ? matches[0].length / 3 : 0;
-  }, []);
-
-  const removeDot = useCallback((str: string) => {
-    return str.replace(/^\(.*?\)/, '');
-  }, []);
-  const replaceAnsiEscapeSequence = useCallback((str: string) => {
-    const res = str.replace(ansiEscapeRegex, '');
-    return removeDot(res);
-  }, []);
-
-  const handleRControl = useCallback((str: string) => {
-    if (str.includes('\r')) {
-      const parts = str.split('\r');
-      const lastLine = parts[parts.length - 1];
-      return lastLine;
-    }
-    return str;
-  }, []);
-
-  const parseHtmlStr = useCallback((logStr: string) => {
-    const result: string[] = [];
-    const lines = logStr.split('\n').filter((line) => line.trim() !== '');
-    // const lines = text;
-    lines.forEach((line: string, index: number) => {
-      const upCount = getCursorUpLines(line);
-      console.log('line=========1', {
-        line,
-        upCount,
-        result
-      });
-      if (endsWithAnsiEscapeSequence(line)) {
-        const newLine = handleRControl(line);
-        const val = removeDot(newLine);
-        if (result.length < upCount) {
-          result.push('');
-        }
-        if (upCount) {
-          console.log('line=========0', {
-            line,
-            upCount,
-            result
-          });
-          const placeIndex = result.length - upCount;
-          result[placeIndex] = replaceAnsiEscapeSequence(val);
-        } else {
-          result.push(val);
-        }
-      } else {
-        const val = handleRControl(line);
-        result.push(val);
-      }
-    });
-    return result.map((item) => {
-      return convert.toHtml(item);
-    });
-  }, []);
+  const termRef = useRef<any>(null);
+  const termInsRef = useRef<any>(null);
+  const fitAddonRef = useRef<any>(null);
+  const cacheDatARef = useRef<any>(null);
+  const size = useSize(scroller);
 
   const updateContent = (newVal: string) => {
-    const list = parseHtmlStr(newVal);
-    setLogsContent(list);
+    cacheDatARef.current = newVal;
+    termRef.current?.reset();
+    termRef.current?.write?.(newVal);
+  };
+
+  const fitTerm = () => {
+    fitAddonRef.current.fit();
   };
 
   const createChunkConnection = async () => {
@@ -116,6 +48,38 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       handler: updateContent
     });
   };
+  const initTerm = () => {
+    termRef.current?.dispose?.();
+    termRef.current = new Terminal({
+      lineHeight: 1.2,
+      fontSize: 12,
+      fontFamily:
+        "monospace,Menlo,Courier,'Courier New',Consolas,Monaco, 'Liberation Mono'",
+      disableStdin: true,
+      convertEol: true,
+      theme: {
+        background: '#1e1e1e'
+      },
+      cursorInactiveStyle: 'none'
+      // windowOptions: {
+      //   setWinPosition: true,
+      //   setWinSizePixels: true,
+      //   refreshWin: true
+      // }
+    });
+    fitAddonRef.current = new FitAddon();
+    termRef.current.loadAddon(fitAddonRef.current);
+    termRef.current.open(termInsRef.current);
+    fitAddonRef.current?.fit();
+  };
+
+  const handleResize = _.throttle(() => {
+    termRef.current?.clear();
+    if (cacheDatARef.current) {
+      updateContent(cacheDatARef.current);
+    }
+    fitTerm();
+  }, 100);
 
   useEffect(() => {
     createChunkConnection();
@@ -124,21 +88,23 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     };
   }, [url, props.params]);
 
+  useEffect(() => {
+    if (termInsRef.current) {
+      initTerm();
+    }
+  }, []);
+
+  useEffect(() => {
+    handleResize();
+    console.log('size======', size);
+  }, [size]);
+
   return (
     <div className="logs-viewer-wrap-w2">
-      <div
-        className="wrap"
-        style={{ height: height }}
-        ref={scroller}
-        onWheel={handleContentWheel}
-      >
+      <div className="wrap" style={{ height: height }} ref={scroller}>
         <div className={classNames('content', { 'line-break': nowrap })}>
           <div className="text">
-            {logsContent.map((item, index) => {
-              return (
-                <div key={index} dangerouslySetInnerHTML={{ __html: item }} />
-              );
-            })}
+            <div ref={termInsRef}></div>
           </div>
         </div>
       </div>

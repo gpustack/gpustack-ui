@@ -22,7 +22,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     setModalSize((size: any) => {
       return {
         width: size.width === 600 ? '100%' : 600,
-        height: size.height === 420 ? 'calc(100vh - 100px)' : 420
+        height: size.height === 420 ? 'calc(100vh - 86px)' : 420
       };
     });
   };
@@ -32,7 +32,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       isFullScreenRef.current = false;
       setModalSize({
         width: '100%',
-        height: 'calc(100vh - 100px)'
+        height: 'calc(100vh - 86px)'
       });
     }
   }, [open]);
@@ -58,6 +58,11 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       closeIcon={true}
       maskClosable={false}
       keyboard={true}
+      styles={{
+        content: {
+          borderRadius: 0
+        }
+      }}
       width={modalSize.width}
       footer={null}
     >

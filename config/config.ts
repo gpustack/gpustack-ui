@@ -14,7 +14,7 @@ const isProduction = env === 'production';
 const t = Date.now();
 export default defineConfig({
   proxy: {
-    ...proxy()
+    ...proxy('http://192.168.50.166:8080')
   },
   history: {
     type: 'hash'

@@ -42,13 +42,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       title={
         <span className="flex flex-center">
           <span> {intl.formatMessage({ id: 'common.button.viewlog' })}</span>
-          {/* <Button size="middle" type="text" onClick={handleFullscreenToggle}>
-            {isFullScreenRef.current ? (
-              <FullscreenExitOutlined />
-            ) : (
-              <FullscreenOutlined />
-            )}
-          </Button> */}
         </span>
       }
       open={open}

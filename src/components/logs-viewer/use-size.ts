@@ -5,7 +5,7 @@ export default function useSize(target: any) {
   const [size, setSize] = React.useState();
 
   React.useLayoutEffect(() => {
-    setSize(target.current.getBoundingClientRect());
+    setSize(target.current?.getBoundingClientRect());
   }, [target]);
 
   useResizeObserver(target, (entry: any) => setSize(entry?.contentRect));

@@ -18,16 +18,16 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { height, content, url } = props;
   const { setChunkRequest } = useSetChunkRequest();
   const chunkRequedtRef = useRef<any>(null);
-  const scroller = useRef<any>(null);
-  const termRef = useRef<any>(null);
-  const termwrapRef = useRef<any>(null);
-  const fitAddonRef = useRef<any>(null);
-  const cacheDatARef = useRef<any>(null);
+  const scroller = useRef<any>({});
+  const termRef = useRef<any>({});
+  const termwrapRef = useRef<any>({});
+  const fitAddonRef = useRef<any>({});
+  const cacheDataRef = useRef<any>(null);
   const size = useSize(scroller);
 
   const updateContent = useCallback(
     _.throttle((data: string) => {
-      cacheDatARef.current = data;
+      cacheDataRef.current = data;
       termRef.current?.clear?.();
       termRef.current?.write?.(data);
     }, 100),
@@ -35,7 +35,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   );
 
   const fitTerm = () => {
-    fitAddonRef.current.fit();
+    fitAddonRef.current?.fit?.();
   };
 
   const createChunkConnection = async () => {
@@ -68,7 +68,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     fitAddonRef.current = new FitAddon();
     termRef.current.loadAddon(fitAddonRef.current);
     termRef.current.open(termwrapRef.current);
-    fitAddonRef.current?.fit();
+    // fitAddonRef.current?.fit?.();
   };
 
   const handleResize = _.throttle(() => {
@@ -86,10 +86,15 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     if (termwrapRef.current) {
       initTerm();
     }
+    return () => {
+      termRef.current?.dispose?.();
+    };
   }, [termwrapRef.current]);
 
   useEffect(() => {
-    handleResize();
+    if (size) {
+      handleResize();
+    }
   }, [size]);
 
   return (

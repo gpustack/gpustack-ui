@@ -4,7 +4,7 @@ import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import './index.less';
 import useSize from './use-size';
 
@@ -23,7 +23,12 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const termwrapRef = useRef<any>({});
   const fitAddonRef = useRef<any>({});
   const cacheDataRef = useRef<any>(null);
+  const [logs, setLogs] = useState('');
   const size = useSize(scroller);
+
+  const throttleScroll = _.debounce(() => {
+    termRef.current?.scrollToBottom?.();
+  }, 100);
 
   const updateContent = useCallback(
     _.throttle((data: string) => {
@@ -73,10 +78,9 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     termRef.current.open(termwrapRef.current);
 
     // add event
-
-    termRef.current.onWriteParsed((e: any) => {
+    termRef.current.onLineFeed((e: any) => {
       if (cacheDataRef.current) {
-        termRef.current?.scrollToBottom();
+        throttleScroll();
       }
     });
   };

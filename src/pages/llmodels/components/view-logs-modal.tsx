@@ -1,7 +1,6 @@
 import LogsViewer from '@/components/logs-viewer';
-import { FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
@@ -43,13 +42,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       title={
         <span className="flex flex-center">
           <span> {intl.formatMessage({ id: 'common.button.viewlog' })}</span>
-          <Button size="middle" type="text" onClick={handleFullscreenToggle}>
+          {/* <Button size="middle" type="text" onClick={handleFullscreenToggle}>
             {isFullScreenRef.current ? (
               <FullscreenExitOutlined />
             ) : (
               <FullscreenOutlined />
             )}
-          </Button>
+          </Button> */}
         </span>
       }
       open={open}

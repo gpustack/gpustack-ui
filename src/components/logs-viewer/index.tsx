@@ -23,12 +23,14 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const termwrapRef = useRef<any>({});
   const fitAddonRef = useRef<any>({});
   const cacheDataRef = useRef<any>(null);
+  const isScorlling = useRef<boolean>(false);
   const size = useSize(scroller);
 
   const updateContent = useCallback(
     _.throttle((data: string) => {
-      cacheDataRef.current = data;
+      cacheDataRef.current = '';
       termRef.current?.clear?.();
+      cacheDataRef.current = data;
       termRef.current?.write?.(data);
     }, 100),
     []
@@ -50,6 +52,12 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       handler: updateContent
     });
   };
+
+  const scrollAnimation = () => {
+    window.requestAnimationFrame(() => {
+      termRef.current?.scrollToBottom();
+    });
+  };
   const initTerm = () => {
     termRef.current?.dispose?.();
     termRef.current = new Terminal({
@@ -63,12 +71,20 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
         background: '#1e1e1e',
         foreground: 'rgba(255,255,255,0.8)'
       },
-      cursorInactiveStyle: 'none'
+      cursorInactiveStyle: 'none',
+      smoothScrollDuration: 600
     });
     fitAddonRef.current = new FitAddon();
     termRef.current.loadAddon(fitAddonRef.current);
     termRef.current.open(termwrapRef.current);
-    // fitAddonRef.current?.fit?.();
+
+    // add event
+
+    termRef.current.onWriteParsed((e: any) => {
+      if (cacheDataRef.current) {
+        window.requestAnimationFrame(scrollAnimation);
+      }
+    });
   };
 
   const handleResize = _.throttle(() => {

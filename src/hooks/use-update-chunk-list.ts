@@ -1,6 +1,6 @@
 import { WatchEventType } from '@/config';
 import _ from 'lodash';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface ChunkedCollection {
   ids: string[];
@@ -19,6 +19,10 @@ export function useUpdateChunkedList(options: {
 }) {
   const cacheDataListRef = useRef<any[]>(options.dataList || []);
   const timerRef = useRef<any>(null);
+
+  useEffect(() => {
+    cacheDataListRef.current = [...(options.dataList || [])];
+  }, [options.dataList]);
 
   const debounceUpdateChunckedList = () => {
     clearTimeout(timerRef.current);

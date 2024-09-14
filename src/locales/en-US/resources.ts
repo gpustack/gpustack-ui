@@ -8,6 +8,7 @@ export default {
   'resources.table.labels': 'Labels',
   'resources.table.hostname': 'Hostname',
   'resources.table.key.tips': 'The same key exists.',
+  'resources.form.label': 'Label',
   'resources.form.advanced': 'Advanced',
   'resources.form.enablePartialOffload': 'Allow CPU Offloading',
   'resources.form.placementStrategy': 'Placement Strategy',

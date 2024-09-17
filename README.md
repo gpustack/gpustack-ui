@@ -1,3 +1,7 @@
+# GPUStack UI
+
+UI for [GPUStack](https://github.com/gpustack/gpustack).
+
 ## Installation
 
 1. [Nodejs](https://nodejs.org/en) 16.0+(with NPM)

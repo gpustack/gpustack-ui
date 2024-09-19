@@ -8,6 +8,7 @@ import VersionInfo, { modalConfig } from '@/components/version-info';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
@@ -20,7 +21,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
-import { Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import { useAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import Exception from './Exception';
@@ -139,6 +140,11 @@ export default (props: any) => {
     notFound: <span>404 not found</span>
   };
 
+  const handleToggleCollapse = (e: any) => {
+    e.stopPropagation();
+    setCollapsed(!collapsed);
+  };
+
   const newRoutes = filterRoutes(
     clientRoutes.filter((route) => route.id === '@@/global-layout'),
     (route) => {
@@ -151,7 +157,6 @@ export default (props: any) => {
 
   const role = initialState?.currentUser?.is_admin ? 'admin' : 'user';
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes, role));
-  console.log('clientRoutes===========', route, clientRoutes, newRoutes);
 
   patchRoutes({
     routes: route.children,
@@ -162,7 +167,6 @@ export default (props: any) => {
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,
     [location.pathname]
   );
-  console.log('route===========', matchedRoute, route);
   return (
     <div>
       <div className="background"></div>
@@ -179,10 +183,22 @@ export default (props: any) => {
           e.preventDefault();
           navigate('/');
         }}
-        collapsed={collapsed}
-        onCollapse={(collapsed) => {
-          setCollapsed(collapsed);
+        menuHeaderRender={(logo, title) => {
+          return (
+            <>
+              {logo}
+              <div className="collapse-wrap">
+                <Button
+                  type={collapsed ? 'default' : 'text'}
+                  onClick={handleToggleCollapse}
+                >
+                  {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                </Button>
+              </div>
+            </>
+          );
         }}
+        collapsed={collapsed}
         onPageChange={(route) => {
           const { location } = history;
 

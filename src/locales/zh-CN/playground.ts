@@ -33,5 +33,11 @@ export default {
   'playground.delete.img': '删除图片',
   'playground.img.upload': '上传图片',
   'playground.img.upload.success': '上传成功',
-  'playground.img.upload.error': '上传失败'
+  'playground.img.upload.error': '上传失败',
+  'playground.toolbar.clearmsg': '清空消息',
+  'playground.toolbar.prompts': '提示词',
+  'playground.toolbar.compare2Model': '2 模型对比',
+  'playground.toolbar.compare3Model': '3 模型对比',
+  'playground.toolbar.compare4Model': '4 模型对比',
+  'playground.toolbar.compare6Model': '6 模型对比'
 };

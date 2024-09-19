@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import avatarImg from '@/assets/images/avatar.png';
 import externalLinks from '@/constants/external-links';
 import langConfigMap from '@/locales/lang-config-map';
@@ -18,7 +17,7 @@ import { getAllLocales, history, setLocale } from '@umijs/max';
 import { Avatar, Menu, Spin } from 'antd';
 import _ from 'lodash';
 
-export function getRightRenderContent(opts: {
+export const getRightRenderContent = (opts: {
   runtimeConfig: any;
   loading: boolean;
   initialState: any;
@@ -26,7 +25,7 @@ export function getRightRenderContent(opts: {
   setInitialState: any;
   siderWidth: number;
   intl: any;
-}) {
+}) => {
   const { intl, collapsed, siderWidth } = opts;
 
   const allLocals = getAllLocales();
@@ -121,7 +120,9 @@ export function getRightRenderContent(opts: {
         key: 'help',
         icon: <QuestionCircleOutlined />,
         label: (
-          <span>{intl?.formatMessage?.({ id: 'common.button.help' })}</span>
+          <span className="sub-title">
+            {intl?.formatMessage?.({ id: 'common.button.help' })}
+          </span>
         ),
         children: helpList.map((item) => ({
           key: item.key,
@@ -169,7 +170,7 @@ export function getRightRenderContent(opts: {
         key: 'lang',
         icon: <GlobalOutlined />,
         label: (
-          <span>
+          <span className="sub-title">
             {intl?.formatMessage?.({ id: 'common.settings.language' })}
           </span>
         ),
@@ -280,4 +281,4 @@ export function getRightRenderContent(opts: {
       ></Menu>
     </div>
   );
-}
+};

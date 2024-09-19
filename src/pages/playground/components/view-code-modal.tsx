@@ -58,16 +58,41 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     }
   };
   const generateCode = () => {
+    const systemList = systemMessage
+      ? [
+          {
+            role: 'system',
+            content: [
+              {
+                type: 'text',
+                text: systemMessage
+              }
+            ]
+          }
+        ]
+      : [];
+
+    const formatMessageList = _.map(messageList, (item: any) => {
+      return {
+        role: item.role,
+        content: [
+          {
+            type: 'text',
+            text: item.content
+          },
+          ..._.map(item.imgs, (img: any) => {
+            return {
+              type: 'image_url',
+              image_url: {
+                url: img.dataUrl
+              }
+            };
+          })
+        ]
+      };
+    });
     if (lang === 'shell') {
-      const systemList = systemMessage
-        ? [{ role: 'system', content: systemMessage }]
-        : [];
-      const messages = [
-        ...systemList,
-        ..._.map(messageList, (item: any) => {
-          return { role: item.role, content: item.content };
-        })
-      ];
+      const messages = [...systemList, ...formatMessageList];
       const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
@@ -78,15 +103,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       )}'`;
       setCodeValue(code);
     } else if (lang === 'javascript') {
-      const systemList = systemMessage
-        ? [{ role: 'system', content: systemMessage }]
-        : [];
-      const messages = [
-        ...systemList,
-        ..._.map(messageList, (item: any) => {
-          return { role: item.role, content: item.content };
-        })
-      ];
+      const messages = [...systemList, ...formatMessageList];
       const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
@@ -110,18 +127,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         },
         ''
       );
-      const systemList = systemMessage
-        ? [{ role: 'system', content: systemMessage }]
-        : [];
       const messages =
         apiType === 'chat'
           ? `messages=${JSON.stringify(
-              [
-                ...systemList,
-                ..._.map(messageList, (item: any) => {
-                  return { role: item.role, content: item.content };
-                })
-              ],
+              [...systemList, ...formatMessageList],
               null,
               2
             )}`

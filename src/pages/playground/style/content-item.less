@@ -4,14 +4,62 @@
   &-role {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     font-weight: var(--font-weight-bold);
     margin-bottom: 8px;
+    height: 24px;
+  }
+
+  .role {
+    position: relative;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: var(--border-radius-mini);
+
+    &:hover {
+      background-color: var(--ant-color-fill-secondary);
+    }
+  }
+
+  .actions {
+    display: none;
+  }
+
+  &:hover {
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 5px;
+    }
   }
 
   &-content {
     word-break: break-word;
     padding: 8px;
+    min-height: 38px;
     border-radius: var(--border-radius-mini);
     background-color: var(--ant-color-fill-tertiary);
+  }
+
+  .message-content-input {
+    flex: 1;
+    cursor: pointer;
+
+    &.has-img {
+      border: 1px solid var(--ant-color-fill-secondary);
+      border-radius: var(--border-radius-base);
+      overflow: hidden;
+
+      .ant-input {
+        border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
+        border-color: transparent;
+        background-color: transparent;
+      }
+
+      &:focus-within {
+        border-color: var(--ant-color-primary);
+      }
+    }
   }
 }

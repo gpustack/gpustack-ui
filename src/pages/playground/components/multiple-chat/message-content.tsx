@@ -1,48 +1,51 @@
-import { Spin } from 'antd';
-import React, { useMemo } from 'react';
-import SimpleBar from 'simplebar-react';
+import React from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
+import { MessageItem } from '../../config/types';
 import ContentItem from './content-item';
 
 interface MessageContentProps {
-  loading: boolean;
+  loading?: boolean;
   spans: {
     span: number;
     count: number;
   };
-  messageList: {
-    role: string;
-    uid?: any;
-    content: string;
-  }[];
+  editable?: boolean;
+  messageList: MessageItem[];
+  setMessageList?: (list: any) => void;
 }
 
 const MessageContent: React.FC<MessageContentProps> = ({
+  setMessageList,
   messageList,
   spans,
-  loading
+  editable
 }) => {
-  const maxHeight = useMemo(() => {
-    const total = 72 + 110 + 46 + 16 + 32;
-    if (spans.span < 4) {
-      return `calc(100vh - ${total}px)`;
-    }
-    return `calc(100vh - ${total * 2 + 16}px)`;
-  }, [spans.span]);
+  const updateMessage = (index: number, message: MessageItem) => {
+    const newMessageList = [...messageList];
+    newMessageList[index] = message;
+    setMessageList?.(newMessageList);
+  };
+
+  const handleDelete = (index: number) => {
+    const newMessageList = [...messageList];
+    newMessageList.splice(index, 1);
+    setMessageList?.(newMessageList);
+  };
   return (
     <>
-      {messageList.length ? (
-        <SimpleBar style={{ maxHeight: 'calc(100% - 46px)' }}>
-          <div className="message-content-list">
-            {messageList.map((item, index) => (
-              <ContentItem key={index} data={item} />
-            ))}
-          </div>
-        </SimpleBar>
-      ) : (
-        <span>{loading}</span>
+      {!!messageList.length && (
+        <div className="message-content-list">
+          {messageList.map((item, index) => (
+            <ContentItem
+              key={item.uid}
+              data={item}
+              editable={editable}
+              onDelete={() => handleDelete(index)}
+              updateMessage={(data) => updateMessage(index, data)}
+            />
+          ))}
+        </div>
       )}
-      <Spin spinning={!!loading} size="small" style={{ width: '100%' }} />
     </>
   );
 };

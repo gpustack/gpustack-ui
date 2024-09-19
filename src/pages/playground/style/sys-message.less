@@ -1,0 +1,35 @@
+.sys-message {
+  position: relative;
+
+  .sys-content-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--ant-color-fill-tertiary);
+    padding-right: 20px;
+    cursor: pointer;
+
+    &:hover {
+      .clear-btn {
+        display: block;
+      }
+    }
+  }
+
+  .clear-btn {
+    display: none;
+    position: absolute;
+    right: 6px;
+    top: 6px;
+  }
+
+  .sys-content {
+    height: 38px;
+    line-height: 18px;
+    padding: 10px 14px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}

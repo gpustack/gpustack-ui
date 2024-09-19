@@ -28,6 +28,10 @@ export default {
     Message: {
       contentPadding: '12px 16px'
     },
+    Tooltip: {
+      colorBgSpotlight: 'rgba(110,110,110,1)'
+      // sizePopupArrow: 0
+    },
     Slider: {
       handleSize: 8,
       handleSizeHover: 8,
@@ -42,7 +46,7 @@ export default {
   },
   token: {
     colorPrimary: '#007BFF',
-    borderRadius: 8,
+    borderRadius: 6,
     fontSize: 12,
     motion: true
   }

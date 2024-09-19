@@ -11,7 +11,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundLeft from './components/ground-left';
 import MultipleChat from './components/multiple-chat';
-import ParamsSettings from './components/params-settings';
 import './style/play-ground.less';
 
 const Playground: React.FC = () => {
@@ -40,16 +39,16 @@ const Playground: React.FC = () => {
     groundLeftRef.current?.viewCode?.();
   }, [groundLeftRef]);
 
+  const handleToggleCollapse = useCallback(() => {
+    groundLeftRef.current?.setCollapse?.();
+  }, [groundLeftRef]);
+
   const items: TabsProps['items'] = [
     {
       key: 'chat',
       label: 'Chat',
       children: (
-        <GroundLeft
-          parameters={params}
-          ref={groundLeftRef}
-          modelList={modelList}
-        ></GroundLeft>
+        <GroundLeft ref={groundLeftRef} modelList={modelList}></GroundLeft>
       )
     },
     {
@@ -95,7 +94,7 @@ const Playground: React.FC = () => {
         </Button>
         <Button
           size="middle"
-          onClick={() => setCollapse(!collapse)}
+          onClick={handleToggleCollapse}
           icon={
             <IconFont
               type="icon-a-layout6-line"
@@ -144,7 +143,7 @@ const Playground: React.FC = () => {
         <div className="chat">
           <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
-        {activeKey === 'chat' && (
+        {/* {activeKey === 'chat' && (
           <div
             className={classNames('left', {
               collapse: collapse
@@ -163,7 +162,7 @@ const Playground: React.FC = () => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </PageContainer>
   );

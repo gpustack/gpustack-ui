@@ -214,14 +214,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
                 id: 'playground.params.temperature.tips'
               })
             })}
-            style={{ paddingInline: 0 }}
+            style={{ padding: '20px 2px 0' }}
             variant="borderless"
           >
             <Slider
               defaultValue={1}
               max={2}
               step={0.1}
-              style={{ marginBottom: 0, marginTop: 16 }}
+              style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
               tooltip={{ open: false }}
               value={form.getFieldValue('temperature') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'temperature')}
@@ -240,14 +240,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
                 id: 'playground.params.maxtokens.tips'
               })
             })}
-            style={{ paddingInline: 0 }}
+            style={{ padding: '20px 2px 0' }}
             variant="borderless"
           >
             <Slider
               defaultValue={1024}
               max={2048}
               step={1}
-              style={{ marginBottom: 0, marginTop: 16 }}
+              style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
               tooltip={{ open: false }}
               value={form.getFieldValue('max_tokens') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'max_tokens')}
@@ -266,14 +266,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
                 id: 'playground.params.topp.tips'
               })
             })}
-            style={{ paddingInline: 0 }}
+            style={{ padding: '20px 2px 0' }}
             variant="borderless"
           >
             <Slider
               defaultValue={1}
               max={1}
               step={0.1}
-              style={{ marginBottom: 0, marginTop: 16 }}
+              style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
               tooltip={{ open: false }}
               value={form.getFieldValue('top_p') || undefined}
               onChange={(val) => handleFieldValueChange(val, 'top_p')}

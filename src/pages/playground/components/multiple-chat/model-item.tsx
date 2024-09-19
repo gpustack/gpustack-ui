@@ -7,15 +7,7 @@ import {
   SettingOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Dropdown,
-  Input,
-  Popover,
-  Select
-} from 'antd';
+import { Button, Checkbox, Dropdown, Popover, Select, Spin } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -27,28 +19,24 @@ import React, {
   useRef,
   useState
 } from 'react';
+import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
 import { Roles } from '../../config';
 import CompareContext from '../../config/compare-context';
-import { ModelSelectionItem } from '../../config/types';
+import { MessageItem, ModelSelectionItem } from '../../config/types';
 import '../../style/model-item.less';
 import ParamsSettings from '../params-settings';
 import ReferenceParams from '../reference-params';
 import ViewCodeModal from '../view-code-modal';
 import MessageContent from './message-content';
+import SystemMessage from './system-message';
 
 interface ModelItemProps {
   model: string;
   modelList: ModelSelectionItem[];
   instanceId: symbol;
   ref: any;
-}
-
-interface MessageItemProps {
-  role: string;
-  content: string;
-  uid: string | number;
 }
 
 const ModelItem: React.FC<ModelItemProps> = forwardRef(
@@ -63,26 +51,28 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     } = useContext(CompareContext);
     const intl = useIntl();
     const isApplyToAllModels = useRef(false);
-    const [autoSize, setAutoSize] = useState<{
-      minRows: number;
-      maxRows: number;
-      focus: boolean;
-    }>({ minRows: 1, maxRows: 1, focus: false });
     const [systemMessage, setSystemMessage] = useState<string>('');
     const [params, setParams] = useState<Record<string, any>>({});
     const [loading, setLoading] = useState(false);
     const messageId = useRef<number>(0);
-    const [messageList, setMessageList] = useState<MessageItemProps[]>([]);
+    const [messageList, setMessageList] = useState<MessageItem[]>([]);
     const [tokenResult, setTokenResult] = useState<any>(null);
     const [show, setShow] = useState(false);
     const contentRef = useRef<any>('');
     const controllerRef = useRef<any>(null);
-    const currentMessageRef = useRef<MessageItemProps>({} as MessageItemProps);
-    const systemMessageRef = useRef<any>(null);
+    const currentMessageRef = useRef<MessageItem>({} as MessageItem);
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
     };
+    const maxHeight = useMemo(() => {
+      console.log('spans==========', spans);
+      const total = 72 + 110 + 46 + 16 + 32;
+      if (spans.count < 4) {
+        return `calc(100vh - ${total}px)`;
+      }
+      return `calc(100vh - ${total * 2 + 16}px)`;
+    }, [spans.count]);
 
     const abortFetch = () => {
       controllerRef.current?.abort?.();
@@ -104,9 +94,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       console.log('currentMessage==========5', messageList);
       setMessageList([
         ...messageList,
-        {
-          ...currentMessageRef.current
-        },
         {
           role: Roles.Assistant,
           content: contentRef.current,
@@ -149,28 +136,58 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               ...currentMessageRef.current
             }
           ],
-          (item: MessageItemProps) => {
+          (item: MessageItem) => {
             return {
               role: item.role,
-              content: item.content
+              content: item.content,
+              imgs: item.imgs || []
             };
           }
         );
 
         contentRef.current = '';
+        // ====== payload =================
+        const formatMessages = _.map(messages, (item: MessageItem) => {
+          return {
+            role: item.role,
+            content: [
+              {
+                type: 'text',
+                text: item.content
+              },
+              ..._.map(
+                item.imgs,
+                (img: { uid: string | number; dataUrl: string }) => {
+                  return {
+                    type: 'image_url',
+                    image_url: {
+                      url: img.dataUrl
+                    }
+                  };
+                }
+              )
+            ]
+          };
+        });
         const chatParams = {
           messages: systemMessage
             ? [
                 {
                   role: Roles.System,
-                  content: systemMessage
+                  content: [
+                    {
+                      type: 'text',
+                      text: systemMessage
+                    }
+                  ]
                 },
-                ...messages
+                ...formatMessages
               ]
-            : [...messages],
+            : [...formatMessages],
           ...parameters,
           stream: true
         };
+        // ============== payload end ================
         const result = await fetchChunkedData({
           data: chatParams,
           url: CHAT_API,
@@ -180,6 +197,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         if (!result) {
           return;
         }
+        setMessageId();
         const { reader, decoder } = result;
         await readStreamData(reader, decoder, (chunk: any) => {
           joinMessage(chunk);
@@ -242,7 +260,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setMessageList([]);
       setTokenResult(null);
       setSystemMessage('');
-      currentMessageRef.current = {} as MessageItemProps;
+      currentMessageRef.current = {} as MessageItem;
       console.log('clear message', systemMessage);
     };
 
@@ -258,8 +276,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       handleClearMessage();
     };
 
-    const handlePresetMessageList = (list: MessageItemProps[]) => {
-      currentMessageRef.current = {} as MessageItemProps;
+    const handlePresetMessageList = (list: MessageItem[]) => {
+      currentMessageRef.current = {} as MessageItem;
       const messages = _.map(
         list,
         (item: { role: string; content: string }) => {
@@ -277,31 +295,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
 
     const handleDelete = () => {
       handleDeleteModel(instanceId);
-    };
-
-    const handleFocus = () => {
-      setAutoSize({
-        minRows: 4,
-        maxRows: 4,
-        focus: true
-      });
-      setTimeout(() => {
-        systemMessageRef.current?.focus?.({
-          cursor: 'end'
-        });
-      }, 100);
-    };
-
-    const handleBlur = () => {
-      setAutoSize({
-        minRows: 1,
-        maxRows: 1,
-        focus: false
-      });
-    };
-
-    const handleClearSystemMessage = () => {
-      setSystemMessage('');
     };
 
     const modelOptions = useMemo(() => {
@@ -406,66 +399,35 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
                 size="small"
               ></Button>
             </Popover>
-            <Button
-              type="text"
-              icon={<CloseOutlined />}
-              size="small"
-              onClick={handleDelete}
-            ></Button>
+            {modelList.length > 2 && (
+              <Button
+                type="text"
+                icon={<CloseOutlined />}
+                size="small"
+                onClick={handleDelete}
+              ></Button>
+            )}
           </span>
         </div>
-        <div className="sys-message">
-          {
-            <div style={{ display: autoSize.focus ? 'block' : 'none' }}>
-              <Input.TextArea
-                ref={systemMessageRef}
-                variant="filled"
-                placeholder="Type system message here"
-                style={{
-                  borderRadius: '0',
-                  border: 'none'
-                }}
-                value={systemMessage}
-                autoSize={{
-                  minRows: autoSize.minRows,
-                  maxRows: autoSize.maxRows
-                }}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                allowClear={false}
-                onChange={(e) => setSystemMessage(e.target.value)}
-              ></Input.TextArea>
-              <Divider style={{ margin: '0' }}></Divider>
-            </div>
-          }
-          {!autoSize.focus && (
-            <div className="sys-content-wrap" onClick={handleFocus}>
-              <div className="sys-content">
-                {systemMessage || (
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    Type system message here
-                  </span>
-                )}
-              </div>
-              {systemMessage && (
-                <Button
-                  className="clear-btn"
-                  type="text"
-                  icon={<CloseOutlined />}
-                  size="small"
-                  onClick={handleClearSystemMessage}
-                ></Button>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="content">
-          <MessageContent
-            spans={spans}
-            messageList={messageList}
-            loading={loadingStatus[params.model]}
-          />
-        </div>
+        <SystemMessage
+          systemMessage={systemMessage}
+          setSystemMessage={setSystemMessage}
+        ></SystemMessage>
+        <SimpleBar style={{ maxHeight: maxHeight }}>
+          <div className="content">
+            <MessageContent
+              spans={spans}
+              messageList={messageList}
+              setMessageList={setMessageList}
+              editable={true}
+            />
+            <Spin
+              spinning={!!loadingStatus[instanceId]}
+              size="small"
+              style={{ width: '100%' }}
+            />
+          </div>
+        </SimpleBar>
         <ViewCodeModal
           open={show}
           systemMessage={systemMessage}

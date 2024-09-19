@@ -1,10 +1,12 @@
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CompareContext from '../../config/compare-context';
-import { ModelSelectionItem } from '../../config/types';
+import { MessageItem, ModelSelectionItem } from '../../config/types';
 import '../../style/multiple-chat.less';
 import MessageInput from '../message-input';
 import ActiveModels from './active-models';
+
+type CurrentMessage = Omit<MessageItem, 'uid'>;
 
 interface MultiCompareProps {
   modelList: (Global.BaseOption<string> & { type?: string })[];
@@ -61,7 +63,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     loadingStatus[instanceId] = false;
   };
 
-  const handleSubmit = (currentMessage: { role: string; content: string }) => {
+  const handleSubmit = (currentMessage: CurrentMessage) => {
     const modelRefList = Object.getOwnPropertySymbols(modelRefs.current);
     modelRefList.forEach((instanceId: symbol) => {
       const ref = modelRefs.current[instanceId];
@@ -69,7 +71,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     });
   };
 
-  const handleAddMessage = (message: { role: string; content: string }) => {
+  const handleAddMessage = (message: CurrentMessage) => {
     const modelRefList = Object.getOwnPropertySymbols(modelRefs.current);
     modelRefList.forEach((instanceId: symbol) => {
       const ref = modelRefs.current[instanceId];
@@ -218,13 +220,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     setModelSelections(resultList);
   }, [modelList]);
 
-  // useEffect(() => {
-  //   modelRefs.current = {};
-  //   modelSelections.forEach((item) => {
-  //     modelRefs.current[item.instanceId] = null;
-  //   });
-  // }, [modelSelections]);
-
   return (
     <div className="multiple-chat" style={{ height: boxHeight }}>
       <div className="chat-list">
@@ -248,6 +243,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
       <div>
         <MessageInput
           loading={isLoading}
+          disabled={isLoading || modelSelections.length === 0}
           handleSubmit={handleSubmit}
           addMessage={handleAddMessage}
           handleAbortFetch={handleAbortFetch}
@@ -256,6 +252,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
           setModelSelections={handleUpdateModelSelections}
           presetPrompt={handlePresetPrompt}
           modelList={modelFullList}
+          showModelSelection={true}
         />
       </div>
     </div>

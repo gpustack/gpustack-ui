@@ -28,7 +28,11 @@ const Wrapper: React.FC<WrapperProps> = ({
 }) => {
   return (
     <div
-      style={{ ...style }}
+      style={{
+        padding: '0 calc(var(--ant-padding-sm) - 5px)',
+        width: '100%',
+        ...style
+      }}
       className={classNames(
         wrapperStyle.wrapper,
         wrapperStyle[`validate-status-${status}`],
@@ -51,8 +55,8 @@ const Wrapper: React.FC<WrapperProps> = ({
         ></LabelInfo>
       </label>
       <div
+        className="child-inner"
         style={{
-          padding: '0 calc(var(--ant-padding-sm) - 5px)',
           width: '100%'
         }}
       >

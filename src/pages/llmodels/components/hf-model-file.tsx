@@ -252,11 +252,9 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
                           {getModelQuantizationType(item)}
                           {item.parts && item.parts.length > 1 && (
                             <Tooltip
-                              color="var(--color-white-1)"
                               overlayInnerStyle={{
-                                width: 150,
-                                padding: 0,
-                                color: 'var(--ant-color-text-secondary)'
+                                width: 180,
+                                padding: 0
                               }}
                               title={
                                 <FileParts fileList={item.parts}></FileParts>

@@ -33,5 +33,11 @@ export default {
   'playground.delete.img': 'Delete Image',
   'playground.img.upload': 'Upload Image',
   'playground.img.upload.success': 'Upload Success',
-  'playground.img.upload.error': 'Upload Error'
+  'playground.img.upload.error': 'Upload Error',
+  'playground.toolbar.clearmsg': 'Clear Messages',
+  'playground.toolbar.prompts': 'Prompts',
+  'playground.toolbar.compare2Model': '2-Model Compare',
+  'playground.toolbar.compare3Model': '3-Model Compare',
+  'playground.toolbar.compare4Model': '4-Model Compare',
+  'playground.toolbar.compare6Model': '6-Model Compare'
 };

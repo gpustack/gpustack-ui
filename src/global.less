@@ -21,10 +21,10 @@ html {
   --color-logs-text: #d4d4d4;
   --layout-content-blockpadding: 32px;
   --layout-content-inlinepadding: 32px;
-  --menu-border-radius-base: 8px;
-  --border-radius-base: 8px;
+  --menu-border-radius-base: 6px;
+  --border-radius-base: 6px;
   --border-radius-middle: 20px;
-  --border-radius-small: 8px;
+  --border-radius-small: 6px;
   --border-radius-mdium: 6px;
   --border-radius-mini: 4px;
   --color-white-1: rgba(255, 255, 255, 100%);
@@ -39,11 +39,11 @@ html {
   --font-size-base: 12px;
   --font-size-large: 16px;
   --font-size-middle: 14px;
-  --table-td-radius: 8px;
+  --table-td-radius: 6px;
   --checkbox-border-radius: 4px;
   --ant-table-cell-padding-inline: 16px;
-  --ant-table-cell-padding-block: 8px;
-  --ant-table-header-border-radius: 8px;
+  --ant-table-cell-padding-block: 6px;
+  --ant-table-header-border-radius: 6px;
   --ant-table-header-split-color: #f0f0f0;
   --ant-table-row-selected-bg: #e6f6ff;
   --ant-table-row-selected-hover-bg: #e6f6ff;
@@ -59,7 +59,7 @@ html {
   --ant-input-active-border-color: #007bff;
   --ant-input-hover-border-color: #2997ff;
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
-  --ant-border-radius-lg: 8px;
+  --ant-border-radius-lg: 6px;
   --ant-menu-item-color: var(--color-text-1);
   --color-selected-bg: rgba(230, 230, 230, 88%);
   // --box-shadow-base: none;
@@ -75,7 +75,7 @@ html {
 
     &.ant-menu-css-var {
       // --ant-menu-item-selected-bg: var(--color-white-1);
-      --ant-menu-item-border-radius: 8px;
+      --ant-menu-item-border-radius: 6px;
       --ant-menu-item-selected-color: var(--ant-color-primary);
       --ant-menu-item-color: var(--color-text-1);
     }
@@ -92,7 +92,7 @@ html {
     --ant-font-size-xl: 20px;
     --ant-font-size: var(--font-size-base);
     --ant-padding-sm: 14px;
-    --ant-border-radius-lg: 8px;
+    --ant-border-radius-lg: 6px;
     --ant-color-text: #000;
     --ant-color-error: #ff4d4f;
     --ant-color-bg-mask: rgba(0, 0, 0, 35%);
@@ -126,7 +126,7 @@ html {
   .css-var-ri.ant-menu-css-var,
   .css-var-rh.ant-menu-css-var {
     --ant-menu-item-height: 46px;
-    --ant-menu-item-border-radius: 8px;
+    --ant-menu-item-border-radius: 6px;
     --ant-menu-item-selected-color: var(--ant-color-primary);
     --ant-menu-item-color: var(--color-text-1);
     --ant-menu-item-active-bg: rgba(0, 0, 0, 4%);
@@ -293,12 +293,26 @@ body {
     }
 
     .ant-pro-sider-logo {
+      position: relative;
       padding-left: 18px;
+      padding-block: 12px;
       border-block-end: none;
     }
 
     .ant-pro-sider-logo-collapsed {
       padding-left: 12px;
+
+      .collapse-wrap {
+        display: none;
+        position: absolute;
+        top: 8px;
+      }
+
+      &:hover {
+        .collapse-wrap {
+          display: block;
+        }
+      }
     }
 
     .ant-pro-sider .ant-layout-sider-children {
@@ -427,6 +441,10 @@ body {
         }
       }
     }
+
+    .sub-title {
+      display: none !important;
+    }
   }
 
   .ant-menu-submenu-title {
@@ -499,6 +517,12 @@ body {
     align-items: flex-start !important;
   }
 }
+
+// =============== segment start==============
+.ant-segmented .ant-segmented-item::after {
+  border-radius: var(--border-radius-mini);
+}
+// =============== segment end ===============
 
 .background {
   position: fixed;

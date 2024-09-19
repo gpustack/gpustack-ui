@@ -216,7 +216,7 @@ const MessageItem: React.FC<{
         <ThumbImg dataList={imgList} onDelete={handleDeleteImg}></ThumbImg>
         <Input.TextArea
           ref={inputRef}
-          style={{ paddingBlock: '12px', paddingTop: 20 }}
+          style={{ paddingBlock: '12px' }}
           value={message.content}
           autoSize={true}
           variant="filled"

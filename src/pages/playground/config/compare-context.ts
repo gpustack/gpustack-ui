@@ -7,7 +7,7 @@ interface CompareContextProps {
   };
   systemMessage?: string;
   globalParams: Record<string, any>;
-  loadingStatus: Record<string, boolean>;
+  loadingStatus: Record<symbol, boolean>;
   handleDeleteModel: (instanceId: symbol) => void;
   setSystemMessage?: (message: string) => void;
   setGlobalParams: (value: Record<string, any>) => void;

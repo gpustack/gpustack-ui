@@ -3,3 +3,10 @@ export interface ModelSelectionItem extends Global.BaseOption<string> {
   instanceId: symbol;
   type?: string;
 }
+
+export interface MessageItem {
+  role: string;
+  content: string;
+  imgs?: { uid: string | number; dataUrl: string }[];
+  uid: number;
+}

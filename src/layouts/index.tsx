@@ -23,7 +23,7 @@ import {
 } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import { useAtom } from 'jotai';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
@@ -93,6 +93,7 @@ export default (props: any) => {
   const intl = useIntl();
   const { clientRoutes, pluginManager } = useAppData();
   const [collapsed, setCollapsed] = useState(false);
+  const [collapseValue, setCollapseValue] = useState(false);
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -167,6 +168,51 @@ export default (props: any) => {
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,
     [location.pathname]
   );
+
+  const renderMenuHeader = useCallback(
+    (logo, title) => {
+      return (
+        <>
+          {logo}
+          <div className="collapse-wrap">
+            <Button
+              size="small"
+              type={collapsed ? 'default' : 'text'}
+              onClick={handleToggleCollapse}
+            >
+              <>
+                <MenuUnfoldOutlined
+                  style={{ display: collapsed ? 'block' : 'none' }}
+                />
+                <MenuFoldOutlined
+                  style={{ display: !collapsed ? 'block' : 'none' }}
+                />
+              </>
+            </Button>
+          </div>
+        </>
+      );
+    },
+    [collapsed]
+  );
+
+  const actionRender = useCallback(
+    (layoutProps) => {
+      const dom = getRightRenderContent({
+        runtimeConfig,
+        loading,
+        initialState,
+        setInitialState,
+        intl,
+        siderWidth: layoutProps.siderWidth,
+        collapsed: layoutProps.collapsed
+      });
+
+      return dom;
+    },
+    [intl]
+  );
+
   return (
     <div>
       <div className="background"></div>
@@ -183,21 +229,7 @@ export default (props: any) => {
           e.preventDefault();
           navigate('/');
         }}
-        menuHeaderRender={(logo, title) => {
-          return (
-            <>
-              {logo}
-              <div className="collapse-wrap">
-                <Button
-                  type={collapsed ? 'default' : 'text'}
-                  onClick={handleToggleCollapse}
-                >
-                  {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                </Button>
-              </div>
-            </>
-          );
-        }}
+        menuHeaderRender={renderMenuHeader}
         collapsed={collapsed}
         onPageChange={(route) => {
           const { location } = history;
@@ -258,19 +290,7 @@ export default (props: any) => {
         fixSiderbar
         fixedHeader
         {...runtimeConfig}
-        actionsRender={(layoutProps) => {
-          const dom = getRightRenderContent({
-            runtimeConfig,
-            loading,
-            initialState,
-            setInitialState,
-            intl,
-            siderWidth: layoutProps.siderWidth,
-            collapsed: layoutProps.collapsed
-          });
-
-          return dom;
-        }}
+        actionsRender={actionRender}
       >
         <Exception
           route={matchedRoute}

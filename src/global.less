@@ -5,7 +5,7 @@ html {
   --ant-color-text-secondary: rgba(0, 0, 0, 65%);
   --ant-color-text-tertiary: rgba(0, 0, 0, 45%);
   --ant-color-text-quaternary: rgba(0, 0, 0, 25%);
-  --ant-color-fill: rgba(0, 0, 0, 15%);
+  --ant-color-fill: rgba(223, 168, 168, 15%);
   --ant-color-fill-secondary: rgba(0, 0, 0, 6%);
   --ant-color-fill-tertiary: rgba(0, 0, 0, 4%);
   --ant-color-fill-quaternary: rgba(0, 0, 0, 2%);
@@ -21,11 +21,12 @@ html {
   --color-logs-text: #d4d4d4;
   --layout-content-blockpadding: 32px;
   --layout-content-inlinepadding: 32px;
-  --menu-border-radius-base: 6px;
-  --border-radius-base: 6px;
+  --border-radius-modal: 6px;
+  --menu-border-radius-base: 4px;
+  --border-radius-base: 4px;
   --border-radius-middle: 20px;
-  --border-radius-small: 6px;
-  --border-radius-mdium: 6px;
+  --border-radius-small: 4px;
+  --border-radius-mdium: 4px;
   --border-radius-mini: 4px;
   --color-white-1: rgba(255, 255, 255, 100%);
   --color-fill-sider: #f4f5f4;
@@ -39,11 +40,11 @@ html {
   --font-size-base: 12px;
   --font-size-large: 16px;
   --font-size-middle: 14px;
-  --table-td-radius: 6px;
-  --checkbox-border-radius: 4px;
+  --table-td-radius: 4px;
+  --checkbox-border-radius: 2px;
   --ant-table-cell-padding-inline: 16px;
   --ant-table-cell-padding-block: 6px;
-  --ant-table-header-border-radius: 6px;
+  --ant-table-header-border-radius: 4px;
   --ant-table-header-split-color: #f0f0f0;
   --ant-table-row-selected-bg: #e6f6ff;
   --ant-table-row-selected-hover-bg: #e6f6ff;
@@ -59,7 +60,7 @@ html {
   --ant-input-active-border-color: #007bff;
   --ant-input-hover-border-color: #2997ff;
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
-  --ant-border-radius-lg: 6px;
+  --ant-border-radius-lg: 4px;
   --ant-menu-item-color: var(--color-text-1);
   --color-selected-bg: rgba(230, 230, 230, 88%);
   // --box-shadow-base: none;
@@ -75,7 +76,7 @@ html {
 
     &.ant-menu-css-var {
       // --ant-menu-item-selected-bg: var(--color-white-1);
-      --ant-menu-item-border-radius: 6px;
+      --ant-menu-item-border-radius: 4px;
       --ant-menu-item-selected-color: var(--ant-color-primary);
       --ant-menu-item-color: var(--color-text-1);
     }
@@ -92,7 +93,7 @@ html {
     --ant-font-size-xl: 20px;
     --ant-font-size: var(--font-size-base);
     --ant-padding-sm: 14px;
-    --ant-border-radius-lg: 6px;
+    --ant-border-radius-lg: 4px;
     --ant-color-text: #000;
     --ant-color-error: #ff4d4f;
     --ant-color-bg-mask: rgba(0, 0, 0, 35%);
@@ -113,6 +114,10 @@ html {
       --ant-table-row-hover-bg: #e6e6e6;
     }
 
+    &.ant-progress {
+      --ant-progress-line-border-radius: 2px;
+    }
+
     &.ant-modal-css-var {
       --ant-modal-title-font-size: 14px;
       --ant-modal-header-margin-bottom: 20px;
@@ -126,7 +131,7 @@ html {
   .css-var-ri.ant-menu-css-var,
   .css-var-rh.ant-menu-css-var {
     --ant-menu-item-height: 46px;
-    --ant-menu-item-border-radius: 6px;
+    --ant-menu-item-border-radius: 4px;
     --ant-menu-item-selected-color: var(--ant-color-primary);
     --ant-menu-item-color: var(--color-text-1);
     --ant-menu-item-active-bg: rgba(0, 0, 0, 4%);
@@ -148,6 +153,9 @@ html {
 
 body * {
   font-weight: var(--font-weight-normal);
+  font-family: 'noto sans', sans-serif;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -305,7 +313,7 @@ body {
       .collapse-wrap {
         display: none;
         position: absolute;
-        top: 8px;
+        top: 12px;
       }
 
       &:hover {
@@ -460,7 +468,29 @@ body {
 }
 // ======== monaco editor style ============
 .monaco-editor {
-  border-radius: 16px;
+  border-radius: 8px;
+}
+
+.custome-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-scrollbar-thumb);
+      border-radius: 4px;
+    }
+  }
 }
 
 .ant-message-notice-wrapper {

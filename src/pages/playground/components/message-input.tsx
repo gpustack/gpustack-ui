@@ -1,16 +1,16 @@
 import IconFont from '@/components/icon-font';
-import HotKeys from '@/config/hotkeys';
+import HotKeys, { KeyMap } from '@/config/hotkeys';
 import { platformCall } from '@/utils';
 import {
   ClearOutlined,
   ControlOutlined,
-  EnterOutlined,
+  SendOutlined,
   SwapOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Input, Select, Tooltip } from 'antd';
 import _ from 'lodash';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import { MessageItem } from '../config/types';
@@ -77,6 +77,7 @@ interface MessageInputProps {
   showModelSelection?: boolean;
   disabled: boolean;
   isEmpty?: boolean;
+  scope: string;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -91,19 +92,26 @@ const MessageInput: React.FC<MessageInputProps> = ({
   modelList,
   showModelSelection,
   disabled,
-  isEmpty
+  isEmpty,
+  scope
 }) => {
   const { TextArea } = Input;
   const intl = useIntl();
   const platform = platformCall();
   // const [disabled, setDisabled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [message, setMessage] = useState<CurrentMessage>({
     role: Roles.User,
     content: '',
     imgs: []
   });
   const imgCountRef = useRef(0);
+  const inputRef = useRef<any>(null);
+
+  const isDisabled = useMemo(() => {
+    return disabled ? true : !message.content && isEmpty;
+  }, [disabled, message.content, isEmpty]);
 
   const resetMessage = () => {
     setMessage({
@@ -162,7 +170,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   const handleAddMessage = () => {
-    console.log('add message');
+    console.log('add message=====1');
     addMessage({ ...message });
     resetMessage();
   };
@@ -279,12 +287,42 @@ const MessageInput: React.FC<MessageInputProps> = ({
   );
 
   useHotkeys(
-    HotKeys.SUBMIT.join(','),
+    HotKeys.SUBMIT,
     () => {
       console.log('submit message', loading);
+      inputRef.current?.blur?.();
       handleSendMessage();
     },
-    { enabled: true }
+    {
+      enabled: !loading && !isDisabled,
+      enableOnFormTags: focused,
+      preventDefault: true
+    }
+  );
+  useHotkeys(
+    HotKeys.ADD,
+    (e: any) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('add message', loading);
+      inputRef.current?.blur?.();
+      handleAddMessage();
+    },
+    {
+      enabled: !loading,
+      enableOnFormTags: focused,
+      preventDefault: true
+    }
+  );
+
+  useHotkeys(
+    HotKeys.FOCUS,
+    () => {
+      inputRef.current?.focus?.({
+        cursor: 'end'
+      });
+    },
+    { preventDefault: true }
   );
 
   return (
@@ -357,37 +395,46 @@ const MessageInput: React.FC<MessageInputProps> = ({
             ></Select>
           )}
 
-          <Button type="default" size="middle" onClick={handleAddMessage}>
-            {intl.formatMessage({ id: 'common.button.add' })}
-          </Button>
-          {!loading ? (
-            <Button
-              type="primary"
-              onClick={handleSendMessage}
-              size="middle"
-              disabled={disabled ? true : !message.content && isEmpty}
-            >
-              {intl.formatMessage({ id: 'common.button.submit' })}
-              <span className="m-l-5 opct-7">
-                {platform.isMac ? (
-                  <>
-                    <IconFont type="icon-command"></IconFont> +{' '}
-                    <EnterOutlined />
-                  </>
-                ) : (
-                  <>
-                    CTRL + <EnterOutlined />
-                  </>
-                )}
+          <Tooltip
+            title={
+              <span>
+                [{KeyMap.ADD.textKeybinding}]{' '}
+                {intl.formatMessage({ id: 'common.button.add' })}
               </span>
+            }
+          >
+            <Button type="default" size="middle" onClick={handleAddMessage}>
+              {intl.formatMessage({ id: 'common.button.add' })}
             </Button>
+          </Tooltip>
+          {!loading ? (
+            <Tooltip
+              title={
+                <span>
+                  [{KeyMap.SUBMIT.textKeybinding}]{' '}
+                  {intl.formatMessage({ id: 'common.button.submit' })}
+                </span>
+              }
+            >
+              <Button
+                style={{ width: 46 }}
+                type="primary"
+                onClick={handleSendMessage}
+                size="middle"
+                disabled={isDisabled}
+              >
+                <SendOutlined rotate={0} className="font-size-14" />
+              </Button>
+            </Tooltip>
           ) : (
             <Button
-              style={{ width: 44 }}
+              style={{ width: 46 }}
               type="primary"
               onClick={onStop}
               size="middle"
-              icon={<IconFont type="icon-stop1"></IconFont>}
+              icon={
+                <IconFont type="icon-stop1" className="font-size-14"></IconFont>
+              }
             ></Button>
           )}
         </div>
@@ -396,16 +443,25 @@ const MessageInput: React.FC<MessageInputProps> = ({
         dataList={message.imgs || []}
         onDelete={handleDeleteImg}
       ></ThumbImg>
-      <TextArea
-        placeholder="Type your message here"
-        autoSize={{ minRows: 3, maxRows: 3 }}
-        onChange={(e) => handleInputChange(e.target.value)}
-        value={message.content}
-        size="large"
-        variant="borderless"
-        onKeyDown={handleKeyDown}
-        onPaste={handleOnPaste}
-      ></TextArea>
+      <div className="input-box">
+        <TextArea
+          ref={inputRef}
+          autoSize={{ minRows: 3, maxRows: 3 }}
+          onChange={(e) => handleInputChange(e.target.value)}
+          value={message.content}
+          size="large"
+          variant="borderless"
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={handleKeyDown}
+          onPaste={handleOnPaste}
+        ></TextArea>
+        {!message.content && !focused && (
+          <span className="holder">
+            Type <kbd>/</kbd> to input message
+          </span>
+        )}
+      </div>
       <PromptModal
         open={open}
         onCancel={() => setOpen(false)}

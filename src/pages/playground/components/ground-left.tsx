@@ -1,9 +1,7 @@
-import HotKeys from '@/config/hotkeys';
 import useContainerScroll from '@/hooks/use-container-scorll';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Tooltip } from 'antd';
+import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import {
@@ -14,7 +12,6 @@ import {
   useRef,
   useState
 } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../apis';
 import { Roles } from '../config';
@@ -25,6 +22,7 @@ import MessageInput from './message-input';
 import MessageContent from './multiple-chat/message-content';
 import SystemMessage from './multiple-chat/system-message';
 import ParamsSettings from './params-settings';
+import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
@@ -43,14 +41,12 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
   const [systemMessage, setSystemMessage] = useState('');
-  const [collapsed, setCollapsed] = useState(true);
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [currentIsFocus, setCurrentIsFocus] = useState(false);
   const [collapse, setCollapse] = useState(false);
-  const systemRef = useRef<any>(null);
   const contentRef = useRef<any>('');
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
@@ -81,9 +77,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     };
   });
-  const handleSystemMessageChange = (e: any) => {
-    setSystemMessage(e.target.value);
-  };
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -223,10 +216,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
     setMessageId();
     setMessageList([]);
-  };
-
-  const handleView = () => {
-    setShow(true);
+    setTokenResult(null);
   };
 
   const handleSendMessage = (message: { role: string; content: string }) => {
@@ -235,51 +225,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage(currentMessage);
   };
 
-  const handleSubmit = () => {
-    submitMessage();
-  };
-
   const handleCloseViewCode = () => {
     setShow(false);
-  };
-
-  const handleDelete = (index: number) => {
-    messageList.splice(index, 1);
-    setMessageList([...messageList]);
-  };
-
-  const handleUpdateMessage = (index: number, message: MessageItem) => {
-    messageList[index] = message;
-    setMessageList([...messageList]);
-  };
-
-  const renderLabel = () => {
-    return (
-      <div className="system-message-wrap ">
-        <span className="title">
-          {intl.formatMessage({ id: 'playground.system' })}
-        </span>
-        <Tooltip
-          title={
-            collapsed
-              ? intl.formatMessage({ id: 'common.button.collapse' })
-              : intl.formatMessage({ id: 'common.button.expand' })
-          }
-        >
-          <Button size="small">
-            {collapsed ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-          </Button>
-        </Tooltip>
-      </div>
-    );
-  };
-
-  const handleFocus = () => {
-    setCurrentIsFocus(true);
-  };
-
-  const handleBlur = () => {
-    setCurrentIsFocus(false);
   };
 
   const handleSelectModel = () => {};
@@ -299,95 +246,30 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageList(userMsg);
   };
 
-  useHotkeys(
-    HotKeys.SUBMIT,
-    () => {
-      handleSubmit();
-    },
-    {
-      enabled: currentIsFocus && !loading,
-      enableOnFormTags: currentIsFocus && !loading,
-      preventDefault: true
-    }
-  );
-
-  useHotkeys(
-    HotKeys.CREATE.join(','),
-    () => {
-      handleNewMessage();
-    },
-    {
-      enabled: !loading,
-      enableOnFormTags: !loading,
-      preventDefault: true
-    }
-  );
-
-  useHotkeys(
-    HotKeys.CLEAR.join(','),
-    () => {
-      handleClear();
-    },
-    {
-      enabled: !loading,
-      enableOnFormTags: !loading,
-      preventDefault: true
-    }
-  );
-
   return (
     <div className="ground-left-wrapper">
       <div className="ground-left">
-        <div className="message-list-wrap" onWheel={handleContentWheel}>
+        <div
+          className="message-list-wrap"
+          onWheel={handleContentWheel}
+          ref={scroller}
+        >
           <div
             style={{
-              marginBottom: 20,
-              borderRadius: 'var(--border-radius-mini)',
-              overflow: 'hidden'
+              marginBottom: 20
             }}
           >
             <SystemMessage
+              style={{
+                borderRadius: 'var(--border-radius-mini)',
+                overflow: 'hidden'
+              }}
               systemMessage={systemMessage}
               setSystemMessage={setSystemMessage}
             ></SystemMessage>
-            {/* <TransitionWrapper
-            header={renderLabel()}
-            variant="filled"
-            setCollapsed={setCollapsed}
-            ref={systemRef}
-          >
-            <Input.TextArea
-              value={systemMessage}
-              variant="filled"
-              autoSize={true}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              style={{ minHeight: 40 }}
-              placeholder={intl.formatMessage({
-                id: 'playground.system.tips'
-              })}
-              onChange={handleSystemMessageChange}
-            ></Input.TextArea>
-          </TransitionWrapper> */}
           </div>
 
           <div className="content">
-            {/* {messageList.map((item, index) => {
-            return (
-              <MessageItem
-                key={item.uid}
-                isFocus={index === activeIndex}
-                islast={index === messageList.length - 1}
-                loading={loading}
-                onDelete={() => handleDelete(index)}
-                updateMessage={(message: MessageItem) =>
-                  handleUpdateMessage(index, message)
-                }
-                onSubmit={handleSubmit}
-                message={item}
-              />
-            );
-          })} */}
             <MessageContent
               spans={{
                 span: 24,
@@ -398,15 +280,21 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               editable={true}
               loading={loading}
             />
-            {/* {loading && (
-            <Spin>
-              <div style={{ height: '46px' }}></div>
-            </Spin>
-          )} */}
+            {loading && (
+              <Spin size="small">
+                <div style={{ height: '46px' }}></div>
+              </Spin>
+            )}
           </div>
         </div>
+        {tokenResult && (
+          <div style={{ height: 40 }}>
+            <ReferenceParams usage={tokenResult}></ReferenceParams>
+          </div>
+        )}
         <div className="ground-left-footer">
           <MessageInput
+            scope="chat"
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}

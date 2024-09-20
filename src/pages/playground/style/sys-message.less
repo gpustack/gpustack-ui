@@ -24,12 +24,26 @@
     top: 6px;
   }
 
+  .system-label {
+    font-weight: var(--font-weight-bold);
+    padding-left: 16px;
+  }
+
   .sys-content {
+    flex: 1;
     height: 38px;
+    width: 300px;
     line-height: 18px;
     padding: 10px 14px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    color: var(--ant-color-text-secondary);
+
+    .title {
+      font-weight: var(--font-weight-bold);
+      padding-right: 10px;
+      color: var(--ant-color-text);
+    }
   }
 }

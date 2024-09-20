@@ -136,6 +136,12 @@ export async function queryHuggingfaceModelDetail(
   });
 }
 
+export async function queryModelScopeModels() {
+  return request(`https://www.modelscope.cn/api/v1/dolphin/models`, {
+    method: 'PUT'
+  });
+}
+
 export async function queryHuggingfaceModels(
   params: {
     search: {

@@ -104,7 +104,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
 
     const submitMessage = async (currentParams: {
       parameters: Record<string, any>;
-      currentMessage: { role: string; content: string };
+      currentMessage: Omit<MessageItem, 'uid'>;
     }) => {
       console.log('currentMessage==========3', currentParams);
       const { parameters, currentMessage } = currentParams;
@@ -278,17 +278,14 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
 
     const handlePresetMessageList = (list: MessageItem[]) => {
       currentMessageRef.current = {} as MessageItem;
-      const messages = _.map(
-        list,
-        (item: { role: string; content: string }) => {
-          setMessageId();
-          return {
-            role: item.role,
-            content: item.content,
-            uid: messageId.current
-          };
-        }
-      );
+      const messages = _.map(list, (item: Omit<MessageItem, 'uid'>) => {
+        setMessageId();
+        return {
+          role: item.role,
+          content: item.content,
+          uid: messageId.current
+        };
+      });
       setTokenResult(null);
       setMessageList(messages);
     };

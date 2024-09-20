@@ -46,7 +46,9 @@ export default {
   },
   token: {
     colorPrimary: '#007BFF',
-    borderRadius: 6,
+    colorSuccess: '#54cc98',
+    borderRadius: 4,
+    borderRadiusSM: 2,
     fontSize: 12,
     motion: true
   }

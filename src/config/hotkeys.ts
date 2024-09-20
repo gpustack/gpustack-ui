@@ -1,23 +1,26 @@
 import { platformCall } from '@/utils';
+
 const platform = platformCall();
 const KeybindingsMap = {
-  CREATE: ['alt+ctrl+N', 'alt+meta+N'],
-  CLEAR: ['alt+ctrl+K', 'alt+meta+K'],
-  RIGHT: ['ctrl+RIGHT', 'meta+RIGHT'],
-  SAVE: ['ctrl+S', 'meta+S'],
-  SUBMIT: ['ctrl+enter', 'meta+enter'],
-  SAVEAS: ['alt+ctrl+S', 'alt+meta+S'],
-  OPEN: ['alt+ctrl+O', 'alt+meta+O'],
-  CANCEL: ['ctrl+W', 'meta+W'],
+  CREATE: ['Alt+Ctrl+N', 'Alt+Meta+N'],
+  CLEAR: ['Alt+Ctrl+K', 'Alt+Meta+K'],
+  RIGHT: ['Ctrl+RIGHT', 'Meta+RIGHT'],
+  SAVE: ['Ctrl+S', 'Meta+S'],
+  SUBMIT: ['Ctrl+Enter', 'Meta+Enter'],
+  SAVEAS: ['Alt+Ctrl+S', 'Alt+Meta+S'],
+  OPEN: ['Alt+Ctrl+O', 'Alt+Meta+O'],
+  CANCEL: ['Ctrl+W', 'Meta+W'],
   DELETE: ['delete'],
-  COPY: ['ctrl+C', 'meta+C'],
-  REFRESH: ['ctrl+R', 'meta+R'],
-  EDIT: ['ctrl+E', 'meta+E'],
-  SEARCH: ['ctrl+K', 'meta+K'],
-  RESET: ['alt+ctrl+R', 'alt+meta+R'],
-  INPUT: ['ctrl+K', 'meta+K'],
-  NEW1: ['ctrl+1', 'meta+1'],
-  NEW2: ['ctrl+2', 'meta+2']
+  COPY: ['Ctrl+C', 'Meta+C'],
+  REFRESH: ['Ctrl+R', 'Meta+R'],
+  EDIT: ['Ctrl+E', 'Meta+E'],
+  SEARCH: ['Ctrl+K', 'Meta+K'],
+  RESET: ['Alt+Ctrl+R', 'Alt+Meta+R'],
+  INPUT: ['Ctrl+K', 'Meta+K'],
+  NEW1: ['Ctrl+1', 'Meta+1'],
+  NEW2: ['Ctrl+2', 'Meta+2'],
+  FOCUS: ['/', '/'],
+  ADD: ['Alt+Ctrl+Enter', 'Alt+Meta+Enter']
 };
 
 type KeyBindingType = keyof typeof KeybindingsMap;
@@ -36,11 +39,11 @@ const KeybiningList: KeybindingValue[] = Object.entries(KeybindingsMap).map(
       keybinding: keybinding,
       command: key,
       textKeybinding: platform.isMac
-        ? keybinding.replace('meta', 'Cmd').replace('alt', 'Option')
-        : keybinding.replace('ctrl', 'Ctrl'),
+        ? keybinding.replace('Meta', 'Cmd').replace('Alt', 'Option')
+        : keybinding.replace('Ctrl', 'Ctrl'),
       iconKeybinding: platform.isMac
-        ? keybinding.replace('meta', '⌘').replace('alt', '⌥')
-        : keybinding.replace('ctrl', 'Ctrl')
+        ? keybinding.replace('Meta', '⌘').replace('Alt', '⌥')
+        : keybinding.replace('Ctrl', 'Ctrl')
     } as KeybindingValue;
   }
 );

@@ -2,6 +2,7 @@ export default {
   'playground.system.tips': '在这里输入系统消息',
   'playground.title': '试验场',
   'playground.system': '系统',
+  'playground.systemMessage': '系统消息',
   'playground.user': '用户',
   'playground.assistant': '小助手',
   'playground.newMessage': '新消息',

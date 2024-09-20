@@ -109,9 +109,7 @@ const Playground: React.FC = () => {
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
-      setCollapse((pre) => {
-        return !pre;
-      });
+      groundLeftRef.current?.setCollapse?.();
     },
     {
       preventDefault: true
@@ -136,7 +134,8 @@ const Playground: React.FC = () => {
       }}
       extra={renderExtra()}
       className={classNames('playground-container', {
-        compare: activeKey === 'compare'
+        compare: activeKey === 'compare',
+        chat: activeKey === 'chat'
       })}
     >
       <div className="play-ground">

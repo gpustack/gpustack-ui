@@ -68,4 +68,24 @@
       justify-content: flex-end;
     }
   }
+
+  .input-box {
+    width: 100%;
+    display: flex;
+    position: relative;
+
+    .holder {
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 6px;
+      color: var(--ant-color-text-quaternary);
+
+      kbd {
+        border: 1px solid var(--ant-color-border);
+        border-radius: 3px;
+        padding: 0 2px;
+      }
+    }
+  }
 }

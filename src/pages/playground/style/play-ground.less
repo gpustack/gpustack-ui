@@ -78,6 +78,25 @@
     padding-block: 0;
   }
 
+  .ant-page-header {
+    position: relative;
+    height: 72px;
+  }
+
+  &.chat {
+    .ant-page-header {
+      &::after {
+        position: absolute;
+        content: '';
+        left: 32px;
+        right: 32px;
+        bottom: 0;
+        height: 1px;
+        background-color: var(--ant-color-split);
+      }
+    }
+  }
+
   &.compare {
     .ant-pro-page-container-children-container {
       padding-inline: 0;

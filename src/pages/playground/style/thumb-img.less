@@ -11,10 +11,6 @@
     overflow: hidden;
     border-radius: var(--border-radius-base);
     cursor: pointer;
-    // background-position: center;
-    // background-size: cover;
-    // background-repeat: no-repeat;
-    // border: 1px solid var(--ant-color-border);
   }
 
   .del {
@@ -26,12 +22,22 @@
     background-color: var(--color-white-1);
     display: none;
     border-radius: 50%;
+    height: 16px;
+    width: 16px;
     overflow: hidden;
+    pointer-events: all;
   }
 
   &:hover {
+    .ant-image .ant-image-mask {
+      opacity: 1;
+      transition: opacity var(--ant-motion-duration-slow);
+    }
+
     .del {
-      display: block;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 }

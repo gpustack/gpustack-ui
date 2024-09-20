@@ -1,15 +1,18 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { Button, Divider, Input } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Button, Divider, Input, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import '../../style/sys-message.less';
 
 interface SystemMessageProps {
+  style?: React.CSSProperties;
   systemMessage: string;
   setSystemMessage: (value: string) => void;
 }
 
 const SystemMessage: React.FC<SystemMessageProps> = (props) => {
-  const { systemMessage, setSystemMessage } = props;
+  const { systemMessage, setSystemMessage, style } = props;
+  const intl = useIntl();
   const systemMessageRef = React.useRef<any>(null);
   const [autoSize, setAutoSize] = useState<{
     minRows: number;
@@ -43,13 +46,16 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
   };
 
   return (
-    <div className="sys-message">
+    <div className="sys-message" style={{ ...style }}>
       {
         <div style={{ display: autoSize.focus ? 'block' : 'none' }}>
+          <span className="system-label">
+            {intl.formatMessage({ id: 'playground.systemMessage' })}
+          </span>
           <Input.TextArea
             ref={systemMessageRef}
             variant="filled"
-            placeholder="Type system message here"
+            placeholder={intl.formatMessage({ id: 'playground.system.tips' })}
             style={{
               borderRadius: '0',
               border: 'none'
@@ -70,20 +76,25 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
       {!autoSize.focus && (
         <div className="sys-content-wrap" onClick={handleFocus}>
           <div className="sys-content">
+            <span className="title">
+              {intl.formatMessage({ id: 'playground.systemMessage' })}
+            </span>
             {systemMessage || (
               <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                Type system message here
+                {intl.formatMessage({ id: 'playground.system.tips' })}
               </span>
             )}
           </div>
           {systemMessage && (
-            <Button
-              className="clear-btn"
-              type="text"
-              icon={<CloseOutlined />}
-              size="small"
-              onClick={handleClearSystemMessage}
-            ></Button>
+            <Tooltip title={intl.formatMessage({ id: 'common.button.clear' })}>
+              <Button
+                className="clear-btn"
+                type="text"
+                icon={<CloseOutlined />}
+                size="small"
+                onClick={handleClearSystemMessage}
+              ></Button>
+            </Tooltip>
           )}
         </div>
       )}

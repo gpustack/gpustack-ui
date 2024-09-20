@@ -1,7 +1,8 @@
 export default {
-  'playground.system.tips': 'Enter system message here',
+  'playground.system.tips': 'Type system instructions here',
   'playground.title': 'Playground',
   'playground.system': 'System',
+  'playground.systemMessage': 'System instructions',
   'playground.user': 'User',
   'playground.assistant': 'Assistant',
   'playground.newMessage': 'New Message',

@@ -1,11 +1,10 @@
 import CopyButton from '@/components/copy-button';
-import IconFont from '@/components/icon-font';
-import { CloseOutlined, SwapOutlined, UserOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Input, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Roles } from '../../config';
 import { MessageItem } from '../../config/types';
 import '../../style/content-item.less';
@@ -30,9 +29,6 @@ const ContentItem: React.FC<MessageItemProps> = ({
   const intl = useIntl();
   const inputRef = useRef<any>(null);
   const imgCountRef = useRef(0);
-  const [imgList, setImgList] = useState<
-    { uid: number | string; dataUrl: string }[]
-  >([]);
 
   const handleMessageChange = (e: any) => {
     updateMessage?.({
@@ -91,9 +87,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
             dataUrl: img
           };
         });
-        // setImgList((pre) => {
-        //   return [...pre, ...list];
-        // });
+
         updateMessage?.({
           role: data.role,
           content: data.content,
@@ -124,9 +118,6 @@ const ContentItem: React.FC<MessageItemProps> = ({
 
   const handleUpdateImgList = useCallback(
     (list: { uid: number | string; dataUrl: string }[]) => {
-      // setImgList((preList) => {
-      //   return [...preList, ...list];
-      // });
       console.log('list===========', data.imgs, list);
       updateMessage?.({
         role: data.role,
@@ -140,7 +131,6 @@ const ContentItem: React.FC<MessageItemProps> = ({
 
   const handleDeleteImg = (uid: number | string) => {
     const list = _.filter(data.imgs, (item: MessageItem) => item.uid !== uid);
-    // setImgList(list);
     updateMessage?.({
       role: data.role,
       content: data.content,
@@ -185,16 +175,8 @@ const ContentItem: React.FC<MessageItemProps> = ({
   return (
     <div className="content-item">
       <div className="content-item-role">
-        <div className="role" onClick={handleToggleRole}>
-          <span className="m-r-5">
-            {Roles.User === data.role ? (
-              <UserOutlined></UserOutlined>
-            ) : (
-              <IconFont type="icon-AIzhineng"></IconFont>
-            )}
-          </span>
+        <div className="role">
           {intl.formatMessage({ id: `playground.${data.role}` })}
-          <SwapOutlined rotate={90} className="m-l-5" />
         </div>
         <div className="actions">
           {editable && (
@@ -215,7 +197,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
                 size="small"
                 type="text"
                 onClick={onDelete}
-                icon={<CloseOutlined />}
+                icon={<MinusCircleOutlined />}
               ></Button>
             </Tooltip>
           )}

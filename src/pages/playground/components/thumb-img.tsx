@@ -1,4 +1,4 @@
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
 import { Image } from 'antd';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
@@ -25,7 +25,14 @@ const ThumbImg: React.FC<{
         return (
           <span key={item.uid} className="thumb-img">
             <span className="img">
-              <Image src={item.dataUrl} width={56} height={56} />
+              <Image
+                src={item.dataUrl}
+                width={56}
+                height={56}
+                preview={{
+                  mask: <EyeOutlined />
+                }}
+              />
             </span>
 
             <span className="del" onClick={() => handleOnDelete(item.uid)}>

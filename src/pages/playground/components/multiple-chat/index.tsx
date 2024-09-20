@@ -242,6 +242,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
       </div>
       <div>
         <MessageInput
+          scope="compare"
           loading={isLoading}
           disabled={isLoading || modelSelections.length === 0}
           handleSubmit={handleSubmit}

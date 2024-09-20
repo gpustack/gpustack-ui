@@ -77,7 +77,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
             title={intl.formatMessage({ id: 'resources.table.key.tips' })}
           >
             <SealInput.Input
-              label="Key"
+              label={intl.formatMessage({ id: 'common.input.key' })}
               value={label.key}
               onChange={handleOnKeyChange}
               onBlur={handleKeyOnBlur}
@@ -89,7 +89,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
       <div className="label-value">
         {valueAddon ?? (
           <SealInput.Input
-            label="Value"
+            label={intl.formatMessage({ id: 'common.input.value' })}
             value={label.value}
             onChange={handleOnValueChange}
           ></SealInput.Input>

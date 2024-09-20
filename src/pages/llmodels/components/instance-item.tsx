@@ -153,7 +153,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                     paddingInline: 'var(--ant-table-cell-padding-inline)'
                   }}
                 >
-                  <Tooltip title={renderWorkerInfo(item)} trigger={['click']}>
+                  <Tooltip title={renderWorkerInfo(item)}>
                     <span className="m-r-5">{item.name}</span>
                     <InfoCircleOutlined />
                   </Tooltip>

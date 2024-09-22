@@ -1,10 +1,15 @@
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Select } from 'antd';
+import { Select } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { queryHuggingfaceModels } from '../apis';
-import { ModelSortType, modelSourceMap, ollamaModelOptions } from '../config';
+import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
+import {
+  ModelScopeSortType,
+  ModelSortType,
+  modelSourceMap,
+  ollamaModelOptions
+} from '../config';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -31,10 +36,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     networkError: false,
     sortType: ModelSortType.trendingScore
   });
+  const SUPPORTEDSOURCE = [
+    modelSourceMap.huggingface_value,
+    modelSourceMap.modelscope_value
+  ];
   const [current, setCurrent] = useState<string>('');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
-  const customOllamaModelRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
   const modelFilesSortOptions = useRef<any[]>([
     {
@@ -56,16 +64,74 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   ]);
 
   const handleOnSelectModel = useCallback((item: any) => {
+    console.log('handleOnSelectModel', item);
     onSelectModel(item);
     setCurrent(item.id);
   }, []);
 
+  // huggeface
+  const getModelsFromHuggingface = useCallback(async (sort: string) => {
+    try {
+      const task: any = searchInputRef.current ? '' : 'text-generation';
+      const params = {
+        search: {
+          query: searchInputRef.current || '',
+          sort: sort,
+          tags: ['gguf'],
+          task
+        }
+      };
+      const data = await queryHuggingfaceModels(params, {
+        signal: axiosTokenRef.current.signal
+      });
+      let list = _.map(data || [], (item: any) => {
+        return {
+          ...item,
+          value: item.name,
+          label: item.name
+        };
+      });
+      return list;
+    } catch (error) {
+      return [];
+    }
+  }, []);
+
+  // modelscope
+  const getModelsFromModelscope = useCallback(async (sort: string) => {
+    try {
+      const params = {
+        Name: searchInputRef.current || '',
+        SortBy: ModelScopeSortType[sort]
+      };
+      const data = await queryModelScopeModels(params, {
+        signal: axiosTokenRef.current.signal
+      });
+      let list = _.map(_.get(data, 'Data.Model.Models') || [], (item: any) => {
+        return {
+          path: item.Path,
+          name: `${item.Path}/${item.Name}`,
+          downloads: item.Downloads,
+          id: item.Name,
+          updatedAt: item.LastUpdatedTime * 1000,
+          likes: item.Stars,
+          value: item.Name,
+          label: item.Name,
+          task: item.Tasks?.map((sItem: any) => sItem.Name).join(',')
+        };
+      });
+
+      return list;
+    } catch (error) {
+      return [];
+    }
+  }, []);
+
   const handleOnSearchRepo = useCallback(
     async (sortType?: string) => {
-      if (modelSource === modelSourceMap.ollama_library_value) {
+      if (!SUPPORTEDSOURCE.includes(modelSource)) {
         return;
       }
-      console.log('handleOnSearchRepo', dataSource.loading);
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
       if (dataSource.loading) return;
@@ -77,26 +143,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         });
         setLoadingModel?.(true);
         cacheRepoOptions.current = [];
-        const task: any = searchInputRef.current ? '' : 'text-generation';
-        const params = {
-          search: {
-            query: searchInputRef.current || '',
-            sort: sort,
-            tags: ['gguf'],
-            task
-          }
-        };
-        const models = await queryHuggingfaceModels(params, {
-          signal: axiosTokenRef.current.signal
-        });
-        let list = _.map(models || [], (item: any) => {
-          return {
-            ...item,
-            value: item.name,
-            label: item.name
-          };
-        });
-
+        let list: any[] = [];
+        if (modelSource === modelSourceMap.huggingface_value) {
+          list = await getModelsFromHuggingface(sort);
+        } else if (modelSource === modelSourceMap.modelscope_value) {
+          list = await getModelsFromModelscope(sort);
+        }
         cacheRepoOptions.current = list;
         setDataSource({
           repoOptions: list,
@@ -133,7 +185,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (
       !dataSource.repoOptions.length &&
       !cacheRepoOptions.current.length &&
-      modelSource === modelSourceMap.huggingface_value
+      SUPPORTEDSOURCE.includes(modelSource)
     ) {
       handleOnSearchRepo();
     }
@@ -149,51 +201,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   };
 
-  const handleFilterModels = (e: any) => {
-    const text = e.target.value;
-    const list = _.filter(cacheRepoOptions.current, (item: any) => {
-      return item.name.includes(text);
-    });
-    setDataSource({
-      repoOptions: list,
-      loading: false,
-      networkError: false,
-      sortType: dataSource.sortType
-    });
-  };
-
-  const debounceFilter = _.debounce((e: any) => {
-    handleFilterModels(e);
-  }, 300);
-
-  const handleSourceChange = (source: string) => {
-    axiosTokenRef.current?.abort?.();
-    onSourceChange?.(source);
-    setDataSource({
-      repoOptions: [],
-      loading: false,
-      networkError: false,
-      sortType: dataSource.sortType
-    });
-    cacheRepoOptions.current = [];
-  };
-
-  const handleInputChange = (e: any) => {
-    const value = e.target.value;
-    customOllamaModelRef.current = value;
-  };
-
-  const handleConfirm = () => {
-    const model = {
-      label: customOllamaModelRef.current,
-      value: customOllamaModelRef.current,
-      name: customOllamaModelRef.current,
-      id: ''
-    };
-    onSelectModel(model);
-    setCurrent('');
-  };
-
   const handleSortChange = (value: string) => {
     handleOnSearchRepo(value || '');
   };
@@ -201,7 +208,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const renderHFSearch = () => {
     return (
       <>
-        <SearchInput onSearch={handlerSearchModels}></SearchInput>
+        <SearchInput
+          onSearch={handlerSearchModels}
+          modelSource={modelSource}
+        ></SearchInput>
         <div className={SearchStyle.filter}>
           <span>
             <span className="value">
@@ -231,23 +241,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     );
   };
 
-  const renderOllamaCustom = () => {
-    return (
-      <>
-        <Input
-          allowClear
-          placeholder="Input ollama model name"
-          onChange={handleInputChange}
-        ></Input>
-        <div className={SearchStyle.filter}>
-          <Button type="primary" onClick={handleConfirm}>
-            {intl.formatMessage({ id: 'common.button.confirm' })}
-          </Button>
-        </div>
-      </>
-    );
-  };
-
   useEffect(() => {
     handleOnOpen();
     console.log('SearchModel useEffect', modelSource);
@@ -262,7 +255,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   return (
     <div style={{ flex: 1 }}>
       <div className={SearchStyle['search-bar']}>
-        {modelSource === modelSourceMap.huggingface_value ? (
+        {SUPPORTEDSOURCE.includes(modelSource) ? (
           renderHFSearch()
         ) : (
           <div style={{ lineHeight: '18px' }}>

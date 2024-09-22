@@ -22,7 +22,7 @@ export default {
   'model.form.ollama.model': 'Ollama 模型',
   'model.form.ollamaholder': '请选择或输入模型名称',
   'model.deploy.sort': '排序',
-  'model.deploy.search.placeholder': '从 Hugging Face 搜索模型',
+  'model.deploy.search.placeholder': '从 {source} 搜索模型',
   'model.form.ollamatips':
     '提示：以下为 GPUStack 预设的 Ollama 模型，请选择你想要的模型或者直接在右侧表单 【{name}】 输入框中输入你要部署的模型。',
   'models.sort.name': '名称',
@@ -35,6 +35,7 @@ export default {
   'models.data.card': '模型简介',
   'models.available.files': '可用文件',
   'models.viewin.hf': '在 Hugging Face 中查看',
+  'models.viewin.modelscope': '在 ModelScope 中查看',
   'models.architecture': '架构',
   'models.search.noresult': '未找到相关模型',
   'models.search.nofiles': '无可用文件',

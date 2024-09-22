@@ -26,7 +26,6 @@ import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
-  parameters?: any;
   modelList: Global.BaseOption<string>[];
   ref?: any;
 }
@@ -142,10 +141,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           ]
         : [];
 
-      setMessageList((pre) => {
-        return [...pre, ...currentMessageRef.current];
-      });
-
       contentRef.current = '';
       const formatMessages = _.map(
         [...messageList, ...currentMessageRef.current],
@@ -207,6 +202,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setLoading(false);
     } catch (error) {
       console.log('error=====', error);
+      setMessageList((pre) => {
+        return [...pre, ...currentMessageRef.current];
+      });
       setLoading(false);
     }
   };

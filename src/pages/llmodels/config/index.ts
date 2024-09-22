@@ -87,7 +87,16 @@ export const modelSourceMap: Record<string, string> = {
   s3: 'S3',
   huggingface_value: 'huggingface',
   ollama_library_value: 'ollama_library',
-  s3_value: 's3'
+  s3_value: 's3',
+  modelScope: 'ModelScope',
+  modelscope_value: 'model_scope'
+};
+
+export const modelSourceValueMap = {
+  [modelSourceMap.huggingface_value]: modelSourceMap.huggingface,
+  [modelSourceMap.ollama_library_value]: modelSourceMap.ollama_library,
+  [modelSourceMap.s3_value]: modelSourceMap.s3,
+  [modelSourceMap.modelscope_value]: modelSourceMap.modelScope
 };
 
 export const InstanceStatusMap = {
@@ -148,6 +157,13 @@ export const ModelSortType = {
   lastModified: 'lastModified'
 };
 
+export const ModelScopeSortType = {
+  [ModelSortType.trendingScore]: 'Default',
+  [ModelSortType.likes]: 'StarsCount',
+  [ModelSortType.downloads]: 'DownloadsCount',
+  [ModelSortType.lastModified]: 'GmtModified'
+};
+
 export const placementStrategyOptions = [
   {
     label: 'Spread',
@@ -158,3 +174,61 @@ export const placementStrategyOptions = [
     value: 'binpack'
   }
 ];
+
+export const sourceRepoConfig = {
+  [modelSourceMap.huggingface_value]: {
+    repo_id: 'huggingface_repo_id',
+    file_name: 'huggingface_filename'
+  },
+
+  [modelSourceMap.modelscope_value]: {
+    repo_id: 'model_scope_model_id',
+    file_name: 'model_scope_file_path'
+  }
+};
+
+export const getSourceRepoConfigValue = (
+  source: string,
+  data: any
+): {
+  values: Record<string, any>;
+  omits: string[];
+} => {
+  const config: Record<string, any> = sourceRepoConfig[source] || {};
+  const result: Record<string, any> = {};
+  const omits: string[] = [];
+  Object.keys(config)?.forEach((key: string) => {
+    if (config[key]) {
+      result[config[key]] = data[key];
+      omits.push(key);
+    }
+  });
+
+  return {
+    values: result,
+    omits: omits
+  };
+};
+
+export const setSourceRepoConfigValue = (
+  source: string,
+  data: any
+): {
+  values: Record<string, any>;
+  omits: string[];
+} => {
+  const config: Record<string, any> = sourceRepoConfig[source] || {};
+  const result: Record<string, any> = {};
+  const omits: string[] = [];
+  Object.keys(config)?.forEach((key: string) => {
+    if (config[key]) {
+      result[key] = data[config[key]];
+      omits.push(config[key]);
+    }
+  });
+
+  return {
+    values: result,
+    omits: omits
+  };
+};

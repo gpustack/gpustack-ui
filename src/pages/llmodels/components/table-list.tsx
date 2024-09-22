@@ -38,7 +38,7 @@ import {
   queryModelInstancesList,
   updateModel
 } from '../apis';
-import { modelSourceMap } from '../config';
+import { getSourceRepoConfigValue, modelSourceMap } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
@@ -95,9 +95,7 @@ const Models: React.FC<ModelsProps> = ({
     source: modelSourceMap.huggingface_value
   });
   const [title, setTitle] = useState<string>('');
-  const [currentData, setCurrentData] = useState<ListItem | undefined>(
-    undefined
-  );
+  const [currentData, setCurrentData] = useState<ListItem>({} as ListItem);
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
   const modalRef = useRef<any>(null);
 
@@ -108,6 +106,21 @@ const Models: React.FC<ModelsProps> = ({
         show: true,
         width: 'calc(100vw - 220px)',
         source: modelSourceMap.huggingface_value
+      });
+    },
+    {
+      preventDefault: true,
+      enabled: !openAddModal && !openDeployModal.show && !openLogModal
+    }
+  );
+
+  useHotkeys(
+    HotKeys.NEW3.join(','),
+    () => {
+      setOpenDeployModal({
+        show: true,
+        width: 'calc(100vw - 220px)',
+        source: modelSourceMap.modelscope_value
       });
     },
     {
@@ -157,6 +170,19 @@ const Models: React.FC<ModelsProps> = ({
             width: 600,
             source: modelSourceMap.ollama_library_value
           };
+        });
+      }
+    },
+    {
+      label: 'ModelScope',
+      value: modelSourceMap.modelscope_value,
+      key: 'modelscope',
+      icon: <IconFont type="icon-tu2"></IconFont>,
+      onClick: (e: any) => {
+        setOpenDeployModal({
+          show: true,
+          width: 'calc(100vw - 220px)',
+          source: modelSourceMap.modelscope_value
         });
       }
     }
@@ -222,9 +248,12 @@ const Models: React.FC<ModelsProps> = ({
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
+        console.log('data:', data, openDeployModal);
+        const result = getSourceRepoConfigValue(currentData?.source, data);
         await updateModel({
           data: {
-            ...data
+            ...result.values,
+            ..._.omit(data, result.omits)
           },
           id: currentData?.id as number
         });
@@ -252,7 +281,14 @@ const Models: React.FC<ModelsProps> = ({
       try {
         console.log('data:', data, openDeployModal);
 
-        await createModel({ data });
+        const result = getSourceRepoConfigValue(openDeployModal.source, data);
+
+        await createModel({
+          data: {
+            ...result.values,
+            ..._.omit(data, result.omits)
+          }
+        });
         setOpenDeployModal({
           ...openDeployModal,
           show: false
@@ -380,6 +416,16 @@ const Models: React.FC<ModelsProps> = ({
     [workerList]
   );
 
+  const generateSource = useCallback((record: ListItem) => {
+    if (record.source === modelSourceMap.modelscope_value) {
+      return `${modelSourceMap.modelScope} / ${record.model_scope_file_path}`;
+    }
+    if (record.source === modelSourceMap.huggingface_value) {
+      return `${modelSourceMap.huggingface} / ${record.huggingface_filename}`;
+    }
+    return `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`;
+  }, []);
+
   const handleCloseViewCode = useCallback(() => {
     setEmbeddingParams({
       params: {},
@@ -493,11 +539,7 @@ const Models: React.FC<ModelsProps> = ({
             render={(text, record: ListItem) => {
               return (
                 <span className="flex flex-column">
-                  <span>
-                    {record.source === modelSourceMap.huggingface_value
-                      ? `${modelSourceMap.huggingface} / ${record.huggingface_filename}`
-                      : `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`}
-                  </span>
+                  <span>{generateSource(record)}</span>
                 </span>
               );
             }}

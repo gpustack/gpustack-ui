@@ -60,7 +60,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const [show, setShow] = useState(false);
     const contentRef = useRef<any>('');
     const controllerRef = useRef<any>(null);
-    const currentMessageRef = useRef<MessageItem>({} as MessageItem);
+    const currentMessageRef = useRef<MessageItem[]>([]);
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
@@ -94,6 +94,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       console.log('currentMessage==========5', messageList);
       setMessageList([
         ...messageList,
+        ...currentMessageRef.current,
         {
           role: Roles.Assistant,
           content: contentRef.current,
@@ -102,13 +103,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       ]);
     };
 
-    const submitMessage = async (currentParams: {
-      parameters: Record<string, any>;
-      currentMessage: Omit<MessageItem, 'uid'>;
-    }) => {
-      console.log('currentMessage==========3', currentParams);
-      const { parameters, currentMessage } = currentParams;
-      if (!parameters.model) return;
+    const submitMessage = async (currentMessage?: Omit<MessageItem, 'uid'>) => {
+      if (!params.model) return;
       try {
         setLoadingStatus(instanceId, true);
         setMessageId();
@@ -116,26 +112,18 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         controllerRef.current?.abort?.();
         controllerRef.current = new AbortController();
         const signal = controllerRef.current.signal;
-        currentMessageRef.current = {
-          ...currentMessage,
-          uid: messageId.current
-        };
-        setMessageList((preList) => {
-          return [
-            ...preList,
-            {
-              ...currentMessageRef.current
-            }
-          ];
-        });
+        currentMessageRef.current = currentMessage
+          ? [
+              {
+                ...currentMessage,
+                uid: messageId.current
+              }
+            ]
+          : [];
+        console.log('currentMessageRef.current 1:', currentMessageRef.current);
         console.log('currentMessage==========4', messageList);
         const messages = _.map(
-          [
-            ...messageList,
-            {
-              ...currentMessageRef.current
-            }
-          ],
+          [...messageList, ...currentMessageRef.current],
           (item: MessageItem) => {
             return {
               role: item.role,
@@ -184,7 +172,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
                 ...formatMessages
               ]
             : [...formatMessages],
-          ...parameters,
+          ...params,
           stream: true
         };
         // ============== payload end ================
@@ -204,6 +192,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         });
         setLoadingStatus(instanceId, false);
       } catch (error) {
+        setMessageList((preList) => {
+          return [...preList, ...currentMessageRef.current];
+        });
         setLoadingStatus(instanceId, false);
       }
     };
@@ -222,7 +213,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       content: string;
     }) => {
       console.log('currentMessage==========2', currentMessage);
-      submitMessage({ parameters: params, currentMessage });
+      const currentMsg = currentMessage.content ? currentMessage : undefined;
+      submitMessage(currentMsg);
     };
 
     const handleApplyToAllModels = (e: any) => {
@@ -260,7 +252,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setMessageList([]);
       setTokenResult(null);
       setSystemMessage('');
-      currentMessageRef.current = {} as MessageItem;
+      currentMessageRef.current = [];
       console.log('clear message', systemMessage);
     };
 
@@ -277,7 +269,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     };
 
     const handlePresetMessageList = (list: MessageItem[]) => {
-      currentMessageRef.current = {} as MessageItem;
+      currentMessageRef.current = [];
       const messages = _.map(list, (item: Omit<MessageItem, 'uid'>) => {
         setMessageId();
         return {

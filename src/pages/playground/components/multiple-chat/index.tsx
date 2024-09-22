@@ -34,7 +34,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     span: 12,
     count: 2
   });
-  const cacheModelInstanceList = useRef<any[]>([]);
   const modelsCounterMap = useRef<Record<string, number>>({});
   const modelRefs = useRef<any>({});
   const boxHeight = 'calc(100vh - 72px)';

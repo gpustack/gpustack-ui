@@ -7,23 +7,25 @@ import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { queryHuggingfaceModelFiles } from '../apis';
+import { queryHuggingfaceModelFiles, queryModelScopeModelFiles } from '../apis';
+import { modelSourceMap } from '../config';
 import { getFileType } from '../config/file-type';
 import '../style/hf-model-file.less';
 import FileParts from './file-parts';
 import TitleWrapper from './title-wrapper';
 
 interface HFModelFileProps {
-  repo: string;
+  selectedModel: any;
   collapsed?: boolean;
   loadingModel?: boolean;
+  modelSource: string;
   onSelectFile?: (file: any) => void;
 }
 
 const pattern = /^(.*)-(\d+)-of-(\d+)\.gguf$/;
 
 const HFModelFile: React.FC<HFModelFileProps> = (props) => {
-  const { collapsed, loadingModel } = props;
+  const { collapsed, modelSource } = props;
   const intl = useIntl();
   const [dataSource, setDataSource] = useState<any>({
     fileList: [],
@@ -109,19 +111,11 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
     return [...shardFileListResult, ...newGeneralFileList];
   }, []);
 
-  const handleFetchModelFiles = async () => {
-    if (!props.repo) {
-      setDataSource({ fileList: [], loading: false });
-      handleSelectModelFile({});
-      return;
-    }
-    axiosTokenRef.current?.abort?.();
-    axiosTokenRef.current = new AbortController();
-    setDataSource({ ...dataSource, loading: true });
-    setCurrent('');
+  // hugging face files
+  const getHuggingfaceFiles = async () => {
     try {
       const res = await queryHuggingfaceModelFiles(
-        { repo: props.repo },
+        { repo: props.selectedModel.name || '' },
         {
           signal: axiosTokenRef.current.signal
         }
@@ -133,6 +127,55 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       const list = _.filter(fileList, (file: any) => {
         return _.endsWith(file.path, '.gguf') || _.includes(file.path, '.gguf');
       });
+      return list;
+    } catch (error) {
+      return [];
+    }
+  };
+
+  // modelscope files
+  const getModelScopeFiles = async () => {
+    try {
+      const data = await queryModelScopeModelFiles(
+        {
+          name: props.selectedModel.name || ''
+        },
+        {
+          signal: axiosTokenRef.current.signal
+        }
+      );
+      const fileList = _.filter(_.get(data, ['Data', 'Files']), (file: any) => {
+        return _.endsWith(file.Path, '.gguf') || _.includes(file.Path, '.gguf');
+      });
+      const list = _.map(fileList, (item: any) => {
+        return {
+          path: item.Path,
+          size: item.Size
+        };
+      });
+      return list;
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const handleFetchModelFiles = async () => {
+    if (!props.selectedModel.name) {
+      setDataSource({ fileList: [], loading: false });
+      handleSelectModelFile({});
+      return;
+    }
+    axiosTokenRef.current?.abort?.();
+    axiosTokenRef.current = new AbortController();
+    setDataSource({ ...dataSource, loading: true });
+    setCurrent('');
+    try {
+      let list = [];
+      if (modelSourceMap.huggingface_value === modelSource) {
+        list = await getHuggingfaceFiles();
+      } else if (modelSourceMap.modelscope_value === modelSource) {
+        list = await getModelScopeFiles();
+      }
 
       const newList = generateGroupByFilename(list);
       const sortList = _.sortBy(newList, (item: any) => {
@@ -186,7 +229,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
 
   useEffect(() => {
     handleFetchModelFiles();
-  }, [props.repo]);
+  }, [props.selectedModel.name]);
 
   useEffect(() => {
     return () => {

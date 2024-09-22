@@ -11,17 +11,23 @@ import { Button, Empty, Tag, Tooltip } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { downloadModelFile, queryHuggingfaceModelDetail } from '../apis';
+import {
+  downloadModelFile,
+  queryHuggingfaceModelDetail,
+  queryModelScopeModelDetail
+} from '../apis';
+import { modelSourceMap } from '../config';
 import '../style/model-card.less';
 import TitleWrapper from './title-wrapper';
 
 const ModelCard: React.FC<{
-  repo: string;
+  selectedModel: any;
   onCollapse: (flag: boolean) => void;
   collapsed: boolean;
   loadingModel?: boolean;
+  modelSource: string;
 }> = (props) => {
-  const { repo, onCollapse, collapsed, loadingModel } = props;
+  const { onCollapse, collapsed, modelSource } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [modelData, setModelData] = useState<any>({});
@@ -49,28 +55,60 @@ const ModelCard: React.FC<{
     }
   };
 
-  const getModelCardData = async () => {
-    if (!repo) {
-      setModelData(null);
-      return;
-    }
-    requestToken.current?.cancel?.();
-    requestToken.current = requestSource();
+  // huggingface model card data
+  const getHuggingfaceModelDetail = async () => {
     try {
       const [modelcard, readme] = await Promise.all([
         queryHuggingfaceModelDetail(
-          { repo },
+          { repo: props.selectedModel.name },
           {
             token: requestToken.current.token
           }
         ),
-        loadFile(repo, 'main')
+        loadFile(props.selectedModel.name, 'main')
       ]);
 
       setModelData(modelcard);
       setReadmeText(readme);
     } catch (error) {
       setModelData({});
+      setReadmeText(null);
+    }
+  };
+
+  const getModelScopeModelDetail = async () => {
+    try {
+      const data = await queryModelScopeModelDetail(
+        {
+          name: props.selectedModel.name
+        },
+        {
+          token: requestToken.current.token
+        }
+      );
+      console.log('detaildata==========', data);
+      setModelData({
+        ...data?.Data,
+        name: data?.Data?.Name
+      });
+      setReadmeText(data?.Data?.ReadMeContent);
+    } catch (error) {
+      setModelData({});
+      setReadmeText(null);
+    }
+  };
+
+  const getModelCardData = async () => {
+    if (!props.selectedModel.name) {
+      setModelData(null);
+      return;
+    }
+    requestToken.current?.cancel?.();
+    requestToken.current = requestSource();
+    if (modelSource === modelSourceMap.huggingface_value) {
+      getHuggingfaceModelDetail();
+    } else if (modelSource === modelSourceMap.modelscope_value) {
+      getModelScopeModelDetail();
     }
   };
 
@@ -78,9 +116,46 @@ const ModelCard: React.FC<{
     onCollapse(!collapsed);
   }, [collapsed]);
 
+  const generateModelLink = () => {
+    const name = modelData?.id || modelData?.name;
+    if (!name) {
+      return null;
+    }
+    if (modelSource === modelSourceMap.huggingface_value) {
+      return (
+        <Tooltip title={intl.formatMessage({ id: 'models.viewin.hf' })}>
+          <Button
+            size="small"
+            type="link"
+            target="_blank"
+            href={`https://huggingface.co/${modelData.id}`}
+          >
+            <IconFont type="icon-external-link"></IconFont>
+          </Button>
+        </Tooltip>
+      );
+    }
+
+    if (modelSource === modelSourceMap.modelscope_value) {
+      return (
+        <Tooltip title={intl.formatMessage({ id: 'models.viewin.modelscope' })}>
+          <Button
+            size="small"
+            type="link"
+            target="_blank"
+            href={`https://modelscope.cn/models/${modelData?.Path}/${modelData.name}`}
+          >
+            <IconFont type="icon-external-link"></IconFont>
+          </Button>
+        </Tooltip>
+      );
+    }
+    return null;
+  };
+
   useEffect(() => {
     getModelCardData();
-  }, [repo]);
+  }, [props.selectedModel.name]);
 
   useEffect(() => {
     if (!readmeText) {
@@ -98,19 +173,8 @@ const ModelCard: React.FC<{
   return (
     <>
       <TitleWrapper>
-        <div className="title">{modelData?.id} </div>
-        {modelData?.id && (
-          <Tooltip title={intl.formatMessage({ id: 'models.viewin.hf' })}>
-            <Button
-              size="small"
-              type="link"
-              target="_blank"
-              href={`https://huggingface.co/${modelData.id}`}
-            >
-              <IconFont type="icon-external-link"></IconFont>
-            </Button>
-          </Tooltip>
-        )}
+        <div className="title">{modelData?.id || modelData?.name} </div>
+        {generateModelLink()}
       </TitleWrapper>
       <div className="card-wrapper">
         {modelData ? (

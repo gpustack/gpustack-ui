@@ -8,11 +8,11 @@ import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Form, Modal } from 'antd';
 import _ from 'lodash';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryGPUList, queryHuggingfaceModelFiles } from '../apis';
-import { modelSourceMap } from '../config';
+import { modelSourceMap, setSourceRepoConfigValue } from '../config';
 import { FormData, GPUListItem, ListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
 
@@ -35,7 +35,17 @@ const sourceOptions = [
     label: 'Ollama Library',
     value: modelSourceMap.ollama_library_value,
     key: 'ollama_library'
+  },
+  {
+    label: 'ModelScope',
+    value: modelSourceMap.modelscope_value,
+    key: 'model_scope'
   }
+];
+
+const SEARCH_SOURCE = [
+  modelSourceMap.huggingface_value,
+  modelSourceMap.modelscope_value
 ];
 
 const UpdateModal: React.FC<AddModalProps> = (props) => {
@@ -70,8 +80,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       });
     }
     if (action === PageAction.EDIT && open) {
+      const result = setSourceRepoConfigValue(
+        props.data?.source || '',
+        props.data
+      );
       form.setFieldsValue({
-        ...props.data,
+        ...result.values,
+        ..._.omit(props.data, result.omits),
         scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
         gpu_selector: props.data?.gpu_selector
           ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
@@ -118,7 +133,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleRepoOnBlur = (e: any) => {
-    const repo = form.getFieldValue('huggingface_repo_id');
+    const repo = form.getFieldValue('repo_id');
     handleFetchModelFiles(repo);
   };
 
@@ -126,7 +141,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     return (
       <>
         <Form.Item<FormData>
-          name="huggingface_repo_id"
+          name="repo_id"
           rules={[
             {
               required: true,
@@ -146,7 +161,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ></SealInput.Input>
         </Form.Item>
         <Form.Item<FormData>
-          name="huggingface_filename"
+          name="file_name"
           rules={[
             {
               required: true,
@@ -165,7 +180,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             required
             options={fileOptions}
             loading={loading}
-            onFocus={handleRepoOnBlur}
             disabled={action === PageAction.EDIT}
           ></SealAutoComplete>
         </Form.Item>
@@ -229,18 +243,21 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     );
   };
 
-  const renderFieldsBySource = () => {
-    switch (modelSource) {
-      case modelSourceMap.huggingface_value:
-        return renderHuggingfaceFields();
-      case modelSourceMap.ollama_library_value:
-        return renderOllamaModelFields();
-      case modelSourceMap.s3_value:
-        return renderS3Fields();
-      default:
-        return null;
+  const renderFieldsBySource = useMemo(() => {
+    if (SEARCH_SOURCE.includes(props.data?.source || '')) {
+      return renderHuggingfaceFields();
     }
-  };
+
+    if (props.data?.source === modelSourceMap.ollama_library_value) {
+      return renderOllamaModelFields();
+    }
+
+    if (props.data?.source === modelSourceMap.s3_value) {
+      return renderS3Fields();
+    }
+
+    return null;
+  }, [props.data?.source]);
 
   const handleSumit = () => {
     form.submit();
@@ -367,7 +384,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               ></SealSelect>
             )}
           </Form.Item>
-          {renderFieldsBySource()}
+          {renderFieldsBySource}
           <Form.Item<FormData>
             name="replicas"
             rules={[

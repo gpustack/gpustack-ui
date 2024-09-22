@@ -36,18 +36,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     action,
     width = 600
   } = props || {};
+  const SEARCH_SOURCE = [
+    modelSourceMap.huggingface_value,
+    modelSourceMap.modelscope_value
+  ];
   const form = useRef<any>({});
   const intl = useIntl();
-  const [huggingfaceRepoId, setHuggingfaceRepoId] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [loadingModel, setLoadingModel] = useState<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
-    form.current?.setFieldValue?.('huggingface_filename', item.fakeName);
+    form.current?.setFieldValue?.('file_name', item.fakeName);
   }, []);
 
   const handleOnSelectModel = (item: any) => {
-    setHuggingfaceRepoId(item.name);
+    setSelectedModel(item);
   };
 
   const handleSumit = () => {
@@ -56,7 +60,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   useEffect(() => {
     return () => {
-      setHuggingfaceRepoId('');
+      setSelectedModel({});
     };
   }, [open]);
 
@@ -91,41 +95,43 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           overflowX: 'hidden'
         },
         content: {
-          borderRadius: '8px 0 0 8px'
+          borderRadius: '6px 0 0 6px'
         }
       }}
       width={width}
       footer={false}
     >
       <div style={{ display: 'flex' }}>
-        {props.source === modelSourceMap.huggingface_value && (
-          <div style={{ display: 'flex', flex: 1 }}>
-            <ColumnWrapper>
-              <SearchModel
-                modelSource={props.source}
-                onSelectModel={handleOnSelectModel}
-                setLoadingModel={setLoadingModel}
-              ></SearchModel>
-            </ColumnWrapper>
-            <Separator></Separator>
-          </div>
-        )}
-        {props.source === modelSourceMap.huggingface_value && (
-          <div style={{ display: 'flex', flex: 1 }}>
-            <ColumnWrapper>
-              <ModelCard
-                repo={huggingfaceRepoId}
-                onCollapse={setCollapsed}
-                collapsed={collapsed}
-              ></ModelCard>
-              <HFModelFile
-                repo={huggingfaceRepoId}
-                onSelectFile={handleSelectModelFile}
-                collapsed={collapsed}
-              ></HFModelFile>
-            </ColumnWrapper>
-            <Separator></Separator>
-          </div>
+        {SEARCH_SOURCE.includes(props.source) && (
+          <>
+            <div style={{ display: 'flex', flex: 1 }}>
+              <ColumnWrapper>
+                <SearchModel
+                  modelSource={props.source}
+                  onSelectModel={handleOnSelectModel}
+                  setLoadingModel={setLoadingModel}
+                ></SearchModel>
+              </ColumnWrapper>
+              <Separator></Separator>
+            </div>
+            <div style={{ display: 'flex', flex: 1 }}>
+              <ColumnWrapper>
+                <ModelCard
+                  selectedModel={selectedModel}
+                  onCollapse={setCollapsed}
+                  collapsed={collapsed}
+                  modelSource={props.source}
+                ></ModelCard>
+                <HFModelFile
+                  selectedModel={selectedModel}
+                  modelSource={props.source}
+                  onSelectFile={handleSelectModelFile}
+                  collapsed={collapsed}
+                ></HFModelFile>
+              </ColumnWrapper>
+              <Separator></Separator>
+            </div>
+          </>
         )}
         <ColumnWrapper
           footer={
@@ -141,7 +147,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           }
         >
           <>
-            {source === modelSourceMap.huggingface_value && (
+            {SEARCH_SOURCE.includes(source) && (
               <TitleWrapper>
                 {intl.formatMessage({ id: 'models.form.configurations' })}
                 <span style={{ display: 'flex', height: 24 }}></span>
@@ -150,7 +156,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             <DataForm
               source={source}
               action={action}
-              repo={huggingfaceRepoId}
+              selectedModel={selectedModel}
               onOk={onOk}
               ref={form}
             ></DataForm>

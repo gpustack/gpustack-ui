@@ -176,6 +176,7 @@ export default (props: any) => {
           {logo}
           <div className="collapse-wrap">
             <Button
+              style={{ marginRight: collapsed ? 0 : -14 }}
               size="small"
               type={collapsed ? 'default' : 'text'}
               onClick={handleToggleCollapse}

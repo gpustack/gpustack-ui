@@ -1,7 +1,7 @@
 import IconFont from '@/components/icon-font';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, Empty, Row, Spin } from 'antd';
+import { Col, Empty, Row, Spin } from 'antd';
 import React from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -53,7 +53,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
               <span>
                 {intl.formatMessage({ id: 'models.search.networkerror' })}
               </span>
-              <span>
+              {/* <span>
                 <span>
                   {intl.formatMessage({ id: 'models.search.hfvisit' })}
                 </span>
@@ -65,7 +65,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                 >
                   Hugging Face
                 </Button>
-              </span>
+              </span> */}
             </div>
           }
         />

@@ -10,6 +10,7 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useState
 } from 'react';
 import { queryGPUList } from '../apis';
@@ -21,7 +22,7 @@ interface DataFormProps {
   ref?: any;
   source: string;
   action: PageActionType;
-  repo: string;
+  selectedModel: any;
   onOk: (values: FormData) => void;
 }
 
@@ -35,11 +36,20 @@ const sourceOptions = [
     label: 'Ollama Library',
     value: modelSourceMap.ollama_library_value,
     key: 'ollama_library'
+  },
+  {
+    label: 'ModelScope',
+    value: modelSourceMap.modelscope_value,
+    key: 'model_scope'
   }
+];
+const SEARCH_SOURCE = [
+  modelSourceMap.huggingface_value,
+  modelSourceMap.modelscope_value
 ];
 
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
-  const { action, repo, onOk } = props;
+  const { action, onOk } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
   const [gpuOptions, setGpuOptions] = useState<
@@ -86,22 +96,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   );
 
   const handleOnSelectModel = () => {
-    console.log('repo=============', repo);
-    if (!repo) {
+    if (!props.selectedModel.name) {
       return;
     }
-    let name = _.split(repo, '/').slice(-1)[0];
+    let name = _.split(props.selectedModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
 
-    if (props.source === modelSourceMap.huggingface_value) {
+    if (SEARCH_SOURCE.includes(props.source)) {
       form.setFieldsValue({
-        huggingface_repo_id: repo,
+        repo_id: props.selectedModel.name,
         name: name
       });
     } else {
       form.setFieldsValue({
-        ollama_library_model_name: repo,
+        ollama_library_model_name: props.selectedModel.name,
         name: name
       });
     }
@@ -111,8 +120,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return (
       <>
         <Form.Item<FormData>
-          name="huggingface_repo_id"
-          key="huggingface_repo_id"
+          name="repo_id"
+          key="repo_id"
           rules={[
             {
               required: true,
@@ -132,7 +141,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           ></SealInput.Input>
         </Form.Item>
         <Form.Item<FormData>
-          name="huggingface_filename"
+          name="file_name"
+          key="file_name"
           rules={[
             {
               required: true,
@@ -214,18 +224,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     );
   };
 
-  const renderFieldsBySource = () => {
-    switch (props.source) {
-      case modelSourceMap.huggingface_value:
-        return renderHuggingfaceFields();
-      case modelSourceMap.ollama_library_value:
-        return renderOllamaModelFields();
-      case modelSourceMap.s3_value:
-        return renderS3Fields();
-      default:
-        return null;
+  const renderFieldsBySource = useMemo(() => {
+    if (SEARCH_SOURCE.includes(props.source)) {
+      return renderHuggingfaceFields();
     }
-  };
+
+    if (props.source === modelSourceMap.ollama_library_value) {
+      return renderOllamaModelFields();
+    }
+
+    if (props.source === modelSourceMap.s3_value) {
+      return renderS3Fields();
+    }
+
+    return null;
+  }, [props.source]);
 
   const handleOk = (formdata: FormData) => {
     const gpu = _.find(gpuOptions, (item: any) => {
@@ -249,7 +262,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     handleOnSelectModel();
-  }, [repo]);
+  }, [props.selectedModel.name]);
 
   return (
     <Form
@@ -314,7 +327,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           ></SealSelect>
         }
       </Form.Item>
-      {renderFieldsBySource()}
+      {renderFieldsBySource}
       <Form.Item<FormData>
         name="replicas"
         rules={[

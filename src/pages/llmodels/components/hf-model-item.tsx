@@ -25,6 +25,11 @@ interface HFModelItemProps {
 }
 const warningTask = ['image', 'audio', 'video'];
 
+const SUPPORTEDSOURCE = [
+  modelSourceMap.huggingface_value,
+  modelSourceMap.modelscope_value
+];
+
 const HFModelItem: React.FC<HFModelItemProps> = (props) => {
   const intl = useIntl();
   const isExcludeTask = () => {
@@ -57,7 +62,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
         )}
       </div>
       <div className="info">
-        {props.source === modelSourceMap.huggingface_value ? (
+        {SUPPORTEDSOURCE.includes(props.source || '') ? (
           <div className="info-item">
             {/* {props.task && (
               <Tag

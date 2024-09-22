@@ -1,6 +1,7 @@
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
+import qs from 'query-string';
 import {
   FormData,
   GPUListItem,
@@ -126,6 +127,15 @@ export async function callHuggingfaceQuickSearch(params: any) {
 
 const HUGGINGFACE_API = 'https://huggingface.co/api/models';
 
+const MODEL_SCOPE_LIST_MODEL_API =
+  '/proxy?url=https://www.modelscope.cn/api/v1/dolphin/models';
+
+const MODEL_SCOPE_DETAIL_MODEL_API =
+  '/proxy?url=https://www.modelscope.cn/api/v1/dolphin/models/';
+
+const MODE_SCOPE_MODEL_FIELS_API =
+  '/proxy?url=https://modelscope.cn/api/v1/models/';
+
 export async function queryHuggingfaceModelDetail(
   params: { repo: string },
   options?: any
@@ -136,10 +146,69 @@ export async function queryHuggingfaceModelDetail(
   });
 }
 
-export async function queryModelScopeModels() {
-  return request(`https://www.modelscope.cn/api/v1/dolphin/models`, {
-    method: 'PUT'
+export async function queryModelScopeModels(
+  params: {
+    PageSize?: number;
+    PageNumber?: number;
+    SortBy?: string;
+    Target?: string;
+    SingleCriterion?: any[];
+    Name: string;
+  },
+  config?: any
+) {
+  const res = await fetch(`${MODEL_SCOPE_LIST_MODEL_API}`, {
+    method: 'PUT',
+    signal: config?.signal,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ...params,
+      Name: `${params.Name} gguf`,
+      PageSize: 100,
+      PageNumber: 1
+    })
   });
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+    return null;
+  }
+  return res.json();
+}
+
+export async function queryModelScopeModelDetail(
+  params: { name: string },
+  options?: any
+) {
+  return request(`${MODE_SCOPE_MODEL_FIELS_API}${params.name}`, {
+    method: 'GET',
+    cancelToken: options?.token
+  });
+}
+
+export async function queryModelScopeModelFiles(
+  params: { name: string },
+  options?: any
+) {
+  const res = await fetch(
+    `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/repo/files?${qs.stringify({
+      Revision: 'master',
+      Root: ''
+    })}`,
+    {
+      method: 'GET',
+      signal: options?.signal,
+      body: null
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+    return null;
+  }
+
+  return res.json();
 }
 
 export async function queryHuggingfaceModels(

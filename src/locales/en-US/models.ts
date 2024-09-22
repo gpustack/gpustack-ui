@@ -22,7 +22,7 @@ export default {
   'model.form.ollama.model': 'Ollama Model',
   'model.form.ollamaholder': 'Please select or input model name',
   'model.deploy.sort': 'Sort',
-  'model.deploy.search.placeholder': 'Search models from Hugging Face',
+  'model.deploy.search.placeholder': 'Search models from {source}',
   'model.form.ollamatips':
     'Tip: The following are the preconfigured Ollama models in GPUStack. Please select the model you want, or directly enter the model you wish to deploy in the 【{name}】 input box on the right.',
   'models.sort.name': 'Name',
@@ -35,6 +35,7 @@ export default {
   'models.data.card': 'Model Card',
   'models.available.files': 'Available Files',
   'models.viewin.hf': 'View in Hugging Face',
+  'models.viewin.modelscope': 'View in ModelScope',
   'models.architecture': 'Architecture',
   'models.search.noresult': 'No related models found',
   'models.search.nofiles': 'No available files',

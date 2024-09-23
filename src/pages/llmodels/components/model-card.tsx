@@ -89,7 +89,7 @@ const ModelCard: React.FC<{
       console.log('detaildata==========', data);
       setModelData({
         ...data?.Data,
-        name: data?.Data?.Name
+        name: `${data.Data?.Path}/${data.Data?.Name}`
       });
       setReadmeText(data?.Data?.ReadMeContent);
     } catch (error) {
@@ -143,7 +143,7 @@ const ModelCard: React.FC<{
             size="small"
             type="link"
             target="_blank"
-            href={`https://modelscope.cn/models/${modelData?.Path}/${modelData.name}`}
+            href={`https://modelscope.cn/models/${modelData.name}`}
           >
             <IconFont type="icon-external-link"></IconFont>
           </Button>

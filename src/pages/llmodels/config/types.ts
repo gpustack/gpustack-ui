@@ -24,6 +24,8 @@ export interface ListItem {
 }
 
 export interface FormData {
+  backend?: string;
+  backend_parameters?: string[];
   source: string;
   repo_id: string;
   file_name: string;

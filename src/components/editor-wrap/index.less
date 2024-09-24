@@ -1,10 +1,16 @@
 .editor-wrap {
   border-radius: var(--border-radius-mini);
   overflow: hidden;
+  font-size: 0;
+
+  .code-pre {
+    margin-bottom: 0;
+  }
 
   .editor-header {
     display: flex;
-    padding: 6px 10px;
+    height: 40px;
+    padding: 0 10px;
     justify-content: space-between;
     align-items: center;
     background-color: rgb(56, 56, 56);
@@ -12,6 +18,7 @@
     .ant-select-selector {
       background-color: rgba(255, 255, 255, 9%) !important;
       color: rgba(255, 255, 255, 70%);
+      border-radius: var(--border-radius-2px);
 
       .ant-select-selection-item {
         color: rgba(255, 255, 255, 70%);

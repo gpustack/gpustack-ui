@@ -20,6 +20,7 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
   if (!usage) {
     return null;
   }
+  console.log('ReferenceParams usage:', usage);
   return (
     <div className="reference-params">
       <span className="usage">
@@ -48,14 +49,18 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
         <Tooltip
           title={
             <Space>
-              <span>TPOT: {_.round(usage.time_per_output_token_ms, 2)} ms</span>
-              <span>TTFT: {_.round(usage.time_to_first_token_ms, 2)} ms</span>
+              <span>
+                TPOT: {_.round(usage.time_per_output_token_ms, 2) || 0} ms
+              </span>
+              <span>
+                TTFT: {_.round(usage.time_to_first_token_ms, 2) || 0} ms
+              </span>
             </Space>
           }
         >
           <span>
             {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-            {_.round(usage.tokens_per_second, 2)} Tokens/s
+            {_.round(usage.tokens_per_second, 2) || 0} Tokens/s
           </span>
         </Tooltip>
       </span>

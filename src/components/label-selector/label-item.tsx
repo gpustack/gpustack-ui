@@ -52,7 +52,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
     // has duplicate key
     const duplicates = _.filter(
       labelList,
-      (item: Global.BaseListItem) => val && val === item.key
+      (item: Global.BaseListItem<string>) => val && val === item.key
     );
     if (duplicates.length > 1) {
       setOpen(true);

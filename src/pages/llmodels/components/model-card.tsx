@@ -1,5 +1,5 @@
-import HighlightCode from '@/components/highlight-code';
 import IconFont from '@/components/icon-font';
+import MarkdownViewer from '@/components/markdown-viewer';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   DownOutlined,
@@ -7,7 +7,7 @@ import {
   RightOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Empty, Tag, Tooltip } from 'antd';
+import { Button, Empty, Spin, Tag, Tooltip } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -21,19 +21,22 @@ import '../style/model-card.less';
 import TitleWrapper from './title-wrapper';
 
 const ModelCard: React.FC<{
-  selectedModel: any;
   onCollapse: (flag: boolean) => void;
+  setIsGGUF: (flag: boolean) => void;
+  selectedModel: any;
   collapsed: boolean;
   loadingModel?: boolean;
   modelSource: string;
 }> = (props) => {
-  const { onCollapse, collapsed, modelSource } = props;
+  const { onCollapse, setIsGGUF, collapsed, modelSource } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [modelData, setModelData] = useState<any>({});
   const [readmeText, setReadmeText] = useState<string | null>(null);
   const requestToken = useRef<any>(null);
   const axiosTokenRef = useRef<any>(null);
+  const [isGGUFModel, setIsGGUFModel] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const loadFile = async (repo: string, sha: string) => {
     try {
@@ -70,9 +73,13 @@ const ModelCard: React.FC<{
 
       setModelData(modelcard);
       setReadmeText(readme);
+      setIsGGUF(modelcard.tags?.includes('gguf'));
+      setIsGGUFModel(modelcard.tags?.includes('gguf'));
     } catch (error) {
       setModelData({});
       setReadmeText(null);
+      setIsGGUF(false);
+      setIsGGUFModel(false);
     }
   };
 
@@ -86,15 +93,18 @@ const ModelCard: React.FC<{
           token: requestToken.current.token
         }
       );
-      console.log('detaildata==========', data);
       setModelData({
         ...data?.Data,
         name: `${data.Data?.Path}/${data.Data?.Name}`
       });
       setReadmeText(data?.Data?.ReadMeContent);
+      setIsGGUF(data.Data?.Tags?.includes('gguf'));
+      setIsGGUFModel(data.Data?.Tags?.includes('gguf'));
     } catch (error) {
       setModelData({});
       setReadmeText(null);
+      setIsGGUF(false);
+      setIsGGUFModel(false);
     }
   };
 
@@ -105,11 +115,13 @@ const ModelCard: React.FC<{
     }
     requestToken.current?.cancel?.();
     requestToken.current = requestSource();
+    setLoading(true);
     if (modelSource === modelSourceMap.huggingface_value) {
-      getHuggingfaceModelDetail();
+      await getHuggingfaceModelDetail();
     } else if (modelSource === modelSourceMap.modelscope_value) {
-      getModelScopeModelDetail();
+      await getModelScopeModelDetail();
     }
+    setLoading(false);
   };
 
   const handleCollapse = useCallback(() => {
@@ -191,7 +203,7 @@ const ModelCard: React.FC<{
                 </Tag>
               )}
             </div>
-            {readmeText && (
+            {readmeText && isGGUFModel && (
               <div
                 style={{
                   borderRadius: 4,
@@ -213,12 +225,10 @@ const ModelCard: React.FC<{
                     maxHeight: collapsed ? 300 : 0
                   }}
                 >
-                  <HighlightCode
-                    code={readmeText}
-                    lang="markdown"
-                    copyable={false}
+                  <MarkdownViewer
+                    content={readmeText}
                     theme="light"
-                  ></HighlightCode>
+                  ></MarkdownViewer>
                 </SimpleBar>
               </div>
             )}
@@ -230,6 +240,21 @@ const ModelCard: React.FC<{
           ></Empty>
         )}
       </div>
+      {!isGGUFModel && readmeText && (
+        <div>
+          <TitleWrapper>
+            <div className="title">README.md</div>
+          </TitleWrapper>
+          <div className="card-wrapper">
+            <Spin spinning={loading}>
+              <MarkdownViewer
+                content={readmeText}
+                theme="light"
+              ></MarkdownViewer>
+            </Spin>
+          </div>
+        </div>
+      )}
     </>
   );
 };

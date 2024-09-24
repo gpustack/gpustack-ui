@@ -2,6 +2,7 @@
 @import url('src/assets/styles/menu.less');
 
 html {
+  --font-family: 'noto sans', sans-serif;
   --ant-color-text-secondary: rgba(0, 0, 0, 65%);
   --ant-color-text-tertiary: rgba(0, 0, 0, 45%);
   --ant-color-text-quaternary: rgba(0, 0, 0, 25%);
@@ -12,6 +13,8 @@ html {
   --color-text-light-1: rgba(255, 255, 255, 90%);
   --color-fill-1: var(--ant-color-fill-tertiary);
   --color-scrollbar-thumb: rgba(193, 193, 193, 80%);
+  --color-editor-dark: #282c34;
+  --color-editor-light: #fafafa;
   --color-scrollbar-track: var(--ant-color-fill-tertiary);
   // --color-fill-1: #fff;
   --ant-color-text: #000;
@@ -29,6 +32,7 @@ html {
   --border-radius-small: 4px;
   --border-radius-mdium: 4px;
   --border-radius-mini: 4px;
+  --border-radius-2px: 2px;
   --color-white-1: rgba(255, 255, 255, 100%);
   --color-fill-sider: #f4f5f4;
   --font-weight-normal: 500;
@@ -472,6 +476,28 @@ body {
 .custome-scrollbar {
   &::-webkit-scrollbar {
     width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-scrollbar-thumb);
+      border-radius: 4px;
+    }
+  }
+}
+
+.custom-scrollbar-horizontal {
+  &::-webkit-scrollbar {
+    height: 8px;
   }
 
   &::-webkit-scrollbar-thumb {

@@ -110,7 +110,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const inputRef = useRef<any>(null);
 
   const isDisabled = useMemo(() => {
-    return disabled ? true : !message.content && isEmpty;
+    return disabled
+      ? true
+      : !message.content && isEmpty && !message.imgs?.length;
   }, [disabled, message.content, isEmpty]);
 
   const resetMessage = () => {
@@ -214,9 +216,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             dataUrl: img
           };
         });
-        // setImgList((pre) => {
-        //   return [...pre, ...list];
-        // });
         setMessage({
           ...message,
           imgs: [...(message.imgs || []), ...list]
@@ -253,7 +252,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (text) {
       setMessage?.({
         ...message,
-        content: text
+        content: message.content + text
       });
     } else {
       getPasteContent(e);
@@ -446,7 +445,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <div className="input-box">
         <TextArea
           ref={inputRef}
-          autoSize={{ minRows: 3, maxRows: 3 }}
+          autoSize={{ minRows: 3, maxRows: 8 }}
           onChange={(e) => handleInputChange(e.target.value)}
           value={message.content}
           size="large"

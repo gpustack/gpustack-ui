@@ -10,6 +10,7 @@ interface CodeViewerProps {
   autodetect?: boolean;
   ignoreIllegals?: boolean;
   copyable?: boolean;
+  height?: string | number;
   theme?: 'light' | 'dark';
 }
 const CodeViewer: React.FC<CodeViewerProps> = (props) => {
@@ -18,7 +19,8 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
     lang,
     autodetect = true,
     ignoreIllegals = true,
-    copyable = true
+    copyable = true,
+    height = 'auto'
   } = props || {};
 
   const highlightedCode = useMemo(() => {
@@ -58,11 +60,14 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
 
   return (
     <pre
-      className={classNames('code-pre', {
+      className={classNames('code-pre custome-scrollbar ', {
         dark: props.theme === 'dark',
         light: props.theme === 'light',
         copyable: copyable
       })}
+      style={{
+        height: height
+      }}
     >
       <code
         className={highlightedCode.className}

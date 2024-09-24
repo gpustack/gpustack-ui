@@ -54,5 +54,7 @@ export default {
   'models.table.backend': '后端',
   'models.table.acrossworker': '跨 worker 推理',
   'models.table.cpuoffload': 'CPU 卸载',
-  'models.table.layers': '层'
+  'models.table.layers': '层',
+  'models.form.backend': '后端',
+  'models.form.backend_parameters': '后端参数'
 };

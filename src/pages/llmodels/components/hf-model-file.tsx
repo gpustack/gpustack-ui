@@ -4,7 +4,15 @@ import { useIntl } from '@umijs/max';
 import { Col, Empty, Row, Select, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryHuggingfaceModelFiles, queryModelScopeModelFiles } from '../apis';
@@ -19,12 +27,16 @@ interface HFModelFileProps {
   collapsed?: boolean;
   loadingModel?: boolean;
   modelSource: string;
+  ref: any;
   onSelectFile?: (file: any) => void;
 }
 
-const pattern = /^(.*)-(\d+)-of-(\d+)\.gguf$/;
+const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
 
-const HFModelFile: React.FC<HFModelFileProps> = (props) => {
+const filterReg = /\.(safetensors|gguf)$/i;
+const includeReg = /\.(safetensors|gguf)$/i;
+
+const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const { collapsed, modelSource } = props;
   const intl = useIntl();
   const [dataSource, setDataSource] = useState<any>({
@@ -58,7 +70,8 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       return {
         filename: match[1],
         part: parseInt(match[2], 10),
-        total: parseInt(match[3], 10)
+        total: parseInt(match[3], 10),
+        extension: match[4]
       };
     } else {
       return null;
@@ -101,7 +114,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       (value: any[], filename: string) => {
         return {
           path: filename,
-          fakeName: `${filename}*.gguf`,
+          fakeName: `${filename}*.${_.get(value, '[0].extension')}`,
           size: _.sumBy(value, 'size'),
           parts: value
         };
@@ -125,8 +138,9 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       });
 
       const list = _.filter(fileList, (file: any) => {
-        return _.endsWith(file.path, '.gguf') || _.includes(file.path, '.gguf');
+        return filterReg.test(file.path) || _.includes(includeReg, file.path);
       });
+
       return list;
     } catch (error) {
       return [];
@@ -145,7 +159,7 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
         }
       );
       const fileList = _.filter(_.get(data, ['Data', 'Files']), (file: any) => {
-        return _.endsWith(file.Path, '.gguf') || _.includes(file.Path, '.gguf');
+        return filterReg.test(file.path) || _.includes(includeReg, file.path);
       });
       const list = _.map(fileList, (item: any) => {
         return {
@@ -226,10 +240,13 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       handleSelectModelFile(item);
     }
   };
+  useImperativeHandle(ref, () => ({
+    fetchModelFiles: handleFetchModelFiles
+  }));
 
-  useEffect(() => {
-    handleFetchModelFiles();
-  }, [props.selectedModel.name]);
+  // useEffect(() => {
+  //   handleFetchModelFiles();
+  // }, [props.selectedModel.name]);
 
   useEffect(() => {
     return () => {
@@ -340,6 +357,6 @@ const HFModelFile: React.FC<HFModelFileProps> = (props) => {
       </SimpleBar>
     </div>
   );
-};
+});
 
 export default memo(HFModelFile);

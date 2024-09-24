@@ -32,5 +32,11 @@ declare namespace Global {
     value: T;
   }
 
+  interface HintOptions {
+    label: string;
+    value: string;
+    opts?: Array<BaseOption<string>>;
+  }
+
   type SearchParams = Pagination & { search?: string };
 }

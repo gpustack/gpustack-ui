@@ -1,10 +1,11 @@
 import IconFont from '@/components/icon-font';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, Empty, Row, Spin } from 'antd';
+import { Button, Col, Empty, Row, Spin } from 'antd';
 import React from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+import { modelSourceMap } from '../config';
 import '../style/search-result.less';
 import HFModelItem from './hf-model-item';
 
@@ -49,24 +50,26 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
             ></IconFont>
           }
           description={
-            <div className="flex-column gap-5">
-              <span>
-                {intl.formatMessage({ id: 'models.search.networkerror' })}
-              </span>
-              {/* <span>
+            source === modelSourceMap.huggingface_value ? (
+              <div className="flex-column gap-5">
                 <span>
-                  {intl.formatMessage({ id: 'models.search.hfvisit' })}
+                  {intl.formatMessage({ id: 'models.search.networkerror' })}
                 </span>
-                <Button
-                  type="link"
-                  size="small"
-                  href="https://huggingface.co/"
-                  target="_blank"
-                >
-                  Hugging Face
-                </Button>
-              </span> */}
-            </div>
+                <span>
+                  <span>
+                    {intl.formatMessage({ id: 'models.search.hfvisit' })}
+                  </span>
+                  <Button
+                    type="link"
+                    size="small"
+                    href="https://huggingface.co/"
+                    target="_blank"
+                  >
+                    Hugging Face
+                  </Button>
+                </span>
+              </div>
+            ) : null
           }
         />
       );

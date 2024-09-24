@@ -14,7 +14,11 @@ import React, {
   useState
 } from 'react';
 import { queryGPUList } from '../apis';
-import { modelSourceMap, ollamaModelOptions } from '../config';
+import {
+  backendOptionsMap,
+  modelSourceMap,
+  ollamaModelOptions
+} from '../config';
 import { FormData, GPUListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
 
@@ -23,6 +27,7 @@ interface DataFormProps {
   source: string;
   action: PageActionType;
   selectedModel: any;
+  isGGUF: boolean;
   onOk: (values: FormData) => void;
 }
 
@@ -49,7 +54,7 @@ const SEARCH_SOURCE = [
 ];
 
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
-  const { action, onOk } = props;
+  const { action, isGGUF, onOk } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
   const [gpuOptions, setGpuOptions] = useState<
@@ -140,27 +145,29 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             disabled={true}
           ></SealInput.Input>
         </Form.Item>
-        <Form.Item<FormData>
-          name="file_name"
-          key="file_name"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.filename' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({ id: 'models.form.filename' })}
-            required
-            disabled={true}
-          ></SealInput.Input>
-        </Form.Item>
+        {isGGUF && (
+          <Form.Item<FormData>
+            name="file_name"
+            key="file_name"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.input'
+                  },
+                  { name: intl.formatMessage({ id: 'models.form.filename' }) }
+                )
+              }
+            ]}
+          >
+            <SealInput.Input
+              label={intl.formatMessage({ id: 'models.form.filename' })}
+              required
+              disabled={true}
+            ></SealInput.Input>
+          </Form.Item>
+        )}
       </>
     );
   };
@@ -238,7 +245,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
 
     return null;
-  }, [props.source]);
+  }, [props.source, isGGUF]);
 
   const handleOk = (formdata: FormData) => {
     const gpu = _.find(gpuOptions, (item: any) => {
@@ -260,6 +267,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
+  useEffect(() => {
+    if (action === PageAction.CREATE) {
+      form.setFieldValue(
+        'backend',
+        isGGUF ? backendOptionsMap.llamaBox : backendOptionsMap.vllm
+      );
+    }
+  }, [isGGUF]);
   useEffect(() => {
     handleOnSelectModel();
   }, [props.selectedModel.name]);
@@ -360,7 +375,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           })}
         ></SealInput.TextArea>
       </Form.Item>
-      <AdvanceConfig form={form} gpuOptions={gpuOptions}></AdvanceConfig>
+      <AdvanceConfig
+        form={form}
+        gpuOptions={gpuOptions}
+        isGGUF={isGGUF}
+        action={action}
+      ></AdvanceConfig>
     </Form>
   );
 });

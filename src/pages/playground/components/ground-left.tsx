@@ -99,7 +99,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (!chunk) {
       return;
     }
-    if (_.get(chunk, 'choices.0.finish_reason')) {
+    if (!_.get(chunk, 'choices', []).length) {
       setTokenResult({
         ...chunk?.usage
       });
@@ -142,6 +142,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         : [];
 
       contentRef.current = '';
+      setMessageList((pre) => {
+        return [...pre, ...currentMessageRef.current];
+      });
       const formatMessages = _.map(
         [...messageList, ...currentMessageRef.current],
         (item: MessageItem) => {
@@ -217,9 +220,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTokenResult(null);
   };
 
-  const handleSendMessage = (message: { role: string; content: string }) => {
+  const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
     console.log('message:', message);
-    const currentMessage = message.content ? message : undefined;
+    const currentMessage =
+      message.content || message.imgs?.length ? message : undefined;
     submitMessage(currentMessage);
   };
 

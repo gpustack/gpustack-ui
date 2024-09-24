@@ -165,7 +165,7 @@ export async function queryModelScopeModels(
     },
     body: JSON.stringify({
       ...params,
-      Name: `${params.Name} gguf`,
+      Name: `${params.Name}`,
       PageSize: 100,
       PageNumber: 1
     })

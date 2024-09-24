@@ -83,7 +83,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       if (!chunk) {
         return;
       }
-      if (_.get(chunk, 'choices.0.finish_reason')) {
+      if (!_.get(chunk, 'choices', [].length)) {
         setTokenResult({
           ...chunk?.usage
         });
@@ -120,6 +120,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               }
             ]
           : [];
+        setMessageList((preList) => {
+          return [...preList, ...currentMessageRef.current];
+        });
         console.log('currentMessageRef.current 1:', currentMessageRef.current);
         console.log('currentMessage==========4', messageList);
         const messages = _.map(
@@ -208,12 +211,11 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       }
     }, []);
 
-    const handleSubmit = (currentMessage: {
-      role: string;
-      content: string;
-    }) => {
-      console.log('currentMessage==========2', currentMessage);
-      const currentMsg = currentMessage.content ? currentMessage : undefined;
+    const handleSubmit = (currentMessage: Omit<MessageItem, 'uid'>) => {
+      const currentMsg =
+        currentMessage.content || currentMessage.imgs?.length
+          ? currentMessage
+          : undefined;
       submitMessage(currentMsg);
     };
 

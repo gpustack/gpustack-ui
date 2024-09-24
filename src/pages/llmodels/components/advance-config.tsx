@@ -1,5 +1,8 @@
 import LabelSelector from '@/components/label-selector';
+import ListInput from '@/components/list-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import {
@@ -13,22 +16,28 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { placementStrategyOptions } from '../config';
+import { backendOptionsMap, placementStrategyOptions } from '../config';
+import llamaConfig from '../config/llama-config';
 import { FormData } from '../config/types';
+import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
 import GPUCard from './gpu-card';
 
 interface AdvanceConfigProps {
+  isGGUF: boolean;
   form: FormInstance;
   gpuOptions: Array<any>;
+  action: PageActionType;
 }
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, gpuOptions } = props;
+  const { form, gpuOptions, isGGUF, action } = props;
 
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
   const scheduleType = Form.useWatch('scheduleType', form);
+  const backend = Form.useWatch('backend', form);
+  const [params, setParams] = React.useState<string[]>([]);
 
   const placementStrategyTips = [
     {
@@ -64,6 +73,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     }
   ];
 
+  const paramsConfig = useMemo(() => {
+    return backend === backendOptionsMap.llamaBox ? llamaConfig : vllmConfig;
+  }, [backend]);
+
   const renderSelectTips = (list: Array<{ title: string; tips: string }>) => {
     return (
       <div>
@@ -95,6 +108,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     },
     []
   );
+
+  const handleBackendParametersChange = useCallback((list: string[]) => {
+    form.setFieldValue('backend_parameters', list);
+  }, []);
 
   const collapseItems = useMemo(() => {
     const children = (
@@ -176,6 +193,33 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </>
         )}
+        <Form.Item name="backend">
+          <SealSelect
+            label={intl.formatMessage({ id: 'models.form.backend' })}
+            options={[
+              {
+                label: `llama-box(llama.cpp)`,
+                value: backendOptionsMap.llamaBox,
+                disabled: !isGGUF
+              },
+              {
+                label: 'vLLM',
+                value: backendOptionsMap.vllm,
+                disabled: isGGUF
+              }
+            ]}
+            disabled={action === PageAction.EDIT}
+          ></SealSelect>
+        </Form.Item>
+        <Form.Item<FormData> name="backend_parameters">
+          <ListInput
+            btnText="common.button.addParams"
+            label={intl.formatMessage({ id: 'models.form.backend_parameters' })}
+            dataList={form.getFieldValue('backend_parameters') || []}
+            onChange={handleBackendParametersChange}
+            options={paramsConfig}
+          ></ListInput>
+        </Form.Item>
         {scheduleType === 'manual' && (
           <Form.Item<FormData>
             name="gpu_selector"
@@ -202,34 +246,36 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </SealSelect>
           </Form.Item>
         )}
-        <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
-          <Form.Item<FormData>
-            name="cpu_offloading"
-            valuePropName="checked"
-            style={{ padding: '0 10px', marginBottom: 0 }}
-            noStyle
-          >
-            <Checkbox className="p-l-6">
-              <Tooltip
-                trigger={['click']}
-                title={intl.formatMessage({
-                  id: 'models.form.partialoffload.tips'
-                })}
-              >
-                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                  {intl.formatMessage({
-                    id: 'resources.form.enablePartialOffload'
+        {isGGUF && (
+          <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
+            <Form.Item<FormData>
+              name="cpu_offloading"
+              valuePropName="checked"
+              style={{ padding: '0 10px', marginBottom: 0 }}
+              noStyle
+            >
+              <Checkbox className="p-l-6">
+                <Tooltip
+                  trigger={['click']}
+                  title={intl.formatMessage({
+                    id: 'models.form.partialoffload.tips'
                   })}
-                </span>
-                <InfoCircleOutlined
-                  className="m-l-4"
-                  style={{ color: 'var(--ant-color-text-tertiary)' }}
-                />
-              </Tooltip>
-            </Checkbox>
-          </Form.Item>
-        </div>
-        {scheduleType === 'auto' && (
+                >
+                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                    {intl.formatMessage({
+                      id: 'resources.form.enablePartialOffload'
+                    })}
+                  </span>
+                  <InfoCircleOutlined
+                    className="m-l-4"
+                    style={{ color: 'var(--ant-color-text-tertiary)' }}
+                  />
+                </Tooltip>
+              </Checkbox>
+            </Form.Item>
+          </div>
+        )}
+        {scheduleType === 'auto' && isGGUF && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>
               name="distributed_inference_across_workers"
@@ -270,7 +316,15 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         children
       }
     ];
-  }, [form, intl, gpuOptions, scheduleType, wokerSelector]);
+  }, [
+    form,
+    intl,
+    gpuOptions,
+    paramsConfig,
+    scheduleType,
+    wokerSelector,
+    isGGUF
+  ]);
 
   return (
     <Collapse
@@ -289,4 +343,4 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   );
 };
 
-export default AdvanceConfig;
+export default React.memo(AdvanceConfig);

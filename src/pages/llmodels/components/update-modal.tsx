@@ -12,7 +12,11 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryGPUList, queryHuggingfaceModelFiles } from '../apis';
-import { modelSourceMap, setSourceRepoConfigValue } from '../config';
+import {
+  backendOptionsMap,
+  modelSourceMap,
+  setSourceRepoConfigValue
+} from '../config';
 import { FormData, GPUListItem, ListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
 
@@ -160,29 +164,31 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             disabled={true}
           ></SealInput.Input>
         </Form.Item>
-        <Form.Item<FormData>
-          name="file_name"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.filename' }) }
-              )
-            }
-          ]}
-        >
-          <SealAutoComplete
-            filterOption
-            label={intl.formatMessage({ id: 'models.form.filename' })}
-            required
-            options={fileOptions}
-            loading={loading}
-            disabled={action === PageAction.EDIT}
-          ></SealAutoComplete>
-        </Form.Item>
+        {form.getFieldValue('file_name') && (
+          <Form.Item<FormData>
+            name="file_name"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.input'
+                  },
+                  { name: intl.formatMessage({ id: 'models.form.filename' }) }
+                )
+              }
+            ]}
+          >
+            <SealAutoComplete
+              filterOption
+              label={intl.formatMessage({ id: 'models.form.filename' })}
+              required
+              options={fileOptions}
+              loading={loading}
+              disabled={action === PageAction.EDIT}
+            ></SealAutoComplete>
+          </Form.Item>
+        )}
       </>
     );
   };
@@ -418,7 +424,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             ></SealInput.TextArea>
           </Form.Item>
 
-          <AdvanceConfig form={form} gpuOptions={gpuOptions}></AdvanceConfig>
+          <AdvanceConfig
+            form={form}
+            gpuOptions={gpuOptions}
+            action={PageAction.EDIT}
+            isGGUF={
+              form.getFieldValue('backend') === backendOptionsMap.llamaBox
+            }
+          ></AdvanceConfig>
         </Form>
       </SimpleBar>
     </Modal>

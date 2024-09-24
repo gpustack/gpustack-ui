@@ -18,7 +18,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   text,
   disabled,
   type = 'text',
-  shape = 'circle',
+  shape = 'default',
   fontSize = '14px',
   style,
   size = 'middle'

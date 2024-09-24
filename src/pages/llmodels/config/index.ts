@@ -81,6 +81,11 @@ export const ollamaModelOptions = [
   }
 ];
 
+export const backendOptionsMap = {
+  llamaBox: 'llama-box',
+  vllm: 'vllm'
+};
+
 export const modelSourceMap: Record<string, string> = {
   huggingface: 'Hugging Face',
   ollama_library: 'Ollama Library',
@@ -231,4 +236,23 @@ export const setSourceRepoConfigValue = (
     values: result,
     omits: omits
   };
+};
+
+export const getbackendParameters = (data: any) => {
+  const backendParameters = data.backend_parameters || {};
+  const result: string[] = [];
+  Object.keys(backendParameters)?.forEach((key: string) => {
+    result.push(`${key}=${backendParameters[key]}`);
+  });
+  return result;
+};
+
+export const setbackendParameters = (data: any) => {
+  const result: Record<string, string> = {};
+  const backendParameters = data.backend_parameters || [];
+  backendParameters.forEach((item: string) => {
+    const [key, value] = item.split('=');
+    result[key] = value;
+  });
+  return result;
 };

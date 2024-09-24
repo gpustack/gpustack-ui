@@ -10,6 +10,11 @@ interface EditorwrapProps {
   copyText: string;
   defaultValue?: string;
   langOptions?: { label: string; value: string }[];
+  styles?: {
+    wrapper?: React.CSSProperties;
+    header?: React.CSSProperties;
+    content?: React.CSSProperties;
+  };
   onChangeLang?: (value: string) => void;
 }
 const EditorWrap: React.FC<EditorwrapProps> = ({
@@ -19,6 +24,7 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
   langOptions,
   onChangeLang,
   defaultValue,
+  styles = {},
   showHeader = true
 }) => {
   const handleChangeLang = (value: string) => {
@@ -52,7 +58,7 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
     return null;
   };
   return (
-    <div className="editor-wrap">
+    <div className="editor-wrap" style={{ ...styles.wrapper }}>
       {renderHeader()}
       <div className="editor-content">{children}</div>
     </div>

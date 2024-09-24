@@ -205,5 +205,6 @@ export default {
   'common.button.version': 'Version',
   'common.title.delete.confirm': 'Confirm delete',
   'common.button.addLabel': 'Add Labels',
-  'common.button.addSelector': 'Add Selectors'
+  'common.button.addSelector': 'Add Selectors',
+  'common.button.addParams': 'Add Parameter'
 };

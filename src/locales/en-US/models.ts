@@ -55,5 +55,7 @@ export default {
   'models.table.backend': 'Backends',
   'models.table.acrossworker': 'Distribution Across Workers',
   'models.table.cpuoffload': 'CPU Offload',
-  'models.table.layers': 'Layers'
+  'models.table.layers': 'Layers',
+  'models.form.backend': 'Backend',
+  'models.form.backend_parameters': 'Backend Parameters'
 };

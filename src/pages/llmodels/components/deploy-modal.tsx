@@ -45,6 +45,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [loadingModel, setLoadingModel] = useState<boolean>(false);
+  const [isGGUF, setIsGGUF] = useState<boolean>(false);
+  const modelFileRef = useRef<any>(null);
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldValue?.('file_name', item.fakeName);
@@ -56,6 +58,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleSumit = () => {
     form.current?.submit?.();
+  };
+
+  const handleSetIsGGUF = (flag: boolean) => {
+    setIsGGUF(flag);
+    if (flag) {
+      setTimeout(() => {
+        modelFileRef.current?.fetchModelFiles?.();
+      }, 50);
+    }
   };
 
   useEffect(() => {
@@ -121,13 +132,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                   onCollapse={setCollapsed}
                   collapsed={collapsed}
                   modelSource={props.source}
+                  setIsGGUF={handleSetIsGGUF}
                 ></ModelCard>
-                <HFModelFile
-                  selectedModel={selectedModel}
-                  modelSource={props.source}
-                  onSelectFile={handleSelectModelFile}
-                  collapsed={collapsed}
-                ></HFModelFile>
+                {isGGUF && (
+                  <HFModelFile
+                    ref={modelFileRef}
+                    selectedModel={selectedModel}
+                    modelSource={props.source}
+                    onSelectFile={handleSelectModelFile}
+                    collapsed={collapsed}
+                  ></HFModelFile>
+                )}
               </ColumnWrapper>
               <Separator></Separator>
             </div>
@@ -159,6 +174,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               selectedModel={selectedModel}
               onOk={onOk}
               ref={form}
+              isGGUF={isGGUF}
             ></DataForm>
           </>
         </ColumnWrapper>

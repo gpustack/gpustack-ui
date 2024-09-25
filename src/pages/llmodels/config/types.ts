@@ -32,7 +32,7 @@ export interface FormData {
   huggingface_repo_id: string;
   huggingface_filename: string;
   s3_address: string;
-  ollama_library_model_name: 'string';
+  ollama_library_model_name: string;
   distributed_inference_across_workers?: boolean;
   model_scope_model_id?: string;
   model_scope_file_path?: string;
@@ -85,8 +85,8 @@ export interface ModelInstanceFormData {
   model_id: number;
   model_name: string;
   source: string;
-  huggingface_repo_id: 'string';
-  huggingface_filename: 'string';
+  huggingface_repo_id: string;
+  huggingface_filename: string;
 }
 
 export interface GPUListItem {

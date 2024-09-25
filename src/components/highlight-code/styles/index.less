@@ -12,16 +12,19 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: rgba(211, 211, 220, 50%);
-      border-radius: 6px;
-
-      &:hover {
-        background-color: rgba(190, 190, 190, 100%);
-      }
+      background-color: transparent;
+      border-radius: 4px;
     }
 
     &::-webkit-scrollbar-track {
       background-color: transparent;
+    }
+
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 4px;
+      }
     }
   }
 
@@ -29,6 +32,10 @@
     padding-inline: 12px 12px;
     position: relative;
     border-radius: var(--border-radius-mini);
+
+    code {
+      line-height: 1.5;
+    }
 
     &.copyable {
       padding-inline: 12px 32px;

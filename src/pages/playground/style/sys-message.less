@@ -1,6 +1,19 @@
 .sys-message {
   position: relative;
 
+  &.focus {
+    padding-top: 9px;
+  }
+
+  .apply-check {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    direction: rtl;
+    background-color: var(--color-white-1);
+    box-shadow: var(--ant-box-shadow-tertiary);
+  }
+
   .sys-content-wrap {
     position: relative;
     display: flex;
@@ -26,7 +39,7 @@
 
   .system-label {
     font-weight: var(--font-weight-bold);
-    padding-left: 16px;
+    padding-left: 14px;
   }
 
   .sys-content {

@@ -40,5 +40,8 @@ export default {
   'playground.toolbar.compare2Model': '2 模型对比',
   'playground.toolbar.compare3Model': '3 模型对比',
   'playground.toolbar.compare4Model': '4 模型对比',
-  'playground.toolbar.compare6Model': '6 模型对比'
+  'playground.toolbar.compare6Model': '6 模型对比',
+  'playground.input.holder': '按 <kbd>/</kbd> 开始输入',
+  'playground.compare.apply': '应用',
+  'playground.compare.applytoall': '应用到所有模型'
 };

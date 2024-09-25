@@ -5,7 +5,7 @@ import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
 const SealAutoComplete: React.FC<
-  AutoCompleteProps & SealFormItemProps & { onInput: (e: Event) => void }
+  AutoCompleteProps & SealFormItemProps & { onInput?: (e: Event) => void }
 > = (props) => {
   const {
     label,

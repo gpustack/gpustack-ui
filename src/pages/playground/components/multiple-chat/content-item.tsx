@@ -48,73 +48,74 @@ const ContentItem: React.FC<MessageItemProps> = ({
     });
   };
 
-  const getPasteContent = useCallback(async (event: any) => {
-    const clipboardData = event.clipboardData || window.clipboardData;
-    const items = clipboardData.items;
-    const imgPromises: Promise<string>[] = [];
+  const getPasteContent = useCallback(
+    async (event: any) => {
+      const clipboardData = event.clipboardData || window.clipboardData;
+      const items = clipboardData.items;
+      const imgPromises: Promise<string>[] = [];
 
-    for (let i = 0; i < items.length; i++) {
-      let item = items[i];
-      console.log('item===========', item);
+      for (let i = 0; i < items.length; i++) {
+        let item = items[i];
+        console.log('item===========', item);
 
-      if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
-        const file = item.getAsFile();
-        const imgPromise = new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = function (event) {
-            const base64String = event.target?.result as string;
-            if (base64String) {
-              resolve(base64String);
-            } else {
-              reject('Failed to convert image to base64');
-            }
-          };
-          reader.readAsDataURL(file);
-        });
-        imgPromises.push(imgPromise);
-      } else if (item.kind === 'string') {
-        // string
+        if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          const imgPromise = new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              const base64String = event.target?.result as string;
+              if (base64String) {
+                resolve(base64String);
+              } else {
+                reject('Failed to convert image to base64');
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+          imgPromises.push(imgPromise);
+        } else if (item.kind === 'string') {
+          // string
+        }
       }
-    }
 
-    try {
-      const imgs = await Promise.all(imgPromises);
-      if (imgs.length) {
-        const list = _.map(imgs, (img: string) => {
-          imgCountRef.current += 1;
-          return {
-            uid: imgCountRef.current,
-            dataUrl: img
-          };
-        });
+      try {
+        const imgs = await Promise.all(imgPromises);
+        if (imgs.length) {
+          const list = _.map(imgs, (img: string) => {
+            imgCountRef.current += 1;
+            return {
+              uid: imgCountRef.current,
+              dataUrl: img
+            };
+          });
 
-        updateMessage?.({
-          role: data.role,
-          content: data.content,
-          uid: data.uid,
-          imgs: [...(data.imgs || []), ...list]
-        });
-      }
-    } catch (error) {
-      console.error('Error processing images:', error);
-    }
-  }, []);
-
-  const handleOnPaste = useCallback(
-    (e: any) => {
-      const text = e.clipboardData.getData('text');
-      if (text) {
-        updateMessage?.({
-          role: data.role,
-          content: inputRef.current?.resizableTextArea?.textArea?.value || '',
-          uid: data.uid
-        });
-      } else {
-        getPasteContent(e);
+          updateMessage?.({
+            role: data.role,
+            content: data.content,
+            uid: data.uid,
+            imgs: [...(data.imgs || []), ...list]
+          });
+        }
+      } catch (error) {
+        console.error('Error processing images:', error);
       }
     },
-    [getPasteContent, data, updateMessage]
+    [data]
   );
+
+  const handleOnPaste = (e: any) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text');
+    if (text) {
+      updateMessage?.({
+        role: data.role,
+        content: data.content + text,
+        uid: data.uid
+      });
+    } else {
+      getPasteContent(e);
+    }
+  };
 
   const handleUpdateImgList = useCallback(
     (list: { uid: number | string; dataUrl: string }[]) => {

@@ -111,16 +111,38 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     });
   };
 
+  const adjustSpan = () => {
+    const count = spans.count - 1;
+    if (spans.count === 6) {
+      setSpans({
+        span: 8,
+        count: count
+      });
+    } else if (spans.count === 5) {
+      setSpans({
+        span: 12,
+        count: count
+      });
+    } else if (spans.count === 4) {
+      setSpans({
+        span: 8,
+        count: count
+      });
+    } else if (spans.count === 3) {
+      setSpans({
+        span: 12,
+        count: count
+      });
+    }
+  };
+
   const handleDeleteModel = (instanceId: symbol) => {
     const newModelList = modelSelections.filter(
       (model) => model.instanceId !== instanceId
     );
     pruneInstanceSymbol(instanceId);
-    const span = Math.floor(24 / (24 / spans.span - 1));
-    setSpans({
-      span,
-      count: spans.count
-    });
+
+    adjustSpan();
     setModelSelections(newModelList);
   };
 
@@ -141,6 +163,14 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
       count: spans.count
     });
     setModelSelections(updateList);
+  };
+
+  const handleApplySystemChangeToAll = (message: string) => {
+    const modelRefList = Object.getOwnPropertySymbols(modelRefs.current);
+    modelRefList.forEach((instanceId: symbol) => {
+      const ref = modelRefs.current[instanceId];
+      ref?.setSystemMessage(message);
+    });
   };
 
   const handlePresetPrompt = (list: { role: string; content: string }[]) => {
@@ -227,6 +257,8 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
             spans,
             globalParams,
             loadingStatus,
+            modelFullList: modelList,
+            handleApplySystemChangeToAll,
             setGlobalParams,
             setLoadingStatus: handleSetLoadingStatus,
             handleDeleteModel: handleDeleteModel
@@ -252,7 +284,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
           setModelSelections={handleUpdateModelSelections}
           presetPrompt={handlePresetPrompt}
           modelList={modelFullList}
-          showModelSelection={true}
+          showModelSelection={false}
         />
       </div>
     </div>

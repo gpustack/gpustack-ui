@@ -32,12 +32,6 @@ const SearchInput: React.FC<{
       )}
       prefix={
         <>
-          {/* <SearchOutlined
-            style={{
-              fontSize: '16px',
-              color: 'var(--ant-color-text-quaternary)'
-            }}
-          /> */}
           <IconFont
             className="font-size-16"
             type={

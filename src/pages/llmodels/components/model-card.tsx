@@ -31,7 +31,7 @@ const ModelCard: React.FC<{
   const { onCollapse, setIsGGUF, collapsed, modelSource } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
-  const [modelData, setModelData] = useState<any>({});
+  const [modelData, setModelData] = useState<any>(null);
   const [readmeText, setReadmeText] = useState<string | null>(null);
   const requestToken = useRef<any>(null);
   const axiosTokenRef = useRef<any>(null);
@@ -76,7 +76,7 @@ const ModelCard: React.FC<{
       setIsGGUF(modelcard.tags?.includes('gguf'));
       setIsGGUFModel(modelcard.tags?.includes('gguf'));
     } catch (error) {
-      setModelData({});
+      setModelData(null);
       setReadmeText(null);
       setIsGGUF(false);
       setIsGGUFModel(false);
@@ -101,7 +101,7 @@ const ModelCard: React.FC<{
       setIsGGUF(data.Data?.Tags?.includes('gguf'));
       setIsGGUFModel(data.Data?.Tags?.includes('gguf'));
     } catch (error) {
-      setModelData({});
+      setModelData(null);
       setReadmeText(null);
       setIsGGUF(false);
       setIsGGUFModel(false);
@@ -140,7 +140,7 @@ const ModelCard: React.FC<{
             size="small"
             type="link"
             target="_blank"
-            href={`https://huggingface.co/${modelData.id}`}
+            href={`https://huggingface.co/${modelData?.id}`}
           >
             <IconFont type="icon-external-link"></IconFont>
           </Button>
@@ -155,7 +155,7 @@ const ModelCard: React.FC<{
             size="small"
             type="link"
             target="_blank"
-            href={`https://modelscope.cn/models/${modelData.name}`}
+            href={`https://modelscope.cn/models/${modelData?.name}`}
           >
             <IconFont type="icon-external-link"></IconFont>
           </Button>
@@ -202,6 +202,11 @@ const ModelCard: React.FC<{
                   </span>
                 </Tag>
               )}
+              {isGGUFModel && (
+                <Tag className="tag-item" color="magenta">
+                  <span style={{ opacity: 0.65 }}>GGUF</span>
+                </Tag>
+              )}
             </div>
             {readmeText && isGGUFModel && (
               <div
@@ -222,6 +227,7 @@ const ModelCard: React.FC<{
                 </span>
                 <SimpleBar
                   style={{
+                    paddingTop: collapsed ? 12 : 0,
                     maxHeight: collapsed ? 300 : 0
                   }}
                 >

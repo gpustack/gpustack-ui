@@ -47,6 +47,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setGlobalParams,
       setLoadingStatus,
       handleDeleteModel,
+      handleApplySystemChangeToAll,
+      modelFullList,
       loadingStatus
     } = useContext(CompareContext);
     const intl = useIntl();
@@ -224,7 +226,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       isApplyToAllModels.current = e.target.checked;
       if (e.target.checked) {
         setGlobalParams({
-          ...params
+          ..._.omit(params, 'model')
         });
       }
     };
@@ -289,10 +291,10 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     };
 
     const modelOptions = useMemo(() => {
-      return modelList.filter((item) => {
+      return modelFullList.filter((item) => {
         return item.type !== 'empty';
       });
-    }, [modelList]);
+    }, [modelFullList]);
 
     useEffect(() => {
       console.log('globalParams:', globalParams.model, globalParams);
@@ -326,9 +328,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         <div className="header">
           <span className="title">
             <Select
-              style={{ minWidth: '100px' }}
+              style={{ minWidth: '120px' }}
               variant="borderless"
-              options={modelOptions}
+              options={modelFullList}
               onChange={handleModelChange}
               value={params.model}
             ></Select>
@@ -379,7 +381,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               title={
                 <div>
                   <Checkbox onChange={handleApplyToAllModels}>
-                    Apply to all models
+                    {intl.formatMessage({
+                      id: 'playground.compare.applytoall'
+                    })}
                   </Checkbox>
                 </div>
               }
@@ -401,7 +405,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           </span>
         </div>
         <SystemMessage
+          showApplyToAll={true}
           systemMessage={systemMessage}
+          applyToAll={handleApplySystemChangeToAll}
           setSystemMessage={setSystemMessage}
         ></SystemMessage>
         <SimpleBar style={{ maxHeight: maxHeight }}>

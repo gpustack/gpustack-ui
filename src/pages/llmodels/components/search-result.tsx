@@ -20,7 +20,6 @@ interface SearchResultProps {
 }
 
 const SearchResult: React.FC<SearchResultProps> = (props) => {
-  console.log('SearchResult======');
   const { resultList, onSelect, source, networkError } = props;
   const intl = useIntl();
 

@@ -1,7 +1,8 @@
 import { EyeOutlined } from '@ant-design/icons';
 import { Image, Typography } from 'antd';
+import { unescape } from 'lodash';
 import { TokensList, marked } from 'marked';
-import React, { Fragment } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import HighlightCode from '../highlight-code';
 import './index.less';
 
@@ -34,12 +35,13 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     'list',
     'list_item',
     'br',
-    'html'
+    'html',
+    'escape'
   ];
 
-  const renderItem = (token: any, render: any) => {
-    // console.log('token======66==', token.raw, token.type);
+  const renderItem = useCallback((token: any, render: any) => {
     if (!reDefineTypes.includes(token.type)) {
+      console.log('token======66==', token.type, token);
       return (
         <span
           dangerouslySetInnerHTML={{
@@ -53,7 +55,11 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     if (token.tokens?.length) {
       child = render?.(token.tokens as TokensList, render);
     }
-    const text = child ? child : token.text;
+    const text = child ? child : unescape(token.text);
+
+    if (token.type === 'escape') {
+      htmlstr = text;
+    }
 
     if (token.type === 'html') {
       htmlstr = <div dangerouslySetInnerHTML={{ __html: token.text }} />;
@@ -125,7 +131,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     }
 
     return htmlstr;
-  };
+  }, []);
   const renderTokens = (tokens: TokensList): any => {
     return tokens?.map((token: any, index: number) => {
       return <Fragment key={index}>{renderItem(token, renderTokens)}</Fragment>;

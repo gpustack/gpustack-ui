@@ -60,11 +60,14 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
 
   return (
     <pre
-      className={classNames('code-pre custome-scrollbar ', {
-        dark: props.theme === 'dark',
-        light: props.theme === 'light',
-        copyable: copyable
-      })}
+      className={classNames(
+        'code-pre custome-scrollbar custom-scrollbar-horizontal ',
+        {
+          dark: props.theme === 'dark',
+          light: props.theme === 'light',
+          copyable: copyable
+        }
+      )}
       style={{
         height: height
       }}

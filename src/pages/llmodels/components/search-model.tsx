@@ -1,6 +1,6 @@
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Select } from 'antd';
+import { Select } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
@@ -78,7 +78,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         search: {
           query: searchInputRef.current || '',
           sort: sort,
-          tags: filterGGUFRef.current ? ['gguf'] : [],
+          // tags: filterGGUFRef.current ? ['gguf'] : [],
+          tags: ['gguf'],
           task
         }
       };
@@ -102,9 +103,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const getModelsFromModelscope = useCallback(async (sort: string) => {
     try {
       const params = {
-        Name: filterGGUFRef.current
-          ? `${searchInputRef.current} gguf`
-          : searchInputRef.current || '',
+        // Name: filterGGUFRef.current
+        //   ? `${searchInputRef.current} gguf`
+        //   : searchInputRef.current || '',
+        Name: `${searchInputRef.current} gguf`,
         SortBy: ModelScopeSortType[sort]
       };
       const data = await queryModelScopeModels(params, {
@@ -115,7 +117,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           path: item.Path,
           name: `${item.Path}/${item.Name}`,
           downloads: item.Downloads,
-          id: item.Name,
+          id: `${item.Path}/${item.Name}`,
           updatedAt: item.LastUpdatedTime * 1000,
           likes: item.Stars,
           value: item.Name,
@@ -231,13 +233,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             </span>
           </span>
           <span>
-            <Checkbox
+            {/* <Checkbox
               onChange={handleFilterGGUFChange}
               className="m-r-5"
               checked={filterGGUFRef.current}
             >
               GGUF
-            </Checkbox>
+            </Checkbox> */}
             <Select
               allowClear
               value={dataSource.sortType}

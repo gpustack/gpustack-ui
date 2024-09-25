@@ -40,5 +40,8 @@ export default {
   'playground.toolbar.compare2Model': '2-Model Compare',
   'playground.toolbar.compare3Model': '3-Model Compare',
   'playground.toolbar.compare4Model': '4-Model Compare',
-  'playground.toolbar.compare6Model': '6-Model Compare'
+  'playground.toolbar.compare6Model': '6-Model Compare',
+  'playground.input.holder': 'Type <kbd>/</kbd> to input message',
+  'playground.compare.apply': 'Apply',
+  'playground.compare.applytoall': 'Apply to all models'
 };

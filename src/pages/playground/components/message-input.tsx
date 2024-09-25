@@ -123,11 +123,11 @@ const MessageInput: React.FC<MessageInputProps> = ({
     });
   };
 
-  const handleInputChange = (value: string) => {
-    console.log('input change:', value);
+  const handleInputChange = (e: any) => {
+    console.log('input change:', e.target?.value);
     setMessage({
       ...message,
-      content: value
+      content: e.target?.value
     });
   };
   const handleSendMessage = () => {
@@ -177,54 +177,57 @@ const MessageInput: React.FC<MessageInputProps> = ({
     resetMessage();
   };
 
-  const getPasteContent = useCallback(async (event: any) => {
-    const clipboardData = event.clipboardData || window.clipboardData;
-    const items = clipboardData.items;
-    const imgPromises: Promise<string>[] = [];
+  const getPasteContent = useCallback(
+    async (event: any) => {
+      const clipboardData = event.clipboardData || window.clipboardData;
+      const items = clipboardData.items;
+      const imgPromises: Promise<string>[] = [];
 
-    for (let i = 0; i < items.length; i++) {
-      let item = items[i];
-      console.log('item===========', item);
+      for (let i = 0; i < items.length; i++) {
+        let item = items[i];
 
-      if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
-        const file = item.getAsFile();
-        const imgPromise = new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = function (event) {
-            const base64String = event.target?.result as string;
-            if (base64String) {
-              resolve(base64String);
-            } else {
-              reject('Failed to convert image to base64');
-            }
-          };
-          reader.readAsDataURL(file);
-        });
-        imgPromises.push(imgPromise);
-      } else if (item.kind === 'string') {
-        // string
+        if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          const imgPromise = new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+              const base64String = event.target?.result as string;
+              if (base64String) {
+                resolve(base64String);
+              } else {
+                reject('Failed to convert image to base64');
+              }
+            };
+            reader.readAsDataURL(file);
+          });
+          imgPromises.push(imgPromise);
+        } else if (item.kind === 'string') {
+          // string
+        }
       }
-    }
 
-    try {
-      const imgs = await Promise.all(imgPromises);
-      if (imgs.length) {
-        const list = _.map(imgs, (img: string) => {
-          imgCountRef.current += 1;
-          return {
-            uid: imgCountRef.current,
-            dataUrl: img
-          };
-        });
-        setMessage({
-          ...message,
-          imgs: [...(message.imgs || []), ...list]
-        });
+      try {
+        const imgs = await Promise.all(imgPromises);
+
+        if (imgs.length) {
+          const list = _.map(imgs, (img: string) => {
+            imgCountRef.current += 1;
+            return {
+              uid: imgCountRef.current,
+              dataUrl: img
+            };
+          });
+          setMessage({
+            ...message,
+            imgs: [...(message.imgs || []), ...list]
+          });
+        }
+      } catch (error) {
+        console.error('Error processing images:', error);
       }
-    } catch (error) {
-      console.error('Error processing images:', error);
-    }
-  }, []);
+    },
+    [message]
+  );
 
   // ========== upload image ==========
   const handleUpdateImgList = (
@@ -248,6 +251,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   const handleOnPaste = (e: any) => {
+    e.preventDefault();
     const text = e.clipboardData.getData('text');
     if (text) {
       setMessage?.({
@@ -446,7 +450,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <TextArea
           ref={inputRef}
           autoSize={{ minRows: 3, maxRows: 8 }}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={handleInputChange}
           value={message.content}
           size="large"
           variant="borderless"
@@ -456,9 +460,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
           onPaste={handleOnPaste}
         ></TextArea>
         {!message.content && !focused && (
-          <span className="holder">
-            Type <kbd>/</kbd> to input message
-          </span>
+          <span
+            className="holder"
+            dangerouslySetInnerHTML={{
+              __html: intl.formatMessage({ id: 'playground.input.holder' })
+            }}
+          ></span>
         )}
       </div>
       <PromptModal

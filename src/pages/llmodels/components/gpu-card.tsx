@@ -35,4 +35,4 @@ const GPUCard: React.FC<{
   );
 };
 
-export default GPUCard;
+export default React.memo(GPUCard);

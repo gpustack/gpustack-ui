@@ -45,8 +45,6 @@ const ActionList = [
 ];
 
 const Resources: React.FC = () => {
-  console.log('resources======workers');
-
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -400,7 +398,7 @@ const Resources: React.FC = () => {
             return (
               <span className="flex-column flex-gap-2">
                 {_.map(
-                  record?.status?.gpu_devices,
+                  _.sortBy(record?.status?.gpu_devices || [], ['index']),
                   (item: GPUDeviceItem, index: string) => {
                     return (
                       <span className="flex-center" key={index}>
@@ -431,7 +429,7 @@ const Resources: React.FC = () => {
             return (
               <span className="flex-column">
                 {_.map(
-                  record?.status?.gpu_devices,
+                  _.sortBy(record?.status?.gpu_devices || [], ['index']),
                   (item: GPUDeviceItem, index: string) => {
                     return (
                       <span key={index}>

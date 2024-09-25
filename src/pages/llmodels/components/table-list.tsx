@@ -265,7 +265,6 @@ const Models: React.FC<ModelsProps> = ({
   );
 
   const handleModalCancel = useCallback(() => {
-    console.log('handleModalCancel');
     setOpenAddModal(false);
   }, []);
 

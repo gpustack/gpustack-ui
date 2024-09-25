@@ -57,7 +57,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
                     type="default"
                     onClick={() => handleSelect(item)}
                   >
-                    Apply
+                    {intl.formatMessage({ id: 'playground.compare.apply' })}
                   </Button>
                 </h3>
                 {item.data.map((data, i) => {

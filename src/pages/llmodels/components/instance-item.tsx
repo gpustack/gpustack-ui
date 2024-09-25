@@ -210,6 +210,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                     )}
                     {item?.distributed_servers?.rpc_servers?.length && (
                       <Tooltip
+                        trigger={['click']}
                         overlayInnerStyle={{
                           width: '400px'
                         }}

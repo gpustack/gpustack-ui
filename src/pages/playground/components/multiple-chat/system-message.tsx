@@ -1,18 +1,23 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Divider, Input, Tooltip } from 'antd';
+import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
+import classNames from 'classnames';
 import React, { useState } from 'react';
 import '../../style/sys-message.less';
 
 interface SystemMessageProps {
   style?: React.CSSProperties;
   systemMessage: string;
+  showApplyToAll?: boolean;
+  applyToAll?: (e: any) => void;
   setSystemMessage: (value: string) => void;
 }
 
 const SystemMessage: React.FC<SystemMessageProps> = (props) => {
-  const { systemMessage, setSystemMessage, style } = props;
+  const { systemMessage, showApplyToAll, setSystemMessage, style, applyToAll } =
+    props;
   const intl = useIntl();
+  const [isChange, setIsChange] = useState(false);
   const systemMessageRef = React.useRef<any>(null);
   const [autoSize, setAutoSize] = useState<{
     minRows: number;
@@ -33,26 +38,51 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
     }, 100);
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e: any) => {
     setAutoSize({
       minRows: 1,
       maxRows: 1,
       focus: false
     });
+    setIsChange(false);
+  };
+
+  const handleOnChange = (e: any) => {
+    setSystemMessage(e.target.value);
+    setIsChange(true);
   };
 
   const handleClearSystemMessage = () => {
     setSystemMessage('');
   };
 
+  const handleClickCheckbox = (e?: any) => {
+    e.preventDefault();
+  };
+
+  const handleApplyToAllModels = (e: any) => {
+    if (e.target.checked) {
+      applyToAll?.(systemMessage);
+    }
+  };
+
   return (
-    <div className="sys-message" style={{ ...style }}>
+    <div
+      className={classNames('sys-message', {
+        focus: autoSize.focus
+      })}
+      style={{ ...style }}
+    >
       {
-        <div style={{ display: autoSize.focus ? 'block' : 'none' }}>
+        <div
+          style={{ display: autoSize.focus ? 'block' : 'none' }}
+          className="textarea-wrapper"
+        >
           <span className="system-label">
             {intl.formatMessage({ id: 'playground.systemMessage' })}
           </span>
           <Input.TextArea
+            className="custome-scrollbar"
             ref={systemMessageRef}
             variant="filled"
             placeholder={intl.formatMessage({ id: 'playground.system.tips' })}
@@ -68,8 +98,17 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
             onFocus={handleFocus}
             onBlur={handleBlur}
             allowClear={false}
-            onChange={(e) => setSystemMessage(e.target.value)}
+            onChange={handleOnChange}
           ></Input.TextArea>
+          {isChange && showApplyToAll && (
+            <span className="apply-check" onMouseDown={handleClickCheckbox}>
+              <Checkbox onChange={handleApplyToAllModels}>
+                {intl.formatMessage({
+                  id: 'playground.compare.applytoall'
+                })}
+              </Checkbox>
+            </span>
+          )}
           <Divider style={{ margin: '0' }}></Divider>
         </div>
       }

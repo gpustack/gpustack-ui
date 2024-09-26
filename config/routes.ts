@@ -31,13 +31,6 @@ export default [
     access: 'canSeeAdmin',
     component: './resources'
   },
-  // {
-  //   name: 'usage',
-  //   path: '/usage',
-  //   key: 'usage',
-  //   icon: 'BarChartOutlined',
-  //   component: './usage'
-  // },
   {
     name: 'apikeys',
     path: '/api-keys',

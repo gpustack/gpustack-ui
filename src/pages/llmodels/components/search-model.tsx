@@ -1,6 +1,6 @@
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Select } from 'antd';
+import { Checkbox, Select } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
@@ -22,7 +22,6 @@ interface SearchInputProps {
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
-  console.log('SearchModel======');
   const intl = useIntl();
   const { modelSource, setLoadingModel, onSourceChange, onSelectModel } = props;
   const [dataSource, setDataSource] = useState<{
@@ -44,7 +43,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
-  const filterGGUFRef = useRef<boolean>(true);
+  const filterGGUFRef = useRef<boolean | undefined>();
   const modelFilesSortOptions = useRef<any[]>([
     {
       label: intl.formatMessage({ id: 'models.sort.trending' }),
@@ -78,8 +77,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         search: {
           query: searchInputRef.current || '',
           sort: sort,
-          // tags: filterGGUFRef.current ? ['gguf'] : [],
-          tags: ['gguf'],
+          tags: filterGGUFRef.current ? ['gguf'] : [],
           task
         }
       };
@@ -103,10 +101,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const getModelsFromModelscope = useCallback(async (sort: string) => {
     try {
       const params = {
-        // Name: filterGGUFRef.current
-        //   ? `${searchInputRef.current} gguf`
-        //   : searchInputRef.current || '',
-        Name: `${searchInputRef.current} gguf`,
+        Name: `${searchInputRef.current}`,
+        filterGGUF: filterGGUFRef.current,
         SortBy: ModelScopeSortType[sort]
       };
       const data = await queryModelScopeModels(params, {
@@ -233,13 +229,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             </span>
           </span>
           <span>
-            {/* <Checkbox
+            <Checkbox
               onChange={handleFilterGGUFChange}
               className="m-r-5"
               checked={filterGGUFRef.current}
             >
               GGUF
-            </Checkbox> */}
+            </Checkbox>
             <Select
               allowClear
               value={dataSource.sortType}

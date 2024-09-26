@@ -42,9 +42,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [currentIsFocus, setCurrentIsFocus] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const contentRef = useRef<any>('');
   const controllerRef = useRef<any>(null);
@@ -92,7 +90,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     });
     setMessageId();
     setMessageList([...messageList]);
-    setActiveIndex(messageList.length - 1);
   };
 
   const joinMessage = (chunk: any) => {
@@ -252,7 +249,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     <div className="ground-left-wrapper">
       <div className="ground-left">
         <div
-          className="message-list-wrap"
+          className="message-list-wrap custome-scrollbar"
           onWheel={handleContentWheel}
           ref={scroller}
         >

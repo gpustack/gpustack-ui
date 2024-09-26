@@ -101,9 +101,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   );
 
   const handleOnSelectModel = () => {
-    if (!props.selectedModel.name) {
-      return;
-    }
     let name = _.split(props.selectedModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');

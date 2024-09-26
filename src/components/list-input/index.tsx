@@ -78,7 +78,6 @@ const ListInput: React.FC<ListInputProps> = (props) => {
               options={options}
               key={item.uid}
               value={item.value}
-              label={`${index + 1}`}
               onRemove={() => handleOnRemove(index)}
               onChange={(val) => handleOnChange(val, index)}
             />

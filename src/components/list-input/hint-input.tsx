@@ -21,7 +21,7 @@ const HintInput: React.FC<HintInputProps> = (props) => {
 
   const generateOptions = (context: string) => {
     if (!context) {
-      setOptions([]);
+      setOptions(sourceOptions || []);
       return;
     }
     const match = context.match(matchReg);

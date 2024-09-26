@@ -142,26 +142,6 @@ const Playground: React.FC = () => {
         <div className="chat">
           <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
-        {/* {activeKey === 'chat' && (
-          <div
-            className={classNames('left', {
-              collapse: collapse
-            })}
-          >
-            <div className={classNames('params')}>
-              <div
-                className={classNames('params-box', {
-                  collapse: collapse
-                })}
-              >
-                <ParamsSettings
-                  setParams={setParams}
-                  selectedModel={selectModel}
-                />
-              </div>
-            </div>
-          </div>
-        )} */}
       </div>
     </PageContainer>
   );

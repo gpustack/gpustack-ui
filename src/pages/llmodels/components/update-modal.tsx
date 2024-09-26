@@ -4,14 +4,13 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Form, Modal } from 'antd';
 import _ from 'lodash';
 import { memo, useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { queryGPUList, queryHuggingfaceModelFiles } from '../apis';
+import { queryGPUList } from '../apis';
 import {
   backendOptionsMap,
   modelSourceMap,
@@ -58,11 +57,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const [gpuOptions, setGpuOptions] = useState<any[]>([]);
+  const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
-  const modelSource = Form.useWatch('source', form);
-  const [fileOptions, setFileOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
 
   const getGPUList = async () => {
     const data = await queryGPUList();
@@ -88,6 +84,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         props.data?.source || '',
         props.data
       );
+
       form.setFieldsValue({
         ...result.values,
         ..._.omit(props.data, result.omits),
@@ -103,43 +100,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     initFormValue();
   }, [open]);
 
-  const fileNamLabel = (item: any) => {
-    return (
-      <span>
-        {item.path}
-        <span
-          style={{ color: 'var(--ant-color-text-tertiary)', marginLeft: '4px' }}
-        >
-          ({convertFileSize(item.size)})
-        </span>
-      </span>
-    );
-  };
-  const handleFetchModelFiles = async (repo: string) => {
-    try {
-      setLoading(true);
-      const res = await queryHuggingfaceModelFiles({ repo });
-      const list = _.filter(res, (file: any) => {
-        return _.endsWith(file.path, '.gguf');
-      }).map((item: any) => {
-        return {
-          label: fileNamLabel(item),
-          value: item.path,
-          size: item.size
-        };
-      });
-      setFileOptions(list);
-      setLoading(false);
-    } catch (error) {
-      setFileOptions([]);
-      setLoading(false);
-    }
-  };
-
-  const handleRepoOnBlur = (e: any) => {
-    const repo = form.getFieldValue('repo_id');
-    handleFetchModelFiles(repo);
-  };
+  useEffect(() => {
+    setIsGGUF(props.data?.backend === backendOptionsMap.llamaBox);
+  }, [props.data?.backend]);
 
   const renderHuggingfaceFields = () => {
     return (
@@ -164,7 +127,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             disabled={true}
           ></SealInput.Input>
         </Form.Item>
-        {form.getFieldValue('file_name') && (
+        {isGGUF && (
           <Form.Item<FormData>
             name="file_name"
             rules={[
@@ -183,7 +146,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               filterOption
               label={intl.formatMessage({ id: 'models.form.filename' })}
               required
-              options={fileOptions}
+              options={[]}
               loading={loading}
               disabled={action === PageAction.EDIT}
             ></SealAutoComplete>
@@ -263,7 +226,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
 
     return null;
-  }, [props.data?.source]);
+  }, [props.data?.source, isGGUF]);
 
   const handleSumit = () => {
     form.submit();

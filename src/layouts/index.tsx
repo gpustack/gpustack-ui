@@ -235,8 +235,6 @@ export default (props: any) => {
         onPageChange={(route) => {
           const { location } = history;
 
-          console.log('onPageChange', userInfo, initialState);
-
           // if user is not change password, redirect to change password page
           if (
             location.pathname !== loginPath &&

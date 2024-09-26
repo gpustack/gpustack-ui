@@ -167,3 +167,19 @@ export const formatNumber = (num: number) => {
     return num.toString();
   }
 };
+
+export function loadLanguageConfig(language: string) {
+  const requireContext = require.context(`./${language}`, false, /\.ts$/);
+
+  const languageConfig: Record<string, string> = {};
+
+  requireContext.keys().forEach((fileName: any) => {
+    const moduleConfig = requireContext(fileName).default;
+
+    const moduleName = fileName.replace(/(\.\/|\.ts)/g, '');
+
+    languageConfig[moduleName] = moduleConfig;
+  });
+
+  return languageConfig;
+}

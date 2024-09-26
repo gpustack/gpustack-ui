@@ -111,6 +111,7 @@ const ModelCard: React.FC<{
   const getModelCardData = async () => {
     if (!props.selectedModel.name) {
       setModelData(null);
+      setReadmeText(null);
       return;
     }
     requestToken.current?.cancel?.();
@@ -191,7 +192,7 @@ const ModelCard: React.FC<{
       <div className="card-wrapper">
         {modelData ? (
           <div className="model-card-wrap">
-            <div className="flex-between flex-center">
+            <div className="flex-center">
               {modelData.config?.model_type && (
                 <Tag className="tag-item" color="gold">
                   <span style={{ opacity: 0.65 }}>

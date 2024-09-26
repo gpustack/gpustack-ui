@@ -118,7 +118,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       width={width}
       footer={false}
     >
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', height: '100%' }}>
         {SEARCH_SOURCE.includes(props.source) && (
           <>
             <div style={{ display: 'flex', flex: 1 }}>

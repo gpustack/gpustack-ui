@@ -88,6 +88,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       htmlstr = (
         <Image
           src={token.href}
+          alt={token.text}
           preview={{
             mask: <EyeOutlined />
           }}

@@ -5,7 +5,14 @@
 
   .chat-list {
     flex: 1;
+    overflow-y: auto;
     padding-bottom: 16px;
     padding-inline: var(--layout-content-inlinepadding);
+  }
+
+  .chat-list-inner {
+    min-height: calc(100vh - 199px);
+    max-height: max-content;
+    height: 100%;
   }
 }

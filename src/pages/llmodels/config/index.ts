@@ -44,13 +44,13 @@ export const ollamaModelOptions = [
     tags: ['7B'],
     id: 'mistral'
   },
-  // {
-  //   label: 'llava',
-  //   value: 'llava',
-  //   name: 'llava',
-  //   tags: ['7B', '13B', '34B'],
-  //   id: 'llava'
-  // },
+  {
+    label: 'llava',
+    value: 'llava',
+    name: 'llava',
+    tags: ['7B', '13B', '34B'],
+    id: 'llava'
+  },
   {
     label: 'qwen2',
     value: 'qwen2',

@@ -252,24 +252,26 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
   return (
     <div className="multiple-chat" style={{ height: boxHeight }}>
       <div className="chat-list">
-        <CompareContext.Provider
-          value={{
-            spans,
-            globalParams,
-            loadingStatus,
-            modelFullList: modelList,
-            handleApplySystemChangeToAll,
-            setGlobalParams,
-            setLoadingStatus: handleSetLoadingStatus,
-            handleDeleteModel: handleDeleteModel
-          }}
-        >
-          <ActiveModels
-            spans={spans}
-            modelSelections={modelSelections}
-            setModelRefs={setModelRefs}
-          ></ActiveModels>
-        </CompareContext.Provider>
+        <div className="chat-list-inner">
+          <CompareContext.Provider
+            value={{
+              spans,
+              globalParams,
+              loadingStatus,
+              modelFullList: modelList,
+              handleApplySystemChangeToAll,
+              setGlobalParams,
+              setLoadingStatus: handleSetLoadingStatus,
+              handleDeleteModel: handleDeleteModel
+            }}
+          >
+            <ActiveModels
+              spans={spans}
+              modelSelections={modelSelections}
+              setModelRefs={setModelRefs}
+            ></ActiveModels>
+          </CompareContext.Provider>
+        </div>
       </div>
       <div>
         <MessageInput

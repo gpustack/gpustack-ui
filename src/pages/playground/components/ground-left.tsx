@@ -93,13 +93,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const joinMessage = (chunk: any) => {
-    if (!chunk) {
-      return;
-    }
-    if (!_.get(chunk, 'choices', []).length) {
-      setTokenResult({
-        ...chunk?.usage
-      });
+    setTokenResult({
+      ...(chunk?.usage ?? {})
+    });
+
+    if (!chunk || !_.get(chunk, 'choices', []).length) {
       return;
     }
     contentRef.current =

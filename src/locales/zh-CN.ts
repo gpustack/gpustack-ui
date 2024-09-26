@@ -9,6 +9,14 @@ import shortcuts from './zh-CN/shortcuts';
 import usage from './zh-CN/usage';
 import users from './zh-CN/users';
 
+// import { LangConfigType } from './lang-config-map';
+
+// const DIR: LangConfigType = 'zh-CN';
+
+// const langConfig = require.context(`./`, true, /\.ts$/);
+
+// console.log('langConfig====', langConfig);
+
 export default {
   ...common,
   ...menu,

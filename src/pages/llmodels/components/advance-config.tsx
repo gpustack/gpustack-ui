@@ -1,5 +1,7 @@
 import LabelSelector from '@/components/label-selector';
+import ListInput from '@/components/list-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -191,7 +193,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </>
         )}
-        {/* <Form.Item name="backend">
+        <Form.Item name="backend">
           <SealSelect
             label={intl.formatMessage({ id: 'models.form.backend' })}
             options={[
@@ -208,8 +210,8 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             ]}
             disabled={action === PageAction.EDIT}
           ></SealSelect>
-        </Form.Item> */}
-        {/* <Form.Item<FormData> name="backend_parameters">
+        </Form.Item>
+        <Form.Item<FormData> name="backend_parameters">
           <ListInput
             btnText="common.button.addParams"
             label={intl.formatMessage({ id: 'models.form.backend_parameters' })}
@@ -217,7 +219,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             onChange={handleBackendParametersChange}
             options={paramsConfig}
           ></ListInput>
-        </Form.Item> */}
+        </Form.Item>
         {scheduleType === 'manual' && (
           <Form.Item<FormData>
             name="gpu_selector"

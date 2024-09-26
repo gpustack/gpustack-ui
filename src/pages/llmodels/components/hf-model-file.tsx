@@ -192,7 +192,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       }
 
       const newList = generateGroupByFilename(list);
-      console.log('newList====', newList);
       const sortList = _.sortBy(newList, (item: any) => {
         return sortType === 'size' ? item.size : item.path;
       });
@@ -200,7 +199,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       handleSelectModelFile(sortList[0]);
       setDataSource({ fileList: sortList, loading: false });
     } catch (error) {
-      console.log('error======', error);
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
     }
@@ -246,9 +244,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     fetchModelFiles: handleFetchModelFiles
   }));
 
-  // useEffect(() => {
-  //   handleFetchModelFiles();
-  // }, [props.selectedModel.name]);
+  useEffect(() => {
+    if (!props.selectedModel.name) {
+      setDataSource({ fileList: [], loading: false });
+      handleSelectModelFile({});
+    }
+  }, [props.selectedModel.name]);
 
   useEffect(() => {
     return () => {

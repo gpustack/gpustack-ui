@@ -154,9 +154,17 @@ export async function queryModelScopeModels(
     Target?: string;
     SingleCriterion?: any[];
     Name: string;
+    filterGGUF?: boolean;
   },
   config?: any
 ) {
+  const Criterion = params.filterGGUF
+    ? {
+        Criterion: [
+          { category: 'tags', predicate: 'contains', values: ['gguf'] }
+        ]
+      }
+    : {};
   const res = await fetch(`${MODEL_SCOPE_LIST_MODEL_API}`, {
     method: 'PUT',
     signal: config?.signal,
@@ -165,6 +173,7 @@ export async function queryModelScopeModels(
     },
     body: JSON.stringify({
       ...params,
+      ...Criterion,
       Name: `${params.Name}`,
       PageSize: 100,
       PageNumber: 1

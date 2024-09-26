@@ -96,7 +96,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <div>{workerIp}</div>
         <div>
           {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
-          {_.join(item.gpu_indexes, ',')}]
+          {_.join(item.gpu_indexes?.sort?.(), ',')}]
         </div>
       </div>
     );
@@ -119,7 +119,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         worker_name: `${row.worker_name}`,
         worker_ip: `${row.worker_ip}`,
         port: row.port,
-        gpu_index: `${row.gpu_indexes} (main)`
+        gpu_index: `${row.gpu_indexes?.sort?.()} (main)`
       }
     ];
 

@@ -37,7 +37,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const wokerSelector = Form.useWatch('worker_selector', form);
   const scheduleType = Form.useWatch('scheduleType', form);
   const backend = Form.useWatch('backend', form);
-  const [params, setParams] = React.useState<string[]>([]);
 
   const placementStrategyTips = [
     {
@@ -313,6 +312,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             {intl.formatMessage({ id: 'resources.form.advanced' })}
           </span>
         ),
+        forceRender: true,
         children
       }
     ];
@@ -331,6 +331,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       expandIconPosition="start"
       bordered={false}
       ghost
+      destroyInactivePanel={false}
       className={dataformStyles['advanced-collapse']}
       expandIcon={({ isActive }) => (
         <RightOutlined

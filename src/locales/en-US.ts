@@ -1,23 +1,18 @@
-import apikeys from './en-US/apikeys';
-import common from './en-US/common';
-import dashboard from './en-US/dashboard';
-import menu from './en-US/menu';
-import models from './en-US/models';
-import playground from './en-US/playground';
-import resources from './en-US/resources';
-import shortcuts from './en-US/shortcuts';
-import usage from './en-US/usage';
-import users from './en-US/users';
+/**
+ * @description The directory name used in require.context must match the language configuration names defined in lang-config-map.ts.
+ * @example Directories like 'en-US' or 'zh-CN' should correspond exactly to the configuration names in lang-config-map.ts.
+ */
 
-export default {
-  ...common,
-  ...menu,
-  ...models,
-  ...playground,
-  ...resources,
-  ...apikeys,
-  ...users,
-  ...dashboard,
-  ...usage,
-  ...shortcuts
-};
+const requireContext = require.context(`./en-US`, false, /\.ts$/);
+
+let languageConfig: Record<string, string> = {};
+
+requireContext.keys().forEach((fileName: any) => {
+  const moduleConfig = requireContext(fileName).default;
+  languageConfig = {
+    ...languageConfig,
+    ...moduleConfig
+  };
+});
+
+export default languageConfig;

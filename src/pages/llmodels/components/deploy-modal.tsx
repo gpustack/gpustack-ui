@@ -75,6 +75,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (source === modelSourceMap.ollama_library_value) {
+      setIsGGUF(true);
+    }
+  }, [source]);
+
   return (
     <Drawer
       title={

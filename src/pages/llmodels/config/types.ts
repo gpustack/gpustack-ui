@@ -1,5 +1,6 @@
 export interface ListItem {
   source: string;
+  backend: string;
   huggingface_repo_id: string;
   huggingface_file_name: string;
   huggingface_filename: string;

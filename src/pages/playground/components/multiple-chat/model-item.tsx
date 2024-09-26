@@ -68,7 +68,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       messageId.current = messageId.current + 1;
     };
     const maxHeight = useMemo(() => {
-      console.log('spans==========', spans);
       const total = 72 + 110 + 46 + 16 + 32;
       if (spans.count < 4) {
         return `calc(100vh - ${total}px)`;
@@ -367,11 +366,14 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               ></Button>
             </Dropdown>
             <Popover
+              placement="bottomRight"
               content={
                 <ParamsSettings
                   showModelSelector={false}
                   setParams={setParams}
+                  modelList={modelList}
                   globalParams={globalParams}
+                  selectedModel={params.model}
                   onValuesChange={handleOnValuesChange}
                 />
               }

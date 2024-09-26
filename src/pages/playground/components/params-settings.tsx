@@ -7,7 +7,6 @@ import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
 import { useEffect, useId, useState } from 'react';
-import { queryModelsList } from '../apis';
 import CustomLabelStyles from '../style/custom-label.less';
 
 type ParamsSettingsFormProps = {
@@ -24,6 +23,7 @@ type ParamsSettingsProps = {
   showModelSelector?: boolean;
   params?: ParamsSettingsFormProps;
   model?: string;
+  modelList: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   setParams: (params: any) => void;
   globalParams?: ParamsSettingsFormProps;
@@ -35,6 +35,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   globalParams,
   onValuesChange,
   model,
+  modelList,
   showModelSelector = true
 }) => {
   const intl = useIntl();
@@ -51,41 +52,26 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   const formId = useId();
 
   useEffect(() => {
-    const getModelList = async () => {
-      try {
-        const params = {
-          embedding_only: false
-        };
-        const res = await queryModelsList(params);
-        const list = _.map(res.data || [], (item: any) => {
-          return {
-            value: item.id,
-            label: item.id
-          };
-        });
-        setModelList(list);
-        form.setFieldsValue({
-          model: selectedModel || _.get(list, '[0].value'),
-          ...initialValues
-        });
-        setParams({
-          model: selectedModel || _.get(list, '[0].value'),
-          ...initialValues
-        });
-      } catch (error) {
-        setModelList([]);
-        form.setFieldsValue({
-          model: selectedModel || '',
-          ...initialValues
-        });
-        setParams({
-          model: selectedModel || '',
-          ...initialValues
-        });
-      }
-    };
-    getModelList();
-  }, []);
+    if (showModelSelector) {
+      form.setFieldsValue({
+        model: selectedModel || _.get(modelList, '[0].value'),
+        ...initialValues
+      });
+      setParams({
+        model: selectedModel || _.get(modelList, '[0].value'),
+        ...initialValues
+      });
+    } else {
+      form.setFieldsValue({
+        model: selectedModel || '',
+        ...initialValues
+      });
+      setParams({
+        model: selectedModel || '',
+        ...initialValues
+      });
+    }
+  }, [modelList, showModelSelector, selectedModel]);
 
   const handleOnFinish = (values: any) => {
     console.log('handleOnFinish', values);
@@ -126,8 +112,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
 
   useEffect(() => {
     form.setFieldsValue(globalParams);
-    console.log('globalParams=========11111', model, globalParams);
   }, [globalParams]);
+
   const renderLabel = (args: {
     field: string;
     label: string;
@@ -193,7 +179,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             >
               <SealSelect
                 showSearch
-                options={ModelList}
+                options={modelList}
                 label={intl.formatMessage({ id: 'playground.model' })}
               ></SealSelect>
             </Form.Item>

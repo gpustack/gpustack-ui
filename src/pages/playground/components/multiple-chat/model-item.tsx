@@ -2,7 +2,7 @@ import IconFont from '@/components/icon-font';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import {
   ClearOutlined,
-  CloseOutlined,
+  DeleteOutlined,
   MoreOutlined,
   SettingOutlined
 } from '@ant-design/icons';
@@ -11,7 +11,6 @@ import { Button, Checkbox, Dropdown, Popover, Select, Spin } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
-  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -81,18 +80,17 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     };
 
     const joinMessage = (chunk: any) => {
-      if (!chunk) {
+      setTokenResult({
+        ...(chunk?.usage ?? {})
+      });
+
+      if (!chunk || !_.get(chunk, 'choices', [].length)) {
         return;
       }
-      if (!_.get(chunk, 'choices', [].length)) {
-        setTokenResult({
-          ...chunk?.usage
-        });
-        return;
-      }
+
       contentRef.current =
         contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
-      console.log('currentMessage==========5', messageList);
+
       setMessageList([
         ...messageList,
         ...currentMessageRef.current,
@@ -202,15 +200,10 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         setLoadingStatus(instanceId, false);
       }
     };
-    const handleDropdownAction = useCallback(({ key }: { key: string }) => {
-      if (key === 'clear') {
-        setMessageList([]);
-        setSystemMessage('');
-      }
-      if (key === 'viewCode') {
-        setShow(true);
-      }
-    }, []);
+
+    const handleDelete = () => {
+      handleDeleteModel(instanceId);
+    };
 
     const handleSubmit = (currentMessage: Omit<MessageItem, 'uid'>) => {
       const currentMsg =
@@ -234,7 +227,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       changeValues: any,
       allValues: Record<string, any>
     ) => {
-      console.log('value:', allValues, isApplyToAllModels.current);
       if (isApplyToAllModels.current) {
         setParams({
           ...params,
@@ -256,7 +248,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setTokenResult(null);
       setSystemMessage('');
       currentMessageRef.current = [];
-      console.log('clear message', systemMessage);
     };
 
     const handleCloseViewCode = () => {
@@ -285,15 +276,47 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setMessageList(messages);
     };
 
-    const handleDelete = () => {
-      handleDeleteModel(instanceId);
-    };
-
     const modelOptions = useMemo(() => {
       return modelFullList.filter((item) => {
         return item.type !== 'empty';
       });
     }, [modelFullList]);
+
+    const actionItems = useMemo(() => {
+      const list = [
+        {
+          label: intl.formatMessage({ id: 'common.button.clear' }),
+          key: 'clear',
+          icon: <ClearOutlined />,
+          danger: false,
+          onClick: () => {
+            setMessageList([]);
+            setSystemMessage('');
+          }
+        },
+        {
+          label: intl.formatMessage({ id: 'playground.viewcode' }),
+          key: 'viewcode',
+          icon: <IconFont type="icon-code" />,
+          onClick: () => {
+            setShow(true);
+          }
+        }
+      ];
+
+      if (modelList.length > 2) {
+        list.push({
+          label: intl.formatMessage({ id: 'common.button.delete' }),
+          key: 'delete',
+          icon: <DeleteOutlined />,
+          danger: true,
+          onClick: () => {
+            handleDelete();
+          }
+        });
+      }
+      return list;
+    }, [modelList]);
 
     useEffect(() => {
       console.log('globalParams:', globalParams.model, globalParams);
@@ -327,7 +350,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         <div className="header">
           <span className="title">
             <Select
-              style={{ minWidth: '120px' }}
+              style={{ minWidth: '120px', maxWidth: '200px' }}
               variant="borderless"
               options={modelFullList}
               onChange={handleModelChange}
@@ -338,24 +361,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           <span className="action">
             <Dropdown
               menu={{
-                items: [
-                  {
-                    label: intl.formatMessage({ id: 'common.button.clear' }),
-                    key: 'clear',
-                    icon: <ClearOutlined />,
-                    onClick: () => {
-                      handleDropdownAction({ key: 'clear' });
-                    }
-                  },
-                  {
-                    label: intl.formatMessage({ id: 'playground.viewcode' }),
-                    key: 'viewcode',
-                    icon: <IconFont type="icon-code" />,
-                    onClick: () => {
-                      handleDropdownAction({ key: 'viewCode' });
-                    }
-                  }
-                ]
+                items: actionItems
               }}
               placement="bottomRight"
             >
@@ -396,14 +402,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
                 size="small"
               ></Button>
             </Popover>
-            {modelList.length > 2 && (
-              <Button
-                type="text"
-                icon={<CloseOutlined />}
-                size="small"
-                onClick={handleDelete}
-              ></Button>
-            )}
           </span>
         </div>
         <SystemMessage

@@ -291,9 +291,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   useHotkeys(
     HotKeys.SUBMIT,
-    () => {
+    (e: any) => {
       console.log('submit message', loading);
-      inputRef.current?.blur?.();
+      e.preventDefault();
       handleSendMessage();
     },
     {
@@ -307,8 +307,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
     (e: any) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log('add message', loading);
-      inputRef.current?.blur?.();
       handleAddMessage();
     },
     {

@@ -219,10 +219,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             filterOption
             defaultActiveFirstOption
             disabled={action === PageAction.EDIT}
+            options={ollamaModelOptions}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
             required
-            options={ollamaModelOptions}
           ></SealAutoComplete>
         </Form.Item>
       </>

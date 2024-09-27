@@ -1,10 +1,13 @@
+import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Space, Tooltip } from 'antd';
+import { Alert, Space, Tooltip } from 'antd';
 import _ from 'lodash';
 import '../style/reference-params.less';
 
 interface ReferenceParamsProps {
   usage: {
+    error?: boolean;
+    errorMessage?: string;
     completion_tokens: number;
     prompt_tokens: number;
     total_tokens: number;
@@ -17,10 +20,25 @@ interface ReferenceParamsProps {
 const ReferenceParams = (props: ReferenceParamsProps) => {
   const intl = useIntl();
   const { usage } = props;
-  if (!usage) {
+  if (!usage || _.isEmpty(usage)) {
     return null;
   }
-  console.log('ReferenceParams usage:', usage);
+  if (usage.error) {
+    return (
+      <Alert
+        type="error"
+        style={{ textAlign: 'center', paddingBlock: 0 }}
+        message={
+          <span style={{ color: 'var(--ant-color-error)' }}>
+            <WarningOutlined className="m-r-8" />
+            {usage?.errorMessage}
+          </span>
+        }
+        banner
+        showIcon={false}
+      />
+    );
+  }
   return (
     <div className="reference-params">
       <span className="usage">

@@ -172,13 +172,17 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         ...parameters,
         stream: true
       };
-      const result = await fetchChunkedData({
+      const result: any = await fetchChunkedData({
         data: chatParams,
         url: CHAT_API,
         signal
       });
 
-      if (!result) {
+      if (result?.error) {
+        setTokenResult({
+          error: true,
+          errorMessage: result?.data?.message
+        });
         return;
       }
       setMessageId();
@@ -186,10 +190,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       await readStreamData(reader, decoder, (chunk: any) => {
         joinMessage(chunk);
       });
-      setLoading(false);
     } catch (error) {
-      console.log('error=====', error);
-
+      // console.log('error:', error);
+    } finally {
       setLoading(false);
     }
   };

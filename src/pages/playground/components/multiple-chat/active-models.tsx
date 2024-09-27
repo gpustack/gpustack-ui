@@ -15,9 +15,15 @@ interface ActiveModelsProps {
 const ActiveModels: React.FC<ActiveModelsProps> = (props) => {
   const { spans, modelSelections, setModelRefs } = props;
   return (
-    <Row gutter={[16, 16]} style={{ height: '100%' }}>
+    <Row gutter={[16, 0]} style={{ height: '100%' }}>
       {modelSelections.map((model, index) => (
-        <Col span={spans.span} key={`${model.value || 'empty'}-${model.uid}`}>
+        <Col
+          span={spans.span}
+          key={`${model.value || 'empty'}-${model.uid}`}
+          style={{
+            height: spans.count < 4 ? 'calc(100% - 16px)' : 'calc(50% - 16px)'
+          }}
+        >
           <ModelItem
             key={`${model.value || 'empty'}-${model.uid}`}
             ref={(el: React.MutableRefObject<any>) =>

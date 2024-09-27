@@ -139,7 +139,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       });
 
       const list = _.filter(fileList, (file: any) => {
-        return filterReg.test(file.path) || _.includes(includeReg, file.path);
+        return filterRegGGUF.test(file.path) || _.includes(file.path, '.gguf');
       });
 
       return list;
@@ -160,9 +160,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         }
       );
       const fileList = _.filter(_.get(data, ['Data', 'Files']), (file: any) => {
-        return (
-          filterRegGGUF.test(file.Path) || _.includes(filterRegGGUF, file.Path)
-        );
+        return filterRegGGUF.test(file.Path) || _.includes(file.Path, '.gguf');
       });
 
       const list = _.map(fileList, (item: any) => {

@@ -1,4 +1,6 @@
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import _ from 'lodash';
+import 'overlayscrollbars/overlayscrollbars.css';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
@@ -14,6 +16,7 @@ interface MultiCompareProps {
 }
 
 const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
+  const { initialize } = useOverlayScroller();
   const [loadingStatus, setLoadingStatus] = useState<Record<symbol, boolean>>(
     {}
   );
@@ -36,6 +39,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
   });
   const modelsCounterMap = useRef<Record<string, number>>({});
   const modelRefs = useRef<any>({});
+  const chatListScrollRef = useRef<any>(null);
   const boxHeight = 'calc(100vh - 72px)';
 
   const isLoading = useMemo(() => {
@@ -249,29 +253,33 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
     setModelSelections(resultList);
   }, [modelList]);
 
+  useEffect(() => {
+    if (chatListScrollRef.current) {
+      initialize(chatListScrollRef.current);
+    }
+  }, [chatListScrollRef.current, initialize]);
+
   return (
     <div className="multiple-chat" style={{ height: boxHeight }}>
-      <div className="chat-list">
-        <div className="chat-list-inner">
-          <CompareContext.Provider
-            value={{
-              spans,
-              globalParams,
-              loadingStatus,
-              modelFullList: modelList,
-              handleApplySystemChangeToAll,
-              setGlobalParams,
-              setLoadingStatus: handleSetLoadingStatus,
-              handleDeleteModel: handleDeleteModel
-            }}
-          >
-            <ActiveModels
-              spans={spans}
-              modelSelections={modelSelections}
-              setModelRefs={setModelRefs}
-            ></ActiveModels>
-          </CompareContext.Provider>
-        </div>
+      <div className="chat-list" ref={chatListScrollRef}>
+        <CompareContext.Provider
+          value={{
+            spans,
+            globalParams,
+            loadingStatus,
+            modelFullList: modelList,
+            handleApplySystemChangeToAll,
+            setGlobalParams,
+            setLoadingStatus: handleSetLoadingStatus,
+            handleDeleteModel: handleDeleteModel
+          }}
+        >
+          <ActiveModels
+            spans={spans}
+            modelSelections={modelSelections}
+            setModelRefs={setModelRefs}
+          ></ActiveModels>
+        </CompareContext.Provider>
       </div>
       <div>
         <MessageInput

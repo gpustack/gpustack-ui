@@ -1,9 +1,10 @@
-import useContainerScroll from '@/hooks/use-container-scorll';
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
+import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
   memo,
@@ -12,7 +13,6 @@ import {
   useRef,
   useState
 } from 'react';
-import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../apis';
 import { Roles } from '../config';
 import { MessageItem } from '../config/types';
@@ -48,21 +48,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
   const currentMessageRef = useRef<any>(null);
-  const paramsScroller = useRef<any>(null);
-  const leftSimple = useRef<any>(null);
-  const { updateScrollerPosition, handleContentWheel } = useContainerScroll(
-    scroller,
-    { toBottom: true }
-  );
+  const paramsRef = useRef<any>(null);
 
-  useEffect(() => {
-    updateScrollerPosition();
-  }, [messageList]);
-
-  useEffect(() => {
-    paramsScroller.current?.recalculate();
-    leftSimple.current?.recalculate();
-  }, [collapse]);
+  const { initialize, updateScrollerPosition } = useOverlayScroller();
+  const { initialize: innitializeParams } = useOverlayScroller();
 
   useImperativeHandle(ref, () => {
     return {
@@ -200,9 +189,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setLoading(false);
     } catch (error) {
       console.log('error=====', error);
-      setMessageList((pre) => {
-        return [...pre, ...currentMessageRef.current];
-      });
+
       setLoading(false);
     }
   };
@@ -243,14 +230,26 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageList(userMsg);
   };
 
+  useEffect(() => {
+    if (scroller.current) {
+      initialize(scroller.current);
+    }
+  }, [scroller.current, initialize]);
+
+  useEffect(() => {
+    if (paramsRef.current) {
+      innitializeParams(paramsRef.current);
+    }
+  }, [paramsRef.current, innitializeParams]);
+
+  useEffect(() => {
+    updateScrollerPosition();
+  }, [messageList]);
+
   return (
     <div className="ground-left-wrapper">
       <div className="ground-left">
-        <div
-          className="message-list-wrap custome-scrollbar"
-          onWheel={handleContentWheel}
-          ref={scroller}
-        >
+        <div className="message-list-wrap" ref={scroller}>
           <div
             style={{
               marginBottom: 20
@@ -305,11 +304,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-
       <div
         className={classNames('params-wrapper', {
           collapsed: collapse
         })}
+        ref={paramsRef}
       >
         <div className="box">
           <ParamsSettings

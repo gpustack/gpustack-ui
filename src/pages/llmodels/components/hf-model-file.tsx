@@ -35,6 +35,7 @@ const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
 
 const filterReg = /\.(safetensors|gguf)$/i;
 const includeReg = /\.(safetensors|gguf)$/i;
+const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const { collapsed, modelSource } = props;
@@ -159,8 +160,11 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         }
       );
       const fileList = _.filter(_.get(data, ['Data', 'Files']), (file: any) => {
-        return filterReg.test(file.Path) || _.includes(includeReg, file.Path);
+        return (
+          filterRegGGUF.test(file.Path) || _.includes(filterRegGGUF, file.Path)
+        );
       });
+
       const list = _.map(fileList, (item: any) => {
         return {
           path: item.Path,

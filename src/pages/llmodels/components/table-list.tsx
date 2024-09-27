@@ -402,10 +402,11 @@ const Models: React.FC<ModelsProps> = ({
   );
 
   const renderChildren = useCallback(
-    (list: any) => {
+    (list: any, parent?: any) => {
       return (
         <InstanceItem
           list={list}
+          modelData={parent}
           gpuDeviceList={gpuDeviceList}
           workerList={workerList}
           handleChildSelect={handleChildSelect}
@@ -417,12 +418,12 @@ const Models: React.FC<ModelsProps> = ({
 
   const generateSource = useCallback((record: ListItem) => {
     if (record.source === modelSourceMap.modelscope_value) {
-      return `${modelSourceMap.modelScope} / ${record.model_scope_file_path || record.model_scope_model_id}`;
+      return `${modelSourceMap.modelScope}/${record.model_scope_file_path || record.model_scope_model_id}`;
     }
     if (record.source === modelSourceMap.huggingface_value) {
-      return `${modelSourceMap.huggingface} / ${record.huggingface_filename || record.huggingface_repo_id}`;
+      return `${modelSourceMap.huggingface}/${record.huggingface_filename || record.huggingface_repo_id}`;
     }
-    return `${modelSourceMap.ollama_library} / ${record.ollama_library_model_name}`;
+    return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
   }, []);
 
   const handleCloseViewCode = useCallback(() => {

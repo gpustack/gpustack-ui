@@ -23,6 +23,7 @@ interface InstanceItemProps {
   list: ModelInstanceListItem[];
   gpuDeviceList: GPUDeviceItem[];
   workerList: WorkerListItem[];
+  modelData?: any;
   handleChildSelect: (
     val: string,
     item: ModelInstanceListItem,
@@ -33,6 +34,7 @@ interface InstanceItemProps {
 const InstanceItem: React.FC<InstanceItemProps> = ({
   list,
   workerList,
+  modelData,
   handleChildSelect
 }) => {
   const intl = useIntl();
@@ -97,6 +99,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <div>
           {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
           {_.join(item.gpu_indexes?.sort?.(), ',')}]
+        </div>
+        <div>
+          {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
+          {modelData?.backend || ''}
         </div>
       </div>
     );

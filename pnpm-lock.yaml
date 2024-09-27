@@ -86,6 +86,12 @@ dependencies:
   numeral:
     specifier: ^2.0.6
     version: 2.0.6
+  overlayscrollbars:
+    specifier: ^2.10.0
+    version: 2.10.0
+  overlayscrollbars-react:
+    specifier: ^0.5.6
+    version: 0.5.6(overlayscrollbars@2.10.0)(react@18.2.0)
   query-string:
     specifier: ^9.0.0
     version: 9.0.0
@@ -12604,6 +12610,20 @@ packages:
       execa: 4.1.0
       lcid: 3.1.1
       mem: 5.1.1
+    dev: false
+
+  /overlayscrollbars-react@0.5.6(overlayscrollbars@2.10.0)(react@18.2.0):
+    resolution: {integrity: sha512-E5To04bL5brn9GVCZ36SnfGanxa2I2MDkWoa4Cjo5wol7l+diAgi4DBc983V7l2nOk/OLJ6Feg4kySspQEGDBw==, tarball: https://registry.npmjs.org/overlayscrollbars-react/-/overlayscrollbars-react-0.5.6.tgz}
+    peerDependencies:
+      overlayscrollbars: ^2.0.0
+      react: '>=16.8.0'
+    dependencies:
+      overlayscrollbars: 2.10.0
+      react: 18.2.0
+    dev: false
+
+  /overlayscrollbars@2.10.0:
+    resolution: {integrity: sha512-diNMeEafWTE0A4GJfwRpdBp2rE/BEvrhptBdBcDu8/UeytWcdCy9Td8tZWnztJeJ26f8/uHCWfPnPUC/dtgJdw==, tarball: https://registry.npmjs.org/overlayscrollbars/-/overlayscrollbars-2.10.0.tgz}
     dev: false
 
   /p-defer@1.0.0:

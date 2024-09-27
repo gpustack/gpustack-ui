@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Empty, Spin, Tag, Tooltip } from 'antd';
+import 'overlayscrollbars/overlayscrollbars.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';

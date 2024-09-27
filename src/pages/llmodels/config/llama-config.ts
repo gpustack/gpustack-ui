@@ -1,11 +1,12 @@
-export default [
+const options = [
   {
     label: '--chat-template',
     value: '--chat-template'
   },
   {
     label: '--ctx-size',
-    value: '--ctx-size'
+    value: '--ctx-size',
+    options: ['8192']
   },
   {
     label: '--flash-attn',
@@ -24,3 +25,18 @@ export default [
     value: '--ubatch-size'
   }
 ];
+
+const resultList = options.map((option) => {
+  return {
+    label: option.label,
+    value: option.value,
+    opts: option.options?.map((opt) => {
+      return {
+        label: opt,
+        value: opt
+      };
+    })
+  };
+});
+
+export default resultList;

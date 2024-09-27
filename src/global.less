@@ -13,6 +13,9 @@ html {
   --color-text-light-1: rgba(255, 255, 255, 90%);
   --color-fill-1: var(--ant-color-fill-tertiary);
   --color-scrollbar-thumb: rgba(193, 193, 193, 80%);
+  --scrollbar-size: 6px;
+  --scrollbar-handle-bg: rgba(0, 0, 0, 44%);
+  --scrollbar-handle-hover-bg: rgba(0, 0, 0, 55%);
   --color-editor-dark: #282c34;
   --color-editor-light: #fafafa;
   --color-scrollbar-track: var(--ant-color-fill-tertiary);
@@ -476,7 +479,7 @@ body {
 
 .custome-scrollbar {
   &::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-size);
   }
 
   &::-webkit-scrollbar-thumb {
@@ -498,7 +501,7 @@ body {
 
 .custom-scrollbar-horizontal {
   &::-webkit-scrollbar {
-    height: 8px;
+    height: var(--scrollbar-size);
   }
 
   &::-webkit-scrollbar-thumb {
@@ -515,6 +518,21 @@ body {
       background-color: var(--color-scrollbar-thumb);
       border-radius: 4px;
     }
+  }
+}
+
+.simplebar-scrollbar.simplebar-visible::before {
+  opacity: 1;
+}
+
+.simplebar-scrollbar::before {
+  background: var(--scrollbar-handle-bg);
+  width: var(--scrollbar-size);
+}
+
+.simplebar-scrollbar.simplebar-visible.simplebar-hover {
+  &::before {
+    background: var(--scrollbar-handle-hover-bg);
   }
 }
 

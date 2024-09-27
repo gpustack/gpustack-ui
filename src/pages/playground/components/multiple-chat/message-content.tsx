@@ -31,6 +31,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
     newMessageList.splice(index, 1);
     setMessageList?.(newMessageList);
   };
+
   return (
     <>
       {!!messageList.length && (

@@ -79,7 +79,7 @@ const TableRow: React.FC<
   }, []);
 
   const renderChildrenData = () => {
-    return renderChildren?.(childrenData);
+    return renderChildren?.(childrenData, record);
   };
 
   const handlePolling = async () => {

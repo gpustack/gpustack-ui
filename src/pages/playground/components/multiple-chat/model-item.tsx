@@ -1,4 +1,5 @@
 import IconFont from '@/components/icon-font';
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import {
   ClearOutlined,
@@ -9,6 +10,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Dropdown, Popover, Select, Spin } from 'antd';
 import _ from 'lodash';
+import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
   useContext,
@@ -18,7 +20,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
 import { Roles } from '../../config';
@@ -62,6 +63,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const contentRef = useRef<any>('');
     const controllerRef = useRef<any>(null);
     const currentMessageRef = useRef<MessageItem[]>([]);
+    const modelScrollRef = useRef<any>(null);
+
+    const { initialize } = useOverlayScroller();
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
@@ -122,8 +126,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         setMessageList((preList) => {
           return [...preList, ...currentMessageRef.current];
         });
-        console.log('currentMessageRef.current 1:', currentMessageRef.current);
-        console.log('currentMessage==========4', messageList);
         const messages = _.map(
           [...messageList, ...currentMessageRef.current],
           (item: MessageItem) => {
@@ -194,9 +196,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         });
         setLoadingStatus(instanceId, false);
       } catch (error) {
-        setMessageList((preList) => {
-          return [...preList, ...currentMessageRef.current];
-        });
         setLoadingStatus(instanceId, false);
       }
     };
@@ -333,6 +332,12 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       };
     }, []);
 
+    useEffect(() => {
+      if (modelScrollRef.current) {
+        initialize(modelScrollRef.current);
+      }
+    }, [modelScrollRef.current, initialize]);
+
     useImperativeHandle(ref, () => {
       return {
         submit: handleSubmit,
@@ -410,8 +415,12 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           applyToAll={handleApplySystemChangeToAll}
           setSystemMessage={setSystemMessage}
         ></SystemMessage>
-        <SimpleBar style={{ maxHeight: maxHeight }}>
-          <div className="content">
+        <div
+          className="content"
+          ref={modelScrollRef}
+          style={{ maxHeight: maxHeight }}
+        >
+          <div>
             <MessageContent
               spans={spans}
               messageList={messageList}
@@ -424,7 +433,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               style={{ width: '100%' }}
             />
           </div>
-        </SimpleBar>
+        </div>
         <ViewCodeModal
           open={show}
           systemMessage={systemMessage}

@@ -192,6 +192,32 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </>
         )}
+        {scheduleType === 'manual' && (
+          <Form.Item<FormData>
+            name="gpu_selector"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.select'
+                  },
+                  {
+                    name: 'gpu_selector'
+                  }
+                )
+              }
+            ]}
+          >
+            <SealSelect label="GPU Selector" required>
+              {gpuOptions.map((item) => (
+                <Select.Option key={item.value} value={item.value}>
+                  <GPUCard data={item}></GPUCard>
+                </Select.Option>
+              ))}
+            </SealSelect>
+          </Form.Item>
+        )}
         <Form.Item name="backend">
           <SealSelect
             label={intl.formatMessage({ id: 'models.form.backend' })}
@@ -219,32 +245,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={paramsConfig}
           ></ListInput>
         </Form.Item>
-        {scheduleType === 'manual' && (
-          <Form.Item<FormData>
-            name="gpu_selector"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.select'
-                  },
-                  {
-                    name: 'gpu_selector'
-                  }
-                )
-              }
-            ]}
-          >
-            <SealSelect label="GPU Selector" required>
-              {gpuOptions.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  <GPUCard data={item}></GPUCard>
-                </Select.Option>
-              ))}
-            </SealSelect>
-          </Form.Item>
-        )}
         {isGGUF && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>

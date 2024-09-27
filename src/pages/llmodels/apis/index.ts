@@ -203,6 +203,7 @@ export async function queryModelScopeModelFiles(
   const res = await fetch(
     `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/repo/files?${qs.stringify({
       Revision: 'master',
+      Recursive: true,
       Root: ''
     })}`,
     {

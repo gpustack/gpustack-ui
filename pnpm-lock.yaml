@@ -86,9 +86,6 @@ dependencies:
   numeral:
     specifier: ^2.0.6
     version: 2.0.6
-  overlayscrollbars:
-    specifier: ^2.10.0
-    version: 2.10.0
   overlayscrollbars-react:
     specifier: ^0.5.6
     version: 0.5.6(overlayscrollbars@2.10.0)(react@18.2.0)

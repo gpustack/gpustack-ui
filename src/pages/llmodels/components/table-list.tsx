@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
@@ -518,8 +519,10 @@ const Models: React.FC<ModelsProps> = ({
             span={5}
             render={(text, record: ListItem) => {
               return (
-                <span>
-                  <span className="m-r-5">{text}</span>
+                <span className="flex" style={{ maxWidth: '100%' }}>
+                  <AutoTooltip className="m-r-5" showTitle={true} ghost>
+                    {text}
+                  </AutoTooltip>
                   <span>
                     {record.embedding_only && (
                       <Tag style={{ marginTop: 6 }} color="geekblue">

@@ -47,8 +47,10 @@ export const fetchChunkedData = async (params: {
     }
   });
   if (!response.ok) {
-    throw new Error('Network response was not ok');
-    return null;
+    return {
+      error: true,
+      data: await response.json()
+    };
   }
   const reader = response?.body?.getReader();
   const decoder = new TextDecoder('utf-8');

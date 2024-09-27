@@ -32,7 +32,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
       const { scrollWidth, clientWidth } = contentRef.current;
       setIsOverflowing(scrollWidth > clientWidth);
     }
-  }, []);
+  }, [contentRef.current]);
 
   const debouncedCheckOverflow = useMemo(
     () => debounce(checkOverflow, 200),

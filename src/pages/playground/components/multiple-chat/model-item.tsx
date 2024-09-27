@@ -65,7 +65,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const currentMessageRef = useRef<MessageItem[]>([]);
     const modelScrollRef = useRef<any>(null);
 
-    const { initialize } = useOverlayScroller();
+    const { initialize, updateScrollerPosition } = useOverlayScroller();
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
@@ -180,13 +180,17 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           stream: true
         };
         // ============== payload end ================
-        const result = await fetchChunkedData({
+        const result: any = await fetchChunkedData({
           data: chatParams,
           url: CHAT_API,
           signal
         });
 
-        if (!result) {
+        if (result?.error) {
+          setTokenResult({
+            error: true,
+            errorMessage: result?.data?.message
+          });
           return;
         }
         setMessageId();
@@ -194,8 +198,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         await readStreamData(reader, decoder, (chunk: any) => {
           joinMessage(chunk);
         });
-        setLoadingStatus(instanceId, false);
       } catch (error) {
+        // console.log('error:', error);
+      } finally {
         setLoadingStatus(instanceId, false);
       }
     };
@@ -338,6 +343,10 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       }
     }, [modelScrollRef.current, initialize]);
 
+    useEffect(() => {
+      updateScrollerPosition();
+    }, [messageList]);
+
     useImperativeHandle(ref, () => {
       return {
         submit: handleSubmit,
@@ -415,11 +424,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           applyToAll={handleApplySystemChangeToAll}
           setSystemMessage={setSystemMessage}
         ></SystemMessage>
-        <div
-          className="content"
-          ref={modelScrollRef}
-          style={{ maxHeight: maxHeight }}
-        >
+        <div className="content" ref={modelScrollRef}>
           <div>
             <MessageContent
               spans={spans}

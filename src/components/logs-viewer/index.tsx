@@ -26,7 +26,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const [logs, setLogs] = useState('');
   const size = useSize(scroller);
 
-  const throttleScroll = _.debounce(() => {
+  const throttleScroll = _.throttle(() => {
     termRef.current?.scrollToBottom?.();
   }, 100);
 
@@ -36,6 +36,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       termRef.current?.clear?.();
       cacheDataRef.current = data;
       termRef.current?.write?.(data);
+      setLogs(data);
     }, 100),
     []
   );
@@ -78,11 +79,11 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     termRef.current.open(termwrapRef.current);
 
     // add event
-    termRef.current.onLineFeed((e: any) => {
-      if (cacheDataRef.current) {
-        throttleScroll();
-      }
-    });
+    // termRef.current.onLineFeed((e: any) => {
+    //   if (cacheDataRef.current) {
+    //     throttleScroll();
+    //   }
+    // });
   };
 
   const handleResize = _.throttle(() => {
@@ -110,6 +111,10 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       handleResize();
     }
   }, [size]);
+
+  useEffect(() => {
+    throttleScroll();
+  }, [logs]);
 
   return (
     <div className="logs-viewer-wrap-w2">

@@ -289,9 +289,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         replicas: 1,
         source: props.source,
         placement_strategy: 'spread',
-        cpu_offloading: false,
+        cpu_offloading: true,
         scheduleType: 'auto',
-        distributed_inference_across_workers: false
+        distributed_inference_across_workers: true
       }}
     >
       <Form.Item<FormData>

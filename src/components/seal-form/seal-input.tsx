@@ -17,6 +17,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     isInFormItems = true,
     variant,
     addAfter,
+    checkStatus,
     trim = true,
     ...rest
   } = props;
@@ -70,7 +71,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
 
   return (
     <Wrapper
-      status={status}
+      status={checkStatus || status}
       label={label || (placeholder as string)}
       isFocus={isFocus}
       required={required}

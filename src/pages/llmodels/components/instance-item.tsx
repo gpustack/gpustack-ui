@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import RowChildren from '@/components/seal-table/components/row-children';
 import SimpleTabel from '@/components/simple-table';
@@ -159,10 +160,16 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                     paddingInline: 'var(--ant-table-cell-padding-inline)'
                   }}
                 >
-                  <Tooltip title={renderWorkerInfo(item)}>
-                    <span className="m-r-5">{item.name}</span>
+                  <span className="flex-center">
+                    <AutoTooltip
+                      title={renderWorkerInfo(item)}
+                      ghost
+                      showTitle={true}
+                    >
+                      <span className="m-r-5">{item.name}</span>
+                    </AutoTooltip>
                     <InfoCircleOutlined />
-                  </Tooltip>
+                  </span>
                 </Col>
                 <Col span={6}>
                   <span

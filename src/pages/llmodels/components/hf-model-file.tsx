@@ -262,7 +262,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   return (
     <div>
       <TitleWrapper>
-        <span>
+        <span className="title">
           {intl.formatMessage({ id: 'models.available.files' })} (
           {dataSource.fileList.length || 0})
         </span>

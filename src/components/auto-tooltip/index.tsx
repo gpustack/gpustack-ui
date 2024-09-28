@@ -1,4 +1,4 @@
-import { Tag, Tooltip } from 'antd';
+import { Tag, Tooltip, type TagProps } from 'antd';
 import debounce from 'lodash/debounce';
 import React, {
   useCallback,
@@ -8,12 +8,15 @@ import React, {
   useState
 } from 'react';
 
-interface AutoTooltipProps extends React.ComponentProps<typeof Tag> {
+// type TagProps = React.ComponentProps<typeof Tag>;
+
+interface AutoTooltipProps extends Omit<TagProps, 'title'> {
   children: React.ReactNode;
   maxWidth?: number | string;
   color?: string;
   style?: React.CSSProperties;
   ghost?: boolean;
+  title?: React.ReactNode;
   showTitle?: boolean;
 }
 
@@ -21,6 +24,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   children,
   maxWidth = '100%',
   ghost = false,
+  title,
   showTitle = false,
   ...tagProps
 }) => {
@@ -64,7 +68,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   );
 
   return (
-    <Tooltip title={isOverflowing || showTitle ? children : ''}>
+    <Tooltip title={isOverflowing || showTitle ? title || children : ''}>
       {ghost ? (
         <div ref={contentRef} style={tagStyle}>
           {children}

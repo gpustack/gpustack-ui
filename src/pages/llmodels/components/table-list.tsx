@@ -519,8 +519,8 @@ const Models: React.FC<ModelsProps> = ({
             span={5}
             render={(text, record: ListItem) => {
               return (
-                <span className="flex" style={{ maxWidth: '100%' }}>
-                  <AutoTooltip className="m-r-5" showTitle={true} ghost>
+                <span className="flex-center" style={{ maxWidth: '100%' }}>
+                  <AutoTooltip className="m-r-5" ghost>
                     {text}
                   </AutoTooltip>
                   <span>

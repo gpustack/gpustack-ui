@@ -254,9 +254,17 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                             : undefined
                         }
                         statusValue={{
-                          status: status[item.state] as any,
+                          status:
+                            item.state === InstanceStatusMap.Downloading &&
+                            item.download_progress === 100
+                              ? status[InstanceStatusMap.Running]
+                              : (status[item.state] as any),
                           text: InstanceStatusMapValue[item.state],
-                          message: item.state_message
+                          message:
+                            item.state === InstanceStatusMap.Downloading &&
+                            item.download_progress === 100
+                              ? ''
+                              : item.state_message
                         }}
                       ></StatusTag>
                     )}

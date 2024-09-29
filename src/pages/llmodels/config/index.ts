@@ -17,25 +17,11 @@ export const ollamaModelOptions = [
     id: 'gemma2'
   },
   {
-    label: 'llama3.1',
-    value: 'llama3.1',
-    name: 'llama3.1',
-    id: 'llama3.1',
-    tags: ['8B', '70B', '405B']
-  },
-  {
     label: 'gemma2',
     value: 'gemma2',
     name: 'gemma2',
     tags: ['2B', '9B', '27B'],
     id: 'gemma2'
-  },
-  {
-    label: 'llava',
-    value: 'llava',
-    name: 'llava',
-    tags: ['7B', '13B', '34B'],
-    id: 'llava'
   },
   {
     label: 'mistral-nemo',
@@ -57,13 +43,6 @@ export const ollamaModelOptions = [
     name: 'mistral',
     tags: ['7B'],
     id: 'mistral'
-  },
-  {
-    label: 'qwen2',
-    value: 'qwen2',
-    name: 'qwen2',
-    tags: ['0.5B', '1.5B', '7B', '72B'],
-    id: 'qwen2'
   },
   {
     label: 'phi3.5',

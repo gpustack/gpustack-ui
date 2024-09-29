@@ -1,10 +1,11 @@
+import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -222,6 +223,22 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             options={ollamaModelOptions}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
+            addAfter={
+              <Typography.Link
+                href="https://www.ollama.com/library"
+                target="_blank"
+              >
+                <Tooltip
+                  title={intl.formatMessage({ id: 'models.form.ollamalink' })}
+                  placement="topRight"
+                >
+                  <IconFont
+                    type="icon-external-link"
+                    className="font-size-14"
+                  ></IconFont>
+                </Tooltip>
+              </Typography.Link>
+            }
             required
           ></SealAutoComplete>
         </Form.Item>

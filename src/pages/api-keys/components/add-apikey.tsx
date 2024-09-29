@@ -185,6 +185,7 @@ const AddModal: React.FC<AddModalProps> = ({
           <Form.Item>
             <div>
               <Tag
+                bordered={false}
                 color="error"
                 style={{ padding: '6px 8px', marginBottom: 16 }}
               >

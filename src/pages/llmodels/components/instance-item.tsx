@@ -161,14 +161,12 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                   }}
                 >
                   <span className="flex-center">
-                    <AutoTooltip
-                      title={renderWorkerInfo(item)}
-                      ghost
-                      showTitle={true}
-                    >
+                    <AutoTooltip title={item.name} ghost>
                       <span className="m-r-5">{item.name}</span>
                     </AutoTooltip>
-                    <InfoCircleOutlined />
+                    <Tooltip title={renderWorkerInfo(item)}>
+                      <InfoCircleOutlined />
+                    </Tooltip>
                   </span>
                 </Col>
                 <Col span={6}>

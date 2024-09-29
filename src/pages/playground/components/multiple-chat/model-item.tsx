@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
@@ -369,6 +370,19 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               options={modelFullList}
               onChange={handleModelChange}
               value={params.model}
+              optionRender={(data) => {
+                return (
+                  <AutoTooltip
+                    title={data.label}
+                    ghost
+                    tooltipProps={{
+                      placement: 'right'
+                    }}
+                  >
+                    {data.label}
+                  </AutoTooltip>
+                );
+              }}
             ></Select>
           </span>
           <ReferenceParams usage={tokenResult}></ReferenceParams>

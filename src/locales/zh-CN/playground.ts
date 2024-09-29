@@ -43,5 +43,8 @@ export default {
   'playground.toolbar.compare6Model': '6 模型对比',
   'playground.input.holder': '按 <kbd>/</kbd> 开始输入',
   'playground.compare.apply': '应用',
-  'playground.compare.applytoall': '应用到所有模型'
+  'playground.compare.applytoall': '应用到所有模型',
+  'playground.model.noavailable': '无可用模型',
+  'playground.model.noavailable.tips':
+    '请先部署模型，且不是 Embedding Only 模型'
 };

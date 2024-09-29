@@ -56,5 +56,7 @@ export default {
   'models.table.cpuoffload': 'CPU 卸载',
   'models.table.layers': '层',
   'models.form.backend': '后端',
-  'models.form.backend_parameters': '后端参数'
+  'models.form.backend_parameters': '后端参数',
+  'models.search.gguf.tips': '1. GGUF 模型后端为 llama-box(llama.cpp)',
+  'models.search.vllm.tips': '2. 非 GGUF 模型后端为 vLLM'
 };

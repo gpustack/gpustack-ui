@@ -2,26 +2,24 @@ import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
 import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
+import EmptyModels from './components/empty-models';
 import GroundLeft from './components/ground-left';
 import MultipleChat from './components/multiple-chat';
 import './style/play-ground.less';
 
 const Playground: React.FC = () => {
   const intl = useIntl();
-  const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
-  const [params, setParams] = useState({});
-  const [collapse, setCollapse] = useState(false);
   const [activeKey, setActiveKey] = useState('chat');
   const groundLeftRef = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const optionsList = [
     {
       label: intl.formatMessage({ id: 'menu.chat' }),
@@ -74,13 +72,15 @@ const Playground: React.FC = () => {
         setModelList(list);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoaded(true);
       }
     };
     getModelList();
   }, []);
 
   const renderExtra = () => {
-    if (activeKey === 'compare') {
+    if (activeKey === 'compare' || modelList.length === 0) {
       return false;
     }
     return (
@@ -123,12 +123,14 @@ const Playground: React.FC = () => {
         title: (
           <div className="flex items-center">
             {intl.formatMessage({ id: 'menu.playground' })}
-            <Segmented
-              options={optionsList}
-              size="middle"
-              className="m-l-40"
-              onChange={(key) => setActiveKey(key)}
-            ></Segmented>
+            {modelList.length > 0 && (
+              <Segmented
+                options={optionsList}
+                size="middle"
+                className="m-l-40"
+                onChange={(key) => setActiveKey(key)}
+              ></Segmented>
+            )}
           </div>
         )
       }}
@@ -140,7 +142,15 @@ const Playground: React.FC = () => {
     >
       <div className="play-ground">
         <div className="chat">
-          <Tabs items={items} activeKey={activeKey}></Tabs>
+          {modelList.length > 0 ? (
+            <Tabs items={items} activeKey={activeKey}></Tabs>
+          ) : (
+            loaded && (
+              <EmptyModels
+                style={{ height: 'calc(100vh - 72px)', paddingBottom: 100 }}
+              ></EmptyModels>
+            )
+          )}
         </div>
       </div>
     </PageContainer>

@@ -18,6 +18,7 @@ interface AutoTooltipProps extends Omit<TagProps, 'title'> {
   ghost?: boolean;
   title?: React.ReactNode;
   showTitle?: boolean;
+  tooltipProps?: React.ComponentProps<typeof Tooltip>;
 }
 
 const AutoTooltip: React.FC<AutoTooltipProps> = ({
@@ -26,6 +27,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   ghost = false,
   title,
   showTitle = false,
+  tooltipProps,
   ...tagProps
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -68,7 +70,10 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   );
 
   return (
-    <Tooltip title={isOverflowing || showTitle ? title || children : ''}>
+    <Tooltip
+      title={isOverflowing || showTitle ? title || children : ''}
+      {...tooltipProps}
+    >
       {ghost ? (
         <div ref={contentRef} style={tagStyle}>
           {children}

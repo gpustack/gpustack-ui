@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Empty, Spin, Tag, Tooltip } from 'antd';
+import { some } from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SimpleBar from 'simplebar-react';
@@ -74,8 +75,9 @@ const ModelCard: React.FC<{
 
       setModelData(modelcard);
       setReadmeText(readme);
-      setIsGGUF(modelcard.tags?.includes('gguf'));
-      setIsGGUFModel(modelcard.tags?.includes('gguf'));
+      const isGGUF = modelcard.tags?.includes('gguf');
+      setIsGGUF(isGGUF);
+      setIsGGUFModel(isGGUF);
     } catch (error) {
       setModelData(null);
       setReadmeText(null);
@@ -99,8 +101,12 @@ const ModelCard: React.FC<{
         name: `${data.Data?.Path}/${data.Data?.Name}`
       });
       setReadmeText(data?.Data?.ReadMeContent);
-      setIsGGUF(data.Data?.Tags?.includes('gguf'));
-      setIsGGUFModel(data.Data?.Tags?.includes('gguf'));
+      const isGGUF = some(
+        data?.Data?.Tags,
+        (tag: string) => tag?.indexOf('gguf') > -1
+      );
+      setIsGGUF(isGGUF);
+      setIsGGUFModel(isGGUF);
     } catch (error) {
       setModelData(null);
       setReadmeText(null);

@@ -1,6 +1,6 @@
-import { BulbOutlined } from '@ant-design/icons';
+import { BulbOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Select } from 'antd';
+import { Checkbox, Select, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
@@ -234,7 +234,22 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               className="m-r-5"
               checked={filterGGUFRef.current}
             >
-              GGUF
+              <Tooltip
+                overlayInnerStyle={{ width: 'max-content' }}
+                title={
+                  <div>
+                    <div>
+                      {intl.formatMessage({ id: 'models.search.gguf.tips' })}
+                    </div>
+                    <div>
+                      {intl.formatMessage({ id: 'models.search.vllm.tips' })}
+                    </div>
+                  </div>
+                }
+              >
+                GGUF
+                <InfoCircleOutlined className="m-l-4" />
+              </Tooltip>
             </Checkbox>
             <Select
               allowClear

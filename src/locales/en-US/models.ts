@@ -57,5 +57,7 @@ export default {
   'models.table.cpuoffload': 'CPU Offload',
   'models.table.layers': 'Layers',
   'models.form.backend': 'Backend',
-  'models.form.backend_parameters': 'Backend Parameters'
+  'models.form.backend_parameters': 'Backend Parameters',
+  'models.search.gguf.tips': '1. GGUF model backend is llama-box(llama.cpp).',
+  'models.search.vllm.tips': '2. Non-GGUF model backend is vLLM.'
 };

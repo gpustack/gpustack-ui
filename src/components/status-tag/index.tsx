@@ -52,7 +52,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
   const renderContent = () => {
     const percent = download?.percent || 0;
 
-    if (download && percent > 0 && percent < 100) {
+    if (download && percent > 0 && percent <= 100) {
       return (
         <>
           <span className="progress">{download?.percent || 0}%</span>

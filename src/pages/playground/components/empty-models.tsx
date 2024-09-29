@@ -1,5 +1,5 @@
 import { useIntl, useNavigate } from '@umijs/max';
-import { Button, Empty, Typography } from 'antd';
+import { Empty, Typography } from 'antd';
 import React from 'react';
 
 const EmptyModels: React.FC<{
@@ -13,7 +13,7 @@ const EmptyModels: React.FC<{
   };
   return (
     <div
-      className="flex-center justify-center"
+      className="flex-center  justify-center"
       style={{
         ...style
       }}
@@ -25,16 +25,9 @@ const EmptyModels: React.FC<{
             <Typography.Text type="secondary">
               {intl.formatMessage({ id: 'playground.model.noavailable' })}
             </Typography.Text>
-            <Typography.Text type="secondary">
-              {intl.formatMessage({ id: 'playground.model.noavailable.tips' })}
-            </Typography.Text>
           </div>
         }
-      >
-        <Button type="primary" onClick={handleDeployModel}>
-          {intl.formatMessage({ id: 'models.button.deploy' })}
-        </Button>
-      </Empty>
+      ></Empty>
     </div>
   );
 };

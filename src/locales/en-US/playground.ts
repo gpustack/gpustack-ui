@@ -44,7 +44,7 @@ export default {
   'playground.input.holder': 'Type <kbd>/</kbd> to input message',
   'playground.compare.apply': 'Apply',
   'playground.compare.applytoall': 'Apply to all models',
-  'playground.model.noavailable': 'No available models.',
+  'playground.model.noavailable': 'No available models',
   'playground.model.noavailable.tips':
     'Please deploy a model first, and it should not be an embedding-only model.'
 };

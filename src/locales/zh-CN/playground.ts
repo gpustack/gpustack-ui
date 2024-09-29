@@ -46,5 +46,5 @@ export default {
   'playground.compare.applytoall': '应用到所有模型',
   'playground.model.noavailable': '无可用模型',
   'playground.model.noavailable.tips':
-    '请先部署模型，且不是 Embedding Only 模型'
+    '请先部署模型，且不是 Embedding Only 的模型'
 };

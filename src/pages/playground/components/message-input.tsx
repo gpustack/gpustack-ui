@@ -1,12 +1,7 @@
 import IconFont from '@/components/icon-font';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import { platformCall } from '@/utils';
-import {
-  ClearOutlined,
-  ControlOutlined,
-  SendOutlined,
-  SwapOutlined
-} from '@ant-design/icons';
+import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Input, Select, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -351,7 +346,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             ></Button>
           </Tooltip>
 
-          <Tooltip
+          {/* <Tooltip
             title={intl.formatMessage({ id: 'playground.toolbar.prompts' })}
           >
             <Button
@@ -360,7 +355,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               size="middle"
               onClick={handleOpenPrompt}
             ></Button>
-          </Tooltip>
+          </Tooltip> */}
           {updateLayout && (
             <>
               <Divider type="vertical" style={{ margin: 0 }} />

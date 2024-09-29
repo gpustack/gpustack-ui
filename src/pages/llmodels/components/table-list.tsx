@@ -519,17 +519,20 @@ const Models: React.FC<ModelsProps> = ({
             span={5}
             render={(text, record: ListItem) => {
               return (
-                <span className="flex-center" style={{ maxWidth: '100%' }}>
-                  <AutoTooltip className="m-r-5" ghost>
-                    {text}
+                <span
+                  className="flex-center flex-wrap"
+                  style={{ maxWidth: '100%' }}
+                >
+                  <AutoTooltip ghost>
+                    <span className="m-r-5">{text}</span>
                   </AutoTooltip>
-                  <span>
-                    {record.embedding_only && (
-                      <Tag style={{ marginTop: 6 }} color="geekblue">
+                  {record.embedding_only && (
+                    <span>
+                      <Tag style={{ margin: 0 }} color="geekblue">
                         Embedding Only
                       </Tag>
-                    )}
-                  </span>
+                    </span>
+                  )}
                 </span>
               );
             }}

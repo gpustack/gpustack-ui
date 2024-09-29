@@ -5,6 +5,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
 import '../../style/multiple-chat.less';
+import EmptyModels from '../empty-models';
 import MessageInput from '../message-input';
 import ActiveModels from './active-models';
 
@@ -12,10 +13,10 @@ type CurrentMessage = Omit<MessageItem, 'uid'>;
 
 interface MultiCompareProps {
   modelList: (Global.BaseOption<string> & { type?: string })[];
-  spans?: number;
+  loaded?: boolean;
 }
 
-const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
+const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   const { initialize } = useOverlayScroller();
   const [loadingStatus, setLoadingStatus] = useState<Record<symbol, boolean>>(
     {}
@@ -262,30 +263,41 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList }) => {
   return (
     <div className="multiple-chat" style={{ height: boxHeight }}>
       <div className="chat-list" ref={chatListScrollRef}>
-        <CompareContext.Provider
-          value={{
-            spans,
-            globalParams,
-            loadingStatus,
-            modelFullList: modelList,
-            handleApplySystemChangeToAll,
-            setGlobalParams,
-            setLoadingStatus: handleSetLoadingStatus,
-            handleDeleteModel: handleDeleteModel
-          }}
-        >
-          <ActiveModels
-            spans={spans}
-            modelSelections={modelSelections}
-            setModelRefs={setModelRefs}
-          ></ActiveModels>
-        </CompareContext.Provider>
+        {modelList.length > 0 ? (
+          <CompareContext.Provider
+            value={{
+              spans,
+              globalParams,
+              loadingStatus,
+              modelFullList: modelList,
+              handleApplySystemChangeToAll,
+              setGlobalParams,
+              setLoadingStatus: handleSetLoadingStatus,
+              handleDeleteModel: handleDeleteModel
+            }}
+          >
+            <ActiveModels
+              spans={spans}
+              modelSelections={modelSelections}
+              setModelRefs={setModelRefs}
+            ></ActiveModels>
+          </CompareContext.Provider>
+        ) : (
+          loaded && (
+            <EmptyModels
+              style={{
+                height: '100%',
+                paddingBottom: 60
+              }}
+            ></EmptyModels>
+          )
+        )}
       </div>
       <div>
         <MessageInput
           scope="compare"
           loading={isLoading}
-          disabled={isLoading || modelSelections.length === 0}
+          disabled={isLoading || !modelSelections.length || !modelList.length}
           handleSubmit={handleSubmit}
           addMessage={handleAddMessage}
           handleAbortFetch={handleAbortFetch}

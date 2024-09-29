@@ -108,7 +108,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     return disabled
       ? true
       : !message.content && isEmpty && !message.imgs?.length;
-  }, [disabled, message.content, isEmpty]);
+  }, [disabled, message, isEmpty]);
 
   const resetMessage = () => {
     setMessage({

@@ -9,7 +9,6 @@ import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
-import EmptyModels from './components/empty-models';
 import GroundLeft from './components/ground-left';
 import MultipleChat from './components/multiple-chat';
 import './style/play-ground.less';
@@ -52,7 +51,7 @@ const Playground: React.FC = () => {
     {
       key: 'compare',
       label: 'Compare',
-      children: <MultipleChat modelList={modelList} />
+      children: <MultipleChat modelList={modelList} loaded={loaded} />
     }
   ];
 
@@ -80,7 +79,7 @@ const Playground: React.FC = () => {
   }, []);
 
   const renderExtra = () => {
-    if (activeKey === 'compare' || modelList.length === 0) {
+    if (activeKey === 'compare') {
       return false;
     }
     return (
@@ -123,14 +122,14 @@ const Playground: React.FC = () => {
         title: (
           <div className="flex items-center">
             {intl.formatMessage({ id: 'menu.playground' })}
-            {modelList.length > 0 && (
+            {
               <Segmented
                 options={optionsList}
                 size="middle"
                 className="m-l-40"
                 onChange={(key) => setActiveKey(key)}
               ></Segmented>
-            )}
+            }
           </div>
         )
       }}
@@ -142,15 +141,7 @@ const Playground: React.FC = () => {
     >
       <div className="play-ground">
         <div className="chat">
-          {modelList.length > 0 ? (
-            <Tabs items={items} activeKey={activeKey}></Tabs>
-          ) : (
-            loaded && (
-              <EmptyModels
-                style={{ height: 'calc(100vh - 72px)', paddingBottom: 100 }}
-              ></EmptyModels>
-            )
-          )}
+          <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
       </div>
     </PageContainer>

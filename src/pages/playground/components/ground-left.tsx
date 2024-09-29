@@ -27,6 +27,7 @@ import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
+  loaded?: boolean;
   ref?: any;
 }
 
@@ -253,38 +254,40 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     <div className="ground-left-wrapper">
       <div className="ground-left">
         <div className="message-list-wrap" ref={scroller}>
-          <div
-            style={{
-              marginBottom: 20
-            }}
-          >
-            <SystemMessage
+          <>
+            <div
               style={{
-                borderRadius: 'var(--border-radius-mini)',
-                overflow: 'hidden'
+                marginBottom: 20
               }}
-              systemMessage={systemMessage}
-              setSystemMessage={setSystemMessage}
-            ></SystemMessage>
-          </div>
+            >
+              <SystemMessage
+                style={{
+                  borderRadius: 'var(--border-radius-mini)',
+                  overflow: 'hidden'
+                }}
+                systemMessage={systemMessage}
+                setSystemMessage={setSystemMessage}
+              ></SystemMessage>
+            </div>
 
-          <div className="content">
-            <MessageContent
-              spans={{
-                span: 24,
-                count: 1
-              }}
-              messageList={messageList}
-              setMessageList={setMessageList}
-              editable={true}
-              loading={loading}
-            />
-            {loading && (
-              <Spin size="small">
-                <div style={{ height: '46px' }}></div>
-              </Spin>
-            )}
-          </div>
+            <div className="content">
+              <MessageContent
+                spans={{
+                  span: 24,
+                  count: 1
+                }}
+                messageList={messageList}
+                setMessageList={setMessageList}
+                editable={true}
+                loading={loading}
+              />
+              {loading && (
+                <Spin size="small">
+                  <div style={{ height: '46px' }}></div>
+                </Spin>
+              )}
+            </div>
+          </>
         </div>
         {tokenResult && (
           <div style={{ height: 40 }}>

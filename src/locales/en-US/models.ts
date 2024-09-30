@@ -60,5 +60,9 @@ export default {
   'models.form.backend_parameters': 'Backend Parameters',
   'models.search.gguf.tips': '1. GGUF model backend is llama-box(llama.cpp).',
   'models.search.vllm.tips': '2. Non-GGUF model backend is vLLM.',
-  'models.form.ollamalink': 'Find More in Ollama Library'
+  'models.form.ollamalink': 'Find More in Ollama Library',
+  'models.form.backend_parameters.llamabox.placeholder':
+    'e.g., --ctx-size=8192',
+  'models.form.backend_parameters.vllm.placeholder':
+    'e.g., --max-model-len=8192'
 };

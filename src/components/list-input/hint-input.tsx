@@ -6,6 +6,7 @@ interface HintInputProps {
   value: string;
   label?: string;
   onChange: (value: string) => void;
+  placeholder?: string;
   sourceOptions?: Global.HintOptions[];
 }
 
@@ -82,6 +83,7 @@ const HintInput: React.FC<HintInputProps> = (props) => {
 
   return (
     <AutoComplete
+      placeholder={props.placeholder}
       defaultActiveFirstOption={true}
       value={value}
       onInput={handleInput}

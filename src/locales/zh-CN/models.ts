@@ -59,5 +59,9 @@ export default {
   'models.form.backend_parameters': '后端参数',
   'models.search.gguf.tips': '1. GGUF 模型后端为 llama-box(llama.cpp)',
   'models.search.vllm.tips': '2. 非 GGUF 模型后端为 vLLM',
-  'models.form.ollamalink': '在 Ollama Library 中查找'
+  'models.form.ollamalink': '在 Ollama Library 中查找',
+  'models.form.backend_parameters.llamabox.placeholder':
+    '例如，--ctx-size=8192',
+  'models.form.backend_parameters.vllm.placeholder':
+    '例如，--max-model-len=8192'
 };

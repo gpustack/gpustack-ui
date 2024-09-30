@@ -10,6 +10,7 @@ interface LabelItemProps {
   onChange: (value: string) => void;
   value: string;
   label?: string;
+  placeholder?: string;
   options?: Global.HintOptions[];
 }
 
@@ -27,6 +28,7 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
         onChange={handleOnChange}
         label={label}
         sourceOptions={options}
+        placeholder={props.placeholder}
       />
       <Button
         size="small"

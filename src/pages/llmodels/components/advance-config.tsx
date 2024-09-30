@@ -238,6 +238,15 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         </Form.Item>
         <Form.Item<FormData> name="backend_parameters">
           <ListInput
+            placeholder={
+              backend === backendOptionsMap.llamaBox
+                ? intl.formatMessage({
+                    id: 'models.form.backend_parameters.llamabox.placeholder'
+                  })
+                : intl.formatMessage({
+                    id: 'models.form.backend_parameters.vllm.placeholder'
+                  })
+            }
             btnText="common.button.addParams"
             label={intl.formatMessage({ id: 'models.form.backend_parameters' })}
             dataList={form.getFieldValue('backend_parameters') || []}

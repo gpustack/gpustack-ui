@@ -1,6 +1,6 @@
 {
   "private": true,
-  "author": "jialin <jialinkuang@126.com>",
+  "author": "jialin",
   "scripts": {
     "build": "max build",
     "dev": "max dev",

@@ -95,7 +95,6 @@ const Models: React.FC<ModelsProps> = ({
     width: 600,
     source: modelSourceMap.huggingface_value
   });
-  const [title, setTitle] = useState<string>('');
   const [currentData, setCurrentData] = useState<ListItem>({} as ListItem);
   const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
   const modalRef = useRef<any>(null);
@@ -366,7 +365,6 @@ const Models: React.FC<ModelsProps> = ({
   const handleEdit = (row: ListItem) => {
     setCurrentData(row);
     setOpenAddModal(true);
-    setTitle(intl.formatMessage({ id: 'models.title.edit' }));
   };
 
   const handleSelect = useCallback((val: any, row: ListItem) => {
@@ -599,7 +597,7 @@ const Models: React.FC<ModelsProps> = ({
       <UpdateModel
         open={openAddModal}
         action={PageAction.EDIT}
-        title={title}
+        title={intl.formatMessage({ id: 'models.title.edit' })}
         data={currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}

@@ -153,7 +153,8 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     try {
       const data = await queryModelScopeModelFiles(
         {
-          name: props.selectedModel.name || ''
+          name: props.selectedModel.name || '',
+          revision: props.selectedModel.revision || 'master'
         },
         {
           signal: axiosTokenRef.current.signal

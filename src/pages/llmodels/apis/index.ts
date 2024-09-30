@@ -197,12 +197,12 @@ export async function queryModelScopeModelDetail(
 }
 
 export async function queryModelScopeModelFiles(
-  params: { name: string },
+  params: { name: string; revision: string },
   options?: any
 ) {
   const res = await fetch(
     `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/repo/files?${qs.stringify({
-      Revision: 'master',
+      Revision: params.revision,
       Recursive: true,
       Root: ''
     })}`,

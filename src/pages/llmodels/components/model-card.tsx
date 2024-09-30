@@ -150,7 +150,10 @@ const ModelCard: React.FC<{
             target="_blank"
             href={`https://huggingface.co/${modelData?.id}`}
           >
-            <IconFont type="icon-external-link"></IconFont>
+            <IconFont
+              type="icon-external-link"
+              className="font-size-14"
+            ></IconFont>
           </Button>
         </Tooltip>
       );
@@ -165,13 +168,26 @@ const ModelCard: React.FC<{
             target="_blank"
             href={`https://modelscope.cn/models/${modelData?.name}`}
           >
-            <IconFont type="icon-external-link"></IconFont>
+            <IconFont
+              type="icon-external-link"
+              className="font-size-14"
+            ></IconFont>
           </Button>
         </Tooltip>
       );
     }
     return null;
   };
+
+  const generateModeScopeImgLink = useCallback(
+    (imgSrc: string) => {
+      if (!imgSrc) {
+        return '';
+      }
+      return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
+    },
+    [modelData]
+  );
 
   useEffect(() => {
     getModelCardData();
@@ -240,6 +256,11 @@ const ModelCard: React.FC<{
                   }}
                 >
                   <MarkdownViewer
+                    generateImgLink={
+                      modelSource === modelSourceMap.modelscope_value
+                        ? generateModeScopeImgLink
+                        : undefined
+                    }
                     content={readmeText}
                     theme="light"
                   ></MarkdownViewer>
@@ -262,6 +283,11 @@ const ModelCard: React.FC<{
           <div className="card-wrapper">
             <Spin spinning={loading}>
               <MarkdownViewer
+                generateImgLink={
+                  modelSource === modelSourceMap.modelscope_value
+                    ? generateModeScopeImgLink
+                    : undefined
+                }
                 content={readmeText}
                 theme="light"
               ></MarkdownViewer>

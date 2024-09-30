@@ -40,20 +40,24 @@
     line-height: 2;
   }
 
+  a * {
+    color: inherit;
+  }
+
   table {
     width: 100%;
 
     th {
       text-align: left;
       font-weight: var(--font-weight-bold);
-      line-height: 2;
+      line-height: 1.5;
       padding-inline: 6px;
       border-bottom: 1px solid var(--ant-color-split);
       word-break: break-word;
     }
 
     td {
-      line-height: 2;
+      line-height: 1.5;
       padding-inline: 6px;
       border-bottom: 1px solid var(--ant-color-split);
       word-break: break-word;
@@ -68,6 +72,23 @@
     div {
       display: inline;
     }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  video {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-base);
+  }
+
+  audio {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-base);
   }
 
   .item-token {

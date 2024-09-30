@@ -2,7 +2,7 @@ import { EyeOutlined } from '@ant-design/icons';
 import { Image, Typography } from 'antd';
 import { unescape } from 'lodash';
 import { TokensList, marked } from 'marked';
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useEffect } from 'react';
 import HighlightCode from '../highlight-code';
 import './index.less';
 
@@ -12,10 +12,12 @@ interface MarkdownViewerProps {
   content: string;
   height?: string;
   theme?: 'light' | 'dark';
+  generateImgLink?: (src: string) => string;
 }
 
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   content,
+  generateImgLink,
   height = 'auto',
   theme = 'light'
 }) => {
@@ -39,109 +41,138 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     'escape'
   ];
 
-  const renderItem = useCallback((token: any, render: any) => {
-    if (!reDefineTypes.includes(token.type)) {
-      console.log('token======66==', token.type, token);
-      return (
-        <span
-          dangerouslySetInnerHTML={{
-            __html: marked.parser([token], { renderer })
-          }}
-        ></span>
-      );
-    }
-    let htmlstr: any = null;
-    let child: any = null;
-    if (token.tokens?.length) {
-      child = render?.(token.tokens as TokensList, render);
-    }
-    const text = child ? child : unescape(token.text);
+  renderer.link = ({ href, title, text }) => {
+    return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  };
 
-    if (token.type === 'escape') {
-      htmlstr = text;
-    }
+  const isValidURL = useCallback((url: string) => {
+    const pattern = /^(https?:\/\/|\/\/)([^\s/$.?#].[^\s]*)$/;
 
-    if (token.type === 'html') {
-      htmlstr = <div dangerouslySetInnerHTML={{ __html: token.text }} />;
-    }
-    if (token.type === 'list') {
-      htmlstr = token.order ? (
-        <ol>{render?.(token.items, render)}</ol>
-      ) : (
-        <ul>{render?.(token.items, render)}</ul>
-      );
-    }
-
-    if (token.type === 'list_item') {
-      htmlstr = <li>{text}</li>;
-    }
-
-    if (token.type === 'br') {
-      htmlstr = <br />;
-    }
-
-    if (token.type === 'em') {
-      htmlstr = <em>{text}</em>;
-    }
-
-    if (token.type === 'image') {
-      htmlstr = (
-        <Image
-          src={token.href}
-          alt={token.text}
-          preview={{
-            mask: <EyeOutlined />
-          }}
-        />
-      );
-    }
-    if (token.type === 'text') {
-      htmlstr = text;
-    }
-    if (token.type === 'codespan') {
-      htmlstr = <Text code>{text}</Text>;
-    }
-    if (token.type === 'strong') {
-      htmlstr = <Text strong>{text}</Text>;
-    }
-    if (token.type === 'heading') {
-      htmlstr = <Typography.Title level={4}>{text}</Typography.Title>;
-    }
-    if (token.type === 'paragraph') {
-      htmlstr = <Paragraph> {text}</Paragraph>;
-    }
-    if (token.type === 'code') {
-      htmlstr = (
-        <HighlightCode theme={theme} code={token.text} lang={token.lang} />
-      );
-    }
-    if (token.type === 'link') {
-      htmlstr = (
-        <Link
-          href={token.href}
-          title={token.title || ''}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {text}
-        </Link>
-      );
-    }
-    if (token.type === 'hr') {
-      htmlstr = <hr className="hr" />;
-    }
-
-    return htmlstr;
+    return pattern.test(url);
   }, []);
+
+  const renderItem = useCallback(
+    (token: any, render: any) => {
+      if (!reDefineTypes.includes(token.type)) {
+        return (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: marked.parser([token], { renderer })
+            }}
+          ></span>
+        );
+      }
+      let htmlstr: any = null;
+      let child: any = null;
+      if (token.tokens?.length) {
+        child = render?.(token.tokens as TokensList, render);
+      }
+      const text = child ? child : unescape(token.text);
+
+      if (token.type === 'escape') {
+        htmlstr = text;
+      }
+
+      if (token.type === 'html') {
+        htmlstr = <div dangerouslySetInnerHTML={{ __html: token.text }} />;
+      }
+      if (token.type === 'list') {
+        htmlstr = token.order ? (
+          <ol>{render?.(token.items, render)}</ol>
+        ) : (
+          <ul>{render?.(token.items, render)}</ul>
+        );
+      }
+
+      if (token.type === 'list_item') {
+        htmlstr = <li>{text}</li>;
+      }
+
+      if (token.type === 'br') {
+        htmlstr = <br />;
+      }
+
+      if (token.type === 'em') {
+        htmlstr = <em>{text}</em>;
+      }
+
+      if (token.type === 'image') {
+        let href = token.href;
+        if (!isValidURL(token.href)) {
+          href = generateImgLink ? generateImgLink(token.href) : token.href;
+        }
+        htmlstr = (
+          <Image
+            src={href}
+            alt={token.text}
+            preview={{
+              mask: <EyeOutlined />
+            }}
+          />
+        );
+      }
+      if (token.type === 'text') {
+        htmlstr = text;
+      }
+      if (token.type === 'codespan') {
+        htmlstr = <Text code>{text}</Text>;
+      }
+      if (token.type === 'strong') {
+        htmlstr = <Text strong>{text}</Text>;
+      }
+      if (token.type === 'heading') {
+        htmlstr = <Typography.Title level={4}>{text}</Typography.Title>;
+      }
+      if (token.type === 'paragraph') {
+        htmlstr = <Paragraph> {text}</Paragraph>;
+      }
+      if (token.type === 'code') {
+        htmlstr = (
+          <HighlightCode theme={theme} code={token.text} lang={token.lang} />
+        );
+      }
+      if (token.type === 'link') {
+        htmlstr = (
+          <Link
+            href={token.href}
+            title={token.title || ''}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {text}
+          </Link>
+        );
+      }
+      if (token.type === 'hr') {
+        htmlstr = <hr className="hr" />;
+      }
+
+      return htmlstr;
+    },
+    [generateImgLink]
+  );
   const renderTokens = (tokens: TokensList): any => {
     return tokens?.map((token: any, index: number) => {
       return <Fragment key={index}>{renderItem(token, renderTokens)}</Fragment>;
     });
   };
 
+  useEffect(() => {
+    if (!content) {
+      return;
+    }
+    const imgs = document.querySelectorAll('.markdown-viewer img');
+    imgs.forEach((img) => {
+      const src = img.getAttribute('src');
+      if (src && !isValidURL(src)) {
+        img.setAttribute('src', generateImgLink ? generateImgLink(src) : src);
+      }
+    });
+  }, [content, generateImgLink]);
+
   return (
     <div
-      style={{ height, overflow: 'auto' }}
+      style={{ height }}
       className="markdown-viewer custom-scrollbar-horizontal"
     >
       {renderTokens(tokens)}

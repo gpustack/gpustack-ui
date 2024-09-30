@@ -226,7 +226,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
 
     return null;
-  }, [props.data?.source, isGGUF]);
+  }, [props.data?.source, isGGUF, intl]);
 
   const handleSumit = () => {
     form.submit();

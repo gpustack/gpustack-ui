@@ -5,9 +5,8 @@ import breakpoints from '@/config/breakpoints';
 import useWindowResize from '@/hooks/use-window-resize';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
-import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
@@ -28,11 +27,29 @@ const SystemLoad = () => {
   const [paddingRight, setPaddingRight] = useState<string>('20px');
   const [smallChartHeight, setSmallChartHeight] = useState<number>(190);
   const [largeChartHeight, setLargeChartHeight] = useState<number>(400);
-  const thresholds = [0.5, 0.7, 1];
-  const height = 400;
-  const currentDate = dayjs().format('YYYY-MM-DD');
 
-  const handleSelectDate = (date: any) => {};
+  const height = 400;
+
+  const chartData = useMemo(() => {
+    return {
+      gpu: {
+        data: _.round(data.gpu || 0, 1),
+        color: strokeColorFunc(data.gpu)
+      },
+      vram: {
+        data: _.round(data.vram || 0, 1),
+        color: strokeColorFunc(data.vram)
+      },
+      cpu: {
+        data: _.round(data.cpu || 0, 1),
+        color: strokeColorFunc(data.cpu)
+      },
+      ram: {
+        data: _.round(data.ram || 0, 1),
+        color: strokeColorFunc(data.ram)
+      }
+    };
+  }, [data]);
 
   useEffect(() => {
     if (size.width < breakpoints.xl) {
@@ -70,8 +87,8 @@ const SystemLoad = () => {
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <GaugeChart
                     height={smallChartHeight}
-                    value={_.round(data.gpu || 0, 1)}
-                    color={strokeColorFunc(data.gpu)}
+                    value={chartData.gpu.data}
+                    color={chartData.gpu.color}
                     title={intl.formatMessage({
                       id: 'dashboard.gpuutilization'
                     })}
@@ -83,8 +100,8 @@ const SystemLoad = () => {
                       id: 'dashboard.vramutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.vram)}
-                    value={_.round(data.vram || 0, 1)}
+                    color={chartData.vram.color}
+                    value={chartData.vram.data}
                   ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
@@ -93,8 +110,8 @@ const SystemLoad = () => {
                       id: 'dashboard.cpuutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.cpu)}
-                    value={_.round(data.cpu || 0, 1)}
+                    color={chartData.cpu.color}
+                    value={chartData.cpu.data}
                   ></GaugeChart>
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
@@ -103,8 +120,8 @@ const SystemLoad = () => {
                       id: 'dashboard.memoryutilization'
                     })}
                     height={smallChartHeight}
-                    color={strokeColorFunc(data.ram)}
-                    value={_.round(data.ram || 0, 1)}
+                    color={chartData.ram.color}
+                    value={chartData.ram.data}
                   ></GaugeChart>
                 </Col>
               </Row>
@@ -116,4 +133,4 @@ const SystemLoad = () => {
   );
 };
 
-export default SystemLoad;
+export default memo(SystemLoad);

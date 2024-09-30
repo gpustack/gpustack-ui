@@ -8,7 +8,6 @@ interface TopUserProps {
   topUserList: string[];
 }
 const TopUser: React.FC<TopUserProps> = (props) => {
-  console.log('TopUser=====================');
   const { userData, topUserList } = props;
   const intl = useIntl();
 

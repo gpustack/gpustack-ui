@@ -2,71 +2,9 @@ import PageTools from '@/components/page-tools';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
-const projectColumns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name'
-  },
-  {
-    title: 'Token Quota',
-    dataIndex: 'quota',
-    key: 'quota',
-    render: (text: any, record: any) => <span>{record.quota}k</span>
-  },
-  {
-    title: 'Token Utilization',
-    dataIndex: 'utilization',
-    key: 'utilization',
-    render: (text: any, record: any) => <span>{record.utilization}%</span>
-  },
-  {
-    title: 'Members',
-    dataIndex: 'members',
-    key: 'members'
-  }
-];
-
-const projectData = [
-  {
-    id: 1,
-    name: 'copilot-dev',
-    quota: 100,
-    utilization: 50,
-    members: 4
-  },
-  {
-    id: 2,
-    name: 'rag-wiki',
-    quota: 200,
-    utilization: 70,
-    members: 3
-  },
-  {
-    id: 3,
-    name: 'smart-auto-agent',
-    quota: 100,
-    utilization: 20,
-    members: 5
-  },
-  {
-    id: 4,
-    name: 'office-auto-docs',
-    quota: 100,
-    utilization: 25,
-    members: 1
-  },
-  {
-    id: 5,
-    name: 'smart-customer-service',
-    quota: 100,
-    utilization: 46,
-    members: 2
-  }
-];
 const ActiveTable = () => {
   const intl = useIntl();
   const data = useContext(DashboardContext).active_models || [];
@@ -76,14 +14,6 @@ const ActiveTable = () => {
       dataIndex: 'name',
       key: 'name'
     },
-    // {
-    //   title: intl.formatMessage({ id: 'dashboard.gpuutilization' }),
-    //   dataIndex: 'gpu_utilization',
-    //   key: 'gpu_utilization',
-    //   render: (text: any, record: any) => (
-    //     <ProgressBar percent={_.round(text, 0)}></ProgressBar>
-    //   )
-    // },
     {
       title: intl.formatMessage({ id: 'dashboard.allocatevram' }),
       dataIndex: 'resource_claim.memory',
@@ -133,4 +63,4 @@ const ActiveTable = () => {
   );
 };
 
-export default ActiveTable;
+export default memo(ActiveTable);

@@ -110,7 +110,6 @@ const option = {
 };
 
 const UtilizationOvertime: React.FC = () => {
-  console.log('systemload=====================');
   const intl = useIntl();
   const data = useContext(DashboardContext)?.system_load?.history || {};
 
@@ -147,7 +146,7 @@ const UtilizationOvertime: React.FC = () => {
       legendData,
       xAxisData: _.uniq(xAxisData)
     };
-  }, [data]);
+  }, [data, intl]);
 
   return (
     <>

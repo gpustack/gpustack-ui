@@ -177,11 +177,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
                 }
               ]}
             >
-              <SealSelect
-                showSearch
-                options={modelList}
-                label={intl.formatMessage({ id: 'playground.model' })}
-              ></SealSelect>
+              <SealSelect showSearch options={modelList}></SealSelect>
             </Form.Item>
           </>
         )}

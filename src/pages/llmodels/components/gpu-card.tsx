@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
@@ -12,12 +13,12 @@ const GPUCard: React.FC<{
   const intl = useIntl();
   return (
     <div className="gpu-card">
-      <div className="header">
+      <div className="header" style={{ width: '100%' }}>
         {header ?? (
-          <>
+          <AutoTooltip ghost>
             {data.label}({data.worker_name})[
             {intl.formatMessage({ id: 'resources.table.index' })}:{data.index}]
-          </>
+          </AutoTooltip>
         )}
       </div>
       <div className="info">

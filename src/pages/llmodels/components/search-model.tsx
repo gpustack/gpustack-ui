@@ -118,6 +118,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           likes: item.Stars,
           value: item.Name,
           label: item.Name,
+          revision: item.Revision,
           task: item.Tasks?.map((sItem: any) => sItem.Name).join(',')
         };
       });

@@ -321,7 +321,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         });
       }
       return list;
-    }, [modelList]);
+    }, [modelList, intl]);
 
     useEffect(() => {
       console.log('globalParams:', globalParams.model, globalParams);

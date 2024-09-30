@@ -264,7 +264,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             >
               <Checkbox className="p-l-6">
                 <Tooltip
-                  trigger={['click']}
                   title={intl.formatMessage({
                     id: 'models.form.partialoffload.tips'
                   })}

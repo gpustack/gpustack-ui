@@ -48,6 +48,9 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
 
   const handleOnChange = (e: any) => {
     setSystemMessage(e.target.value);
+    if (applyToAllModels) {
+      applyToAll?.(e.target.value);
+    }
   };
 
   const handleClearSystemMessage = () => {

@@ -50,6 +50,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const scroller = useRef<any>(null);
   const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
+  const messageListLengthCache = useRef<number>(0);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -68,6 +69,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
+
   const handleNewMessage = (message?: { role: string; content: string }) => {
     const newMessage = message || {
       role:
@@ -247,8 +249,17 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [paramsRef.current, innitializeParams]);
 
   useEffect(() => {
-    updateScrollerPosition();
-  }, [messageList]);
+    if (loading) {
+      updateScrollerPosition();
+    }
+  }, [messageList, loading]);
+
+  useEffect(() => {
+    if (messageList.length > messageListLengthCache.current) {
+      updateScrollerPosition();
+    }
+    messageListLengthCache.current = messageList.length;
+  }, [messageList.length]);
 
   return (
     <div className="ground-left-wrapper">

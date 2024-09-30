@@ -17,7 +17,6 @@ interface RequestTokenInnerProps {
   xAxisData: string[];
 }
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
-  console.log('request token inner=====================');
   const { requestData, tokenData, xAxisData } = props;
   const intl = useIntl();
   const labelFormatter = (v: any) => {

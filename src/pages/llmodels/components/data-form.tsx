@@ -260,7 +260,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
 
     return null;
-  }, [props.source, isGGUF]);
+  }, [props.source, isGGUF, intl]);
 
   const handleOk = (formdata: FormData) => {
     const gpu = _.find(gpuOptions, (item: any) => {

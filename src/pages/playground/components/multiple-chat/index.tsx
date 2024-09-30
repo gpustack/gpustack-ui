@@ -79,9 +79,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
     const modelRefList = Object.getOwnPropertySymbols(modelRefs.current);
     modelRefList.forEach((instanceId: symbol) => {
       const ref = modelRefs.current[instanceId];
-      ref?.setMessageList((preList: any) => {
-        return [...preList, { ...message }];
-      });
+      ref?.addNewMessage(message);
     });
   };
 

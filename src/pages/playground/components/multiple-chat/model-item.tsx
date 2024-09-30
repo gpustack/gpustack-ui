@@ -65,19 +65,13 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const controllerRef = useRef<any>(null);
     const currentMessageRef = useRef<MessageItem[]>([]);
     const modelScrollRef = useRef<any>(null);
+    const messageListLengthCache = useRef<number>(0);
 
     const { initialize, updateScrollerPosition } = useOverlayScroller();
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
     };
-    const maxHeight = useMemo(() => {
-      const total = 72 + 110 + 46 + 16 + 32;
-      if (spans.count < 4) {
-        return `calc(100vh - ${total}px)`;
-      }
-      return `calc(100vh - ${total * 2 + 16}px)`;
-    }, [spans.count]);
 
     const abortFetch = () => {
       controllerRef.current?.abort?.();
@@ -255,6 +249,19 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       currentMessageRef.current = [];
     };
 
+    const addNewMessage = (message: Omit<MessageItem, 'uid'>) => {
+      setMessageId();
+      setMessageList((preList) => {
+        return [
+          ...preList,
+          {
+            ...message,
+            uid: messageId.current
+          }
+        ];
+      });
+    };
+
     const handleCloseViewCode = () => {
       setShow(false);
     };
@@ -345,14 +352,23 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     }, [modelScrollRef.current, initialize]);
 
     useEffect(() => {
-      updateScrollerPosition();
+      if (loadingStatus[instanceId]) {
+        updateScrollerPosition();
+      }
     }, [messageList]);
+
+    useEffect(() => {
+      if (messageList.length > messageListLengthCache.current) {
+        updateScrollerPosition();
+      }
+      messageListLengthCache.current = messageList.length;
+    }, [messageList.length]);
 
     useImperativeHandle(ref, () => {
       return {
         submit: handleSubmit,
         abortFetch,
-        setMessageList,
+        addNewMessage,
         clear: handleClearMessage,
         presetPrompt: handlePresetMessageList,
         setSystemMessage,

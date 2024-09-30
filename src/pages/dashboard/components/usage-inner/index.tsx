@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { memo, useCallback, useContext } from 'react';
+import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../../config/dashboard-context';
 import RequestTokenInner from './request-token-inner';
 import TopUser from './top-user';
@@ -33,18 +33,29 @@ const getCurrentMonthDays = () => {
 
 const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
   const intl = useIntl();
-  const currentDate = dayjs();
-  const currentMonthDays = getCurrentMonthDays();
-  let requestData: {
-    name: string;
-    color: string;
-    areaStyle: any;
-    data: { time: string; value: number }[];
-  }[] = [];
-  let tokenData: { time: string; value: number }[] = [];
-  let userData: { name: string; value: number }[] = [];
-  const xAxisData: string[] = currentMonthDays;
-  let topUserList: string[] = [];
+
+  const [topUserData, setTopUserData] = useState<{
+    userData: { name: string; value: number }[];
+    topUserList: string[];
+  }>({
+    userData: [],
+    topUserList: []
+  });
+
+  const [requestTokenData, setRequestTokenData] = useState<{
+    requestData: {
+      name: string;
+      color: string;
+      areaStyle: any;
+      data: { time: string; value: number }[];
+    }[];
+    tokenData: { time: string; value: number }[];
+    xAxisData: string[];
+  }>({
+    requestData: [],
+    tokenData: [],
+    xAxisData: []
+  });
 
   const { model_usage } = useContext(DashboardContext);
   const data = model_usage || {};
@@ -54,6 +65,7 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
   };
 
   const generateData = useCallback(() => {
+    const currentMonthDays = getCurrentMonthDays();
     const requestList: {
       name: string;
       color: string;
@@ -88,7 +100,7 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
       data: []
     };
 
-    _.each(xAxisData, (date: string) => {
+    _.each(currentMonthDays, (date: string) => {
       // tokens data
       const item = _.find(data.completion_token_history, (item: any) => {
         return dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date;
@@ -140,8 +152,10 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
 
     // ========== top users ============
     if (!data.top_users?.length) {
-      userData = [];
-      topUserList = [];
+      setTopUserData({
+        userData: [],
+        topUserList: []
+      });
     } else {
       const users: string[] = [];
       _.each(data.top_users, (item: any) => {
@@ -155,15 +169,23 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
           value: item.completion_token_count
         });
       });
-      topUserList = _.uniq(users);
-      userData = [topUserCompletion, topUserPrompt];
+
+      setTopUserData({
+        userData: [topUserCompletion, topUserPrompt],
+        topUserList: _.uniq(users)
+      });
     }
 
-    requestData = [requestList];
-    tokenData = [completionData, prompData];
-  }, [data, xAxisData]);
+    setRequestTokenData({
+      requestData: [requestList],
+      tokenData: [completionData, prompData],
+      xAxisData: currentMonthDays
+    });
+  }, [data]);
 
-  generateData();
+  useEffect(() => {
+    generateData();
+  }, [generateData]);
 
   return (
     <>
@@ -181,13 +203,16 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
           style={{ paddingRight: paddingRight }}
         >
           <RequestTokenInner
-            requestData={requestData}
-            xAxisData={xAxisData}
-            tokenData={tokenData}
+            requestData={requestTokenData.requestData}
+            xAxisData={requestTokenData.xAxisData}
+            tokenData={requestTokenData.tokenData}
           ></RequestTokenInner>
         </Col>
         <Col xs={24} sm={24} md={24} lg={24} xl={8}>
-          <TopUser userData={userData} topUserList={topUserList}></TopUser>
+          <TopUser
+            userData={topUserData.userData}
+            topUserList={topUserData.topUserList}
+          ></TopUser>
         </Col>
       </Row>
     </>

@@ -72,7 +72,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
   return (
     <Wrapper
       status={checkStatus || status}
-      label={label || (placeholder as string)}
+      label={label}
       isFocus={isFocus}
       required={required}
       description={description}
@@ -83,7 +83,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     >
       <Input
         {...rest}
-        placeholder={isFocus ? placeholder : ''}
+        placeholder={isFocus || !label ? placeholder : ''}
         ref={inputRef}
         autoComplete="off"
         onInput={handleInput}

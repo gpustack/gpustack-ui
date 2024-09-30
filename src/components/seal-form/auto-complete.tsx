@@ -75,7 +75,7 @@ const SealAutoComplete: React.FC<
     <Wrapper
       status={status}
       extra={extra}
-      label={label || (placeholder as string)}
+      label={label}
       isFocus={isFocus}
       required={required}
       description={description}
@@ -87,7 +87,7 @@ const SealAutoComplete: React.FC<
         {...rest}
         ref={inputRef}
         placeholder={
-          isFocus ? (
+          isFocus || !label ? (
             <span style={{ paddingLeft: '12px' }}>{placeholder}</span>
           ) : (
             ''

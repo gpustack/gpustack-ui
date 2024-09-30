@@ -6,7 +6,7 @@ const options = [
   {
     label: '--ctx-size',
     value: '--ctx-size',
-    options: ['8192']
+    options: []
   },
   {
     label: '--flash-attn',

@@ -12,6 +12,7 @@ interface ListInputProps {
   description?: string;
   btnText?: string;
   options?: Global.HintOptions[];
+  placeholder?: string;
   onChange: (data: string[]) => void;
 }
 
@@ -75,6 +76,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
         {_.map(list, (item: any, index: number) => {
           return (
             <ListItem
+              placeholder={props.placeholder}
               options={options}
               key={item.uid}
               value={item.value}

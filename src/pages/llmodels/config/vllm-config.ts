@@ -183,7 +183,7 @@ const options = [
   {
     label: '--max-model-len',
     value: '--max-model-len',
-    options: ['8192']
+    options: []
   },
   {
     label: '--guided-decoding-backend',

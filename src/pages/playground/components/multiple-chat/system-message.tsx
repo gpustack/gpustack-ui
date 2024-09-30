@@ -2,7 +2,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../style/sys-message.less';
 
 interface SystemMessageProps {
@@ -17,7 +17,7 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
   const { systemMessage, showApplyToAll, setSystemMessage, style, applyToAll } =
     props;
   const intl = useIntl();
-  const [isChange, setIsChange] = useState(false);
+  const [applyToAllModels, setApplyToAllModels] = useState(false);
   const systemMessageRef = React.useRef<any>(null);
   const [autoSize, setAutoSize] = useState<{
     minRows: number;
@@ -44,12 +44,10 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
       maxRows: 1,
       focus: false
     });
-    setIsChange(false);
   };
 
   const handleOnChange = (e: any) => {
     setSystemMessage(e.target.value);
-    setIsChange(true);
   };
 
   const handleClearSystemMessage = () => {
@@ -58,13 +56,14 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
 
   const handleClickCheckbox = (e?: any) => {
     e.preventDefault();
+    setApplyToAllModels(!applyToAllModels);
   };
 
-  const handleApplyToAllModels = (e: any) => {
-    if (e.target.checked) {
+  useEffect(() => {
+    if (applyToAllModels) {
       applyToAll?.(systemMessage);
     }
-  };
+  }, [applyToAllModels]);
 
   return (
     <div
@@ -100,13 +99,14 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
             allowClear={false}
             onChange={handleOnChange}
           ></Input.TextArea>
-          {isChange && showApplyToAll && (
+          {showApplyToAll && (
             <span className="apply-check" onMouseDown={handleClickCheckbox}>
-              <Checkbox onChange={handleApplyToAllModels}>
+              <span className="m-r-5">
                 {intl.formatMessage({
                   id: 'playground.compare.applytoall'
                 })}
-              </Checkbox>
+              </span>
+              <Checkbox checked={applyToAllModels}></Checkbox>
             </span>
           )}
           <Divider style={{ margin: '0' }}></Divider>

@@ -57,7 +57,7 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
   return (
     <Wrapper
       status={status}
-      label={label || (placeholder as string)}
+      label={label}
       isFocus={isFocus}
       required={required}
       description={description}

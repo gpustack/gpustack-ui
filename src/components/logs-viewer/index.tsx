@@ -77,13 +77,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     fitAddonRef.current = new FitAddon();
     termRef.current.loadAddon(fitAddonRef.current);
     termRef.current.open(termwrapRef.current);
-
-    // add event
-    // termRef.current.onLineFeed((e: any) => {
-    //   if (cacheDataRef.current) {
-    //     throttleScroll();
-    //   }
-    // });
   };
 
   const handleResize = _.throttle(() => {

@@ -99,11 +99,6 @@ export const getRightRenderContent = (opts: {
       icon: <InfoCircleOutlined />,
       label: intl.formatMessage({ id: 'common.button.version' })
     }
-    // {
-    //   key: 'shortcuts',
-    //   icon: <IconFont type="icon-keyboard"></IconFont>,
-    //   label: intl.formatMessage({ id: 'common.button.shortcut' })
-    // }
   ];
 
   const helpMenu = {
@@ -113,7 +108,7 @@ export const getRightRenderContent = (opts: {
       : 'user-menu-container',
     mode: 'vertical',
     expandIcon: false,
-    inlineCollapsed: collapsed,
+    // inlineCollapsed: collapsed,
     triggerSubMenuAction: 'hover',
     items: [
       {
@@ -163,7 +158,7 @@ export const getRightRenderContent = (opts: {
       : 'user-menu-container',
     mode: 'vertical',
     expandIcon: false,
-    inlineCollapsed: collapsed,
+    // inlineCollapsed: collapsed,
     triggerSubMenuAction: 'hover',
     items: [
       {
@@ -196,7 +191,7 @@ export const getRightRenderContent = (opts: {
       : 'user-menu-container',
     mode: 'vertical',
     expandIcon: false,
-    inlineCollapsed: collapsed,
+    // inlineCollapsed: collapsed,
     triggerSubMenuAction: 'hover',
     items: [
       {
@@ -263,19 +258,19 @@ export const getRightRenderContent = (opts: {
       <Menu
         {...helpMenu}
         style={{
-          width: collapsed ? 64 : `calc(${siderWidth}px - 16px)`
+          width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`
         }}
       ></Menu>
       <Menu
         {...langMenu}
         style={{
-          width: collapsed ? 64 : `calc(${siderWidth}px - 16px)`
+          width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`
         }}
       ></Menu>
       <Menu
         {...userMenu}
         style={{
-          width: collapsed ? 64 : `calc(${siderWidth}px - 16px)`,
+          width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`,
           marginTop: 20
         }}
       ></Menu>

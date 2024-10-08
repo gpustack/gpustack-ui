@@ -6,7 +6,7 @@ const Wrapper: React.FC<{
   label?: string;
   description?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ children, label, description }) => {
+}> = ({ children, label, description, ...rest }) => {
   return (
     <div className={styles['wrapper']}>
       {label && (
@@ -14,7 +14,9 @@ const Wrapper: React.FC<{
           <LabelInfo label={label} description={description}></LabelInfo>
         </span>
       )}
-      {children}
+      {React.isValidElement(children)
+        ? React.cloneElement(children, { ...rest })
+        : children}
     </div>
   );
 };

@@ -41,7 +41,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     <Modal
       title={
         <span className="flex flex-center">
-          <span> {intl.formatMessage({ id: 'common.button.viewlog' })}</span>
+          <span style={{ fontWeight: 'var(--font-weight-bold)' }}>
+            {' '}
+            {intl.formatMessage({ id: 'common.button.viewlog' })}
+          </span>
         </span>
       }
       open={open}

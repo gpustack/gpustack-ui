@@ -9,7 +9,7 @@ interface WrapperProps {
   className?: string;
   disabled?: boolean;
   required?: boolean;
-  description?: string;
+  description?: React.ReactNode;
   variant?: string;
   style?: React.CSSProperties;
   onClick?: () => void;

@@ -119,7 +119,6 @@ const ContentItem: React.FC<MessageItemProps> = ({
 
   const handleUpdateImgList = useCallback(
     (list: { uid: number | string; dataUrl: string }[]) => {
-      console.log('list===========', data.imgs, list);
       updateMessage?.({
         role: data.role,
         content: data.content,

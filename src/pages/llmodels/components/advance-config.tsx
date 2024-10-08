@@ -1,22 +1,25 @@
 import LabelSelector from '@/components/label-selector';
+import FieldWrapper from '@/components/label-selector/wrapper';
 import ListInput from '@/components/list-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+
 import {
   Checkbox,
   Collapse,
   Form,
   FormInstance,
+  Radio,
   Select,
   Tooltip,
   Typography
 } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { backendOptionsMap, placementStrategyOptions } from '../config';
+import { backendOptionsMap } from '../config';
 import llamaConfig from '../config/llama-config';
 import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
@@ -116,7 +119,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     const children = (
       <>
         <Form.Item name="scheduleType">
-          <SealSelect
+          {/* <SealSelect
             label={intl.formatMessage({ id: 'models.form.scheduletype' })}
             description={renderSelectTips(scheduleTypeTips)}
             options={[
@@ -133,18 +136,46 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 value: 'manual'
               }
             ]}
-          ></SealSelect>
+          ></SealSelect> */}
+          <FieldWrapper
+            label={intl.formatMessage({ id: 'models.form.scheduletype' })}
+            description={renderSelectTips(scheduleTypeTips)}
+          >
+            <Radio.Group style={{ marginTop: 5 }}>
+              <Radio value="auto">
+                {intl.formatMessage({
+                  id: 'models.form.scheduletype.auto'
+                })}
+              </Radio>
+              <Radio value="manual">
+                {intl.formatMessage({
+                  id: 'models.form.scheduletype.manual'
+                })}
+              </Radio>
+            </Radio.Group>
+          </FieldWrapper>
         </Form.Item>
         {scheduleType === 'auto' && (
           <>
             <Form.Item<FormData> name="placement_strategy">
-              <SealSelect
+              {/* <SealSelect
                 label={intl.formatMessage({
                   id: 'resources.form.placementStrategy'
                 })}
                 options={placementStrategyOptions}
                 description={renderSelectTips(placementStrategyTips)}
-              ></SealSelect>
+              ></SealSelect> */}
+              <FieldWrapper
+                label={intl.formatMessage({
+                  id: 'resources.form.placementStrategy'
+                })}
+                description={renderSelectTips(placementStrategyTips)}
+              >
+                <Radio.Group style={{ marginTop: 5 }}>
+                  <Radio value="spread">Spread</Radio>
+                  <Radio value="binpack">Binpack</Radio>
+                </Radio.Group>
+              </FieldWrapper>
             </Form.Item>
             <Form.Item<FormData>
               name="worker_selector"
@@ -219,7 +250,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           </Form.Item>
         )}
         <Form.Item name="backend">
-          <SealSelect
+          {/* <SealSelect
             label={intl.formatMessage({ id: 'models.form.backend' })}
             options={[
               {
@@ -234,7 +265,25 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               }
             ]}
             disabled={action === PageAction.EDIT}
-          ></SealSelect>
+          ></SealSelect> */}
+          <FieldWrapper
+            label={intl.formatMessage({ id: 'models.form.backend' })}
+          >
+            <Radio.Group>
+              <Radio
+                value={backendOptionsMap.llamaBox}
+                disabled={!isGGUF || action === PageAction.EDIT}
+              >
+                llama-box(llama.cpp)
+              </Radio>
+              <Radio
+                value={backendOptionsMap.vllm}
+                disabled={isGGUF || action === PageAction.EDIT}
+              >
+                vLLM
+              </Radio>
+            </Radio.Group>
+          </FieldWrapper>
         </Form.Item>
         <Form.Item<FormData> name="backend_parameters">
           <ListInput

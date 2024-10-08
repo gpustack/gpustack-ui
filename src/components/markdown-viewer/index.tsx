@@ -51,6 +51,19 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     return pattern.test(url);
   }, []);
 
+  const generateImgSrc = useCallback(
+    (src: string | null) => {
+      if (!src) {
+        return '';
+      }
+      if (generateImgLink) {
+        return isValidURL(src) ? src : generateImgLink(src);
+      }
+      return src;
+    },
+    [generateImgLink]
+  );
+
   const renderItem = useCallback(
     (token: any, render: any) => {
       if (!reDefineTypes.includes(token.type)) {
@@ -97,10 +110,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       }
 
       if (token.type === 'image') {
-        let href = token.href;
-        if (!isValidURL(token.href)) {
-          href = generateImgLink ? generateImgLink(token.href) : token.href;
-        }
+        let href = generateImgSrc(token.href);
         htmlstr = (
           <Image
             src={href}
@@ -149,7 +159,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
       return htmlstr;
     },
-    [generateImgLink]
+    [generateImgSrc]
   );
   const renderTokens = (tokens: TokensList): any => {
     return tokens?.map((token: any, index: number) => {
@@ -164,11 +174,9 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     const imgs = document.querySelectorAll('.markdown-viewer img');
     imgs.forEach((img) => {
       const src = img.getAttribute('src');
-      if (src && !isValidURL(src)) {
-        img.setAttribute('src', generateImgLink ? generateImgLink(src) : src);
-      }
+      img.setAttribute('src', generateImgSrc(src));
     });
-  }, [content, generateImgLink]);
+  }, [content, generateImgSrc]);
 
   return (
     <div

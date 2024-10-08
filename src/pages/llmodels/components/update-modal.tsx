@@ -72,33 +72,21 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     setGpuOptions(list);
   };
 
-  const initFormValue = () => {
-    if (action === PageAction.CREATE && open) {
-      form.setFieldsValue({
-        source: modelSourceMap.huggingface_value,
-        replicas: 1
-      });
-    }
-    if (action === PageAction.EDIT && open) {
-      const result = setSourceRepoConfigValue(
-        props.data?.source || '',
-        props.data
-      );
+  const initFormValue = useMemo(() => {
+    const result = setSourceRepoConfigValue(
+      props.data?.source || '',
+      props.data
+    );
 
-      form.setFieldsValue({
-        ...result.values,
-        ..._.omit(props.data, result.omits),
-        scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
-        gpu_selector: props.data?.gpu_selector
-          ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
-          : null
-      });
-    }
-  };
-
-  useEffect(() => {
-    initFormValue();
-  }, [open]);
+    return {
+      ...result.values,
+      ..._.omit(props.data, result.omits),
+      scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
+      gpu_selector: props.data?.gpu_selector
+        ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
+        : null
+    };
+  }, [props.data]);
 
   useEffect(() => {
     setIsGGUF(props.data?.backend === backendOptionsMap.llamaBox);
@@ -305,6 +293,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           style={{
             padding: 'var(--ant-modal-content-padding)',
             paddingBlock: 0
+          }}
+          initialValues={{
+            ...initFormValue
           }}
         >
           <Form.Item<FormData>

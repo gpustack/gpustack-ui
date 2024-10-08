@@ -225,6 +225,9 @@ export default (props: any) => {
         layout="side"
         disableMobile={true}
         siderWidth={220}
+        onCollapse={(collapsed) => {
+          setCollapsed(collapsed);
+        }}
         onMenuHeaderClick={(e) => {
           e.stopPropagation();
           e.preventDefault();

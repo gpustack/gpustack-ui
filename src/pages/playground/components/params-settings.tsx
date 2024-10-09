@@ -6,7 +6,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
-import { useEffect, useId, useState } from 'react';
+import { memo, useCallback, useEffect, useId } from 'react';
 import CustomLabelStyles from '../style/custom-label.less';
 
 type ParamsSettingsFormProps = {
@@ -39,7 +39,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   showModelSelector = true
 }) => {
   const intl = useIntl();
-  const [ModelList, setModelList] = useState([]);
   const initialValues = {
     seed: null,
     stop: null,
@@ -86,7 +85,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     setParams?.(allValues);
     onValuesChange?.(changedValues, allValues);
   };
-  const handleFieldValueChange = (val: any, field: string) => {
+  const handleFieldValueChange = useCallback((val: any, field: string) => {
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
@@ -103,7 +102,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         [field]: val
       }
     );
-  };
+  }, []);
 
   const handleResetParams = () => {
     form.setFieldsValue(initialValues);
@@ -177,7 +176,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
                 }
               ]}
             >
-              <SealSelect showSearch options={modelList}></SealSelect>
+              <SealSelect showSearch={true} options={modelList}></SealSelect>
             </Form.Item>
           </>
         )}
@@ -296,4 +295,4 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   );
 };
 
-export default ParamsSettings;
+export default memo(ParamsSettings);

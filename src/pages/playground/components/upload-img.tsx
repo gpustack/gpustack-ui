@@ -16,14 +16,14 @@ const UploadImg: React.FC<UploadImgProps> = ({ handleUpdateImgList }) => {
   const intl = useIntl();
   const uploadRef = useRef<any>(null);
 
-  const getBase64 = (file: RcFile): Promise<string> => {
+  const getBase64 = useCallback((file: RcFile): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = (error) => reject(error);
     });
-  };
+  }, []);
 
   const debouncedUpdate = useCallback(
     debounce((base64List: { dataUrl: string; uid: number | string }[]) => {
@@ -32,32 +32,35 @@ const UploadImg: React.FC<UploadImgProps> = ({ handleUpdateImgList }) => {
     [handleUpdateImgList, intl]
   );
 
-  const handleChange = async (info: any) => {
-    const { fileList } = info;
+  const handleChange = useCallback(
+    async (info: any) => {
+      const { fileList } = info;
 
-    const newFileList = await Promise.all(
-      fileList.map(async (item: UploadFile) => {
-        if (item.originFileObj && !item.url) {
-          const base64 = await getBase64(item.originFileObj as RcFile);
-          item.url = base64;
-        }
-        return item;
-      })
-    );
+      const newFileList = await Promise.all(
+        fileList.map(async (item: UploadFile) => {
+          if (item.originFileObj && !item.url) {
+            const base64 = await getBase64(item.originFileObj as RcFile);
+            item.url = base64;
+          }
+          return item;
+        })
+      );
 
-    if (newFileList.length > 0) {
-      const base64List = newFileList
-        .filter((sitem) => sitem.url)
-        .map((item: UploadFile) => {
-          return {
-            dataUrl: item.url as string,
-            uid: item.uid
-          };
-        });
+      if (newFileList.length > 0) {
+        const base64List = newFileList
+          .filter((sitem) => sitem.url)
+          .map((item: UploadFile) => {
+            return {
+              dataUrl: item.url as string,
+              uid: item.uid
+            };
+          });
 
-      debouncedUpdate(base64List);
-    }
-  };
+        debouncedUpdate(base64List);
+      }
+    },
+    [debouncedUpdate, getBase64]
+  );
 
   return (
     <>

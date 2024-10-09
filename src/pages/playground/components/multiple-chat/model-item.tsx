@@ -14,6 +14,7 @@ import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
+  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -222,25 +223,25 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       }
     };
 
-    const handleOnValuesChange = (
-      changeValues: any,
-      allValues: Record<string, any>
-    ) => {
-      if (isApplyToAllModels.current) {
-        setParams({
-          ...params,
-          ...allValues
-        });
-        setGlobalParams({
-          ...allValues
-        });
-      } else {
-        setParams({
-          ...params,
-          ...changeValues
-        });
-      }
-    };
+    const handleOnValuesChange = useCallback(
+      (changeValues: any, allValues: Record<string, any>) => {
+        if (isApplyToAllModels.current) {
+          setParams({
+            ...params,
+            ...allValues
+          });
+          setGlobalParams({
+            ...allValues
+          });
+        } else {
+          setParams({
+            ...params,
+            ...changeValues
+          });
+        }
+      },
+      [params, isApplyToAllModels.current]
+    );
 
     const handleClearMessage = () => {
       setMessageList([]);

@@ -64,27 +64,16 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
       <div className="info">
         {SUPPORTEDSOURCE.includes(props.source || '') ? (
           <div className="info-item">
-            {/* {props.task && (
-              <Tag
-                className="tag-item"
-                color="gold"
-                style={{
-                  marginRight: 0
-                }}
-              >
-                <span style={{ opacity: 0.65 }}>{props.task}</span>
-              </Tag>
-            )} */}
             <span>
               {dayjs().to(
                 dayjs(dayjs(props.updatedAt).format('YYYY-MM-DD HH:mm:ss'))
               )}
             </span>
-            <span>
+            <span className="flex-center">
               <HeartOutlined className="m-r-5" />
               {props.likes}
             </span>
-            <span>
+            <span className="flex-center">
               <DownloadOutlined className="m-r-5" />
               {formatNumber(props.downloads)}
             </span>

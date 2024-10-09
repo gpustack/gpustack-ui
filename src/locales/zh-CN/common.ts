@@ -199,5 +199,6 @@ export default {
   'common.title.delete.confirm': '确认删除',
   'common.button.addLabel': '添加标签',
   'common.button.addSelector': '添加选择器',
-  'common.button.addParams': '添加参数'
+  'common.button.addParams': '添加参数',
+  'common.text.here': '这里'
 };

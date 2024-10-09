@@ -206,5 +206,6 @@ export default {
   'common.title.delete.confirm': 'Confirm delete',
   'common.button.addLabel': 'Add Labels',
   'common.button.addSelector': 'Add Selectors',
-  'common.button.addParams': 'Add Parameter'
+  'common.button.addParams': 'Add Parameter',
+  'common.text.here': 'here'
 };

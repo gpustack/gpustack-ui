@@ -63,5 +63,6 @@ export default {
   'models.form.backend_parameters.llamabox.placeholder':
     '例如，--ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':
-    '例如，--max-model-len=8192'
+    '例如，--max-model-len=8192',
+  'models.form.backend_parameters.vllm.tips': '更多 {backend} 参数说明查看'
 };

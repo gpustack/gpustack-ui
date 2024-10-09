@@ -9,7 +9,7 @@ import ListItem from './list-item';
 interface ListInputProps {
   dataList: string[];
   label: string;
-  description?: string;
+  description?: React.ReactNode;
   btnText?: string;
   options?: Global.HintOptions[];
   placeholder?: string;

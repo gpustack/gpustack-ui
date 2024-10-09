@@ -382,9 +382,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             form={form}
             gpuOptions={gpuOptions}
             action={PageAction.EDIT}
-            isGGUF={
-              form.getFieldValue('backend') === backendOptionsMap.llamaBox
-            }
+            isGGUF={props.data?.backend === backendOptionsMap.llamaBox}
           ></AdvanceConfig>
         </Form>
       </SimpleBar>

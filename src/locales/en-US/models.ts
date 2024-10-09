@@ -64,5 +64,6 @@ export default {
   'models.form.backend_parameters.llamabox.placeholder':
     'e.g., --ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':
-    'e.g., --max-model-len=8192'
+    'e.g., --max-model-len=8192',
+  'models.form.backend_parameters.vllm.tips': 'More {backend} parameter details'
 };

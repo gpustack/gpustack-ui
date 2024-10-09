@@ -34,7 +34,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   setParams,
   globalParams,
   onValuesChange,
-  model,
   modelList,
   showModelSelector = true
 }) => {
@@ -80,29 +79,34 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     console.log('handleOnFinishFailed', errorInfo);
   };
 
-  const handleValuesChange = (changedValues: any, allValues: any) => {
-    console.log('changedValues===', changedValues);
-    setParams?.(allValues);
-    onValuesChange?.(changedValues, allValues);
-  };
-  const handleFieldValueChange = useCallback((val: any, field: string) => {
-    const values = form.getFieldsValue();
-    form.setFieldsValue({
-      ...values,
-      [field]: val
-    });
-    setParams({
-      ...values,
-      [field]: val
-    });
-    onValuesChange?.(
-      { [field]: val },
-      {
+  const handleValuesChange = useCallback(
+    (changedValues: any, allValues: any) => {
+      setParams?.(allValues);
+      onValuesChange?.(changedValues, allValues);
+    },
+    [onValuesChange, setParams]
+  );
+  const handleFieldValueChange = useCallback(
+    (val: any, field: string) => {
+      const values = form.getFieldsValue();
+      form.setFieldsValue({
         ...values,
         [field]: val
-      }
-    );
-  }, []);
+      });
+      setParams({
+        ...values,
+        [field]: val
+      });
+      onValuesChange?.(
+        { [field]: val },
+        {
+          ...values,
+          [field]: val
+        }
+      );
+    },
+    [form, setParams, onValuesChange]
+  );
 
   const handleResetParams = () => {
     form.setFieldsValue(initialValues);

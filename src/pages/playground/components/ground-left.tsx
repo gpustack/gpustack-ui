@@ -330,6 +330,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <ParamsSettings
             setParams={setParams}
+            params={parameters}
             selectedModel={selectModel}
             modelList={modelList}
           />

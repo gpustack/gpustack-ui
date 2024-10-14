@@ -12,6 +12,15 @@
     transition: background-color 0.3s ease;
     border-bottom: 1px solid var(--ant-color-split);
 
+    &:hover {
+      background-color: var(--ant-color-fill-tertiary);
+
+      .btn-group {
+        display: flex;
+        gap: 8px;
+      }
+    }
+
     &:focus-within {
       background-color: transparent;
     }
@@ -25,15 +34,6 @@
       margin-left: 8px;
       display: flex;
       gap: 8px;
-    }
-
-    &:hover {
-      background-color: var(--ant-color-fill-tertiary);
-
-      .btn-group {
-        display: flex;
-        gap: 8px;
-      }
     }
   }
 }

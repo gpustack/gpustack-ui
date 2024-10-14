@@ -1,6 +1,5 @@
 import IconFont from '@/components/icon-font';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
-import { platformCall } from '@/utils';
 import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Divider, Input, Select, Tooltip } from 'antd';
@@ -61,18 +60,19 @@ interface MessageInputProps {
   handleAbortFetch: () => void;
   updateLayout?: (value: { span: number; count: number }) => void;
   clearAll: () => void;
-  setModelSelections: (
+  setModelSelections?: (
     modelList: (Global.BaseOption<string> & {
       instanceId: symbol;
     })[]
   ) => void;
-  presetPrompt: (list: CurrentMessage[]) => void;
-  addMessage: (message: CurrentMessage) => void;
+  presetPrompt?: (list: CurrentMessage[]) => void;
+  addMessage?: (message: CurrentMessage) => void;
   loading: boolean;
   showModelSelection?: boolean;
   disabled: boolean;
   isEmpty?: boolean;
   scope: string;
+  placeholer?: string;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -88,12 +88,11 @@ const MessageInput: React.FC<MessageInputProps> = ({
   showModelSelection,
   disabled,
   isEmpty,
-  scope
+  scope,
+  placeholer
 }) => {
   const { TextArea } = Input;
   const intl = useIntl();
-  const platform = platformCall();
-  // const [disabled, setDisabled] = useState(false);
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const [message, setMessage] = useState<CurrentMessage>({
@@ -130,11 +129,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
     resetMessage();
   };
   const onStop = () => {
-    // setDisabled(false);
     handleAbortFetch();
   };
   const handleLayoutChange = (value: { span: number; count: number }) => {
-    console.log('layout change:', value);
     updateLayout?.(value);
   };
 
@@ -151,7 +148,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   const handleUpdateModelSelections = (value: string[]) => {
-    console.log('update model selections:', value);
     const list = value?.map?.((val) => {
       return {
         value: val,
@@ -159,7 +155,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         instanceId: Symbol(val)
       };
     });
-    setModelSelections(list);
+    setModelSelections?.(list);
   };
 
   const handleOpenPrompt = () => {
@@ -167,8 +163,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   const handleAddMessage = () => {
-    console.log('add message=====1');
-    addMessage({ ...message });
+    addMessage?.({ ...message });
     resetMessage();
   };
 
@@ -249,9 +244,14 @@ const MessageInput: React.FC<MessageInputProps> = ({
     e.preventDefault();
     const text = e.clipboardData.getData('text');
     if (text) {
+      const startPos = e.target.selectionStart;
+      const endPos = e.target.selectionEnd;
       setMessage?.({
         ...message,
-        content: message.content + text
+        content:
+          message.content.slice(0, startPos) +
+          text +
+          message.content.slice(endPos)
       });
     } else {
       getPasteContent(e);
@@ -283,6 +283,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
     },
     [message, handleDeleteLastImage]
   );
+
+  const handleSelectPrompt = (list: CurrentMessage[]) => {
+    presetPrompt?.(list);
+  };
 
   useHotkeys(
     HotKeys.SUBMIT,
@@ -325,16 +329,23 @@ const MessageInput: React.FC<MessageInputProps> = ({
     <div className="messageInput">
       <div className="tool-bar">
         <div className="actions">
-          <Button
-            type="text"
-            size="middle"
-            onClick={handleToggleRole}
-            icon={<SwapOutlined rotate={90} />}
-          >
-            {intl.formatMessage({ id: `playground.${message.role}` })}
-          </Button>
-          <Divider type="vertical" style={{ margin: 0 }} />
-          <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>
+          {scope !== 'reranker' && (
+            <>
+              <Button
+                type="text"
+                size="middle"
+                onClick={handleToggleRole}
+                icon={<SwapOutlined rotate={90} />}
+              >
+                {intl.formatMessage({ id: `playground.${message.role}` })}
+              </Button>
+              <Divider type="vertical" style={{ margin: 0 }} />
+              <UploadImg
+                handleUpdateImgList={handleUpdateImgList}
+                size="middle"
+              ></UploadImg>
+            </>
+          )}
           <Tooltip
             title={intl.formatMessage({ id: 'playground.toolbar.clearmsg' })}
           >
@@ -345,17 +356,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
               onClick={handleClearAll}
             ></Button>
           </Tooltip>
-
-          {/* <Tooltip
-            title={intl.formatMessage({ id: 'playground.toolbar.prompts' })}
-          >
-            <Button
-              type="text"
-              icon={<ControlOutlined />}
-              size="middle"
-              onClick={handleOpenPrompt}
-            ></Button>
-          </Tooltip> */}
           {updateLayout && (
             <>
               <Divider type="vertical" style={{ margin: 0 }} />
@@ -391,18 +391,20 @@ const MessageInput: React.FC<MessageInputProps> = ({
             ></Select>
           )}
 
-          <Tooltip
-            title={
-              <span>
-                [{KeyMap.ADD.textKeybinding}]{' '}
+          {scope !== 'reranker' && (
+            <Tooltip
+              title={
+                <span>
+                  [{KeyMap.ADD.textKeybinding}]{' '}
+                  {intl.formatMessage({ id: 'common.button.add' })}
+                </span>
+              }
+            >
+              <Button type="default" size="middle" onClick={handleAddMessage}>
                 {intl.formatMessage({ id: 'common.button.add' })}
-              </span>
-            }
-          >
-            <Button type="default" size="middle" onClick={handleAddMessage}>
-              {intl.formatMessage({ id: 'common.button.add' })}
-            </Button>
-          </Tooltip>
+              </Button>
+            </Tooltip>
+          )}
           {!loading ? (
             <Tooltip
               title={
@@ -440,23 +442,39 @@ const MessageInput: React.FC<MessageInputProps> = ({
         onDelete={handleDeleteImg}
       ></ThumbImg>
       <div className="input-box">
-        <TextArea
-          ref={inputRef}
-          autoSize={{ minRows: 3, maxRows: 8 }}
-          onChange={handleInputChange}
-          value={message.content}
-          size="large"
-          variant="borderless"
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onKeyDown={handleKeyDown}
-          onPaste={handleOnPaste}
-        ></TextArea>
+        {scope !== 'reranker' ? (
+          <TextArea
+            ref={inputRef}
+            autoSize={{ minRows: 3, maxRows: 8 }}
+            onChange={handleInputChange}
+            value={message.content}
+            size="large"
+            variant="borderless"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={handleKeyDown}
+            onPaste={handleOnPaste}
+          ></TextArea>
+        ) : (
+          <TextArea
+            ref={inputRef}
+            autoSize={{ minRows: 3, maxRows: 8 }}
+            onChange={handleInputChange}
+            value={message.content}
+            size="large"
+            variant="borderless"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={handleKeyDown}
+          ></TextArea>
+        )}
         {!message.content && !focused && (
           <span
             className="holder"
             dangerouslySetInnerHTML={{
-              __html: intl.formatMessage({ id: 'playground.input.holder' })
+              __html:
+                placeholer ??
+                intl.formatMessage({ id: 'playground.input.holder' })
             }}
           ></span>
         )}
@@ -464,7 +482,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <PromptModal
         open={open}
         onCancel={() => setOpen(false)}
-        onSelect={presetPrompt}
+        onSelect={handleSelectPrompt}
       ></PromptModal>
     </div>
   );

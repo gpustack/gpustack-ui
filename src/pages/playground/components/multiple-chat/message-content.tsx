@@ -5,10 +5,11 @@ import ContentItem from './content-item';
 
 interface MessageContentProps {
   loading?: boolean;
-  spans: {
+  spans?: {
     span: number;
     count: number;
   };
+  actions?: string[];
   editable?: boolean;
   messageList: MessageItem[];
   setMessageList?: (list: any) => void;
@@ -17,8 +18,8 @@ interface MessageContentProps {
 const MessageContent: React.FC<MessageContentProps> = ({
   setMessageList,
   messageList,
-  spans,
-  editable
+  editable,
+  actions = ['upload', 'delete', 'copy']
 }) => {
   const updateMessage = (index: number, message: MessageItem) => {
     const newMessageList = [...messageList];
@@ -41,6 +42,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
               key={item.uid}
               data={item}
               editable={editable}
+              actions={actions}
               onDelete={() => handleDelete(index)}
               updateMessage={(data) => updateMessage(index, data)}
             />

@@ -42,6 +42,7 @@ export default {
   'playground.toolbar.compare4Model': '4-Model Comparison',
   'playground.toolbar.compare6Model': '6-Model Comparison',
   'playground.input.holder': 'Type <kbd>/</kbd> to input message',
+  'playground.input.keyword.holder': 'Type <kbd>/</kbd> to input your query',
   'playground.compare.apply': 'Apply',
   'playground.compare.applytoall': 'Apply to all models',
   'playground.model.noavailable': 'No available models',

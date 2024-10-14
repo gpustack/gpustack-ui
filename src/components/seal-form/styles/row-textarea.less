@@ -1,0 +1,60 @@
+.row-textarea {
+  position: relative;
+
+  &.focus {
+    padding-top: 9px;
+  }
+
+  .content-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 20px;
+    cursor: pointer;
+
+    &:hover {
+      .clear-btn {
+        display: block;
+      }
+    }
+  }
+
+  textarea.ant-input {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .clear-btn {
+    display: none;
+    position: absolute;
+    right: 6px;
+    top: 6px;
+  }
+
+  .textarea-label {
+    position: relative;
+    top: 1px;
+    font-weight: var(--font-weight-bold);
+    padding-left: 14px;
+  }
+
+  .content {
+    flex: 1;
+    width: 100px;
+    height: 40px;
+    line-height: 24px;
+    padding: 8px 14px;
+    padding-right: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--ant-color-text-secondary);
+
+    .title {
+      font-weight: var(--font-weight-normal);
+      padding-right: 10px;
+      color: var(--ant-color-text);
+    }
+  }
+}

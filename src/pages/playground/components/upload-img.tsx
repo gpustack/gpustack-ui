@@ -7,12 +7,16 @@ import { debounce } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 
 interface UploadImgProps {
+  size?: 'small' | 'middle' | 'large';
   handleUpdateImgList: (
     imgList: { dataUrl: string; uid: number | string }[]
   ) => void;
 }
 
-const UploadImg: React.FC<UploadImgProps> = ({ handleUpdateImgList }) => {
+const UploadImg: React.FC<UploadImgProps> = ({
+  handleUpdateImgList,
+  size = 'small'
+}) => {
   const intl = useIntl();
   const uploadRef = useRef<any>(null);
 
@@ -74,7 +78,7 @@ const UploadImg: React.FC<UploadImgProps> = ({ handleUpdateImgList }) => {
         onChange={handleChange}
       >
         <Tooltip title={intl.formatMessage({ id: 'playground.img.upload' })}>
-          <Button size="small" type="text" icon={<PictureOutlined />}></Button>
+          <Button size={size} type="text" icon={<PictureOutlined />}></Button>
         </Tooltip>
       </Upload>
     </>

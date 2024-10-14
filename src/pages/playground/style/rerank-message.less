@@ -1,0 +1,45 @@
+.rerank-message {
+  display: flex;
+  flex-direction: column;
+
+  .rank {
+    margin-right: 10px;
+    max-width: 75px;
+    min-width: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .score {
+      margin-left: 5px;
+      color: var(--ant-rate-star-color);
+    }
+  }
+
+  .result {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .content-item-text {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .text {
+    flex: 1;
+    width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0;
+  }
+
+  .doc-name {
+    margin-bottom: 0;
+    font-weight: var(--font-weight-bold);
+    font-style: italic;
+  }
+}

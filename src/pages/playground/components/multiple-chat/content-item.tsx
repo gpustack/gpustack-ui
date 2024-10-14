@@ -15,6 +15,7 @@ interface MessageItemProps {
   data: MessageItem;
   editable?: boolean;
   loading?: boolean;
+  actions?: string[];
   updateMessage?: (message: MessageItem) => void;
   onDelete?: () => void;
 }
@@ -24,7 +25,8 @@ const ContentItem: React.FC<MessageItemProps> = ({
   onDelete,
   loading,
   data,
-  editable
+  editable,
+  actions = ['upload', 'delete', 'copy']
 }) => {
   const intl = useIntl();
   const inputRef = useRef<any>(null);
@@ -107,9 +109,12 @@ const ContentItem: React.FC<MessageItemProps> = ({
     e.preventDefault();
     const text = e.clipboardData.getData('text');
     if (text) {
+      const startPos = e.target.selectionStart;
+      const endPos = e.target.selectionEnd;
       updateMessage?.({
         role: data.role,
-        content: data.content + text,
+        content:
+          data.content.slice(0, startPos) + text + data.content.slice(endPos),
         uid: data.uid
       });
     } else {
@@ -176,13 +181,13 @@ const ContentItem: React.FC<MessageItemProps> = ({
     <div className="content-item">
       <div className="content-item-role">
         <div className="role">
-          {intl.formatMessage({ id: `playground.${data.role}` })}
+          {data.title ?? intl.formatMessage({ id: `playground.${data.role}` })}
         </div>
         <div className="actions">
-          {editable && (
+          {actions.includes('upload') && (
             <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>
           )}
-          {data.content && (
+          {data.content && actions.includes('copy') && (
             <CopyButton
               text={data.content}
               size="small"
@@ -191,7 +196,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
               fontSize="12px"
             ></CopyButton>
           )}
-          {editable && (
+          {actions.includes('delete') && (
             <Tooltip title={intl.formatMessage({ id: 'common.button.delete' })}>
               <Button
                 size="small"
@@ -229,9 +234,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
           ></Input.TextArea>
         </div>
       ) : (
-        <div className="content-item-content">
-          <span>{data.content}</span>
-        </div>
+        <div className="content-item-content">{data.content}</div>
       )}
     </div>
   );

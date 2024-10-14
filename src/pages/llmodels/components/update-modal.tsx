@@ -72,21 +72,24 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     setGpuOptions(list);
   };
 
-  const initFormValue = useMemo(() => {
-    const result = setSourceRepoConfigValue(
-      props.data?.source || '',
-      props.data
-    );
+  useEffect(() => {
+    if (action === PageAction.EDIT && open) {
+      const result = setSourceRepoConfigValue(
+        props.data?.source || '',
+        props.data
+      );
 
-    return {
-      ...result.values,
-      ..._.omit(props.data, result.omits),
-      scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
-      gpu_selector: props.data?.gpu_selector
-        ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
-        : null
-    };
-  }, [props.data]);
+      const formData = {
+        ...result.values,
+        ..._.omit(props.data, result.omits),
+        scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
+        gpu_selector: props.data?.gpu_selector
+          ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
+          : null
+      };
+      form.setFieldsValue(formData);
+    }
+  }, [open]);
 
   useEffect(() => {
     setIsGGUF(props.data?.backend === backendOptionsMap.llamaBox);
@@ -245,6 +248,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
+  const handleOnClose = () => {
+    onCancel?.();
+  };
+
   useEffect(() => {
     getGPUList();
   }, []);
@@ -256,6 +263,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       centered={true}
       onOk={handleSumit}
       onCancel={onCancel}
+      onClose={handleOnClose}
       destroyOnClose={true}
       closeIcon={true}
       maskClosable={false}
@@ -293,9 +301,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           style={{
             padding: 'var(--ant-modal-content-padding)',
             paddingBlock: 0
-          }}
-          initialValues={{
-            ...initFormValue
           }}
         >
           <Form.Item<FormData>

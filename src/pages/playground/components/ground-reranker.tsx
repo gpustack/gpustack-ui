@@ -306,6 +306,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           <div style={{ marginTop: 8 }}>
             <FileList
               fileList={fileList}
+              textListCount={textList.length || 0}
               onDelete={handleDeleteFile}
             ></FileList>
           </div>

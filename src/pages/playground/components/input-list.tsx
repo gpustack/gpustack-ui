@@ -70,7 +70,7 @@ const InputList: React.FC<InputListProps> = ({ textList, onChange }) => {
           <div key={text.uid} className="input-item">
             <div className="input-wrap">
               <RowTextarea
-                label={`Text ${index + 1}`}
+                label={`${index + 1}.`}
                 value={text.text}
                 onChange={(e) => handleTextChange(e.target.value, text)}
               ></RowTextarea>

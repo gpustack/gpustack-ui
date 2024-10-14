@@ -72,6 +72,7 @@ const InputList: React.FC<InputListProps> = ({ textList, onChange }) => {
               <RowTextarea
                 label={`${index + 1}.`}
                 value={text.text}
+                placeholder="Input your text"
                 onChange={(e) => handleTextChange(e.target.value, text)}
               ></RowTextarea>
             </div>

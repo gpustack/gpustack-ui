@@ -1,10 +1,6 @@
 import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
-import {
-  FileSearchOutlined,
-  MessageOutlined,
-  OneToOneOutlined
-} from '@ant-design/icons';
+import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
@@ -38,12 +34,12 @@ const Playground: React.FC = () => {
       label: intl.formatMessage({ id: 'menu.compare' }),
       value: 'compare',
       icon: <OneToOneOutlined />
-    },
-    {
-      label: 'Rerank',
-      value: 'reranker',
-      icon: <FileSearchOutlined />
     }
+    // {
+    //   label: 'Rerank',
+    //   value: 'reranker',
+    //   icon: <FileSearchOutlined />
+    // }
   ];
 
   const handleViewCode = useCallback(() => {

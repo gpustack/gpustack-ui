@@ -137,7 +137,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageList([
         ...currentMessageRef.current,
         {
-          title: 'Result',
+          title: 'Results',
           content: result.results?.map((item: any) => {
             return {
               uid: item.index,

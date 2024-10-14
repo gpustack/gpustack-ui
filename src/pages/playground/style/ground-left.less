@@ -2,6 +2,7 @@
   display: flex;
 
   .params-wrapper {
+    position: relative;
     overflow-x: hidden;
     width: 390px;
     border-left: 1px solid var(--ant-color-split);
@@ -49,5 +50,12 @@
         flex: 1;
       }
     }
+  }
+
+  .ant-upload-wrapper .ant-upload-drag {
+    background-color: var(--color-fill-sider);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }

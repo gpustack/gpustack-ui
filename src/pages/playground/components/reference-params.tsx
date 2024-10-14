@@ -5,6 +5,7 @@ import _ from 'lodash';
 import '../style/reference-params.less';
 
 interface ReferenceParamsProps {
+  showOutput?: boolean;
   usage: {
     error?: boolean;
     errorMessage?: string;
@@ -19,7 +20,7 @@ interface ReferenceParamsProps {
 
 const ReferenceParams = (props: ReferenceParamsProps) => {
   const intl = useIntl();
-  const { usage } = props;
+  const { usage, showOutput = true } = props;
   if (!usage || _.isEmpty(usage)) {
     return null;
   }
@@ -63,25 +64,27 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
         </Tooltip>
       </span>
 
-      <span className="usage">
-        <Tooltip
-          title={
-            <Space>
-              <span>
-                TPOT: {_.round(usage.time_per_output_token_ms, 2) || 0} ms
-              </span>
-              <span>
-                TTFT: {_.round(usage.time_to_first_token_ms, 2) || 0} ms
-              </span>
-            </Space>
-          }
-        >
-          <span>
-            {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
-            {_.round(usage.tokens_per_second, 2) || 0} Tokens/s
-          </span>
-        </Tooltip>
-      </span>
+      {showOutput && (
+        <span className="usage">
+          <Tooltip
+            title={
+              <Space>
+                <span>
+                  TPOT: {_.round(usage.time_per_output_token_ms, 2) || 0} ms
+                </span>
+                <span>
+                  TTFT: {_.round(usage.time_to_first_token_ms, 2) || 0} ms
+                </span>
+              </Space>
+            }
+          >
+            <span>
+              {intl.formatMessage({ id: 'playground.tokenoutput' })}:{' '}
+              {_.round(usage.tokens_per_second, 2) || 0} Tokens/s
+            </span>
+          </Tooltip>
+        </span>
+      )}
     </div>
   );
 };

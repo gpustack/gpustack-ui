@@ -1,0 +1,39 @@
+.input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .input-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-bottom: 1px solid var(--ant-color-split);
+
+    &:focus-within {
+      background-color: transparent;
+    }
+
+    .input-wrap {
+      flex: 1;
+    }
+
+    .btn-group {
+      width: 60px;
+      margin-left: 8px;
+      display: flex;
+      gap: 8px;
+    }
+
+    &:hover {
+      background-color: var(--ant-color-fill-tertiary);
+
+      .btn-group {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
+}

@@ -367,26 +367,29 @@ const Models: React.FC<ModelsProps> = ({
     setOpenAddModal(true);
   };
 
-  const handleSelect = useCallback((val: any, row: ListItem) => {
-    if (val === 'edit') {
-      handleEdit(row);
-    }
-    if (val === 'chat') {
-      handleOpenPlayGround(row);
-    }
-    if (val === 'delete') {
-      handleDelete(row);
-    }
-    if (val === 'embedding') {
-      setEmbeddingParams({
-        params: {
-          input: 'Your text string goes here',
-          model: row.name
-        },
-        show: true
-      });
-    }
-  }, []);
+  const handleSelect = useCallback(
+    (val: any, row: ListItem) => {
+      if (val === 'edit') {
+        handleEdit(row);
+      }
+      if (val === 'chat') {
+        handleOpenPlayGround(row);
+      }
+      if (val === 'delete') {
+        handleDelete(row);
+      }
+      if (val === 'embedding') {
+        setEmbeddingParams({
+          params: {
+            input: 'Your text string goes here',
+            model: row.name
+          },
+          show: true
+        });
+      }
+    },
+    [handleEdit, handleOpenPlayGround, handleDelete, setEmbeddingParams]
+  );
 
   const handleChildSelect = useCallback(
     (val: any, row: ModelInstanceListItem, list: ModelInstanceListItem[]) => {
@@ -524,7 +527,14 @@ const Models: React.FC<ModelsProps> = ({
                   <AutoTooltip ghost>
                     <span className="m-r-5">{text}</span>
                   </AutoTooltip>
-                  {record.embedding_only && (
+                  {record.reranker && (
+                    <span>
+                      <Tag style={{ margin: 0 }} color="geekblue">
+                        Reranker
+                      </Tag>
+                    </span>
+                  )}
+                  {record.embedding_only && !record.reranker && (
                     <span>
                       <Tag style={{ margin: 0 }} color="geekblue">
                         Embedding Only

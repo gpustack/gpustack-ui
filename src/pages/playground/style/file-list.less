@@ -1,0 +1,38 @@
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--ant-color-split);
+    padding: 8px 14px;
+    padding-right: 6px;
+    cursor: pointer;
+    height: 41px;
+    transition: background-color 0.3s ease;
+
+    .delete-btn {
+      display: none;
+    }
+
+    &:hover {
+      background-color: var(--ant-color-fill-tertiary);
+
+      .delete-btn {
+        display: block;
+      }
+    }
+
+    &.ghost {
+      background-color: transparent;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+    }
+  }
+}

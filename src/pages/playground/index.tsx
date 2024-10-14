@@ -1,6 +1,10 @@
 import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
-import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
+import {
+  FileSearchOutlined,
+  MessageOutlined,
+  OneToOneOutlined
+} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
@@ -10,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundLeft from './components/ground-left';
+import GroundReranker from './components/ground-reranker';
 import MultipleChat from './components/multiple-chat';
 import './style/play-ground.less';
 
@@ -17,7 +22,11 @@ const Playground: React.FC = () => {
   const intl = useIntl();
   const [activeKey, setActiveKey] = useState('chat');
   const groundLeftRef = useRef<any>(null);
+  const groundRerankerRef = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
+  const [rerankerModelList, setRerankerModelList] = useState<
+    Global.BaseOption<string>[]
+  >([]);
   const [loaded, setLoaded] = useState(false);
   const optionsList = [
     {
@@ -29,6 +38,11 @@ const Playground: React.FC = () => {
       label: intl.formatMessage({ id: 'menu.compare' }),
       value: 'compare',
       icon: <OneToOneOutlined />
+    },
+    {
+      label: 'Rerank',
+      value: 'reranker',
+      icon: <FileSearchOutlined />
     }
   ];
 
@@ -37,8 +51,12 @@ const Playground: React.FC = () => {
   }, [groundLeftRef]);
 
   const handleToggleCollapse = useCallback(() => {
+    if (activeKey === 'reranker') {
+      groundRerankerRef.current?.setCollapse?.();
+      return;
+    }
     groundLeftRef.current?.setCollapse?.();
-  }, [groundLeftRef]);
+  }, [groundLeftRef, groundRerankerRef, activeKey]);
 
   const items: TabsProps['items'] = [
     {
@@ -52,6 +70,17 @@ const Playground: React.FC = () => {
       key: 'compare',
       label: 'Compare',
       children: <MultipleChat modelList={modelList} loaded={loaded} />
+    },
+    {
+      key: 'reranker',
+      label: 'Reranker',
+      children: (
+        <GroundReranker
+          ref={groundRerankerRef}
+          modelList={rerankerModelList}
+          loaded={loaded}
+        ></GroundReranker>
+      )
     }
   ];
 
@@ -68,14 +97,43 @@ const Playground: React.FC = () => {
             label: item.id
           };
         }) as Global.BaseOption<string>[];
-        setModelList(list);
+        return list;
       } catch (error) {
         console.error(error);
-      } finally {
+        return [];
+      }
+    };
+    const getModelListByReranker = async () => {
+      try {
+        const params = {
+          reranker: true
+        };
+        const res = await queryModelsList(params);
+        const list = _.map(res.data || [], (item: any) => {
+          return {
+            value: item.id,
+            label: item.id
+          };
+        }) as Global.BaseOption<string>[];
+        return list;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    };
+    const fetchData = async () => {
+      try {
+        const [modelist, rerankerModelList] = await Promise.all([
+          getModelList(),
+          getModelListByReranker()
+        ]);
+        setModelList(modelist);
+        setRerankerModelList(rerankerModelList);
+      } catch (error) {
         setLoaded(true);
       }
     };
-    getModelList();
+    fetchData();
   }, []);
 
   const renderExtra = () => {
@@ -136,7 +194,7 @@ const Playground: React.FC = () => {
       extra={renderExtra()}
       className={classNames('playground-container', {
         compare: activeKey === 'compare',
-        chat: activeKey === 'chat'
+        chat: activeKey !== 'compare'
       })}
     >
       <div className="play-ground">

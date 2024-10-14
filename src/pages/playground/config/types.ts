@@ -7,6 +7,7 @@ export interface ModelSelectionItem extends Global.BaseOption<string> {
 export interface MessageItem {
   role: string;
   content: string;
+  title?: string;
   imgs?: { uid: string | number; dataUrl: string }[];
   uid: number;
 }

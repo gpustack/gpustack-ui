@@ -10,18 +10,20 @@ interface FileListProps {
   fileList: { text: string; name: string; uid: number | string }[];
   ghost?: boolean;
   showIcon?: boolean;
+  textListCount: number;
   onDelete?: (uid: number | string) => void;
 }
 
 const FileList: React.FC<FileListProps> = (props) => {
-  const { fileList, ghost, showIcon = true, onDelete } = props;
+  const { textListCount, fileList, ghost, showIcon = true, onDelete } = props;
   const intl = useIntl();
   return (
     <div className="file-list">
-      {fileList.map((file) => {
+      {fileList.map((file, index) => {
         return (
           <div key={file.uid} className={classNames('file-item', { ghost })}>
             <span className="title">
+              <span className="m-r-5">{index + 1 + textListCount}.</span>
               {showIcon && <PaperClipOutlined className="m-r-5" />}
               <AutoTooltip ghost> {file.name}</AutoTooltip>
             </span>

@@ -37,7 +37,7 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ dataList }) => {
                           </span>
                         </dt>
                         <dd className="text">{sItem.text}</dd>
-                        <dd className="doc-name">《{sItem.title}》</dd>
+                        {/* <dd className="doc-name">《{sItem.title}》</dd> */}
                       </dl>
                     );
                   })}

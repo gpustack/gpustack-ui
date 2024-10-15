@@ -261,7 +261,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   }, []);
 
   return (
-    <div>
+    <div className="files-wrap">
       <TitleWrapper>
         <span className="title">
           {intl.formatMessage({ id: 'models.available.files' })} (
@@ -282,83 +282,89 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           style={{ width: '120px' }}
         ></Select>
       </TitleWrapper>
+      {dataSource.loading && (
+        <div className="spin-wrapper">
+          <Spin
+            spinning={dataSource.loading}
+            style={{ height: '100%', width: '100%' }}
+          ></Spin>
+        </div>
+      )}
       <SimpleBar
         style={{
           height: collapsed ? 'max-content' : 'calc(100vh - 300px)'
         }}
       >
         <div style={{ padding: '16px 24px' }}>
-          <Spin spinning={dataSource.loading} style={{ minHeight: 100 }}>
-            {dataSource.fileList.length ? (
-              <Row gutter={[16, 24]}>
-                {_.map(dataSource.fileList, (item: any) => {
-                  return (
-                    <Col span={24} key={item.path}>
-                      <div
-                        className={classNames('hf-model-file', {
-                          active: item.path === current
-                        })}
-                        tabIndex={0}
-                        onClick={() => handleSelectModelFile(item)}
-                        onKeyDown={(e) => handleOnEnter(e, item)}
-                      >
-                        <div className="title">{item.path}</div>
-                        <div className="tags">
-                          <Tag
-                            className="tag-item"
-                            color="green"
-                            style={{
-                              marginRight: 0
+          {dataSource.fileList.length ? (
+            <Row gutter={[16, 24]}>
+              {_.map(dataSource.fileList, (item: any) => {
+                return (
+                  <Col span={24} key={item.path}>
+                    <div
+                      className={classNames('hf-model-file', {
+                        active: item.path === current
+                      })}
+                      tabIndex={0}
+                      onClick={() => handleSelectModelFile(item)}
+                      onKeyDown={(e) => handleOnEnter(e, item)}
+                    >
+                      <div className="title">{item.path}</div>
+                      <div className="tags">
+                        <Tag
+                          className="tag-item"
+                          color="green"
+                          style={{
+                            marginRight: 0
+                          }}
+                        >
+                          <span style={{ opacity: 0.65 }}>
+                            {convertFileSize(item.size)}
+                          </span>
+                        </Tag>
+                        {getModelQuantizationType(item)}
+                        {item.parts && item.parts.length > 1 && (
+                          <Tooltip
+                            overlayInnerStyle={{
+                              width: 180,
+                              padding: 0
                             }}
+                            title={
+                              <FileParts fileList={item.parts}></FileParts>
+                            }
                           >
-                            <span style={{ opacity: 0.65 }}>
-                              {convertFileSize(item.size)}
-                            </span>
-                          </Tag>
-                          {getModelQuantizationType(item)}
-                          {item.parts && item.parts.length > 1 && (
-                            <Tooltip
-                              overlayInnerStyle={{
-                                width: 180,
-                                padding: 0
+                            <Tag
+                              className="tag-item"
+                              color="purple"
+                              style={{
+                                marginRight: 0
                               }}
-                              title={
-                                <FileParts fileList={item.parts}></FileParts>
-                              }
                             >
-                              <Tag
-                                className="tag-item"
-                                color="purple"
-                                style={{
-                                  marginRight: 0
-                                }}
-                              >
-                                <span style={{ opacity: 1 }}>
-                                  <InfoCircleOutlined className="m-r-5" />
-                                  {item.parts.length} parts
-                                </span>
-                              </Tag>
-                            </Tooltip>
-                          )}
-                        </div>
+                              <span style={{ opacity: 1 }}>
+                                <InfoCircleOutlined className="m-r-5" />
+                                {item.parts.length} parts
+                              </span>
+                            </Tag>
+                          </Tooltip>
+                        )}
                       </div>
-                    </Col>
-                  );
+                    </div>
+                  </Col>
+                );
+              })}
+            </Row>
+          ) : (
+            !dataSource.loading &&
+            !dataSource.fileList.length && (
+              <Empty
+                imageStyle={{ height: 'auto', marginTop: '20px' }}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={intl.formatMessage({
+                  id: 'models.search.nofiles'
                 })}
-              </Row>
-            ) : (
-              !dataSource.loading &&
-              !dataSource.fileList.length && (
-                <Empty
-                  imageStyle={{ height: 'auto', marginTop: '20px' }}
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={intl.formatMessage({
-                    id: 'models.search.nofiles'
-                  })}
-                />
-              )
-            )}
-          </Spin>
+              />
+            )
+          )}
         </div>
       </SimpleBar>
     </div>

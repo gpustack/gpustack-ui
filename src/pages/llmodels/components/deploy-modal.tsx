@@ -3,6 +3,7 @@ import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
+import { debounce } from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
@@ -53,6 +54,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, []);
 
   const handleOnSelectModel = (item: any) => {
+    handleSelectModelFile({ fakeName: '' });
     setSelectedModel(item);
   };
 
@@ -60,12 +62,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current?.submit?.();
   };
 
+  const debounceFetchModelFiles = debounce(() => {
+    modelFileRef.current?.fetchModelFiles?.();
+  }, 300);
+
   const handleSetIsGGUF = (flag: boolean) => {
     setIsGGUF(flag);
     if (flag) {
-      setTimeout(() => {
-        modelFileRef.current?.fetchModelFiles?.();
-      }, 50);
+      debounceFetchModelFiles();
     }
   };
 

@@ -23,12 +23,19 @@ const ThumbImg: React.FC<{
     <div className="thumb-list-wrap">
       {_.map(dataList, (item: any) => {
         return (
-          <span key={item.uid} className="thumb-img">
+          <span
+            key={item.uid}
+            className="thumb-img"
+            style={{
+              width: item.width,
+              height: item.height
+            }}
+          >
             <span className="img">
               <Image
                 src={item.dataUrl}
-                width={56}
-                height={56}
+                width={item.width}
+                height={item.height}
                 preview={{
                   mask: <EyeOutlined />
                 }}

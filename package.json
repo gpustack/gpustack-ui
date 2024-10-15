@@ -7,6 +7,8 @@
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "prepare": "husky",
+    "preview": "max preview",
+    "report": "max build --analyze",
     "setup": "max setup",
     "start": "npm run dev"
   },
@@ -34,9 +36,11 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "echarts": "^5.5.1",
+    "epubjs": "^0.3.93",
     "has-ansi": "^5.0.1",
     "highlight.js": "^11.10.0",
     "jotai": "^2.8.4",
+    "jszip": "^3.10.1",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "mammoth": "^1.8.0",
@@ -44,6 +48,7 @@
     "numeral": "^2.0.6",
     "overlayscrollbars": "^2.10.0",
     "overlayscrollbars-react": "^0.5.6",
+    "pdfjs-dist": "^4.7.76",
     "query-string": "^9.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -74,6 +79,7 @@
     "prettier-plugin-packagejson": "^2.5.0",
     "prettier-plugin-two-style-order": "^1.0.1",
     "typescript": "^5.4.5",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }

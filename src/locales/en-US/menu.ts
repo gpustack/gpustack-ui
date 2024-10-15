@@ -1,7 +1,8 @@
 export default {
   'menu.dashboard': 'Dashboard',
   'menu.playground': 'Playground',
-  'menu.chat': 'Chat',
+  'menu.playground.rerank': 'Rerank',
+  'menu.playground.chat': 'Chat',
   'menu.compare': 'Compare',
   'menu.models': 'Models',
   'menu.resources': 'Resources',

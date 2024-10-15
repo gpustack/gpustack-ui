@@ -73,6 +73,7 @@ interface MessageInputProps {
   isEmpty?: boolean;
   scope: string;
   placeholer?: string;
+  shouldResetMessage?: boolean;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -89,7 +90,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   disabled,
   isEmpty,
   scope,
-  placeholer
+  placeholer,
+  shouldResetMessage = true
 }) => {
   const { TextArea } = Input;
   const intl = useIntl();
@@ -126,7 +128,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
   const handleSendMessage = () => {
     handleSubmit({ ...message });
-    resetMessage();
+    if (shouldResetMessage) {
+      resetMessage();
+    }
   };
   const onStop = () => {
     handleAbortFetch();
@@ -346,16 +350,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
               ></UploadImg>
             </>
           )}
-          <Tooltip
-            title={intl.formatMessage({ id: 'playground.toolbar.clearmsg' })}
-          >
-            <Button
-              type="text"
-              icon={<ClearOutlined />}
-              size="middle"
-              onClick={handleClearAll}
-            ></Button>
-          </Tooltip>
+          {scope !== 'reranker' && (
+            <Tooltip
+              title={intl.formatMessage({ id: 'playground.toolbar.clearmsg' })}
+            >
+              <Button
+                type="text"
+                icon={<ClearOutlined />}
+                size="middle"
+                onClick={handleClearAll}
+              ></Button>
+            </Tooltip>
+          )}
           {updateLayout && (
             <>
               <Divider type="vertical" style={{ margin: 0 }} />

@@ -3,12 +3,10 @@ import HighlightCode from '@/components/highlight-code';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
-import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
-  systemMessage?: string;
-  messageList: any[];
+  documentList: string[];
   parameters: any;
   title: string;
   open: boolean;
@@ -25,7 +23,7 @@ const langMap = {
 const langOptions = [
   { label: 'Curl', value: langMap.shell },
   { label: 'Python', value: langMap.python },
-  { label: 'Nodejs', value: langMap.javascript }
+  { label: 'JavaScript', value: langMap.javascript }
 ];
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
@@ -33,102 +31,48 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     title,
     open,
     onCancel,
-    systemMessage,
-    messageList,
-    parameters = {},
-    apiType = 'chat'
+    documentList = [],
+    parameters = {}
   } = props || {};
 
   const intl = useIntl();
-  const editorRef = useRef(null);
   const [codeValue, setCodeValue] = useState('');
   const [lang, setLang] = useState(langMap.shell);
 
-  const BaseURL = `${window.location.origin}/v1-openai`;
-  const ClientType = apiType === 'chat' ? 'chat.completions' : 'embeddings';
-  const api = apiType === 'chat' ? 'chat/completions' : 'embeddings';
-  const logcommand =
-    apiType === 'chat' ? 'choices[0].message.content' : 'data[0].embedding';
+  const BaseURL = `${window.location.origin}/v1/rerank`;
 
   const generateCode = () => {
-    const systemList = systemMessage
-      ? [
-          {
-            role: 'system',
-            content: [
-              {
-                type: 'text',
-                text: systemMessage
-              }
-            ]
-          }
-        ]
-      : [];
-
-    const formatMessageList = _.map(messageList, (item: any) => {
-      return {
-        role: item.role,
-        content: [
-          {
-            type: 'text',
-            text: item.content
-          },
-          ..._.map(item.imgs, (img: any) => {
-            return {
-              type: 'image_url',
-              image_url: {
-                url: img.dataUrl
-              }
-            };
-          })
-        ]
-      };
-    });
     if (lang === langMap.shell) {
-      const messages = [...systemList, ...formatMessageList];
-      const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/v1-openai \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
-          ...(messages.length > 0 ? { messages } : {})
+          documents: documentList
         },
         null,
         2
       )}'`;
       setCodeValue(code);
     } else if (lang === langMap.javascript) {
-      const messages = [...systemList, ...formatMessageList];
-      const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
-        {
-          ...parameters,
-          ...(messages.length > 0 ? { messages } : {})
-        },
-        null,
-        4
-      )};\nconst response = await openai.${ClientType}.create(params);\n  console.log(response.${logcommand});\n}\nmain();`;
+      const data = {
+        ...parameters,
+        documents: documentList
+      };
+      const headers = {
+        'Content-type': 'application/json',
+        Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
+      };
+      const code = `import axios from 'axios';\n\nconst url = "${BaseURL}";\n\nconst headers = ${JSON.stringify(headers, null, 2)};\n\nconst data = ${JSON.stringify(data, null, 2)};\n\naxios.post(url, data, { headers }).then((response) => {\n  console.log(response.data);\n});`;
       setCodeValue(code);
     } else if (lang === langMap.python) {
-      const formattedParams = _.keys(parameters).reduce(
-        (acc: string, key: string) => {
-          if (parameters[key] === null) {
-            return acc;
-          }
-          const value =
-            typeof parameters[key] === 'string'
-              ? `"${parameters[key]}"`
-              : parameters[key];
-          return acc + `  ${key}=${value},\n`;
-        },
-        ''
-      );
-      const messages =
-        apiType === 'chat'
-          ? `messages=${JSON.stringify(
-              [...systemList, ...formatMessageList],
-              null,
-              2
-            )}`
-          : '';
-      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${ClientType}.create(\n${formattedParams}  ${messages})\nprint(response.${logcommand})`;
+      const data = {
+        ...parameters,
+        documents: documentList
+      };
+      const headers = {
+        'Content-type': 'application/json',
+        Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
+      };
+      const code = `import requests\n\nurl="${BaseURL}"\n\nheaders = ${JSON.stringify(headers, null, 2)}\n\ndata=${JSON.stringify(data, null, 2)}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nprint(response.json())`;
       setCodeValue(code);
     }
   };
@@ -144,7 +88,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
 
   useEffect(() => {
     generateCode();
-  }, [lang, systemMessage, messageList, parameters]);
+  }, [lang, parameters, documentList]);
 
   return (
     <>

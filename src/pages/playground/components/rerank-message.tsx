@@ -1,4 +1,3 @@
-import { StarFilled } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 import React from 'react';
@@ -6,17 +5,22 @@ import '../style/content-item.less';
 import '../style/rerank-message.less';
 
 interface RerankMessageProps {
+  header?: React.ReactNode;
   dataList: { title?: string; content: any; uid: number | string }[];
 }
-const RerankMessage: React.FC<RerankMessageProps> = ({ dataList }) => {
+const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
+  if (!dataList || dataList.length === 0) {
+    return null;
+  }
   return (
     <div className="rerank-message">
+      {header}
       {dataList.map((item) => {
         return (
           <div className="content-item" key={item.uid}>
-            <div className="content-item-role">
+            {/* <div className="content-item-role">
               <span className="role">{item.title}</span>
-            </div>
+            </div> */}
             <div className="content-item-content">
               {Array.isArray(item.content) ? (
                 <div className="result">
@@ -24,20 +28,15 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ dataList }) => {
                     return (
                       <dl className="content-item-text" key={sItem.uid}>
                         <dt className="rank">
-                          <span>[{sItem.docIndex + 1}]</span>
-                          <span className="score">
-                            <Tooltip
-                              title={
-                                <span>Score: {_.round(sItem.score, 2)}</span>
-                              }
-                            >
-                              <StarFilled className="m-r-5" />
-                              {_.round(sItem.score, 2)}
-                            </Tooltip>
+                          <span className="doc-index">
+                            {sItem.docIndex + 1}
                           </span>
                         </dt>
-                        <dd className="text">{sItem.text}</dd>
-                        {/* <dd className="doc-name">《{sItem.title}》</dd> */}
+                        <Tooltip
+                          title={<span>Score: {_.round(sItem.score, 2)}</span>}
+                        >
+                          <dd className="text">{sItem.text}</dd>
+                        </Tooltip>
                       </dl>
                     );
                   })}

@@ -26,7 +26,7 @@ const Playground: React.FC = () => {
   const [loaded, setLoaded] = useState(false);
   const optionsList = [
     {
-      label: intl.formatMessage({ id: 'menu.chat' }),
+      label: intl.formatMessage({ id: 'menu.playground.chat' }),
       value: 'chat',
       icon: <MessageOutlined />
     },
@@ -43,8 +43,12 @@ const Playground: React.FC = () => {
   ];
 
   const handleViewCode = useCallback(() => {
-    groundLeftRef.current?.viewCode?.();
-  }, [groundLeftRef]);
+    if (activeKey === 'reranker') {
+      groundRerankerRef.current?.viewCode?.();
+    } else if (activeKey === 'chat') {
+      groundLeftRef.current?.viewCode?.();
+    }
+  }, [groundLeftRef, groundRerankerRef, activeKey]);
 
   const handleToggleCollapse = useCallback(() => {
     if (activeKey === 'reranker') {
@@ -175,7 +179,7 @@ const Playground: React.FC = () => {
       header={{
         title: (
           <div className="flex items-center">
-            {intl.formatMessage({ id: 'menu.playground' })}
+            {intl.formatMessage({ id: 'menu.playground.chat' })}
             {
               <Segmented
                 options={optionsList}
@@ -185,7 +189,8 @@ const Playground: React.FC = () => {
               ></Segmented>
             }
           </div>
-        )
+        ),
+        breadcrumb: {}
       }}
       extra={renderExtra()}
       className={classNames('playground-container', {

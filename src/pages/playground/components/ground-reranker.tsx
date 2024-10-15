@@ -24,7 +24,7 @@ import ReferenceParams from './reference-params';
 import RerankMessage from './rerank-message';
 import RerankerParams from './reranker-params';
 import UploadFile from './upload-file';
-import ViewCodeModal from './view-code-modal';
+import ViewRerankCode from './view-rerank-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -34,6 +34,8 @@ interface MessageProps {
 
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
+  const acceptType =
+    '.txt, .doc, .docx, .xls, .xlsx, .csv, .md, .pdf, .eml, .msg, .ppt, .pptx, .xml, .epub, .html';
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<MessageItem[]>([]);
 
@@ -42,7 +44,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [searchParams] = useSearchParams();
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
-  const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
@@ -63,7 +64,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   >([]);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
-  const { initialize: innitializeParams } = useOverlayScroller();
+  const {
+    initialize: innitializeParams,
+    updateScrollerPosition: updateDocumentScrollerPosition
+  } = useOverlayScroller();
 
   useImperativeHandle(ref, () => {
     return {
@@ -95,32 +99,15 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 
-      controllerRef.current?.abort?.();
-      controllerRef.current = new AbortController();
-      const signal = controllerRef.current.signal;
-
-      currentMessageRef.current = current
-        ? [
-            {
-              content: current.content,
-              title: 'Query',
-              uid: messageId.current
-            }
-          ]
-        : [];
-
-      contentRef.current = '';
-      setMessageList((pre) => {
-        return [...currentMessageRef.current];
-      });
+      contentRef.current = current?.content || '';
 
       const documentList: any[] = [...textList, ...fileList];
-      console.log('documentList:', documentList);
+
       const result: any = await rerankerQuery(
         {
           model: parameters.model,
           top_n: parameters.top_n,
-          query: current?.content || '',
+          query: contentRef.current,
           documents: [
             ...textList.map((item) => item.text),
             ...fileList.map((item) => item.text)
@@ -135,9 +122,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(result.usage);
       setMessageList([
-        ...currentMessageRef.current,
         {
           title: 'Results',
+          role: '',
           content: result.results?.map((item: any) => {
             return {
               uid: item.index,
@@ -169,9 +156,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    const currentMessage =
-      message.content || message.imgs?.length ? message : undefined;
-    submitMessage(currentMessage);
+    submitMessage(message);
   };
 
   const handleCloseViewCode = () => {
@@ -223,17 +208,15 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [paramsRef.current, innitializeParams]);
 
   useEffect(() => {
-    if (loading) {
-      updateScrollerPosition();
-    }
-  }, [messageList, loading]);
+    updateScrollerPosition();
+  }, [messageList]);
 
   useEffect(() => {
-    if (messageList.length > messageListLengthCache.current) {
-      updateScrollerPosition();
+    if (textList.length + fileList.length > messageListLengthCache.current) {
+      updateDocumentScrollerPosition();
     }
-    messageListLengthCache.current = messageList.length;
-  }, [messageList.length]);
+    messageListLengthCache.current = textList.length + fileList.length;
+  }, [textList.length, fileList.length]);
 
   return (
     <div className="ground-left-wrapper">
@@ -241,7 +224,18 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="message-list-wrap" ref={scroller}>
           <>
             <div className="content">
-              <RerankMessage dataList={messageList} />
+              <RerankMessage
+                dataList={messageList}
+                header={
+                  <div className="result-header">
+                    <span className="title">Results</span>
+                    <ReferenceParams
+                      usage={tokenResult}
+                      showOutput={false}
+                    ></ReferenceParams>
+                  </div>
+                }
+              />
               {loading && (
                 <Spin size="small">
                   <div style={{ height: '46px' }}></div>
@@ -250,24 +244,36 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
           </>
         </div>
-        {tokenResult && (
-          <div style={{ height: 40 }}>
-            <ReferenceParams
-              usage={tokenResult}
-              showOutput={false}
-            ></ReferenceParams>
-          </div>
-        )}
+        <div
+          style={{
+            height: 70,
+            paddingLeft: 1
+          }}
+        >
+          <UploadFile
+            handleUpdateFileList={handleUpdateFileList}
+            accept={acceptType}
+          >
+            <div style={{ backgroundColor: 'var(--color-fill-sider)' }}>
+              <InboxOutlined className="font-size-16" />
+              <span className="m-l-10">
+                Click or drag file to this area to upload
+              </span>
+            </div>
+            <span className="text-tertiary">support {acceptType}</span>
+          </UploadFile>
+        </div>
         <div className="ground-left-footer">
           <MessageInput
             scope="reranker"
             loading={loading}
             disabled={!parameters.model}
             isEmpty={true}
+            shouldResetMessage={false}
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}
             clearAll={handleClear}
-            modelList={modelList}
+            modelList={[]}
             placeholer={intl.formatMessage({
               id: 'playground.input.keyword.holder'
             })}
@@ -279,75 +285,62 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           collapsed: collapse
         })}
         style={{
-          paddingBottom: 80
+          overflow: 'hidden',
+          paddingBottom: 16
         }}
-        ref={paramsRef}
       >
-        <div className="box" style={{ padding: collapse ? 0 : '0 16px' }}>
-          <RerankerParams
-            setParams={setParams}
-            params={parameters}
-            selectedModel={selectModel}
-            modelList={modelList}
-          />
-          <h3 className="m-b-20 m-l-10 flex-between flex-center font-size-14">
-            <span>Documents</span>
-            <Button
-              type="text"
-              icon={<ClearOutlined />}
-              size="middle"
-              onClick={handleClearDocuments}
-            ></Button>
-          </h3>
-          <InputList
-            textList={textList}
-            onChange={handleTextListChange}
-          ></InputList>
-          <div style={{ marginTop: 8 }}>
-            <FileList
-              fileList={fileList}
-              textListCount={textList.length || 0}
-              onDelete={handleDeleteFile}
-            ></FileList>
+        <div className="box" style={{ paddingInline: 0, height: '100%' }}>
+          <div style={{ padding: collapse ? 0 : '0 16px' }}>
+            <RerankerParams
+              setParams={setParams}
+              params={parameters}
+              selectedModel={selectModel}
+              modelList={modelList}
+            />
+            <h3 className="m-b-20 m-l-10 flex-between flex-center font-size-14">
+              <span>Documents</span>
+              <Button
+                type="text"
+                icon={<ClearOutlined />}
+                size="middle"
+                onClick={handleClearDocuments}
+              ></Button>
+            </h3>
           </div>
-        </div>
-
-        <div
-          style={{
-            height: collapse ? 0 : 60,
-            padding: '0 10px',
-            position: 'absolute',
-            overflow: 'hidden',
-            bottom: 20,
-            left: 0,
-            right: 0
-          }}
-        >
-          <UploadFile
-            handleUpdateFileList={handleUpdateFileList}
-            accept=".txt, .doc, .docx, .xls, .xlsx"
+          <div
+            className="docs-wrapper"
+            ref={paramsRef}
+            style={{
+              height: 'calc(100% - 210px)',
+              padding: '0 16px',
+              overflowY: 'auto'
+            }}
           >
-            <div style={{ backgroundColor: 'var(--color-fill-sider)' }}>
-              <InboxOutlined className="font-size-16" />
-              <span className="m-l-10">
-                Click or drag file to this area to upload
-              </span>
+            <InputList
+              textList={textList}
+              onChange={handleTextListChange}
+            ></InputList>
+            <div style={{ marginTop: 8 }}>
+              <FileList
+                fileList={fileList}
+                textListCount={textList.length || 0}
+                onDelete={handleDeleteFile}
+              ></FileList>
             </div>
-            <span className="text-tertiary">
-              support .txt, .doc, .docx, .xls, .xlsx
-            </span>
-          </UploadFile>
+          </div>
         </div>
       </div>
 
-      <ViewCodeModal
+      <ViewRerankCode
         open={show}
-        systemMessage={systemMessage}
-        messageList={messageList}
-        parameters={parameters}
+        documentList={[...textList, ...fileList].map((item) => item.text)}
+        parameters={{
+          ...parameters,
+          query: contentRef.current
+        }}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCodeModal>
+      ></ViewRerankCode>
     </div>
   );
 });

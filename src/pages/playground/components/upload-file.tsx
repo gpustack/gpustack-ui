@@ -1,4 +1,10 @@
-import { readBlob, readExcelContent, readWordContent } from '@/utils';
+import { readBlob } from '@/utils';
+import readEpubContent from '@/utils/epub-reader';
+import readExcelContent from '@/utils/excel-reader';
+import readPDFContent from '@/utils/pdf-reader';
+import readPptxContent from '@/utils/pptx-reader';
+import readHtmlContent from '@/utils/read-html';
+import readWordContent from '@/utils/word-reader';
 import { PaperClipOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip, Upload } from 'antd';
@@ -26,16 +32,11 @@ const UploadImg: React.FC<UploadImgProps> = ({
   const uploadRef = useRef<any>(null);
 
   const wordReg = /\.(doc|docx)$/;
+  const pptReg = /\.(ppt|pptx)$/;
+  const pdfReg = /\.(pdf)$/;
+  const epubReg = /\.(epub)$/;
   const excelReg = /\.(xls|xlsx)$/;
-
-  const getBase64 = useCallback((file: RcFile): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  }, []);
+  const htmlReg = /\.(html)$/;
 
   const debouncedUpdate = useCallback(
     debounce(
@@ -58,9 +59,30 @@ const UploadImg: React.FC<UploadImgProps> = ({
               const context = await readWordContent(
                 item.originFileObj as RcFile
               );
+
               item.url = context;
             } else if (excelReg.test(item.name)) {
               const context = await readExcelContent(
+                item.originFileObj as RcFile
+              );
+              item.url = context;
+            } else if (epubReg.test(item.name)) {
+              const context = await readEpubContent(
+                item.originFileObj as RcFile
+              );
+              item.url = context;
+            } else if (pdfReg.test(item.name)) {
+              const context = await readPDFContent(
+                item.originFileObj as RcFile
+              );
+              item.url = context;
+            } else if (pptReg.test(item.name)) {
+              const context = await readPptxContent(
+                item.originFileObj as RcFile
+              );
+              item.url = context;
+            } else if (htmlReg.test(item.name)) {
+              const context = await readHtmlContent(
                 item.originFileObj as RcFile
               );
               item.url = context;
@@ -86,10 +108,10 @@ const UploadImg: React.FC<UploadImgProps> = ({
           debouncedUpdate(files);
         }
       } catch (error) {
-        // console.log('error', error);
+        console.log('error', error);
       }
     },
-    [debouncedUpdate, getBase64]
+    [debouncedUpdate]
   );
 
   return (

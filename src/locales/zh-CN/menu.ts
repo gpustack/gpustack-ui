@@ -1,7 +1,8 @@
 export default {
   'menu.dashboard': '概览',
   'menu.playground': '试验场',
-  'menu.chat': '聊天',
+  'menu.playground.rerank': 'Rerank',
+  'menu.playground.chat': '对话',
   'menu.compare': '多模型对比',
   'menu.models': '模型',
   'menu.resources': '资源',

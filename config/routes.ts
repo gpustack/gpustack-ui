@@ -9,11 +9,30 @@ export default [
   },
   {
     name: 'playground',
-    title: 'Playground',
-    path: '/playground',
-    key: 'playground',
     icon: 'Comment',
-    component: './playground'
+    path: '/playground',
+    routes: [
+      {
+        path: '/playground',
+        redirect: '/playground/chat'
+      },
+      {
+        name: 'chat',
+        title: 'Chat',
+        path: '/playground/chat',
+        key: 'chat',
+        icon: 'Comment',
+        component: './playground/index'
+      },
+      {
+        name: 'rerank',
+        title: 'Rerank',
+        path: '/playground/rerank',
+        key: 'rerank',
+        icon: 'Comment',
+        component: './playground/rerank'
+      }
+    ]
   },
   {
     name: 'models',

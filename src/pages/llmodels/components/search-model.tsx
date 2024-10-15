@@ -136,7 +136,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       }
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
-      if (dataSource.loading) return;
       const sort = sortType ?? dataSource.sortType;
       try {
         setDataSource((pre) => {
@@ -208,7 +207,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   const handleFilterGGUFChange = (e: any) => {
-    console.log('filterggufChange:', e.target.checked);
     filterGGUFRef.current = e.target.checked;
     handleOnSearchRepo();
   };

@@ -522,20 +522,24 @@ const Models: React.FC<ModelsProps> = ({
               return (
                 <span
                   className="flex-center flex-wrap"
-                  style={{ maxWidth: '100%' }}
+                  style={{
+                    maxWidth: '100%',
+                    lineHeight:
+                      record.reranker || record.embedding_only
+                        ? '24px'
+                        : 'inherit'
+                  }}
                 >
                   <AutoTooltip ghost>
                     <span className="m-r-5">{text}</span>
                   </AutoTooltip>
                   {record.reranker && (
-                    <span>
-                      <Tag style={{ margin: 0 }} color="geekblue">
-                        Reranker
-                      </Tag>
+                    <span className="font-size-0">
+                      <Tag style={{ margin: 0 }}>Reranker</Tag>
                     </span>
                   )}
                   {record.embedding_only && !record.reranker && (
-                    <span>
+                    <span className="font-size-0">
                       <Tag style={{ margin: 0 }} color="geekblue">
                         Embedding Only
                       </Tag>

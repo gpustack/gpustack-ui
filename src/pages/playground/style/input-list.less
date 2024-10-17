@@ -8,9 +8,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 0;
+    padding-right: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     border-bottom: 1px solid var(--ant-color-split);
+
+    .btn-group {
+      display: none;
+    }
 
     &:hover {
       background-color: var(--ant-color-fill-tertiary);
@@ -27,13 +32,6 @@
 
     .input-wrap {
       flex: 1;
-    }
-
-    .btn-group {
-      width: 60px;
-      margin-left: 8px;
-      display: flex;
-      gap: 8px;
     }
   }
 }

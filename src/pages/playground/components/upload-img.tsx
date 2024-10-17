@@ -3,7 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Tooltip, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload';
 import { RcFile } from 'antd/es/upload';
-import { debounce, round } from 'lodash';
+import { debounce } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 
 interface UploadImgProps {
@@ -38,21 +38,6 @@ const UploadImg: React.FC<UploadImgProps> = ({
     [handleUpdateImgList, intl]
   );
 
-  const getImgDimensions = useCallback(
-    (file: any): Promise<{ ratio: number }> => {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-          resolve({ ratio: round(img.width / img.height, 2) });
-        };
-        img.onerror = () => {
-          resolve({ ratio: 1 });
-        };
-        img.src = URL.createObjectURL(file);
-      });
-    },
-    []
-  );
   const handleChange = useCallback(
     async (info: any) => {
       const { fileList } = info;

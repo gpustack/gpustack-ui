@@ -524,21 +524,18 @@ const Models: React.FC<ModelsProps> = ({
             render={(text, record: ListItem) => {
               return (
                 <span
-                  className="flex-center flex-wrap"
+                  className="flex-center"
                   style={{
                     maxWidth: '100%'
                   }}
                 >
                   <AutoTooltip ghost>
-                    <span>{text}</span>
+                    <span className="m-r-5">{text}</span>
                   </AutoTooltip>
                   {record.reranker && (
                     <Tag
                       style={{
                         margin: 0,
-                        position: 'absolute',
-                        bottom: '2px',
-                        left: 13,
                         opacity: 0.8,
                         transform: 'scale(0.9)'
                       }}
@@ -551,9 +548,6 @@ const Models: React.FC<ModelsProps> = ({
                     <Tag
                       style={{
                         margin: 0,
-                        position: 'absolute',
-                        bottom: '2px',
-                        left: 13,
                         opacity: 0.8,
                         transform: 'scale(0.9)'
                       }}

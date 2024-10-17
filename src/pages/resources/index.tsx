@@ -36,7 +36,7 @@ const Resources = () => {
         }}
         extra={[]}
       >
-        <div style={{ marginTop: 60 }}>
+        <div style={{ marginTop: 30 }}>
           <Tabs
             type="card"
             defaultActiveKey="workers"

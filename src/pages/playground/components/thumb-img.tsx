@@ -1,5 +1,5 @@
+import AutoImage from '@/components/auto-image';
 import { CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
-import { Image } from 'antd';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
 import '../style/thumb-img.less';
@@ -32,10 +32,9 @@ const ThumbImg: React.FC<{
             }}
           >
             <span className="img">
-              <Image
+              <AutoImage
                 src={item.dataUrl}
-                width={item.width}
-                height={item.height}
+                height={100}
                 preview={{
                   mask: <EyeOutlined />
                 }}

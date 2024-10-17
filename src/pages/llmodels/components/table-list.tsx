@@ -199,11 +199,11 @@ const Models: React.FC<ModelsProps> = ({
       key: 'chat',
       icon: <WechatWorkOutlined />
     },
-    {
-      label: 'common.button.viewcode',
-      key: 'embedding',
-      icon: <IconFont type="icon-code" />
-    },
+    // {
+    //   label: 'common.button.viewcode',
+    //   key: 'embedding',
+    //   icon: <IconFont type="icon-code" />
+    // },
     {
       label: 'common.button.delete',
       key: 'delete',
@@ -220,7 +220,10 @@ const Models: React.FC<ModelsProps> = ({
         return record.ready_replicas > 0 && !record.embedding_only;
       }
       if (action.key === 'embedding') {
-        return record.embedding_only && record.ready_replicas > 0;
+        return (
+          (record.embedding_only || record.reranker) &&
+          record.ready_replicas > 0
+        );
       }
       return true;
     });
@@ -523,27 +526,41 @@ const Models: React.FC<ModelsProps> = ({
                 <span
                   className="flex-center flex-wrap"
                   style={{
-                    maxWidth: '100%',
-                    lineHeight:
-                      record.reranker || record.embedding_only
-                        ? '24px'
-                        : 'inherit'
+                    maxWidth: '100%'
                   }}
                 >
                   <AutoTooltip ghost>
-                    <span className="m-r-5">{text}</span>
+                    <span>{text}</span>
                   </AutoTooltip>
                   {record.reranker && (
-                    <span className="font-size-0">
-                      <Tag style={{ margin: 0 }}>Reranker</Tag>
-                    </span>
+                    <Tag
+                      style={{
+                        margin: 0,
+                        position: 'absolute',
+                        bottom: '2px',
+                        left: 13,
+                        opacity: 0.8,
+                        transform: 'scale(0.9)'
+                      }}
+                      color="geekblue"
+                    >
+                      Reranker
+                    </Tag>
                   )}
                   {record.embedding_only && !record.reranker && (
-                    <span className="font-size-0">
-                      <Tag style={{ margin: 0 }} color="geekblue">
-                        Embedding Only
-                      </Tag>
-                    </span>
+                    <Tag
+                      style={{
+                        margin: 0,
+                        position: 'absolute',
+                        bottom: '2px',
+                        left: 13,
+                        opacity: 0.8,
+                        transform: 'scale(0.9)'
+                      }}
+                      color="geekblue"
+                    >
+                      Embedding Only
+                    </Tag>
                   )}
                 </span>
               );
@@ -556,8 +573,8 @@ const Models: React.FC<ModelsProps> = ({
             span={6}
             render={(text, record: ListItem) => {
               return (
-                <span className="flex flex-column">
-                  <span>{generateSource(record)}</span>
+                <span className="flex flex-column" style={{ width: '100%' }}>
+                  <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
                 </span>
               );
             }}
@@ -574,7 +591,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             render={(text, record: ListItem) => {
               return (
-                <span style={{ paddingLeft: 7 }}>
+                <span style={{ paddingLeft: 7, minWidth: '33px' }}>
                   {record.ready_replicas} / {record.replicas}
                 </span>
               );
@@ -589,7 +606,11 @@ const Models: React.FC<ModelsProps> = ({
             sortOrder={sortOrder}
             sorter={false}
             render={(text, row) => {
-              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+              return (
+                <AutoTooltip ghost>
+                  {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+                </AutoTooltip>
+              );
             }}
           />
           <SealColumn

@@ -4,7 +4,14 @@ import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react';
 import './index.less';
 import useSize from './use-size';
 
@@ -22,7 +29,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const termRef = useRef<any>({});
   const termwrapRef = useRef<any>({});
   const fitAddonRef = useRef<any>({});
-  const cacheDataRef = useRef<any>(null);
+  const cacheDataRef = useRef<any>('');
   const [logs, setLogs] = useState('');
   const size = useSize(scroller);
 
@@ -99,7 +106,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     };
   }, [termwrapRef.current]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (size) {
       handleResize();
     }

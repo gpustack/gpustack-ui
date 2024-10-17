@@ -172,7 +172,7 @@ const useSetChunkRequest = () => {
 
           let result = response;
           let cres = '';
-          console.log('chunkrequest============e==', e);
+          console.log('chunkrequest============e==', result);
           if (contentType === 'json') {
             const currentRes = sliceData(response, e.loaded, loadedSize);
             result = parseData(currentRes);
@@ -194,7 +194,6 @@ const useSetChunkRequest = () => {
         retryCount.current -= 1;
       }
     } catch (error) {
-      console.log('error=============', error);
       if (!axios.isCancel(error)) {
         setRequestReadyState(4);
         if (retryCount.current > 0) {

@@ -311,6 +311,7 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await deleteModel(row.id);
         updateExpandedRowKeys([row.id]);
+        rowSelection.removeSelectedKey(row.id);
       }
     });
   };

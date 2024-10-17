@@ -1,4 +1,4 @@
-import LogsViewer from '@/components/logs-viewer';
+import LogsViewer from '@/components/logs-viewer/index';
 import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useEffect, useState } from 'react';

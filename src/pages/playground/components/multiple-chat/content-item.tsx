@@ -58,7 +58,6 @@ const ContentItem: React.FC<MessageItemProps> = ({
 
       for (let i = 0; i < items.length; i++) {
         let item = items[i];
-        console.log('item===========', item);
 
         if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
           const file = item.getAsFile();
@@ -102,7 +101,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
         console.error('Error processing images:', error);
       }
     },
-    [data]
+    [data, updateMessage]
   );
 
   const handleOnPaste = (e: any) => {
@@ -131,7 +130,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
         imgs: [...(data.imgs || []), ...list]
       });
     },
-    [data]
+    [data, updateMessage]
   );
 
   const handleDeleteImg = (uid: number | string) => {

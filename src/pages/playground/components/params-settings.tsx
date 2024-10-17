@@ -163,7 +163,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       <div>
         {showModelSelector && (
           <>
-            <h3 className="m-b-20 m-l-10 font-size-14">
+            <h3 className="m-b-20 m-l-10 font-size-14 line-24">
               {intl.formatMessage({ id: 'playground.model' })}
             </h3>
             <Form.Item<ParamsSettingsFormProps>
@@ -184,7 +184,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             </Form.Item>
           </>
         )}
-        <h3 className="m-b-20 m-l-10 flex-between flex-center font-size-14">
+        <h3 className="m-b-20 m-l-10 flex-between flex-center font-size-14 line-24">
           <span>{intl.formatMessage({ id: 'playground.parameters' })}</span>
         </h3>
         <Form.Item<ParamsSettingsFormProps>

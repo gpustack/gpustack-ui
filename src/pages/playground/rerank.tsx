@@ -98,11 +98,7 @@ const PlaygroundRerank: React.FC = () => {
     <PageContainer
       ghost
       header={{
-        title: (
-          <div className="flex items-center">
-            {intl.formatMessage({ id: 'menu.playground.rerank' })}
-          </div>
-        ),
+        title: intl.formatMessage({ id: 'menu.playground.rerank' }),
         breadcrumb: {}
       }}
       extra={renderExtra()}

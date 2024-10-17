@@ -65,8 +65,10 @@ interface MessageInputProps {
       instanceId: symbol;
     })[]
   ) => void;
+  submitIcon?: React.ReactNode;
   presetPrompt?: (list: CurrentMessage[]) => void;
   addMessage?: (message: CurrentMessage) => void;
+  tools?: React.ReactNode;
   loading: boolean;
   showModelSelection?: boolean;
   disabled: boolean;
@@ -90,7 +92,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
   disabled,
   isEmpty,
   scope,
+  submitIcon,
   placeholer,
+  tools,
+
   shouldResetMessage = true
 }) => {
   const { TextArea } = Input;
@@ -333,6 +338,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     <div className="messageInput">
       <div className="tool-bar">
         <div className="actions">
+          {tools}
           {scope !== 'reranker' && (
             <>
               <Button
@@ -427,7 +433,9 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 size="middle"
                 disabled={isDisabled}
               >
-                <SendOutlined rotate={0} className="font-size-14" />
+                {submitIcon ?? (
+                  <SendOutlined rotate={0} className="font-size-14" />
+                )}
               </Button>
             </Tooltip>
           ) : (

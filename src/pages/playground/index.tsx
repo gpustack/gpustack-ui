@@ -179,7 +179,9 @@ const Playground: React.FC = () => {
       header={{
         title: (
           <div className="flex items-center">
-            {intl.formatMessage({ id: 'menu.playground.chat' })}
+            <span className="font-600">
+              {intl.formatMessage({ id: 'menu.playground.chat' })}
+            </span>
             {
               <Segmented
                 options={optionsList}

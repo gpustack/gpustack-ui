@@ -246,7 +246,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const handleClearMessage = () => {
       setMessageList([]);
       setTokenResult(null);
-      setSystemMessage('');
       currentMessageRef.current = [];
     };
 

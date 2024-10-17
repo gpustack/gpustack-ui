@@ -9,7 +9,7 @@ export default [
   },
   {
     name: 'playground',
-    icon: 'Comment',
+    icon: 'ExperimentOutlined',
     path: '/playground',
     routes: [
       {

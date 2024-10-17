@@ -116,7 +116,7 @@ const UploadImg: React.FC<UploadImgProps> = ({
 
   return (
     <>
-      <Upload.Dragger
+      <Upload
         ref={uploadRef}
         multiple
         action="/"
@@ -132,7 +132,7 @@ const UploadImg: React.FC<UploadImgProps> = ({
             <Button size={size} icon={<PaperClipOutlined />} />
           </Tooltip>
         )}
-      </Upload.Dragger>
+      </Upload>
     </>
   );
 };

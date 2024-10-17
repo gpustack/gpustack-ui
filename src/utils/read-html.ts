@@ -7,7 +7,8 @@ export default function readHtmlContent(file: File): Promise<string> {
       const parser = new DOMParser();
       const doc = parser.parseFromString(fileContent, 'text/html');
       const textContent = doc.body.textContent || '';
-      resolve(textContent);
+      const cleanedTextContent = textContent.replace(/[\t\n]/g, '').trim();
+      resolve(cleanedTextContent);
     };
     reader.onerror = (error) => reject(error);
     reader.readAsText(file);

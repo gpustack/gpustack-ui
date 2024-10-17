@@ -148,6 +148,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       <div>
         {
           <>
+            <h3 className="m-b-20 m-l-10 font-size-14 line-24">Parameters</h3>
             <Form.Item<ParamsSettingsFormProps>
               name="model"
               rules={[

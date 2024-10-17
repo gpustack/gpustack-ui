@@ -11,6 +11,7 @@ export default [
     name: 'playground',
     icon: 'ExperimentOutlined',
     path: '/playground',
+    key: 'playground',
     routes: [
       {
         path: '/playground',

@@ -1,5 +1,5 @@
 import { EyeOutlined } from '@ant-design/icons';
-import { Image, Typography } from 'antd';
+import { Checkbox, Image, Typography } from 'antd';
 import { unescape } from 'lodash';
 import { TokensList, marked } from 'marked';
 import React, { Fragment, useCallback, useEffect } from 'react';
@@ -38,12 +38,15 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     'list_item',
     'br',
     'html',
-    'escape'
+    'escape',
+    'del',
+    'blockquote',
+    'checkbox'
   ];
 
-  renderer.link = ({ href, title, text }) => {
-    return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-  };
+  // renderer.link = ({ href, title, text }) => {
+  //   return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  // };
 
   const isValidURL = useCallback((url: string) => {
     const pattern = /^(https?:\/\/|\/\/)([^\s/$.?#].[^\s]*)$/;
@@ -99,6 +102,18 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
       if (token.type === 'list_item') {
         htmlstr = <li>{text}</li>;
+      }
+
+      if (token.type === 'del') {
+        htmlstr = <del>{text}</del>;
+      }
+
+      if (token.type === 'blockquote') {
+        htmlstr = <blockquote>{text}</blockquote>;
+      }
+
+      if (token.type === 'checkbox') {
+        htmlstr = <Checkbox value={token.checked} />;
       }
 
       if (token.type === 'br') {

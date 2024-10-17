@@ -46,7 +46,10 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
       if (selectedRowKeys?.length === 0) {
         setSelectAll(false);
         setIndeterminate(false);
-      } else if (selectedRowKeys?.length === props.dataSource.length) {
+      } else if (
+        selectedRowKeys?.length === props.dataSource.length &&
+        selectedRowKeys.length > 0
+      ) {
         setSelectAll(true);
         setIndeterminate(false);
       } else {
@@ -54,7 +57,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
         setIndeterminate(true);
       }
     }
-  }, [rowSelection]);
+  }, [rowSelection, props.dataSource]);
 
   const handleSelectAllChange = (e: any) => {
     if (e.target.checked) {

@@ -10,7 +10,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundLeft from './components/ground-left';
-import GroundReranker from './components/ground-reranker';
 import MultipleChat from './components/multiple-chat';
 import './style/play-ground.less';
 
@@ -70,18 +69,18 @@ const Playground: React.FC = () => {
       key: 'compare',
       label: 'Compare',
       children: <MultipleChat modelList={modelList} loaded={loaded} />
-    },
-    {
-      key: 'reranker',
-      label: 'Reranker',
-      children: (
-        <GroundReranker
-          ref={groundRerankerRef}
-          modelList={rerankerModelList}
-          loaded={loaded}
-        ></GroundReranker>
-      )
     }
+    // {
+    //   key: 'reranker',
+    //   label: 'Reranker',
+    //   children: (
+    //     <GroundReranker
+    //       ref={groundRerankerRef}
+    //       modelList={rerankerModelList}
+    //       loaded={loaded}
+    //     ></GroundReranker>
+    //   )
+    // }
   ];
 
   useEffect(() => {

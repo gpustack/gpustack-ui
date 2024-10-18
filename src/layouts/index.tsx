@@ -294,7 +294,9 @@ export default (props: any) => {
           }
         }}
         formatMessage={formatMessage}
-        menu={{ locale: true }}
+        menu={{
+          locale: true
+        }}
         logo={collapsed ? SLogoIcon : LogoIcon}
         menuItemRender={(menuItemProps, defaultDom) => {
           if (menuItemProps.isUrl || menuItemProps.children) {

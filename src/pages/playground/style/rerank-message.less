@@ -53,8 +53,11 @@
   }
 
   .content-item-content {
+    position: relative;
     padding: 14px;
+    padding-left: 8px;
     border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
+    background-color: transparent;
   }
 
   .result-header {
@@ -62,9 +65,14 @@
     align-items: center;
     justify-content: space-between;
     border-radius: 4px 4px 0 0;
-    background: var(--ant-color-fill-tertiary);
-    padding: 0 14px;
+    min-height: 41px;
+    padding: 0 10px;
     border-bottom: 1px solid var(--ant-color-split);
+    padding-left: 10px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 100;
 
     .title {
       font-weight: var(--font-weight-medium);

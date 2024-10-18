@@ -58,17 +58,6 @@ const InputList: React.FC<InputListProps> = forwardRef(
 
     return (
       <div className="input-list">
-        {/* {textList.length === 0 && (
-        <Button
-          block
-          onClick={handleAdd}
-          type="text"
-          style={{ backgroundColor: 'var(--ant-color-fill-secondary)' }}
-        >
-          <PlusOutlined />
-          Add Text
-        </Button>
-      )} */}
         {textList.map((text, index) => {
           return (
             <div key={text.uid} className="input-item">
@@ -92,18 +81,6 @@ const InputList: React.FC<InputListProps> = forwardRef(
                     onClick={() => handleDelete(text)}
                   ></Button>
                 </Tooltip>
-                {/* {index === textList.length - 1 && (
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'common.button.add' })}
-                  >
-                    <Button
-                      size="small"
-                      type="text"
-                      icon={<PlusCircleOutlined />}
-                      onClick={handleAdd}
-                    ></Button>
-                  </Tooltip>
-                )} */}
               </span>
             </div>
           );

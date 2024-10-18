@@ -155,14 +155,14 @@ const GPUList: React.FC = () => {
             return <span>{text ? _.round(text, 1) : '-'}</span>;
           }}
         />
-        <Column
+        {/* <Column
           title={intl.formatMessage({ id: 'resources.table.core' })}
           dataIndex="core"
           key="Core"
           render={(text, record: GPUDeviceItem) => {
             return <span>{record.core?.total}</span>;
           }}
-        />
+        /> */}
         <Column
           title={intl.formatMessage({ id: 'resources.table.gpuutilization' })}
           dataIndex="gpuUtil"

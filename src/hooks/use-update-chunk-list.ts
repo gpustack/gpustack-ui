@@ -10,6 +10,7 @@ interface ChunkedCollection {
 // Only used to update lists without nested state
 export function useUpdateChunkedList(options: {
   dataList?: any[];
+  limit?: number;
   setDataList: (args: any) => void;
   callback?: (args: any) => void;
   filterFun?: (args: any) => boolean;
@@ -19,6 +20,7 @@ export function useUpdateChunkedList(options: {
   const cacheDataListRef = useRef<any[]>(options.dataList || []);
   const timerRef = useRef<any>(null);
   const countRef = useRef<number>(0);
+  const limit = options.limit || 10;
 
   useEffect(() => {
     cacheDataListRef.current = [...(options.dataList || [])];
@@ -68,7 +70,7 @@ export function useUpdateChunkedList(options: {
       cacheDataListRef.current = [
         ...newDataList,
         ...cacheDataListRef.current
-      ].slice(0, 10);
+      ].slice(0, limit);
     }
     // DELETE
     if (data?.type === WatchEventType.DELETE) {
@@ -91,7 +93,7 @@ export function useUpdateChunkedList(options: {
         } else if (updateIndex === -1) {
           cacheDataListRef.current = [
             updateItem,
-            ...cacheDataListRef.current.slice(0, 9)
+            ...cacheDataListRef.current.slice(0, limit - 1)
           ];
         }
       });

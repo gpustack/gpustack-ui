@@ -46,6 +46,7 @@ const TableRow: React.FC<
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
+    limit: 100,
     setDataList: setChildrenData
     // callback: (list) => renderChildren?.(list)
   });
@@ -118,7 +119,7 @@ const TableRow: React.FC<
 
   const updateChildrenHandler = (list: any) => {
     _.each(list, (data: any) => {
-      updateChunkedList(data, childrenDataRef.current);
+      updateChunkedList(data);
     });
   };
 

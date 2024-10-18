@@ -88,7 +88,7 @@ export default {
   'common.tips.title': 'Tips:',
   'common.input.range.start': 'start value',
   'common.input.range.end': 'end value',
-  'common.footer.version': 'Versions',
+  'common.footer.version': 'Version',
   'common.footer.version.title': 'Version Information',
   'common.footer.version.web': 'UI',
   'common.footer.version.server': 'Server',
@@ -207,5 +207,8 @@ export default {
   'common.button.addLabel': 'Add Labels',
   'common.button.addSelector': 'Add Selectors',
   'common.button.addParams': 'Add Parameter',
-  'common.text.here': 'here'
+  'common.text.here': 'here',
+  'common.text.latest': 'Latest',
+  'common.text.new': 'New',
+  'common.text.changelog': 'Release Notes'
 };

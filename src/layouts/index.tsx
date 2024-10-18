@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { userAtom } from '@/atoms/user';
+import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import ShortCuts, {
   modalConfig as ShortCutsConfig
 } from '@/components/short-cuts';
@@ -88,6 +88,8 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 
 export default (props: any) => {
   const [userInfo] = useAtom(userAtom);
+  const [version] = useAtom(GPUStackVersionAtom);
+  const [updateCheck] = useAtom(UpdateCheckAtom);
   const location = useLocation();
   const navigate = useNavigate();
   const intl = useIntl();
@@ -115,6 +117,7 @@ export default (props: any) => {
   const showVersion = () => {
     Modal.info({
       ...modalConfig,
+      width: 460,
       content: <VersionInfo intl={intl} />
     });
   };
@@ -169,6 +172,14 @@ export default (props: any) => {
     [location.pathname]
   );
 
+  const showUpgrade = useMemo(() => {
+    return (
+      initialState?.currentUser?.is_admin &&
+      updateCheck.latest_version &&
+      updateCheck.latest_version !== version?.version
+    );
+  }, [updateCheck, version, initialState]);
+
   const renderMenuHeader = useCallback(
     (logo, title) => {
       return (
@@ -206,12 +217,13 @@ export default (props: any) => {
         setInitialState,
         intl,
         siderWidth: layoutProps.siderWidth,
-        collapsed: layoutProps.collapsed
+        collapsed: layoutProps.collapsed,
+        showUpgrade
       });
 
       return dom;
     },
-    [intl]
+    [intl, version, updateCheck]
   );
 
   return (

@@ -11,6 +11,12 @@ export const GPUStackVersionAtom = atom<{
   git_commit: ''
 });
 
+export const UpdateCheckAtom = atom<{
+  latest_version: string;
+}>({
+  latest_version: ''
+});
+
 export const initialPasswordAtom = atomWithStorage<string>(
   'initialPassword',
   ''

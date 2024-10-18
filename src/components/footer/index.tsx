@@ -12,6 +12,7 @@ const Footer: React.FC = () => {
   const showVersion = () => {
     Modal.info({
       ...modalConfig,
+      width: 460,
       content: <VersionInfo intl={intl} />
     });
   };

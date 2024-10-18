@@ -1,9 +1,10 @@
-import { GPUStackVersionAtom } from '@/atoms/user';
+import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
 import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
-  queryVersionInfo
+  queryVersionInfo,
+  updateCheck
 } from '@/services/profile/apis';
 import { RequestConfig, history } from '@umijs/max';
 
@@ -16,11 +17,24 @@ export async function getInitialState(): Promise<{
 }> {
   const { location } = history;
 
+  const getUpdateCheck = async () => {
+    try {
+      const data = await updateCheck();
+      setAtomStorage(UpdateCheckAtom, data);
+      return data;
+    } catch (error) {
+      console.error('updateCheck error', error);
+    }
+  };
+
   const fetchUserInfo = async (): Promise<Global.UserInfo> => {
     try {
       const data = await queryCurrentUserState({
         skipErrorHandler: true
       });
+      if (data.is_admin) {
+        getUpdateCheck();
+      }
       return data;
     } catch (error) {
       history.push(loginPath);

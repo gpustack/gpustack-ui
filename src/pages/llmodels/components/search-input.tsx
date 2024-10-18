@@ -8,9 +8,10 @@ import { modelSourceMap, modelSourceValueMap } from '../config';
 
 const SearchInput: React.FC<{
   modelSource: string;
+  onChange: (e: any) => void;
   onSearch: (e: any) => void;
 }> = (props) => {
-  const { onSearch, modelSource } = props;
+  const { onSearch, onChange, modelSource } = props;
   const intl = useIntl();
   const inputRef = useRef<any>(null);
 
@@ -23,6 +24,7 @@ const SearchInput: React.FC<{
     <Input
       ref={inputRef}
       onPressEnter={onSearch}
+      onChange={onChange}
       allowClear
       placeholder={intl.formatMessage(
         {

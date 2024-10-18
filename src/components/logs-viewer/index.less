@@ -3,7 +3,8 @@
     padding: 5px 0 5px 10px;
     background-color: var(--color-logs-bg);
     border-radius: var(--border-radius-mini);
-    overflow: hidden;
+    overflow: auto;
+    font-family: "monospace,Menlo,Courier,'Courier New',Consolas,Monaco, 'Liberation Mono'";
 
     .content {
       word-wrap: break-word;
@@ -14,7 +15,7 @@
       }
 
       .text {
-        height: 100%;
+        min-height: 22px;
       }
 
       color: var(--color-logs-text);
@@ -26,8 +27,6 @@
   }
 
   .xterm {
-    // height: 100% !important;
-
     .xterm-viewport {
       overflow-y: auto !important;
 

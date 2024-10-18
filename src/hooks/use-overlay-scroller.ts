@@ -14,6 +14,7 @@ export const overlaySollerOptions: UseOverlayScrollbarsParams = {
       x: 'hidden'
     },
     scrollbars: {
+      theme: 'os-theme-light',
       autoHide: 'scroll',
       autoHideDelay: 600,
       clickScroll: 'instant'
@@ -22,11 +23,25 @@ export const overlaySollerOptions: UseOverlayScrollbarsParams = {
   defer: true
 };
 
-export default function useOverlayScroller() {
+export default function useOverlayScroller(options?: any) {
   const scrollEventElement = React.useRef<any>(null);
   const instanceRef = React.useRef<any>(null);
   const [initialize, instance] = useOverlayScrollbars({
-    ...overlaySollerOptions
+    options: {
+      update: {
+        debounce: 0
+      },
+      overflow: {
+        x: 'hidden'
+      },
+      scrollbars: {
+        theme: options?.theme || 'os-theme-dark',
+        autoHide: 'scroll',
+        autoHideDelay: 600,
+        clickScroll: 'instant'
+      }
+    },
+    defer: true
   });
   instanceRef.current = instance?.();
   scrollEventElement.current =

@@ -43,7 +43,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
 
   const generateCode = () => {
     if (lang === langMap.shell) {
-      const code = `curl ${window.location.origin}/v1-openai \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/v1/rerank \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
           documents: documentList

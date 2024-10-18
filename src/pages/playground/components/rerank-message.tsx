@@ -1,4 +1,4 @@
-import { Tooltip } from 'antd';
+import { Progress, Tooltip } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import '../style/content-item.less';
@@ -18,9 +18,6 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
       {dataList.map((item) => {
         return (
           <div className="content-item" key={item.uid}>
-            {/* <div className="content-item-role">
-              <span className="role">{item.title}</span>
-            </div> */}
             <div className="content-item-content">
               {Array.isArray(item.content) ? (
                 <div className="result">
@@ -37,6 +34,33 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
                         >
                           <dd className="text">{sItem.text}</dd>
                         </Tooltip>
+                        <Progress
+                          format={() => (
+                            <span
+                              style={{
+                                paddingRight: 4,
+                                color: 'var(--ant-color-text-tertiary)'
+                              }}
+                            >
+                              {_.round(sItem.score, 2)}
+                            </span>
+                          )}
+                          size={{
+                            height: 4
+                          }}
+                          type="line"
+                          status="normal"
+                          percentPosition={{ align: 'end', type: 'outer' }}
+                          strokeColor="rgb(22 119 255 / 27%)"
+                          trailColor="transparent"
+                          percent={sItem.normalizValue}
+                          style={{
+                            position: 'absolute',
+                            left: 0,
+                            bottom: 0,
+                            lineHeight: '12px'
+                          }}
+                        ></Progress>
                       </dl>
                     );
                   })}

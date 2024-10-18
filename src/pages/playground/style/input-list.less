@@ -1,7 +1,7 @@
 .input-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 
   .input-item {
     display: flex;
@@ -11,7 +11,14 @@
     padding-right: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    border-bottom: 1px solid var(--ant-color-split);
+    border-radius: var(--border-radius-base);
+    border: 1px solid var(--ant-color-border);
+    // &:focus-within {
+    //   border-color: var(--ant-input-active-border-color);
+    //   box-shadow: var(--ant-input-active-shadow);
+    //   outline: 0;
+    //   background-color: var(--ant-input-active-bg);
+    // }
 
     .btn-group {
       display: none;

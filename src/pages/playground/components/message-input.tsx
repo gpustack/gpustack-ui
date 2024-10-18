@@ -76,6 +76,7 @@ interface MessageInputProps {
   scope: string;
   placeholer?: string;
   shouldResetMessage?: boolean;
+  style?: React.CSSProperties;
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -95,7 +96,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   submitIcon,
   placeholer,
   tools,
-
+  style,
   shouldResetMessage = true
 }) => {
   const { TextArea } = Input;
@@ -347,7 +348,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   );
 
   return (
-    <div className="messageInput">
+    <div className="messageInput" style={{ ...style }}>
       <div className="tool-bar">
         <div className="actions">
           {tools}

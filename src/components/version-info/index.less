@@ -1,6 +1,5 @@
 .version-box {
   display: flex;
-  margin-bottom: 40px;
   flex-direction: column;
   align-items: center;
 
@@ -25,18 +24,25 @@
   .ver {
     line-height: 32px;
     display: flex;
+    justify-content: center;
     font-size: var(--font-size-middle);
+    color: var(--ant-color-text-secondary);
+    gap: 10px;
 
     .label {
       display: flex;
       justify-content: flex-start;
-      width: 60px;
       font-size: var(--font-size-middle);
-      font-weight: var(--font-weight-medium);
     }
+  }
 
-    .val {
-      color: var(--ant-color-text-secondary);
-    }
+  .upgrade {
+    display: flex;
+    margin-top: 20px;
+    justify-content: space-between;
+    padding-block: 20px 4px;
+    align-items: center;
+    width: 100%;
+    border-top: 1px solid var(--ant-color-split);
   }
 }

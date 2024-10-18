@@ -7,6 +7,7 @@
     "format": "prettier --cache --write .",
     "postinstall": "max setup",
     "prepare": "husky",
+    "preview": "max preview",
     "setup": "max setup",
     "start": "npm run dev"
   },

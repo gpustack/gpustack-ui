@@ -12,3 +12,9 @@ export async function queryVersionInfo() {
     method: 'GET'
   });
 }
+
+export async function updateCheck() {
+  return request(`/update/`, {
+    method: 'GET'
+  });
+}

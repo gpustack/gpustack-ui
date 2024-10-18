@@ -26,7 +26,7 @@ export const getRightRenderContent = (opts: {
   siderWidth: number;
   intl: any;
 }) => {
-  const { intl, collapsed, siderWidth } = opts;
+  const { intl, collapsed, siderWidth, showUpgrade } = opts;
 
   const allLocals = getAllLocales();
   if (opts.runtimeConfig.rightRender) {
@@ -109,14 +109,28 @@ export const getRightRenderContent = (opts: {
     mode: 'vertical',
     expandIcon: false,
     // inlineCollapsed: collapsed,
-    triggerSubMenuAction: 'hover',
+    triggerSubMenuAction: 'click',
     items: [
       {
         key: 'help',
         icon: <QuestionCircleOutlined />,
         label: (
-          <span className="sub-title">
-            {intl?.formatMessage?.({ id: 'common.button.help' })}
+          <span className="sub-title ">
+            <span className="flex-center">
+              <span>{intl?.formatMessage?.({ id: 'common.button.help' })}</span>
+              {showUpgrade && (
+                <span
+                  className="m-l-5"
+                  style={{
+                    display: 'flex',
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: 'var(--ant-orange-5)'
+                  }}
+                ></span>
+              )}
+            </span>
           </span>
         ),
         children: helpList.map((item) => ({
@@ -125,7 +139,16 @@ export const getRightRenderContent = (opts: {
             <span className="flex flex-center">
               {item.icon}
               {item.key === 'version' ? (
-                <a className="m-l-8">{item.label}</a>
+                <>
+                  <a className="m-l-8">{item.label}</a>
+                  {showUpgrade && (
+                    <span className="new-icon">
+                      <span className="text">
+                        {intl.formatMessage({ id: 'common.text.new' })}
+                      </span>
+                    </span>
+                  )}
+                </>
               ) : (
                 <a
                   className="m-l-8"

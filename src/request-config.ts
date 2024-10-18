@@ -3,7 +3,7 @@ import { clearAtomStorage } from '@/atoms/utils';
 import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 
-const NoBaseURLAPIs = ['/auth', '/v1-openai', '/version', '/proxy'];
+const NoBaseURLAPIs = ['/auth', '/v1-openai', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {
   errorConfig: {
@@ -16,7 +16,6 @@ export const requestConfig: RequestConfig = {
       if (!opts?.skipErrorHandler && response?.status) {
         message.error(errMsg);
       }
-      console.log('errorHandler+++++++++++++++', error, opts);
       if (response?.status === 401) {
         clearAtomStorage(userAtom);
 
@@ -26,7 +25,6 @@ export const requestConfig: RequestConfig = {
   },
   requestInterceptors: [
     (url, options) => {
-      console.log('requestInterceptors+++++++++++++++', url, options);
       if (NoBaseURLAPIs.some((api) => url.startsWith(api))) {
         options.baseURL = '';
         return { url, options };

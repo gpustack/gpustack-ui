@@ -54,7 +54,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, []);
 
   const handleOnSelectModel = (item: any) => {
-    handleSelectModelFile({ fakeName: '' });
     setSelectedModel(item);
   };
 
@@ -72,6 +71,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       debounceFetchModelFiles();
     }
   };
+
+  useEffect(() => {
+    handleSelectModelFile({ fakeName: '' });
+  }, [selectedModel]);
 
   useEffect(() => {
     return () => {

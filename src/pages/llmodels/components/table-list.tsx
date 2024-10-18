@@ -424,10 +424,10 @@ const Models: React.FC<ModelsProps> = ({
 
   const generateSource = useCallback((record: ListItem) => {
     if (record.source === modelSourceMap.modelscope_value) {
-      return `${modelSourceMap.modelScope}/${record.model_scope_file_path || record.model_scope_model_id}`;
+      return `${modelSourceMap.modelScope}/${record.model_scope_model_id}`;
     }
     if (record.source === modelSourceMap.huggingface_value) {
-      return `${modelSourceMap.huggingface}/${record.huggingface_filename || record.huggingface_repo_id}`;
+      return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
     }
     return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
   }, []);
@@ -586,7 +586,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             render={(text, record: ListItem) => {
               return (
-                <span style={{ paddingLeft: 7, minWidth: '33px' }}>
+                <span style={{ paddingLeft: 10, minWidth: '33px' }}>
                   {record.ready_replicas} / {record.replicas}
                 </span>
               );

@@ -173,7 +173,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     },
     [dataSource]
   );
-
+  const handleSearchInputChange = useCallback((e: any) => {
+    searchInputRef.current = e.target.value;
+  }, []);
   const handlerSearchModels = useCallback(
     async (e: any) => {
       searchInputRef.current = e.target.value;
@@ -216,6 +218,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       <>
         <SearchInput
           onSearch={handlerSearchModels}
+          onChange={handleSearchInputChange}
           modelSource={modelSource}
         ></SearchInput>
         <div className={SearchStyle.filter}>

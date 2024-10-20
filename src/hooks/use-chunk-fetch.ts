@@ -1,3 +1,4 @@
+import { split } from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef } from 'react';
 
@@ -6,27 +7,22 @@ interface RequestConfig {
   handler: (data: any) => any;
   beforeReconnect?: () => void;
   params?: object;
+  byLine?: boolean;
   contentType?: 'json' | 'text';
 }
 
 const useSetChunkFetch = () => {
   const axiosToken = useRef<any>(null);
   const requestConfig = useRef<any>({});
-  const completeData = useRef<any>([]);
   const chunkDataRef = useRef<any>([]);
-  const conentLengthRef = useRef<any>(0);
-  const receivedLengthRef = useRef<any>(0);
+  const bufferCacheRef = useRef<any>('');
 
   const readTextEventStreamData = async (
-    reader: any,
+    reader: ReadableStreamDefaultReader<Uint8Array>,
     decoder: TextDecoder,
     callback: (data: any) => void
   ) => {
     const { done, value } = await reader.read();
-    console.log('chunkDataRef.current===1', {
-      data: chunkDataRef.current,
-      done
-    });
     if (done) {
       return;
     }
@@ -39,47 +35,42 @@ const useSetChunkFetch = () => {
     await readTextEventStreamData(reader, decoder, callback);
   };
 
-  const combineUint8Arrays = (arrays: Uint8Array[]) => {
-    // Calculate total length
-    const totalLength = arrays.reduce((acc, arr) => acc + arr.length, 0);
-
-    // Create a new Uint8Array to hold the combined data
-    const combined = new Uint8Array(totalLength);
-
-    // Copy each array into the combined array
-    let offset = 0;
-    for (const arr of arrays) {
-      combined.set(arr, offset);
-      offset += arr.length;
-    }
-
-    return combined;
-  };
-
-  const readUint8ArrayStreamData = async (
+  const readTextEventStreamDataByLine = async (
     reader: ReadableStreamDefaultReader<Uint8Array>,
-    callback: (data: Uint8Array) => void
+    decoder: TextDecoder,
+    callback: (data: any) => void
   ) => {
     const { done, value } = await reader.read();
-    while (true) {
-      if (done) {
-        callback(completeData.current);
-        break;
-      }
-      const tempData = new Uint8Array(
-        completeData.current.length + value.length
-      );
-      tempData.set(completeData.current);
-      tempData.set(value, completeData.current.length);
-      completeData.current = tempData;
+    if (done) {
+      return;
     }
 
-    // await readUint8ArrayStreamData(reader, callback);
+    bufferCacheRef.current += decoder.decode(value, { stream: true });
+    const lines = split(bufferCacheRef.current, /\r?\n/);
+    bufferCacheRef.current = lines.pop();
+    for (const line of lines) {
+      callback(line);
+    }
+
+    await readTextEventStreamDataByLine(reader, decoder, callback);
+  };
+
+  const readTextEventStreamDataByLineWithBuffer = async (
+    reader: ReadableStreamDefaultReader<Uint8Array>,
+    decoder: TextDecoder,
+    callback: (data: any) => void
+  ) => {
+    await readTextEventStreamDataByLine(reader, decoder, callback);
+
+    if (bufferCacheRef.current.length > 0) {
+      callback(bufferCacheRef.current);
+    }
   };
 
   const fetchChunkRequest = async ({
     url,
     handler,
+    byLine = false,
     params = {}
   }: RequestConfig) => {
     axiosToken.current?.abort?.();
@@ -104,13 +95,13 @@ const useSetChunkFetch = () => {
         return;
       }
 
-      chunkDataRef.current = '';
-      conentLengthRef.current = response.headers.get('Content-Length');
-      receivedLengthRef.current = 0;
-      console.log('conentLengthRef.current', conentLengthRef.current, response);
-      const reader = response?.body?.getReader();
+      const reader =
+        response?.body?.getReader() as ReadableStreamDefaultReader<Uint8Array>;
       const decoder = new TextDecoder('utf-8');
+
       await readTextEventStreamData(reader, decoder, handler);
+
+      console.log('chunkDataRef.current===1', chunkDataRef.current);
     } catch (error) {
       // handle error
       console.log('error============', error);

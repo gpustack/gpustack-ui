@@ -27,5 +27,5 @@ export default {
   'users.password.confirm.error': 'The two passwords entered do not match.',
   'users.login.title': 'Log in to {name}',
   'users.version.islatest': '{version} is the latest version',
-  'users.version.update': 'Version {version} is available for update'
+  'users.version.update': 'Version {version} is available'
 };

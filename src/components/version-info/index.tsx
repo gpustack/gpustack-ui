@@ -10,6 +10,11 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
   const latestVersion = getAtomStorage(UpdateCheckAtom).latest_version;
   const currentVersion = getAtomStorage(GPUStackVersionAtom)?.version;
 
+  const isProd =
+    document.documentElement.getAttribute('data-env') === 'production';
+
+  const uiVersion = document.documentElement.getAttribute('data-version');
+
   return (
     <div className="version-box">
       <div className="img">
@@ -17,14 +22,31 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
       </div>
 
       <div className="ver">
-        <span className="label">
-          {' '}
-          {intl.formatMessage({ id: 'common.footer.version' })}
-        </span>
-        <span className="val">
-          {getAtomStorage(GPUStackVersionAtom)?.version ||
-            getAtomStorage(GPUStackVersionAtom)?.git_commit}
-        </span>
+        {isProd && (
+          <span className="label">
+            {intl.formatMessage({ id: 'common.footer.version' })}
+          </span>
+        )}
+        {isProd ? (
+          <span className="val">
+            {getAtomStorage(GPUStackVersionAtom)?.version ||
+              getAtomStorage(GPUStackVersionAtom)?.git_commit}
+          </span>
+        ) : (
+          <span className="val dev">
+            <span className="item">
+              <span className="tl">
+                {' '}
+                {intl.formatMessage({ id: 'common.footer.version.server' })}
+              </span>
+              {getAtomStorage(GPUStackVersionAtom)?.git_commit}
+            </span>
+            <span className="item">
+              <span className="tl">UI</span>
+              {uiVersion}
+            </span>
+          </span>
+        )}
       </div>
       {getAtomStorage(userAtom)?.is_admin && (
         <div className="upgrade">

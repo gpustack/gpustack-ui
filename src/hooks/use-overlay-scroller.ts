@@ -59,9 +59,24 @@ export default function useOverlayScroller(options?: any) {
     [scrollEventElement, instanceRef]
   );
 
-  const throttledUpdateScrollerPosition = React.useCallback(() => {
-    throttledScroll();
-  }, [throttledScroll]);
+  const scrollauto = React.useCallback(() => {
+    scrollEventElement.current?.scrollTo?.({
+      top: scrollEventElement.current.scrollHeight,
+      behavior: 'auto'
+    });
+    instanceRef.current?.update?.();
+  }, [scrollEventElement, instanceRef]);
+
+  const throttledUpdateScrollerPosition = React.useCallback(
+    (delay?: number) => {
+      if (delay === 0) {
+        scrollauto();
+      } else {
+        throttledScroll();
+      }
+    },
+    [throttledScroll, scrollauto]
+  );
 
   // const createInstance = React.useCallback((el: any) => {
   //   if (el) {

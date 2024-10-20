@@ -1,13 +1,11 @@
 import useSetChunkFetch from '@/hooks/use-chunk-fetch';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { FitAddon } from '@xterm/addon-fit';
-import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import './index.less';
-import parseAnsi from './parse-ansi';
+import useParseAnsi from './parse-ansi';
 
 interface LogsViewerProps {
   height: number;
@@ -20,15 +18,14 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { initialize, updateScrollerPosition } = useOverlayScroller({
     theme: 'os-theme-light'
   });
+  const { isClean, parseAnsi } = useParseAnsi();
   const { setChunkFetch } = useSetChunkFetch();
   const chunkRequedtRef = useRef<any>(null);
   const scroller = useRef<any>({});
-  const termRef = useRef<any>({});
-  const termwrapRef = useRef<any>({});
-  const fitAddonRef = useRef<any>({});
   const cacheDataRef = useRef<any>('');
   const uidRef = useRef<any>(0);
   const [logs, setLogs] = useState<any[]>([]);
+  const autoScroll = useRef(true);
 
   const setId = () => {
     uidRef.current += 1;
@@ -41,7 +38,11 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   const updateContent = useCallback(
     (data: string) => {
-      cacheDataRef.current += data;
+      if (isClean(data)) {
+        cacheDataRef.current = data;
+      } else {
+        cacheDataRef.current += data;
+      }
       const res = parseAnsi(cacheDataRef.current, setId, clearScreen);
       setLogs(res);
     },
@@ -61,28 +62,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     });
   };
 
-  const initTerm = useCallback(() => {
-    termRef.current?.clear?.();
-    termRef.current?.dispose?.();
-    termRef.current = new Terminal({
-      lineHeight: 1.2,
-      fontSize: 13,
-      fontFamily:
-        "monospace,Menlo,Courier,'Courier New',Consolas,Monaco, 'Liberation Mono'",
-      disableStdin: true,
-      convertEol: true,
-      theme: {
-        background: '#1e1e1e',
-        foreground: 'rgba(255,255,255,0.8)'
-      },
-      cursorInactiveStyle: 'none',
-      smoothScrollDuration: 0
-    });
-    fitAddonRef.current = new FitAddon();
-    termRef.current.loadAddon(fitAddonRef.current);
-    termRef.current.open(termwrapRef.current);
-  }, [termwrapRef.current]);
-
   useEffect(() => {
     createChunkConnection();
     return () => {
@@ -97,10 +76,10 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   }, [scroller.current, initialize]);
 
   useEffect(() => {
-    if (logs) {
-      updateScrollerPosition();
+    if (logs.length) {
+      updateScrollerPosition(0);
     }
-  }, [logs]);
+  }, [logs, autoScroll.current]);
 
   return (
     <div className="logs-viewer-wrap-w2">

@@ -39,7 +39,11 @@ import {
   queryModelInstancesList,
   updateModel
 } from '../apis';
-import { getSourceRepoConfigValue, modelSourceMap } from '../config';
+import {
+  InstanceStatusMap,
+  getSourceRepoConfigValue,
+  modelSourceMap
+} from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
@@ -96,7 +100,13 @@ const Models: React.FC<ModelsProps> = ({
     source: modelSourceMap.huggingface_value
   });
   const [currentData, setCurrentData] = useState<ListItem>({} as ListItem);
-  const [currentInstanceUrl, setCurrentInstanceUrl] = useState<string>('');
+  const [currentInstance, setCurrentInstance] = useState<{
+    url: string;
+    status: string;
+  }>({
+    url: '',
+    status: ''
+  });
   const modalRef = useRef<any>(null);
 
   useHotkeys(
@@ -333,7 +343,10 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleViewLogs = async (row: any) => {
     try {
-      setCurrentInstanceUrl(`${MODEL_INSTANCE_API}/${row.id}/logs`);
+      setCurrentInstance({
+        url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
+        status: row.status
+      });
       setOpenLogModal(true);
     } catch (error) {
       console.log('error:', error);
@@ -643,7 +656,8 @@ const Models: React.FC<ModelsProps> = ({
         onOk={handleCreateModel}
       ></DeployModal>
       <ViewLogsModal
-        url={currentInstanceUrl}
+        url={currentInstance.url}
+        autoScroll={currentInstance.status !== InstanceStatusMap.Downloading}
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>

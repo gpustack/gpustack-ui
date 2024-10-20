@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 type ViewModalProps = {
   open: boolean;
   url: string;
+  autoScroll?: boolean;
   onCancel: () => void;
 };
 
@@ -65,6 +66,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       <LogsViewer
         height={modalSize.height}
         url={url}
+        autoScroll={props.autoScroll}
         params={{
           follow: true
         }}

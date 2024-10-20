@@ -26,6 +26,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const uidRef = useRef<any>(0);
   const [logs, setLogs] = useState<any[]>([]);
   const autoScroll = useRef(true);
+  const stopScroll = useRef(false);
 
   const setId = () => {
     uidRef.current += 1;
@@ -62,6 +63,17 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     });
   };
 
+  const debounceResetStopScroll = _.debounce(() => {
+    stopScroll.current = false;
+  }, 3000);
+  const handleOnWheel = useCallback(
+    (e: any) => {
+      stopScroll.current = true;
+      debounceResetStopScroll();
+    },
+    [debounceResetStopScroll]
+  );
+
   useEffect(() => {
     createChunkConnection();
     return () => {
@@ -76,14 +88,19 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   }, [scroller.current, initialize]);
 
   useEffect(() => {
-    if (logs.length) {
+    if (logs.length && !stopScroll.current) {
       updateScrollerPosition(0);
     }
-  }, [logs, autoScroll.current]);
+  }, [logs, autoScroll.current, stopScroll.current]);
 
   return (
     <div className="logs-viewer-wrap-w2">
-      <div className="wrap" style={{ height: height }} ref={scroller}>
+      <div
+        className="wrap"
+        style={{ height: height }}
+        ref={scroller}
+        onWheel={handleOnWheel}
+      >
         <div className={classNames('content')}>
           {_.map(logs, (item: any, index: number) => {
             return (

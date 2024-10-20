@@ -6,7 +6,7 @@ const useParseAnsi = () => {
   const lastIndex = useRef(0);
 
   const removeBrackets = useCallback((str: string) => {
-    return str?.replace?.(/^\(.*?\)/, '');
+    return str?.replace?.(/^\(…\)/, '');
   }, []);
 
   const isClean = useCallback((ansiStr: string) => {
@@ -25,6 +25,8 @@ const useParseAnsi = () => {
       let screen = [['']];
       // replace carriage return and newline characters in the text
       let input = inputStr.replace(/\r\n/g, '\n');
+
+      lastIndex.current = 0;
 
       // handle the \r and \n characters in the text
       const handleText = (text: string) => {

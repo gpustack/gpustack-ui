@@ -5,6 +5,7 @@ import ShortCuts, {
   modalConfig as ShortCutsConfig
 } from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
@@ -23,12 +24,13 @@ import {
 } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import { useAtom } from 'jotai';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
+
 const loginPath = '/login';
 
 type InitialStateType = {
@@ -87,6 +89,8 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 };
 
 export default (props: any) => {
+  const { initialize } = useOverlayScroller();
+  const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
   const [version] = useAtom(GPUStackVersionAtom);
   const [updateCheck] = useAtom(UpdateCheckAtom);
@@ -179,6 +183,16 @@ export default (props: any) => {
       updateCheck.latest_version !== version?.version
     );
   }, [updateCheck, version, initialState]);
+
+  useEffect(() => {
+    initialize(document.body);
+  }, [initialize]);
+
+  useEffect(() => {
+    initializeMenu(
+      document.querySelector('.ant-menu.ant-menu-root')?.parentElement
+    );
+  }, [initializeMenu]);
 
   const renderMenuHeader = useCallback(
     (logo, title) => {

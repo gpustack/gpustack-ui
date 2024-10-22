@@ -454,7 +454,16 @@ const Resources: React.FC = () => {
                           </span>
                           <ProgressBar
                             key={index}
-                            percent={_.round(item.memory?.utilization_rate, 0)}
+                            percent={
+                              item.memory?.used
+                                ? _.round(item.memory?.utilization_rate, 0)
+                                : _.round(
+                                    (item.memory?.allocated /
+                                      item.memory?.total) *
+                                      100,
+                                    0
+                                  )
+                            }
                             label={
                               <span className="flex-column">
                                 <span>

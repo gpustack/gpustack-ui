@@ -1,7 +1,7 @@
 import { throttle } from 'lodash';
 import {
-  useOverlayScrollbars,
-  UseOverlayScrollbarsParams
+  UseOverlayScrollbarsParams,
+  useOverlayScrollbars
 } from 'overlayscrollbars-react';
 import React from 'react';
 
@@ -26,6 +26,7 @@ export const overlaySollerOptions: UseOverlayScrollbarsParams = {
 export default function useOverlayScroller(options?: any) {
   const scrollEventElement = React.useRef<any>(null);
   const instanceRef = React.useRef<any>(null);
+  const initialized = React.useRef(false);
   const [initialize, instance] = useOverlayScrollbars({
     options: {
       update: {
@@ -43,6 +44,7 @@ export default function useOverlayScroller(options?: any) {
     },
     defer: true
   });
+
   instanceRef.current = instance?.();
   scrollEventElement.current =
     instanceRef.current?.elements()?.scrollEventElement;
@@ -78,6 +80,12 @@ export default function useOverlayScroller(options?: any) {
     [throttledScroll, scrollauto]
   );
 
+  const generateInstance = () => {
+    instanceRef.current = instance?.();
+    scrollEventElement.current =
+      instanceRef.current?.elements()?.scrollEventElement;
+  };
+
   const createInstance = React.useCallback(
     (el: any) => {
       if (instanceRef.current) {
@@ -85,6 +93,14 @@ export default function useOverlayScroller(options?: any) {
       }
       if (el) {
         initialize(el);
+        initialized.current = true;
+        console.log(
+          'createInstance===2',
+          initialized.current,
+          instanceRef.current,
+          instance?.(),
+          instance
+        );
         instanceRef.current = instance?.();
         scrollEventElement.current =
           instanceRef.current?.elements()?.scrollEventElement;
@@ -97,6 +113,8 @@ export default function useOverlayScroller(options?: any) {
     initialize: createInstance,
     instance: instanceRef.current,
     scrollEventElement: scrollEventElement.current,
+    initialized: initialized.current,
+    generateInstance,
     updateScrollerPosition: throttledUpdateScrollerPosition
   };
 }

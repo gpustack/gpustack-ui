@@ -10,8 +10,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
   const latestVersion = getAtomStorage(UpdateCheckAtom).latest_version;
   const currentVersion = getAtomStorage(GPUStackVersionAtom)?.version;
 
-  const isProd =
-    document.documentElement.getAttribute('data-env') === 'production';
+  const isProd = currentVersion !== '0.0.0';
 
   const uiVersion = document.documentElement.getAttribute('data-version');
 
@@ -51,7 +50,9 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
       {getAtomStorage(userAtom)?.is_admin && (
         <div className="upgrade">
           <span className="m-l-5">
-            {latestVersion && latestVersion !== currentVersion
+            {latestVersion &&
+            latestVersion !== currentVersion &&
+            latestVersion !== '0.0.0'
               ? intl.formatMessage(
                   { id: 'users.version.update' },
                   { version: latestVersion }

@@ -3,7 +3,7 @@ import { IApi } from '@umijs/max';
 export default (api: IApi) => {
   api.modifyHTML(($) => {
     const info = JSON.parse(process.env.VERSION || '{}');
-    const env = info.version ? 'production' : 'development';
+    const env = process.env.NODE_ENV;
 
     $('html').attr('data-env', env);
 

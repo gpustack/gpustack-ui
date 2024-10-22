@@ -15,10 +15,16 @@ interface LogsViewerProps {
 }
 const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { height, url } = props;
-  const { initialize, updateScrollerPosition, scrollEventElement } =
-    useOverlayScroller({
-      theme: 'os-theme-light'
-    });
+  const {
+    initialize,
+    updateScrollerPosition,
+    generateInstance,
+    scrollEventElement,
+    instance,
+    initialized
+  } = useOverlayScroller({
+    theme: 'os-theme-light'
+  });
   const { isClean, parseAnsi } = useParseAnsi();
   const { setChunkFetch } = useSetChunkFetch();
   const chunkRequedtRef = useRef<any>(null);
@@ -62,11 +68,12 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const debounceResetStopScroll = _.debounce(() => {
     stopScroll.current = false;
   }, 30000);
+
   const handleOnWheel = useCallback(
     (e: any) => {
-      const scrollTop = scrollEventElement.scrollTop;
-      const scrollHeight = scrollEventElement.scrollHeight;
-      const clientHeight = scrollEventElement.clientHeight;
+      const scrollTop = scrollEventElement?.scrollTop;
+      const scrollHeight = scrollEventElement?.scrollHeight;
+      const clientHeight = scrollEventElement?.clientHeight;
       if (scrollTop + clientHeight >= scrollHeight) {
         stopScroll.current = false;
       } else {
@@ -74,8 +81,13 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       }
       debounceResetStopScroll();
     },
-    [debounceResetStopScroll]
+    [debounceResetStopScroll, scrollEventElement]
   );
+
+  const debounceUpdateScrollerPosition = _.debounce(() => {
+    generateInstance();
+    updateScrollerPosition(0);
+  }, 200);
 
   useEffect(() => {
     createChunkConnection();
@@ -91,10 +103,19 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   }, [scroller.current, initialize]);
 
   useEffect(() => {
-    if (logs.length && !stopScroll.current) {
+    if (logs.length && !stopScroll.current && instance) {
       updateScrollerPosition(0);
+    } else if (logs.length && !stopScroll.current && scroller.current) {
+      if (!initialized) {
+        initialize(scroller.current);
+      }
+      if (!instance) {
+        debounceUpdateScrollerPosition();
+      } else {
+        updateScrollerPosition(0);
+      }
     }
-  }, [logs, stopScroll.current]);
+  }, [logs, stopScroll.current, instance, scroller.current]);
 
   return (
     <div className="logs-viewer-wrap-w2">

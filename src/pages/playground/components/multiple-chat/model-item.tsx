@@ -174,7 +174,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
             : [...formatMessages],
           ...params,
           stream: true,
-          stream_otpions: {
+          stream_options: {
             include_usage: true
           }
         };

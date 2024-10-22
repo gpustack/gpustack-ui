@@ -174,7 +174,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           : [...formatMessages],
         ...parameters,
         stream: true,
-        stream_otpions: {
+        stream_options: {
           include_usage: true
         }
       };

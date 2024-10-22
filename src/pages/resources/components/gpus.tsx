@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import useTableSort from '@/hooks/use-table-sort';
@@ -140,6 +141,16 @@ const GPUList: React.FC = () => {
           title={intl.formatMessage({ id: 'resources.table.workername' })}
           dataIndex="worker_name"
           key="worker_name"
+          width={200}
+          render={(text, record: GPUDeviceItem) => {
+            return (
+              <span style={{ display: 'flex', width: '100%' }}>
+                <AutoTooltip ghost maxWidth={340}>
+                  {text}
+                </AutoTooltip>
+              </span>
+            );
+          }}
         />
         <Column
           title={intl.formatMessage({ id: 'resources.table.vender' })}
@@ -160,7 +171,7 @@ const GPUList: React.FC = () => {
           dataIndex="core"
           key="Core"
           render={(text, record: GPUDeviceItem) => {
-            return <span>{record.core?.total}</span>;
+            return <>{record.core ? <span>{record.core?.total}</span> : '-'}</>;
           }}
         /> */}
         <Column
@@ -169,9 +180,15 @@ const GPUList: React.FC = () => {
           key="gpuUtil"
           render={(text, record: GPUDeviceItem) => {
             return (
-              <ProgressBar
-                percent={_.round(record.core?.utilization_rate, 2)}
-              ></ProgressBar>
+              <>
+                {record.core ? (
+                  <ProgressBar
+                    percent={_.round(record.core?.utilization_rate, 2)}
+                  ></ProgressBar>
+                ) : (
+                  '-'
+                )}
+              </>
             );
           }}
         />
@@ -192,7 +209,10 @@ const GPUList: React.FC = () => {
                     </span>
                     <span>
                       {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-                      {convertFileSize(record.memory?.used, 0)}
+                      {convertFileSize(
+                        record.memory?.used || record.memory?.allocated,
+                        0
+                      )}
                     </span>
                   </span>
                 }

@@ -173,7 +173,10 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               ]
             : [...formatMessages],
           ...params,
-          stream: true
+          stream: true,
+          stream_otpions: {
+            include_usage: true
+          }
         };
         // ============== payload end ================
         const result: any = await fetchChunkedData({

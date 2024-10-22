@@ -173,7 +173,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             ]
           : [...formatMessages],
         ...parameters,
-        stream: true
+        stream: true,
+        stream_otpions: {
+          include_usage: true
+        }
       };
       const result: any = await fetchChunkedData({
         data: chatParams,

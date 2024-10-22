@@ -37,6 +37,7 @@ export default {
   'resources.table.utilization': '利用率',
   'resources.table.total': '总量',
   'resources.table.used': '已用',
+  'resources.table.allocated': '已分配',
   'resources.table.wokers': 'workers',
   'resources.table.unified': '统一内存',
   'resources.worker.linuxormaxos': 'Linux 或 MacOS',

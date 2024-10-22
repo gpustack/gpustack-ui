@@ -39,11 +39,7 @@ import {
   queryModelInstancesList,
   updateModel
 } from '../apis';
-import {
-  InstanceStatusMap,
-  getSourceRepoConfigValue,
-  modelSourceMap
-} from '../config';
+import { getSourceRepoConfigValue, modelSourceMap } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
@@ -657,7 +653,6 @@ const Models: React.FC<ModelsProps> = ({
       ></DeployModal>
       <ViewLogsModal
         url={currentInstance.url}
-        autoScroll={currentInstance.status !== InstanceStatusMap.Downloading}
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>

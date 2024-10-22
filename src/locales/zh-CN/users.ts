@@ -26,5 +26,5 @@ export default {
   'users.password.confirm.error': '两次输入的密码不一致',
   'users.login.title': '登录 {name}',
   'users.version.islatest': '{version} 已是最新版本',
-  'users.version.update': '{version} 版本可供更新'
+  'users.version.update': 'GPUStack {version} 版本可供更新'
 };

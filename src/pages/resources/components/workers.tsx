@@ -307,6 +307,14 @@ const Resources: React.FC = () => {
           title={intl.formatMessage({ id: 'common.table.name' })}
           dataIndex="name"
           key="name"
+          width={100}
+          render={(text, record: ListItem) => {
+            return (
+              <AutoTooltip ghost maxWidth={240}>
+                <span>{record.name}</span>
+              </AutoTooltip>
+            );
+          }}
         />
         <Column
           title={intl.formatMessage({ id: 'resources.table.labels' })}
@@ -408,10 +416,14 @@ const Resources: React.FC = () => {
                         >
                           [{item.index}]
                         </span>
-                        <ProgressBar
-                          key={index}
-                          percent={_.round(item.core?.utilization_rate, 0)}
-                        ></ProgressBar>
+                        {item.core ? (
+                          <ProgressBar
+                            key={index}
+                            percent={_.round(item.core?.utilization_rate, 0)}
+                          ></ProgressBar>
+                        ) : (
+                          '-'
+                        )}
                       </span>
                     );
                   }
@@ -455,7 +467,11 @@ const Resources: React.FC = () => {
                                   {intl.formatMessage({
                                     id: 'resources.table.used'
                                   })}
-                                  : {convertFileSize(item.memory?.used, 0)}
+                                  :{' '}
+                                  {convertFileSize(
+                                    item.memory?.used || item.memory?.allocated,
+                                    0
+                                  )}
                                 </span>
                               </span>
                             }

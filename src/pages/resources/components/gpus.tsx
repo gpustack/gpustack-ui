@@ -200,7 +200,14 @@ const GPUList: React.FC = () => {
           render={(text, record: GPUDeviceItem) => {
             return (
               <ProgressBar
-                percent={_.round(record.memory?.utilization_rate, 0)}
+                percent={
+                  record.memory?.used
+                    ? _.round(record.memory?.utilization_rate, 0)
+                    : _.round(
+                        record.memory?.allocated / record.memory?.total,
+                        0
+                      )
+                }
                 label={
                   <span className="flex-column">
                     <span>

@@ -24,6 +24,7 @@ import {
 } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import { useAtom } from 'jotai';
+import 'overlayscrollbars/overlayscrollbars.css';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Exception from './Exception';
 import './Layout.css';
@@ -89,7 +90,7 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 };
 
 export default (props: any) => {
-  const { initialize } = useOverlayScroller();
+  const { initialize: initialize } = useOverlayScroller();
   const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
   const [version] = useAtom(GPUStackVersionAtom);
@@ -185,13 +186,19 @@ export default (props: any) => {
   }, [updateCheck, version, initialState]);
 
   useEffect(() => {
-    initialize(document.body);
+    const body = document.querySelector('body');
+    if (body) {
+      initialize(body);
+    }
   }, [initialize]);
 
   useEffect(() => {
-    initializeMenu(
-      document.querySelector('.ant-menu.ant-menu-root')?.parentElement
-    );
+    const menuWrap = document.querySelector(
+      '.ant-menu.ant-menu-root'
+    )?.parentElement;
+    if (menuWrap) {
+      initializeMenu(menuWrap);
+    }
   }, [initializeMenu]);
 
   const renderMenuHeader = useCallback(

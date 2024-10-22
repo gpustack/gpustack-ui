@@ -66,7 +66,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       <LogsViewer
         height={modalSize.height}
         url={url}
-        autoScroll={props.autoScroll}
         params={{
           follow: true
         }}

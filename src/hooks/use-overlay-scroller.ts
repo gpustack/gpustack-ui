@@ -56,7 +56,7 @@ export default function useOverlayScroller(options?: any) {
         });
         instanceRef.current?.update?.();
       }, 300),
-    [scrollEventElement, instanceRef]
+    [scrollEventElement.current, instanceRef.current]
   );
 
   const scrollauto = React.useCallback(() => {
@@ -65,7 +65,7 @@ export default function useOverlayScroller(options?: any) {
       behavior: 'auto'
     });
     instanceRef.current?.update?.();
-  }, [scrollEventElement, instanceRef]);
+  }, [scrollEventElement.current, instanceRef.current]);
 
   const throttledUpdateScrollerPosition = React.useCallback(
     (delay?: number) => {
@@ -78,25 +78,25 @@ export default function useOverlayScroller(options?: any) {
     [throttledScroll, scrollauto]
   );
 
-  // const createInstance = React.useCallback((el: any) => {
-  //   if (el) {
-  //     instanceRef.current?.destroy?.();
-  //     initialize(el);
-  //     instanceRef.current = instance?.();
-  //     scrollEventElement.current =
-  //       instanceRef.current?.elements()?.scrollEventElement;
-  //   }
-  // }, []);
-
-  React.useEffect(() => {
-    return () => {
-      instanceRef.current?.destroy?.();
-    };
-  }, []);
+  const createInstance = React.useCallback(
+    (el: any) => {
+      if (instanceRef.current) {
+        return;
+      }
+      if (el) {
+        initialize(el);
+        instanceRef.current = instance?.();
+        scrollEventElement.current =
+          instanceRef.current?.elements()?.scrollEventElement;
+      }
+    },
+    [initialize, instance]
+  );
 
   return {
-    initialize,
+    initialize: createInstance,
     instance: instanceRef.current,
+    scrollEventElement: scrollEventElement.current,
     updateScrollerPosition: throttledUpdateScrollerPosition
   };
 }

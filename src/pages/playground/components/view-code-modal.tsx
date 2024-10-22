@@ -4,7 +4,7 @@ import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
   systemMessage?: string;
@@ -40,8 +40,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   } = props || {};
 
   const intl = useIntl();
-  const editorRef = useRef(null);
-  const [loaded, setLoaded] = useState(false);
   const [codeValue, setCodeValue] = useState('');
   const [lang, setLang] = useState(langMap.shell);
 

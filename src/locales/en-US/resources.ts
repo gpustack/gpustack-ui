@@ -37,6 +37,7 @@ export default {
   'resources.table.vramutilization': 'VRAM Utilization',
   'resources.table.total': 'Total',
   'resources.table.used': 'Used',
+  'resources.table.allocated': 'Allocated',
   'resources.table.wokers': 'workers',
   'resources.worker.linuxormaxos': 'Linux or MacOS',
   'resources.table.unified': 'Unified Memory',

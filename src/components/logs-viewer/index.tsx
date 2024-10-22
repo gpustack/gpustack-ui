@@ -15,9 +15,10 @@ interface LogsViewerProps {
 }
 const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const { height, url } = props;
-  const { initialize, updateScrollerPosition } = useOverlayScroller({
-    theme: 'os-theme-light'
-  });
+  const { initialize, updateScrollerPosition, scrollEventElement } =
+    useOverlayScroller({
+      theme: 'os-theme-light'
+    });
   const { isClean, parseAnsi } = useParseAnsi();
   const { setChunkFetch } = useSetChunkFetch();
   const chunkRequedtRef = useRef<any>(null);
@@ -25,16 +26,11 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   const cacheDataRef = useRef<any>('');
   const uidRef = useRef<any>(0);
   const [logs, setLogs] = useState<any[]>([]);
-  const autoScroll = useRef(true);
   const stopScroll = useRef(false);
 
   const setId = () => {
     uidRef.current += 1;
     return uidRef.current;
-  };
-
-  const clearScreen = () => {
-    cacheDataRef.current = '';
   };
 
   const updateContent = useCallback(
@@ -44,7 +40,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       } else {
         cacheDataRef.current += data;
       }
-      const res = parseAnsi(cacheDataRef.current, setId, clearScreen);
+      const res = parseAnsi(cacheDataRef.current, setId);
       setLogs(res);
     },
     [setLogs, setId]
@@ -65,10 +61,17 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   const debounceResetStopScroll = _.debounce(() => {
     stopScroll.current = false;
-  }, 3000);
+  }, 30000);
   const handleOnWheel = useCallback(
     (e: any) => {
-      stopScroll.current = true;
+      const scrollTop = scrollEventElement.scrollTop;
+      const scrollHeight = scrollEventElement.scrollHeight;
+      const clientHeight = scrollEventElement.clientHeight;
+      if (scrollTop + clientHeight >= scrollHeight) {
+        stopScroll.current = false;
+      } else {
+        stopScroll.current = true;
+      }
       debounceResetStopScroll();
     },
     [debounceResetStopScroll]
@@ -91,7 +94,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     if (logs.length && !stopScroll.current) {
       updateScrollerPosition(0);
     }
-  }, [logs, autoScroll.current, stopScroll.current]);
+  }, [logs, stopScroll.current]);
 
   return (
     <div className="logs-viewer-wrap-w2">

@@ -61,7 +61,12 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
                   { version: currentVersion }
                 )}
           </span>
-          <Button type="link" href={externalLinks.release} target="_blank">
+          <Button
+            type="link"
+            href={externalLinks.release}
+            target="_blank"
+            style={{ paddingInline: 0 }}
+          >
             {intl.formatMessage({ id: 'common.text.changelog' })}
           </Button>
         </div>

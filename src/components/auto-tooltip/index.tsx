@@ -13,6 +13,7 @@ import React, {
 interface AutoTooltipProps extends Omit<TagProps, 'title'> {
   children: React.ReactNode;
   maxWidth?: number | string;
+  minWidth?: number | string;
   color?: string;
   style?: React.CSSProperties;
   ghost?: boolean;
@@ -24,6 +25,7 @@ interface AutoTooltipProps extends Omit<TagProps, 'title'> {
 const AutoTooltip: React.FC<AutoTooltipProps> = ({
   children,
   maxWidth = '100%',
+  minWidth,
   ghost = false,
   title,
   showTitle = false,
@@ -61,6 +63,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   const tagStyle = useMemo(
     () => ({
       maxWidth,
+      minWidth,
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap' as const,

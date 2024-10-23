@@ -217,7 +217,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     };
 
     const handleApplyToAllModels = (e: any) => {
-      console.log('checkbox change:', e.target.checked);
       isApplyToAllModels.current = e.target.checked;
       if (e.target.checked) {
         setGlobalParams({
@@ -334,7 +333,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     }, [modelList, intl]);
 
     useEffect(() => {
-      console.log('globalParams:', globalParams.model, globalParams);
       setParams({
         ...params,
         model: model,
@@ -384,7 +382,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         <div className="header">
           <span className="title">
             <Select
-              style={{ minWidth: '120px', maxWidth: '200px' }}
+              style={{ minWidth: '120px', maxWidth: '180px' }}
               variant="borderless"
               options={modelFullList}
               onChange={handleModelChange}
@@ -404,7 +402,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               }}
             ></Select>
           </span>
-          <ReferenceParams usage={tokenResult}></ReferenceParams>
+          <ReferenceParams usage={tokenResult} scaleable></ReferenceParams>
           <span className="action">
             <Dropdown
               menu={{

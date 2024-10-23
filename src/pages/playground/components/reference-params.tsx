@@ -1,11 +1,13 @@
 import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Alert, Space, Tooltip } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
 import '../style/reference-params.less';
 
 interface ReferenceParamsProps {
   showOutput?: boolean;
+  scaleable?: boolean;
   usage: {
     error?: boolean;
     errorMessage?: string;
@@ -20,7 +22,7 @@ interface ReferenceParamsProps {
 
 const ReferenceParams = (props: ReferenceParamsProps) => {
   const intl = useIntl();
-  const { usage, showOutput = true } = props;
+  const { usage, showOutput = true, scaleable } = props;
   if (!usage || _.isEmpty(usage)) {
     return null;
   }
@@ -41,8 +43,16 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
     );
   }
   return (
-    <div className="reference-params">
-      <span className="usage">
+    <div
+      className={classNames('reference-params', {
+        scaleable: scaleable
+      })}
+    >
+      <span
+        className={classNames('usage', {
+          scaleable: scaleable
+        })}
+      >
         <Tooltip
           title={
             <Space>
@@ -65,7 +75,11 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
       </span>
 
       {showOutput && (
-        <span className="usage">
+        <span
+          className={classNames('usage', {
+            scaleable: scaleable
+          })}
+        >
           <Tooltip
             title={
               <Space>

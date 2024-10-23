@@ -1,4 +1,4 @@
-import { throttle } from 'echarts/core';
+import { throttle } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 import echarts, { ECOption } from '.';
 
@@ -9,6 +9,8 @@ const Chart: React.FC<{
 }> = ({ options, width, height }) => {
   const container = useRef<HTMLDivElement>(null);
   const chart = useRef<echarts.EChartsType>();
+  const resizeable = useRef(false);
+  const resizeObserver = useRef<ResizeObserver>();
 
   const init = useCallback(() => {
     if (container.current) {
@@ -30,27 +32,48 @@ const Chart: React.FC<{
   }, []);
 
   useEffect(() => {
-    init();
+    if (container.current) {
+      init();
+    }
     return () => {
       chart.current?.dispose();
     };
   }, [init]);
 
   useEffect(() => {
+    resizeable.current = false;
     resize();
     setOption(options);
   }, [options]);
 
-  // resize on window resize
+  useEffect(() => {
+    let timer: any = null;
+    timer = setTimeout(() => {
+      resizeable.current = true;
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   useEffect(() => {
     const handleResize = throttle(() => {
-      resize();
+      if (resizeable.current) {
+        chart.current?.resize();
+      }
     }, 100);
-    window.addEventListener('resize', handleResize);
+
+    if (container.current) {
+      resizeObserver.current = new ResizeObserver(handleResize);
+
+      resizeObserver.current.observe(container.current);
+    }
     return () => {
-      window.removeEventListener('resize', handleResize);
+      if (container.current) {
+        resizeObserver.current?.unobserve(container.current);
+      }
     };
-  }, [resize]);
+  }, []);
 
   return <div ref={container} style={{ width: width, height }}></div>;
 };

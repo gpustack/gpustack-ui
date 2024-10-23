@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
@@ -218,9 +219,15 @@ const APIKeys: React.FC = () => {
             title={intl.formatMessage({ id: 'common.table.name' })}
             dataIndex="name"
             key="name"
-            width={400}
             ellipsis={{
-              showTitle: true
+              showTitle: false
+            }}
+            render={(text, record) => {
+              return (
+                <AutoTooltip ghost style={{ maxWidth: 400 }}>
+                  {text}
+                </AutoTooltip>
+              );
             }}
           />
 
@@ -228,10 +235,19 @@ const APIKeys: React.FC = () => {
             title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
             dataIndex="expires_at"
             key="expiration"
+            ellipsis={{
+              showTitle: false
+            }}
             render={(text, record) => {
-              return text
-                ? dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-                : intl.formatMessage({ id: 'apikeys.form.expiration.never' });
+              return (
+                <AutoTooltip ghost>
+                  {text
+                    ? dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+                    : intl.formatMessage({
+                        id: 'apikeys.form.expiration.never'
+                      })}
+                </AutoTooltip>
+              );
             }}
           />
           <Column
@@ -239,7 +255,10 @@ const APIKeys: React.FC = () => {
             dataIndex="description"
             key="description"
             ellipsis={{
-              showTitle: true
+              showTitle: false
+            }}
+            render={(text, record) => {
+              return <AutoTooltip ghost>{text}</AutoTooltip>;
             }}
           />
           <Column
@@ -250,13 +269,23 @@ const APIKeys: React.FC = () => {
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={false}
+            ellipsis={{
+              showTitle: false
+            }}
             render={(text, record) => {
-              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+              return (
+                <AutoTooltip ghost>
+                  {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+                </AutoTooltip>
+              );
             }}
           />
           <Column
             title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
+            ellipsis={{
+              showTitle: false
+            }}
             render={(text, record: ListItem) => {
               return (
                 <Space size={20}>

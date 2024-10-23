@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
@@ -275,26 +276,39 @@ const Users: React.FC = () => {
             title={intl.formatMessage({ id: 'common.table.name' })}
             dataIndex="username"
             key="name"
+            ellipsis={{
+              showTitle: false
+            }}
+            render={(text, record) => {
+              return (
+                <AutoTooltip ghost minWidth={20}>
+                  {text}
+                </AutoTooltip>
+              );
+            }}
           />
           <Column
             title={intl.formatMessage({ id: 'users.table.role' })}
             dataIndex="role"
             key="role"
+            ellipsis={{
+              showTitle: false
+            }}
             render={(text, record: ListItem) => {
               return record.is_admin ? (
-                <>
+                <AutoTooltip ghost minWidth={50}>
                   <UserSwitchOutlined className="size-16" />
                   <span className="m-l-5">
                     {intl.formatMessage({ id: 'users.form.admin' })}
                   </span>
-                </>
+                </AutoTooltip>
               ) : (
-                <>
+                <AutoTooltip ghost minWidth={50}>
                   <UserOutlined className="size-16" />
                   <span className="m-l-5">
                     {intl.formatMessage({ id: 'users.form.user' })}
                   </span>
-                </>
+                </AutoTooltip>
               );
             }}
           />
@@ -302,6 +316,16 @@ const Users: React.FC = () => {
             title={intl.formatMessage({ id: 'users.form.fullname' })}
             dataIndex="full_name"
             key="full_name"
+            ellipsis={{
+              showTitle: false
+            }}
+            render={(text, record) => {
+              return (
+                <AutoTooltip ghost minWidth={20}>
+                  {text}
+                </AutoTooltip>
+              );
+            }}
           />
           <Column
             title={intl.formatMessage({ id: 'common.table.createTime' })}
@@ -311,14 +335,23 @@ const Users: React.FC = () => {
             sortOrder={sortOrder}
             showSorterTooltip={false}
             sorter={false}
+            ellipsis={{
+              showTitle: false
+            }}
             render={(text, record) => {
-              return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
+              return (
+                <AutoTooltip ghost minWidth={20}>
+                  {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+                </AutoTooltip>
+              );
             }}
           />
           <Column
             title={intl.formatMessage({ id: 'common.table.operation' })}
             key="operation"
-            width={200}
+            ellipsis={{
+              showTitle: false
+            }}
             render={(text, record: ListItem) => {
               return (
                 <DropdownButtons

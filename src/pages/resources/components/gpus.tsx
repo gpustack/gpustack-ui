@@ -128,6 +128,13 @@ const GPUList: React.FC = () => {
           title={intl.formatMessage({ id: 'common.table.name' })}
           dataIndex="name"
           key="name"
+          render={(text, record) => {
+            return (
+              <AutoTooltip ghost style={{ width: '100%' }}>
+                {text}
+              </AutoTooltip>
+            );
+          }}
         />
         <Column
           title={intl.formatMessage({ id: 'resources.table.index' })}

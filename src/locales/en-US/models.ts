@@ -53,7 +53,7 @@ export default {
   'models.form.manual.schedule': 'Manual Schedule',
   'models.table.gpuindex': 'GPU Index',
   'models.table.backend': 'Backends',
-  'models.table.acrossworker': 'Distribution Across Workers',
+  'models.table.acrossworker': 'Distributed Across Workers',
   'models.table.cpuoffload': 'CPU Offload',
   'models.table.layers': 'Layers',
   'models.form.backend': 'Backend',

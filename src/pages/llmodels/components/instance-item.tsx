@@ -91,7 +91,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const renderWorkerInfo = (item: ModelInstanceListItem) => {
     let workerIp = '-';
     if (item.worker_ip) {
-      workerIp = item.port ? `${item.worker_ip}:${item.port}` : item.worker_ip;
+      workerIp = item.worker_ip;
     }
     return (
       <div>

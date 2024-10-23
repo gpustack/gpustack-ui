@@ -353,6 +353,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               type="text"
               icon={<ClearOutlined />}
               size="middle"
+              disabled={loading}
               onClick={handleClearAll}
             ></Button>
           </Tooltip>

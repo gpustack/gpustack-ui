@@ -6,7 +6,16 @@
   color: var(--ant-orange);
   gap: 20px;
 
+  &.scaleable {
+    gap: 15px;
+  }
+
   .usage {
     cursor: pointer;
+    line-height: 16px;
+
+    &.scaleable {
+      transform: scale(0.9);
+    }
   }
 }

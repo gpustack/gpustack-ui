@@ -91,7 +91,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const renderWorkerInfo = (item: ModelInstanceListItem) => {
     let workerIp = '-';
     if (item.worker_ip) {
-      workerIp = item.worker_ip;
+      workerIp = item.port ? `${item.worker_ip}:${item.port}` : item.worker_ip;
     }
     return (
       <div>
@@ -116,7 +116,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       return {
         worker_name: data?.name,
         worker_ip: data?.ip,
-        port: data?.port,
+        port: '',
         gpu_index: item.gpu_index
       };
     });
@@ -125,7 +125,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       {
         worker_name: `${row.worker_name}`,
         worker_ip: `${row.worker_ip}`,
-        port: row.port,
+        port: '',
         gpu_index: `${row.gpu_indexes?.sort?.()} (main)`
       }
     ];

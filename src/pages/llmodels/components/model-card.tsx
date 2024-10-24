@@ -60,6 +60,23 @@ const ModelCard: React.FC<{
     }
   };
 
+  const removeMetadata = (str: string) => {
+    let indexes = [];
+    let index = str.indexOf('---');
+
+    while (index !== -1) {
+      indexes.push(index);
+      if (indexes.length >= 2) {
+        break;
+      }
+      index = str.indexOf('---', index + 1);
+    }
+    if (indexes.length >= 2) {
+      return str.slice(indexes[1] + 3);
+    }
+    return str;
+  };
+
   // huggingface model card data
   const getHuggingfaceModelDetail = async () => {
     try {
@@ -74,7 +91,10 @@ const ModelCard: React.FC<{
       ]);
 
       setModelData(modelcard);
-      setReadmeText(readme);
+      // remove the meta data from readme
+      const newReadme = removeMetadata(readme);
+
+      setReadmeText(newReadme);
       const isGGUF = modelcard.tags?.includes('gguf');
       setIsGGUF(isGGUF);
       setIsGGUFModel(isGGUF);

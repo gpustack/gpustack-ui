@@ -13,3 +13,30 @@ export const playGroundRoles = [
     label: 'playground.assitant'
   }
 ];
+
+export const formatMessageParams = (messageList: any[]) => {
+  const result: any[] = [];
+
+  messageList.forEach((item) => {
+    const { role, content, title, imgs, uid } = item;
+    content?.forEach((contentItem: any) => {
+      if (contentItem.type === 'text') {
+        result.push({
+          role,
+          content: contentItem.text
+        });
+      }
+      if (contentItem.type === 'image_url') {
+        result.push({
+          role,
+          content: [
+            {
+              ...contentItem
+            }
+          ]
+        });
+      }
+    });
+  });
+  return result;
+};

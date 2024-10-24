@@ -183,7 +183,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
           {data.title ?? intl.formatMessage({ id: `playground.${data.role}` })}
         </div>
         <div className="actions">
-          {actions.includes('upload') && (
+          {actions.includes('upload') && data.role === Roles.User && (
             <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>
           )}
           {data.content && actions.includes('copy') && (

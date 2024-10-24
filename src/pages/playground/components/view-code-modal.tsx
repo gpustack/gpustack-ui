@@ -50,41 +50,41 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     apiType === 'chat' ? 'choices[0].message.content' : 'data[0].embedding';
 
   const generateCode = () => {
-    const systemList = systemMessage
-      ? [
-          {
-            role: 'system',
-            content: [
-              {
-                type: 'text',
-                text: systemMessage
-              }
-            ]
-          }
-        ]
-      : [];
+    // const systemList = systemMessage
+    //   ? [
+    //       {
+    //         role: 'system',
+    //         content: [
+    //           {
+    //             type: 'text',
+    //             text: systemMessage
+    //           }
+    //         ]
+    //       }
+    //     ]
+    //   : [];
 
-    const formatMessageList = _.map(messageList, (item: any) => {
-      return {
-        role: item.role,
-        content: [
-          {
-            type: 'text',
-            text: item.content
-          },
-          ..._.map(item.imgs, (img: any) => {
-            return {
-              type: 'image_url',
-              image_url: {
-                url: img.dataUrl
-              }
-            };
-          })
-        ]
-      };
-    });
+    // const formatMessageList = _.map(messageList, (item: any) => {
+    //   return {
+    //     role: item.role,
+    //     content: [
+    //       {
+    //         type: 'text',
+    //         text: item.content
+    //       },
+    //       ..._.map(item.imgs, (img: any) => {
+    //         return {
+    //           type: 'image_url',
+    //           image_url: {
+    //             url: img.dataUrl
+    //           }
+    //         };
+    //       })
+    //     ]
+    //   };
+    // });
     if (lang === langMap.shell) {
-      const messages = [...systemList, ...formatMessageList];
+      const messages = messageList;
       const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
@@ -95,7 +95,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       )}'`;
       setCodeValue(code);
     } else if (lang === langMap.javascript) {
-      const messages = [...systemList, ...formatMessageList];
+      const messages = messageList;
       const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
@@ -121,11 +121,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       );
       const messages =
         apiType === 'chat'
-          ? `messages=${JSON.stringify(
-              [...systemList, ...formatMessageList],
-              null,
-              2
-            )}`
+          ? `messages=${JSON.stringify(messageList, null, 2)}`
           : '';
       const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${ClientType}.create(\n${formattedParams}  ${messages})\nprint(response.${logcommand})`;
       setCodeValue(code);
@@ -158,7 +154,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
 
   useEffect(() => {
     generateCode();
-  }, [lang, systemMessage, messageList, parameters]);
+  }, [lang, messageList, parameters]);
 
   return (
     <>

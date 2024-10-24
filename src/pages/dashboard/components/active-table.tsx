@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import PageTools from '@/components/page-tools';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
@@ -12,18 +13,27 @@ const ActiveTable = () => {
     {
       title: intl.formatMessage({ id: 'common.table.name' }),
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      ellipsis: true,
+      render: (text: any, record: any) => {
+        return (
+          <AutoTooltip ghost>
+            <span>{text}</span>
+          </AutoTooltip>
+        );
+      }
     },
     {
       title: intl.formatMessage({ id: 'dashboard.allocatevram' }),
       dataIndex: 'resource_claim.memory',
       key: 'vram',
+      ellipsis: true,
       render: (text: any, record: any) => {
         return (
-          <span>
+          <AutoTooltip ghost>
             {convertFileSize(record.resource_claim?.vram || 0)} /{' '}
             {convertFileSize(record.resource_claim?.ram || 0)}
-          </span>
+          </AutoTooltip>
         );
       }
     },
@@ -35,7 +45,15 @@ const ActiveTable = () => {
     {
       title: intl.formatMessage({ id: 'dashboard.tokens' }),
       dataIndex: 'token_count',
-      key: 'token_count'
+      key: 'token_count',
+      ellipsis: true,
+      render: (text: any, record: any) => {
+        return (
+          <AutoTooltip ghost>
+            <span>{text}</span>
+          </AutoTooltip>
+        );
+      }
     }
   ];
   return (

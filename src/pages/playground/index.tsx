@@ -1,5 +1,7 @@
 import IconFont from '@/components/icon-font';
+import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
+import useWindowResize from '@/hooks/use-window-resize';
 import { MessageOutlined, OneToOneOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
@@ -16,6 +18,7 @@ import './style/play-ground.less';
 
 const Playground: React.FC = () => {
   const intl = useIntl();
+  const { size } = useWindowResize();
   const [activeKey, setActiveKey] = useState('chat');
   const groundLeftRef = useRef<any>(null);
   const groundRerankerRef = useRef<any>(null);
@@ -79,6 +82,14 @@ const Playground: React.FC = () => {
       )
     }
   ];
+
+  useEffect(() => {
+    if (size.width < breakpoints.lg) {
+      if (!groundLeftRef.current?.collapse) {
+        groundLeftRef.current?.setCollapse?.();
+      }
+    }
+  }, [size.width]);
 
   useEffect(() => {
     const getModelList = async () => {

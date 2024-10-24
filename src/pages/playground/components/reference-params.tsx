@@ -1,6 +1,6 @@
 import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Alert, Space, Tooltip } from 'antd';
+import { Space, Tooltip, Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import '../style/reference-params.less';
@@ -28,18 +28,22 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
   }
   if (usage.error) {
     return (
-      <Alert
-        type="error"
-        style={{ textAlign: 'center', paddingBlock: 0 }}
-        message={
-          <span style={{ color: 'var(--ant-color-error)' }}>
-            <WarningOutlined className="m-r-8" />
-            {usage?.errorMessage}
-          </span>
-        }
-        banner
-        showIcon={false}
-      />
+      <Typography.Paragraph
+        type="danger"
+        ellipsis={{
+          rows: 2,
+          tooltip: usage?.errorMessage
+        }}
+        style={{
+          textAlign: 'center',
+          paddingBlock: 0,
+          margin: 0,
+          backgroundColor: 'var(--ant-color-error-bg)'
+        }}
+      >
+        <WarningOutlined className="m-r-8" />
+        {usage?.errorMessage}
+      </Typography.Paragraph>
     );
   }
   return (

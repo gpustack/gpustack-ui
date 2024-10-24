@@ -14,7 +14,7 @@ import {
   useState
 } from 'react';
 import { CHAT_API } from '../apis';
-import { Roles } from '../config';
+import { Roles, formatMessageParams } from '../config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
@@ -51,6 +51,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
+  const [viewCodeMessage, setViewCodeMessage] = useState<any[]>([]);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -158,21 +159,27 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           };
         }
       );
+      const messageParams = systemMessage
+        ? [
+            {
+              role: Roles.System,
+              content: [
+                {
+                  type: 'text',
+                  text: systemMessage
+                }
+              ]
+            },
+            ...formatMessages
+          ]
+        : [...formatMessages];
+
+      const finalMessageParams = formatMessageParams(messageParams);
+
+      setViewCodeMessage(finalMessageParams);
+
       const chatParams = {
-        messages: systemMessage
-          ? [
-              {
-                role: Roles.System,
-                content: [
-                  {
-                    type: 'text',
-                    text: systemMessage
-                  }
-                ]
-              },
-              ...formatMessages
-            ]
-          : [...formatMessages],
+        messages: finalMessageParams,
         ...parameters,
         stream: true,
         stream_options: {
@@ -196,6 +203,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       const { reader, decoder } = result;
       await readStreamData(reader, decoder, (chunk: any) => {
+        if (chunk?.error) {
+          setTokenResult({
+            error: true,
+            errorMessage: chunk?.error?.message || chunk?.message || ''
+          });
+          return;
+        }
         joinMessage(chunk);
       });
     } catch (error) {
@@ -344,8 +358,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       <ViewCodeModal
         open={show}
-        systemMessage={systemMessage}
-        messageList={messageList}
+        messageList={viewCodeMessage}
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

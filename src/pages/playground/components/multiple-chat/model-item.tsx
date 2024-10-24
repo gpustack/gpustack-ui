@@ -24,7 +24,7 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
-import { Roles } from '../../config';
+import { Roles, formatMessageParams } from '../../config';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
 import '../../style/model-item.less';
@@ -67,6 +67,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const currentMessageRef = useRef<MessageItem[]>([]);
     const modelScrollRef = useRef<any>(null);
     const messageListLengthCache = useRef<number>(0);
+    const [viewCodeMessage, setViewCodeMessage] = useState<any[]>([]);
 
     const { initialize, updateScrollerPosition } = useOverlayScroller();
 
@@ -157,21 +158,28 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
             ]
           };
         });
+
+        const messageParams = systemMessage
+          ? [
+              {
+                role: Roles.System,
+                content: [
+                  {
+                    type: 'text',
+                    text: systemMessage
+                  }
+                ]
+              },
+              ...formatMessages
+            ]
+          : [...formatMessages];
+
+        const finalMessageParams = formatMessageParams(messageParams);
+
+        setViewCodeMessage(finalMessageParams);
+
         const chatParams = {
-          messages: systemMessage
-            ? [
-                {
-                  role: Roles.System,
-                  content: [
-                    {
-                      type: 'text',
-                      text: systemMessage
-                    }
-                  ]
-                },
-                ...formatMessages
-              ]
-            : [...formatMessages],
+          messages: finalMessageParams,
           ...params,
           stream: true,
           stream_options: {
@@ -196,6 +204,13 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         setMessageId();
         const { reader, decoder } = result;
         await readStreamData(reader, decoder, (chunk: any) => {
+          if (chunk?.error) {
+            setTokenResult({
+              error: true,
+              errorMessage: chunk?.error?.message || chunk?.message || ''
+            });
+            return;
+          }
           joinMessage(chunk);
         });
       } catch (error) {
@@ -473,8 +488,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         </div>
         <ViewCodeModal
           open={show}
-          systemMessage={systemMessage}
-          messageList={messageList}
+          messageList={viewCodeMessage}
           parameters={params}
           onCancel={handleCloseViewCode}
           title={intl.formatMessage({ id: 'playground.viewcode' })}

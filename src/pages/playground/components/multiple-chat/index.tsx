@@ -29,7 +29,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
     stop: null,
     temperature: 1,
     top_p: 1,
-    top_n: 0,
     max_tokens: 1024
   });
   const [spans, setSpans] = useState<{

@@ -4,6 +4,7 @@ import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import CopyButton from '../copy-button';
 import './index.less';
 import useParseAnsi from './parse-ansi';
 
@@ -119,6 +120,13 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   return (
     <div className="logs-viewer-wrap-w2">
+      <span className="copy">
+        <CopyButton
+          text={logs?.map((item) => item.content).join('\n')}
+          type="default"
+          size="small"
+        ></CopyButton>
+      </span>
       <div
         className="wrap"
         style={{ height: height }}

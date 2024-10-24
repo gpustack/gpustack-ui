@@ -188,7 +188,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         if (result?.error) {
           setTokenResult({
             error: true,
-            errorMessage: result?.data?.error?.message
+            errorMessage:
+              result?.data?.error?.message || result?.data?.message || ''
           });
           return;
         }

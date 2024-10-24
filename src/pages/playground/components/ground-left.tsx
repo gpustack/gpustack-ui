@@ -188,7 +188,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (result?.error) {
         setTokenResult({
           error: true,
-          errorMessage: result?.data?.error?.message
+          errorMessage:
+            result?.data?.error?.message || result?.data?.message || ''
         });
         return;
       }

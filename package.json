@@ -21,6 +21,7 @@
     "@huggingface/hub": "^0.15.1",
     "@huggingface/tasks": "^0.11.6",
     "@monaco-editor/react": "^4.6.0",
+    "@orcid/bibtex-parse-js": "^0.0.25",
     "@react-hook/resize-observer": "^2.0.2",
     "@types/lodash": "^4.17.4",
     "@umijs/max": "^4.2.11",

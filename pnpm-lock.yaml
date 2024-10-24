@@ -26,6 +26,9 @@ dependencies:
   '@monaco-editor/react':
     specifier: ^4.6.0
     version: 4.6.0(monaco-editor@0.52.0)(react-dom@18.2.0)(react@18.2.0)
+  '@orcid/bibtex-parse-js':
+    specifier: ^0.0.25
+    version: 0.0.25
   '@react-hook/resize-observer':
     specifier: ^2.0.2
     version: 2.0.2(react@18.2.0)
@@ -4603,6 +4606,10 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
+
+  /@orcid/bibtex-parse-js@0.0.25:
+    resolution: {integrity: sha512-n6VuG5/WjiifC1DoUzq0sUCWNSbAyRZznBgvPcY4jVZ/2eJiMv2tNUAt2NukbnFExOUa0RyTOFsqhH2MGpiLgQ==, tarball: https://registry.npmjs.org/@orcid/bibtex-parse-js/-/bibtex-parse-js-0.0.25.tgz}
+    dev: false
 
   /@pkgjs/parseargs@0.11.0:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==, tarball: https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz}

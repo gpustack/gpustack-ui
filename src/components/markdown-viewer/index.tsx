@@ -42,6 +42,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     'del',
     'blockquote',
     'checkbox'
+    // 'bibtex'
   ];
 
   // renderer.link = ({ href, title, text }) => {
@@ -69,6 +70,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
   const renderItem = useCallback(
     (token: any, render: any) => {
+      console.log('token====', token);
       if (!reDefineTypes.includes(token.type)) {
         return (
           <span
@@ -151,11 +153,13 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       if (token.type === 'paragraph') {
         htmlstr = <Paragraph> {text}</Paragraph>;
       }
+
       if (token.type === 'code') {
         htmlstr = (
           <HighlightCode theme={theme} code={token.text} lang={token.lang} />
         );
       }
+
       if (token.type === 'link') {
         htmlstr = (
           <Link

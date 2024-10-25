@@ -20,10 +20,21 @@
       background-color: transparent;
     }
 
-    &:hover {
-      &::-webkit-scrollbar-thumb {
-        background-color: var(--color-scrollbar-thumb);
-        border-radius: 4px;
+    &.light {
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--color-scrollbar-thumb);
+          border-radius: 4px;
+        }
+      }
+    }
+
+    &.dark {
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--scrollbar-handle-light-bg);
+          border-radius: 4px;
+        }
       }
     }
   }

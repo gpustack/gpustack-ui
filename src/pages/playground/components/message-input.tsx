@@ -162,9 +162,14 @@ const MessageInput: React.FC<MessageInputProps> = ({
     setOpen(true);
   };
 
-  const handleAddMessage = () => {
+  const handleAddMessage = (e?: any) => {
+    e?.preventDefault();
     addMessage?.({ ...message });
     resetMessage();
+    setFocused(true);
+    setTimeout(() => {
+      inputRef.current?.focus?.();
+    }, 100);
   };
 
   const getPasteContent = useCallback(

@@ -74,7 +74,10 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
     >
       <code
         style={{ minHeight: height }}
-        className={highlightedCode.className}
+        className={classNames(highlightedCode.className, {
+          dark: props.theme === 'dark',
+          light: props.theme === 'light'
+        })}
         dangerouslySetInnerHTML={{
           __html: highlightedCode.value
         }}

@@ -105,23 +105,24 @@ const ContentItem: React.FC<MessageItemProps> = ({
   );
 
   const handleOnPaste = (e: any) => {
-    e.preventDefault();
+    // e.preventDefault();
     const text = e.clipboardData.getData('text');
     if (text) {
-      const startPos = e.target.selectionStart;
-      const endPos = e.target.selectionEnd;
-      updateMessage?.({
-        role: data.role,
-        content:
-          data.content.slice(0, startPos) + text + data.content.slice(endPos),
-        uid: data.uid
-      });
-      if (endPos !== startPos) {
-        setTimeout(() => {
-          e.target.setSelectionRange(endPos, endPos);
-        }, 0);
-      }
+      // const startPos = e.target.selectionStart;
+      // const endPos = e.target.selectionEnd;
+      // updateMessage?.({
+      //   role: data.role,
+      //   content:
+      //     data.content.slice(0, startPos) + text + data.content.slice(endPos),
+      //   uid: data.uid
+      // });
+      // if (endPos !== startPos) {
+      //   setTimeout(() => {
+      //     e.target.setSelectionRange(endPos, endPos);
+      //   }, 0);
+      // }
     } else {
+      e.preventDefault();
       getPasteContent(e);
     }
   };

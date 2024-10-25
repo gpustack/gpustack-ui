@@ -4,7 +4,7 @@ import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 type ViewModalProps = {
   systemMessage?: string;
@@ -33,14 +33,12 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     title,
     open,
     onCancel,
-    systemMessage,
     messageList,
     parameters = {},
     apiType = 'chat'
   } = props || {};
 
   const intl = useIntl();
-  const [codeValue, setCodeValue] = useState('');
   const [lang, setLang] = useState(langMap.shell);
 
   const BaseURL = `${window.location.origin}/v1-openai`;
@@ -49,40 +47,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const logcommand =
     apiType === 'chat' ? 'choices[0].message.content' : 'data[0].embedding';
 
-  const generateCode = () => {
-    // const systemList = systemMessage
-    //   ? [
-    //       {
-    //         role: 'system',
-    //         content: [
-    //           {
-    //             type: 'text',
-    //             text: systemMessage
-    //           }
-    //         ]
-    //       }
-    //     ]
-    //   : [];
-
-    // const formatMessageList = _.map(messageList, (item: any) => {
-    //   return {
-    //     role: item.role,
-    //     content: [
-    //       {
-    //         type: 'text',
-    //         text: item.content
-    //       },
-    //       ..._.map(item.imgs, (img: any) => {
-    //         return {
-    //           type: 'image_url',
-    //           image_url: {
-    //             url: img.dataUrl
-    //           }
-    //         };
-    //       })
-    //     ]
-    //   };
-    // });
+  const codeValue = useMemo(() => {
     if (lang === langMap.shell) {
       const messages = messageList;
       const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
@@ -93,8 +58,9 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         null,
         2
       )}'`;
-      setCodeValue(code);
-    } else if (lang === langMap.javascript) {
+      return code;
+    }
+    if (lang === langMap.javascript) {
       const messages = messageList;
       const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
@@ -104,8 +70,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         null,
         4
       )};\nconst response = await openai.${ClientType}.create(params);\n  console.log(response.${logcommand});\n}\nmain();`;
-      setCodeValue(code);
-    } else if (lang === langMap.python) {
+
+      return code;
+    }
+    if (lang === langMap.python) {
       const formattedParams = _.keys(parameters).reduce(
         (acc: string, key: string) => {
           if (parameters[key] === null) {
@@ -124,9 +92,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
           ? `messages=${JSON.stringify(messageList, null, 2)}`
           : '';
       const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${ClientType}.create(\n${formattedParams}  ${messages})\nprint(response.${logcommand})`;
-      setCodeValue(code);
+      return code;
     }
-  };
+    return '';
+  }, [lang, messageList, parameters]);
 
   const handleOnChangeLang = (value: string) => {
     setLang(value);
@@ -136,25 +105,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     setLang(langMap.shell);
     onCancel();
   };
-  const editorConfig = {
-    minimap: {
-      enabled: false
-    },
-    hover: {
-      enabled: false
-    },
-    readOnly: true,
-    formatOnType: true,
-    formatOnPaste: true,
-    fontWeight: 'bold',
-    scrollbar: {
-      verticalSliderSize: 8
-    }
-  };
-
-  useEffect(() => {
-    generateCode();
-  }, [lang, messageList, parameters]);
 
   return (
     <>
@@ -228,4 +178,4 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   );
 };
 
-export default ViewCodeModal;
+export default React.memo(ViewCodeModal);

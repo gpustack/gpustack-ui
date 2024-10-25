@@ -60,7 +60,7 @@ const ModelCard: React.FC<{
     }
   };
 
-  const removeMetadata = (str: string) => {
+  const removeMetadata = useCallback((str: string) => {
     let indexes = [];
     let index = str.indexOf('---');
 
@@ -75,7 +75,7 @@ const ModelCard: React.FC<{
       return str.slice(indexes[1] + 3);
     }
     return str;
-  };
+  }, []);
 
   // huggingface model card data
   const getHuggingfaceModelDetail = async () => {

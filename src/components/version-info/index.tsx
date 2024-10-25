@@ -11,7 +11,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
   const currentVersion = getAtomStorage(GPUStackVersionAtom)?.version;
 
   const isProd =
-    currentVersion !== '0.0.0' && currentVersion.indexOf('rc') === -1;
+    currentVersion !== '0.0.0' && currentVersion?.indexOf('rc') === -1;
 
   const uiVersion = document.documentElement.getAttribute('data-version');
 

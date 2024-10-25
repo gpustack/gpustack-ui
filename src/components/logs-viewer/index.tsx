@@ -3,7 +3,7 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CopyButton from '../copy-button';
 import './index.less';
 import useParseAnsi from './parse-ansi';
@@ -90,6 +90,13 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     updateScrollerPosition(0);
   }, 200);
 
+  const copyText = useMemo(() => {
+    if (!logs.length) {
+      return '';
+    }
+    return logs?.map((item) => item.content).join('\n');
+  }, [logs]);
+
   useEffect(() => {
     createChunkConnection();
     return () => {
@@ -121,11 +128,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   return (
     <div className="logs-viewer-wrap-w2">
       <span className="copy">
-        <CopyButton
-          text={logs?.map((item) => item.content).join('\n')}
-          type="text"
-          size="small"
-        ></CopyButton>
+        <CopyButton text={copyText} type="text" size="small"></CopyButton>
       </span>
       <div
         className="wrap"

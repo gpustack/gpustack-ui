@@ -67,9 +67,15 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const currentMessageRef = useRef<MessageItem[]>([]);
     const modelScrollRef = useRef<any>(null);
     const messageListLengthCache = useRef<number>(0);
-    const [viewCodeMessage, setViewCodeMessage] = useState<any[]>([]);
 
     const { initialize, updateScrollerPosition } = useOverlayScroller();
+
+    const viewCodeMessage = useMemo(() => {
+      return generateMessages([
+        { role: Roles.System, content: systemMessage },
+        ...messageList
+      ]);
+    }, [messageList, systemMessage]);
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
@@ -134,8 +140,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         ];
 
         const messages = generateMessages(messageParams);
-
-        setViewCodeMessage(messages);
 
         const chatParams = {
           messages: messages,
@@ -362,14 +366,29 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               options={modelFullList}
               onChange={handleModelChange}
               value={params.model}
-              optionRender={(data) => {
+              labelRender={(data) => {
                 return (
                   <AutoTooltip
-                    title={data.label}
                     ghost
                     tooltipProps={{
                       placement: 'right'
                     }}
+                    minWidth={60}
+                    maxWidth={180}
+                  >
+                    {data.label}
+                  </AutoTooltip>
+                );
+              }}
+              optionRender={(data) => {
+                return (
+                  <AutoTooltip
+                    ghost
+                    tooltipProps={{
+                      placement: 'right'
+                    }}
+                    minWidth={60}
+                    maxWidth={180}
                   >
                     {data.label}
                   </AutoTooltip>

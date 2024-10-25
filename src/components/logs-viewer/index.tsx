@@ -123,7 +123,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
       <span className="copy">
         <CopyButton
           text={logs?.map((item) => item.content).join('\n')}
-          type="default"
+          type="text"
           size="small"
         ></CopyButton>
       </span>

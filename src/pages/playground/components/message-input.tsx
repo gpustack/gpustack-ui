@@ -340,10 +340,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
                 {intl.formatMessage({ id: `playground.${message.role}` })}
               </Button>
               <Divider type="vertical" style={{ margin: 0 }} />
-              <UploadImg
-                handleUpdateImgList={handleUpdateImgList}
-                size="middle"
-              ></UploadImg>
+              {message.role === Roles.User && (
+                <UploadImg
+                  handleUpdateImgList={handleUpdateImgList}
+                  size="middle"
+                ></UploadImg>
+              )}
             </>
           )}
           <Tooltip

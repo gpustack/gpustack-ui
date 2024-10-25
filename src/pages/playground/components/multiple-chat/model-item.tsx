@@ -24,7 +24,7 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
-import { Roles, formatMessageParams } from '../../config';
+import { Roles, generateMessages } from '../../config';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
 import '../../style/model-item.less';
@@ -123,63 +123,22 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         setMessageList((preList) => {
           return [...preList, ...currentMessageRef.current];
         });
-        const messages = _.map(
-          [...messageList, ...currentMessageRef.current],
-          (item: MessageItem) => {
-            return {
-              role: item.role,
-              content: item.content,
-              imgs: item.imgs || []
-            };
-          }
-        );
 
         contentRef.current = '';
         // ====== payload =================
-        const formatMessages = _.map(messages, (item: MessageItem) => {
-          return {
-            role: item.role,
-            content: [
-              {
-                type: 'text',
-                text: item.content
-              },
-              ..._.map(
-                item.imgs,
-                (img: { uid: string | number; dataUrl: string }) => {
-                  return {
-                    type: 'image_url',
-                    image_url: {
-                      url: img.dataUrl
-                    }
-                  };
-                }
-              )
-            ]
-          };
-        });
 
-        const messageParams = systemMessage
-          ? [
-              {
-                role: Roles.System,
-                content: [
-                  {
-                    type: 'text',
-                    text: systemMessage
-                  }
-                ]
-              },
-              ...formatMessages
-            ]
-          : [...formatMessages];
+        const messageParams = [
+          { role: Roles.System, content: systemMessage },
+          ...messageList,
+          ...currentMessageRef.current
+        ];
 
-        const finalMessageParams = formatMessageParams(messageParams);
+        const messages = generateMessages(messageParams);
 
-        setViewCodeMessage(finalMessageParams);
+        setViewCodeMessage(messages);
 
         const chatParams = {
-          messages: finalMessageParams,
+          messages: messages,
           ...params,
           stream: true,
           stream_options: {

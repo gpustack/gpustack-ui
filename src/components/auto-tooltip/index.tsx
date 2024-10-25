@@ -74,13 +74,17 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
       overlayInnerStyle={{ paddingInline: 0 }}
       destroyTooltipOnHide={false}
       title={
-        <TitleTip
-          isOverflowing={isOverflowing}
-          title={title}
-          showTitle={showTitle}
-        >
-          {children}
-        </TitleTip>
+        isOverflowing || showTitle ? (
+          <TitleTip
+            isOverflowing={isOverflowing}
+            title={title}
+            showTitle={showTitle}
+          >
+            {children}
+          </TitleTip>
+        ) : (
+          ''
+        )
       }
       {...tooltipProps}
     >

@@ -47,6 +47,7 @@
     "overlayscrollbars": "^2.10.0",
     "overlayscrollbars-react": "^0.5.6",
     "query-string": "^9.0.0",
+    "rc-virtual-list": "^3.14.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hotkeys-hook": "^4.5.0",

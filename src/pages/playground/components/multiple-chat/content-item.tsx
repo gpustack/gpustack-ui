@@ -116,6 +116,11 @@ const ContentItem: React.FC<MessageItemProps> = ({
           data.content.slice(0, startPos) + text + data.content.slice(endPos),
         uid: data.uid
       });
+      if (endPos !== startPos) {
+        setTimeout(() => {
+          e.target.setSelectionRange(endPos, endPos);
+        }, 0);
+      }
     } else {
       getPasteContent(e);
     }

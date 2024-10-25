@@ -242,6 +242,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   const handleOnPaste = (e: any) => {
     e.preventDefault();
+
     const text = e.clipboardData.getData('text');
     if (text) {
       const startPos = e.target.selectionStart;
@@ -253,6 +254,11 @@ const MessageInput: React.FC<MessageInputProps> = ({
           text +
           message.content.slice(endPos)
       });
+      if (endPos !== startPos) {
+        setTimeout(() => {
+          e.target.setSelectionRange(endPos, endPos);
+        }, 0);
+      }
     } else {
       getPasteContent(e);
     }

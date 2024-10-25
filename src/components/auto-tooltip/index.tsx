@@ -1,5 +1,5 @@
 import { Tag, Tooltip, type TagProps } from 'antd';
-import debounce from 'lodash/debounce';
+import { throttle } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState
 } from 'react';
+import TitleTip from './title-tip';
 
 // type TagProps = React.ComponentProps<typeof Tag>;
 
@@ -34,6 +35,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const resizeObserver = useRef<ResizeObserver>();
 
   const checkOverflow = useCallback(() => {
     if (contentRef.current) {
@@ -42,19 +44,14 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
     }
   }, [contentRef.current]);
 
-  const debouncedCheckOverflow = useMemo(
-    () => debounce(checkOverflow, 200),
-    [checkOverflow]
-  );
-
   useEffect(() => {
-    checkOverflow();
+    const debouncedCheckOverflow = throttle(checkOverflow, 200);
     window.addEventListener('resize', debouncedCheckOverflow);
     return () => {
       window.removeEventListener('resize', debouncedCheckOverflow);
       debouncedCheckOverflow.cancel();
     };
-  }, [checkOverflow, debouncedCheckOverflow]);
+  }, [checkOverflow]);
 
   useEffect(() => {
     checkOverflow();
@@ -74,7 +71,17 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
 
   return (
     <Tooltip
-      title={isOverflowing || showTitle ? title || children : ''}
+      overlayInnerStyle={{ paddingInline: 0 }}
+      destroyTooltipOnHide={false}
+      title={
+        <TitleTip
+          isOverflowing={isOverflowing}
+          title={title}
+          showTitle={showTitle}
+        >
+          {children}
+        </TitleTip>
+      }
       {...tooltipProps}
     >
       {ghost ? (

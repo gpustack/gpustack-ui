@@ -10,6 +10,7 @@ import {
   memo,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -51,7 +52,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
-  const [viewCodeMessage, setViewCodeMessage] = useState<any[]>([]);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -67,6 +67,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const viewCodeMessage = useMemo(() => {
+    return generateMessages([
+      { role: Roles.System, content: systemMessage },
+      ...messageList
+    ]);
+  }, [messageList, systemMessage]);
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -134,10 +141,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageList((pre) => {
         return [...pre, ...currentMessageRef.current];
       });
-      console.log('messageList:', [
-        ...messageList,
-        ...currentMessageRef.current
-      ]);
 
       const messageParams = [
         { role: Roles.System, content: systemMessage },
@@ -146,8 +149,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       ];
 
       const messages = generateMessages(messageParams);
-
-      setViewCodeMessage(messages);
 
       const chatParams = {
         messages: messages,

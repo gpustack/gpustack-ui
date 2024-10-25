@@ -5,11 +5,6 @@ import _ from 'lodash';
 import { memo, useContext, useMemo } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 
-const chartColorMap = {
-  tickLineColor: 'rgba(217,217,217,0.5)',
-  axislabelColor: 'rgba(0, 0, 0, 0.4)'
-};
-
 const TypeKeyMap = {
   cpu: {
     label: 'CPU',

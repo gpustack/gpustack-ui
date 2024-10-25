@@ -14,7 +14,7 @@ import {
   useState
 } from 'react';
 import { CHAT_API } from '../apis';
-import { Roles, formatMessageParams } from '../config';
+import { Roles, generateMessages } from '../config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
@@ -134,52 +134,23 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageList((pre) => {
         return [...pre, ...currentMessageRef.current];
       });
-      const formatMessages = _.map(
-        [...messageList, ...currentMessageRef.current],
-        (item: MessageItem) => {
-          return {
-            role: item.role,
-            content: [
-              {
-                type: 'text',
-                text: item.content
-              },
-              ..._.map(
-                item.imgs,
-                (img: { uid: string | number; dataUrl: string }) => {
-                  return {
-                    type: 'image_url',
-                    image_url: {
-                      url: img.dataUrl
-                    }
-                  };
-                }
-              )
-            ]
-          };
-        }
-      );
-      const messageParams = systemMessage
-        ? [
-            {
-              role: Roles.System,
-              content: [
-                {
-                  type: 'text',
-                  text: systemMessage
-                }
-              ]
-            },
-            ...formatMessages
-          ]
-        : [...formatMessages];
+      console.log('messageList:', [
+        ...messageList,
+        ...currentMessageRef.current
+      ]);
 
-      const finalMessageParams = formatMessageParams(messageParams);
+      const messageParams = [
+        { role: Roles.System, content: systemMessage },
+        ...messageList,
+        ...currentMessageRef.current
+      ];
 
-      setViewCodeMessage(finalMessageParams);
+      const messages = generateMessages(messageParams);
+
+      setViewCodeMessage(messages);
 
       const chatParams = {
-        messages: finalMessageParams,
+        messages: messages,
         ...parameters,
         stream: true,
         stream_options: {

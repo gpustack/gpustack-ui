@@ -439,7 +439,7 @@ const Resources: React.FC = () => {
           key="VRAM"
           render={(text, record: ListItem) => {
             return (
-              <span className="flex-column">
+              <span className="flex-column flex-gap-2">
                 {_.map(
                   _.sortBy(record?.status?.gpu_devices || [], ['index']),
                   (item: GPUDeviceItem, index: string) => {

@@ -108,10 +108,6 @@ export const getRightRenderContent = (opts: {
       : 'user-menu-container',
     mode: 'vertical',
     expandIcon: false,
-<<<<<<< HEAD
-    // inlineCollapsed: collapsed,
-=======
->>>>>>> 7174170 (refactor: playground rerank layout)
     triggerSubMenuAction: 'hover',
     items: [
       {

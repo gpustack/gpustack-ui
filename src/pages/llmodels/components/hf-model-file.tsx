@@ -161,7 +161,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         }
       );
       const fileList = _.filter(_.get(data, ['Data', 'Files']), (file: any) => {
-        return filterRegGGUF.test(file.Path) || _.includes(file.Path, '.gguf');
+        return filterRegGGUF.test(file.Path) && file.Type === 'blob';
       });
 
       const list = _.map(fileList, (item: any) => {

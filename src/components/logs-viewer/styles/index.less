@@ -1,6 +1,29 @@
 .logs-viewer-wrap-w2 {
   position: relative;
 
+  .pg {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    padding-top: 100px;
+    display: flex;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 25%);
+
+    .ant-spin-dot-holder {
+      color: rgba(255, 255, 255, 90%);
+    }
+  }
+
   .copy {
     position: absolute;
     top: 10px;
@@ -19,16 +42,16 @@
   }
 
   .wrap {
-    padding: 5px 0 5px 10px;
+    padding: 5px 0 2px 10px;
     background-color: var(--color-logs-bg);
     border-radius: var(--border-radius-mini);
-    overflow: auto;
     font-family: monospace, Menlo, Courier, 'Courier New', Consolas, Monaco,
       'Liberation Mono' !important;
 
     .content {
       word-wrap: break-word;
       height: 100%;
+      padding-right: 2px;
 
       &.line-break {
         word-wrap: break-word;

@@ -1,31 +1,24 @@
-import { useCallback, useRef } from 'react';
-
-const controlSeqRegex = /\x1b\[(\d*);?(\d*)?([A-DJKHfm])/g;
+import { controlSeqRegex } from './config';
 
 const useParseAnsi = () => {
-  const lastIndex = useRef(0);
-
-  const removeBrackets = useCallback((str: string) => {
+  const removeBrackets = (str: string) => {
     return str?.replace?.(/^\(…\)/, '');
-  }, []);
+  };
 
-  const isClean = useCallback((ansiStr: string) => {
-    let input = ansiStr.replace(/\r\n/g, '\n');
+  const isClean = (input: string) => {
     let match = controlSeqRegex.exec(input) || [];
     const command = match?.[3];
     const n = parseInt(match?.[1], 10) || 1;
     return command === 'J' && n === 2;
-  }, []);
+  };
 
-  const parseAnsi = useCallback((inputStr: string, setId: () => number) => {
-    let cursorRow = 0; // current row
-    let cursorCol = 0; // current column
-    // screen content array
+  const parseAnsi = (input: string, setId: () => number) => {
+    let cursorRow = 0;
+    let cursorCol = 0;
     let screen = [['']];
-    // replace carriage return and newline characters in the text
-    let input = inputStr.replace(/\r\n/g, '\n');
+    let lastIndex = 0;
 
-    lastIndex.current = 0;
+    // let input = inputStr.replace(replaceLineRegex, '\n');
 
     // handle the \r and \n characters in the text
     const handleText = (text: string) => {
@@ -67,9 +60,9 @@ const useParseAnsi = () => {
     // match ANSI control characters
     while ((match = controlSeqRegex.exec(input)) !== null) {
       // handle text before the control character
-      let textBeforeControl = input.slice(lastIndex.current, match.index);
+      let textBeforeControl = input.slice(lastIndex, match.index);
       output += handleText(textBeforeControl); // add the processed text to the output
-      lastIndex.current = controlSeqRegex.lastIndex; // update the last index
+      lastIndex = controlSeqRegex.lastIndex; // update the last index
 
       const n = parseInt(match[1], 10) || 1;
       const m = parseInt(match[2], 10) || 1;
@@ -110,12 +103,12 @@ const useParseAnsi = () => {
             cursorCol = 0;
           }
           break;
-        case 'm': // color
-          if (match[1] === '0') {
-            currentStyle = '';
-          } else if (colorMap[match[1]]) {
-            currentStyle = `color: ${colorMap[match[1]]};`;
-          }
+        case 'm':
+          // if (match[1] === '0') {
+          //   currentStyle = '';
+          // } else if (colorMap[match[1]]) {
+          //   currentStyle = `color: ${colorMap[match[1]]};`;
+          // }
           break;
       }
 
@@ -129,7 +122,7 @@ const useParseAnsi = () => {
     }
 
     // handle the remaining text
-    output += handleText(input.slice(lastIndex.current));
+    output += handleText(input.slice(lastIndex));
 
     let result = [];
     for (let row = 0; row < screen.length; row++) {
@@ -145,7 +138,7 @@ const useParseAnsi = () => {
     });
 
     return result;
-  }, []);
+  };
 
   return { parseAnsi, isClean };
 };

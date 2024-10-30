@@ -64,5 +64,7 @@ export default {
     '例如，--ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':
     '例如，--max-model-len=8192',
-  'models.form.backend_parameters.vllm.tips': '更多 {backend} 参数说明查看'
+  'models.form.backend_parameters.vllm.tips': '更多 {backend} 参数说明查看',
+  'models.logs.pagination.prev': '上一 {lines} 行',
+  'models.logs.pagination.next': '下一 {lines} 行'
 };

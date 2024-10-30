@@ -4,8 +4,9 @@ import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import './index.less';
+import { replaceLineRegex } from './config';
 import useParseAnsi from './parse-ansi';
+import './styles/index.less';
 
 interface LogsViewerProps {
   height: number;
@@ -40,13 +41,15 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   };
 
   const updateContent = useCallback(
-    (data: string) => {
+    (inputStr: string) => {
+      const data = inputStr.replace(replaceLineRegex, '\n');
       if (isClean(data)) {
         cacheDataRef.current = data;
       } else {
         cacheDataRef.current += data;
       }
       const res = parseAnsi(cacheDataRef.current, setId);
+      console.log('res===', res);
       setLogs(res);
     },
     [setLogs, setId]
@@ -126,9 +129,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   return (
     <div className="logs-viewer-wrap-w2">
-      {/* <span className="copy">
-        <CopyButton text={copyText} type="text" size="small"></CopyButton>
-      </span> */}
       <div
         className="wrap"
         style={{ height: height }}

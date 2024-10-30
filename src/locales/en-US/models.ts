@@ -65,5 +65,8 @@ export default {
     'e.g., --ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':
     'e.g., --max-model-len=8192',
-  'models.form.backend_parameters.vllm.tips': 'More {backend} parameter details'
+  'models.form.backend_parameters.vllm.tips':
+    'More {backend} parameter details',
+  'models.logs.pagination.prev': 'Previous {lines} Lines',
+  'models.logs.pagination.next': 'Next {lines} Lines'
 };

@@ -11,13 +11,13 @@ import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
 const strokeColorFunc = (percent: number) => {
-  if (percent <= 50) {
+  if (percent <= 50 || percent === undefined) {
     return 'rgb(84, 204, 152, 80%)';
   }
   if (percent <= 80) {
     return 'rgba(250, 173, 20, 80%)';
   }
-  return ' rgba(255, 77, 79, 80%)';
+  return 'rgba(255, 77, 79, 80%)';
 };
 
 const SystemLoad = () => {

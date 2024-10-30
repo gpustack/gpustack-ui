@@ -1,7 +1,7 @@
-import LogsViewer from '@/components/logs-viewer/index';
+import LogsViewer from '@/components/logs-viewer/virtual-log-list';
 import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 type ViewModalProps = {
   open: boolean;
@@ -18,22 +18,25 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   });
   const isFullScreenRef = React.useRef(false);
   const intl = useIntl();
-  const handleFullscreenToggle = () => {
+  const viewportHeight = window.innerHeight;
+  const viewHeight = viewportHeight - 86;
+
+  const handleFullscreenToggle = useCallback(() => {
     isFullScreenRef.current = !isFullScreenRef.current;
     setModalSize((size: any) => {
       return {
         width: size.width === 600 ? '100%' : 600,
-        height: size.height === 420 ? 'calc(100vh - 86px)' : 420
+        height: size.height === 420 ? viewHeight : 420
       };
     });
-  };
+  }, []);
 
   useEffect(() => {
     if (open) {
       isFullScreenRef.current = false;
       setModalSize({
         width: '100%',
-        height: 'calc(100vh - 86px)'
+        height: viewHeight
       });
     }
   }, [open]);
@@ -65,6 +68,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     >
       <LogsViewer
         height={modalSize.height}
+        diffHeight={93}
         url={url}
         params={{
           follow: true

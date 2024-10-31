@@ -97,7 +97,12 @@ const options = [
   {
     label: '--tool-call-parser',
     value: '--tool-call-parser',
-    options: ['mistral', 'hermes']
+    options: ['mistral', 'hermes', 'internlm', 'llama3_json']
+  },
+  {
+    label: '--tool-parser-plugin',
+    value: '--tool-parser-plugin',
+    options: []
   },
   {
     label: '--model',
@@ -312,6 +317,7 @@ const options = [
       'qqq',
       'experts_int8',
       'neuron_quant',
+      'ipex',
       'None'
     ]
   },
@@ -363,6 +369,11 @@ const options = [
   {
     label: '--limit-mm-per-prompt',
     value: '--limit-mm-per-prompt',
+    options: []
+  },
+  {
+    label: '--mm-processor-kwargs',
+    value: '--mm-processor-kwargs',
     options: []
   },
   {
@@ -431,6 +442,11 @@ const options = [
     options: []
   },
   {
+    label: '--multi-step-stream-outputs',
+    value: '--multi-step-stream-outputs',
+    options: []
+  },
+  {
     label: '--scheduler-delay-factor',
     value: '--scheduler-delay-factor',
     options: []
@@ -467,12 +483,18 @@ const options = [
       'qqq',
       'experts_int8',
       'neuron_quant',
+      'ipex',
       'None'
     ]
   },
   {
     label: '--num-speculative-tokens',
     value: '--num-speculative-tokens',
+    options: []
+  },
+  {
+    label: '--speculative-disable-mqa-scorer',
+    value: '--speculative-disable-mqa-scorer',
     options: []
   },
   {
@@ -566,6 +588,11 @@ const options = [
     options: []
   },
   {
+    label: '--scheduling-policy',
+    value: '--scheduling-policy',
+    options: ['fcfs', 'priority']
+  },
+  {
     label: '--disable-log-requests',
     value: '--disable-log-requests',
     options: []
@@ -573,6 +600,11 @@ const options = [
   {
     label: '--max-log-len',
     value: '--max-log-len',
+    options: []
+  },
+  {
+    label: '--disable-fastapi-docs',
+    value: '--disable-fastapi-docs',
     options: []
   }
 ];

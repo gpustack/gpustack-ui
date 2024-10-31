@@ -242,3 +242,32 @@ export const setbackendParameters = (data: any) => {
   });
   return result;
 };
+
+export const getVllmCliArgs = (inputString: string) => {
+  const arrayOutput = inputString
+    .split(/\s*\[\s*|\s*\]\s*/g) // Split by '[' or ']', removing extra spaces
+    .filter((item) => item) // Remove empty items
+    .map((item) => item.trim()); // Trim spaces around each item
+
+  const result = arrayOutput.map((item) => {
+    const parts = item.split(' ');
+    const label = parts[0].trim(); // Remove leading dashes
+    const value = parts[0].trim();
+
+    if (parts.length === 1) {
+      return { label, value, options: [] };
+    } else if (parts.length > 1) {
+      const optionPart = parts[1];
+      if (optionPart.startsWith('{') && optionPart.endsWith('}')) {
+        const options = optionPart
+          .slice(1, -1)
+          .split(',')
+          .map((opt) => opt.trim());
+        return { label, value, options };
+      }
+    }
+    return { label, value, options: [] }; // Fallback
+  });
+
+  return result;
+};

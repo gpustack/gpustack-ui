@@ -1,9 +1,16 @@
 import useSetChunkFetch from '@/hooks/use-chunk-fetch';
-import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react';
 import { controlSeqRegex, replaceLineRegex } from './config';
 import LogsInner from './logs-inner';
 import LogsPagination from './logs-pagination';
@@ -15,28 +22,38 @@ interface LogsViewerProps {
   content?: string;
   url: string;
   params?: object;
+  ref?: any;
   diffHeight?: number;
 }
-const LogsViewer: React.FC<LogsViewerProps> = (props) => {
+const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const { diffHeight, url } = props;
   const { pageSize, page, setPage, setTotalPage, totalPage } =
     useLogsPagination();
-  const { setChunkRequest } = useSetChunkRequest();
   const { setChunkFetch } = useSetChunkFetch();
   const chunkRequedtRef = useRef<any>(null);
   const cacheDataRef = useRef<any>('');
   const [logs, setLogs] = useState<any[]>([]);
   const logParseWorker = useRef<any>(null);
   const tail = useRef<any>(pageSize);
-  const isLoadend = useRef<any>(false);
+  const [isLoadend, setIsLoadend] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isAtTop, setIsAtTop] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    abort() {
+      chunkRequedtRef.current?.current?.abort?.();
+    }
+  }));
 
   useEffect(() => {
     logParseWorker.current?.terminate?.();
 
     logParseWorker.current = new Worker(
-      new URL('./parse-worker.ts', import.meta.url)
+      // @ts-ignore
+      new URL('./parse-worker.ts', import.meta.url),
+      {
+        type: 'module'
+      }
     );
 
     logParseWorker.current.onmessage = (event: any) => {
@@ -53,7 +70,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   const debounceLoading = _.debounce(() => {
     setLoading(false);
-  }, 100);
+  }, 200);
 
   const isClean = useCallback((input: string) => {
     let match = controlSeqRegex.exec(input) || [];
@@ -64,9 +81,9 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
 
   const getLastPage = useCallback(
     (data: string) => {
-      const list = _.split(data, '\n');
-      isLoadend.current = list.length < pageSize;
-      console.log('isLoadend.current===', isLoadend.current, list.length);
+      const list = _.split(data.trim(), '\n');
+      console.log('list.length', list.length);
+
       if (list.length <= pageSize) {
         setTotalPage(1);
         return data;
@@ -84,7 +101,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   );
 
   const getPrePage = useCallback(() => {
-    const list = _.split(cacheDataRef.current, '\n');
+    const list = _.split(cacheDataRef.current.trim(), '\n');
     let newPage = page - 1;
     if (newPage < 1) {
       newPage = 1;
@@ -99,7 +116,7 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   }, [page, pageSize]);
 
   const getNextPage = useCallback(() => {
-    const list = _.split(cacheDataRef.current, '\n');
+    const list = _.split(cacheDataRef.current.trim(), '\n');
     let newPage = page + 1;
     if (newPage > totalPage) {
       newPage = totalPage;
@@ -146,17 +163,18 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
   };
 
   const handleOnScroll = useCallback(
-    (isTop: boolean) => {
-      setIsAtTop(isTop && isLoadend.current);
-      if (loading || isLoadend.current) {
+    async (isTop: boolean) => {
+      setIsAtTop(isTop);
+      if (loading || isLoadend || logs.length < pageSize) {
         return;
       }
-      if (isTop && !isLoadend.current) {
+      if (isTop && !isLoadend) {
         tail.current = undefined;
         createChunkConnection();
+        setIsLoadend(true);
       }
     },
-    [loading, isLoadend.current]
+    [loading, isLoadend, logs.length, pageSize]
   );
 
   useEffect(() => {
@@ -182,19 +200,26 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
             loading: loading && isAtTop
           })}
         ></Spin>
-        {totalPage > 1 && isAtTop && (
+        {totalPage > 1 && (
           <div className="pg">
-            <LogsPagination
-              page={page}
-              total={totalPage}
-              onNext={getNextPage}
-              onPrev={getPrePage}
-            ></LogsPagination>
+            <div
+              className={classNames('pg-inner', {
+                'at-top': isAtTop
+              })}
+            >
+              <LogsPagination
+                page={page}
+                total={totalPage}
+                pageSize={pageSize}
+                onNext={getNextPage}
+                onPrev={getPrePage}
+              ></LogsPagination>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
-};
+});
 
 export default memo(LogsViewer);

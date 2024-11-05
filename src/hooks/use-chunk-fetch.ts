@@ -8,6 +8,7 @@ interface RequestConfig {
   beforeReconnect?: () => void;
   params?: object;
   byLine?: boolean;
+  watch?: boolean;
   contentType?: 'json' | 'text';
 }
 
@@ -70,6 +71,7 @@ const useSetChunkFetch = () => {
   const fetchChunkRequest = async ({
     url,
     handler,
+    watch,
     byLine = false,
     params = {}
   }: RequestConfig) => {
@@ -79,7 +81,7 @@ const useSetChunkFetch = () => {
       const response = await fetch(
         `v1${url}?${qs.stringify({
           ...params,
-          watch: true
+          watch: watch === undefined ? true : watch
         })}`,
         {
           method: 'GET',

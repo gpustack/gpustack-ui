@@ -17,6 +17,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     height: 420
   });
   const isFullScreenRef = React.useRef(false);
+  const logsViewerRef = React.useRef<any>(null);
   const intl = useIntl();
   const viewportHeight = window.innerHeight;
   const viewHeight = viewportHeight - 86;
@@ -30,6 +31,11 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       };
     });
   }, []);
+
+  const handleCancel = useCallback(() => {
+    logsViewerRef.current?.abort();
+    onCancel();
+  }, [onCancel]);
 
   useEffect(() => {
     if (open) {
@@ -53,7 +59,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       }
       open={open}
       centered={true}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       destroyOnClose={true}
       closeIcon={true}
       maskClosable={false}
@@ -67,6 +73,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       footer={null}
     >
       <LogsViewer
+        ref={logsViewerRef}
         height={modalSize.height}
         diffHeight={93}
         url={url}

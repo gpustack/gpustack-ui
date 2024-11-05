@@ -97,7 +97,6 @@ const useParseAnsi = () => {
           break;
         case 'J': // clear the screen
           if (n === 2) {
-            console.log('clear====');
             screen = [['']];
             cursorRow = 0;
             cursorCol = 0;
@@ -132,6 +131,7 @@ const useParseAnsi = () => {
         uid: setId()
       });
     }
+
     result.push({
       content: output,
       uid: setId()

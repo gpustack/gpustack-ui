@@ -10,7 +10,7 @@ import {
 } from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { ChartProps } from './types';
 
 const BarChart: React.FC<ChartProps> = (props) => {
@@ -23,10 +23,6 @@ const BarChart: React.FC<ChartProps> = (props) => {
     legendData,
     title
   } = props;
-
-  if (!seriesData.length) {
-    return <EmptyData height={height} title={title}></EmptyData>;
-  }
 
   const options = {
     title: {
@@ -55,7 +51,7 @@ const BarChart: React.FC<ChartProps> = (props) => {
 
     series: []
   };
-  const setDataOptions = () => {
+  const dataOptions = useMemo((): any => {
     const data = _.map(seriesData, (item: any) => {
       return {
         ...item,
@@ -82,16 +78,20 @@ const BarChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-  };
-
-  const dataOptions: any = setDataOptions();
+  }, [seriesData, xAxisData, title]);
 
   return (
-    <Chart
-      height={height}
-      options={dataOptions}
-      width={width || '100%'}
-    ></Chart>
+    <>
+      {!seriesData.length ? (
+        <EmptyData height={height} title={title}></EmptyData>
+      ) : (
+        <Chart
+          height={height}
+          options={dataOptions}
+          width={width || '100%'}
+        ></Chart>
+      )}
+    </>
   );
 };
 

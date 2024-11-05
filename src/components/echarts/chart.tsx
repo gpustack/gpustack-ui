@@ -1,16 +1,29 @@
 import { throttle } from 'lodash';
-import { useCallback, useEffect, useRef } from 'react';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef
+} from 'react';
 import echarts, { ECOption } from '.';
 
 const Chart: React.FC<{
   options: ECOption;
   height: number | string;
   width: number | string;
-}> = ({ options, width, height }) => {
+  ref?: any;
+}> = forwardRef(({ options, width, height }, ref) => {
   const container = useRef<HTMLDivElement>(null);
   const chart = useRef<echarts.EChartsType>();
   const resizeable = useRef(false);
   const resizeObserver = useRef<ResizeObserver>();
+
+  useImperativeHandle(ref, () => {
+    return {
+      chart: chart.current
+    };
+  });
 
   const init = useCallback(() => {
     if (container.current) {
@@ -44,17 +57,8 @@ const Chart: React.FC<{
     resizeable.current = false;
     resize();
     setOption(options);
+    resizeable.current = true;
   }, [options]);
-
-  useEffect(() => {
-    let timer: any = null;
-    timer = setTimeout(() => {
-      resizeable.current = true;
-    }, 300);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
 
   useEffect(() => {
     const handleResize = throttle(() => {
@@ -75,7 +79,22 @@ const Chart: React.FC<{
     };
   }, []);
 
-  return <div ref={container} style={{ width: width, height }}></div>;
-};
+  // resize on window resize
+  // useEffect(() => {
+  //   const handleResize = throttle(() => {
+  //     chart.current?.resize();
+  //   }, 100);
+  //   window.addEventListener('resize', handleResize);
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize);
+  //   };
+  // }, []);
+
+  return (
+    <div className="chart-wrapper" style={{ width: width, height }}>
+      <div ref={container} style={{ width: width, height }}></div>
+    </div>
+  );
+});
 
 export default Chart;

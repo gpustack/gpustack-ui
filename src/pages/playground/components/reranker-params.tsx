@@ -6,6 +6,7 @@ import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Tooltip } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useId } from 'react';
+import { ParamsSchema } from '../config/types';
 import CustomLabelStyles from '../style/custom-label.less';
 
 type ParamsSettingsFormProps = {
@@ -16,26 +17,27 @@ type ParamsSettingsFormProps = {
 type ParamsSettingsProps = {
   selectedModel?: string;
   showModelSelector?: boolean;
-  params?: ParamsSettingsFormProps;
+  params?: Record<string, any>;
   model?: string;
   modelList: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   setParams: (params: any) => void;
-  globalParams?: ParamsSettingsFormProps;
+  globalParams?: Record<string, any>;
+  paramsConfig?: ParamsSchema[];
+  initialValues?: Record<string, any>;
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
-  selectedModel,
   setParams,
-  globalParams,
   onValuesChange,
+  selectedModel,
+  globalParams,
+  initialValues,
+  paramsConfig,
   modelList,
   showModelSelector = true
 }) => {
   const intl = useIntl();
-  const initialValues = {
-    top_n: 1
-  };
   const [form] = Form.useForm();
   const formId = useId();
 
@@ -59,7 +61,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
         ...initialValues
       });
     }
-  }, [modelList, showModelSelector, selectedModel]);
+  }, [modelList, showModelSelector, selectedModel, initialValues]);
 
   const handleOnFinish = (values: any) => {
     console.log('handleOnFinish', values);
@@ -101,6 +103,45 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   useEffect(() => {
     form.setFieldsValue(globalParams);
   }, [globalParams]);
+
+  const renderFields = useCallback(() => {
+    console.log('paramsConfig:', paramsConfig);
+    if (!paramsConfig?.length) {
+      return null;
+    }
+    return paramsConfig.map((item: ParamsSchema) => {
+      if (item.type === 'InputNumber') {
+        return (
+          <Form.Item name={item.name} rules={item.rules} key={item.name}>
+            <SealInput.Number
+              {...item.attrs}
+              style={{ width: '100%' }}
+              label={
+                item.label.isLocalized
+                  ? intl.formatMessage({ id: item.label.text })
+                  : item.label.text
+              }
+            ></SealInput.Number>
+          </Form.Item>
+        );
+      }
+      if (item.type === 'Select') {
+        return (
+          <Form.Item name={item.name} rules={item.rules} key={item.name}>
+            <SealSelect
+              options={item.options}
+              label={
+                item.label.isLocalized
+                  ? intl.formatMessage({ id: item.label.text })
+                  : item.label.text
+              }
+            ></SealSelect>
+          </Form.Item>
+        );
+      }
+      return null;
+    });
+  }, [paramsConfig]);
 
   const renderLabel = (args: {
     field: string;
@@ -148,7 +189,9 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       <div>
         {
           <>
-            <h3 className="m-b-20 m-l-10 font-size-14 line-24">Parameters</h3>
+            <h3 className="m-b-20 m-l-10 font-size-14 line-24">
+              <span>{intl.formatMessage({ id: 'playground.parameters' })}</span>
+            </h3>
             <Form.Item<ParamsSettingsFormProps>
               name="model"
               rules={[
@@ -171,16 +214,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             </Form.Item>
           </>
         }
-        <Form.Item<ParamsSettingsFormProps>
-          name="top_n"
-          rules={[{ required: true }]}
-        >
-          <SealInput.Number
-            style={{ width: '100%' }}
-            label="Top N"
-            min={1}
-          ></SealInput.Number>
-        </Form.Item>
+        {renderFields()}
       </div>
     </Form>
   );

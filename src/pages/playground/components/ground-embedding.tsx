@@ -1,30 +1,37 @@
+import ScatterChart from '@/components/echarts/scatter';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
-import { ClearOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  ClearOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+  ThunderboltOutlined,
+  UploadOutlined
+} from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Spin } from 'antd';
+import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
-import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
   memo,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
-import { rerankerQuery } from '../apis';
+import { UMAP } from 'umap-js';
+import { handleEmbedding } from '../apis';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
+import FileList from './file-list';
 import InputList from './input-list';
-import MessageInput from './message-input';
-import ReferenceParams from './reference-params';
-import RerankMessage from './rerank-message';
 import RerankerParams from './reranker-params';
-import ViewRerankCode from './view-rerank-code';
+import UploadFile from './upload-file';
+import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -34,26 +41,37 @@ interface MessageProps {
 
 const paramsConfig: ParamsSchema[] = [
   {
-    type: 'InputNumber',
-    name: 'top_n',
+    type: 'Select',
+    name: 'truncate',
     label: {
-      text: 'Top N',
+      text: 'Truncate',
       isLocalized: false
     },
-    attrs: {
-      min: 1
-    },
+    options: [
+      {
+        label: 'None',
+        value: 'none'
+      },
+      {
+        label: 'Start',
+        value: 'start'
+      },
+      {
+        label: 'End',
+        value: 'end'
+      }
+    ],
     rules: [
       {
         required: true,
-        message: 'Top N is required'
+        message: 'Please select truncate'
       }
     ]
   }
 ];
 
 const initialValues = {
-  top_n: 1
+  truncate: 'none'
 };
 
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
@@ -73,9 +91,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const contentRef = useRef<any>('');
-  const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
-  const currentMessageRef = useRef<any>(null);
   const inputListRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
@@ -99,6 +115,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   ]);
 
+  const [scatterData, setScatterData] = useState<any[]>([]);
+
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const {
     initialize: innitializeParams,
@@ -115,6 +133,41 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     };
   });
+
+  const inputEmpty = useMemo(() => {
+    const list = [...textList, ...fileList].filter((item) => item.text);
+    return list.length < 2;
+  }, [textList, fileList]);
+
+  const generateEmbedding = (embeddings: any[]) => {
+    try {
+      const umap = new UMAP({
+        // random() {
+        //   return 0.1;
+        // },
+        // minDist: 0.1,
+        nComponents: 2,
+        nNeighbors: 1
+      });
+
+      const dataList = embeddings.map((item) => {
+        return item.embedding;
+      });
+
+      const embedding = umap.fit([...dataList, ...dataList]);
+
+      const list = embedding.map((item: number[], index: number) => {
+        return {
+          value: item,
+          name: index + 1,
+          text: `test test test test test`
+        };
+      });
+      setScatterData(list);
+    } catch (e) {
+      // console.log('error:', e);
+    }
+  };
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -137,14 +190,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       contentRef.current = current?.content || '';
 
-      const documentList: any[] = [...textList, ...fileList];
-
-      const result: any = await rerankerQuery(
+      const result: any = await handleEmbedding(
         {
           model: parameters.model,
-          top_n: parameters.top_n,
-          query: contentRef.current,
-          documents: [
+          input: [
             ...textList.map((item) => item.text),
             ...fileList.map((item) => item.text)
           ]
@@ -155,32 +204,15 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       );
       console.log('result:', result);
 
-      setMessageId();
       setTokenResult(result.usage);
-      const maxItem = _.maxBy(result.results || [], (item: any) =>
-        Math.abs(item.relevance_score)
-      );
-      const maxValue = _.ceil(maxItem?.relevance_score, 2);
 
-      setMessageList([
-        {
-          title: 'Results',
-          role: '',
-          content: result.results?.map((item: any) => {
-            return {
-              uid: item.index,
-              text: `${item.document?.text?.slice(0, 500) || ''}`,
-              docIndex: item.index,
-              title: documentList[item.index]?.name || '',
-              score: item.relevance_score,
-              normalizValue:
-                _.round(_.round(item.relevance_score, 2) / maxValue, 2) * 100
-            };
-          }),
-          uid: messageId.current
-        }
-      ]);
+      const embeddingsList = result.data || [];
+
+      console.log('embeddings:', embeddingsList);
+
+      generateEmbedding(embeddingsList);
     } catch (error: any) {
+      console.log('error========', error);
       setTokenResult({
         error: true,
         errorMessage: error.response?.data?.error?.message
@@ -194,12 +226,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       return;
     }
     setMessageId();
-    setMessageList([]);
+    setScatterData([]);
     setTokenResult(null);
   };
 
-  const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    submitMessage(message);
+  const handleSendMessage = () => {
+    submitMessage();
   };
 
   const handleCloseViewCode = () => {
@@ -244,11 +276,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     ]);
     setFileList([]);
+    setScatterData([]);
   };
 
   useEffect(() => {
     setMessageId();
-    setMessageList([]);
+    setScatterData([]);
     setTokenResult(null);
   }, [parameters.model]);
 
@@ -277,42 +310,19 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   return (
     <div className="ground-left-wrapper rerank">
-      <div className="ground-left">
-        <div className="ground-left-footer">
-          <MessageInput
-            scope="reranker"
-            submitIcon={<SearchOutlined className="font-size-16" />}
-            loading={loading}
-            disabled={!parameters.model}
-            isEmpty={true}
-            shouldResetMessage={false}
-            handleSubmit={handleSendMessage}
-            handleAbortFetch={handleStopConversation}
-            clearAll={handleClear}
-            modelList={[]}
-            placeholer={intl.formatMessage({
-              id: 'playground.input.keyword.holder'
-            })}
-            tools={<span style={{ paddingLeft: 6 }}>Query</span>}
-            style={{
-              borderTop: 'none',
-              width: 'unset',
-              marginInline: 32,
-              marginTop: 16,
-              border: '1px solid var(--ant-color-border)',
-              borderRadius: 'var(--border-radius-base)',
-              paddingInline: 10
-            }}
-          />
-        </div>
-        <div className="center" ref={scroller}>
+      <div className="ground-left" style={{ justifyContent: 'flex-start' }}>
+        <div
+          className="center"
+          ref={scroller}
+          style={{ height: 'auto', maxHeight: '100%' }}
+        >
           <div className="documents">
             <div className="flex-between m-b-8 doc-header">
               <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-0">
                 <span>Documents</span>
               </h3>
               <div className="flex gap-10">
-                {/* <UploadFile
+                <UploadFile
                   handleUpdateFileList={handleUpdateFileList}
                   accept={acceptType}
                 >
@@ -324,7 +334,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                       Upload File
                     </Button>
                   </Tooltip>
-                </UploadFile> */}
+                </UploadFile>
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   Add Text
@@ -336,6 +346,15 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 >
                   {intl.formatMessage({ id: 'common.button.clear' })}
                 </Button>
+                <Button
+                  size="middle"
+                  type="primary"
+                  disabled={inputEmpty}
+                  onClick={handleSendMessage}
+                >
+                  {loading ? <LoadingOutlined /> : <ThunderboltOutlined />}
+                  {intl.formatMessage({ id: 'common.button.run' })}
+                </Button>
               </div>
             </div>
             <div className="docs-wrapper">
@@ -344,40 +363,42 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 textList={textList}
                 onChange={handleTextListChange}
               ></InputList>
-              {/* <div style={{ marginTop: 8 }}>
+              <div style={{ marginTop: 8 }}>
                 <FileList
                   fileList={fileList}
                   textListCount={textList.length || 0}
                   onDelete={handleDeleteFile}
                 ></FileList>
-              </div> */}
+              </div>
             </div>
           </div>
-          <div>
-            {messageList.length ? (
-              <div className="result-header flex-center">
-                <h3 className="font-size-14 m-b-0">Results</h3>
-                <ReferenceParams
-                  usage={tokenResult}
-                  showOutput={false}
-                ></ReferenceParams>
-              </div>
-            ) : null}
-          </div>
+        </div>
+
+        <div
+          className="ground-left-footer"
+          style={{
+            width: '100%',
+            padding: '0 32px 16px'
+          }}
+        >
+          <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-16">
+            <span>Output</span>
+          </h3>
           <div
-            className="message-list-wrap"
-            style={{ paddingInline: 0, paddingTop: 0 }}
+            style={{
+              border: '1px solid var(--ant-color-border)',
+              borderRadius: 'var(--border-radius-base)',
+              overflow: 'hidden',
+              width: '100%'
+            }}
+            className="scatter"
           >
-            <>
-              <div className="content">
-                <RerankMessage dataList={messageList} />
-                {loading && (
-                  <Spin size="small">
-                    <div style={{ height: '46px' }}></div>
-                  </Spin>
-                )}
-              </div>
-            </>
+            <ScatterChart
+              seriesData={scatterData}
+              height={160}
+              width="100%"
+              xAxisData={[]}
+            ></ScatterChart>
           </div>
         </div>
       </div>
@@ -390,25 +411,30 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <RerankerParams
             setParams={setParams}
-            params={parameters}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
+            params={parameters}
             selectedModel={selectModel}
             modelList={modelList}
           />
         </div>
       </div>
 
-      <ViewRerankCode
+      <ViewCodeModal
         open={show}
-        documentList={[...textList, ...fileList].map((item) => item.text)}
+        apiType="embedding"
+        payLoad={{
+          input: [
+            ...textList.map((item) => item.text),
+            ...fileList.map((item) => item.text)
+          ].filter((text) => text)
+        }}
         parameters={{
-          ...parameters,
-          query: contentRef.current
+          ...parameters
         }}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewRerankCode>
+      ></ViewCodeModal>
     </div>
   );
 });

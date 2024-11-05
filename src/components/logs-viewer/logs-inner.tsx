@@ -26,10 +26,9 @@ const LogsInner: React.FC<LogsInnerProps> = (props) => {
           index: data.length - 1,
           align: 'bottom'
         });
-        console.log('scrollToBottom', stopScroll.current, data.length);
       }
     }, 200),
-    [scroller.current, stopScroll.current, data]
+    [data, scroller.current, stopScroll.current]
   );
 
   const debounceResetStopScroll = _.debounce(() => {
@@ -66,7 +65,6 @@ const LogsInner: React.FC<LogsInnerProps> = (props) => {
     (e: any) => {
       const isBottom = isScrollBottom(logsWrapper.current);
       const isTop = isScrollTop(logsWrapper.current);
-      console.log('isBottom===', isBottom);
       if (isBottom) {
         stopScroll.current = false;
       } else {
@@ -79,10 +77,7 @@ const LogsInner: React.FC<LogsInnerProps> = (props) => {
   );
 
   useEffect(() => {
-    if (!stopScroll.current && data.length > 0) {
-      updataPositionToBottom();
-      console.log('updataPositionToBottom', stopScroll.current);
-    }
+    updataPositionToBottom();
   }, [updataPositionToBottom]);
 
   useEffect(() => {
@@ -115,7 +110,7 @@ const LogsInner: React.FC<LogsInnerProps> = (props) => {
           }
         }}
       >
-        {(item: any) => (
+        {(item: any, index: number) => (
           <div key={item.uid} className="text">
             {item.content}
           </div>

@@ -26,6 +26,14 @@ export default [
         component: './playground/index'
       },
       {
+        name: 'embedding',
+        title: 'embedding',
+        path: '/playground/embedding',
+        key: 'embedding',
+        icon: 'Comment',
+        component: './playground/embedding'
+      },
+      {
         name: 'rerank',
         title: 'Rerank',
         path: '/playground/rerank',

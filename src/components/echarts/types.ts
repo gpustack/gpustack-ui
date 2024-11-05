@@ -1,5 +1,6 @@
 export interface ChartProps {
   seriesData: any[];
+  showEmpty?: boolean;
   xAxisData: string[];
   legendData?: string[];
   labelFormatter?: (val?: any) => string;

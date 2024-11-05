@@ -56,39 +56,19 @@ const UploadImg: React.FC<UploadImgProps> = ({
         const newFileList = await Promise.all(
           fileList.map(async (item: UploadFile) => {
             if (wordReg.test(item.name)) {
-              const context = await readWordContent(
-                item.originFileObj as RcFile
-              );
-
-              item.url = context;
+              item.url = await readWordContent(item.originFileObj as RcFile);
             } else if (excelReg.test(item.name)) {
-              const context = await readExcelContent(
-                item.originFileObj as RcFile
-              );
-              item.url = context;
+              item.url = await readExcelContent(item.originFileObj as RcFile);
             } else if (epubReg.test(item.name)) {
-              const context = await readEpubContent(
-                item.originFileObj as RcFile
-              );
-              item.url = context;
+              item.url = await readEpubContent(item.originFileObj as RcFile);
             } else if (pdfReg.test(item.name)) {
-              const context = await readPDFContent(
-                item.originFileObj as RcFile
-              );
-              item.url = context;
+              item.url = await readPDFContent(item.originFileObj as RcFile);
             } else if (pptReg.test(item.name)) {
-              const context = await readPptxContent(
-                item.originFileObj as RcFile
-              );
-              item.url = context;
+              item.url = await readPptxContent(item.originFileObj as RcFile);
             } else if (htmlReg.test(item.name)) {
-              const context = await readHtmlContent(
-                item.originFileObj as RcFile
-              );
-              item.url = context;
+              item.url = await readHtmlContent(item.originFileObj as RcFile);
             } else {
-              const context = await readBlob(item.originFileObj as RcFile);
-              item.url = context;
+              item.url = await readBlob(item.originFileObj as RcFile);
             }
             return item;
           })

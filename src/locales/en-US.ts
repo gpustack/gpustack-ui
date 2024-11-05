@@ -3,6 +3,7 @@
  * @example Directories like 'en-US' or 'zh-CN' should correspond exactly to the configuration names in lang-config-map.ts.
  */
 
+// @ts-ignore
 const requireContext = require.context(`./en-US`, false, /\.ts$/);
 
 let languageConfig: Record<string, string> = {};

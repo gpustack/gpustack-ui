@@ -3,7 +3,7 @@ import IconFont from '@/components/icon-font';
 /**
  * Language configuration map
  * Warning: The key of the map must be the same as the directory name in the locales directory
- * Do not modify the key of the map
+ * Do not modify the key of the map !!!
  *
  */
 const langConfigMap = {

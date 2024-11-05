@@ -466,7 +466,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         </div>
         <ViewCodeModal
           open={show}
-          messageList={viewCodeMessage}
+          payLoad={{
+            messages: viewCodeMessage
+          }}
           parameters={params}
           onCancel={handleCloseViewCode}
           title={intl.formatMessage({ id: 'playground.viewcode' })}

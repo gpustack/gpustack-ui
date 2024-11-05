@@ -330,7 +330,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       <ViewCodeModal
         open={show}
-        messageList={viewCodeMessage}
+        payLoad={{
+          messages: viewCodeMessage
+        }}
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

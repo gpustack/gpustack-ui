@@ -22,9 +22,6 @@ const Playground: React.FC = () => {
   const groundLeftRef = useRef<any>(null);
   const groundRerankerRef = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
-  const [rerankerModelList, setRerankerModelList] = useState<
-    Global.BaseOption<string>[]
-  >([]);
   const [loaded, setLoaded] = useState(false);
   const optionsList = [
     {
@@ -37,11 +34,6 @@ const Playground: React.FC = () => {
       value: 'compare',
       icon: <OneToOneOutlined />
     }
-    // {
-    //   label: 'Rerank',
-    //   value: 'reranker',
-    //   icon: <FileSearchOutlined />
-    // }
   ];
 
   const handleViewCode = useCallback(() => {
@@ -73,17 +65,6 @@ const Playground: React.FC = () => {
       label: 'Compare',
       children: <MultipleChat modelList={modelList} loaded={loaded} />
     }
-    // {
-    //   key: 'reranker',
-    //   label: 'Reranker',
-    //   children: (
-    //     <GroundReranker
-    //       ref={groundRerankerRef}
-    //       modelList={rerankerModelList}
-    //       loaded={loaded}
-    //     ></GroundReranker>
-    //   )
-    // }
   ];
 
   useEffect(() => {
@@ -113,32 +94,11 @@ const Playground: React.FC = () => {
         return [];
       }
     };
-    const getModelListByReranker = async () => {
-      try {
-        const params = {
-          reranker: true
-        };
-        const res = await queryModelsList(params);
-        const list = _.map(res.data || [], (item: any) => {
-          return {
-            value: item.id,
-            label: item.id
-          };
-        }) as Global.BaseOption<string>[];
-        return list;
-      } catch (error) {
-        console.error(error);
-        return [];
-      }
-    };
+
     const fetchData = async () => {
       try {
-        const [modelist, rerankerModelList] = await Promise.all([
-          getModelList(),
-          getModelListByReranker()
-        ]);
+        const modelist = await getModelList();
         setModelList(modelist);
-        setRerankerModelList(rerankerModelList);
       } catch (error) {
         setLoaded(true);
       }

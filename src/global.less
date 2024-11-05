@@ -255,6 +255,7 @@ body {
       }
     }
   }
+
   // input
   .ant-input-css-var.ant-input {
     height: 40px;
@@ -278,6 +279,7 @@ body {
     border: none;
     box-shadow: none;
   }
+
   // input number
   .ant-input-number-outlined.ant-input-number-status-error:not(
       .ant-input-number-disabled
@@ -436,6 +438,7 @@ body {
     }
   }
 }
+
 // ======== menu style end ============
 .ant-menu-submenu-popup {
   .ant-menu-sub {
@@ -524,6 +527,7 @@ body {
 .ant-menu-submenu-popup > .ant-menu {
   border-radius: var(--menu-border-radius-base);
 }
+
 // ======== monaco editor style ============
 .monaco-editor {
   border-radius: 8px;
@@ -686,6 +690,7 @@ body {
 .ant-segmented .ant-segmented-item::after {
   border-radius: var(--border-radius-mini);
 }
+
 // =============== segment end ===============
 
 .background {
@@ -769,6 +774,7 @@ body {
   font-size: 11px;
   background-color: rgba(255, 255, 255, 80%);
   min-width: 100px;
+  max-width: 360px;
 
   .tooltip-x-name {
     font-size: var(--font-size-base);
@@ -788,6 +794,8 @@ body {
     .tooltip-value {
       margin-left: 10px;
       color: var(--ant-color-text);
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
   }
 }

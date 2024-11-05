@@ -10,7 +10,7 @@ import {
 } from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { ChartProps } from './types';
 
 const LineChart: React.FC<ChartProps> = (props) => {
@@ -26,9 +26,6 @@ const LineChart: React.FC<ChartProps> = (props) => {
     smooth,
     title
   } = props;
-  if (!seriesData.length) {
-    return <EmptyData height={height} title={title}></EmptyData>;
-  }
 
   const options = {
     title: {
@@ -59,7 +56,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     series: []
   };
 
-  const generateOptions = (): any => {
+  const dataOptions = useMemo((): any => {
     const data = _.map(seriesData, (item: any) => {
       return {
         ...item,
@@ -75,7 +72,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
         }
       };
     });
-    const optionsConfig = {
+    return {
       ...options,
       animation: false,
       title: {
@@ -92,15 +89,20 @@ const LineChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-    return optionsConfig;
-  };
-  const dataOptions = generateOptions();
+  }, [seriesData, xAxisData, yAxisName, title, smooth, legendData]);
+
   return (
-    <Chart
-      height={height}
-      options={dataOptions}
-      width={width || '100%'}
-    ></Chart>
+    <>
+      {!seriesData.length ? (
+        <EmptyData height={height} title={title}></EmptyData>
+      ) : (
+        <Chart
+          height={height}
+          options={dataOptions}
+          width={width || '100%'}
+        ></Chart>
+      )}
+    </>
   );
 };
 

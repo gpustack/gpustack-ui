@@ -2,6 +2,8 @@ import { request } from '@umijs/max';
 
 export const CHAT_API = '/v1-openai/chat/completions';
 
+export const EMBEDDING_API = '/v1-openai/embeddings';
+
 export const OPENAI_MODELS = '/v1-openai/models';
 
 export const RERANKER_API = '/rerank';
@@ -30,6 +32,20 @@ export const rerankerQuery = async (
   options?: any
 ) => {
   return request(`${RERANKER_API}`, {
+    method: 'POST',
+    data: params,
+    cancelToken: options?.cancelToken
+  });
+};
+
+export const handleEmbedding = async (
+  params: {
+    model: string;
+    input: string[];
+  },
+  options?: any
+) => {
+  return request(`${EMBEDDING_API}`, {
     method: 'POST',
     data: params,
     cancelToken: options?.cancelToken

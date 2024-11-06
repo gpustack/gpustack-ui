@@ -1,0 +1,26 @@
+.logs-wrap {
+  background-color: var(--color-logs-bg);
+  border-radius: var(--border-radius-mini);
+  font-family: monospace, Menlo, Courier, 'Courier New', Consolas, Monaco,
+    'Liberation Mono' !important;
+
+  .content {
+    word-wrap: break-word;
+    height: 100%;
+    padding-right: 2px;
+
+    &.line-break {
+      word-wrap: break-word;
+    }
+
+    .text {
+      min-height: 22px;
+    }
+
+    color: var(--color-logs-text);
+    font-size: var(--font-size-small);
+    line-height: 22px;
+    white-space: pre-wrap;
+    background-color: var(--color-logs-bg);
+  }
+}

@@ -2,7 +2,7 @@ import useSetChunkFetch from '@/hooks/use-chunk-fetch';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import {
+import React, {
   forwardRef,
   memo,
   useCallback,
@@ -12,7 +12,7 @@ import {
   useState
 } from 'react';
 import { controlSeqRegex, replaceLineRegex } from './config';
-import LogsInner from './logs-inner';
+import LogsList from './logs-list';
 import LogsPagination from './logs-pagination';
 import './styles/index.less';
 import useLogsPagination from './use-logs-pagination';
@@ -132,7 +132,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const updateContent = useCallback(
     (inputStr: string) => {
-      console.log('data========', inputStr);
       const data = inputStr.replace(replaceLineRegex, '\n');
       if (isClean(data)) {
         cacheDataRef.current = data;
@@ -188,11 +187,11 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     <div className="logs-viewer-wrap-w2">
       <div className="wrap">
         <div className={classNames('content')}>
-          <LogsInner
-            data={logs}
+          <LogsList
+            dataList={logs}
             diffHeight={diffHeight}
             onScroll={handleOnScroll}
-          ></LogsInner>
+          ></LogsList>
         </div>
         <Spin
           spinning={loading && isAtTop}

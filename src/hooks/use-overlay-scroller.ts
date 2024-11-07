@@ -68,6 +68,7 @@ export default function useOverlayScroller(options?: any) {
     instanceRef.current?.update?.();
   }, [scrollEventElement.current, instanceRef.current]);
 
+  // scroll to bottom
   const throttledUpdateScrollerPosition = React.useCallback(
     (delay?: number) => {
       if (delay === 0) {
@@ -78,6 +79,19 @@ export default function useOverlayScroller(options?: any) {
     },
     [throttledScroll, scrollauto]
   );
+
+  // scroll to top
+  const updateScrollerPositionToTop = React.useCallback(() => {
+    console.log(
+      ' scrollEventElement.current.scrollHeight====',
+      scrollEventElement.current.scrollHeight
+    );
+    scrollEventElement.current?.scrollTo?.({
+      top: 0,
+      behavior: 'auto'
+    });
+    instanceRef.current?.update?.();
+  }, [scrollEventElement.current, instanceRef.current]);
 
   const generateInstance = () => {
     instanceRef.current = instance?.();
@@ -114,6 +128,7 @@ export default function useOverlayScroller(options?: any) {
     scrollEventElement: scrollEventElement.current,
     initialized: initialized.current,
     generateInstance,
-    updateScrollerPosition: throttledUpdateScrollerPosition
+    updateScrollerPosition: throttledUpdateScrollerPosition,
+    updateScrollerPositionToTop: updateScrollerPositionToTop
   };
 }

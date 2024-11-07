@@ -23,10 +23,11 @@ interface LogsViewerProps {
   url: string;
   params?: object;
   ref?: any;
+  tail?: number;
   diffHeight?: number;
 }
 const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
-  const { diffHeight, url } = props;
+  const { diffHeight, url, tail: defaultTail } = props;
   const { pageSize, page, setPage, setTotalPage, totalPage } =
     useLogsPagination();
   const { setChunkFetch } = useSetChunkFetch();
@@ -34,10 +35,12 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const cacheDataRef = useRef<any>('');
   const [logs, setLogs] = useState<any[]>([]);
   const logParseWorker = useRef<any>(null);
-  const tail = useRef<any>(pageSize);
+  const tail = useRef<any>(defaultTail);
   const [isLoadend, setIsLoadend] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isAtTop, setIsAtTop] = useState(false);
+  const [scrollPos, setScrollPos] = useState<any[]>([]);
+  const logListRef = useRef<any>(null);
 
   useImperativeHandle(ref, () => ({
     abort() {
@@ -110,6 +113,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const end = newPage * pageSize;
     const prePage = list.slice(start, end).join('\n');
     setPage(newPage);
+    setScrollPos(['bottom', newPage]);
     logParseWorker.current.postMessage({
       inputStr: prePage
     });
@@ -125,6 +129,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const end = newPage * pageSize;
     const nextPage = list.slice(start, end).join('\n');
     setPage(newPage);
+    setScrollPos(['top', newPage]);
     logParseWorker.current.postMessage({
       inputStr: nextPage
     });
@@ -183,11 +188,21 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     };
   }, [url, props.params]);
 
+  useEffect(() => {
+    if (scrollPos[0] === 'top') {
+      logListRef.current?.scrollToTop();
+    }
+    if (scrollPos[0] === 'bottom') {
+      logListRef.current?.scrollToBottom();
+    }
+  }, [scrollPos]);
+
   return (
     <div className="logs-viewer-wrap-w2">
       <div className="wrap">
         <div className={classNames('content')}>
           <LogsList
+            ref={logListRef}
             dataList={logs}
             diffHeight={diffHeight}
             onScroll={handleOnScroll}

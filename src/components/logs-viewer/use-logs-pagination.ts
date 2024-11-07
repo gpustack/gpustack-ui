@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { PageSize } from './config';
 
 const useLogsPagination = () => {
-  const [pageSize, setPageSize] = useState(500);
+  const [pageSize, setPageSize] = useState(PageSize);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
 

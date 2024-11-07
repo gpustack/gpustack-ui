@@ -68,5 +68,7 @@ export default {
   'models.form.backend_parameters.vllm.tips':
     'More {backend} parameter details',
   'models.logs.pagination.prev': 'Previous {lines} Lines',
-  'models.logs.pagination.next': 'Next {lines} Lines'
+  'models.logs.pagination.next': 'Next {lines} Lines',
+  'models.form.localPath': 'Local Path',
+  'models.form.filePath': 'File Path'
 };

@@ -1,7 +1,14 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import classNames from 'classnames';
 import _, { throttle } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
+} from 'react';
 import './styles/logs-list.less';
 
 interface LogsListProps {
@@ -9,12 +16,14 @@ interface LogsListProps {
   height?: number;
   onScroll?: (isTop: boolean) => void;
   diffHeight?: number;
+  ref?: any;
 }
-const LogsList: React.FC<LogsListProps> = (props) => {
+const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
   const { dataList, height, onScroll, diffHeight = 96 } = props;
   const {
     initialize,
     updateScrollerPosition,
+    updateScrollerPositionToTop,
     generateInstance,
     scrollEventElement,
     instance,
@@ -27,6 +36,19 @@ const LogsList: React.FC<LogsListProps> = (props) => {
   const [innerHieght, setInnerHeight] = useState(viewHeight);
   const scroller = useRef<any>({});
   const stopScroll = useRef(false);
+
+  const scrollToBottom = useCallback(() => {
+    updateScrollerPosition(0);
+  }, [updateScrollerPosition]);
+
+  const scrollToTop = useCallback(() => {
+    updateScrollerPositionToTop();
+  }, [updateScrollerPositionToTop]);
+
+  useImperativeHandle(ref, () => ({
+    scrollToBottom,
+    scrollToTop
+  }));
 
   const debounceResetStopScroll = _.debounce(() => {
     stopScroll.current = false;
@@ -106,6 +128,6 @@ const LogsList: React.FC<LogsListProps> = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export default React.memo(LogsList);

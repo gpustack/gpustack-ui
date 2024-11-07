@@ -5,7 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import { debounce } from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { modelSourceMap } from '../config';
+import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import ColumnWrapper from './column-wrapper';
 import DataForm from './data-form';
@@ -27,7 +27,6 @@ type AddModalProps = {
 };
 
 const AddModal: React.FC<AddModalProps> = (props) => {
-  console.log('addmodel====');
   const {
     title,
     open,
@@ -69,6 +68,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     setIsGGUF(flag);
     if (flag) {
       debounceFetchModelFiles();
+    }
+  };
+
+  const handleBackendChange = (backend: string) => {
+    if (backend === backendOptionsMap.vllm) {
+      setIsGGUF(false);
+    }
+
+    if (backend === backendOptionsMap.llamaBox) {
+      setIsGGUF(true);
     }
   };
 
@@ -188,6 +197,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               onOk={onOk}
               ref={form}
               isGGUF={isGGUF}
+              onBackendChange={handleBackendChange}
             ></DataForm>
           </>
         </ColumnWrapper>

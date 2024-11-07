@@ -80,14 +80,17 @@ export const modelSourceMap: Record<string, string> = {
   ollama_library_value: 'ollama_library',
   s3_value: 's3',
   modelScope: 'ModelScope',
-  modelscope_value: 'model_scope'
+  modelscope_value: 'model_scope',
+  local_path: 'Local Path',
+  local_path_value: 'local_path'
 };
 
 export const modelSourceValueMap = {
   [modelSourceMap.huggingface_value]: modelSourceMap.huggingface,
   [modelSourceMap.ollama_library_value]: modelSourceMap.ollama_library,
   [modelSourceMap.s3_value]: modelSourceMap.s3,
-  [modelSourceMap.modelscope_value]: modelSourceMap.modelScope
+  [modelSourceMap.modelscope_value]: modelSourceMap.modelScope,
+  [modelSourceMap.local_path_value]: modelSourceMap.local_path
 };
 
 export const InstanceStatusMap = {

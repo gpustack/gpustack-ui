@@ -2,6 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
+import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
@@ -39,7 +40,11 @@ import {
   queryModelInstancesList,
   updateModel
 } from '../apis';
-import { getSourceRepoConfigValue, modelSourceMap } from '../config';
+import {
+  InstanceStatusMap,
+  getSourceRepoConfigValue,
+  modelSourceMap
+} from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
@@ -99,6 +104,7 @@ const Models: React.FC<ModelsProps> = ({
   const [currentInstance, setCurrentInstance] = useState<{
     url: string;
     status: string;
+    tail?: number;
   }>({
     url: '',
     status: ''
@@ -189,6 +195,21 @@ const Models: React.FC<ModelsProps> = ({
           show: true,
           width: 'calc(100vw - 220px)',
           source: modelSourceMap.modelscope_value
+        });
+      }
+    },
+    {
+      label: intl.formatMessage({ id: 'models.form.localPath' }),
+      value: modelSourceMap.local_path_value,
+      key: 'local_path',
+      icon: <IconFont type="icon-hard-disk"></IconFont>,
+      onClick: (e: any) => {
+        setOpenDeployModal(() => {
+          return {
+            show: true,
+            width: 600,
+            source: modelSourceMap.local_path_value
+          };
         });
       }
     }
@@ -341,7 +362,8 @@ const Models: React.FC<ModelsProps> = ({
     try {
       setCurrentInstance({
         url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
-        status: row.status
+        status: row.state,
+        tail: row.state === InstanceStatusMap.Downloading ? undefined : PageSize
       });
       setOpenLogModal(true);
     } catch (error) {
@@ -438,7 +460,13 @@ const Models: React.FC<ModelsProps> = ({
     if (record.source === modelSourceMap.huggingface_value) {
       return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
     }
-    return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
+    if (record.source === modelSourceMap.local_path_value) {
+      return `${modelSourceMap.local_path} ${record.local_path}`;
+    }
+    if (record.source === modelSourceMap.ollama_library_value) {
+      return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
+    }
+    return '';
   }, []);
 
   const handleCloseViewCode = useCallback(() => {
@@ -653,6 +681,7 @@ const Models: React.FC<ModelsProps> = ({
       ></DeployModal>
       <ViewLogsModal
         url={currentInstance.url}
+        tail={currentInstance.tail}
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>

@@ -6,12 +6,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 type ViewModalProps = {
   open: boolean;
   url: string;
+  tail?: number;
   autoScroll?: boolean;
   onCancel: () => void;
 };
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const { open, url, onCancel } = props || {};
+  const { open, url, onCancel, tail } = props || {};
   const [modalSize, setModalSize] = useState<any>({
     width: 600,
     height: 420
@@ -77,6 +78,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         height={modalSize.height}
         diffHeight={93}
         url={url}
+        tail={tail}
         params={{
           follow: true
         }}

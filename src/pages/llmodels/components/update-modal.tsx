@@ -7,7 +7,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Modal } from 'antd';
 import _ from 'lodash';
-import { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryGPUList } from '../apis';
@@ -27,24 +27,6 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
-
-const sourceOptions = [
-  {
-    label: 'Hugging Face',
-    value: modelSourceMap.huggingface_value,
-    key: 'huggingface'
-  },
-  {
-    label: 'Ollama Library',
-    value: modelSourceMap.ollama_library_value,
-    key: 'ollama_library'
-  },
-  {
-    label: 'ModelScope',
-    value: modelSourceMap.modelscope_value,
-    key: 'model_scope'
-  }
-];
 
 const SEARCH_SOURCE = [
   modelSourceMap.huggingface_value,
@@ -71,6 +53,29 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     });
     setGpuOptions(list);
   };
+
+  const sourceOptions = [
+    {
+      label: 'Hugging Face',
+      value: modelSourceMap.huggingface_value,
+      key: 'huggingface'
+    },
+    {
+      label: 'Ollama Library',
+      value: modelSourceMap.ollama_library_value,
+      key: 'ollama_library'
+    },
+    {
+      label: 'ModelScope',
+      value: modelSourceMap.modelscope_value,
+      key: 'model_scope'
+    },
+    {
+      label: intl.formatMessage({ id: 'models.form.localPath' }),
+      value: modelSourceMap.local_path_value,
+      key: 'local_path'
+    }
+  ];
 
   useEffect(() => {
     if (action === PageAction.EDIT && open) {
@@ -203,6 +208,34 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     );
   };
 
+  const renderLocalPathFields = () => {
+    return (
+      <>
+        <Form.Item<FormData>
+          name="local_path"
+          key="local_path"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.form.filePath' }) }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input
+            disabled={action === PageAction.EDIT}
+            label={intl.formatMessage({ id: 'models.form.filePath' })}
+            required
+          ></SealInput.Input>
+        </Form.Item>
+      </>
+    );
+  };
+
   const renderFieldsBySource = useMemo(() => {
     if (SEARCH_SOURCE.includes(props.data?.source || '')) {
       return renderHuggingfaceFields();
@@ -214,6 +247,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
     if (props.data?.source === modelSourceMap.s3_value) {
       return renderS3Fields();
+    }
+
+    if (props.data?.source === modelSourceMap.local_path_value) {
+      return renderLocalPathFields();
     }
 
     return null;

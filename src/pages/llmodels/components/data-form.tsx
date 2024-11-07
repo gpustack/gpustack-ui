@@ -30,25 +30,9 @@ interface DataFormProps {
   selectedModel: any;
   isGGUF: boolean;
   onOk: (values: FormData) => void;
+  onBackendChange?: (value: string) => void;
 }
 
-const sourceOptions = [
-  {
-    label: 'Hugging Face',
-    value: modelSourceMap.huggingface_value,
-    key: 'huggingface'
-  },
-  {
-    label: 'Ollama Library',
-    value: modelSourceMap.ollama_library_value,
-    key: 'ollama_library'
-  },
-  {
-    label: 'ModelScope',
-    value: modelSourceMap.modelscope_value,
-    key: 'model_scope'
-  }
-];
 const SEARCH_SOURCE = [
   modelSourceMap.huggingface_value,
   modelSourceMap.modelscope_value
@@ -61,6 +45,29 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [gpuOptions, setGpuOptions] = useState<
     Array<GPUListItem & { label: string; value: string }>
   >([]);
+
+  const sourceOptions = [
+    {
+      label: 'Hugging Face',
+      value: modelSourceMap.huggingface_value,
+      key: 'huggingface'
+    },
+    {
+      label: 'Ollama Library',
+      value: modelSourceMap.ollama_library_value,
+      key: 'ollama_library'
+    },
+    {
+      label: 'ModelScope',
+      value: modelSourceMap.modelscope_value,
+      key: 'model_scope'
+    },
+    {
+      label: intl.formatMessage({ id: 'models.form.localPath' }),
+      value: modelSourceMap.local_path_value,
+      key: 'local_path'
+    }
+  ];
 
   const getGPUList = async () => {
     const data = await queryGPUList();
@@ -116,6 +123,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         ollama_library_model_name: props.selectedModel.name,
         name: name
       });
+    }
+  };
+
+  const handleLocalPathBlur = (e: any) => {
+    const value = e.target.value;
+    const isEndwithGGUF = _.endsWith(value, '.gguf');
+    if (isEndwithGGUF) {
+      props.onBackendChange?.(backendOptionsMap.llamaBox);
+    } else {
+      props.onBackendChange?.(backendOptionsMap.vllm);
     }
   };
 
@@ -246,6 +263,34 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     );
   };
 
+  const renderLocalPathFields = () => {
+    return (
+      <>
+        <Form.Item<FormData>
+          name="local_path"
+          key="local_path"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.input'
+                },
+                { name: intl.formatMessage({ id: 'models.form.filePath' }) }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input
+            onBlur={handleLocalPathBlur}
+            label={intl.formatMessage({ id: 'models.form.filePath' })}
+            required
+          ></SealInput.Input>
+        </Form.Item>
+      </>
+    );
+  };
+
   const renderFieldsBySource = useMemo(() => {
     if (SEARCH_SOURCE.includes(props.source)) {
       return renderHuggingfaceFields();
@@ -257,6 +302,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
     if (props.source === modelSourceMap.s3_value) {
       return renderS3Fields();
+    }
+    if (props.source === modelSourceMap.local_path_value) {
+      return renderLocalPathFields();
     }
 
     return null;
@@ -332,31 +380,34 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           required
         ></SealInput.Input>
       </Form.Item>
-      <Form.Item<FormData>
-        name="source"
-        rules={[
+      {
+        <Form.Item<FormData>
+          name="source"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.select'
+                },
+                { name: intl.formatMessage({ id: 'models.form.source' }) }
+              )
+            }
+          ]}
+        >
           {
-            required: true,
-            message: intl.formatMessage(
-              {
-                id: 'common.form.rule.select'
-              },
-              { name: intl.formatMessage({ id: 'models.form.source' }) }
-            )
+            <SealSelect
+              disabled={true}
+              label={intl.formatMessage({
+                id: 'models.form.source'
+              })}
+              options={sourceOptions}
+              required
+            ></SealSelect>
           }
-        ]}
-      >
-        {
-          <SealSelect
-            disabled={true}
-            label={intl.formatMessage({
-              id: 'models.form.source'
-            })}
-            options={sourceOptions}
-            required
-          ></SealSelect>
-        }
-      </Form.Item>
+        </Form.Item>
+      }
+
       {renderFieldsBySource}
       <Form.Item<FormData>
         name="replicas"

@@ -15,6 +15,7 @@ export interface ListItem {
   name: string;
   description: string;
   id: number;
+  local_path?: string;
   created_at: string;
   updated_at: string;
   gpu_selector?: {
@@ -36,6 +37,7 @@ export interface FormData {
   s3_address: string;
   ollama_library_model_name: string;
   distributed_inference_across_workers?: boolean;
+  local_path?: string;
   model_scope_model_id?: string;
   model_scope_file_path?: string;
   gpu_selector?: {

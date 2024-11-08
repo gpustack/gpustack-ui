@@ -41,18 +41,20 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
     updateScrollerPosition(0);
   }, [updateScrollerPosition]);
 
+  const debounceResetStopScroll = _.debounce(() => {
+    stopScroll.current = false;
+  }, 30000);
+
   const scrollToTop = useCallback(() => {
+    stopScroll.current = true;
     updateScrollerPositionToTop();
+    debounceResetStopScroll();
   }, [updateScrollerPositionToTop]);
 
   useImperativeHandle(ref, () => ({
     scrollToBottom,
     scrollToTop
   }));
-
-  const debounceResetStopScroll = _.debounce(() => {
-    stopScroll.current = false;
-  }, 30000);
 
   const handleOnWheel = useCallback(
     (e: any) => {

@@ -13,7 +13,7 @@ interface LogsPaginationProps {
 }
 
 const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
-  const { page, total, pageSize, onNext, onPrev } = props;
+  const { page, total, pageSize, onWheel, onNext, onPrev } = props;
   const intl = useIntl();
 
   const handleOnPrev = () => {

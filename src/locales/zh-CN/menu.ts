@@ -4,6 +4,7 @@ export default {
   'menu.playground.rerank': '重排',
   'menu.playground.embedding': '文本嵌入',
   'menu.playground.chat': '对话',
+  'menu.playground.speech': '语音',
   'menu.compare': '多模型对比',
   'menu.models': '模型',
   'menu.resources': '资源',

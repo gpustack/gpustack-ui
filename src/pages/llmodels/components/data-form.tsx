@@ -446,6 +446,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         gpuOptions={gpuOptions}
         isGGUF={isGGUF}
         action={action}
+        source={props.source}
       ></AdvanceConfig>
     </Form>
   );

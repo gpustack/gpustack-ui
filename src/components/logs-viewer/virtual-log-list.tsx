@@ -181,6 +181,18 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     [loading, isLoadend, logs.length, pageSize]
   );
 
+  const debouncedScroll = useCallback(
+    _.debounce(() => {
+      if (scrollPos[0] === 'top') {
+        logListRef.current?.scrollToTop();
+      }
+      if (scrollPos[0] === 'bottom') {
+        logListRef.current?.scrollToBottom();
+      }
+    }, 150),
+    [scrollPos]
+  );
+
   useEffect(() => {
     createChunkConnection();
     return () => {
@@ -189,12 +201,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   }, [url, props.params]);
 
   useEffect(() => {
-    if (scrollPos[0] === 'top') {
-      logListRef.current?.scrollToTop();
-    }
-    if (scrollPos[0] === 'bottom') {
-      logListRef.current?.scrollToBottom();
-    }
+    debouncedScroll();
   }, [scrollPos]);
 
   return (

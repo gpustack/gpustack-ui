@@ -17,7 +17,11 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
-import { backendOptionsMap, placementStrategyOptions } from '../config';
+import {
+  backendOptionsMap,
+  modelSourceMap,
+  placementStrategyOptions
+} from '../config';
 import llamaConfig from '../config/llama-config';
 import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
@@ -29,10 +33,11 @@ interface AdvanceConfigProps {
   form: FormInstance;
   gpuOptions: Array<any>;
   action: PageActionType;
+  source: string;
 }
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, gpuOptions, isGGUF, action } = props;
+  const { form, gpuOptions, isGGUF, action, source } = props;
 
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
@@ -239,15 +244,20 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               {
                 label: `llama-box(llama.cpp)`,
                 value: backendOptionsMap.llamaBox,
-                disabled: !isGGUF
+                disabled:
+                  source === modelSourceMap.local_path_value ? false : !isGGUF
               },
               {
                 label: 'vLLM',
                 value: backendOptionsMap.vllm,
-                disabled: isGGUF
+                disabled:
+                  source === modelSourceMap.local_path_value ? false : isGGUF
               }
             ]}
-            disabled={action === PageAction.EDIT}
+            disabled={
+              action === PageAction.EDIT &&
+              source !== modelSourceMap.local_path_value
+            }
           ></SealSelect>
         </Form.Item>
         <Form.Item<FormData> name="backend_parameters">

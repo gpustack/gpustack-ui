@@ -1,9 +1,10 @@
+import FieldWrapper from '@/components/seal-form/field-wrapper';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { INPUT_WIDTH } from '@/constants';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form, InputNumber, Tooltip } from 'antd';
+import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useId } from 'react';
 import { ParamsSchema } from '../config/types';
@@ -104,45 +105,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     form.setFieldsValue(globalParams);
   }, [globalParams]);
 
-  const renderFields = useCallback(() => {
-    console.log('paramsConfig:', paramsConfig);
-    if (!paramsConfig?.length) {
-      return null;
-    }
-    return paramsConfig.map((item: ParamsSchema) => {
-      if (item.type === 'InputNumber') {
-        return (
-          <Form.Item name={item.name} rules={item.rules} key={item.name}>
-            <SealInput.Number
-              {...item.attrs}
-              style={{ width: '100%' }}
-              label={
-                item.label.isLocalized
-                  ? intl.formatMessage({ id: item.label.text })
-                  : item.label.text
-              }
-            ></SealInput.Number>
-          </Form.Item>
-        );
-      }
-      if (item.type === 'Select') {
-        return (
-          <Form.Item name={item.name} rules={item.rules} key={item.name}>
-            <SealSelect
-              options={item.options}
-              label={
-                item.label.isLocalized
-                  ? intl.formatMessage({ id: item.label.text })
-                  : item.label.text
-              }
-            ></SealSelect>
-          </Form.Item>
-        );
-      }
-      return null;
-    });
-  }, [paramsConfig]);
-
   const renderLabel = (args: {
     field: string;
     label: string;
@@ -177,6 +139,73 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       </span>
     );
   };
+
+  const renderFields = useCallback(() => {
+    console.log('paramsConfig:', paramsConfig);
+    if (!paramsConfig?.length) {
+      return null;
+    }
+    return paramsConfig.map((item: ParamsSchema) => {
+      if (item.type === 'InputNumber') {
+        return (
+          <Form.Item name={item.name} rules={item.rules} key={item.name}>
+            <SealInput.Number
+              {...item.attrs}
+              style={{ width: '100%' }}
+              label={
+                item.label.isLocalized
+                  ? intl.formatMessage({ id: item.label.text })
+                  : item.label.text
+              }
+            ></SealInput.Number>
+          </Form.Item>
+        );
+      }
+      if (item.type === 'Select') {
+        return (
+          <Form.Item name={item.name} rules={item.rules} key={item.name}>
+            <SealSelect
+              {...item.attrs}
+              options={item.options}
+              label={
+                item.label.isLocalized
+                  ? intl.formatMessage({ id: item.label.text })
+                  : item.label.text
+              }
+            ></SealSelect>
+          </Form.Item>
+        );
+      }
+      if (item.type === 'Slider') {
+        return (
+          <Form.Item name={item.name} rules={item.rules} key={item.name}>
+            <FieldWrapper
+              label={renderLabel({
+                field: item.name,
+                label: item.label.isLocalized
+                  ? intl.formatMessage({ id: item.label.text })
+                  : item.label.text,
+                description: item.description?.isLocalized
+                  ? intl.formatMessage({ id: item.description?.text })
+                  : item.description?.text || ''
+              })}
+              style={{ padding: '20px 2px 0' }}
+              variant="borderless"
+            >
+              <Slider
+                {...item.attrs}
+                style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
+                tooltip={{ open: false }}
+                value={form.getFieldValue(item.name) || undefined}
+                onChange={(val) => handleFieldValueChange(val, item.name)}
+              ></Slider>
+            </FieldWrapper>
+          </Form.Item>
+        );
+      }
+      return null;
+    });
+  }, [paramsConfig]);
 
   return (
     <Form

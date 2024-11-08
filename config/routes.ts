@@ -26,6 +26,14 @@ export default [
         component: './playground/index'
       },
       {
+        name: 'speech',
+        title: 'Speech',
+        path: '/playground/speech',
+        key: 'speech',
+        icon: 'Comment',
+        component: './playground/speech'
+      },
+      {
         name: 'embedding',
         title: 'embedding',
         path: '/playground/embedding',

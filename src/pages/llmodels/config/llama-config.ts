@@ -23,6 +23,10 @@ const options = [
   {
     label: '--ubatch-size',
     value: '--ubatch-size'
+  },
+  {
+    label: '--images',
+    value: '--images'
   }
 ];
 

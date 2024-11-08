@@ -27,14 +27,18 @@ export interface ParamsSchema {
     text: string;
     isLocalized?: boolean;
   };
-  options?: Global.BaseOption<string>[];
+  options?: Global.BaseOption<string | number>[];
   value?: string | number | boolean | string[];
   min?: number;
   max?: number;
   step?: number;
   disabled?: boolean;
   defaultValue?: string | number | boolean;
-  rules: { required: boolean; message: string }[];
+  rules: { required: boolean; message?: string }[];
   placeholder?: string;
   attrs?: Record<string, any>;
+  description?: {
+    text: string;
+    isLocalized?: boolean;
+  };
 }

@@ -5,6 +5,7 @@ export default {
   'menu.playground.embedding': 'Embedding',
   'menu.playground.chat': 'Chat',
   'menu.playground.speech': 'Speech',
+  'menu.playground.text2images': 'Text to Images',
   'menu.compare': 'Compare',
   'menu.models': 'Models',
   'menu.resources': 'Resources',

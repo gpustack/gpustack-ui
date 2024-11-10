@@ -65,3 +65,77 @@ export const TTSParamsConfig: ParamsSchema[] = [
     ]
   }
 ];
+
+export const ImageParamsConfig: ParamsSchema[] = [
+  {
+    type: 'InputNumber',
+    name: 'n',
+    label: {
+      text: 'Counts',
+      isLocalized: false
+    },
+    attrs: {
+      min: 1,
+      max: 10
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'size',
+    options: [
+      { label: '256x256', value: '256x256' },
+      { label: '512x512', value: '512x512' },
+      { label: '1024x1024', value: '1024x1024' },
+      { label: '1792x1024', value: '1792x1024' },
+      { label: '1024x1792', value: '1024x1792' }
+    ],
+    label: {
+      text: 'Size',
+      isLocalized: false
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'quality',
+    options: [
+      { label: 'standard', value: 'standard' },
+      { label: 'hd', value: 'hd' }
+    ],
+    label: {
+      text: 'Quality',
+      isLocalized: false
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'style',
+    options: [
+      { label: 'vivid', value: 'vivid' },
+      { label: 'natural', value: 'natural' }
+    ],
+    label: {
+      text: 'Style',
+      isLocalized: false
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  }
+];

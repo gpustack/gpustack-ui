@@ -281,6 +281,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="ground-left-footer">
           <MessageInput
             scope="reranker"
+            actions={[]}
             submitIcon={<SearchOutlined className="font-size-16" />}
             loading={loading}
             disabled={!parameters.model}

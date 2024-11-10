@@ -31,10 +31,19 @@
 
   &-content {
     word-break: break-word;
-    padding: 8px 14px;
     min-height: 38px;
     border-radius: var(--border-radius-mini);
     background-color: var(--ant-color-fill-tertiary);
+
+    .text {
+      padding: 8px 14px;
+      line-height: 20px;
+    }
+
+    &.has-img {
+      border: 1px solid var(--ant-color-fill-secondary);
+      background: none;
+    }
   }
 
   .message-content-input {

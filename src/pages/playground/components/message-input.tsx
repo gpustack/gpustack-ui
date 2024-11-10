@@ -15,6 +15,8 @@ import UploadImg from './upload-img';
 
 type CurrentMessage = Omit<MessageItem, 'uid'>;
 
+type ActionType = 'clear' | 'layout' | 'role' | 'upload' | 'add' | 'paste';
+
 const layoutOptions = [
   {
     label: '2 columns',
@@ -77,6 +79,7 @@ interface MessageInputProps {
   placeholer?: string;
   shouldResetMessage?: boolean;
   style?: React.CSSProperties;
+  actions?: ActionType[];
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -97,7 +100,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   placeholer,
   tools,
   style,
-  shouldResetMessage = true
+  shouldResetMessage = true,
+  actions = ['clear', 'layout', 'role', 'upload', 'add', 'paste']
 }) => {
   const { TextArea } = Input;
   const intl = useIntl();
@@ -256,25 +260,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   const handleOnPaste = (e: any) => {
-    // e.preventDefault();
-
     const text = e.clipboardData.getData('text');
-    if (text) {
-      // const startPos = e.target.selectionStart;
-      // const endPos = e.target.selectionEnd;
-      // setMessage?.({
-      //   ...message,
-      //   content:
-      //     message.content.slice(0, startPos) +
-      //     text +
-      //     message.content.slice(endPos)
-      // });
-      // if (endPos !== startPos) {
-      //   setTimeout(() => {
-      //     e.target.setSelectionRange(endPos, endPos);
-      //   }, 0);
-      // }
-    } else {
+    if (!text) {
       e.preventDefault();
       getPasteContent(e);
     }
@@ -352,26 +339,30 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <div className="tool-bar">
         <div className="actions">
           {tools}
-          {scope !== 'reranker' && (
+          {
             <>
-              <Button
-                type="text"
-                size="middle"
-                onClick={handleToggleRole}
-                icon={<SwapOutlined rotate={90} />}
-              >
-                {intl.formatMessage({ id: `playground.${message.role}` })}
-              </Button>
-              <Divider type="vertical" style={{ margin: 0 }} />
-              {message.role === Roles.User && (
+              {actions.includes('role') && (
+                <>
+                  <Button
+                    type="text"
+                    size="middle"
+                    onClick={handleToggleRole}
+                    icon={<SwapOutlined rotate={90} />}
+                  >
+                    {intl.formatMessage({ id: `playground.${message.role}` })}
+                  </Button>
+                  <Divider type="vertical" style={{ margin: 0 }} />
+                </>
+              )}
+              {actions.includes('upload') && message.role === Roles.User && (
                 <UploadImg
                   handleUpdateImgList={handleUpdateImgList}
                   size="middle"
                 ></UploadImg>
               )}
             </>
-          )}
-          {scope !== 'reranker' && (
+          }
+          {actions.includes('clear') && (
             <Tooltip
               title={intl.formatMessage({ id: 'playground.toolbar.clearmsg' })}
             >
@@ -383,7 +374,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               ></Button>
             </Tooltip>
           )}
-          {updateLayout && (
+          {actions.includes('layout') && updateLayout && (
             <>
               <Divider type="vertical" style={{ margin: 0 }} />
               {layoutOptions.map((option) => (
@@ -418,7 +409,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             ></Select>
           )}
 
-          {scope !== 'reranker' && (
+          {actions.includes('add') && (
             <Tooltip
               title={
                 <span>
@@ -471,7 +462,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         onDelete={handleDeleteImg}
       ></ThumbImg>
       <div className="input-box">
-        {scope !== 'reranker' ? (
+        {actions.includes('paste') ? (
           <TextArea
             ref={inputRef}
             autoSize={{ minRows: 3, maxRows: 8 }}

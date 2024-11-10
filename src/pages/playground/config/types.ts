@@ -3,7 +3,7 @@ export interface ModelSelectionItem extends Global.BaseOption<string> {
   instanceId: symbol;
   type?: string;
 }
-
+export type MessageItemAction = 'upload' | 'delete' | 'copy';
 export interface MessageItem {
   content: string;
   imgs?: { uid: string | number; dataUrl: string }[];

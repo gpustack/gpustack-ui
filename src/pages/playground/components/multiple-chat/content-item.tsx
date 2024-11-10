@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import { Roles } from '../../config';
-import { MessageItem } from '../../config/types';
+import { MessageItem, MessageItemAction } from '../../config/types';
 import '../../style/content-item.less';
 import ThumbImg from '../thumb-img';
 import UploadImg from '../upload-img';
@@ -15,7 +15,7 @@ interface MessageItemProps {
   data: MessageItem;
   editable?: boolean;
   loading?: boolean;
-  actions?: string[];
+  actions?: MessageItemAction[];
   updateMessage?: (message: MessageItem) => void;
   onDelete?: () => void;
 }
@@ -105,23 +105,8 @@ const ContentItem: React.FC<MessageItemProps> = ({
   );
 
   const handleOnPaste = (e: any) => {
-    // e.preventDefault();
     const text = e.clipboardData.getData('text');
-    if (text) {
-      // const startPos = e.target.selectionStart;
-      // const endPos = e.target.selectionEnd;
-      // updateMessage?.({
-      //   role: data.role,
-      //   content:
-      //     data.content.slice(0, startPos) + text + data.content.slice(endPos),
-      //   uid: data.uid
-      // });
-      // if (endPos !== startPos) {
-      //   setTimeout(() => {
-      //     e.target.setSelectionRange(endPos, endPos);
-      //   }, 0);
-      // }
-    } else {
+    if (!text) {
       e.preventDefault();
       getPasteContent(e);
     }
@@ -221,6 +206,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
           onClick={handleClickWrapper}
         >
           <ThumbImg
+            editable={editable}
             dataList={data.imgs || []}
             onDelete={handleDeleteImg}
           ></ThumbImg>
@@ -239,7 +225,18 @@ const ContentItem: React.FC<MessageItemProps> = ({
           ></Input.TextArea>
         </div>
       ) : (
-        <div className="content-item-content">{data.content}</div>
+        <div
+          className={classNames('content-item-content', {
+            'has-img': data.imgs?.length
+          })}
+        >
+          <ThumbImg
+            editable={editable}
+            dataList={data.imgs || []}
+            onDelete={handleDeleteImg}
+          ></ThumbImg>
+          {data.content && <div className="text">{data.content}</div>}
+        </div>
       )}
     </div>
   );

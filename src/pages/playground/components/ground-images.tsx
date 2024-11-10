@@ -1,5 +1,5 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
+import useRequestToken from '@/hooks/use-request-token';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
@@ -14,15 +14,14 @@ import {
   useRef,
   useState
 } from 'react';
-import { CHAT_API } from '../apis';
+import { createImages } from '../apis';
 import { Roles, generateMessages } from '../config';
-import { TTSParamsConfig as paramsConfig } from '../config/params-config';
+import { ImageParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import MessageInput from './message-input';
 import MessageContent from './multiple-chat/message-content';
-import SystemMessage from './multiple-chat/system-message';
 import ReferenceParams from './reference-params';
 import RerankerParams from './reranker-params';
 import ViewCodeModal from './view-code-modal';
@@ -34,17 +33,19 @@ interface MessageProps {
 }
 
 const initialValues = {
-  voice: 'Alloy',
-  response_format: 'mp3',
-  speed: 1
+  n: 1,
+  size: '512x512',
+  quality: 'standard',
+  style: 'vivid'
 };
 
-const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
+const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<MessageItem[]>([]);
 
   const intl = useIntl();
+  const requestSource = useRequestToken();
   const [searchParams] = useSearchParams();
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
@@ -54,11 +55,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const contentRef = useRef<any>('');
-  const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
   const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
+  const requestToken = useRef<any>(null);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -84,6 +85,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
+    return messageId.current;
   };
 
   const handleNewMessage = (message?: { role: string; content: string }) => {
@@ -100,28 +102,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageList([...messageList]);
   };
 
-  const joinMessage = (chunk: any) => {
-    setTokenResult({
-      ...(chunk?.usage ?? {})
-    });
-
-    if (!chunk || !_.get(chunk, 'choices', []).length) {
-      return;
-    }
-    contentRef.current =
-      contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
-    setMessageList([
-      ...messageList,
-      ...currentMessageRef.current,
-      {
-        role: Roles.Assistant,
-        content: contentRef.current,
-        uid: messageId.current
-      }
-    ]);
-  };
   const handleStopConversation = () => {
-    controllerRef.current?.abort?.();
+    requestToken.current?.cancel?.();
     setLoading(false);
   };
 
@@ -130,11 +112,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     try {
       setLoading(true);
       setMessageId();
-      setTokenResult(null);
 
-      controllerRef.current?.abort?.();
-      controllerRef.current = new AbortController();
-      const signal = controllerRef.current.signal;
+      requestToken.current?.cancel?.();
+      requestToken.current = requestSource();
+
       currentMessageRef.current = current
         ? [
             {
@@ -149,48 +130,36 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         return [...pre, ...currentMessageRef.current];
       });
 
-      const messageParams = [
-        { role: Roles.System, content: systemMessage },
-        ...messageList,
-        ...currentMessageRef.current
-      ];
-
-      const messages = generateMessages(messageParams);
-
-      const chatParams = {
-        messages: messages,
-        ...parameters,
-        stream: true,
-        stream_options: {
-          include_usage: true
-        }
+      const params = {
+        prompt: current?.content || '',
+        ...parameters
       };
-      const result: any = await fetchChunkedData({
-        data: chatParams,
-        url: CHAT_API,
-        signal
+
+      const result = await createImages(params, {
+        cancelToken: requestToken.current.token
       });
 
-      if (result?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage:
-            result?.data?.error?.message || result?.data?.message || ''
-        });
-        return;
-      }
-      setMessageId();
-      const { reader, decoder } = result;
-      await readStreamData(reader, decoder, (chunk: any) => {
-        if (chunk?.error) {
-          setTokenResult({
-            error: true,
-            errorMessage: chunk?.error?.message || chunk?.message || ''
-          });
-          return;
-        }
-        joinMessage(chunk);
+      const imgList = _.map(result.data, (item: any, index: number) => {
+        return {
+          dataUrl: `data:image/png;base64,${item.b64_json}`,
+          created: result.created,
+          uid: index
+        };
       });
+      setMessageList((pre) => {
+        return [
+          ...pre,
+          {
+            content: '',
+            role: Roles.Assistant,
+            imgs: imgList,
+            uid: messageId.current
+          }
+        ];
+      });
+      console.log('result:', imgList);
+
+      setMessageId();
     } catch (error) {
       // console.log('error:', error);
     } finally {
@@ -264,30 +233,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <div className="ground-left">
         <div className="message-list-wrap" ref={scroller}>
           <>
-            <div
-              style={{
-                marginBottom: 20
-              }}
-            >
-              <SystemMessage
-                style={{
-                  borderRadius: 'var(--border-radius-mini)',
-                  overflow: 'hidden'
-                }}
-                systemMessage={systemMessage}
-                setSystemMessage={setSystemMessage}
-              ></SystemMessage>
-            </div>
-
             <div className="content">
               <MessageContent
                 spans={{
                   span: 24,
                   count: 1
                 }}
+                actions={[]}
                 messageList={messageList}
                 setMessageList={setMessageList}
-                editable={true}
+                editable={false}
                 loading={loading}
               />
               {loading && (
@@ -306,6 +261,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="ground-left-footer">
           <MessageInput
             scope="chat"
+            placeholer="Type <kbd>/</kbd> to input prompt"
+            actions={['clear']}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}
@@ -340,7 +297,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <ViewCodeModal
         open={show}
         payLoad={{
-          messages: viewCodeMessage
+          prompt: currentMessageRef.current?.[0]?.content
         }}
         parameters={parameters}
         onCancel={handleCloseViewCode}
@@ -350,4 +307,4 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundLeft);
+export default memo(GroundImages);

@@ -34,6 +34,14 @@ export default [
         component: './playground/speech'
       },
       {
+        name: 'text2images',
+        title: 'Text2Images',
+        path: '/playground/text-to-images',
+        key: 'text2images',
+        icon: 'Comment',
+        component: './playground/images'
+      },
+      {
         name: 'embedding',
         title: 'embedding',
         path: '/playground/embedding',

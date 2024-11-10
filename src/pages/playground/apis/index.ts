@@ -2,6 +2,8 @@ import { request } from '@umijs/max';
 
 export const CHAT_API = '/v1-openai/chat/completions';
 
+export const CREAT_IMAGE_API = '/v1-openai/images/generations';
+
 export const EMBEDDING_API = '/v1-openai/embeddings';
 
 export const OPENAI_MODELS = '/v1-openai/models';
@@ -46,6 +48,22 @@ export const handleEmbedding = async (
   options?: any
 ) => {
   return request(`${EMBEDDING_API}`, {
+    method: 'POST',
+    data: params,
+    cancelToken: options?.cancelToken
+  });
+};
+
+export const createImages = async (
+  params: {
+    model: string;
+    prompt: string;
+    n: number;
+    size: string;
+  },
+  options?: any
+) => {
+  return request(`${CREAT_IMAGE_API}`, {
     method: 'POST',
     data: params,
     cancelToken: options?.cancelToken

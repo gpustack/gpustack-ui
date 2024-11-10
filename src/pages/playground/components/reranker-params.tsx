@@ -6,7 +6,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useId } from 'react';
+import { memo, useCallback, useEffect, useId, useMemo } from 'react';
 import { ParamsSchema } from '../config/types';
 import CustomLabelStyles from '../style/custom-label.less';
 
@@ -105,42 +105,41 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     form.setFieldsValue(globalParams);
   }, [globalParams]);
 
-  const renderLabel = (args: {
-    field: string;
-    label: string;
-    description: string;
-  }) => {
-    return (
-      <span
-        className={CustomLabelStyles.label}
-        style={{ width: INPUT_WIDTH.mini }}
-      >
-        <span className="text">
-          {args.description ? (
-            <Tooltip title={args.description}>
-              <span> {args.label}</span>
-              <span className="m-l-5">
-                <InfoCircleOutlined />
-              </span>
-            </Tooltip>
-          ) : (
-            <span>{args.label}</span>
-          )}
+  const renderLabel = useCallback(
+    (args: { field: string; label: string; description: string }) => {
+      return (
+        <span
+          className={CustomLabelStyles.label}
+          style={{ width: INPUT_WIDTH.mini }}
+        >
+          <span className="text">
+            {args.description ? (
+              <Tooltip title={args.description}>
+                <span> {args.label}</span>
+                <span className="m-l-5">
+                  <InfoCircleOutlined />
+                </span>
+              </Tooltip>
+            ) : (
+              <span>{args.label}</span>
+            )}
+          </span>
+
+          <InputNumber
+            className="label-val"
+            variant="outlined"
+            size="small"
+            value={form.getFieldValue(args.field)}
+            controls={false}
+            onChange={(val) => handleFieldValueChange(val, args.field)}
+          ></InputNumber>
         </span>
+      );
+    },
+    [form, handleFieldValueChange]
+  );
 
-        <InputNumber
-          className="label-val"
-          variant="outlined"
-          size="small"
-          value={form.getFieldValue(args.field)}
-          controls={false}
-          onChange={(val) => handleFieldValueChange(val, args.field)}
-        ></InputNumber>
-      </span>
-    );
-  };
-
-  const renderFields = useCallback(() => {
+  const renderFields = useMemo(() => {
     console.log('paramsConfig:', paramsConfig);
     if (!paramsConfig?.length) {
       return null;
@@ -243,7 +242,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             </Form.Item>
           </>
         }
-        {renderFields()}
+        {renderFields}
       </div>
     </Form>
   );

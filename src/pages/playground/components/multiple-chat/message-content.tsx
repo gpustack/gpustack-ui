@@ -1,6 +1,6 @@
 import React from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { MessageItem } from '../../config/types';
+import { MessageItem, MessageItemAction } from '../../config/types';
 import ContentItem from './content-item';
 
 interface MessageContentProps {
@@ -9,7 +9,7 @@ interface MessageContentProps {
     span: number;
     count: number;
   };
-  actions?: string[];
+  actions?: MessageItemAction[];
   editable?: boolean;
   messageList: MessageItem[];
   setMessageList?: (list: any) => void;

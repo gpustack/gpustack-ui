@@ -1,13 +1,14 @@
 import AutoImage from '@/components/auto-image';
-import { CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
 import '../style/thumb-img.less';
 
 const ThumbImg: React.FC<{
   dataList: any[];
+  editable?: boolean;
   onDelete: (uid: number) => void;
-}> = ({ dataList, onDelete }) => {
+}> = ({ dataList, editable, onDelete }) => {
   const handleOnDelete = useCallback(
     (uid: number) => {
       onDelete(uid);
@@ -32,18 +33,14 @@ const ThumbImg: React.FC<{
             }}
           >
             <span className="img">
-              <AutoImage
-                src={item.dataUrl}
-                height={100}
-                preview={{
-                  mask: <EyeOutlined />
-                }}
-              />
+              <AutoImage src={item.dataUrl} height={100} />
             </span>
 
-            <span className="del" onClick={() => handleOnDelete(item.uid)}>
-              <CloseCircleOutlined />
-            </span>
+            {editable && (
+              <span className="del" onClick={() => handleOnDelete(item.uid)}>
+                <CloseCircleOutlined />
+              </span>
+            )}
           </span>
         );
       })}

@@ -4,7 +4,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import { debounce } from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import ColumnWrapper from './column-wrapper';
@@ -40,6 +40,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
+  const uid = useId();
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
@@ -81,6 +82,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
+  const handleCancel = useCallback(() => {
+    onCancel?.();
+    setIsGGUF(false);
+  }, [onCancel]);
+
   useEffect(() => {
     handleSelectModelFile({ fakeName: '' });
   }, [selectedModel]);
@@ -110,13 +116,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           >
             {title}
           </span>
-          <Button type="text" size="small" onClick={onCancel}>
+          <Button type="text" size="small" onClick={handleCancel}>
             <CloseOutlined></CloseOutlined>
           </Button>
         </div>
       }
       open={open}
-      onClose={onCancel}
+      onClose={handleCancel}
       destroyOnClose={true}
       closeIcon={false}
       maskClosable={false}
@@ -173,7 +179,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         <ColumnWrapper
           footer={
             <ModalFooter
-              onCancel={onCancel}
+              onCancel={handleCancel}
               onOk={handleSumit}
               style={{
                 padding: '16px 24px',

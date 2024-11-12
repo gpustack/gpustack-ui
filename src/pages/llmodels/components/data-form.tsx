@@ -102,6 +102,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         },
         getFieldValue: (name: string) => {
           return form.getFieldValue(name);
+        },
+        resetFields() {
+          form.resetFields();
         }
       };
     },
@@ -129,11 +132,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleLocalPathBlur = (e: any) => {
     const value = e.target.value;
     const isEndwithGGUF = _.endsWith(value, '.gguf');
-    if (isEndwithGGUF) {
-      props.onBackendChange?.(backendOptionsMap.llamaBox);
-    } else {
-      props.onBackendChange?.(backendOptionsMap.vllm);
+    let backend = backendOptionsMap.llamaBox;
+    if (!isEndwithGGUF) {
+      backend = backendOptionsMap.vllm;
     }
+    props.onBackendChange?.(backend);
+    form.setFieldValue('backend', backend);
   };
 
   const renderHuggingfaceFields = () => {

@@ -365,6 +365,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     ];
   }, [
     form,
+    source,
     intl,
     gpuOptions,
     paramsConfig,

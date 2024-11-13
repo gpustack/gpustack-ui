@@ -293,7 +293,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             }
           ></ListInput>
         </Form.Item>
-        {isGGUF && (
+        {backend === backendOptionsMap.llamaBox && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>
               name="cpu_offloading"
@@ -321,7 +321,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </div>
         )}
-        {scheduleType === 'auto' && isGGUF && (
+        {scheduleType === 'auto' && backend === backendOptionsMap.llamaBox && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>
               name="distributed_inference_across_workers"
@@ -371,6 +371,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     paramsConfig,
     scheduleType,
     wokerSelector,
+    backend,
     isGGUF
   ]);
 

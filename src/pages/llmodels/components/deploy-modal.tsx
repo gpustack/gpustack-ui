@@ -84,7 +84,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleCancel = useCallback(() => {
     onCancel?.();
-    setIsGGUF(false);
   }, [onCancel]);
 
   useEffect(() => {
@@ -92,6 +91,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, [selectedModel]);
 
   useEffect(() => {
+    if (!open) {
+      setIsGGUF(false);
+      form.current?.setFieldValue?.('backend', backendOptionsMap.vllm);
+    }
     return () => {
       setSelectedModel({});
     };

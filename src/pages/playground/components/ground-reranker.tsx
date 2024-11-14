@@ -2,13 +2,14 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import { ClearOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Spin } from 'antd';
+import { Button, Progress, Spin, Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
   memo,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -21,8 +22,6 @@ import '../style/rerank.less';
 import '../style/system-message-wrap.less';
 import InputList from './input-list';
 import MessageInput from './message-input';
-import ReferenceParams from './reference-params';
-import RerankMessage from './rerank-message';
 import RerankerParams from './reranker-params';
 import ViewRerankCode from './view-rerank-code';
 
@@ -73,19 +72,33 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const contentRef = useRef<any>('');
-  const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
-  const currentMessageRef = useRef<any>(null);
   const inputListRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
   const [fileList, setFileList] = useState<
-    { text: string; name: string; uid: number | string }[]
+    {
+      text: string;
+      name: string;
+      uid: number | string;
+      score?: number;
+      showExtra?: boolean;
+      percent?: number;
+      rank?: number;
+    }[]
   >([]);
 
   const [textList, setTextList] = useState<
-    { text: string; uid: number | string; name: string }[]
+    {
+      text: string;
+      uid: number | string;
+      name: string;
+      score?: number;
+      showExtra?: boolean;
+      percent?: number;
+      rank?: number;
+    }[]
   >([
     {
       text: '',
@@ -99,11 +112,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   ]);
 
-  const { initialize, updateScrollerPosition } = useOverlayScroller();
-  const {
-    initialize: innitializeParams,
-    updateScrollerPosition: updateDocumentScrollerPosition
-  } = useOverlayScroller();
+  const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
+    useOverlayScroller();
+  const { initialize: innitializeParams, updateScrollerPosition } =
+    useOverlayScroller();
 
   useImperativeHandle(ref, () => {
     return {
@@ -116,8 +128,74 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
+  // [0.1, 1.0]
+  const normalizValue = (data: { min: number; max: number; value: number }) => {
+    const range = [0.5, 1.0];
+    const [a, b] = range;
+    const { min, max, value } = data;
+
+    if (isNaN(value) || isNaN(min) || isNaN(max) || min > max) {
+      return 0;
+    }
+    if (min === max) {
+      return 100;
+    }
+    const res = a + ((value - min) * (b - a)) / (max - min);
+    return res * 100;
+  };
+
+  const renderPercent = useCallback((data: any) => {
+    if (!data.showExtra) {
+      return null;
+    }
+    const percent = data.percent;
+    return (
+      <>
+        <Progress
+          size={{
+            height: 4
+          }}
+          type="line"
+          status="normal"
+          strokeLinecap={'square'}
+          showInfo={false}
+          percentPosition={{ align: 'end', type: 'outer' }}
+          strokeColor={`linear-gradient(90deg, #388bff 0%, rgba(255,255,255,1) ${percent}%)`}
+          trailColor="transparent"
+          percent={percent}
+          style={{
+            position: 'absolute',
+            left: 0,
+            bottom: -2,
+            width: 'calc(100% - 2px)',
+            lineHeight: '12px',
+            borderRadius: '0 0 0 6px',
+            overflow: 'hidden'
+          }}
+        ></Progress>
+        <span
+          className="flex-center hover-hidden"
+          style={{
+            position: 'absolute',
+            right: 10,
+            top: 8,
+            padding: '0 4px',
+            backgroundColor: 'transparent',
+            opacity: 0.7
+          }}
+        >
+          <Tag color={'geekblue'}>Rank: {data.rank}</Tag>
+          <Tag style={{ margin: 0 }} color={'cyan'}>
+            Score: {_.round(data.score, 2)}
+          </Tag>
+        </span>
+      </>
+    );
+  }, []);
+
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
+    return messageId.current;
   };
 
   const handleStopConversation = () => {
@@ -153,28 +231,52 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           token: requestToken.current.token
         }
       );
-      console.log('result:', result);
 
       setMessageId();
       setTokenResult(result.usage);
-      const maxItem = _.maxBy(result.results || [], (item: any) =>
-        Math.abs(item.relevance_score)
+
+      const sortList = _.sortBy(
+        result.results || [],
+        (item: any) => item.relevance_score
       );
-      const maxValue = _.ceil(maxItem?.relevance_score, 2);
+      const maxValue = sortList[sortList.length - 1].relevance_score;
+      const minValue = sortList[0].relevance_score;
+
+      let newTextList = [...textList];
+
+      result.results?.forEach((item: any, sIndex: number) => {
+        newTextList[item.index] = {
+          ...newTextList[item.index],
+          rank: sIndex + 1,
+          score: item.relevance_score,
+          showExtra: true,
+          percent: normalizValue({
+            min: minValue,
+            max: maxValue,
+            value: item.relevance_score
+          })
+        };
+      });
+      setTextList(newTextList);
 
       setMessageList([
         {
           title: 'Results',
           role: '',
           content: result.results?.map((item: any) => {
+            const percent: number = normalizValue({
+              min: minValue,
+              max: maxValue,
+              value: item.relevance_score
+            });
             return {
               uid: item.index,
               text: `${item.document?.text?.slice(0, 500) || ''}`,
               docIndex: item.index,
               title: documentList[item.index]?.name || '',
               score: item.relevance_score,
-              normalizValue:
-                _.round(_.round(item.relevance_score, 2) / maxValue, 2) * 100
+              extra: renderPercent(percent),
+              normalizValue: percent
             };
           }),
           uid: messageId.current
@@ -280,8 +382,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       <div className="ground-left">
         <div className="ground-left-footer">
           <MessageInput
-            scope="reranker"
             actions={[]}
+            defaultSize={{
+              minRows: 1,
+              maxRows: 2
+            }}
             submitIcon={<SearchOutlined className="font-size-16" />}
             loading={loading}
             disabled={!parameters.model}
@@ -294,7 +399,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             placeholer={intl.formatMessage({
               id: 'playground.input.keyword.holder'
             })}
-            tools={<span style={{ paddingLeft: 6 }}>Query</span>}
+            tools={
+              <span style={{ paddingLeft: 6, fontSize: 14, fontWeight: 500 }}>
+                Query
+              </span>
+            }
             style={{
               borderTop: 'none',
               width: 'unset',
@@ -313,19 +422,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 <span>Documents</span>
               </h3>
               <div className="flex gap-10">
-                {/* <UploadFile
-                  handleUpdateFileList={handleUpdateFileList}
-                  accept={acceptType}
-                >
-                  <Tooltip title={<span>Support: {acceptType}</span>}>
-                    <Button
-                      size="middle"
-                      icon={<UploadOutlined></UploadOutlined>}
-                    >
-                      Upload File
-                    </Button>
-                  </Tooltip>
-                </UploadFile> */}
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   Add Text
@@ -344,24 +440,20 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 ref={inputListRef}
                 textList={textList}
                 onChange={handleTextListChange}
+                extra={renderPercent}
               ></InputList>
-              {/* <div style={{ marginTop: 8 }}>
-                <FileList
-                  fileList={fileList}
-                  textListCount={textList.length || 0}
-                  onDelete={handleDeleteFile}
-                ></FileList>
-              </div> */}
             </div>
           </div>
           <div>
             {messageList.length ? (
               <div className="result-header flex-center">
                 <h3 className="font-size-14 m-b-0">Results</h3>
-                <ReferenceParams
-                  usage={tokenResult}
-                  showOutput={false}
-                ></ReferenceParams>
+                {tokenResult?.total_tokens && (
+                  <span style={{ color: 'var(--ant-orange)' }}>
+                    {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
+                    {tokenResult?.total_tokens}
+                  </span>
+                )}
               </div>
             ) : null}
           </div>
@@ -371,7 +463,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           >
             <>
               <div className="content">
-                <RerankMessage dataList={messageList} />
+                {/*<RerankMessage dataList={messageList} />*/}
                 {loading && (
                   <Spin size="small">
                     <div style={{ height: '46px' }}></div>
@@ -402,7 +494,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       <ViewRerankCode
         open={show}
-        documentList={[...textList, ...fileList].map((item) => item.text)}
+        documentList={[...textList, ...fileList]
+          .map((item) => item.text)
+          .filter((text) => text)}
         parameters={{
           ...parameters,
           query: contentRef.current

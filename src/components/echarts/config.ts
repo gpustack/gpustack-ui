@@ -84,6 +84,7 @@ export const title = {
   textStyle: {
     fontSize: 12,
     color: '#000'
+    // fontWeight: 500
   },
   text: ''
 };

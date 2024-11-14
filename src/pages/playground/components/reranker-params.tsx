@@ -36,6 +36,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   initialValues,
   paramsConfig,
   modelList,
+  params,
   showModelSelector = true
 }) => {
   const intl = useIntl();
@@ -204,7 +205,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       }
       return null;
     });
-  }, [paramsConfig]);
+  }, [paramsConfig, params]);
 
   return (
     <Form

@@ -7,14 +7,19 @@ import '../style/input-list.less';
 
 interface InputListProps {
   ref?: any;
-  textList: { text: string; uid: number | string; name: string }[];
+  extra?: (data: any) => React.ReactNode;
+  textList: {
+    text: string;
+    uid: number | string;
+    name: string;
+  }[];
   onChange?: (
     textList: { text: string; uid: number | string; name: string }[]
   ) => void;
 }
 
 const InputList: React.FC<InputListProps> = forwardRef(
-  ({ textList, onChange }, ref) => {
+  ({ textList, onChange, extra }, ref) => {
     const intl = useIntl();
     const messageId = useRef(0);
 
@@ -82,6 +87,7 @@ const InputList: React.FC<InputListProps> = forwardRef(
                   ></Button>
                 </Tooltip>
               </span>
+              {extra?.(text)}
             </div>
           );
         })}

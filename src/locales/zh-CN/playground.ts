@@ -36,6 +36,7 @@ export default {
   'playground.img.upload.success': '上传成功',
   'playground.img.upload.error': '上传失败',
   'playground.toolbar.clearmsg': '清空消息',
+  'playground.toolbar.autoplay': '自动播放',
   'playground.toolbar.prompts': '提示词',
   'playground.toolbar.compare2Model': '2 模型对比',
   'playground.toolbar.compare3Model': '3 模型对比',

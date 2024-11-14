@@ -156,6 +156,26 @@ export const platformCall = () => {
   };
 };
 
+export const formatTime = (seconds: number) => {
+  if (isNaN(seconds) || !seconds || seconds === Infinity) {
+    return '00:00';
+  }
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  const formatted = [
+    hrs.toString().padStart(2, '0'),
+    mins.toString().padStart(2, '0'),
+    secs.toString().padStart(2, '0')
+  ];
+
+  if (hrs > 0) {
+    return `${formatted[0]}:${formatted[1]}:${formatted[2]}`;
+  }
+  return `${formatted[1]}:${formatted[2]}`;
+};
+
 export const formatNumber = (num: number) => {
   if (!num) {
     return '0';

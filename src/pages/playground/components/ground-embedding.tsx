@@ -11,10 +11,12 @@ import {
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import classNames from 'classnames';
+import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
   memo,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -23,7 +25,7 @@ import {
 } from 'react';
 import { UMAP } from 'umap-js';
 import { handleEmbedding } from '../apis';
-import { MessageItem, ParamsSchema } from '../config/types';
+import { ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
@@ -40,34 +42,34 @@ interface MessageProps {
 }
 
 const paramsConfig: ParamsSchema[] = [
-  {
-    type: 'Select',
-    name: 'truncate',
-    label: {
-      text: 'Truncate',
-      isLocalized: false
-    },
-    options: [
-      {
-        label: 'None',
-        value: 'none'
-      },
-      {
-        label: 'Start',
-        value: 'start'
-      },
-      {
-        label: 'End',
-        value: 'end'
-      }
-    ],
-    rules: [
-      {
-        required: true,
-        message: 'Please select truncate'
-      }
-    ]
-  }
+  // {
+  //   type: 'Select',
+  //   name: 'truncate',
+  //   label: {
+  //     text: 'Truncate',
+  //     isLocalized: false
+  //   },
+  //   options: [
+  //     {
+  //       label: 'None',
+  //       value: 'none'
+  //     },
+  //     {
+  //       label: 'Start',
+  //       value: 'start'
+  //     },
+  //     {
+  //       label: 'End',
+  //       value: 'end'
+  //     }
+  //   ],
+  //   rules: [
+  //     {
+  //       required: true,
+  //       message: 'Please select truncate'
+  //     }
+  //   ]
+  // }
 ];
 
 const initialValues = {
@@ -79,7 +81,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const acceptType =
     '.txt, .doc, .docx, .xls, .xlsx, .csv, .md, .pdf, .eml, .msg, .ppt, .pptx, .xml, .epub, .html';
   const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItem[]>([]);
 
   const intl = useIntl();
   const requestSource = useRequestToken();
@@ -117,11 +118,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const [scatterData, setScatterData] = useState<any[]>([]);
 
-  const { initialize, updateScrollerPosition } = useOverlayScroller();
-  const {
-    initialize: innitializeParams,
-    updateScrollerPosition: updateDocumentScrollerPosition
-  } = useOverlayScroller();
+  const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
+    useOverlayScroller();
+
+  const { initialize: innitializeParams, updateScrollerPosition } =
+    useOverlayScroller();
 
   useImperativeHandle(ref, () => {
     return {
@@ -139,35 +140,74 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     return list.length < 2;
   }, [textList, fileList]);
 
-  const generateEmbedding = (embeddings: any[]) => {
-    try {
-      const umap = new UMAP({
-        // random() {
-        //   return 0.1;
-        // },
-        // minDist: 0.1,
-        nComponents: 2,
-        nNeighbors: 1
-      });
+  const cosine = useCallback((x: number[], y: number[]) => {
+    let result = 0;
+    let normX = 0;
+    let normY = 0;
 
-      const dataList = embeddings.map((item) => {
-        return item.embedding;
-      });
-
-      const embedding = umap.fit([...dataList, ...dataList]);
-
-      const list = embedding.map((item: number[], index: number) => {
-        return {
-          value: item,
-          name: index + 1,
-          text: `test test test test test`
-        };
-      });
-      setScatterData(list);
-    } catch (e) {
-      // console.log('error:', e);
+    for (let i = 0; i < x.length; i++) {
+      result += x[i] * y[i];
+      normX += x[i] ** 2;
+      normY += y[i] ** 2;
     }
-  };
+
+    if (normX === 0 && normY === 0) {
+      return 0;
+    } else if (normX === 0 || normY === 0) {
+      return 1;
+    } else {
+      return 1 - result / Math.sqrt(normX * normY);
+    }
+  }, []);
+
+  const generateEmbedding = useCallback(
+    (embeddings: any[]) => {
+      try {
+        const umap = new UMAP({
+          // random: random,
+          minDist: 0,
+          nComponents: 3,
+          nEpochs: 200,
+          distanceFn: cosine,
+          nNeighbors: embeddings.length - 1
+        });
+
+        const dataList = embeddings.map((item) => {
+          return item.embedding;
+        });
+
+        const embedding = umap.fit([...dataList]);
+        console.log('embedding:----------------', embedding);
+        const pca = new PCA(dataList, {});
+        console.log('dataList====', dataList, embeddings);
+        const pcadata = pca.predict(dataList, { nComponents: 2 }).to2DArray();
+        console.log('pcadata++++++++++++++++', pcadata);
+
+        const input = [
+          ...textList.map((item) => item.text),
+          ...fileList.map((item) => item.text)
+        ];
+
+        const list = pcadata.map((item: number[], index: number) => {
+          return {
+            value: item,
+            name: index + 1,
+            text: input[index]
+          };
+        });
+        console.log('embedding____________:', {
+          list,
+          input,
+          textList,
+          fileList
+        });
+        setScatterData(list);
+      } catch (e) {
+        console.log('error:', e);
+      }
+    },
+    [textList, fileList]
+  );
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -193,6 +233,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       const result: any = await handleEmbedding(
         {
           model: parameters.model,
+          encoding_format: 'float',
           input: [
             ...textList.map((item) => item.text),
             ...fileList.map((item) => item.text)
@@ -220,14 +261,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     } finally {
       setLoading(false);
     }
-  };
-  const handleClear = () => {
-    if (!messageList.length) {
-      return;
-    }
-    setMessageId();
-    setScatterData([]);
-    setTokenResult(null);
   };
 
   const handleSendMessage = () => {
@@ -296,10 +329,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       innitializeParams(paramsRef.current);
     }
   }, [paramsRef.current, innitializeParams]);
-
-  useEffect(() => {
-    updateScrollerPosition();
-  }, [messageList]);
 
   useEffect(() => {
     if (textList.length + fileList.length > messageListLengthCache.current) {

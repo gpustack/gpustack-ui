@@ -6,8 +6,13 @@ import '../style/rerank-message.less';
 
 interface RerankMessageProps {
   header?: React.ReactNode;
-  dataList: { title?: string; content: any; uid: number | string }[];
+  dataList: {
+    title?: React.ReactNode;
+    content: string | any[];
+    uid: number | string;
+  }[];
 }
+
 const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
   if (!dataList || dataList.length === 0) {
     return null;
@@ -51,13 +56,13 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
                           type="line"
                           status="normal"
                           percentPosition={{ align: 'end', type: 'outer' }}
-                          strokeColor="rgb(22 119 255 / 27%)"
+                          strokeColor={`linear-gradient(90deg, #388bff 0%, #fff ${sItem.normalizValue}%)`}
                           trailColor="transparent"
                           percent={sItem.normalizValue}
                           style={{
                             position: 'absolute',
                             left: 0,
-                            bottom: 0,
+                            bottom: -4,
                             lineHeight: '12px'
                           }}
                         ></Progress>

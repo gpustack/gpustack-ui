@@ -1,0 +1,53 @@
+.player-wrap {
+  width: 100%;
+  display: flex;
+  background-color: var(--ant-color-fill-quaternary);
+  border-radius: 36px;
+
+  .player-ui {
+    padding: 5px 10px;
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .play-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex: 1;
+  }
+
+  .time {
+    &.current {
+      margin-left: 6px;
+    }
+  }
+
+  .progress-bar {
+    margin-inline: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .slider {
+      width: 100%;
+    }
+
+    .file-name {
+      line-height: 20px;
+      height: 20px;
+    }
+
+    .ant-slider-horizontal {
+      margin-block: 2px;
+    }
+  }
+
+  .speaker {
+    margin-left: 10px;
+  }
+}

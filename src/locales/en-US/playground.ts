@@ -36,6 +36,7 @@ export default {
   'playground.img.upload.success': 'Upload Success',
   'playground.img.upload.error': 'Upload Error',
   'playground.toolbar.clearmsg': 'Clear Messages',
+  'playground.toolbar.autoplay': 'Autoplay',
   'playground.toolbar.prompts': 'Prompts',
   'playground.toolbar.compare2Model': '2-Model Comparison',
   'playground.toolbar.compare3Model': '3-Model Comparison',

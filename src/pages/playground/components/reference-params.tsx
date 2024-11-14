@@ -8,6 +8,7 @@ import '../style/reference-params.less';
 interface ReferenceParamsProps {
   showOutput?: boolean;
   scaleable?: boolean;
+  fields?: string[];
   usage: {
     error?: boolean;
     errorMessage?: string;
@@ -22,7 +23,12 @@ interface ReferenceParamsProps {
 
 const ReferenceParams = (props: ReferenceParamsProps) => {
   const intl = useIntl();
-  const { usage, showOutput = true, scaleable } = props;
+  const {
+    usage,
+    showOutput = true,
+    scaleable,
+    fields = ['completion_tokens', 'prompt_tokens']
+  } = props;
   if (!usage || _.isEmpty(usage)) {
     return null;
   }
@@ -60,14 +66,18 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
         <Tooltip
           title={
             <Space>
-              <span>
-                {intl.formatMessage({ id: 'playground.completion' })}:{' '}
-                {usage.completion_tokens}
-              </span>
-              <span>
-                {intl.formatMessage({ id: 'playground.prompt' })}:{' '}
-                {usage.prompt_tokens}
-              </span>
+              {fields.includes('completion_tokens') && (
+                <span>
+                  {intl.formatMessage({ id: 'playground.completion' })}:{' '}
+                  {usage.completion_tokens}
+                </span>
+              )}
+              {fields.includes('prompt_tokens') && (
+                <span>
+                  {intl.formatMessage({ id: 'playground.prompt' })}:{' '}
+                  {usage.prompt_tokens}
+                </span>
+              )}
             </Space>
           }
         >

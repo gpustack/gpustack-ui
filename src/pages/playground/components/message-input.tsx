@@ -2,9 +2,9 @@ import IconFont from '@/components/icon-font';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Divider, Input, Select, Tooltip } from 'antd';
+import { Button, Checkbox, Divider, Input, Select, Tooltip } from 'antd';
 import _ from 'lodash';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import { MessageItem } from '../config/types';
@@ -15,7 +15,14 @@ import UploadImg from './upload-img';
 
 type CurrentMessage = Omit<MessageItem, 'uid'>;
 
-type ActionType = 'clear' | 'layout' | 'role' | 'upload' | 'add' | 'paste';
+type ActionType =
+  | 'clear'
+  | 'layout'
+  | 'role'
+  | 'upload'
+  | 'add'
+  | 'paste'
+  | 'check';
 
 const layoutOptions = [
   {
@@ -57,7 +64,7 @@ const layoutOptions = [
 ];
 
 interface MessageInputProps {
-  modelList: Global.BaseOption<string>[];
+  modelList?: Global.BaseOption<string>[];
   handleSubmit: (params: CurrentMessage) => void;
   handleAbortFetch: () => void;
   updateLayout?: (value: { span: number; count: number }) => void;
@@ -67,6 +74,7 @@ interface MessageInputProps {
       instanceId: symbol;
     })[]
   ) => void;
+  onCheck?: (e: any) => void;
   submitIcon?: React.ReactNode;
   presetPrompt?: (list: CurrentMessage[]) => void;
   addMessage?: (message: CurrentMessage) => void;
@@ -75,11 +83,12 @@ interface MessageInputProps {
   showModelSelection?: boolean;
   disabled: boolean;
   isEmpty?: boolean;
-  scope: string;
   placeholer?: string;
   shouldResetMessage?: boolean;
   style?: React.CSSProperties;
   actions?: ActionType[];
+  checkLabel?: React.ReactNode;
+  defaultSize?: { minRows: number; maxRows: number };
 }
 
 const MessageInput: React.FC<MessageInputProps> = ({
@@ -90,16 +99,18 @@ const MessageInput: React.FC<MessageInputProps> = ({
   clearAll,
   updateLayout,
   addMessage,
+  onCheck,
   loading,
   modelList,
   showModelSelection,
   disabled,
   isEmpty,
-  scope,
   submitIcon,
   placeholer,
   tools,
   style,
+  checkLabel,
+  defaultSize = { minRows: 3, maxRows: 8 },
   shouldResetMessage = true,
   actions = ['clear', 'layout', 'role', 'upload', 'add', 'paste']
 }) => {
@@ -338,7 +349,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
     <div className="messageInput" style={{ ...style }}>
       <div className="tool-bar">
         <div className="actions">
-          {tools}
           {
             <>
               {actions.includes('role') && (
@@ -362,6 +372,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
               )}
             </>
           }
+          {tools}
+          {actions.includes('check') && (
+            <Checkbox onChange={onCheck} defaultChecked={true}>
+              {checkLabel}
+            </Checkbox>
+          )}
           {actions.includes('clear') && (
             <Tooltip
               title={intl.formatMessage({ id: 'playground.toolbar.clearmsg' })}
@@ -374,6 +390,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
               ></Button>
             </Tooltip>
           )}
+
           {actions.includes('layout') && updateLayout && (
             <>
               <Divider type="vertical" style={{ margin: 0 }} />
@@ -478,7 +495,10 @@ const MessageInput: React.FC<MessageInputProps> = ({
         ) : (
           <TextArea
             ref={inputRef}
-            autoSize={{ minRows: 3, maxRows: 8 }}
+            autoSize={{
+              minRows: defaultSize.minRows,
+              maxRows: defaultSize.maxRows
+            }}
             onChange={handleInputChange}
             value={message.content}
             size="large"

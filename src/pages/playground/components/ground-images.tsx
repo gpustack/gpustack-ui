@@ -1,27 +1,24 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
+import ThumbImg from '@/pages/playground/components/thumb-img';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
-import {
+import React, {
   forwardRef,
   memo,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState
 } from 'react';
 import { createImages } from '../apis';
-import { Roles, generateMessages } from '../config';
 import { ImageParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import MessageInput from './message-input';
-import MessageContent from './multiple-chat/message-content';
 import ReferenceParams from './reference-params';
 import RerankerParams from './reranker-params';
 import ViewCodeModal from './view-code-modal';
@@ -42,24 +39,24 @@ const initialValues = {
 const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItem[]>([]);
+  const [messageList, setMessageList] = useState<
+    { dataUrl: string; height: number; uid: number }[]
+  >([]);
 
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [searchParams] = useSearchParams();
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
-  const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
-  const contentRef = useRef<any>('');
   const scroller = useRef<any>(null);
-  const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
+  const [currentPrompt, setCurrentPrompt] = useState<string>('');
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -76,30 +73,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
-  const viewCodeMessage = useMemo(() => {
-    return generateMessages([
-      { role: Roles.System, content: systemMessage },
-      ...messageList
-    ]);
-  }, [messageList, systemMessage]);
-
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
     return messageId.current;
-  };
-
-  const handleNewMessage = (message?: { role: string; content: string }) => {
-    const newMessage = message || {
-      role:
-        _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
-      content: ''
-    };
-    messageList.push({
-      ...newMessage,
-      uid: messageId.current + 1
-    });
-    setMessageId();
-    setMessageList([...messageList]);
   };
 
   const handleStopConversation = () => {
@@ -112,26 +88,25 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     try {
       setLoading(true);
       setMessageId();
+      setCurrentPrompt(current?.content || '');
+      setMessageList(
+        Array(parameters.n)
+          .fill({})
+          .map((item, index: number) => {
+            return {
+              dataUrl: '',
+              height: 256,
+              width: 256,
+              uid: index
+            };
+          })
+      );
 
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 
-      currentMessageRef.current = current
-        ? [
-            {
-              ...current,
-              uid: messageId.current
-            }
-          ]
-        : [];
-
-      contentRef.current = '';
-      setMessageList((pre) => {
-        return [...pre, ...currentMessageRef.current];
-      });
-
       const params = {
-        prompt: current?.content || '',
+        prompt: current?.content || currentPrompt || '',
         ...parameters
       };
 
@@ -143,25 +118,19 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         return {
           dataUrl: `data:image/png;base64,${item.b64_json}`,
           created: result.created,
+          height: 256,
+          width: 256,
           uid: index
         };
       });
-      setMessageList((pre) => {
-        return [
-          ...pre,
-          {
-            content: '',
-            role: Roles.Assistant,
-            imgs: imgList,
-            uid: messageId.current
-          }
-        ];
-      });
+      setMessageList(imgList);
       console.log('result:', imgList);
 
       setMessageId();
     } catch (error) {
       // console.log('error:', error);
+      requestToken.current?.cancel?.();
+      setMessageList([]);
     } finally {
       setLoading(false);
     }
@@ -177,30 +146,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
     console.log('message:', message);
-    const currentMessage =
-      message.content || message.imgs?.length ? message : undefined;
+    const currentMessage = message.content ? message : undefined;
     submitMessage(currentMessage);
   };
 
   const handleCloseViewCode = () => {
     setShow(false);
-  };
-
-  const handleSelectModel = () => {};
-
-  const handlePresetPrompt = (list: { role: string; content: string }[]) => {
-    const sysMsg = list.filter((item) => item.role === 'system');
-    const userMsg = list
-      .filter((item) => item.role === 'user')
-      .map((item) => {
-        setMessageId();
-        return {
-          ...item,
-          uid: messageId.current
-        };
-      });
-    setSystemMessage(sysMsg[0]?.content || '');
-    setMessageList(userMsg);
   };
 
   useEffect(() => {
@@ -234,22 +185,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="message-list-wrap" ref={scroller}>
           <>
             <div className="content">
-              <MessageContent
-                spans={{
-                  span: 24,
-                  count: 1
-                }}
-                actions={[]}
-                messageList={messageList}
-                setMessageList={setMessageList}
+              <ThumbImg
+                style={{ paddingInline: 0 }}
                 editable={false}
+                dataList={messageList}
                 loading={loading}
-              />
-              {loading && (
-                <Spin size="small">
-                  <div style={{ height: '46px' }}></div>
-                </Spin>
-              )}
+              ></ThumbImg>
             </div>
           </>
         </div>
@@ -260,19 +201,15 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            scope="chat"
             placeholer="Type <kbd>/</kbd> to input prompt"
             actions={['clear']}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}
             handleSubmit={handleSendMessage}
-            addMessage={handleNewMessage}
             handleAbortFetch={handleStopConversation}
+            shouldResetMessage={false}
             clearAll={handleClear}
-            setModelSelections={handleSelectModel}
-            presetPrompt={handlePresetPrompt}
-            modelList={modelList}
           />
         </div>
       </div>
@@ -297,7 +234,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       <ViewCodeModal
         open={show}
         payLoad={{
-          prompt: currentMessageRef.current?.[0]?.content
+          prompt: currentPrompt
         }}
         parameters={parameters}
         onCancel={handleCloseViewCode}

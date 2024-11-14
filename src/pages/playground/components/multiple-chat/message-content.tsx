@@ -5,10 +5,6 @@ import ContentItem from './content-item';
 
 interface MessageContentProps {
   loading?: boolean;
-  spans?: {
-    span: number;
-    count: number;
-  };
   actions?: MessageItemAction[];
   editable?: boolean;
   messageList: MessageItem[];

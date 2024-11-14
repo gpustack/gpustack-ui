@@ -43,6 +43,8 @@ export const rerankerQuery = async (
 export const handleEmbedding = async (
   params: {
     model: string;
+    encoding_format?: string;
+    dimensions?: number;
     input: string[];
   },
   options?: any

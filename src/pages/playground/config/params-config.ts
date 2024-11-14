@@ -66,6 +66,31 @@ export const TTSParamsConfig: ParamsSchema[] = [
   }
 ];
 
+export const RealtimeParamsConfig: ParamsSchema[] = [
+  {
+    type: 'Select',
+    name: 'language',
+    options: [
+      { label: 'Auto', value: 'auto' },
+      { label: 'English', value: 'en' },
+      { label: '中文', value: 'zh' },
+      { label: '日本語', value: 'ja' },
+      { label: 'Français', value: 'fr' },
+      { label: 'Deutsch', value: 'de' }
+    ],
+    label: {
+      text: 'Language',
+      isLocalized: false
+    },
+    rules: [
+      {
+        required: true,
+        message: 'Language is required'
+      }
+    ]
+  }
+];
+
 export const ImageParamsConfig: ParamsSchema[] = [
   {
     type: 'InputNumber',

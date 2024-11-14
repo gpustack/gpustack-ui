@@ -4,6 +4,7 @@
   gap: 12px;
 
   .input-item {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -13,28 +14,42 @@
     transition: background-color 0.3s ease;
     border-radius: var(--border-radius-base);
     border: 1px solid var(--ant-color-border);
-    // &:focus-within {
-    //   border-color: var(--ant-input-active-border-color);
-    //   box-shadow: var(--ant-input-active-shadow);
-    //   outline: 0;
-    //   background-color: var(--ant-input-active-bg);
-    // }
 
     .btn-group {
       display: none;
     }
 
     &:hover {
-      background-color: var(--ant-color-fill-tertiary);
+      //background-color: var(--ant-color-fill-tertiary);
+      &::before {
+        content: '';
+        display: flex;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        top: 0;
+        background-color: var(--ant-color-fill-tertiary);
+        z-index: 5;
+        pointer-events: none;
+      }
 
       .btn-group {
         display: flex;
         gap: 8px;
       }
+
+      .hover-hidden {
+        display: none;
+      }
     }
 
     &:focus-within {
-      background-color: transparent;
+      //background-color: transparent;
+
+      &::before {
+        background-color: transparent;
+      }
     }
 
     .input-wrap {

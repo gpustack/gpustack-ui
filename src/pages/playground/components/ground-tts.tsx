@@ -1,3 +1,4 @@
+import SpeechContent from '@/components/speech-content';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { useIntl, useSearchParams } from '@umijs/max';
@@ -21,8 +22,6 @@ import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import MessageInput from './message-input';
-import MessageContent from './multiple-chat/message-content';
-import SystemMessage from './multiple-chat/system-message';
 import ReferenceParams from './reference-params';
 import RerankerParams from './reranker-params';
 import ViewCodeModal from './view-code-modal';
@@ -59,6 +58,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
+  const checkvalueRef = useRef<any>(true);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -207,10 +207,23 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    console.log('message:', message);
-    const currentMessage =
-      message.content || message.imgs?.length ? message : undefined;
-    submitMessage(currentMessage);
+    // submitMessage(currentMessage);
+    setMessageId();
+    setLoading(true);
+
+    setTimeout(() => {
+      setMessageList([
+        {
+          prompt: message.content,
+          voice: parameters.voice,
+          format: parameters.response_format,
+          speed: parameters.speed,
+          uid: messageId.current,
+          autoplay: checkvalueRef.current
+        }
+      ]);
+      setLoading(false);
+    }, 1000);
   };
 
   const handleCloseViewCode = () => {
@@ -233,7 +246,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setSystemMessage(sysMsg[0]?.content || '');
     setMessageList(userMsg);
   };
-
+  const handleOnCheckChange = (e: any) => {
+    console.log('handleOnCheckChange', e);
+    checkvalueRef.current = e.target.checked;
+  };
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
@@ -264,32 +280,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <div className="ground-left">
         <div className="message-list-wrap" ref={scroller}>
           <>
-            <div
-              style={{
-                marginBottom: 20
-              }}
-            >
-              <SystemMessage
-                style={{
-                  borderRadius: 'var(--border-radius-mini)',
-                  overflow: 'hidden'
-                }}
-                systemMessage={systemMessage}
-                setSystemMessage={setSystemMessage}
-              ></SystemMessage>
-            </div>
-
             <div className="content">
-              <MessageContent
-                spans={{
-                  span: 24,
-                  count: 1
-                }}
-                messageList={messageList}
-                setMessageList={setMessageList}
-                editable={true}
-                loading={loading}
-              />
+              <SpeechContent dataList={messageList} loading={loading} />
               {loading && (
                 <Spin size="small">
                   <div style={{ height: '46px' }}></div>
@@ -306,9 +298,14 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="ground-left-footer">
           <MessageInput
             scope="chat"
+            actions={['clear', 'check']}
+            checkLabel={intl.formatMessage({
+              id: 'playground.toolbar.autoplay'
+            })}
+            onCheck={handleOnCheckChange}
             loading={loading}
             disabled={!parameters.model}
-            isEmpty={!messageList.length}
+            isEmpty={true}
             handleSubmit={handleSendMessage}
             addMessage={handleNewMessage}
             handleAbortFetch={handleStopConversation}

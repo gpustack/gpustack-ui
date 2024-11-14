@@ -13,9 +13,11 @@ const options: any = {
     top: -1,
     bottom: -1,
     left: -1,
-    containLabel: true
+    containLabel: true,
+    borderRadius: 4
   },
   xAxis: {
+    scale: false,
     slient: true,
     splitNumber: 15,
     splitLine: {
@@ -34,6 +36,7 @@ const options: any = {
     }
   },
   yAxis: {
+    scale: false,
     slient: true,
     splitNumber: 10,
     splitLine: {

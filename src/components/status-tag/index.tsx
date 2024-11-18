@@ -75,7 +75,13 @@ const StatusTag: React.FC<StatusTagProps> = ({
 
         <SimpleBar style={{ maxHeight: 200 }}>
           <div
-            style={{ width: 'max-content', maxWidth: 250, paddingInline: 10 }}
+            style={{
+              width: 'max-content',
+              maxWidth: 250,
+              paddingInline: 10,
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word'
+            }}
           >
             {statusValue.message}
           </div>

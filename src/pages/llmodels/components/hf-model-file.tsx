@@ -115,7 +115,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       (value: any[], filename: string) => {
         return {
           path: filename,
-          fakeName: `${filename}*.${_.get(value, '[0].extension')}`,
+          fakeName: `${filename}-*.${_.get(value, '[0].extension')}`,
           size: _.sumBy(value, 'size'),
           parts: value
         };

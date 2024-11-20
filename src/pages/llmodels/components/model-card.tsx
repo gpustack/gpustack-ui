@@ -289,31 +289,39 @@ const ModelCard: React.FC<{
             )}
           </div>
         ) : (
-          <Empty
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            style={{ marginBlock: 20 }}
-          ></Empty>
+          <>
+            {!loading && (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ marginBlock: 20 }}
+              ></Empty>
+            )}
+          </>
         )}
       </div>
-      {!isGGUFModel && readmeText && (
-        <div>
-          <TitleWrapper>
-            <div className="title">README.md</div>
-          </TitleWrapper>
-          <div className="card-wrapper">
-            <Spin spinning={loading}>
-              <MarkdownViewer
-                generateImgLink={
-                  modelSource === modelSourceMap.modelscope_value
-                    ? generateModeScopeImgLink
-                    : undefined
-                }
-                content={readmeText}
-                theme="light"
-              ></MarkdownViewer>
-            </Spin>
+      {!isGGUFModel && (
+        <Spin spinning={loading}>
+          <div style={{ minHeight: 200 }}>
+            {readmeText && (
+              <>
+                <TitleWrapper>
+                  <div className="title">README.md</div>
+                </TitleWrapper>
+                <div className="card-wrapper">
+                  <MarkdownViewer
+                    generateImgLink={
+                      modelSource === modelSourceMap.modelscope_value
+                        ? generateModeScopeImgLink
+                        : undefined
+                    }
+                    content={readmeText}
+                    theme="light"
+                  ></MarkdownViewer>
+                </div>
+              </>
+            )}
           </div>
-        </div>
+        </Spin>
       )}
     </>
   );

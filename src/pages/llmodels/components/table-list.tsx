@@ -461,10 +461,7 @@ const Models: React.FC<ModelsProps> = ({
       return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
     }
     if (record.source === modelSourceMap.local_path_value) {
-      const localPath = _.startsWith(record.local_path, '/')
-        ? record.local_path
-        : `/${record.local_path}`;
-      return `${modelSourceMap.local_path}${localPath}`;
+      return `${record.local_path}`;
     }
     if (record.source === modelSourceMap.ollama_library_value) {
       return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;

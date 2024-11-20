@@ -131,6 +131,15 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     form.setFieldValue('backend_parameters', list);
   }, []);
 
+  const handleBackendChange = useCallback((val: string) => {
+    if (val === backendOptionsMap.llamaBox) {
+      form.setFieldsValue({
+        distributed_inference_across_workers: true,
+        cpu_offloading: true
+      });
+    }
+  }, []);
+
   const collapseItems = useMemo(() => {
     const children = (
       <>
@@ -239,6 +248,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         )}
         <Form.Item name="backend">
           <SealSelect
+            onChange={handleBackendChange}
             label={intl.formatMessage({ id: 'models.form.backend' })}
             options={[
               {

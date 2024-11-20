@@ -113,19 +113,7 @@ export async function queryModelInstanceLogs(id: number) {
 
 // ===================== call huggingface quicksearch api =====================
 
-export async function callHuggingfaceQuickSearch(params: any) {
-  return request<{
-    models: Array<{
-      id: string;
-      _id: string;
-    }>;
-  }>(`https://huggingface.co/api/quicksearch`, {
-    method: 'GET',
-    params
-  });
-}
-
-const HUGGINGFACE_API = 'https://huggingface.co/api/models';
+const HUGGINGFACE_API = '/proxy?url=https://huggingface.co/api/models';
 
 const MODEL_SCOPE_LIST_MODEL_API =
   '/proxy?url=https://www.modelscope.cn/api/v1/dolphin/models';
@@ -221,6 +209,7 @@ export async function queryModelScopeModelFiles(
   return res.json();
 }
 
+// list models from huggingface
 export async function queryHuggingfaceModels(
   params: {
     search: {
@@ -238,7 +227,8 @@ export async function queryHuggingfaceModels(
     ...options,
     limit: 100,
     additionalFields: ['sha', 'tags'],
-    fetch(url: string, config: any) {
+    fetch(_url: string, config: any) {
+      const url = `/proxy?url=${_url}`;
       try {
         const newUrl = params.search.sort
           ? `${url}&sort=${params.search.sort}`
@@ -258,6 +248,7 @@ export async function queryHuggingfaceModels(
   return result;
 }
 
+// list files from huggingface
 export async function queryHuggingfaceModelFiles(
   params: { repo: string },
   options?: any
@@ -268,7 +259,7 @@ export async function queryHuggingfaceModelFiles(
     recursive: true,
     fetch(url: string, config: any) {
       try {
-        return fetch(url, {
+        return fetch(`/proxy?url=${url}`, {
           ...config,
           signal: options?.signal
         });
@@ -295,7 +286,7 @@ export async function downloadModelFile(
       revision: revision,
       path: path,
       fetch(url: string, config: any) {
-        return fetch(url, {
+        return fetch(`/proxy?url=${url}`, {
           ...config,
           signal: options?.signal
         });

@@ -1,14 +1,21 @@
 .thumb-img {
   position: relative;
   display: flex;
+  max-width: 100%;
+  max-height: 100%;
+  justify-content: center;
 
   .img {
     display: flex;
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
     overflow: hidden;
     border-radius: var(--border-radius-base);
     cursor: pointer;
+    justify-content: center;
+    align-items: center;
   }
 
   .del {

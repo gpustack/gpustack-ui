@@ -48,5 +48,26 @@ export default {
   'playground.compare.applytoall': 'Apply to all models',
   'playground.model.noavailable': 'No available models',
   'playground.model.noavailable.tips':
-    'Please deploy a model first, and it should not be an embedding-only model.'
+    'Please deploy a model first, and it should not be an embedding-only model.',
+  'playground.params.counts': 'Counts',
+  'playground.params.quality': 'Quality',
+  'playground.params.style': 'Style',
+  'playground.params.size': 'Size',
+  'playground.params.voice': 'Voice',
+  'playground.params.format': 'Format',
+  'playground.params.speed': 'Speed',
+  'playground.params.language': 'Language',
+  'playground.params.width': 'Width',
+  'playground.params.height': 'Height',
+  'playground.params.custom': 'Custom',
+  'playground.params.empty.tips': 'Generated images will appear here',
+  'playground.embedding.documents': 'Documents',
+  'playground.embedding.addtext': 'Add Text',
+  'playground.embedding.inputyourtext': 'Input your text',
+  'playground.embedding.output': 'Output',
+  'playground.embedding.chart': 'Chart',
+  'playground.rerank.query': 'Query',
+  'playground.rerank.rank': 'Rank',
+  'playground.rerank.score': 'Score',
+  'playground.rerank.query.holder': 'Input your query'
 };

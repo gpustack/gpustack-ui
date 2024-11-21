@@ -20,6 +20,7 @@ type SchemaType =
   | 'Textarea'
   | 'Select'
   | 'Slider'
+  | 'TextArea'
   | 'Checkbox';
 
 export interface ParamsSchema {

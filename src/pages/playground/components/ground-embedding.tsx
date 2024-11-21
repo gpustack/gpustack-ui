@@ -1,18 +1,21 @@
+import AlertInfo from '@/components/alert-info';
 import ScatterChart from '@/components/echarts/scatter';
+import HighlightCode from '@/components/highlight-code';
+import IconFont from '@/components/icon-font';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   ClearOutlined,
-  LoadingOutlined,
+  HolderOutlined,
   PlusOutlined,
-  ThunderboltOutlined,
-  UploadOutlined
+  SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Tooltip } from 'antd';
+import { Button, Segmented, Tabs } from 'antd';
 import classNames from 'classnames';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
+import { Resizable } from 're-resizable';
 import {
   forwardRef,
   memo,
@@ -23,16 +26,14 @@ import {
   useRef,
   useState
 } from 'react';
-import { UMAP } from 'umap-js';
 import { handleEmbedding } from '../apis';
+import { OpenAIViewCode } from '../config';
 import { ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
-import '../style/system-message-wrap.less';
+import DynamicParams from './dynamic-params';
 import FileList from './file-list';
 import InputList from './input-list';
-import RerankerParams from './reranker-params';
-import UploadFile from './upload-file';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
@@ -41,42 +42,11 @@ interface MessageProps {
   ref?: any;
 }
 
-const paramsConfig: ParamsSchema[] = [
-  // {
-  //   type: 'Select',
-  //   name: 'truncate',
-  //   label: {
-  //     text: 'Truncate',
-  //     isLocalized: false
-  //   },
-  //   options: [
-  //     {
-  //       label: 'None',
-  //       value: 'none'
-  //     },
-  //     {
-  //       label: 'Start',
-  //       value: 'start'
-  //     },
-  //     {
-  //       label: 'End',
-  //       value: 'end'
-  //     }
-  //   ],
-  //   rules: [
-  //     {
-  //       required: true,
-  //       message: 'Please select truncate'
-  //     }
-  //   ]
-  // }
-];
+const paramsConfig: ParamsSchema[] = [];
 
-const initialValues = {
-  truncate: 'none'
-};
+const initialValues = {};
 
-const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
+const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const acceptType =
     '.txt, .doc, .docx, .xls, .xlsx, .csv, .md, .pdf, .eml, .msg, .ppt, .pptx, .xml, .epub, .html';
@@ -100,6 +70,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [fileList, setFileList] = useState<
     { text: string; name: string; uid: number | string }[]
   >([]);
+  const [outputType, setOutputType] = useState<string>('chart');
+  const [outputHeight, setOutputHeight] = useState<number>(180);
+  const [embeddingData, setEmbeddingData] = useState<string>('');
+  const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -136,56 +110,23 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
 
   const inputEmpty = useMemo(() => {
-    const list = [...textList, ...fileList].filter((item) => item.text);
+    const list = [...textList, ...fileList];
     return list.length < 2;
   }, [textList, fileList]);
-
-  const cosine = useCallback((x: number[], y: number[]) => {
-    let result = 0;
-    let normX = 0;
-    let normY = 0;
-
-    for (let i = 0; i < x.length; i++) {
-      result += x[i] * y[i];
-      normX += x[i] ** 2;
-      normY += y[i] ** 2;
-    }
-
-    if (normX === 0 && normY === 0) {
-      return 0;
-    } else if (normX === 0 || normY === 0) {
-      return 1;
-    } else {
-      return 1 - result / Math.sqrt(normX * normY);
-    }
-  }, []);
 
   const generateEmbedding = useCallback(
     (embeddings: any[]) => {
       try {
-        const umap = new UMAP({
-          // random: random,
-          minDist: 0,
-          nComponents: 3,
-          nEpochs: 200,
-          distanceFn: cosine,
-          nNeighbors: embeddings.length - 1
-        });
-
         const dataList = embeddings.map((item) => {
           return item.embedding;
         });
 
-        const embedding = umap.fit([...dataList]);
-        console.log('embedding:----------------', embedding);
-        const pca = new PCA(dataList, {});
-        console.log('dataList====', dataList, embeddings);
+        const pca = new PCA(dataList);
         const pcadata = pca.predict(dataList, { nComponents: 2 }).to2DArray();
-        console.log('pcadata++++++++++++++++', pcadata);
 
         const input = [
-          ...textList.map((item) => item.text),
-          ...fileList.map((item) => item.text)
+          ...textList.map((item) => item.text).filter((item) => item),
+          ...fileList.map((item) => item.text).filter((item) => item)
         ];
 
         const list = pcadata.map((item: number[], index: number) => {
@@ -195,13 +136,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             text: input[index]
           };
         });
-        console.log('embedding____________:', {
-          list,
-          input,
-          textList,
-          fileList
-        });
         setScatterData(list);
+        setEmbeddingData(JSON.stringify(embeddings, null, 2));
       } catch (e) {
         console.log('error:', e);
       }
@@ -220,7 +156,26 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const submitMessage = async (current?: { role: string; content: string }) => {
     if (!parameters.model) return;
+
     try {
+      const validTextList = textList.filter((item) => item.text);
+      const validFileList = fileList.filter((item) => item.text);
+
+      const inputList = [
+        ...validTextList.map((item) => item.text),
+        ...validFileList.map((item) => item.text)
+      ];
+
+      if (inputList.length < 2) {
+        setLessTwoInput(true);
+
+        return;
+      }
+
+      setTextList(validTextList);
+      setFileList(validFileList);
+
+      setLessTwoInput(false);
       setLoading(true);
       setMessageId();
       setTokenResult(null);
@@ -234,26 +189,19 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         {
           model: parameters.model,
           encoding_format: 'float',
-          input: [
-            ...textList.map((item) => item.text),
-            ...fileList.map((item) => item.text)
-          ]
+          input: inputList
         },
         {
           token: requestToken.current.token
         }
       );
-      console.log('result:', result);
 
       setTokenResult(result.usage);
 
       const embeddingsList = result.data || [];
 
-      console.log('embeddings:', embeddingsList);
-
       generateEmbedding(embeddingsList);
     } catch (error: any) {
-      console.log('error========', error);
       setTokenResult({
         error: true,
         errorMessage: error.response?.data?.error?.message
@@ -278,6 +226,18 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setFileList((preList) => {
       return [...preList, ...files];
     });
+  };
+
+  const handleScaleOutputSize = (
+    e: any,
+    direction: string,
+    ref: any,
+    d: any
+  ) => {
+    console.log('handleScaleOutputSize', e, direction, ref, d);
+    if (d.height + outputHeight <= 300 && d.height + outputHeight >= 180) {
+      setOutputHeight(d.height + outputHeight);
+    }
   };
 
   const handleDeleteFile = (uid: number | string) => {
@@ -310,7 +270,46 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     ]);
     setFileList([]);
     setScatterData([]);
+    setTokenResult(null);
+    setLessTwoInput(false);
   };
+
+  const handleOutputTypeChange = (value: string) => {
+    setOutputType(value);
+  };
+
+  const outputItems = useMemo(() => {
+    return [
+      {
+        key: 'chart',
+        label: 'Chart',
+        children: (
+          <ScatterChart
+            seriesData={scatterData}
+            height={outputHeight}
+            width="100%"
+            xAxisData={[]}
+          ></ScatterChart>
+        )
+      },
+      {
+        key: 'json',
+        label: 'JSON',
+        children: (
+          <div style={{ padding: 10, backgroundColor: '#fafafa' }}>
+            <HighlightCode
+              height={outputHeight - 20}
+              theme="light"
+              code={embeddingData}
+              lang="json"
+              copyable={true}
+              style={{ marginBottom: 0 }}
+            ></HighlightCode>
+          </div>
+        )
+      }
+    ];
+  }, [outputHeight, scatterData, embeddingData]);
 
   useEffect(() => {
     setMessageId();
@@ -339,7 +338,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   return (
     <div className="ground-left-wrapper rerank">
-      <div className="ground-left" style={{ justifyContent: 'flex-start' }}>
+      <div className="ground-left">
         <div
           className="center"
           ref={scroller}
@@ -348,25 +347,18 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           <div className="documents">
             <div className="flex-between m-b-8 doc-header">
               <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-0">
-                <span>Documents</span>
+                <div className="flex gap-20">
+                  <span>
+                    {intl.formatMessage({
+                      id: 'playground.embedding.documents'
+                    })}
+                  </span>
+                </div>
               </h3>
               <div className="flex gap-10">
-                <UploadFile
-                  handleUpdateFileList={handleUpdateFileList}
-                  accept={acceptType}
-                >
-                  <Tooltip title={<span>Support: {acceptType}</span>}>
-                    <Button
-                      size="middle"
-                      icon={<UploadOutlined></UploadOutlined>}
-                    >
-                      Upload File
-                    </Button>
-                  </Tooltip>
-                </UploadFile>
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
-                  Add Text
+                  {intl.formatMessage({ id: 'playground.embedding.addtext' })}
                 </Button>
                 <Button
                   icon={<ClearOutlined />}
@@ -375,15 +367,31 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 >
                   {intl.formatMessage({ id: 'common.button.clear' })}
                 </Button>
-                <Button
-                  size="middle"
-                  type="primary"
-                  disabled={inputEmpty}
-                  onClick={handleSendMessage}
-                >
-                  {loading ? <LoadingOutlined /> : <ThunderboltOutlined />}
-                  {intl.formatMessage({ id: 'common.button.run' })}
-                </Button>
+                {!loading ? (
+                  <Button
+                    size="middle"
+                    type="primary"
+                    disabled={inputEmpty}
+                    onClick={handleSendMessage}
+                    icon={<SendOutlined rotate={0} className="font-size-14" />}
+                    style={{ width: 60 }}
+                  ></Button>
+                ) : (
+                  <Button
+                    style={{ width: 80 }}
+                    size="middle"
+                    type="primary"
+                    onClick={handleStopConversation}
+                    icon={
+                      <IconFont
+                        type="icon-stop1"
+                        className="font-size-12"
+                      ></IconFont>
+                    }
+                  >
+                    {intl.formatMessage({ id: 'common.button.stop' })}
+                  </Button>
+                )}
               </div>
             </div>
             <div className="docs-wrapper">
@@ -399,6 +407,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                   onDelete={handleDeleteFile}
                 ></FileList>
               </div>
+              {lessTwoInput && (
+                <AlertInfo
+                  type="danger"
+                  message="Please input at least two documents"
+                ></AlertInfo>
+              )}
             </div>
           </div>
         </div>
@@ -411,23 +425,75 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           }}
         >
           <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-16">
-            <span>Output</span>
+            <div className="flex gap-20">
+              <span>
+                {intl.formatMessage({ id: 'playground.embedding.output' })}
+              </span>
+              <AlertInfo
+                type="danger"
+                message={tokenResult?.errorMessage}
+              ></AlertInfo>
+            </div>
+            <Segmented
+              onChange={handleOutputTypeChange}
+              value={outputType}
+              options={[
+                {
+                  label: intl.formatMessage({
+                    id: 'playground.embedding.chart'
+                  }),
+                  value: 'chart'
+                },
+                { label: 'JSON', value: 'json' }
+              ]}
+            ></Segmented>
           </h3>
-          <div
-            style={{
-              border: '1px solid var(--ant-color-border)',
-              borderRadius: 'var(--border-radius-base)',
-              overflow: 'hidden',
-              width: '100%'
-            }}
-            className="scatter"
-          >
-            <ScatterChart
-              seriesData={scatterData}
-              height={160}
-              width="100%"
-              xAxisData={[]}
-            ></ScatterChart>
+          <div className="embed-chart">
+            <Resizable
+              enable={{
+                top: true
+              }}
+              defaultSize={{
+                height: 180
+              }}
+              handleComponent={{
+                top: (
+                  <Button
+                    size="small"
+                    className="drag-handler"
+                    color="default"
+                    variant="filled"
+                    icon={
+                      <HolderOutlined
+                        rotate={90}
+                        style={{ fontSize: 'var(--font-size-14)' }}
+                      />
+                    }
+                  ></Button>
+                )
+              }}
+              maxHeight={300}
+              minHeight={180}
+              onResizeStop={handleScaleOutputSize}
+            >
+              <div
+                style={{
+                  border: '1px solid var(--ant-color-border)',
+                  borderRadius: 'var(--border-radius-base)',
+                  overflow: 'hidden',
+                  width: '100%'
+                }}
+                className="scatter "
+              >
+                <Tabs
+                  defaultActiveKey={outputType}
+                  activeKey={outputType}
+                  centered
+                  renderTabBar={() => <></>}
+                  items={outputItems}
+                ></Tabs>
+              </div>
+            </Resizable>
           </div>
         </div>
       </div>
@@ -438,7 +504,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         ref={paramsRef}
       >
         <div className="box">
-          <RerankerParams
+          <DynamicParams
             setParams={setParams}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
@@ -450,13 +516,13 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       </div>
 
       <ViewCodeModal
+        {...OpenAIViewCode.embeddings}
         open={show}
-        apiType="embedding"
         payLoad={{
           input: [
-            ...textList.map((item) => item.text),
-            ...fileList.map((item) => item.text)
-          ].filter((text) => text)
+            ...textList.map((item) => item.text).filter((item) => item),
+            ...fileList.map((item) => item.text).filter((item) => item)
+          ]
         }}
         parameters={{
           ...parameters
@@ -468,4 +534,4 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundReranker);
+export default memo(GroundEmbedding);

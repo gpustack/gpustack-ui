@@ -125,6 +125,9 @@ dependencies:
   rc-virtual-list:
     specifier: ^3.14.8
     version: 3.14.8(react-dom@18.2.0)(react@18.2.0)
+  re-resizable:
+    specifier: ^6.10.1
+    version: 6.10.1(react-dom@18.2.0)(react@18.2.0)
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -137,9 +140,6 @@ dependencies:
   simplebar-react:
     specifier: ^3.2.6
     version: 3.2.6(react@18.2.0)
-  umap-js:
-    specifier: ^1.4.0
-    version: 1.4.0
   umi-presets-pro:
     specifier: ^2.0.3
     version: 2.0.3(@babel/core@7.25.7)(@types/react-dom@18.3.0)(@types/react@18.3.1)(antd@5.21.6)(dva@2.5.0-beta.2)(rc-field-form@2.4.0)(react-dom@18.2.0)(react@18.2.0)(umi@4.3.24)
@@ -11643,10 +11643,6 @@ packages:
       is-decimal: 1.0.4
     dev: false
 
-  /is-any-array@0.1.1:
-    resolution: {integrity: sha512-qTiELO+kpTKqPgxPYbshMERlzaFu29JDnpB8s3bjg+JkxBpw29/qqSaOdKv2pCdaG92rLGeG/zG2GauX58hfoA==, tarball: https://registry.npmjs.org/is-any-array/-/is-any-array-0.1.1.tgz}
-    dev: false
-
   /is-any-array@2.0.1:
     resolution: {integrity: sha512-UtilS7hLRu++wb/WBAw9bNuP1Eg04Ivn1vERJck8zJthEvXCBEBpGR/33u/xLKWEQf95803oalHrVDptcAvFdQ==, tarball: https://registry.npmjs.org/is-any-array/-/is-any-array-2.0.1.tgz}
     dev: false
@@ -12981,13 +12977,6 @@ packages:
 
   /ml-dataset-iris@1.2.1:
     resolution: {integrity: sha512-7GO+Xk382d+HhVgjebaQnJ4Tcm8+uaL9Mc76UdxhBAU0aFWs6JDjINZLnrlZ0KDiIi9Erc52bD26QOvYsG7Nnw==, tarball: https://registry.npmjs.org/ml-dataset-iris/-/ml-dataset-iris-1.2.1.tgz}
-    dev: false
-
-  /ml-levenberg-marquardt@2.1.1:
-    resolution: {integrity: sha512-2+HwUqew4qFFFYujYlQtmFUrxCB4iJAPqnUYro3P831wj70eJZcANwcRaIMGUVaH9NDKzfYuA4N5u67KExmaRA==, tarball: https://registry.npmjs.org/ml-levenberg-marquardt/-/ml-levenberg-marquardt-2.1.1.tgz}
-    dependencies:
-      is-any-array: 0.1.1
-      ml-matrix: 6.12.0
     dev: false
 
   /ml-matrix@6.12.0:
@@ -16147,6 +16136,16 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /re-resizable@6.10.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-m33nSWRH57UZLmep5M/LatkZ2NRqimVD/bOOpvymw5Zf33+eTSEixsUugscOZzAtK0/nx+OSuOf8VbKJx/4ptw==, tarball: https://registry.npmjs.org/re-resizable/-/re-resizable-6.10.1.tgz}
+    peerDependencies:
+      react: ^16.13.1 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /react-dom@18.1.0(react@18.1.0):
     resolution: {integrity: sha512-fU1Txz7Budmvamp7bshe4Zi32d0ll7ect+ccxNu9FlObT605GOEB8BfO4tmRJ39R5Zj831VCpvQ05QPBW5yb+w==, tarball: https://registry.npmjs.org/react-dom/-/react-dom-18.1.0.tgz}
     peerDependencies:
@@ -18460,12 +18459,6 @@ packages:
 
   /ua-parser-js@0.7.38:
     resolution: {integrity: sha512-fYmIy7fKTSFAhG3fuPlubeGaMoAd6r0rSnfEsO5nEY55i26KSLt9EH7PLQiiqPUhNqYIJvSkTy1oArIcXAbPbA==, tarball: https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.38.tgz}
-    dev: false
-
-  /umap-js@1.4.0:
-    resolution: {integrity: sha512-xxpviF9wUO6Nxrx+C58SoDgea+h2PnVaRPKDelWv0HotmY6BeWeh0kAPJoumfqUkzUvowGsYfMbnsWI0b9do+A==, tarball: https://registry.npmjs.org/umap-js/-/umap-js-1.4.0.tgz}
-    dependencies:
-      ml-levenberg-marquardt: 2.1.1
     dev: false
 
   /umi-presets-pro@2.0.3(@babel/core@7.25.7)(@types/react-dom@18.3.0)(@types/react@18.3.1)(antd@5.21.6)(dva@2.5.0-beta.2)(rc-field-form@2.4.0)(react-dom@18.2.0)(react@18.2.0)(umi@4.3.24):

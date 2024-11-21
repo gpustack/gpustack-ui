@@ -24,7 +24,7 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { CHAT_API } from '../../apis';
-import { Roles, generateMessages } from '../../config';
+import { OpenAIViewCode, Roles, generateMessages } from '../../config';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
 import '../../style/model-item.less';
@@ -452,7 +452,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         <div className="content" ref={modelScrollRef}>
           <div>
             <MessageContent
-              spans={spans}
               messageList={messageList}
               setMessageList={setMessageList}
               editable={true}
@@ -465,6 +464,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           </div>
         </div>
         <ViewCodeModal
+          {...OpenAIViewCode.chat}
           open={show}
           payLoad={{
             messages: viewCodeMessage

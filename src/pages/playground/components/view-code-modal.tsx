@@ -12,8 +12,10 @@ type ViewModalProps = {
   payLoad: Record<string, any>;
   parameters: any;
   title: string;
+  api: string;
+  clientType: string;
+  logcommand?: string;
   open: boolean;
-  apiType?: string;
   onCancel: () => void;
 };
 
@@ -33,21 +35,18 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const {
     title,
     open,
+    api,
+    clientType,
+    logcommand,
     onCancel,
-    messageList,
     payLoad,
-    parameters = {},
-    apiType = 'chat'
+    parameters = {}
   } = props || {};
 
   const intl = useIntl();
   const [lang, setLang] = useState(langMap.shell);
 
   const BaseURL = `${window.location.origin}/v1-openai`;
-  const ClientType = apiType === 'chat' ? 'chat.completions' : 'embeddings';
-  const api = apiType === 'chat' ? 'chat/completions' : 'embeddings';
-  const logcommand =
-    apiType === 'chat' ? 'choices[0].message.content' : 'data[0].embedding';
 
   const formatPyParams = (params: any) => {
     return _.keys(params).reduce((acc: string, key: string) => {
@@ -63,8 +62,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   };
 
   const codeValue = useMemo(() => {
+    const consoleLog = logcommand
+      ? `console.log(response.${logcommand});\n`
+      : '';
+
+    const printLog = logcommand ? `print(response.${logcommand})` : '';
+
     if (lang === langMap.shell) {
-      const messages = messageList;
       const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
@@ -76,7 +80,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       return code;
     }
     if (lang === langMap.javascript) {
-      const messages = messageList;
       const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
@@ -84,7 +87,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         },
         null,
         4
-      )};\nconst response = await openai.${ClientType}.create(params);\n  console.log(response.${logcommand});\n}\nmain();`;
+      )};\nconst response = await openai.${clientType}.create(params);\n  ${consoleLog}}\nmain();`;
 
       return code;
     }
@@ -102,12 +105,12 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         },
         ''
       );
-      const params = apiType === 'chat' ? formatPyParams(payLoad) : '';
-      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${ClientType}.create(\n${formattedParams}  ${params})\nprint(response.${logcommand})`;
+      const params = formatPyParams(payLoad);
+      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${clientType}.create(\n${formattedParams}${params})\n${printLog}`;
       return code;
     }
     return '';
-  }, [lang, payLoad, parameters]);
+  }, [lang, payLoad, parameters, api, clientType, logcommand]);
 
   const handleOnChangeLang = (value: string) => {
     setLang(value);

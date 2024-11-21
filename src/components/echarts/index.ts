@@ -12,6 +12,7 @@ import type {
   TooltipComponentOption
 } from 'echarts/components';
 import {
+  DataZoomComponent,
   DatasetComponent,
   GridComponent,
   LegendComponent,
@@ -44,6 +45,7 @@ echarts.use([
   GridComponent,
   DatasetComponent,
   TransformComponent,
+  DataZoomComponent,
   BarChart,
   LineChart,
   ScatterChart,

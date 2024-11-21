@@ -29,8 +29,8 @@ import '../style/ground-left.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
 import AudioInput from './audio-input';
+import DynamicParams from './dynamic-params';
 import MessageContent from './multiple-chat/message-content';
-import RerankerParams from './reranker-params';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
@@ -70,6 +70,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     analyser: null
   });
   const [isRecording, setIsRecording] = useState(false);
+  const [recordEnd, setRecordEnd] = useState(false);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -251,6 +252,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           duration: data.duration
         };
       });
+      setTimeout(() => {
+        setRecordEnd(true);
+      }, 200);
     },
     []
   );
@@ -264,6 +268,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       const res = await readAudioFile(data.file.originFileObj);
       console.log('res=======', res);
       setAudioData(res);
+      setRecordEnd(true);
     },
     []
   );
@@ -279,6 +284,25 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleOnRecord = useCallback((val: boolean) => {
     setIsRecording(val);
     setAudioData(null);
+  }, []);
+
+  const handleOnGenerate = useCallback(() => {
+    setMessageList([
+      {
+        content: 'Generating text content...',
+        title: '',
+        role: '',
+        uid: messageId.current
+      }
+    ]);
+    setRecordEnd(false);
+    setIsRecording(false);
+  }, []);
+
+  const handleOnDiscard = useCallback(() => {
+    setRecordEnd(false);
+    setAudioData(null);
+    setIsRecording(false);
   }, []);
 
   const renderAniamtion = () => {
@@ -334,32 +358,62 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="ground-left-footer" style={{ flex: 1 }}>
           <div className="speech-to-text">
             <div className="speech-box">
-              <Tooltip title="Upload an audio file">
-                <UploadAudio
-                  type="default"
-                  accept=".mp3,.mp4,.wav"
-                  onChange={handleUploadChange}
-                ></UploadAudio>
-              </Tooltip>
-              <AudioInput
-                type="default"
-                voiceActivity={true}
-                onAudioData={handleOnAudioData}
-                onAudioPermission={handleOnAudioPermission}
-                onAnalyse={handleOnAnalyse}
-                onRecord={handleOnRecord}
-              ></AudioInput>
+              {isRecording ? (
+                <>
+                  <AudioInput
+                    type="default"
+                    voiceActivity={true}
+                    onAudioData={handleOnAudioData}
+                    onAudioPermission={handleOnAudioPermission}
+                    onAnalyse={handleOnAnalyse}
+                    onRecord={handleOnRecord}
+                  ></AudioInput>
+                </>
+              ) : (
+                <>
+                  {/* <Tooltip title="discard">
+                    <Button
+                      onClick={handleOnDiscard}
+                      icon={<DeleteRowOutlined />}
+                      shape="circle"
+                    ></Button>
+                  </Tooltip>
+                  <Tooltip title="generate text content">
+                    <Button
+                      type="primary"
+                      onClick={handleOnGenerate}
+                      shape="circle"
+                      icon={<ThunderboltOutlined></ThunderboltOutlined>}
+                    ></Button>
+                  </Tooltip> */}
+                  <Tooltip title="Upload an audio file">
+                    <UploadAudio
+                      type="default"
+                      accept=".mp3,.mp4,.wav"
+                      onChange={handleUploadChange}
+                    ></UploadAudio>
+                  </Tooltip>
+                  <AudioInput
+                    type="default"
+                    voiceActivity={true}
+                    onAudioData={handleOnAudioData}
+                    onAudioPermission={handleOnAudioPermission}
+                    onAnalyse={handleOnAnalyse}
+                    onRecord={handleOnRecord}
+                  ></AudioInput>
+                </>
+              )}
             </div>
 
             {audioData ? (
-              <div className="flex-between flex-center">
-                <div style={{ flex: 1 }}>
+              <div className="flex-between flex-center justify-center">
+                <div style={{ width: 600 }}>
                   <AudioPlayer
                     url={audioData.url}
                     name={audioData.name}
                     duration={audioData.duration}
                   ></AudioPlayer>
-                  <div
+                  {/* <div
                     style={{
                       paddingRight: 5,
                       display: 'flex',
@@ -376,7 +430,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                         Generata Text Content
                       </Button>
                     </Tooltip>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
@@ -420,15 +474,31 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
           )}
         </div>
-        <div className="message-list-wrap" ref={scroller}>
-          <>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }}
+        >
+          <div
+            className="message-list-wrap"
+            ref={scroller}
+            style={{
+              borderTop: messageList.length
+                ? '1px solid var(--ant-color-split)'
+                : '1px solid var(--ant-color-split)'
+            }}
+          >
             <div className="content" style={{ height: '100%' }}>
               <>
                 <MessageContent
-                  actions={['copy']}
+                  actions={[]}
                   messageList={messageList[0] ? [messageList[0]] : []}
                   setMessageList={setMessageList}
                   editable={false}
+                  showTitle={false}
                   loading={loading}
                 />
                 {loading && (
@@ -438,7 +508,17 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 )}
               </>
             </div>
-          </>
+          </div>
+          <div style={{ padding: '16px 32px', textAlign: 'right' }}>
+            <Tooltip title="generate text content">
+              <Button
+                disabled={!audioData}
+                type="primary"
+                onClick={handleOnGenerate}
+                icon={<ThunderboltOutlined></ThunderboltOutlined>}
+              ></Button>
+            </Tooltip>
+          </div>
         </div>
       </div>
       <div
@@ -448,7 +528,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         ref={paramsRef}
       >
         <div className="box">
-          <RerankerParams
+          <DynamicParams
             setParams={setParams}
             paramsConfig={paramsConfig}
             initialValues={initialValues}

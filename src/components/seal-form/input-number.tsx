@@ -68,6 +68,7 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
       description={description}
       disabled={props.disabled}
       onClick={handleClickWrapper}
+      className="seal-input-number"
     >
       <InputNumber
         {...rest}

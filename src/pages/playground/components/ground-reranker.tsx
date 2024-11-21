@@ -1,8 +1,8 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
-import { ClearOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { ClearOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Progress, Spin, Tag } from 'antd';
+import { Button, Input, Spin, Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -20,9 +20,8 @@ import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
+import DynamicParams from './dynamic-params';
 import InputList from './input-list';
-import MessageInput from './message-input';
-import RerankerParams from './reranker-params';
 import ViewRerankCode from './view-rerank-code';
 
 interface MessageProps {
@@ -52,7 +51,7 @@ const paramsConfig: ParamsSchema[] = [
 ];
 
 const initialValues = {
-  top_n: 1
+  top_n: 3
 };
 
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
@@ -111,6 +110,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       name: ''
     }
   ]);
+  const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -145,51 +145,33 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const renderPercent = useCallback((data: any) => {
-    if (!data.showExtra) {
+    if (!data.showExtra || !data.percent) {
       return null;
     }
     const percent = data.percent;
     return (
-      <>
-        <Progress
-          size={{
-            height: 4
-          }}
-          type="line"
-          status="normal"
-          strokeLinecap={'square'}
-          showInfo={false}
-          percentPosition={{ align: 'end', type: 'outer' }}
-          strokeColor={`linear-gradient(90deg, #388bff 0%, rgba(255,255,255,1) ${percent}%)`}
-          trailColor="transparent"
-          percent={percent}
-          style={{
-            position: 'absolute',
-            left: 0,
-            bottom: -2,
-            width: 'calc(100% - 2px)',
-            lineHeight: '12px',
-            borderRadius: '0 0 0 6px',
-            overflow: 'hidden'
-          }}
-        ></Progress>
-        <span
-          className="flex-center hover-hidden"
-          style={{
-            position: 'absolute',
-            right: 10,
-            top: 8,
-            padding: '0 4px',
-            backgroundColor: 'transparent',
-            opacity: 0.7
-          }}
-        >
-          <Tag color={'geekblue'}>Rank: {data.rank}</Tag>
-          <Tag style={{ margin: 0 }} color={'cyan'}>
-            Score: {_.round(data.score, 2)}
+      <div className="rank-wrapper">
+        <div className="percent-wrapper">
+          <div
+            className="pregress-bar"
+            style={{
+              backgroundImage: `linear-gradient(90deg, #388bff 0%, #cce1ff 100%)`,
+              width: `${percent}%`,
+              height: '4px',
+              borderRadius: '2px'
+            }}
+          ></div>
+        </div>
+        <span className="flex-center hover-hidden rank-tag">
+          <Tag color={'geekblue'} bordered={false}>
+            {intl.formatMessage({ id: 'playground.rerank.rank' })}: {data.rank}
+          </Tag>
+          <Tag color={'cyan'} bordered={false}>
+            {intl.formatMessage({ id: 'playground.rerank.score' })}:{' '}
+            {_.round(data.score, 2)}
           </Tag>
         </span>
-      </>
+      </div>
     );
   }, []);
 
@@ -203,12 +185,13 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setLoading(false);
   };
 
-  const submitMessage = async (current?: { role: string; content: string }) => {
+  const submitMessage = async (current?: { content: string }) => {
     if (!parameters.model) return;
     try {
       setLoading(true);
       setMessageId();
       setTokenResult(null);
+      setSortIndexMap([]);
 
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
@@ -242,11 +225,22 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       const maxValue = sortList[sortList.length - 1].relevance_score;
       const minValue = sortList[0].relevance_score;
 
-      let newTextList = [...textList];
+      // reset state
+      let newTextList = textList.map((item) => {
+        item.percent = undefined;
+        item.score = undefined;
+        item.rank = undefined;
+        return item;
+      });
+
+      let sortMap: number[] = [];
 
       result.results?.forEach((item: any, sIndex: number) => {
+        sortMap.push(item.index);
+
         newTextList[item.index] = {
           ...newTextList[item.index],
+          uid: setMessageId(),
           rank: sIndex + 1,
           score: item.relevance_score,
           showExtra: true,
@@ -257,6 +251,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           })
         };
       });
+
+      newTextList = _.sortBy(newTextList, 'rank');
+      setSortIndexMap(sortMap);
       setTextList(newTextList);
 
       setMessageList([
@@ -270,7 +267,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
               value: item.relevance_score
             });
             return {
-              uid: item.index,
+              uid: setMessageId(),
               text: `${item.document?.text?.slice(0, 500) || ''}`,
               docIndex: item.index,
               title: documentList[item.index]?.name || '',
@@ -279,7 +276,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
               normalizValue: percent
             };
           }),
-          uid: messageId.current
+          uid: setMessageId()
         }
       ]);
     } catch (error: any) {
@@ -304,6 +301,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage(message);
   };
 
+  const handleSearch = (val: string) => {
+    console.log('val:', val);
+    submitMessage({ content: val });
+  };
+
   const handleCloseViewCode = () => {
     setShow(false);
   };
@@ -326,11 +328,30 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     inputListRef.current?.handleAdd();
   };
 
-  const handleTextListChange = (
-    list: { text: string; uid: number | string; name: string }[]
-  ) => {
-    setTextList(list);
-  };
+  const handleTextListChange = useCallback(
+    (list: { text: string; uid: number | string; name: string }[]) => {
+      const newList = list?.map((item: any) => {
+        item.percent = undefined;
+        item.score = undefined;
+        item.rank = undefined;
+        return item;
+      });
+      setTextList(newList);
+    },
+    []
+  );
+  const handleOnSort = useCallback(
+    (list: { text: string; uid: number | string; name: string }[]) => {
+      const newList = list?.map((item) => {
+        return {
+          ...item,
+          uid: setMessageId()
+        };
+      });
+      setTextList(newList);
+    },
+    []
+  );
 
   const handleClearDocuments = () => {
     setTextList([
@@ -381,50 +402,43 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     <div className="ground-left-wrapper rerank">
       <div className="ground-left">
         <div className="ground-left-footer">
-          <MessageInput
-            actions={[]}
-            defaultSize={{
-              minRows: 1,
-              maxRows: 2
-            }}
-            submitIcon={<SearchOutlined className="font-size-16" />}
-            loading={loading}
-            disabled={!parameters.model}
-            isEmpty={true}
-            shouldResetMessage={false}
-            handleSubmit={handleSendMessage}
-            handleAbortFetch={handleStopConversation}
-            clearAll={handleClear}
-            modelList={[]}
-            placeholer={intl.formatMessage({
-              id: 'playground.input.keyword.holder'
-            })}
-            tools={
-              <span style={{ paddingLeft: 6, fontSize: 14, fontWeight: 500 }}>
-                Query
-              </span>
-            }
-            style={{
-              borderTop: 'none',
-              width: 'unset',
-              marginInline: 32,
-              marginTop: 16,
-              border: '1px solid var(--ant-color-border)',
-              borderRadius: 'var(--border-radius-base)',
-              paddingInline: 10
-            }}
-          />
+          <h3
+            className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-0"
+            style={{ padding: '0 32px', marginTop: 16 }}
+          >
+            <span>{intl.formatMessage({ id: 'playground.rerank.query' })}</span>
+          </h3>
+          <div style={{ margin: '16px 32px 10px' }}>
+            <Input.Search
+              onSearch={handleSearch}
+              enterButton={<SendOutlined rotate={0} className="font-size-14" />}
+              placeholder={intl.formatMessage({
+                id: 'playground.rerank.query.holder'
+              })}
+            ></Input.Search>
+          </div>
         </div>
         <div className="center" ref={scroller}>
           <div className="documents">
             <div className="flex-between m-b-8 doc-header">
               <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-0">
-                <span>Documents</span>
+                <span>
+                  {intl.formatMessage({ id: 'playground.embedding.documents' })}
+                </span>
               </h3>
+              <span className="m-l-10 font-size-12">
+                {' '}
+                {tokenResult?.total_tokens && (
+                  <span style={{ color: 'var(--ant-orange)' }}>
+                    {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
+                    {tokenResult?.total_tokens}
+                  </span>
+                )}
+              </span>
               <div className="flex gap-10">
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
-                  Add Text
+                  {intl.formatMessage({ id: 'playground.embedding.addtext' })}
                 </Button>
                 <Button
                   icon={<ClearOutlined />}
@@ -437,33 +451,25 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
             <div className="docs-wrapper">
               <InputList
+                sortIndex={sortIndexMap}
                 ref={inputListRef}
                 textList={textList}
+                showLabel={false}
+                sortable={false}
+                height={46}
                 onChange={handleTextListChange}
+                onSort={handleOnSort}
                 extra={renderPercent}
               ></InputList>
             </div>
           </div>
-          <div>
-            {messageList.length ? (
-              <div className="result-header flex-center">
-                <h3 className="font-size-14 m-b-0">Results</h3>
-                {tokenResult?.total_tokens && (
-                  <span style={{ color: 'var(--ant-orange)' }}>
-                    {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
-                    {tokenResult?.total_tokens}
-                  </span>
-                )}
-              </div>
-            ) : null}
-          </div>
+          <div></div>
           <div
             className="message-list-wrap"
             style={{ paddingInline: 0, paddingTop: 0 }}
           >
             <>
               <div className="content">
-                {/*<RerankMessage dataList={messageList} />*/}
                 {loading && (
                   <Spin size="small">
                     <div style={{ height: '46px' }}></div>
@@ -481,7 +487,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         ref={paramsRef}
       >
         <div className="box">
-          <RerankerParams
+          <DynamicParams
             setParams={setParams}
             params={parameters}
             paramsConfig={paramsConfig}
@@ -494,9 +500,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       <ViewRerankCode
         open={show}
-        documentList={[...textList, ...fileList]
-          .map((item) => item.text)
-          .filter((text) => text)}
+        payload={{
+          documents: [...textList, ...fileList]
+            .map((item) => item.text)
+            .filter((text) => text)
+        }}
         parameters={{
           ...parameters,
           query: contentRef.current

@@ -7,6 +7,7 @@ interface MessageContentProps {
   loading?: boolean;
   actions?: MessageItemAction[];
   editable?: boolean;
+  showTitle?: boolean;
   messageList: MessageItem[];
   setMessageList?: (list: any) => void;
 }
@@ -15,6 +16,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
   setMessageList,
   messageList,
   editable,
+  showTitle = true,
   actions = ['upload', 'delete', 'copy']
 }) => {
   const updateMessage = (index: number, message: MessageItem) => {
@@ -39,6 +41,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
               data={item}
               editable={editable}
               actions={actions}
+              showTitle={showTitle}
               onDelete={() => handleDelete(index)}
               updateMessage={(data) => updateMessage(index, data)}
             />

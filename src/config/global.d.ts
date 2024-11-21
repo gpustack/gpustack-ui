@@ -24,11 +24,13 @@ declare namespace Global {
 
   interface BaseListItem<T> {
     key: string;
+    locale?: boolean;
     value: T;
   }
 
   interface BaseOption<T> {
     label: string;
+    locale?: boolean;
     value: T;
   }
 

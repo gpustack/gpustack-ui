@@ -13,6 +13,7 @@ interface AudioInputProps {
   onAnalyse?: (analyseData: any, frequencyBinCount: any) => void;
   onAudioPermission: (audioPermission: boolean) => void;
   onRecord?: (isRecording: boolean) => void;
+  onStop?: () => void;
   voiceActivity?: boolean;
   type?: 'text' | 'primary' | 'default';
 }
@@ -55,7 +56,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const handleStopRecording = () => {
     setIsRecording(false);
     audioRecorder.current?.stop();
-    props.onRecord?.(false);
+    // props.onRecord?.(false);
   };
 
   // get all audio tracks
@@ -136,6 +137,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const stopRecording = () => {
     audioRecorder.current?.stop();
     setIsRecording(false);
+    props.onRecord?.(false);
   };
 
   const handleAudioData = (audioData: any) => {

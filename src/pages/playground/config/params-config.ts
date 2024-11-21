@@ -13,8 +13,8 @@ export const TTSParamsConfig: ParamsSchema[] = [
       { label: 'Shimmer', value: 'Shimmer' }
     ],
     label: {
-      text: 'Voice',
-      isLocalized: false
+      text: 'playground.params.voice',
+      isLocalized: true
     },
     rules: [
       {
@@ -35,8 +35,8 @@ export const TTSParamsConfig: ParamsSchema[] = [
       { label: 'pcm', value: 'pcm' }
     ],
     label: {
-      text: 'Response Format',
-      isLocalized: false
+      text: 'playground.params.format',
+      isLocalized: true
     },
     rules: [
       {
@@ -55,8 +55,8 @@ export const TTSParamsConfig: ParamsSchema[] = [
       { label: '4x', value: 4 }
     ],
     label: {
-      text: 'Speed',
-      isLocalized: false
+      text: 'playground.params.speed',
+      isLocalized: true
     },
     rules: [
       {
@@ -64,6 +64,25 @@ export const TTSParamsConfig: ParamsSchema[] = [
       }
     ]
   }
+  // {
+  //   type: 'TextArea',
+  //   name: 'prompt',
+  //   label: {
+  //     text: 'Prompt',
+  //     isLocalized: false
+  //   },
+  //   attrs: {
+  //     autoSize: {
+  //       minRows: 2,
+  //       maxRows: 3
+  //     }
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // }
 ];
 
 export const RealtimeParamsConfig: ParamsSchema[] = [
@@ -79,13 +98,12 @@ export const RealtimeParamsConfig: ParamsSchema[] = [
       { label: 'Deutsch', value: 'de' }
     ],
     label: {
-      text: 'Language',
-      isLocalized: false
+      text: 'playground.params.language',
+      isLocalized: true
     },
     rules: [
       {
-        required: true,
-        message: 'Language is required'
+        required: true
       }
     ]
   }
@@ -96,12 +114,12 @@ export const ImageParamsConfig: ParamsSchema[] = [
     type: 'InputNumber',
     name: 'n',
     label: {
-      text: 'Counts',
-      isLocalized: false
+      text: 'playground.params.counts',
+      isLocalized: true
     },
     attrs: {
       min: 1,
-      max: 10
+      max: 4
     },
     rules: [
       {
@@ -117,45 +135,12 @@ export const ImageParamsConfig: ParamsSchema[] = [
       { label: '512x512', value: '512x512' },
       { label: '1024x1024', value: '1024x1024' },
       { label: '1792x1024', value: '1792x1024' },
-      { label: '1024x1792', value: '1024x1792' }
+      { label: '1024x1792', value: '1024x1792' },
+      { label: 'playground.params.custom', value: 'custom', locale: true }
     ],
     label: {
-      text: 'Size',
-      isLocalized: false
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
-    type: 'Select',
-    name: 'quality',
-    options: [
-      { label: 'standard', value: 'standard' },
-      { label: 'hd', value: 'hd' }
-    ],
-    label: {
-      text: 'Quality',
-      isLocalized: false
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
-    type: 'Select',
-    name: 'style',
-    options: [
-      { label: 'vivid', value: 'vivid' },
-      { label: 'natural', value: 'natural' }
-    ],
-    label: {
-      text: 'Style',
-      isLocalized: false
+      text: 'playground.params.size',
+      isLocalized: true
     },
     rules: [
       {
@@ -163,4 +148,57 @@ export const ImageParamsConfig: ParamsSchema[] = [
       }
     ]
   }
+  // {
+  //   type: 'Select',
+  //   name: 'quality',
+  //   options: [
+  //     { label: 'standard', value: 'standard' },
+  //     { label: 'hd', value: 'hd' }
+  //   ],
+  //   label: {
+  //     text: 'playground.params.quality',
+  //     isLocalized: true
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // },
+  // {
+  //   type: 'Select',
+  //   name: 'style',
+  //   options: [
+  //     { label: 'vivid', value: 'vivid' },
+  //     { label: 'natural', value: 'natural' }
+  //   ],
+  //   label: {
+  //     text: 'playground.params.style',
+  //     isLocalized: true
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // }
+  // {
+  //   type: 'TextArea',
+  //   name: 'prompt',
+  //   label: {
+  //     text: 'Prompt',
+  //     isLocalized: false
+  //   },
+  //   attrs: {
+  //     autoSize: {
+  //       minRows: 2,
+  //       maxRows: 3
+  //     }
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // }
 ];

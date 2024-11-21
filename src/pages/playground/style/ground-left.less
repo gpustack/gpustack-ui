@@ -54,6 +54,19 @@
       .content {
         flex: 1;
       }
+
+      .hold-wrapper {
+        height: 100%;
+      }
+
+      .hold-text-icon {
+        display: flex;
+        padding: 4px;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--ant-color-fill-tertiary);
+        border-radius: var(--border-radius-base);
+      }
     }
   }
 
@@ -62,5 +75,20 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+  }
+
+  .embed-chart {
+    position: relative;
+
+    .drag-handler {
+      position: absolute;
+      padding: 0;
+      height: fit-content;
+      top: -10px;
+      font-size: var(--font-size-middle);
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: transparent;
+    }
   }
 }

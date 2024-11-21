@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export const isNotEmptyValue = (value: any) => {
   if (Array.isArray(value)) {
     return value.length > 0;
@@ -30,116 +28,6 @@ export const convertFileSize = (sizeInBytes: number, prec?: number) => {
   } else {
     return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(precision)} TiB`;
   }
-};
-
-export const generateRandomArray = (config?: {
-  min: number;
-  max: number;
-  length: number;
-  offset: number;
-}) => {
-  const { min, max, length, offset } = config || {
-    min: 10,
-    max: 80,
-    length: 10,
-    offset: 10
-  };
-
-  const data = [];
-  let prevValue = Math.floor(Math.random() * (max - min + 1)) + min;
-
-  for (let i = 0; i < length; i++) {
-    let newValue = prevValue + Math.floor(Math.random() * 21) - offset; // Fluctuation range [-10, 10]
-    newValue = Math.max(min, Math.min(max, newValue)); // Ensure within [10, 100]
-    data.push(newValue);
-    prevValue = newValue;
-  }
-
-  return data;
-};
-
-export const generateFluctuatingData2 = ({
-  total = 100,
-  noiseLevel = 10,
-  max = 50,
-  min = 5
-}) => {
-  const x = [];
-  const y = [];
-
-  for (let i = 0; i < total; i++) {
-    // Generate a basic linear trend using a sine function
-    const phaseShift = Math.random() * 2 * Math.PI;
-    const trend =
-      max * Math.sin((3 * Math.PI * i + phaseShift) / total) + max / 2;
-
-    // Generate noise
-    const noise = (Math.random() * 2 - 1) * noiseLevel;
-
-    // Add trend and noise
-    const value = trend + noise;
-    x.push(i);
-    y.push(Math.max(min, value));
-  }
-
-  return y;
-};
-
-export const generateFluctuatingData = ({
-  total = 50,
-  trendType = 'linear',
-  max = 1,
-  f = 1,
-  phase = 0,
-  min = 0
-}) => {
-  /**
-   * Generate a set of data for a line chart with a natural and aesthetically pleasing trend.
-   *
-   * Parameters:
-   * total (number): Number of data points to generate
-   * trendType (string): Type of data trend, options are 'linear', 'sine', 'exponential'
-   * max (number): Fluctuation amplitude
-   * f (number): Fluctuation frequency
-   * phase (number): Fluctuation phase
-   * min (number): Minimum value of the data
-   *
-   * Returns:
-   * x (number[]): x-axis data
-   * y (number[]): y-axis data
-   */
-  const x = Array.from({ length: total }, (_, i) => (i * 10) / (total - 1));
-
-  let y;
-  switch (trendType) {
-    case 'linear':
-      y = x.map(
-        (val) => val * (Math.random() * 2 - 1) * 3 + Math.random() * 8 - 4
-      );
-
-      break;
-    case 'sine':
-      y = x.map(
-        (val) =>
-          max * Math.sin(2 * Math.PI * f * val + phase) + Math.random() * 2 - 1
-      );
-      break;
-    case 'exponential':
-      y = x.map(
-        (val) => Math.exp(val * Math.random() * 0.2) + Math.random() * 4 - 2
-      );
-      break;
-    default:
-      throw new Error(
-        'Invalid trendType parameter. Please choose "linear", "sine", or "exponential".'
-      );
-  }
-
-  // Adjust the data to the minimum value
-  const minY = Math.min(...y);
-  y = y.map((val) => _.round(val - minY + min, 2));
-
-  return y;
 };
 
 export const platformCall = () => {
@@ -190,6 +78,7 @@ export const formatNumber = (num: number) => {
 };
 
 export function loadLanguageConfig(language: string) {
+  // @ts-ignore
   const requireContext = require.context(`./${language}`, false, /\.ts$/);
 
   const languageConfig: Record<string, string> = {};
@@ -214,3 +103,27 @@ export function readBlob(blob: Blob): Promise<string> {
     reader.readAsText(blob, 'utf-8');
   });
 }
+
+export const cosineSimilarity = (vec1: number[], vec2: number[]) => {
+  if (vec1.length !== vec2.length) {
+    throw new Error('both vectors must have the same length');
+  }
+
+  const dotProduct = vec1.reduce(
+    (sum, value, index) => sum + value * vec2[index],
+    0
+  );
+
+  const magnitudeA = Math.sqrt(
+    vec1.reduce((sum, value) => sum + value * value, 0)
+  );
+  const magnitudeB = Math.sqrt(
+    vec2.reduce((sum, value) => sum + value * value, 0)
+  );
+
+  if (magnitudeA === 0 || magnitudeB === 0) {
+    throw new Error('both vectors must have a length greater than 0');
+  }
+
+  return dotProduct / (magnitudeA * magnitudeB);
+};

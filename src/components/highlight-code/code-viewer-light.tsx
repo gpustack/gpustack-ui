@@ -9,6 +9,7 @@ interface CodeViewerProps {
   ignoreIllegals?: boolean;
   copyable?: boolean;
   height?: string | number;
+  style?: React.CSSProperties;
 }
 const LightViewer: React.FC<CodeViewerProps> = (props) => {
   const {
@@ -17,11 +18,13 @@ const LightViewer: React.FC<CodeViewerProps> = (props) => {
     autodetect,
     ignoreIllegals,
     copyable,
+    style,
     height = 'auto'
   } = props || {};
 
   return (
     <CodeViewer
+      style={style}
       height={height}
       code={code}
       lang={lang}

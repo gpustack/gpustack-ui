@@ -48,5 +48,26 @@ export default {
   'playground.compare.applytoall': '应用到所有模型',
   'playground.model.noavailable': '无可用模型',
   'playground.model.noavailable.tips':
-    '请先部署模型，且不是 Embedding Only 的模型'
+    '请先部署模型，且不是 Embedding Only 的模型',
+  'playground.params.counts': '数量',
+  'playground.params.quality': '质量',
+  'playground.params.style': '风格',
+  'playground.params.size': '尺寸',
+  'playground.params.voice': '声音',
+  'playground.params.format': '格式',
+  'playground.params.speed': '播放速度',
+  'playground.params.language': '语言',
+  'playground.params.width': '宽度',
+  'playground.params.height': '高度',
+  'playground.params.custom': '自定义',
+  'playground.params.empty.tips': '生成的图片将出现在这里',
+  'playground.embedding.documents': '文档',
+  'playground.embedding.addtext': '添加文本',
+  'playground.embedding.inputyourtext': '输入你的文本',
+  'playground.embedding.output': '输出',
+  'playground.embedding.chart': '图表',
+  'playground.rerank.query': '查询',
+  'playground.rerank.rank': '排序',
+  'playground.rerank.score': '分数',
+  'playground.rerank.query.holder': '输入查询'
 };

@@ -15,6 +15,7 @@ interface MessageItemProps {
   data: MessageItem;
   editable?: boolean;
   loading?: boolean;
+  showTitle?: boolean;
   actions?: MessageItemAction[];
   updateMessage?: (message: MessageItem) => void;
   onDelete?: () => void;
@@ -26,6 +27,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
   loading,
   data,
   editable,
+  showTitle = true,
   actions = ['upload', 'delete', 'copy']
 }) => {
   const intl = useIntl();
@@ -169,10 +171,16 @@ const ContentItem: React.FC<MessageItemProps> = ({
 
   return (
     <div className="content-item">
-      <div className="content-item-role">
-        <div className="role">
-          {data.title ?? intl.formatMessage({ id: `playground.${data.role}` })}
-        </div>
+      <div
+        className="content-item-role"
+        style={{ display: !showTitle && !actions.length ? 'none' : 'flex' }}
+      >
+        {showTitle && (
+          <div className="role">
+            {data.title ??
+              intl.formatMessage({ id: `playground.${data.role}` })}
+          </div>
+        )}
         <div className="actions">
           {actions.includes('upload') && data.role === Roles.User && (
             <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>

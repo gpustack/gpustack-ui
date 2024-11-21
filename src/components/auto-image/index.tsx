@@ -1,3 +1,4 @@
+import fallbackImg from '@/assets/images/img_fallback.png';
 import {
   DownloadOutlined,
   EyeOutlined,
@@ -13,9 +14,16 @@ import { round } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import './index.less';
 
-const AutoImage: React.FC<ImageProps & { height: number }> = (props) => {
-  const { height = 100, ...rest } = props;
-  const [width, setWidth] = useState(0);
+const AutoImage: React.FC<
+  ImageProps & {
+    height: number | string;
+    width?: number | string;
+    autoSize?: boolean;
+  }
+> = (props) => {
+  const { height = 100, width: w, autoSize, ...rest } = props;
+  const [width, setWidth] = useState(w || 0);
+  const [isError, setIsError] = useState(false);
 
   const getImgRatio = useCallback((url: string): Promise<{ ratio: number }> => {
     return new Promise((resolve) => {
@@ -31,8 +39,15 @@ const AutoImage: React.FC<ImageProps & { height: number }> = (props) => {
   }, []);
 
   const handleOnLoad = useCallback(async () => {
+    if (autoSize) {
+      return;
+    }
     const { ratio } = await getImgRatio(props.src || '');
-    setWidth(height * ratio);
+    if (typeof height === 'number') {
+      setWidth(height * ratio);
+    } else {
+      throw new Error('Height must be a number');
+    }
   }, [getImgRatio, height, props.src]);
 
   const onDownload = () => {
@@ -47,6 +62,10 @@ const AutoImage: React.FC<ImageProps & { height: number }> = (props) => {
     link.remove();
   };
 
+  const handleOnError = () => {
+    setIsError(true);
+  };
+
   useEffect(() => {
     handleOnLoad();
   }, [handleOnLoad]);
@@ -54,8 +73,10 @@ const AutoImage: React.FC<ImageProps & { height: number }> = (props) => {
   return (
     <AntImage
       {...rest}
-      height={height}
-      width={width}
+      height={isError ? 'auto' : height}
+      width={isError ? '100%' : width}
+      onError={handleOnError}
+      fallback={fallbackImg}
       preview={{
         mask: <EyeOutlined />,
         toolbarRender: (

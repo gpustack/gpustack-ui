@@ -1,7 +1,9 @@
 import { isNotEmptyValue } from '@/utils/index';
+import { useIntl } from '@umijs/max';
 import type { SelectProps } from 'antd';
 import { Form, Select } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { cloneDeep } from 'lodash';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
@@ -12,9 +14,11 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     children,
     required,
     description,
+    options,
     isInFormItems = true,
     ...rest
   } = props;
+  const intl = useIntl();
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   let status = '';
@@ -22,6 +26,19 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     const statusData = Form?.Item?.useStatus?.();
     status = statusData?.status || '';
   }
+
+  const _options = useMemo(() => {
+    if (!options?.length) {
+      return [];
+    }
+    const list = cloneDeep(options);
+    return list.map((item: any) => {
+      if (item.locale) {
+        item.label = intl.formatMessage({ id: item.label as string });
+      }
+      return item;
+    });
+  }, [options, intl]);
 
   useEffect(() => {
     if (isNotEmptyValue(props.value)) {
@@ -70,6 +87,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
       <Select
         {...rest}
         ref={inputRef}
+        options={_options}
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
         onChange={handleChange}

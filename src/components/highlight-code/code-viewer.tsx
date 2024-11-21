@@ -12,6 +12,7 @@ interface CodeViewerProps {
   copyable?: boolean;
   height?: string | number;
   theme?: 'light' | 'dark';
+  style?: React.CSSProperties;
 }
 const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   const {
@@ -20,7 +21,8 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
     autodetect = true,
     ignoreIllegals = true,
     copyable = true,
-    height = 'auto'
+    height = 'auto',
+    style
   } = props || {};
 
   const highlightedCode = useMemo(() => {
@@ -69,7 +71,8 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
         }
       )}
       style={{
-        height: height
+        height: height,
+        ...style
       }}
     >
       <code

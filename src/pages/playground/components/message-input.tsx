@@ -477,6 +477,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       <ThumbImg
         dataList={message.imgs || []}
         onDelete={handleDeleteImg}
+        editable={true}
       ></ThumbImg>
       <div className="input-box">
         {actions.includes('paste') ? (

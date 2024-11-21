@@ -2,7 +2,7 @@
   position: relative;
 
   &.focus {
-    padding-top: 9px;
+    // padding-top: 9px;
   }
 
   .content-wrap {
@@ -15,7 +15,7 @@
 
     &:hover {
       .clear-btn {
-        display: block;
+        display: flex;
       }
     }
   }
@@ -29,7 +29,8 @@
     display: none;
     position: absolute;
     right: 6px;
-    top: 6px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
   .textarea-label {
@@ -41,8 +42,8 @@
   .content {
     flex: 1;
     width: 100px;
-    height: 40px;
-    line-height: 24px;
+    height: 46px;
+    line-height: 30px;
     padding: 8px 14px;
     padding-right: 4px;
     text-overflow: ellipsis;

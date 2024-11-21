@@ -17,35 +17,47 @@ const options: any = {
     borderRadius: 4
   },
   xAxis: {
+    min: -1,
+    max: 1,
     scale: false,
     slient: true,
     splitNumber: 15,
     splitLine: {
       lineStyle: {
-        color: 'rgba(5,5,5,0.06)'
+        color: '#F2F2F2'
       }
     },
     axisLine: {
-      show: false
+      show: false,
+      lineStyle: {
+        color: '#F2F2F2'
+      }
     },
     axisTick: {
       show: false
     },
     axisLabel: {
       show: false
-    }
+    },
+    boundaryGap: [0.05, 0.05]
   },
   yAxis: {
+    min: -1,
+    max: 1,
     scale: false,
     slient: true,
     splitNumber: 10,
+    boundaryGap: [0.05, 0.05],
     splitLine: {
       lineStyle: {
-        color: 'rgba(5,5,5,0.06)'
+        color: '#F2F2F2'
       }
     },
     axisLine: {
-      show: false
+      show: false,
+      lineStyle: {
+        color: '#F2F2F2'
+      }
     },
     axisTick: {
       show: false
@@ -54,6 +66,7 @@ const options: any = {
       show: false
     }
   },
+
   symbol: 'roundRect',
   label: {
     show: true,
@@ -67,16 +80,7 @@ const options: any = {
 };
 
 const Scatter: React.FC<ChartProps> = (props) => {
-  const {
-    seriesData,
-    xAxisData,
-    height,
-    width,
-    showEmpty,
-    labelFormatter,
-    legendData,
-    title
-  } = props;
+  const { seriesData, xAxisData, height, width, showEmpty, title } = props;
 
   const chart = useRef<any>(null);
 
@@ -118,18 +122,21 @@ const Scatter: React.FC<ChartProps> = (props) => {
     []
   );
 
-  const dataOptions = useMemo((): any => {
-    if (!seriesData.length) {
-      options.xAxis.min = 0;
-      options.xAxis.max = 1;
-      options.yAxis.min = 0;
-      options.yAxis.max = 1;
-    } else {
-      options.xAxis.min = null;
-      options.xAxis.max = null;
-      options.yAxis.min = null;
-      options.yAxis.max = null;
+  const renderNameInTooltip = useCallback((dataList: any[]) => {
+    if (!dataList.length || dataList.length < 2) {
+      return null;
     }
+    const renderText = (item: any) => {
+      return `<span class="tooltip-item-name">
+               <span style="display:flex;justify-content:center;align-items: center;color:#fff;
+               margin-right:0;border-radius:4px;width:14px;
+               height:14px;background-color:${item?.itemStyle?.color};"
+               >${item.name}</span>
+             </span>`;
+    };
+    return renderText;
+  }, []);
+  const dataOptions = useMemo((): any => {
     const seriseDataList = seriesData.map((item: any, index: number) => {
       return {
         ...item,
@@ -147,15 +154,11 @@ const Scatter: React.FC<ChartProps> = (props) => {
         formatter(params: any, callback?: (val: any) => any) {
           const dataList = findOverlappingPoints(seriseDataList, params.data);
           let result = '';
+          const renderText: any = renderNameInTooltip(dataList);
           dataList.forEach((item: any) => {
             result += `
             <span class="tooltip-item" style="justify-content: flex-start;">
-             <span class="tooltip-item-name">
-               <span style="display:flex;justify-content:center;align-items: center;color:#fff;
-               margin-right:0;border-radius:4px;width:14px;
-               height:14px;background-color:${item.itemStyle?.color};"
-               >${item.name}</span>
-             </span>
+             ${renderText ? renderText(item) : ''}
              <span class="tooltip-value">${item.text}</span>
             </span>`;
           });
@@ -168,6 +171,9 @@ const Scatter: React.FC<ChartProps> = (props) => {
       },
       series: {
         type: 'scatter',
+        labelLayout: {
+          hideOverlap: true
+        },
         data: seriseDataList
       }
     };

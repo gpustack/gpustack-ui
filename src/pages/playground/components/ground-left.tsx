@@ -15,7 +15,7 @@ import {
   useState
 } from 'react';
 import { CHAT_API } from '../apis';
-import { Roles, generateMessages } from '../config';
+import { OpenAIViewCode, Roles, generateMessages } from '../config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
@@ -274,10 +274,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
             <div className="content">
               <MessageContent
-                spans={{
-                  span: 24,
-                  count: 1
-                }}
                 messageList={messageList}
                 setMessageList={setMessageList}
                 editable={true}
@@ -298,7 +294,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            scope="chat"
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}
@@ -329,6 +324,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       </div>
 
       <ViewCodeModal
+        {...OpenAIViewCode.chat}
         open={show}
         payLoad={{
           messages: viewCodeMessage

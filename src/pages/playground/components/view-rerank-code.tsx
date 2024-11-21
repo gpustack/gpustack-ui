@@ -6,11 +6,11 @@ import { Button, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
-  documentList: string[];
   parameters: any;
   title: string;
   open: boolean;
   apiType?: string;
+  payload?: Record<string, any>;
   onCancel: () => void;
 };
 
@@ -27,13 +27,7 @@ const langOptions = [
 ];
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const {
-    title,
-    open,
-    onCancel,
-    documentList = [],
-    parameters = {}
-  } = props || {};
+  const { title, open, onCancel, payload, parameters = {} } = props || {};
 
   const intl = useIntl();
   const [codeValue, setCodeValue] = useState('');
@@ -46,7 +40,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const code = `curl ${window.location.origin}/v1/rerank \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
-          documents: documentList
+          ...payload
         },
         null,
         2
@@ -55,7 +49,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     } else if (lang === langMap.javascript) {
       const data = {
         ...parameters,
-        documents: documentList
+        ...payload
       };
       const headers = {
         'Content-type': 'application/json',
@@ -66,7 +60,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     } else if (lang === langMap.python) {
       const data = {
         ...parameters,
-        documents: documentList
+        ...payload
       };
       const headers = {
         'Content-type': 'application/json',
@@ -88,7 +82,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
 
   useEffect(() => {
     generateCode();
-  }, [lang, parameters, documentList]);
+  }, [lang, parameters, payload]);
 
   return (
     <>

@@ -9,6 +9,7 @@ interface CodeViewerProps {
   ignoreIllegals?: boolean;
   copyable?: boolean;
   height?: string | number;
+  style?: React.CSSProperties;
 }
 const DarkViewer: React.FC<CodeViewerProps> = (props) => {
   const {
@@ -22,6 +23,7 @@ const DarkViewer: React.FC<CodeViewerProps> = (props) => {
 
   return (
     <CodeViewer
+      style={props.style}
       height={height}
       code={code}
       lang={lang}

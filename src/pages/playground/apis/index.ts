@@ -65,9 +65,19 @@ export const createImages = async (
   },
   options?: any
 ) => {
-  return request(`${CREAT_IMAGE_API}`, {
+  const res = await fetch(`${CREAT_IMAGE_API}`, {
     method: 'POST',
-    data: params,
-    cancelToken: options?.cancelToken
+    body: JSON.stringify(params),
+    signal: options.signal,
+    headers: {
+      'Content-Type': 'application/json'
+    }
   });
+  if (!res.ok) {
+    return {
+      error: true,
+      data: await res.json()
+    };
+  }
+  return res.json();
 };

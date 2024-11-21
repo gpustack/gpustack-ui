@@ -1,6 +1,8 @@
+import IconFont from '@/components/icon-font';
 import SpeechContent from '@/components/speech-content';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
+import { ThunderboltOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
@@ -21,9 +23,9 @@ import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
+import RerankerParams from './dynamic-params';
 import MessageInput from './message-input';
 import ReferenceParams from './reference-params';
-import RerankerParams from './reranker-params';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
@@ -59,6 +61,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const checkvalueRef = useRef<any>(true);
+  const [currentPrompt, setCurrentPrompt] = useState<string>('');
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -232,20 +235,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleSelectModel = () => {};
 
-  const handlePresetPrompt = (list: { role: string; content: string }[]) => {
-    const sysMsg = list.filter((item) => item.role === 'system');
-    const userMsg = list
-      .filter((item) => item.role === 'user')
-      .map((item) => {
-        setMessageId();
-        return {
-          ...item,
-          uid: messageId.current
-        };
-      });
-    setSystemMessage(sysMsg[0]?.content || '');
-    setMessageList(userMsg);
-  };
   const handleOnCheckChange = (e: any) => {
     console.log('handleOnCheckChange', e);
     checkvalueRef.current = e.target.checked;
@@ -279,16 +268,35 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     <div className="ground-left-wrapper">
       <div className="ground-left">
         <div className="message-list-wrap" ref={scroller}>
-          <>
+          <div
+            style={{
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
             <div className="content">
-              <SpeechContent dataList={messageList} loading={loading} />
+              {messageList.length ? (
+                <SpeechContent dataList={messageList} loading={loading} />
+              ) : (
+                <div className="flex-column font-size-14 flex-center gap-20">
+                  <span>
+                    <IconFont
+                      type="icon-audio "
+                      className="font-size-32 text-secondary"
+                    ></IconFont>
+                  </span>
+                  <span>Generated speech will appear here</span>
+                </div>
+              )}
               {loading && (
                 <Spin size="small">
                   <div style={{ height: '46px' }}></div>
                 </Spin>
               )}
             </div>
-          </>
+          </div>
         </div>
         {tokenResult && (
           <div style={{ height: 40 }}>
@@ -297,8 +305,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            scope="chat"
-            actions={['clear', 'check']}
+            actions={['check']}
             checkLabel={intl.formatMessage({
               id: 'playground.toolbar.autoplay'
             })}
@@ -311,7 +318,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             handleAbortFetch={handleStopConversation}
             clearAll={handleClear}
             setModelSelections={handleSelectModel}
-            presetPrompt={handlePresetPrompt}
+            shouldResetMessage={false}
+            submitIcon={<ThunderboltOutlined></ThunderboltOutlined>}
             modelList={modelList}
           />
         </div>
@@ -337,7 +345,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <ViewCodeModal
         open={show}
         payLoad={{
-          messages: viewCodeMessage
+          prompt: currentPrompt
         }}
         parameters={parameters}
         onCancel={handleCloseViewCode}

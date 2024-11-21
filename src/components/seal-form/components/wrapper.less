@@ -13,6 +13,10 @@
   border-radius: @borderRadius;
   background-color: var(--color-white-1);
 
+  &.seal-input-number {
+    padding-right: 0;
+  }
+
   &.borderless {
     border: none;
     box-shadow: none;
@@ -96,6 +100,12 @@
   flex: 1;
   padding-block: 20px 0;
   max-width: 100%;
+
+  &:hover {
+    :global(.ant-input-number-handler-wrap) {
+      width: 34px !important;
+    }
+  }
 
   &.no-wrapper-style {
     padding-block: 0;
@@ -201,6 +211,7 @@
     height: @inputheight !important;
   }
   // ==================== input ====================
+
   :global(.ant-input),
   :global(.ant-input-password) {
     // width: 100%;
@@ -221,6 +232,7 @@
   }
 
   :global(.ant-input-number) {
+    position: static;
     display: flex;
     align-items: center;
     border: none;
@@ -228,6 +240,15 @@
     padding: 0;
     height: @inputheight !important;
     background-color: @bgColor;
+
+    &:hover .ant-input-number-handler-wrap,
+    &-focused .ant-input-number-handler-wrap {
+      width: 34px !important;
+    }
+
+    &:hover {
+      cursor: text;
+    }
   }
 
   :global(.ant-input-outlined) {
@@ -293,13 +314,7 @@
   }
 
   :global(.ant-input-number-handler-wrap) {
-    top: -20px;
+    top: 0;
     height: @wrapheight - 2px;
   }
-
-  // :global(.ant-input-prefix) {
-  //   position: absolute;
-  //   top: 1px;
-  //   left: -4px;
-  // }
 }

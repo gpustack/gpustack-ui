@@ -61,7 +61,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
         setPlayOn(false);
         setAudioState((prestate: any) => {
           return {
-            currentTime: 0,
+            currentTime: audioRef.current?.ended ? 0 : prestate.currentTime,
             duration: prestate.duration
           };
         });
@@ -87,6 +87,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
   const handleLoadedMetadata = useCallback(
     (data: any) => {
+      console.log('loadmetadata++++++++');
       const duration = Math.ceil(audioRef.current?.duration || 0);
       setAudioState({
         currentTime: 0,

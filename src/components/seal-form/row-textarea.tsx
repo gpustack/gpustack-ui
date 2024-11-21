@@ -10,11 +10,12 @@ interface SystemMessageProps {
   value: string;
   placeholder?: string;
   label?: React.ReactNode;
+  height?: number;
   onChange: (e: any) => void;
 }
 
 const RowTextarea: React.FC<SystemMessageProps> = (props) => {
-  const { value, onChange, style, label, placeholder } = props;
+  const { value, onChange, style, label, placeholder, height = 46 } = props;
   const intl = useIntl();
   const rowTextAreaRef = React.useRef<any>(null);
   const [autoSize, setAutoSize] = useState<{
@@ -64,7 +65,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
           style={{ display: autoSize.focus ? 'block' : 'none' }}
           className="textarea-wrapper"
         >
-          <span className="textarea-label">{label}</span>
+          {label && <span className="textarea-label">{label}</span>}
           <Input.TextArea
             className="custome-scrollbar"
             ref={rowTextAreaRef}
@@ -87,8 +88,8 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
       }
       {!autoSize.focus && (
         <div className="content-wrap" onClick={handleFocus}>
-          <div className="content">
-            <span className="title">{label}</span>
+          <div className="content" style={{ height: height }}>
+            {label && <span className="title">{label}</span>}
             {value || (
               <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
                 {placeholder}

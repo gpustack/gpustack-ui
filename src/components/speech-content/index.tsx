@@ -9,11 +9,11 @@ interface SpeechContentProps {
 const SpeechContent: React.FC<SpeechContentProps> = (props) => {
   console.log('SpeechContent', props);
   return (
-    <div>
+    <>
       {props.dataList.map((item) => (
         <SpeechItem key={item.uid} {...item} />
       ))}
-    </div>
+    </>
   );
 };
 

@@ -1,3 +1,4 @@
+import { isHTMLDocumentString } from '@/utils';
 import { EyeOutlined } from '@ant-design/icons';
 import { Checkbox, Image, Typography } from 'antd';
 import { unescape } from 'lodash';
@@ -198,12 +199,18 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   }, [content, generateImgSrc]);
 
   return (
-    <div
-      style={{ height }}
-      className="markdown-viewer custom-scrollbar-horizontal"
-    >
-      {renderTokens(tokens)}
-    </div>
+    <>
+      {isHTMLDocumentString(content) ? (
+        <div dangerouslySetInnerHTML={{ __html: content }} style={{ height }} />
+      ) : (
+        <div
+          style={{ height }}
+          className="markdown-viewer custom-scrollbar-horizontal"
+        >
+          {renderTokens(tokens)}
+        </div>
+      )}
+    </>
   );
 };
 

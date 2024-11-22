@@ -5,7 +5,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Modal, Select, Tag } from 'antd';
+import { Button, Form, Modal, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { createApisKey } from '../apis';
@@ -160,17 +160,10 @@ const AddModal: React.FC<AddModalProps> = ({
               ]}
             >
               <SealSelect
+                options={expirationOptions}
                 label={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
                 required
-              >
-                {expirationOptions.map((option) => {
-                  return (
-                    <Select.Option key={option.value} value={option.value}>
-                      {intl.formatMessage({ id: option.label })}
-                    </Select.Option>
-                  );
-                })}
-              </SealSelect>
+              ></SealSelect>
             </Form.Item>
             <Form.Item<FormData>
               name="description"

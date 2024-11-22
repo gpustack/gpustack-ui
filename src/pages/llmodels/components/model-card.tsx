@@ -54,6 +54,7 @@ const ModelCard: React.FC<{
           signal: axiosTokenRef.current.signal
         }
       );
+      console.log('readme++++++++', res);
       return res || '';
     } catch (error) {
       return '';

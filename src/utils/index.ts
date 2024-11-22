@@ -127,3 +127,13 @@ export const cosineSimilarity = (vec1: number[], vec2: number[]) => {
 
   return dotProduct / (magnitudeA * magnitudeB);
 };
+
+export const isHTMLDocumentString = (str: string) => {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(str, 'text/html');
+    return doc.documentElement.tagName.toLowerCase() === 'html';
+  } catch (e) {
+    return false;
+  }
+};

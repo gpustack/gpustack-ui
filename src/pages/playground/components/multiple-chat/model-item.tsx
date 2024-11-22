@@ -44,7 +44,6 @@ interface ModelItemProps {
 const ModelItem: React.FC<ModelItemProps> = forwardRef(
   ({ model, modelList, instanceId }, ref) => {
     const {
-      spans,
       globalParams,
       setGlobalParams,
       setLoadingStatus,
@@ -56,7 +55,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const intl = useIntl();
     const isApplyToAllModels = useRef(false);
     const [systemMessage, setSystemMessage] = useState<string>('');
-    const [params, setParams] = useState<Record<string, any>>({});
+    const [params, setParams] = useState<Record<string, any>>({
+      model: model
+    });
     const [loading, setLoading] = useState(false);
     const messageId = useRef<number>(0);
     const [messageList, setMessageList] = useState<MessageItem[]>([]);
@@ -314,10 +315,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     useEffect(() => {
       setParams({
         ...params,
-        model: model,
         ...globalParams
       });
-    }, [globalParams, model]);
+    }, [globalParams]);
 
     useEffect(() => {
       return () => {

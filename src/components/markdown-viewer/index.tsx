@@ -199,14 +199,12 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
   return (
     <>
-      (
       <div
         style={{ height }}
         className="markdown-viewer custom-scrollbar-horizontal"
       >
         {renderTokens(tokens)}
       </div>
-      )
     </>
   );
 };

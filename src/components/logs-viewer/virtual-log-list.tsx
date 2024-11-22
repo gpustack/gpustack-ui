@@ -24,10 +24,11 @@ interface LogsViewerProps {
   params?: object;
   ref?: any;
   tail?: number;
+  enableScorllLoad?: boolean;
   diffHeight?: number;
 }
 const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
-  const { diffHeight, url, tail: defaultTail } = props;
+  const { diffHeight, url, tail: defaultTail, enableScorllLoad = true } = props;
   const { pageSize, page, setPage, setTotalPage, totalPage } =
     useLogsPagination();
   const { setChunkFetch } = useSetChunkFetch();
@@ -169,7 +170,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const handleOnScroll = useCallback(
     async (isTop: boolean) => {
       setIsAtTop(isTop);
-      if (loading || isLoadend || logs.length < pageSize) {
+      if (loading || isLoadend || logs.length < pageSize || !enableScorllLoad) {
         return;
       }
       if (isTop && !isLoadend) {

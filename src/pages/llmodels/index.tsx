@@ -130,6 +130,7 @@ const Models: React.FC = () => {
   };
 
   const updateInstanceHandler = (list: any) => {
+    console.log('updateInstanceHandler=====', list);
     setModelInstances(list);
   };
 

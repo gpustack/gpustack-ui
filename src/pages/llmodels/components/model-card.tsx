@@ -205,9 +205,15 @@ const ModelCard: React.FC<{
       if (!imgSrc) {
         return '';
       }
-      return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
+      if (modelSource === modelSourceMap.modelscope_value) {
+        return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
+      }
+      if (modelSource === modelSourceMap.huggingface_value) {
+        return `https://huggingface.co/${modelData?.id}/resolve/main/${imgSrc}`;
+      }
+      return '';
     },
-    [modelData]
+    [modelData, modelSource]
   );
 
   useEffect(() => {
@@ -277,11 +283,7 @@ const ModelCard: React.FC<{
                   }}
                 >
                   <MarkdownViewer
-                    generateImgLink={
-                      modelSource === modelSourceMap.modelscope_value
-                        ? generateModeScopeImgLink
-                        : undefined
-                    }
+                    generateImgLink={generateModeScopeImgLink}
                     content={readmeText}
                     theme="light"
                   ></MarkdownViewer>
@@ -310,11 +312,7 @@ const ModelCard: React.FC<{
                 </TitleWrapper>
                 <div className="card-wrapper">
                   <MarkdownViewer
-                    generateImgLink={
-                      modelSource === modelSourceMap.modelscope_value
-                        ? generateModeScopeImgLink
-                        : undefined
-                    }
+                    generateImgLink={generateModeScopeImgLink}
                     content={readmeText}
                     theme="light"
                   ></MarkdownViewer>

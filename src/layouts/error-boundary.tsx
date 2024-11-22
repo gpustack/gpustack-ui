@@ -15,13 +15,11 @@ class ErrorBoundary extends Component<
     };
   }
 
-  // 捕获错误并更新状态
   static getDerivedStateFromError(error: any) {
     console.error('Error caught by Error Boundary:', error);
     return { hasError: true };
   }
 
-  // 记录错误信息（可选）
   componentDidCatch(error: any, info: any) {
     console.error('Error caught by Error Boundary:', error);
     console.error(info);

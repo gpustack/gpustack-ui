@@ -195,13 +195,25 @@ export default (props: any) => {
   }, [initialize]);
 
   useEffect(() => {
-    const menuWrap = document.querySelector(
-      '.ant-menu.ant-menu-root'
-    )?.parentElement;
-    if (menuWrap) {
-      initializeMenu(menuWrap);
-    }
-  }, [initializeMenu]);
+    const checkAndInitialize = () => {
+      const menuWrap = window.document.querySelector(
+        '.ant-menu.ant-menu-root'
+      )?.parentElement;
+      if (menuWrap) {
+        try {
+          initializeMenu(menuWrap);
+        } catch (error) {
+          console.error('Failed to initialize menu:', error);
+        }
+      } else {
+        console.warn('Menu wrapper not found.');
+      }
+    };
+
+    const timeout = setTimeout(checkAndInitialize, 500);
+
+    return () => clearTimeout(timeout);
+  }, [initializeMenu, matchedRoute, location]);
 
   const renderMenuHeader = useCallback(
     (logo, title) => {

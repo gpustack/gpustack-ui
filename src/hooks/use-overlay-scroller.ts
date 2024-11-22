@@ -3,7 +3,7 @@ import {
   UseOverlayScrollbarsParams,
   useOverlayScrollbars
 } from 'overlayscrollbars-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export const overlaySollerOptions: UseOverlayScrollbarsParams = {
   options: {
@@ -52,7 +52,7 @@ export default function useOverlayScroller(options?: any) {
   const throttledScroll = React.useCallback(
     throttle(() => {
       scrollEventElement.current?.scrollTo?.({
-        top: scrollEventElement.current.scrollHeight,
+        top: scrollEventElement.current?.scrollHeight,
         behavior: 'smooth'
       });
       instanceRef.current?.update?.();
@@ -82,10 +82,6 @@ export default function useOverlayScroller(options?: any) {
 
   // scroll to top
   const updateScrollerPositionToTop = React.useCallback(() => {
-    console.log(
-      ' scrollEventElement.current.scrollHeight====',
-      scrollEventElement.current.scrollHeight
-    );
     scrollEventElement.current?.scrollTo?.({
       top: 0,
       behavior: 'auto'
@@ -107,13 +103,6 @@ export default function useOverlayScroller(options?: any) {
       if (el) {
         initialize(el);
         initialized.current = true;
-        console.log(
-          'createInstance===2',
-          initialized.current,
-          instanceRef.current,
-          instance?.(),
-          instance
-        );
         instanceRef.current = instance?.();
         scrollEventElement.current =
           instanceRef.current?.elements()?.scrollEventElement;
@@ -121,6 +110,12 @@ export default function useOverlayScroller(options?: any) {
     },
     [initialize, instance]
   );
+
+  useEffect(() => {
+    return () => {
+      instanceRef.current?.destroy?.();
+    };
+  }, [instance]);
 
   return {
     initialize: createInstance,

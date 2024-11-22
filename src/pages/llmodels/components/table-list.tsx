@@ -11,7 +11,6 @@ import HotKeys from '@/config/hotkeys';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import ViewCodeModal from '@/pages/playground/components/view-code-modal';
 import {
   GPUDeviceItem,
   ListItem as WorkerListItem
@@ -88,10 +87,6 @@ const Models: React.FC<ModelsProps> = ({
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
-  const [embeddingParams, setEmbeddingParams] = useState<any>({
-    params: {},
-    show: false
-  });
 
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -104,6 +99,8 @@ const Models: React.FC<ModelsProps> = ({
   const [currentInstance, setCurrentInstance] = useState<{
     url: string;
     status: string;
+    id?: number | string;
+    modelId?: number | string;
     tail?: number;
   }>({
     url: '',
@@ -226,11 +223,6 @@ const Models: React.FC<ModelsProps> = ({
       key: 'chat',
       icon: <WechatWorkOutlined />
     },
-    // {
-    //   label: 'common.button.viewcode',
-    //   key: 'embedding',
-    //   icon: <IconFont type="icon-code" />
-    // },
     {
       label: 'common.button.delete',
       key: 'delete',
@@ -363,6 +355,8 @@ const Models: React.FC<ModelsProps> = ({
       setCurrentInstance({
         url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
         status: row.state,
+        id: row.id,
+        modelId: row.model_id,
         tail: row.state === InstanceStatusMap.Downloading ? undefined : PageSize
       });
       setOpenLogModal(true);
@@ -413,17 +407,8 @@ const Models: React.FC<ModelsProps> = ({
       if (val === 'delete') {
         handleDelete(row);
       }
-      if (val === 'embedding') {
-        setEmbeddingParams({
-          params: {
-            input: 'Your text string goes here',
-            model: row.name
-          },
-          show: true
-        });
-      }
     },
-    [handleEdit, handleOpenPlayGround, handleDelete, setEmbeddingParams]
+    [handleEdit, handleOpenPlayGround, handleDelete]
   );
 
   const handleChildSelect = useCallback(
@@ -467,13 +452,6 @@ const Models: React.FC<ModelsProps> = ({
       return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
     }
     return '';
-  }, []);
-
-  const handleCloseViewCode = useCallback(() => {
-    setEmbeddingParams({
-      params: {},
-      show: false
-    });
   }, []);
 
   return (
@@ -682,18 +660,12 @@ const Models: React.FC<ModelsProps> = ({
       <ViewLogsModal
         url={currentInstance.url}
         tail={currentInstance.tail}
+        id={currentInstance.id}
+        modelId={currentInstance.modelId}
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-      <ViewCodeModal
-        apiType="embedding"
-        open={embeddingParams.show}
-        messageList={[]}
-        parameters={embeddingParams.params}
-        onCancel={handleCloseViewCode}
-        title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCodeModal>
     </>
   );
 };

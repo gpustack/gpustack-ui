@@ -52,21 +52,21 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   useEffect(() => {
     if (showModelSelector) {
       form.setFieldsValue({
-        model: selectedModel || _.get(modelList, '[0].value'),
-        ...initialValues
+        ...initialValues,
+        model: selectedModel || _.get(modelList, '[0].value')
       });
       setParams({
-        model: selectedModel || _.get(modelList, '[0].value'),
-        ...initialValues
+        ...initialValues,
+        model: selectedModel || _.get(modelList, '[0].value')
       });
     } else {
       form.setFieldsValue({
-        model: selectedModel || '',
-        ...initialValues
+        ...initialValues,
+        model: selectedModel || ''
       });
       setParams({
-        model: selectedModel || '',
-        ...initialValues
+        ...initialValues,
+        model: selectedModel || ''
       });
     }
   }, [modelList, showModelSelector, selectedModel]);

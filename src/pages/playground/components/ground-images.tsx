@@ -221,7 +221,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setLoading(false);
   };
 
-  const submitMessage = async (current?: { role: string; content: string }) => {
+  const submitMessage = async (current?: { content: string }) => {
     try {
       await form.current?.form?.validateFields();
       if (!parameters.model) return;
@@ -255,10 +255,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
+        // url: 'http://192.168.50.27:40639/v1/images/generations',
         url: CREAT_IMAGE_API,
         signal: requestToken.current.signal,
         headers: {
-          accept: 'text/event-stream'
+          'Cache-Control': 'no-cache',
+          Accept: 'text/event-stream',
+          Connection: 'keep-alive'
         }
       });
 
@@ -281,8 +284,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           });
           return;
         }
-        const data = chunk?.data || [];
-        data.forEach((item: any) => {
+        console.log('data:================', chunk);
+        chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
           newImageList[item.index] = {
             dataUrl: `data:image/png;base64,${item.b64_json}`,
@@ -363,7 +366,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           >
             <SealInput.Number
               style={{ width: '100%' }}
-              label={intl.formatMessage({ id: 'playground.params.width' })}
+              label={`${intl.formatMessage({ id: 'playground.params.width' })}(px)`}
             ></SealInput.Number>
           </Form.Item>
           <Form.Item
@@ -385,7 +388,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           >
             <SealInput.Number
               style={{ width: '100%' }}
-              label="Height"
+              label={`${intl.formatMessage({ id: 'playground.params.height' })}(px)`}
             ></SealInput.Number>
           </Form.Item>
         </div>

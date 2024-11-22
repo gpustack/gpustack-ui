@@ -1,52 +1,58 @@
 import LogsViewer from '@/components/logs-viewer/virtual-log-list';
+import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
+import { MODELS_API } from '../apis';
+import { InstanceStatusMap } from '../config';
 
 type ViewModalProps = {
   open: boolean;
   url: string;
+  id?: number | string;
+  modelId?: number | string;
   tail?: number;
-  autoScroll?: boolean;
   onCancel: () => void;
 };
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const { open, url, onCancel, tail } = props || {};
-  const [modalSize, setModalSize] = useState<any>({
-    width: 600,
-    height: 420
-  });
-  const isFullScreenRef = React.useRef(false);
-  const logsViewerRef = React.useRef<any>(null);
-  const intl = useIntl();
   const viewportHeight = window.innerHeight;
-  const viewHeight = viewportHeight - 86;
-
-  const handleFullscreenToggle = useCallback(() => {
-    isFullScreenRef.current = !isFullScreenRef.current;
-    setModalSize((size: any) => {
-      return {
-        width: size.width === 600 ? '100%' : 600,
-        height: size.height === 420 ? viewHeight : 420
-      };
-    });
-  }, []);
+  const intl = useIntl();
+  const { setChunkRequest } = useSetChunkRequest();
+  const { open, url, onCancel, tail } = props || {};
+  const [modalSize] = useState<any>({
+    width: '100%',
+    height: viewportHeight - 86
+  });
+  const [enableScorllLoad, setEnableScorllLoad] = useState(true);
+  const logsViewerRef = React.useRef<any>(null);
+  const requestRef = React.useRef<any>(null);
 
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
     onCancel();
   }, [onCancel]);
 
+  const updateHandler = (list: any) => {
+    const data = list?.find((item: any) => item.data.id === props.id);
+    if (data) {
+      setEnableScorllLoad(InstanceStatusMap.Downloading !== data?.data?.state);
+    }
+  };
+
   useEffect(() => {
+    if (!props.id) return;
     if (open) {
-      isFullScreenRef.current = false;
-      setModalSize({
-        width: '100%',
-        height: viewHeight
+      requestRef.current?.current?.cancel?.();
+      requestRef.current = setChunkRequest({
+        url: `${MODELS_API}/${props.id}/instances`,
+        handler: updateHandler
       });
     }
-  }, [open]);
+    return () => {
+      requestRef.current?.current?.cancel?.();
+    };
+  }, [props.id, open]);
 
   return (
     <Modal
@@ -79,6 +85,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         diffHeight={93}
         url={url}
         tail={tail}
+        enableScorllLoad={enableScorllLoad}
         params={{
           follow: true
         }}

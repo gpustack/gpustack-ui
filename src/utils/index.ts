@@ -128,12 +128,8 @@ export const cosineSimilarity = (vec1: number[], vec2: number[]) => {
   return dotProduct / (magnitudeA * magnitudeB);
 };
 
+const htmlSpecialTags = /^<html>(.|\n|\r)*<\/html>$/i;
+
 export const isHTMLDocumentString = (str: string) => {
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(str, 'text/html');
-    return doc.documentElement.tagName.toLowerCase() === 'html';
-  } catch (e) {
-    return false;
-  }
+  return htmlSpecialTags.test(str?.trim());
 };

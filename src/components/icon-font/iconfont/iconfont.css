@@ -1,0 +1,155 @@
+@font-face {
+  font-family: iconfont; /* Project id 4613488 */
+  src:
+    url('iconfont.woff2?t=1732245003614') format('woff2'),
+    url('iconfont.woff?t=1732245003614') format('woff'),
+    url('iconfont.ttf?t=1732245003614') format('truetype');
+}
+
+.iconfont {
+  font-family: iconfont !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-stop2::before {
+  content: '\e8db';
+}
+
+.icon-stop::before {
+  content: '\e60b';
+}
+
+.icon-image::before {
+  content: '\e62c';
+}
+
+.icon-stopcircle-fill::before {
+  content: '\e7cc';
+}
+
+.icon-playcircle-fill::before {
+  content: '\e7cd';
+}
+
+.icon-SpeakerSlash::before {
+  content: '\e661';
+}
+
+.icon-SpeakerHigh::before {
+  content: '\e670';
+}
+
+.icon-user_voice::before {
+  content: '\e667';
+}
+
+.icon-audio::before {
+  content: '\e985';
+}
+
+.icon-hard-disk::before {
+  content: '\eb1d';
+}
+
+.icon-new::before {
+  content: '\e612';
+}
+
+.icon-tu2::before {
+  content: '\e607';
+}
+
+.icon-robot::before {
+  content: '\e634';
+}
+
+.icon-robot1::before {
+  content: '\e602';
+}
+
+.icon-aizhineng::before {
+  content: '\e672';
+}
+
+.icon-copy::before {
+  content: '\e720';
+}
+
+.icon-AIzhineng::before {
+  content: '\e608';
+}
+
+.icon-cols_6::before {
+  content: '\e651';
+}
+
+.icon-cols_3::before {
+  content: '\e650';
+}
+
+.icon-cols_2::before {
+  content: '\e64e';
+}
+
+.icon-cols_4::before {
+  content: '\e64d';
+}
+
+.icon-clear::before {
+  content: '\e60a';
+}
+
+.icon-keyboard::before {
+  content: '\e61b';
+}
+
+.icon-networkerror::before {
+  content: '\e624';
+}
+
+.icon-external-link::before {
+  content: '\e66b';
+}
+
+.icon-huggingface::before {
+  content: '\e7d1';
+}
+
+.icon-ollama::before {
+  content: '\e601';
+}
+
+.icon-a-layout6-line::before {
+  content: '\e9ef';
+}
+
+.icon-a-Layout5::before {
+  content: '\e610';
+}
+
+.icon-English::before {
+  content: '\e8b3';
+}
+
+.icon-chinese::before {
+  content: '\e611';
+}
+
+.icon-yingguo::before {
+  content: '\e606';
+}
+
+.icon-code::before {
+  content: '\e84f';
+}
+
+.icon-stop1::before {
+  content: '\e783';
+}
+
+.icon-command::before {
+  content: '\e600';
+}

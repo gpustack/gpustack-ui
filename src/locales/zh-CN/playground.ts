@@ -74,5 +74,6 @@ export default {
   'playground.rerank.query': '查询',
   'playground.rerank.rank': '排序',
   'playground.rerank.score': '分数',
-  'playground.rerank.query.holder': '输入查询'
+  'playground.rerank.query.holder': '输入查询',
+  'playground.image.prompt': '输入提示'
 };

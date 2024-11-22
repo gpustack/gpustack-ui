@@ -480,6 +480,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             handleAbortFetch={handleStopConversation}
             shouldResetMessage={false}
             clearAll={handleClear}
+            tools={
+              <span className="p-l-8 font-600">
+                {intl.formatMessage({ id: 'playground.image.prompt' })}
+              </span>
+            }
           />
         </div>
       </div>

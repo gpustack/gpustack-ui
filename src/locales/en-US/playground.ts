@@ -74,5 +74,6 @@ export default {
   'playground.rerank.query': 'Query',
   'playground.rerank.rank': 'Rank',
   'playground.rerank.score': 'Score',
-  'playground.rerank.query.holder': 'Input your query'
+  'playground.rerank.query.holder': 'Input your query',
+  'playground.image.prompt': 'Input Prompt'
 };

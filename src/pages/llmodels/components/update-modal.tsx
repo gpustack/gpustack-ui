@@ -34,7 +34,6 @@ const SEARCH_SOURCE = [
 ];
 
 const UpdateModal: React.FC<AddModalProps> = (props) => {
-  console.log('addmodel====');
   const { title, action, open, onOk, onCancel } = props || {};
   const [form] = Form.useForm();
   const intl = useIntl();
@@ -261,6 +260,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleOk = (formdata: FormData) => {
+    let obj = {};
+    if (formdata.backend === backendOptionsMap.vllm) {
+      obj = {
+        distributed_inference_across_workers: false,
+        cpu_offloading: false
+      };
+    }
     if (formdata.scheduleType === 'manual') {
       const gpu = _.find(gpuOptions, (item: any) => {
         return item.value === formdata.gpu_selector;
@@ -275,12 +281,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               gpu_index: gpu.index,
               worker_name: gpu.worker_name
             }
-          : null
+          : null,
+        ...obj
       });
     } else {
       onOk({
         ..._.omit(formdata, ['scheduleType']),
-        gpu_selector: null
+        gpu_selector: null,
+        ...obj
       });
     }
   };

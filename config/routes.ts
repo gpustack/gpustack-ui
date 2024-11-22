@@ -36,7 +36,7 @@ export default [
       {
         name: 'text2images',
         title: 'Text2Images',
-        path: '/playground/text-to-images',
+        path: '/playground/text-to-image',
         key: 'text2images',
         icon: 'Comment',
         component: './playground/images'

@@ -28,16 +28,16 @@ const options: any = {
       }
     },
     axisLine: {
-      show: false,
+      show: true,
       lineStyle: {
-        color: '#F2F2F2'
+        color: '#DCDCDC'
       }
     },
     axisTick: {
       show: false
     },
     axisLabel: {
-      show: false
+      show: true
     },
     boundaryGap: [0.05, 0.05]
   },
@@ -54,16 +54,16 @@ const options: any = {
       }
     },
     axisLine: {
-      show: false,
+      show: true,
       lineStyle: {
-        color: '#F2F2F2'
+        color: '#DCDCDC'
       }
     },
     axisTick: {
       show: false
     },
     axisLabel: {
-      show: false
+      show: true
     }
   },
 

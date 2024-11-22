@@ -14,7 +14,7 @@ const isProduction = env === 'production';
 const t = Date.now();
 export default defineConfig({
   proxy: {
-    ...proxy('http://csvhs44p420c73bdb41g-80.agent.damodel.com')
+    ...proxy()
   },
   history: {
     type: 'hash'

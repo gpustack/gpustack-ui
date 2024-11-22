@@ -48,8 +48,8 @@ const extraConfig: ParamsSchema[] = [
     type: 'Select',
     name: 'quality',
     options: [
-      { label: 'standard', value: 'standard' },
-      { label: 'hd', value: 'hd' }
+      { label: 'playground.params.standard', value: 'standard', locale: true },
+      { label: 'playground.params.hd', value: 'hd', locale: true }
     ],
     label: {
       text: 'playground.params.quality',
@@ -65,8 +65,12 @@ const extraConfig: ParamsSchema[] = [
     type: 'Select',
     name: 'style',
     options: [
-      { label: 'vivid', value: 'vivid' },
-      { label: 'natural', value: 'natural' }
+      { label: 'playground.params.style.vivid', value: 'vivid', locale: true },
+      {
+        label: 'playground.params.style.natural',
+        value: 'natural',
+        locale: true
+      }
     ],
     label: {
       text: 'playground.params.style',
@@ -93,42 +97,42 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       progress?: number;
     }[]
   >([
-    {
-      dataUrl:
-        'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      height: 'auto',
-      width: 'auto',
-      uid: 0,
-      span: 12,
-      progress: 10
-    },
-    {
-      dataUrl:
-        'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
-      height: 'auto',
-      width: 'auto',
-      uid: 1,
-      span: 12,
-      progress: 15
-    },
-    {
-      dataUrl:
-        'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      height: 'auto',
-      width: 'auto',
-      uid: 3,
-      span: 12,
-      progress: 10
-    },
-    {
-      dataUrl:
-        'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
-      height: 'auto',
-      width: 'auto',
-      uid: 4,
-      span: 12,
-      progress: 15
-    }
+    // {
+    //   dataUrl:
+    //     'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    //   height: 'auto',
+    //   width: 'auto',
+    //   uid: 0,
+    //   span: 12,
+    //   progress: 10
+    // },
+    // {
+    //   dataUrl:
+    //     'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
+    //   height: 'auto',
+    //   width: 'auto',
+    //   uid: 1,
+    //   span: 12,
+    //   progress: 15
+    // },
+    // {
+    //   dataUrl:
+    //     'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    //   height: 'auto',
+    //   width: 'auto',
+    //   uid: 3,
+    //   span: 12,
+    //   progress: 10
+    // },
+    // {
+    //   dataUrl:
+    //     'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
+    //   height: 'auto',
+    //   width: 'auto',
+    //   uid: 4,
+    //   span: 12,
+    //   progress: 15
+    // }
   ]);
 
   const intl = useIntl();
@@ -252,7 +256,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const result: any = await fetchChunkedData({
         data: params,
         url: CREAT_IMAGE_API,
-        signal: requestToken.current.signal
+        signal: requestToken.current.signal,
+        headers: {
+          accept: 'text/event-stream'
+        }
       });
 
       if (result?.error) {
@@ -462,7 +469,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            placeholer="Type <kbd>/</kbd> to input prompt"
+            placeholer={intl.formatMessage({
+              id: 'playground.input.prompt.holder'
+            })}
             actions={[]}
             loading={loading}
             disabled={!parameters.model}

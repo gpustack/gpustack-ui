@@ -32,6 +32,7 @@ export const fetchChunkedData = async (params: {
   params?: any;
   signal?: AbortSignal;
   method?: string;
+  headers?: any;
 }) => {
   const method = params.method || 'POST';
   let url = params.url;
@@ -43,7 +44,8 @@ export const fetchChunkedData = async (params: {
     body: method === 'POST' ? JSON.stringify(params.data) : null,
     signal: params.signal,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      ...params.headers
     }
   });
   if (!response.ok) {

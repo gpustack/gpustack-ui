@@ -104,6 +104,11 @@ export const InstanceStatusMap = {
   Analyzing: 'analyzing'
 };
 
+export const InstanceRealLogStatus = [
+  InstanceStatusMap.Downloading,
+  InstanceStatusMap.Initializing
+];
+
 export const InstanceStatusMapValue = {
   [InstanceStatusMap.Initializing]: 'Initializing',
   [InstanceStatusMap.Pending]: 'Pending',

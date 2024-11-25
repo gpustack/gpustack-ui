@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
-import { InstanceStatusMap } from '../config';
+import { InstanceRealLogStatus } from '../config';
 
 type ViewModalProps = {
   open: boolean;
@@ -36,7 +36,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const updateHandler = (list: any) => {
     const data = list?.find((item: any) => item.data.id === props.id);
     if (data) {
-      setEnableScorllLoad(InstanceStatusMap.Downloading !== data?.data?.state);
+      setEnableScorllLoad(!InstanceRealLogStatus.includes(data?.data?.state));
     }
   };
 

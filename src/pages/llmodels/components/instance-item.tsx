@@ -63,6 +63,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       label: 'common.button.viewlog',
       key: 'viewlog',
       status: [
+        InstanceStatusMap.Initializing,
         InstanceStatusMap.Running,
         InstanceStatusMap.Error,
         InstanceStatusMap.Downloading
@@ -104,6 +105,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <div>
           {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
           {modelData?.backend || ''}
+          {modelData.backend_version ? `(${modelData.backend_version})` : ''}
         </div>
       </div>
     );

@@ -4,6 +4,7 @@ export interface ListItem {
   reranker: boolean;
   huggingface_repo_id: string;
   huggingface_file_name: string;
+  backend_version?: string;
   huggingface_filename: string;
   ollama_library_model_name: string;
   model_scope_file_path: string;
@@ -29,6 +30,7 @@ export interface ListItem {
 export interface FormData {
   backend?: string;
   backend_parameters?: string[];
+  backend_version?: string;
   source: string;
   repo_id: string;
   file_name: string;

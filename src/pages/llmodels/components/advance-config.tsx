@@ -279,9 +279,9 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         </Form.Item>
         <Form.Item name="backend_version">
           <SealInput.Input
-            label={intl.formatMessage({ id: 'model.form.backendVersion' })}
+            label={intl.formatMessage({ id: 'models.form.backendVersion' })}
             description={intl.formatMessage({
-              id: 'model.form.backendVersion.tips'
+              id: 'models.form.backendVersion.tips'
             })}
           ></SealInput.Input>
         </Form.Item>

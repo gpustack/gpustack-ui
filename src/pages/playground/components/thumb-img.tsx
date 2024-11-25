@@ -47,7 +47,7 @@ const ThumbImg: React.FC<{
         }}
       >
         <>
-          {loading ? (
+          {item.loading ? (
             <span
               className="progress-wrap"
               style={{
@@ -65,7 +65,13 @@ const ThumbImg: React.FC<{
               <Progress percent={item.progress} type="circle" />
             </span>
           ) : (
-            <span className="img">
+            <span
+              className="img"
+              style={{
+                maxHeight: `min(${item.maxHeight}, 100%)`,
+                maxWidth: `min(${item.maxWidth}, 100%)`
+              }}
+            >
               <AutoImage
                 autoSize={autoSize}
                 src={item.dataUrl}

@@ -92,8 +92,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       dataUrl: string;
       height: number | string;
       width: string | number;
+      maxHeight: string | number;
+      maxWidth: string | number;
       uid: number;
       span?: number;
+      loading?: boolean;
       progress?: number;
     }[]
   >([
@@ -234,11 +237,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         .fill({})
         .map((item, index: number) => {
           return {
-            dataUr: '',
+            dataUrl: 'data:image/png;base64,',
             ...size,
             progress: 0,
-            height: 'auto',
-            width: 'auto',
+            height: '100%',
+            width: '100%',
+            loading: true,
             uid: index
           };
         });
@@ -249,32 +253,21 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const params = {
         stream: true,
+        stream_options: {
+          chunk_result: true
+        },
         prompt: current?.content || currentPrompt || '',
         ..._.omitBy(finalParameters, (value: string) => !value)
       };
 
       const result: any = await fetchChunkedData({
         data: params,
-        // url: 'http://192.168.1.3:40487/v1/images/generations',
         url: CREAT_IMAGE_API,
-        signal: requestToken.current.signal,
-        headers: {
-          'Cache-Control': 'no-cache',
-          Accept: 'text/event-stream',
-          Connection: 'keep-alive'
-        }
+        signal: requestToken.current.signal
       });
 
-      if (result?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage:
-            result?.data?.error?.message || result?.data?.message || ''
-        });
-        return;
-      }
-
       const { reader, decoder } = result;
+      const imgSize = _.split(finalParameters.size, 'x');
 
       await readStreamData(reader, decoder, (chunk: any) => {
         if (chunk?.error) {
@@ -284,23 +277,28 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           });
           return;
         }
-        console.log('data:================', chunk);
+
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
+          if (item.b64_json) {
+            imgItem.dataUrl += item.b64_json;
+          }
           newImageList[item.index] = {
-            dataUrl: `data:image/png;base64,${item.b64_json}`,
+            dataUrl: imgItem.dataUrl,
             height: '100%',
             width: '100%',
+            maxHeight: `${imgSize[1]}px`,
+            maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,
             span: imgItem.span,
+            loading: _.round(item.progress, 0) < 100,
             progress: _.round(item.progress, 0)
           };
         });
         setImageList([...newImageList]);
       });
-      console.log('result:', newImageList);
     } catch (error) {
-      console.log('error:', error);
+      // console.log('error:', error);
       requestToken.current?.abort?.();
       setImageList([]);
     } finally {

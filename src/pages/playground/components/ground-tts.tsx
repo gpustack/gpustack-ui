@@ -1,7 +1,6 @@
 import IconFont from '@/components/icon-font';
 import SpeechContent from '@/components/speech-content';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { fetchChunkedData } from '@/utils/fetch-chunk-data';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Spin } from 'antd';
@@ -15,7 +14,7 @@ import {
   useRef,
   useState
 } from 'react';
-import { CHAT_API } from '../apis';
+import { CHAT_API, textToSpeech } from '../apis';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
@@ -109,7 +108,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         ...parameters,
         prompt: current?.content || currentPrompt
       };
-      const result: any = await fetchChunkedData({
+      const result: any = await textToSpeech({
         data: chatParams,
         url: CHAT_API,
         signal
@@ -265,6 +264,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           prompt: currentPrompt
         }}
         api="audio/speech"
+        clientType="audio.speech"
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

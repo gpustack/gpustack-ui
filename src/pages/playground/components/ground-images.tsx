@@ -255,7 +255,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        // url: 'http://192.168.50.27:40639/v1/images/generations',
+        // url: 'http://192.168.1.3:40487/v1/images/generations',
         url: CREAT_IMAGE_API,
         signal: requestToken.current.signal,
         headers: {

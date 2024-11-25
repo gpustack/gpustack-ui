@@ -69,7 +69,8 @@ export const ollamaModelOptions = [
 
 export const backendOptionsMap = {
   llamaBox: 'llama-box',
-  vllm: 'vllm'
+  vllm: 'vllm',
+  voxBox: 'vox-box'
 };
 
 export const modelSourceMap: Record<string, string> = {

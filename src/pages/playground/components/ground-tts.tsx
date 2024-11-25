@@ -1,24 +1,21 @@
 import IconFont from '@/components/icon-font';
 import SpeechContent from '@/components/speech-content';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
+import { fetchChunkedData } from '@/utils/fetch-chunk-data';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
-import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
   memo,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState
 } from 'react';
 import { CHAT_API } from '../apis';
-import { Roles, generateMessages } from '../config';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
@@ -43,7 +40,16 @@ const initialValues = {
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItem[]>([]);
+  const [messageList, setMessageList] = useState<
+    {
+      prompt: string;
+      voice: string;
+      format: string;
+      speed: number;
+      uid: number;
+      autoplay: boolean;
+    }[]
+  >([]);
 
   const intl = useIntl();
   const [searchParams] = useSearchParams();
@@ -78,51 +84,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
-  const viewCodeMessage = useMemo(() => {
-    return generateMessages([
-      { role: Roles.System, content: systemMessage },
-      ...messageList
-    ]);
-  }, [messageList, systemMessage]);
-
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
 
-  const handleNewMessage = (message?: { role: string; content: string }) => {
-    const newMessage = message || {
-      role:
-        _.last(messageList)?.role === Roles.User ? Roles.Assistant : Roles.User,
-      content: ''
-    };
-    messageList.push({
-      ...newMessage,
-      uid: messageId.current + 1
-    });
-    setMessageId();
-    setMessageList([...messageList]);
-  };
-
-  const joinMessage = (chunk: any) => {
-    setTokenResult({
-      ...(chunk?.usage ?? {})
-    });
-
-    if (!chunk || !_.get(chunk, 'choices', []).length) {
-      return;
-    }
-    contentRef.current =
-      contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
-    setMessageList([
-      ...messageList,
-      ...currentMessageRef.current,
-      {
-        role: Roles.Assistant,
-        content: contentRef.current,
-        uid: messageId.current
-      }
-    ]);
-  };
   const handleStopConversation = () => {
     controllerRef.current?.abort?.();
     setLoading(false);
@@ -134,39 +99,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setLoading(true);
       setMessageId();
       setTokenResult(null);
+      setCurrentPrompt(current?.content || '');
 
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
-      currentMessageRef.current = current
-        ? [
-            {
-              ...current,
-              uid: messageId.current
-            }
-          ]
-        : [];
-
-      contentRef.current = '';
-      setMessageList((pre) => {
-        return [...pre, ...currentMessageRef.current];
-      });
-
-      const messageParams = [
-        { role: Roles.System, content: systemMessage },
-        ...messageList,
-        ...currentMessageRef.current
-      ];
-
-      const messages = generateMessages(messageParams);
 
       const chatParams = {
-        messages: messages,
         ...parameters,
-        stream: true,
-        stream_options: {
-          include_usage: true
-        }
+        prompt: current?.content || currentPrompt
       };
       const result: any = await fetchChunkedData({
         data: chatParams,
@@ -174,26 +115,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         signal
       });
 
-      if (result?.error) {
-        setTokenResult({
-          error: true,
-          errorMessage:
-            result?.data?.error?.message || result?.data?.message || ''
-        });
-        return;
-      }
-      setMessageId();
-      const { reader, decoder } = result;
-      await readStreamData(reader, decoder, (chunk: any) => {
-        if (chunk?.error) {
-          setTokenResult({
-            error: true,
-            errorMessage: chunk?.error?.message || chunk?.message || ''
-          });
-          return;
+      setMessageList([
+        {
+          prompt: current?.content || currentPrompt,
+          voice: parameters.voice,
+          format: parameters.response_format,
+          speed: parameters.speed,
+          uid: messageId.current,
+          autoplay: checkvalueRef.current
         }
-        joinMessage(chunk);
-      });
+      ]);
     } catch (error) {
       // console.log('error:', error);
     } finally {
@@ -210,23 +141,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    // submitMessage(currentMessage);
-    setMessageId();
-    setLoading(true);
-
-    setTimeout(() => {
-      setMessageList([
-        {
-          prompt: message.content,
-          voice: parameters.voice,
-          format: parameters.response_format,
-          speed: parameters.speed,
-          uid: messageId.current,
-          autoplay: checkvalueRef.current
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    submitMessage(message);
   };
 
   const handleCloseViewCode = () => {
@@ -236,7 +151,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleSelectModel = () => {};
 
   const handleOnCheckChange = (e: any) => {
-    console.log('handleOnCheckChange', e);
     checkvalueRef.current = e.target.checked;
   };
   useEffect(() => {
@@ -287,7 +201,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                       className="font-size-32 text-secondary"
                     ></IconFont>
                   </span>
-                  <span>Generated speech will appear here</span>
+                  <span>
+                    {intl.formatMessage({
+                      id: 'playground.audio.texttospeech.tips'
+                    })}
+                  </span>
                 </div>
               )}
               {loading && (
@@ -314,7 +232,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             disabled={!parameters.model}
             isEmpty={true}
             handleSubmit={handleSendMessage}
-            addMessage={handleNewMessage}
             handleAbortFetch={handleStopConversation}
             clearAll={handleClear}
             setModelSelections={handleSelectModel}
@@ -347,6 +264,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         payLoad={{
           prompt: currentPrompt
         }}
+        api="audio/speech"
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

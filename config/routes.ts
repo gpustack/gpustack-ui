@@ -26,20 +26,20 @@ export default [
         component: './playground/index'
       },
       {
-        name: 'speech',
-        title: 'Speech',
-        path: '/playground/speech',
-        key: 'speech',
-        icon: 'Comment',
-        component: './playground/speech'
-      },
-      {
         name: 'text2images',
         title: 'Text2Images',
         path: '/playground/text-to-image',
         key: 'text2images',
         icon: 'Comment',
         component: './playground/images'
+      },
+      {
+        name: 'speech',
+        title: 'Speech',
+        path: '/playground/speech',
+        key: 'speech',
+        icon: 'Comment',
+        component: './playground/speech'
       },
       {
         name: 'embedding',

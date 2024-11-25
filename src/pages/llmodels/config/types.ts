@@ -11,6 +11,8 @@ export interface ListItem {
   model_scope_model_id: string;
   embedding_only?: boolean;
   ready_replicas: number;
+  speech_to_text?: boolean;
+  text_to_speech?: boolean;
   replicas: number;
   s3Address: string;
   name: string;

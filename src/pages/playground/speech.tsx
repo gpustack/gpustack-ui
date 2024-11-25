@@ -30,12 +30,12 @@ const Playground: React.FC = () => {
   const [loaded, setLoaded] = useState(false);
   const optionsList = [
     {
-      label: 'Text To Speech',
+      label: intl.formatMessage({ id: 'playground.audio.texttospeech' }),
       value: TabsValueMap.Tab1,
       icon: <AudioOutlined />
     },
     {
-      label: 'Speech To Text',
+      label: intl.formatMessage({ id: 'playground.audio.speechtotext' }),
       value: TabsValueMap.Tab2,
       icon: <IconFont type={'icon-audio'}></IconFont>
     }

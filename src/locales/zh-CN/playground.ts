@@ -75,5 +75,10 @@ export default {
   'playground.rerank.rank': '排序',
   'playground.rerank.score': '分数',
   'playground.rerank.query.holder': '输入查询',
-  'playground.image.prompt': '输入提示'
+  'playground.image.prompt': '输入提示',
+  'playground.audio.texttospeech': '文本转语音',
+  'playground.audio.speechtotext': '语音转文本',
+  'playground.audio.texttospeech.tips': '生成的语音将出现在这里',
+  'playground.audio.speechtotext.tips': '上传音频文件或开始录音',
+  'playground.audio.enablemic': '请允许浏览器访问麦克风，以便开始录音'
 };

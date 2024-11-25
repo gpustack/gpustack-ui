@@ -10,6 +10,10 @@ export const OPENAI_MODELS = '/v1-openai/models';
 
 export const RERANKER_API = '/rerank';
 
+export const AUDIO_TEXT_TO_SPEECH_API = '/v1-openai/audio/speech';
+
+export const AUDIO_SPEECH_TO_TEXT_API = '/v1-openai/audio/transcriptions';
+
 export async function execChatCompletions(params: any) {
   return request(`${CHAT_API}`, {
     method: 'POST',
@@ -78,6 +82,31 @@ export const createImages = async (
       error: true,
       data: await res.json()
     };
+  }
+  return res.json();
+};
+
+// ============ audio ============
+export const textToSpeech = async (params: any, options?: any) => {
+  const res = await fetch(AUDIO_TEXT_TO_SPEECH_API, {
+    method: 'POST',
+    body: JSON.stringify(params),
+    signal: params.signal
+  });
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+};
+
+export const speechToText = async (params: any, options?: any) => {
+  const res = await fetch(AUDIO_SPEECH_TO_TEXT_API, {
+    method: 'POST',
+    body: JSON.stringify(params),
+    signal: params.signal
+  });
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
   }
   return res.json();
 };

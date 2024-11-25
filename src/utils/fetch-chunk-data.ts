@@ -51,6 +51,7 @@ export const fetchChunkedData = async (params: {
       ...params.headers
     }
   });
+  console.log('response====', response);
   if (!response.ok) {
     return {
       error: true,

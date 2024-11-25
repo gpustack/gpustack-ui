@@ -75,5 +75,12 @@ export default {
   'playground.rerank.rank': 'Rank',
   'playground.rerank.score': 'Score',
   'playground.rerank.query.holder': 'Input your query',
-  'playground.image.prompt': 'Input Prompt'
+  'playground.image.prompt': 'Input Prompt',
+  'playground.audio.texttospeech': 'Text to Speech',
+  'playground.audio.speechtotext': 'Speech to Text',
+  'playground.audio.texttospeech.tips': 'Generated speech will appear here',
+  'playground.audio.speechtotext.tips':
+    'Upload an audio file or start recording',
+  'playground.audio.enablemic':
+    "Enable microphone access in your browser's settings."
 };

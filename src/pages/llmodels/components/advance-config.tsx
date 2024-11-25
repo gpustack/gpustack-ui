@@ -264,6 +264,11 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 value: backendOptionsMap.vllm,
                 disabled:
                   source === modelSourceMap.local_path_value ? false : isGGUF
+              },
+              {
+                label: 'vox-box',
+                value: backendOptionsMap.voxBox,
+                disabled: false
               }
             ]}
             disabled={

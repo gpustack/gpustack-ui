@@ -321,7 +321,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     return (
       <div className="tips-text">
         <IconFont type={'icon-audio'} style={{ fontSize: 20 }}></IconFont>
-        <span>Upload an audio file or start recording</span>
+        <span>
+          {intl.formatMessage({ id: 'playground.audio.speechtotext.tips' })}
+        </span>
       </div>
     );
   };
@@ -469,7 +471,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                   fontWeight: 500
                 }}
               >
-                Enable microphone access in your browser&rsquo;s settings.
+                {intl.formatMessage({ id: 'playground.audio.enablemic' })}
               </span>
             </div>
           )}
@@ -544,6 +546,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         payLoad={{
           messages: viewCodeMessage
         }}
+        api="audio/transcriptions"
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

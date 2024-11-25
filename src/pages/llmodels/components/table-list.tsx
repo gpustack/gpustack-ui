@@ -423,6 +423,66 @@ const Models: React.FC<ModelsProps> = ({
     []
   );
 
+  const renderModelTags = useCallback((record: ListItem) => {
+    if (record.reranker) {
+      return (
+        <Tag
+          style={{
+            margin: 0,
+            opacity: 0.8,
+            transform: 'scale(0.9)'
+          }}
+          color="geekblue"
+        >
+          Reranker
+        </Tag>
+      );
+    }
+
+    if (record.embedding_only && !record.reranker) {
+      return (
+        <Tag
+          style={{
+            margin: 0,
+            opacity: 0.8,
+            transform: 'scale(0.9)'
+          }}
+          color="geekblue"
+        >
+          Embedding Only
+        </Tag>
+      );
+    }
+    if (record.text_to_speech) {
+      return (
+        <Tag
+          style={{
+            margin: 0,
+            opacity: 0.8,
+            transform: 'scale(0.9)'
+          }}
+          color="geekblue"
+        >
+          {intl.formatMessage({ id: 'playground.audio.texttospeech' })}
+        </Tag>
+      );
+    }
+    if (record.speech_to_text) {
+      return (
+        <Tag
+          style={{
+            margin: 0,
+            opacity: 0.8,
+            transform: 'scale(0.9)'
+          }}
+          color="geekblue"
+        >
+          {intl.formatMessage({ id: 'playground.audio.speechtotext' })}
+        </Tag>
+      );
+    }
+    return null;
+  }, []);
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
       return (
@@ -548,30 +608,7 @@ const Models: React.FC<ModelsProps> = ({
                   <AutoTooltip ghost>
                     <span className="m-r-5">{text}</span>
                   </AutoTooltip>
-                  {record.reranker && (
-                    <Tag
-                      style={{
-                        margin: 0,
-                        opacity: 0.8,
-                        transform: 'scale(0.9)'
-                      }}
-                      color="geekblue"
-                    >
-                      Reranker
-                    </Tag>
-                  )}
-                  {record.embedding_only && !record.reranker && (
-                    <Tag
-                      style={{
-                        margin: 0,
-                        opacity: 0.8,
-                        transform: 'scale(0.9)'
-                      }}
-                      color="geekblue"
-                    >
-                      Embedding Only
-                    </Tag>
-                  )}
+                  {renderModelTags(record)}
                 </span>
               );
             }}

@@ -3,13 +3,11 @@ import AudioPlayer from '@/components/audio-player';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import { readAudioFile } from '@/utils/load-audio-file';
 import { AudioOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
-import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
@@ -17,12 +15,10 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState
 } from 'react';
-import { CHAT_API } from '../apis';
-import { Roles, generateMessages } from '../config';
+import { CHAT_API, speechToText } from '../apis';
 import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
@@ -46,21 +42,24 @@ const initialValues = {
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItem[]>([]);
-
+  const [messageList, setMessageList] = useState<MessageItem[]>([
+    {
+      content: 'Generating text content...',
+      title: '',
+      role: '',
+      uid: messageId.current
+    }
+  ]);
   const intl = useIntl();
   const [searchParams] = useSearchParams();
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
-  const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
-  const contentRef = useRef<any>('');
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
-  const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const [audioPermissionOn, setAudioPermissionOn] = useState(true);
@@ -87,37 +86,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
-  const viewCodeMessage = useMemo(() => {
-    return generateMessages([
-      { role: Roles.System, content: systemMessage },
-      ...messageList
-    ]);
-  }, [messageList, systemMessage]);
-
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
 
-  const joinMessage = (chunk: any) => {
-    setTokenResult({
-      ...(chunk?.usage ?? {})
-    });
-
-    if (!chunk || !_.get(chunk, 'choices', []).length) {
-      return;
-    }
-    contentRef.current =
-      contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
-    setMessageList([
-      ...messageList,
-      ...currentMessageRef.current,
-      {
-        role: Roles.Assistant,
-        content: contentRef.current,
-        uid: messageId.current
-      }
-    ]);
-  };
   const handleStopConversation = () => {
     controllerRef.current?.abort?.();
     setLoading(false);
@@ -133,37 +105,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
-      currentMessageRef.current = current
-        ? [
-            {
-              ...current,
-              uid: messageId.current
-            }
-          ]
-        : [];
-
-      contentRef.current = '';
-      setMessageList((pre) => {
-        return [...pre, ...currentMessageRef.current];
-      });
-
-      const messageParams = [
-        { role: Roles.System, content: systemMessage },
-        ...messageList,
-        ...currentMessageRef.current
-      ];
-
-      const messages = generateMessages(messageParams);
 
       const chatParams = {
-        messages: messages,
         ...parameters,
         stream: true,
         stream_options: {
           include_usage: true
         }
       };
-      const result: any = await fetchChunkedData({
+      const result: any = await speechToText({
         data: chatParams,
         url: CHAT_API,
         signal
@@ -177,18 +127,14 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         });
         return;
       }
-      setMessageId();
-      const { reader, decoder } = result;
-      await readStreamData(reader, decoder, (chunk: any) => {
-        if (chunk?.error) {
-          setTokenResult({
-            error: true,
-            errorMessage: chunk?.error?.message || chunk?.message || ''
-          });
-          return;
+      setMessageList([
+        {
+          content: 'Generating text content...',
+          title: '',
+          role: '',
+          uid: messageId.current
         }
-        joinMessage(chunk);
-      });
+      ]);
     } catch (error) {
       // console.log('error:', error);
     } finally {
@@ -202,41 +148,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageId();
     setMessageList([]);
     setTokenResult(null);
-  };
-
-  const renderTitle = useCallback((role: string) => {
-    return (
-      <span>
-        {intl.formatMessage({ id: `playground.${role}` })}
-        <span className="text-tertiary m-l-5">00:10</span>
-      </span>
-    );
-  }, []);
-
-  const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    setLoading(true);
-    setMessageList([
-      ...messageList,
-      {
-        role: Roles.User,
-        title: renderTitle(Roles.User),
-        content: 'test data test data',
-        uid: messageId.current
-      }
-    ]);
-
-    setTimeout(() => {
-      setMessageList([
-        ...messageList,
-        {
-          role: Roles.Assistant,
-          title: renderTitle(Roles.Assistant),
-          content: 'generate by assistant',
-          uid: messageId.current
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
   };
 
   const handleCloseViewCode = () => {
@@ -498,10 +409,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 <MessageContent
                   actions={[]}
                   messageList={messageList[0] ? [messageList[0]] : []}
-                  setMessageList={setMessageList}
                   editable={false}
                   showTitle={false}
-                  loading={loading}
+                  loading={true}
                 />
                 {loading && (
                   <Spin size="small">
@@ -543,10 +453,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       <ViewCodeModal
         open={show}
-        payLoad={{
-          messages: viewCodeMessage
-        }}
+        payLoad={{}}
         api="audio/transcriptions"
+        clientType="audio.transcriptions"
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

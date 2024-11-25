@@ -72,17 +72,14 @@ export const readStreamData = async (
   callback: (data: any) => void
 ) => {
   const { done, value } = await reader.read();
-  console.log('done====', done, value);
   if (done) {
     return;
   }
 
   let chunk = decoder.decode(value, { stream: true });
   extractJSON(chunk).forEach((data) => {
-    console.log('data====', data);
     callback?.(data);
   });
-  // callback(chunk);
   await readStreamData(reader, decoder, callback);
 };
 

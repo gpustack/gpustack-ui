@@ -34,7 +34,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   }, [onCancel]);
 
   const updateHandler = (list: any) => {
-    const data = list?.find((item: any) => item.data.id === props.id);
+    const data = list?.find((item: any) => item.data?.id === props.id);
     if (data) {
       setEnableScorllLoad(!InstanceRealLogStatus.includes(data?.data?.state));
     }
@@ -45,7 +45,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     if (open) {
       requestRef.current?.current?.cancel?.();
       requestRef.current = setChunkRequest({
-        url: `${MODELS_API}/${props.id}/instances`,
+        url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
     }

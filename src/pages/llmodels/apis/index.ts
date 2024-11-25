@@ -14,6 +14,10 @@ export const MODELS_API = '/models';
 
 export const MODEL_INSTANCE_API = '/model-instances';
 
+const setProxyUrl = (url: string) => {
+  return `/proxy?url=${encodeURIComponent(url)}`;
+};
+
 // ===================== Models =====================
 export async function queryModelsList(
   params: Global.SearchParams,
@@ -128,7 +132,8 @@ export async function queryHuggingfaceModelDetail(
   params: { repo: string },
   options?: any
 ) {
-  return request(`${HUGGINGFACE_API}/${params.repo}`, {
+  const url = `https://huggingface.co/api/models/${params.repo}`;
+  return request(setProxyUrl(url), {
     method: 'GET',
     cancelToken: options?.token
   });
@@ -228,12 +233,11 @@ export async function queryHuggingfaceModels(
     limit: 100,
     additionalFields: ['sha', 'tags'],
     fetch(_url: string, config: any) {
-      const url = `/proxy?url=${_url}`;
+      const url = params.search.sort
+        ? `${_url}&sort=${params.search.sort}`
+        : _url;
       try {
-        const newUrl = params.search.sort
-          ? `${url}&sort=${params.search.sort}`
-          : url;
-        return fetch(`${newUrl}`, {
+        return fetch(setProxyUrl(url), {
           ...config,
           signal: options.signal
         });
@@ -259,7 +263,7 @@ export async function queryHuggingfaceModelFiles(
     recursive: true,
     fetch(url: string, config: any) {
       try {
-        return fetch(`/proxy?url=${url}`, {
+        return fetch(setProxyUrl(url), {
           ...config,
           signal: options?.signal
         });
@@ -286,7 +290,7 @@ export async function downloadModelFile(
       revision: revision,
       path: path,
       fetch(url: string, config: any) {
-        return fetch(`/proxy?url=${url}`, {
+        return fetch(setProxyUrl(url), {
           ...config,
           signal: options?.signal
         });

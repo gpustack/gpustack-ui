@@ -70,5 +70,8 @@ export default {
   'models.logs.pagination.prev': 'Previous {lines} Lines',
   'models.logs.pagination.next': 'Next {lines} Lines',
   'models.form.localPath': 'Local Path',
-  'models.form.filePath': 'Model Path'
+  'models.form.filePath': 'Model Path',
+  'model.form.backendVersion': 'Backend Version',
+  'models.form.backendVersion.tips':
+    'Pin a specific version to keep the backend stable across GPUStack upgrades.'
 };

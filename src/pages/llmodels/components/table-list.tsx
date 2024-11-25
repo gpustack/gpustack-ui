@@ -40,7 +40,7 @@ import {
   updateModel
 } from '../apis';
 import {
-  InstanceStatusMap,
+  InstanceRealLogStatus,
   getSourceRepoConfigValue,
   modelSourceMap
 } from '../config';
@@ -357,7 +357,7 @@ const Models: React.FC<ModelsProps> = ({
         status: row.state,
         id: row.id,
         modelId: row.model_id,
-        tail: row.state === InstanceStatusMap.Downloading ? undefined : PageSize
+        tail: InstanceRealLogStatus.includes(row.state) ? undefined : PageSize
       });
       setOpenLogModal(true);
     } catch (error) {

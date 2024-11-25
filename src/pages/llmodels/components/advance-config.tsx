@@ -1,5 +1,6 @@
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
+import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
@@ -138,6 +139,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         cpu_offloading: true
       });
     }
+    form.setFieldValue('backend_version', '');
   }, []);
 
   const collapseItems = useMemo(() => {
@@ -269,6 +271,14 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               source !== modelSourceMap.local_path_value
             }
           ></SealSelect>
+        </Form.Item>
+        <Form.Item name="backend_version">
+          <SealInput.Input
+            label={intl.formatMessage({ id: 'model.form.backendVersion' })}
+            description={intl.formatMessage({
+              id: 'model.form.backendVersion.tips'
+            })}
+          ></SealInput.Input>
         </Form.Item>
         <Form.Item<FormData> name="backend_parameters">
           <ListInput

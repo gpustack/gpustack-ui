@@ -68,5 +68,8 @@ export default {
   'models.logs.pagination.prev': '上一 {lines} 行',
   'models.logs.pagination.next': '下一 {lines} 行',
   'models.form.localPath': '本地路径',
-  'models.form.filePath': '模型路径'
+  'models.form.filePath': '模型路径',
+  'model.form.backendVersion': '后端版本',
+  'model.form.backendVersion.tips':
+    '固定指定版本以保持后端在 GPUStack 升级过程中的稳定性'
 };

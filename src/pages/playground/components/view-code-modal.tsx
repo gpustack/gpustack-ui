@@ -87,7 +87,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         },
         null,
         4
-      )};\nconst response = await openai.${clientType}.create(params);\n  ${consoleLog}}\nmain();`;
+      )};\nconst response = await openai.${clientType}(params);\n  ${consoleLog}}\nmain();`;
 
       return code;
     }
@@ -106,7 +106,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         ''
       );
       const params = formatPyParams(payLoad);
-      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${clientType}.create(\n${formattedParams}${params})\n${printLog}`;
+      const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${clientType}(\n${formattedParams}${params})\n${printLog}`;
       return code;
     }
     return '';

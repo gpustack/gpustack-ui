@@ -107,16 +107,17 @@ export const generateMessages = (messageList: Omit<MessageItem, 'uid'>[]) => {
 export const OpenAIViewCode = {
   chat: {
     api: 'chat/completions',
-    clientType: 'chat.completions',
+    clientType: 'chat.completions.create',
     logcommand: 'choices[0].message.content'
   },
   embeddings: {
     api: 'embeddings',
-    clientType: 'embeddings',
+    clientType: 'embedding.create',
     logcommand: 'data[0].embedding'
   },
   images: {
     api: 'images/generations',
-    clientType: 'images.generate'
+    clientType: 'images.generate',
+    logcommand: 'data[0].b64_json'
   }
 };

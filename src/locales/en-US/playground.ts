@@ -75,7 +75,7 @@ export default {
   'playground.rerank.rank': 'Rank',
   'playground.rerank.score': 'Score',
   'playground.rerank.query.holder': 'Input your query',
-  'playground.image.prompt': 'Input Prompt',
+  'playground.image.prompt': 'Text Prompt',
   'playground.audio.texttospeech': 'Text to Speech',
   'playground.audio.speechtotext': 'Speech to Text',
   'playground.audio.texttospeech.tips': 'Generated speech will appear here',
@@ -90,5 +90,13 @@ export default {
     'Please upload an audio file, supported formats: {formats}',
   'playground.input.multiplePaste': 'Multi-line paste',
   'playground.multiple.on': 'Enable',
-  'playground.multiple.off': 'Disable'
+  'playground.multiple.off': 'Disable',
+  'playground.image.params.sampler': 'Sampler',
+  'playground.image.params.samplerSteps': 'Sampler Steps',
+  'playground.image.params.seed': 'Seed',
+  'playground.image.params.negativePrompt': 'Negative Prompt',
+  'playground.image.params.cfgScale': 'Scale Factor',
+  'playground.image.params.custom': 'Custom',
+  'playground.image.params.custom.tips': 'Parameter definition',
+  'playground.image.params.openai': 'OpenAI Compatible'
 };

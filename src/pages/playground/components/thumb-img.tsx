@@ -37,15 +37,11 @@ const ThumbImg: React.FC<{
   }
 
   const renderImageItem = (item: any) => {
+    const thumImgWrapStyle = item.loading
+      ? { width: item.width, height: item.height }
+      : {};
     return (
-      <span
-        key={item.uid}
-        className="thumb-img"
-        style={{
-          width: item.width,
-          height: item.height
-        }}
-      >
+      <span key={item.uid} className="thumb-img" style={thumImgWrapStyle}>
         <>
           {item.loading ? (
             <span

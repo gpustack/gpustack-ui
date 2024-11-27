@@ -1,12 +1,13 @@
 import AlertInfo from '@/components/alert-info';
+import FieldComponent from '@/components/seal-form/field-component';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import ThumbImg from '@/pages/playground/components/thumb-img';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
-import { FileImageOutlined } from '@ant-design/icons';
+import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Form } from 'antd';
+import { Button, Form, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -22,7 +23,11 @@ import React, {
 } from 'react';
 import { CREAT_IMAGE_API } from '../apis';
 import { OpenAIViewCode } from '../config';
-import { ImageParamsConfig as paramsConfig } from '../config/params-config';
+import {
+  ImageAdvancedParamsConfig,
+  ImageconstExtraConfig,
+  ImageParamsConfig as paramsConfig
+} from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
@@ -40,53 +45,13 @@ const initialValues = {
   n: 1,
   size: '512x512',
   quality: 'standard',
-  style: ''
+  style: null
 };
-
-const extraConfig: ParamsSchema[] = [
-  {
-    type: 'Select',
-    name: 'quality',
-    options: [
-      { label: 'playground.params.standard', value: 'standard', locale: true },
-      { label: 'playground.params.hd', value: 'hd', locale: true }
-    ],
-    label: {
-      text: 'playground.params.quality',
-      isLocalized: true
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
-    type: 'Select',
-    name: 'style',
-    options: [
-      { label: 'playground.params.style.vivid', value: 'vivid', locale: true },
-      {
-        label: 'playground.params.style.natural',
-        value: 'natural',
-        locale: true
-      }
-    ],
-    label: {
-      text: 'playground.params.style',
-      isLocalized: true
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  }
-];
 
 const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
+  const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(true);
   const [imageList, setImageList] = useState<
     {
       dataUrl: string;
@@ -254,7 +219,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const params = {
         stream: true,
         stream_options: {
-          chunk_result: true
+          chunk_result: true,
+          chunk_size: 16 * 1024
         },
         prompt: current?.content || currentPrompt || '',
         ..._.omitBy(finalParameters, (value: string) => !value)
@@ -263,6 +229,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const result: any = await fetchChunkedData({
         data: params,
         url: CREAT_IMAGE_API,
+        // url: 'http://192.168.50.27:9090/v1/images/generations',
         signal: requestToken.current.signal
       });
 
@@ -324,8 +291,43 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
+  const handleToggleParamsStyle = () => {
+    if (isOpenaiCompatible) {
+      form.current?.form?.setFieldsValue({
+        seed: null,
+        sampler: 'euler_a',
+        cfg_scale: 1,
+        sample_steps: 5,
+        negative_prompt: null
+      });
+      setParams((pre: object) => {
+        return {
+          ...pre,
+          seed: null,
+          sampler: 'euler_a',
+          cfg_scale: 1,
+          sample_steps: 5,
+          negative_prompt: null
+        };
+      });
+    } else {
+      setParams((pre: object) => {
+        return {
+          ..._.omit(pre, [
+            'seed',
+            'sampler',
+            'cfg_scale',
+            'sample_steps',
+            'negative_prompt'
+          ])
+        };
+      });
+    }
+    setIsOpenaiCompatible(!isOpenaiCompatible);
+  };
+
   const renderExtra = useMemo(() => {
-    return extraConfig.map((item: ParamsSchema) => {
+    return ImageconstExtraConfig.map((item: ParamsSchema) => {
       return (
         <Form.Item name={item.name} rules={item.rules} key={item.name}>
           <SealSelect
@@ -340,7 +342,20 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </Form.Item>
       );
     });
-  }, [extraConfig, intl]);
+  }, [ImageconstExtraConfig, intl]);
+
+  const renderAdvanced = useMemo(() => {
+    if (isOpenaiCompatible) {
+      return [];
+    }
+    return ImageAdvancedParamsConfig.map((item: ParamsSchema) => {
+      return (
+        <Form.Item name={item.name} rules={item.rules} key={item.name}>
+          <FieldComponent {..._.omit(item, ['name', 'rules'])}></FieldComponent>
+        </Form.Item>
+      );
+    });
+  }, [ImageAdvancedParamsConfig, isOpenaiCompatible, intl]);
 
   const renderCustomSize = useMemo(() => {
     if (size === 'custom') {
@@ -419,7 +434,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       updateScrollerPosition();
     }
     messageListLengthCache.current = imageList.length;
-    console.log('imageList:', imageList);
   }, [imageList.length]);
 
   return (
@@ -445,7 +459,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 dataList={imageList}
                 loading={loading}
                 responseable={true}
-                gutter={[16, 16]}
+                gutter={[8, 16]}
                 autoSize={true}
               ></ThumbImg>
               {!imageList.length && (
@@ -474,7 +488,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             placeholer={intl.formatMessage({
               id: 'playground.input.prompt.holder'
             })}
-            actions={[]}
+            actions={['clear']}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!imageList.length}
@@ -499,13 +513,40 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={form}
+            parametersTitle={
+              <div className="flex-between flex-center">
+                <span>
+                  {intl.formatMessage({ id: 'playground.parameters' })}
+                </span>
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.image.params.custom.tips'
+                  })}
+                >
+                  <Button
+                    size="middle"
+                    type="text"
+                    icon={<SwapOutlined />}
+                    onClick={handleToggleParamsStyle}
+                  >
+                    {isOpenaiCompatible
+                      ? intl.formatMessage({
+                          id: 'playground.image.params.custom'
+                        })
+                      : intl.formatMessage({
+                          id: 'playground.image.params.openai'
+                        })}
+                  </Button>
+                </Tooltip>
+              </div>
+            }
             setParams={setParams}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
             params={parameters}
             selectedModel={selectModel}
             modelList={modelList}
-            extra={[renderCustomSize, ...renderExtra]}
+            extra={[renderCustomSize, ...renderExtra, ...renderAdvanced]}
           />
         </div>
       </div>

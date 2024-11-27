@@ -130,12 +130,6 @@ const ModelCard: React.FC<{
   // huggingface model card data
   const getHuggingfaceModelDetail = async () => {
     try {
-      const configjson = await loadConfig(
-        props.selectedModel.name,
-        'main'
-      ).catch(() => {
-        return null;
-      });
       const [modelcard, readme] = await Promise.all([
         queryHuggingfaceModelDetail(
           { repo: props.selectedModel.name },
@@ -183,11 +177,6 @@ const ModelCard: React.FC<{
 
   const getModelScopeModelDetail = async () => {
     try {
-      const configjson = await loadModelscopeModelConfig(
-        props.selectedModel.name
-      ).catch(() => {
-        return null;
-      });
       const data = await queryModelScopeModelDetail(
         {
           name: props.selectedModel.name
@@ -200,7 +189,6 @@ const ModelCard: React.FC<{
         ...data?.Data,
         name: `${data.Data?.Path}/${data.Data?.Name}`
       });
-      console.log('modelData++++++++++++', configjson, data?.Data);
       setReadmeText(data?.Data?.ReadMeContent);
       const isGGUF = some(
         data?.Data?.Tags,

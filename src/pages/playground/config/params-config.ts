@@ -183,3 +183,136 @@ export const ImageParamsConfig: ParamsSchema[] = [
   //   ]
   // }
 ];
+
+export const ImageconstExtraConfig: ParamsSchema[] = [
+  {
+    type: 'Select',
+    name: 'quality',
+    options: [
+      { label: 'playground.params.standard', value: 'standard', locale: true },
+      { label: 'playground.params.hd', value: 'hd', locale: true }
+    ],
+    label: {
+      text: 'playground.params.quality',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'style',
+    options: [
+      { label: 'playground.params.style.vivid', value: 'vivid', locale: true },
+      {
+        label: 'playground.params.style.natural',
+        value: 'natural',
+        locale: true
+      }
+    ],
+    attrs: {
+      allowClear: true
+    },
+    label: {
+      text: 'playground.params.style',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  }
+];
+
+export const ImageAdvancedParamsConfig: ParamsSchema[] = [
+  {
+    type: 'Select',
+    name: 'sampler',
+    options: [
+      { label: 'euler_a', value: 'euler_a' },
+      { label: 'euler', value: 'euler' },
+      { label: 'heun', value: 'heun' },
+      { label: 'dpm2', value: 'dpm2' },
+      { label: 'dpm++2s_a', value: 'dpm++2s_a' },
+      { label: 'dpm++2m', value: 'dpm++2m' },
+      { label: 'dpm++2mv2', value: 'dpm++2mv2' },
+      { label: 'ipndm', value: 'ipndm' },
+      { label: 'pndm_v', value: 'pndm_v' },
+      { label: 'lcm', value: 'lcm' }
+    ],
+    label: {
+      text: 'playground.image.params.sampler',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'sample_steps',
+    label: {
+      text: 'playground.image.params.samplerSteps',
+      isLocalized: true
+    },
+    attrs: {
+      min: 1,
+      max: 100
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'cfg_scale',
+    label: {
+      text: 'playground.image.params.cfgScale',
+      isLocalized: true
+    },
+    attrs: {
+      min: 1.0,
+      max: 10,
+      step: 0.1
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Input',
+    name: 'negative_prompt',
+    label: {
+      text: 'playground.image.params.negativePrompt',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'seed',
+    label: {
+      text: 'playground.image.params.seed',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  }
+];

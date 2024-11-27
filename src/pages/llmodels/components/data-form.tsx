@@ -23,6 +23,7 @@ import {
   modelTaskMap,
   ollamaModelOptions
 } from '../config';
+import { HuggingFaceModels, ModelScopeModels } from '../config/audio-catalog';
 import { FormData, GPUListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
 
@@ -120,10 +121,29 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     []
   );
 
+  const identifyModelTask = () => {
+    let data = null;
+    if (props.source === modelSourceMap.huggingface_value) {
+      data = HuggingFaceModels.find(
+        (item) => `${item.org}/${item.name}` === props.selectedModel.name
+      );
+    }
+    if (props.source === modelSourceMap.modelscope_value) {
+      data = ModelScopeModels.find(
+        (item) => `${item.org}/${item.name}` === props.selectedModel.name
+      );
+    }
+    if (data) {
+      return modelTaskMap.audio;
+    }
+    return '';
+  };
   const handleOnSelectModel = () => {
     let name = _.split(props.selectedModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
+
+    const modelTaskType = identifyModelTask();
 
     const modelTask =
       HuggingFaceTaskMap.audio.includes(props.selectedModel.task) ||
@@ -133,7 +153,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
     setModelTask({
       value: props.selectedModel.task,
-      type: modelTask,
+      type: modelTaskType || modelTask,
       text2speech:
         HuggingFaceTaskMap[modelTaskMap.textToSpeech] ===
           props.selectedModel.task ||
@@ -351,8 +371,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     if (gpu) {
       onOk({
         ..._.omit(formdata, ['scheduleType']),
-        speech_to_text: modelTask.speech2text,
-        text_to_speech: modelTask.text2speech,
         gpu_selector: {
           gpu_name: gpu.name,
           gpu_index: gpu.index,
@@ -361,9 +379,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       });
     } else {
       onOk({
-        ..._.omit(formdata, ['scheduleType']),
-        speech_to_text: modelTask.speech2text,
-        text_to_speech: modelTask.text2speech
+        ..._.omit(formdata, ['scheduleType'])
       });
     }
   };

@@ -88,5 +88,13 @@ export default {
   'playground.audio.button.generate': '生成文本',
   'playground.input.multiplePaste': '多行粘贴',
   'playground.multiple.on': '开启',
-  'playground.multiple.off': '关闭'
+  'playground.multiple.off': '关闭',
+  'playground.image.params.sampler': '采样器',
+  'playground.image.params.samplerSteps': '采样器步数',
+  'playground.image.params.seed': '随机种子',
+  'playground.image.params.negativePrompt': '负面提示',
+  'playground.image.params.cfgScale': '缩放因子',
+  'playground.image.params.custom': '自定义',
+  'playground.image.params.custom.tips': '参数定义',
+  'playground.image.params.openai': 'OpenAI 兼容'
 };

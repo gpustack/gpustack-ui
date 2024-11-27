@@ -25,6 +25,7 @@ type ParamsSettingsFormProps = {
 
 type ParamsSettingsProps = {
   ref?: any;
+  parametersTitle?: React.ReactNode;
   selectedModel?: string;
   showModelSelector?: boolean;
   params?: Record<string, any>;
@@ -45,6 +46,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       setParams,
       onValuesChange,
       onModelChange,
+      parametersTitle,
       selectedModel,
       globalParams,
       initialValues,
@@ -169,7 +171,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     );
 
     const renderFields = useMemo(() => {
-      console.log('paramsConfig:', paramsConfig);
       if (!paramsConfig?.length) {
         return null;
       }
@@ -262,9 +263,11 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           {
             <>
               <h3 className="m-b-20 m-l-10 font-size-14 line-24">
-                <span>
-                  {intl.formatMessage({ id: 'playground.parameters' })}
-                </span>
+                {parametersTitle || (
+                  <span>
+                    {intl.formatMessage({ id: 'playground.parameters' })}
+                  </span>
+                )}
               </h3>
               <Form.Item<ParamsSettingsFormProps>
                 name="model"

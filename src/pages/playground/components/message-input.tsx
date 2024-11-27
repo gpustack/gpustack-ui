@@ -2,7 +2,7 @@ import IconFont from '@/components/icon-font';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Divider, Input, Select, Tooltip } from 'antd';
+import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -64,7 +64,6 @@ const layoutOptions = [
 ];
 
 interface MessageInputProps {
-  modelList?: Global.BaseOption<string>[];
   handleSubmit: (params: CurrentMessage) => void;
   handleAbortFetch: () => void;
   updateLayout?: (value: { span: number; count: number }) => void;
@@ -80,7 +79,6 @@ interface MessageInputProps {
   addMessage?: (message: CurrentMessage) => void;
   tools?: React.ReactNode;
   loading: boolean;
-  showModelSelection?: boolean;
   disabled: boolean;
   isEmpty?: boolean;
   placeholer?: string;
@@ -94,15 +92,12 @@ interface MessageInputProps {
 const MessageInput: React.FC<MessageInputProps> = ({
   handleSubmit,
   handleAbortFetch,
-  setModelSelections,
   presetPrompt,
   clearAll,
   updateLayout,
   addMessage,
   onCheck,
   loading,
-  modelList,
-  showModelSelection,
   disabled,
   isEmpty,
   submitIcon,
@@ -170,21 +165,11 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const handleClearAll = (e: any) => {
     e.stopPropagation();
     clearAll();
-  };
-
-  const handleUpdateModelSelections = (value: string[]) => {
-    const list = value?.map?.((val) => {
-      return {
-        value: val,
-        label: val,
-        instanceId: Symbol(val)
-      };
+    setMessage({
+      role: Roles.User,
+      content: '',
+      imgs: []
     });
-    setModelSelections?.(list);
-  };
-
-  const handleOpenPrompt = () => {
-    setOpen(true);
   };
 
   const handleAddMessage = (e?: any) => {
@@ -379,9 +364,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
             </Checkbox>
           )}
           {actions.includes('clear') && (
-            <Tooltip
-              title={intl.formatMessage({ id: 'playground.toolbar.clearmsg' })}
-            >
+            <Tooltip title={intl.formatMessage({ id: 'common.button.clear' })}>
               <Button
                 type="text"
                 icon={<ClearOutlined />}
@@ -412,20 +395,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
           )}
         </div>
         <div className="actions">
-          {showModelSelection && (
-            <Select
-              variant="borderless"
-              style={{ width: 180 }}
-              placeholder="select models"
-              options={modelList}
-              mode="multiple"
-              maxCount={6}
-              maxTagCount={0}
-              maxTagTextLength={15}
-              onChange={handleUpdateModelSelections}
-            ></Select>
-          )}
-
           {actions.includes('add') && (
             <Tooltip
               title={
@@ -490,7 +459,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             variant="borderless"
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            onKeyDown={handleKeyDown}
             onPaste={handleOnPaste}
           ></TextArea>
         ) : (
@@ -506,7 +474,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
             variant="borderless"
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            onKeyDown={handleKeyDown}
           ></TextArea>
         )}
         {!message.content && !focused && (

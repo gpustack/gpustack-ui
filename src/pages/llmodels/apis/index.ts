@@ -117,16 +117,10 @@ export async function queryModelInstanceLogs(id: number) {
 
 // ===================== call huggingface quicksearch api =====================
 
-const HUGGINGFACE_API = '/proxy?url=https://huggingface.co/api/models';
-
 const MODEL_SCOPE_LIST_MODEL_API =
-  '/proxy?url=https://www.modelscope.cn/api/v1/dolphin/models';
+  'https://www.modelscope.cn/api/v1/dolphin/models';
 
-const MODEL_SCOPE_DETAIL_MODEL_API =
-  '/proxy?url=https://www.modelscope.cn/api/v1/dolphin/models/';
-
-const MODE_SCOPE_MODEL_FIELS_API =
-  '/proxy?url=https://modelscope.cn/api/v1/models/';
+const MODE_SCOPE_MODEL_FIELS_API = 'https://modelscope.cn/api/v1/models/';
 
 export async function queryHuggingfaceModelDetail(
   params: { repo: string },
@@ -165,7 +159,7 @@ export async function queryModelScopeModels(
           Criterion: [...(tagsCriterion || []), ...(tasksCriterion || [])]
         }
       : {};
-  const res = await fetch(`${MODEL_SCOPE_LIST_MODEL_API}`, {
+  const res = await fetch(setProxyUrl(`${MODEL_SCOPE_LIST_MODEL_API}`), {
     method: 'PUT',
     signal: config?.signal,
     headers: {
@@ -190,7 +184,7 @@ export async function queryModelScopeModelDetail(
   params: { name: string },
   options?: any
 ) {
-  return request(`${MODE_SCOPE_MODEL_FIELS_API}${params.name}`, {
+  return request(setProxyUrl(`${MODE_SCOPE_MODEL_FIELS_API}${params.name}`), {
     method: 'GET',
     cancelToken: options?.token
   });
@@ -200,18 +194,18 @@ export async function queryModelScopeModelFiles(
   params: { name: string; revision: string },
   options?: any
 ) {
-  const res = await fetch(
-    `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/repo/files?${qs.stringify({
+  const url = `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/repo/files?${qs.stringify(
+    {
       Revision: params.revision,
       Recursive: true,
       Root: ''
-    })}`,
-    {
-      method: 'GET',
-      signal: options?.signal,
-      body: null
     }
-  );
+  )}`;
+  const res = await fetch(setProxyUrl(url), {
+    method: 'GET',
+    signal: options?.signal,
+    body: null
+  });
 
   if (!res.ok) {
     throw new Error('Network response was not ok');
@@ -310,13 +304,11 @@ export async function downloadModelScopeModelfile(
   params: { name: string },
   options?: any
 ) {
-  const res = await fetch(
-    `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/resolve/master/config.json`,
-    {
-      method: 'GET',
-      signal: options?.signal
-    }
-  );
+  const url = `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/resolve/master/config.json`;
+  const res = await fetch(setProxyUrl(url), {
+    method: 'GET',
+    signal: options?.signal
+  });
   if (!res.ok) {
     throw new Error('Network response was not ok');
   }

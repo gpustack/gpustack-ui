@@ -21,7 +21,8 @@ type SchemaType =
   | 'Select'
   | 'Slider'
   | 'TextArea'
-  | 'Checkbox';
+  | 'Checkbox'
+  | 'Textarea';
 
 export interface ParamsSchema {
   type: SchemaType;
@@ -30,6 +31,7 @@ export interface ParamsSchema {
     text: string;
     isLocalized?: boolean;
   };
+  style?: React.CSSProperties;
   options?: Global.BaseOption<string | number>[];
   value?: string | number | boolean | string[];
   min?: number;

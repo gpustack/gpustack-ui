@@ -10,7 +10,6 @@ import {
   ModelSortType,
   ModelscopeTaskMap,
   modelSourceMap,
-  modelTaskMap,
   ollamaModelOptions
 } from '../config';
 import SearchStyle from '../style/search-result.less';
@@ -233,22 +232,15 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           modelSource={modelSource}
         ></SearchInput>
         <div className={SearchStyle.filter}>
-          {/* <span>
+          <span>
             <span className="value">
               {intl.formatMessage(
                 { id: 'models.search.result' },
                 { count: dataSource.repoOptions.length }
               )}
             </span>
-          </span> */}
-          <span
-            style={{
-              flex: 1,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
+          </span>
+          <span>
             <Checkbox
               onChange={handleFilterGGUFChange}
               className="m-r-5"
@@ -271,43 +263,20 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                 <InfoCircleOutlined className="m-l-4" />
               </Tooltip>
             </Checkbox>
-            <span className="flex gap-6">
-              <Select
-                allowClear
-                value={filterTaskRef.current}
-                onChange={handleFilterTaskChange}
-                options={[
-                  {
-                    label: intl.formatMessage({
-                      id: 'playground.audio.texttospeech'
-                    }),
-                    value: modelTaskMap.textToSpeech
-                  },
-                  {
-                    label: intl.formatMessage({
-                      id: 'playground.audio.speechtotext'
-                    }),
-                    value: modelTaskMap.speechToText
-                  }
-                ]}
-                size="middle"
-                style={{ width: '140px' }}
-              ></Select>
-              <Select
-                value={dataSource.sortType}
-                onChange={handleSortChange}
-                labelRender={({ label }) => {
-                  return (
-                    <span>
-                      {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
-                    </span>
-                  );
-                }}
-                options={modelFilesSortOptions.current}
-                size="middle"
-                style={{ width: '140px' }}
-              ></Select>
-            </span>
+            <Select
+              value={dataSource.sortType}
+              onChange={handleSortChange}
+              labelRender={({ label }) => {
+                return (
+                  <span>
+                    {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
+                  </span>
+                );
+              }}
+              options={modelFilesSortOptions.current}
+              size="middle"
+              style={{ width: '150px' }}
+            ></Select>
           </span>
         </div>
       </>

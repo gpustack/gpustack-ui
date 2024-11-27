@@ -28,6 +28,18 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     setCollapsed(!collapsed);
   };
 
+  const onDownload = () => {
+    const url = props.audioUrl || '';
+    const filename = Date.now() + '';
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
   return (
     <div>
       <div className="speech-item">
@@ -60,6 +72,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           </Tooltip>
           <Tooltip title="Download">
             <Button
+              onClick={onDownload}
               icon={<DownloadOutlined />}
               type="text"
               size="small"

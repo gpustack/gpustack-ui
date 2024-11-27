@@ -282,7 +282,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           .split('\n')
           .map((item: string) => {
             return {
-              text: item,
+              text: item?.trim(),
               uid: inputListRef.current?.setMessageId(),
               name: ''
             };

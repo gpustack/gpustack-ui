@@ -231,7 +231,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        url: CREAT_IMAGE_API,
+        url: `${CREAT_IMAGE_API}?t=${Date.now()}`,
         signal: requestToken.current.signal
       });
 
@@ -301,8 +301,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       form.current?.form?.setFieldsValue({
         seed: null,
         sampler: 'euler_a',
-        cfg_scale: 1,
-        sample_steps: 5,
+        cfg_scale: 4.5,
+        sample_steps: 10,
         negative_prompt: null
       });
       setParams((pre: object) => {
@@ -310,8 +310,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           ..._.omit(pre, ['quality', 'style']),
           seed: null,
           sampler: 'euler_a',
-          cfg_scale: 1,
-          sample_steps: 5,
+          cfg_scale: 4.5,
+          sample_steps: 10,
           negative_prompt: null
         };
       });

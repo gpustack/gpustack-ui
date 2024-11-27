@@ -98,5 +98,10 @@ export default {
   'playground.image.params.cfgScale': 'Scale Factor',
   'playground.image.params.custom': 'Custom',
   'playground.image.params.custom.tips': 'Parameter definition',
-  'playground.image.params.openai': 'OpenAI Compatible'
+  'playground.image.params.openai': 'OpenAI Compatible',
+  'playground.embedding.handler.tips': 'Resize Height',
+  'playground.embedding.pcatips1':
+    'PCA is used to reduce the dimensionality of document vectors, projecting new data into PCA space.',
+  'playground.embedding.pcatips2':
+    'In the chart, the distance between points represents the similarity between documents.'
 };

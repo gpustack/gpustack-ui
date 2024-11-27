@@ -350,17 +350,19 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       const text = e.clipboardData.getData('text');
       if (text) {
         console.log('text:', text);
-        const dataLlist = text
-          .split('\n')
-          .map((item: string) => {
-            return {
-              text: item?.trim(),
-              uid: inputListRef.current?.setMessageId(),
-              name: ''
-            };
-          })
-          .filter((item: any) => item.text);
-        setTextList([...textList.slice(0, index), ...dataLlist]);
+        const dataLlist = text.split('\n').map((item: string) => {
+          return {
+            text: item?.trim(),
+            uid: inputListRef.current?.setMessageId(),
+            name: ''
+          };
+        });
+        const result = [
+          ...textList.slice(0, index),
+          ...dataLlist,
+          ...textList.slice(index + 1)
+        ].filter((item) => item.text);
+        setTextList(result);
       }
     },
     [textList]
@@ -475,24 +477,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                     })}
                   </Checkbox>
                 </Button>
-                {/* <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.input.multiplePaste'
-                  })}
-                >
-                  <Switch
-                    checkedChildren={intl.formatMessage({
-                      id: 'playground.multiple.on'
-                    })}
-                    unCheckedChildren={intl.formatMessage({
-                      id: 'playground.multiple.off'
-                    })}
-                    defaultChecked={multiplePasteEnable.current}
-                    onChange={(checked) => {
-                      multiplePasteEnable.current = checked;
-                    }}
-                  />
-                </Tooltip> */}
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}
@@ -508,6 +492,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
             <div className="docs-wrapper">
               <InputList
+                key={messageId.current}
                 sortIndex={sortIndexMap}
                 ref={inputListRef}
                 textList={textList}

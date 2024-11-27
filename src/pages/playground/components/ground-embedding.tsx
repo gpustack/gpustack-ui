@@ -7,11 +7,12 @@ import useRequestToken from '@/hooks/use-request-token';
 import {
   ClearOutlined,
   HolderOutlined,
+  InfoCircleOutlined,
   PlusOutlined,
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Segmented, Tabs } from 'antd';
+import { Button, Checkbox, Segmented, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -98,6 +99,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   ]);
 
   const [scatterData, setScatterData] = useState<any[]>([]);
+  const resizeMaxHeight = 400;
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -252,7 +254,10 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     d: any
   ) => {
     console.log('handleScaleOutputSize', e, direction, ref, d);
-    if (d.height + outputHeight <= 300 && d.height + outputHeight >= 180) {
+    if (
+      d.height + outputHeight <= resizeMaxHeight &&
+      d.height + outputHeight >= 180
+    ) {
       setOutputHeight(d.height + outputHeight);
     }
   };
@@ -277,18 +282,19 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (!multiplePasteEnable.current) return;
       const text = e.clipboardData.getData('text');
       if (text) {
-        console.log('text:', text);
-        const dataLlist = text
-          .split('\n')
-          .map((item: string) => {
-            return {
-              text: item?.trim(),
-              uid: inputListRef.current?.setMessageId(),
-              name: ''
-            };
-          })
-          .filter((item: any) => item.text);
-        setTextList([...textList.slice(0, index), ...dataLlist]);
+        const dataLlist = text.split('\n').map((item: string) => {
+          return {
+            text: item?.trim(),
+            uid: inputListRef.current?.setMessageId(),
+            name: ''
+          };
+        });
+        const result = [
+          ...textList.slice(0, index),
+          ...dataLlist,
+          ...textList.slice(index + 1)
+        ].filter((item) => item.text);
+        setTextList(result);
       }
     },
     [textList]
@@ -408,24 +414,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                     })}
                   </Checkbox>
                 </Button>
-                {/* <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.input.multiplePaste'
-                  })}
-                >
-                  <Switch
-                    checkedChildren={intl.formatMessage({
-                      id: 'playground.multiple.on'
-                    })}
-                    unCheckedChildren={intl.formatMessage({
-                      id: 'playground.multiple.off'
-                    })}
-                    defaultChecked={multiplePasteEnable.current}
-                    onChange={(checked) => {
-                      multiplePasteEnable.current = checked;
-                    }}
-                  />
-                </Tooltip> */}
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}
@@ -497,8 +485,28 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         >
           <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-16">
             <div className="flex gap-20">
-              <span>
+              <span className="flex-center">
                 {intl.formatMessage({ id: 'playground.embedding.output' })}
+                <Tooltip
+                  title={
+                    <span className="flex-column">
+                      <span>
+                        1.
+                        {intl.formatMessage({
+                          id: 'playground.embedding.pcatips1'
+                        })}
+                      </span>
+                      <span>
+                        2.{' '}
+                        {intl.formatMessage({
+                          id: 'playground.embedding.pcatips2'
+                        })}
+                      </span>
+                    </span>
+                  }
+                >
+                  <InfoCircleOutlined className="m-l-4" />
+                </Tooltip>
               </span>
               <AlertInfo
                 type="danger"
@@ -529,21 +537,27 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
               }}
               handleComponent={{
                 top: (
-                  <Button
-                    size="small"
-                    className="drag-handler"
-                    color="default"
-                    variant="filled"
-                    icon={
-                      <HolderOutlined
-                        rotate={90}
-                        style={{ fontSize: 'var(--font-size-14)' }}
-                      />
-                    }
-                  ></Button>
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'playground.embedding.handler.tips'
+                    })}
+                  >
+                    <Button
+                      size="small"
+                      className="drag-handler"
+                      color="default"
+                      variant="filled"
+                      icon={
+                        <HolderOutlined
+                          rotate={90}
+                          style={{ fontSize: 'var(--font-size-14)' }}
+                        />
+                      }
+                    ></Button>
+                  </Tooltip>
                 )
               }}
-              maxHeight={300}
+              maxHeight={resizeMaxHeight}
               minHeight={180}
               onResizeStop={handleScaleOutputSize}
             >

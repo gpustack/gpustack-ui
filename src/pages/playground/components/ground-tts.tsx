@@ -253,7 +253,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               alignItems: 'center'
             }}
           >
-            <div className="content">
+            <div className="content" style={{ maxWidth: 1000 }}>
               {messageList.length ? (
                 <SpeechContent dataList={messageList} loading={loading} />
               ) : (

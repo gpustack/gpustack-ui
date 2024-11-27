@@ -35,6 +35,7 @@ interface AdvanceConfigProps {
   gpuOptions: Array<any>;
   action: PageActionType;
   source: string;
+  modelTask: string;
 }
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {

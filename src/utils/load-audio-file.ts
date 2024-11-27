@@ -12,13 +12,20 @@ export const loadAudioData = async (data: any, type: string) => {
 
       audio.addEventListener('loadedmetadata', () => {
         const duration = audio.duration;
-        resolve({ size: fileSize, duration: Math.ceil(duration), url: url });
+        resolve({
+          data: audioBlob,
+          size: fileSize,
+          type: type,
+          duration: Math.ceil(duration),
+          url: url
+        });
       });
 
       audio.addEventListener('ended', () => {
         URL.revokeObjectURL(audio.src);
       });
     } catch (error) {
+      console.log('error====', error);
       reject(error);
     }
   });
@@ -29,7 +36,6 @@ export const readAudioFile = async (file: File) => {
     const reader = new FileReader();
     reader.onload = async function (e: any) {
       try {
-        // const size = convertFileSize(file.size);
         console.log('file====', file);
         const arrayBuffer = e.target.result;
         const audioData = await loadAudioData(arrayBuffer, file.type);
@@ -38,6 +44,7 @@ export const readAudioFile = async (file: File) => {
           name: file.name
         });
       } catch (error) {
+        console.log('error====', error);
         reject(error);
       }
     };

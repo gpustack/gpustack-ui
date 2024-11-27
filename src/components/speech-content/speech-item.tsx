@@ -9,7 +9,7 @@ import React, { useRef, useState } from 'react';
 import AudioPlayer from './audio-player';
 import './styles/index.less';
 
-const audioUrl = require('./ih.mp4');
+// const audioUrl = require('./ih.mp4');
 
 interface SpeechContentProps {
   prompt: string;
@@ -17,6 +17,7 @@ interface SpeechContentProps {
   voice: string;
   format: string;
   speed: number;
+  audioUrl: string;
 }
 const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   console.log('porps=======', props);
@@ -34,13 +35,16 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   return (
     <div>
       <div className="speech-item">
-        {/* <audio controls autoPlay={true} src={require('./ih.mp4')}></audio> */}
         <div className="voice">
           <IconFont type="icon-user_voice" className="font-size-16" />
           <span className="text">{props.voice}</span>
         </div>
         <div className="wrapper">
-          <AudioPlayer {...props} audioUrl={audioUrl} ref={ref}></AudioPlayer>
+          <AudioPlayer
+            {...props}
+            audioUrl={props.audioUrl}
+            ref={ref}
+          ></AudioPlayer>
         </div>
       </div>
       <div className="speech-actions">
@@ -75,11 +79,11 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           </Tooltip>
         </div>
       </div>
-      {collapsed && (
+      {/* {collapsed && (
         <div className="prompt-box">
           <div className="prompt">{props.prompt}</div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -10,11 +10,18 @@ import { useIntl } from '@umijs/max';
 import { Button, Empty, Spin, Tag, Tooltip } from 'antd';
 import { some } from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import {
   downloadModelFile,
+  downloadModelScopeModelfile,
   queryHuggingfaceModelDetail,
   queryModelScopeModelDetail
 } from '../apis';
@@ -37,10 +44,32 @@ const ModelCard: React.FC<{
   const [readmeText, setReadmeText] = useState<string | null>(null);
   const requestToken = useRef<any>(null);
   const axiosTokenRef = useRef<any>(null);
+  const loadConfigTokenRef = useRef<any>(null);
+  const loadConfigJsonTokenRef = useRef<any>(null);
   const [isGGUFModel, setIsGGUFModel] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const loadFile = async (repo: string, sha: string) => {
+  const modelTags = useMemo(() => {
+    if (modelSource === modelSourceMap.huggingface_value) {
+      return modelData?.pipeline_tag ? [modelData?.pipeline_tag] : [];
+    }
+    if (modelSource === modelSourceMap.modelscope_value) {
+      return modelData?.Tasks?.map((task: any) => task?.Name)?.filter(
+        (val: string) => val
+      );
+    }
+    return [];
+  }, [modelSource, modelData]);
+
+  const modelType = useMemo(() => {
+    if (modelSource === modelSourceMap.huggingface_value) {
+      return modelData?.config?.model_type || modelData?.ModelType?.[0];
+    }
+    if (modelSource === modelSourceMap.modelscope_value) {
+      return modelData?.ModelType?.[0];
+    }
+  }, [modelData, modelSource]);
+  const loadFile = useCallback(async (repo: string, sha: string) => {
     try {
       axiosTokenRef.current?.abort?.();
       axiosTokenRef.current = new AbortController();
@@ -54,12 +83,32 @@ const ModelCard: React.FC<{
           signal: axiosTokenRef.current.signal
         }
       );
-      console.log('readme++++++++', res);
       return res || '';
     } catch (error) {
       return '';
     }
-  };
+  }, []);
+
+  const loadConfig = useCallback(async (repo: string, sha: string) => {
+    try {
+      loadConfigTokenRef.current?.abort?.();
+      loadConfigTokenRef.current = new AbortController();
+      const res = await downloadModelFile(
+        {
+          repo,
+          revision: sha,
+          path: 'config.json'
+        },
+        {
+          signal: loadConfigTokenRef.current.signal
+        }
+      );
+      return res || null;
+    } catch (error) {
+      console.log('error======', error);
+      return null;
+    }
+  }, []);
 
   const removeMetadata = useCallback((str: string) => {
     let indexes = [];
@@ -81,6 +130,12 @@ const ModelCard: React.FC<{
   // huggingface model card data
   const getHuggingfaceModelDetail = async () => {
     try {
+      const configjson = await loadConfig(
+        props.selectedModel.name,
+        'main'
+      ).catch(() => {
+        return null;
+      });
       const [modelcard, readme] = await Promise.all([
         queryHuggingfaceModelDetail(
           { repo: props.selectedModel.name },
@@ -92,11 +147,13 @@ const ModelCard: React.FC<{
       ]);
 
       setModelData(modelcard);
+
       // remove the meta data from readme
       const newReadme = removeMetadata(readme);
 
       setReadmeText(newReadme);
       const isGGUF = modelcard.tags?.includes('gguf');
+      console.log('modelData++++++++++++', isGGUF);
       setIsGGUF(isGGUF);
       setIsGGUFModel(isGGUF);
     } catch (error) {
@@ -107,8 +164,30 @@ const ModelCard: React.FC<{
     }
   };
 
+  const loadModelscopeModelConfig = useCallback(async (name: string) => {
+    try {
+      loadConfigJsonTokenRef.current?.abort?.();
+      loadConfigJsonTokenRef.current = new AbortController();
+      return await downloadModelScopeModelfile(
+        {
+          name: name
+        },
+        {
+          signal: loadConfigJsonTokenRef.current.token
+        }
+      );
+    } catch (error) {
+      return null;
+    }
+  }, []);
+
   const getModelScopeModelDetail = async () => {
     try {
+      const configjson = await loadModelscopeModelConfig(
+        props.selectedModel.name
+      ).catch(() => {
+        return null;
+      });
       const data = await queryModelScopeModelDetail(
         {
           name: props.selectedModel.name
@@ -121,6 +200,7 @@ const ModelCard: React.FC<{
         ...data?.Data,
         name: `${data.Data?.Path}/${data.Data?.Name}`
       });
+      console.log('modelData++++++++++++', configjson, data?.Data);
       setReadmeText(data?.Data?.ReadMeContent);
       const isGGUF = some(
         data?.Data?.Tags,
@@ -230,6 +310,8 @@ const ModelCard: React.FC<{
     return () => {
       requestToken.current?.cancel?.();
       axiosTokenRef.current?.abort?.();
+      loadConfigTokenRef.current?.abort?.();
+      loadConfigJsonTokenRef.current?.abort?.();
     };
   }, []);
 
@@ -243,13 +325,13 @@ const ModelCard: React.FC<{
         {modelData ? (
           <div className="model-card-wrap">
             <div className="flex-center">
-              {modelData.config?.model_type && (
+              {modelType && (
                 <Tag className="tag-item" color="gold">
                   <span style={{ opacity: 0.65 }}>
                     <span className="m-r-5">
                       {intl.formatMessage({ id: 'models.architecture' })}:
                     </span>
-                    {modelData.config?.model_type}
+                    {modelType}
                   </span>
                 </Tag>
               )}
@@ -258,6 +340,14 @@ const ModelCard: React.FC<{
                   <span style={{ opacity: 0.65 }}>GGUF</span>
                 </Tag>
               )}
+              {!!modelTags.length &&
+                modelTags.map((tag: string, index: number) => {
+                  return (
+                    <Tag className="tag-item" color="geekblue" key={index}>
+                      <span style={{ opacity: 0.65 }}>{tag}</span>
+                    </Tag>
+                  );
+                })}
             </div>
             {readmeText && isGGUFModel && (
               <div

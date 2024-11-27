@@ -16,8 +16,11 @@ import React, {
 } from 'react';
 import { queryGPUList } from '../apis';
 import {
+  HuggingFaceTaskMap,
+  ModelscopeTaskMap,
   backendOptionsMap,
   modelSourceMap,
+  modelTaskMap,
   ollamaModelOptions
 } from '../config';
 import { FormData, GPUListItem } from '../config/types';
@@ -45,6 +48,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [gpuOptions, setGpuOptions] = useState<
     Array<GPUListItem & { label: string; value: string }>
   >([]);
+  const [modelTask, setModelTask] = useState<Record<string, any>>({
+    type: '',
+    value: '',
+    text2speech: false,
+    speech2text: false
+  });
 
   const sourceOptions = [
     {
@@ -115,6 +124,27 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     let name = _.split(props.selectedModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
+
+    const modelTask =
+      HuggingFaceTaskMap.audio.includes(props.selectedModel.task) ||
+      ModelscopeTaskMap.audio.includes(props.selectedModel.task)
+        ? modelTaskMap.audio
+        : '';
+
+    setModelTask({
+      value: props.selectedModel.task,
+      type: modelTask,
+      text2speech:
+        HuggingFaceTaskMap[modelTaskMap.textToSpeech] ===
+          props.selectedModel.task ||
+        ModelscopeTaskMap[modelTaskMap.textToSpeech] ===
+          props.selectedModel.task,
+      speech2text:
+        HuggingFaceTaskMap[modelTaskMap.speechToText] ===
+          props.selectedModel.task ||
+        ModelscopeTaskMap[modelTaskMap.speechToText] ===
+          props.selectedModel.task
+    });
 
     if (SEARCH_SOURCE.includes(props.source)) {
       form.setFieldsValue({
@@ -321,6 +351,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     if (gpu) {
       onOk({
         ..._.omit(formdata, ['scheduleType']),
+        speech_to_text: modelTask.speech2text,
+        text_to_speech: modelTask.text2speech,
         gpu_selector: {
           gpu_name: gpu.name,
           gpu_index: gpu.index,
@@ -329,19 +361,24 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       });
     } else {
       onOk({
-        ..._.omit(formdata, ['scheduleType'])
+        ..._.omit(formdata, ['scheduleType']),
+        speech_to_text: modelTask.speech2text,
+        text_to_speech: modelTask.text2speech
       });
     }
   };
 
   useEffect(() => {
-    if (action === PageAction.CREATE) {
+    if (action === PageAction.EDIT) return;
+    if (modelTask.type === modelTaskMap.audio) {
+      form.setFieldValue('backend', backendOptionsMap.voxBox);
+    } else {
       form.setFieldValue(
         'backend',
         isGGUF ? backendOptionsMap.llamaBox : backendOptionsMap.vllm
       );
     }
-  }, [isGGUF]);
+  }, [isGGUF, modelTask]);
   useEffect(() => {
     handleOnSelectModel();
   }, [props.selectedModel.name]);
@@ -449,6 +486,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         form={form}
         gpuOptions={gpuOptions}
         isGGUF={isGGUF}
+        modelTask={modelTask}
         action={action}
         source={props.source}
       ></AdvanceConfig>

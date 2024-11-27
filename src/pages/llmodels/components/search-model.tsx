@@ -5,9 +5,12 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
 import {
+  HuggingFaceTaskMap,
   ModelScopeSortType,
   ModelSortType,
+  ModelscopeTaskMap,
   modelSourceMap,
+  modelTaskMap,
   ollamaModelOptions
 } from '../config';
 import SearchStyle from '../style/search-result.less';
@@ -23,7 +26,7 @@ interface SearchInputProps {
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   const intl = useIntl();
-  const { modelSource, setLoadingModel, onSourceChange, onSelectModel } = props;
+  const { modelSource, setLoadingModel, onSelectModel } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
     loading: boolean;
@@ -44,6 +47,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const axiosTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
   const filterGGUFRef = useRef<boolean | undefined>();
+  const filterTaskRef = useRef<string>('');
   const modelFilesSortOptions = useRef<any[]>([
     {
       label: intl.formatMessage({ id: 'models.sort.trending' }),
@@ -64,7 +68,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   ]);
 
   const handleOnSelectModel = useCallback((item: any) => {
-    console.log('handleOnSelectModel', item);
     onSelectModel(item);
     setCurrent(item.id);
   }, []);
@@ -78,7 +81,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           query: searchInputRef.current || '',
           sort: sort,
           tags: filterGGUFRef.current ? ['gguf'] : [],
-          task
+          task: HuggingFaceTaskMap[filterTaskRef.current] || task
         }
       };
       const data = await queryHuggingfaceModels(params, {
@@ -102,7 +105,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     try {
       const params = {
         Name: `${searchInputRef.current}`,
-        filterGGUF: filterGGUFRef.current,
+        tags: filterGGUFRef.current ? ['gguf'] : [],
+        tasks: filterTaskRef.current
+          ? ([ModelscopeTaskMap[filterTaskRef.current]] as string[])
+          : [],
         SortBy: ModelScopeSortType[sort]
       };
       const data = await queryModelScopeModels(params, {
@@ -213,6 +219,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     handleOnSearchRepo();
   };
 
+  const handleFilterTaskChange = useCallback((value: string) => {
+    filterTaskRef.current = value;
+    handleOnSearchRepo();
+  }, []);
+
   const renderHFSearch = () => {
     return (
       <>
@@ -222,15 +233,22 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           modelSource={modelSource}
         ></SearchInput>
         <div className={SearchStyle.filter}>
-          <span>
+          {/* <span>
             <span className="value">
               {intl.formatMessage(
                 { id: 'models.search.result' },
                 { count: dataSource.repoOptions.length }
               )}
             </span>
-          </span>
-          <span>
+          </span> */}
+          <span
+            style={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
             <Checkbox
               onChange={handleFilterGGUFChange}
               className="m-r-5"
@@ -253,21 +271,43 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                 <InfoCircleOutlined className="m-l-4" />
               </Tooltip>
             </Checkbox>
-            <Select
-              allowClear
-              value={dataSource.sortType}
-              onChange={handleSortChange}
-              labelRender={({ label }) => {
-                return (
-                  <span>
-                    {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
-                  </span>
-                );
-              }}
-              options={modelFilesSortOptions.current}
-              size="middle"
-              style={{ width: '150px' }}
-            ></Select>
+            <span className="flex gap-6">
+              <Select
+                allowClear
+                value={filterTaskRef.current}
+                onChange={handleFilterTaskChange}
+                options={[
+                  {
+                    label: intl.formatMessage({
+                      id: 'playground.audio.texttospeech'
+                    }),
+                    value: modelTaskMap.textToSpeech
+                  },
+                  {
+                    label: intl.formatMessage({
+                      id: 'playground.audio.speechtotext'
+                    }),
+                    value: modelTaskMap.speechToText
+                  }
+                ]}
+                size="middle"
+                style={{ width: '140px' }}
+              ></Select>
+              <Select
+                value={dataSource.sortType}
+                onChange={handleSortChange}
+                labelRender={({ label }) => {
+                  return (
+                    <span>
+                      {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
+                    </span>
+                  );
+                }}
+                options={modelFilesSortOptions.current}
+                size="middle"
+                style={{ width: '140px' }}
+              ></Select>
+            </span>
           </span>
         </div>
       </>

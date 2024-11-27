@@ -147,17 +147,24 @@ export async function queryModelScopeModels(
     Target?: string;
     SingleCriterion?: any[];
     Name: string;
-    filterGGUF?: boolean;
+    tags?: string[];
+    tasks?: string[];
   },
   config?: any
 ) {
-  const Criterion = params.filterGGUF
-    ? {
-        Criterion: [
-          { category: 'tags', predicate: 'contains', values: ['gguf'] }
-        ]
-      }
-    : {};
+  const tagsCriterion = params.tags?.map((tag: string) => {
+    return { category: 'tags', predicate: 'contains', values: [tag] };
+  });
+  const tasksCriterion = params.tasks?.map((task: string) => {
+    return { category: 'tasks', predicate: 'contains', values: [task] };
+  });
+
+  const Criterion =
+    tagsCriterion?.length || tasksCriterion?.length
+      ? {
+          Criterion: [...(tagsCriterion || []), ...(tasksCriterion || [])]
+        }
+      : {};
   const res = await fetch(`${MODEL_SCOPE_LIST_MODEL_API}`, {
     method: 'PUT',
     signal: config?.signal,
@@ -298,4 +305,20 @@ export async function downloadModelFile(
     })
   )?.text();
   return res;
+}
+export async function downloadModelScopeModelfile(
+  params: { name: string },
+  options?: any
+) {
+  const res = await fetch(
+    `${MODE_SCOPE_MODEL_FIELS_API}${params.name}/resolve/master/config.json`,
+    {
+      method: 'GET',
+      signal: options?.signal
+    }
+  );
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
 }

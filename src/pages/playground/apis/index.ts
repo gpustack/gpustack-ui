@@ -1,3 +1,4 @@
+import { MODELS_API } from '@/pages/llmodels/apis';
 import { request } from '@umijs/max';
 
 export const CHAT_API = '/v1-openai/chat/completions';
@@ -96,17 +97,37 @@ export const textToSpeech = async (params: any, options?: any) => {
   if (!res.ok) {
     throw new Error('Network response was not ok');
   }
-  return res.json();
+
+  const audioBlob = await res.blob();
+  const audioUrl = URL.createObjectURL(audioBlob);
+  return audioUrl;
 };
 
+// export const speechToText = async (params: any, options?: any) => {
+//   const res = await fetch(AUDIO_SPEECH_TO_TEXT_API, {
+//     method: 'POST',
+//     body: JSON.stringify(params.data),
+//     signal: params.signal
+//   });
+//   if (!res.ok) {
+//     throw new Error('Network response was not ok');
+//   }
+//   return res.json();
+// };
+
 export const speechToText = async (params: any, options?: any) => {
-  const res = await fetch(AUDIO_SPEECH_TO_TEXT_API, {
+  return request(AUDIO_SPEECH_TO_TEXT_API, {
     method: 'POST',
-    body: JSON.stringify(params.data),
-    signal: params.signal
+    data: params.data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   });
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return res.json();
+};
+
+export const queryModelVoices = async (params: { name: string }) => {
+  return request(`${MODELS_API}/${params.name}/voices`, {
+    method: 'GET',
+    skipErrorHandler: true
+  });
 };

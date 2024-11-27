@@ -23,7 +23,7 @@ interface HFModelItemProps {
   source?: string;
   tags?: string[];
 }
-const warningTask = ['audio', 'video'];
+const warningTask = ['video'];
 
 const SUPPORTEDSOURCE = [
   modelSourceMap.huggingface_value,

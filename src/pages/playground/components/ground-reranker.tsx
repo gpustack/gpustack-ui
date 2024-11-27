@@ -2,7 +2,7 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import { ClearOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Input, Spin, Tag } from 'antd';
+import { Button, Checkbox, Input, Spin, Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -76,6 +76,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
+  const formRef = useRef<any>(null);
+  const multiplePasteEnable = useRef<boolean>(true);
   const [fileList, setFileList] = useState<
     {
       text: string;
@@ -186,6 +188,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { content: string }) => {
+    await formRef.current?.form.validateFields();
     if (!parameters.model) return;
     try {
       setLoading(true);
@@ -340,6 +343,26 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     },
     []
   );
+
+  const handleOnPaste = useCallback(
+    (e: any, index: number) => {
+      if (!multiplePasteEnable.current) return;
+      const text = e.clipboardData.getData('text');
+      if (text) {
+        console.log('text:', text);
+        const dataLlist = text.split('\n').map((item: string) => {
+          return {
+            text: item,
+            uid: inputListRef.current?.setMessageId(),
+            name: ''
+          };
+        });
+        setTextList([...textList.slice(0, index), ...dataLlist]);
+      }
+    },
+    [textList]
+  );
+
   const handleOnSort = useCallback(
     (list: { text: string; uid: number | string; name: string }[]) => {
       const newList = list?.map((item) => {
@@ -435,7 +458,37 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                   </span>
                 )}
               </span>
-              <div className="flex gap-10">
+              <div className="flex-center gap-10">
+                <Button className="flex-center" size="middle">
+                  <Checkbox
+                    defaultChecked={multiplePasteEnable.current}
+                    onChange={(e: any) => {
+                      multiplePasteEnable.current = e.target.checked;
+                    }}
+                  >
+                    {intl.formatMessage({
+                      id: 'playground.input.multiplePaste'
+                    })}
+                  </Checkbox>
+                </Button>
+                {/* <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.input.multiplePaste'
+                  })}
+                >
+                  <Switch
+                    checkedChildren={intl.formatMessage({
+                      id: 'playground.multiple.on'
+                    })}
+                    unCheckedChildren={intl.formatMessage({
+                      id: 'playground.multiple.off'
+                    })}
+                    defaultChecked={multiplePasteEnable.current}
+                    onChange={(checked) => {
+                      multiplePasteEnable.current = checked;
+                    }}
+                  />
+                </Tooltip> */}
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}
@@ -460,6 +513,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 onChange={handleTextListChange}
                 onSort={handleOnSort}
                 extra={renderPercent}
+                onPaste={handleOnPaste}
               ></InputList>
             </div>
           </div>
@@ -488,6 +542,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       >
         <div className="box">
           <DynamicParams
+            ref={formRef}
             setParams={setParams}
             params={parameters}
             paramsConfig={paramsConfig}

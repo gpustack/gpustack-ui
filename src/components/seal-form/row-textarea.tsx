@@ -12,6 +12,7 @@ interface SystemMessageProps {
   label?: React.ReactNode;
   height?: number;
   onChange: (e: any) => void;
+  onPaste?: (e: any) => void;
 }
 
 const RowTextarea: React.FC<SystemMessageProps> = (props) => {
@@ -52,6 +53,9 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
   const handleClear = () => {
     onChange?.({ target: { value: '' } });
   };
+  const handleOnPaste = (e: any) => {
+    props.onPaste?.(e);
+  };
 
   return (
     <div
@@ -83,6 +87,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
             onBlur={handleBlur}
             allowClear={false}
             onChange={handleOnChange}
+            onPaste={handleOnPaste}
           ></Input.TextArea>
         </div>
       }

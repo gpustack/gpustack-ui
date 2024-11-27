@@ -283,6 +283,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           if (item.b64_json) {
             imgItem.dataUrl += item.b64_json;
           }
+          const progress = _.round(item.progress, 0);
           newImageList[item.index] = {
             dataUrl: imgItem.dataUrl,
             height: '100%',
@@ -291,8 +292,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,
             span: imgItem.span,
-            loading: _.round(item.progress, 0) < 100,
-            progress: _.round(item.progress, 0)
+            loading: progress < 100,
+            progress: progress
           };
         });
         setImageList([...newImageList]);

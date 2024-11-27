@@ -82,5 +82,13 @@ export default {
   'playground.audio.speechtotext.tips':
     'Upload an audio file or start recording',
   'playground.audio.enablemic':
-    "Enable microphone access in your browser's settings."
+    "Enable microphone access in your browser's settings.",
+  'playground.audio.startrecord': 'Start Recording',
+  'playground.audio.stoprecord': 'Stop Recording',
+  'playground.audio.generating.tips': 'Generated text will appear here.',
+  'playground.audio.uploadfile.tips':
+    'Please upload an audio file, supported formats: {formats}',
+  'playground.input.multiplePaste': 'Multi-line paste',
+  'playground.multiple.on': 'Enable',
+  'playground.multiple.off': 'Disable'
 };

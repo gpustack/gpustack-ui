@@ -4,6 +4,7 @@ import './styles/dark.less';
 
 interface CodeViewerProps {
   code: string;
+  copyValue?: string;
   lang: string;
   autodetect?: boolean;
   ignoreIllegals?: boolean;
@@ -14,6 +15,7 @@ interface CodeViewerProps {
 const DarkViewer: React.FC<CodeViewerProps> = (props) => {
   const {
     code,
+    copyValue,
     lang,
     autodetect,
     ignoreIllegals,
@@ -26,6 +28,7 @@ const DarkViewer: React.FC<CodeViewerProps> = (props) => {
       style={props.style}
       height={height}
       code={code}
+      copyValue={copyValue}
       lang={lang}
       theme="dark"
       autodetect={autodetect}

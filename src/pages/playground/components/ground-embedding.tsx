@@ -11,7 +11,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Segmented, Tabs } from 'antd';
+import { Button, Checkbox, Segmented, Tabs } from 'antd';
 import classNames from 'classnames';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -72,8 +72,15 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   >([]);
   const [outputType, setOutputType] = useState<string>('chart');
   const [outputHeight, setOutputHeight] = useState<number>(180);
-  const [embeddingData, setEmbeddingData] = useState<string>('');
+  const [embeddingData, setEmbeddingData] = useState<{
+    code: string;
+    copyValue: string;
+  }>({
+    code: '',
+    copyValue: ''
+  });
   const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
+  const multiplePasteEnable = useRef<boolean>(true);
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -97,6 +104,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const { initialize: innitializeParams, updateScrollerPosition } =
     useOverlayScroller();
+  const formRef = useRef<any>(null);
 
   useImperativeHandle(ref, () => {
     return {
@@ -137,7 +145,15 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           };
         });
         setScatterData(list);
-        setEmbeddingData(JSON.stringify(embeddings, null, 2));
+        const embeddingJson = embeddings.map((item, index) => {
+          item.embedding = item.embedding.slice(0, 5);
+          item.embedding.push(null);
+          return item;
+        });
+        setEmbeddingData({
+          code: JSON.stringify(embeddingJson, null, 2).replace(/null/g, '...'),
+          copyValue: JSON.stringify(embeddings, null, 2)
+        });
       } catch (e) {
         console.log('error:', e);
       }
@@ -155,6 +171,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
+    await formRef.current?.form.validateFields();
     if (!parameters.model) return;
 
     try {
@@ -255,6 +272,25 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTextList(list);
   };
 
+  const handleOnPaste = useCallback(
+    (e: any, index: number) => {
+      if (!multiplePasteEnable.current) return;
+      const text = e.clipboardData.getData('text');
+      if (text) {
+        console.log('text:', text);
+        const dataLlist = text.split('\n').map((item: string) => {
+          return {
+            text: item,
+            uid: inputListRef.current?.setMessageId(),
+            name: ''
+          };
+        });
+        setTextList([...textList.slice(0, index), ...dataLlist]);
+      }
+    },
+    [textList]
+  );
+
   const handleClearDocuments = () => {
     setTextList([
       {
@@ -300,7 +336,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
             <HighlightCode
               height={outputHeight - 20}
               theme="light"
-              code={embeddingData}
+              code={embeddingData.code}
+              copyValue={embeddingData.copyValue}
               lang="json"
               copyable={true}
               style={{ marginBottom: 0 }}
@@ -355,7 +392,37 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                   </span>
                 </div>
               </h3>
-              <div className="flex gap-10">
+              <div className="flex-center gap-10">
+                <Button className="flex-center" size="middle">
+                  <Checkbox
+                    defaultChecked={multiplePasteEnable.current}
+                    onChange={(e: any) => {
+                      multiplePasteEnable.current = e.target.checked;
+                    }}
+                  >
+                    {intl.formatMessage({
+                      id: 'playground.input.multiplePaste'
+                    })}
+                  </Checkbox>
+                </Button>
+                {/* <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.input.multiplePaste'
+                  })}
+                >
+                  <Switch
+                    checkedChildren={intl.formatMessage({
+                      id: 'playground.multiple.on'
+                    })}
+                    unCheckedChildren={intl.formatMessage({
+                      id: 'playground.multiple.off'
+                    })}
+                    defaultChecked={multiplePasteEnable.current}
+                    onChange={(checked) => {
+                      multiplePasteEnable.current = checked;
+                    }}
+                  />
+                </Tooltip> */}
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}
@@ -399,6 +466,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 ref={inputListRef}
                 textList={textList}
                 onChange={handleTextListChange}
+                onPaste={handleOnPaste}
               ></InputList>
               <div style={{ marginTop: 8 }}>
                 <FileList
@@ -505,6 +573,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       >
         <div className="box">
           <DynamicParams
+            ref={formRef}
             setParams={setParams}
             paramsConfig={paramsConfig}
             initialValues={initialValues}

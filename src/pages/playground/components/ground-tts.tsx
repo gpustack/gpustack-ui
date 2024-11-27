@@ -157,11 +157,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleSelectModel = useCallback(
     async (value: string) => {
-      const data: any = modelList.find((item) => item.value === value);
-      if (!data) return;
+      if (!value) return;
       try {
         const res = await queryModelVoices({
-          name: data?.modelId as string
+          model: value
         });
         const voiceList = _.map(res.voices || [], (item: any) => {
           return {
@@ -300,7 +299,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             clearAll={handleClear}
             shouldResetMessage={false}
             submitIcon={<SendOutlined></SendOutlined>}
-            modelList={modelList}
           />
         </div>
       </div>

@@ -1,4 +1,3 @@
-import { MODELS_API } from '@/pages/llmodels/apis';
 import { request } from '@umijs/max';
 
 export const CHAT_API = '/v1-openai/chat/completions';
@@ -125,9 +124,10 @@ export const speechToText = async (params: any, options?: any) => {
   });
 };
 
-export const queryModelVoices = async (params: { name: string }) => {
-  return request(`${MODELS_API}/${params.name}/voices`, {
+export const queryModelVoices = async (params: { model: string }) => {
+  return request(`/voices`, {
     method: 'GET',
+    params,
     skipErrorHandler: true
   });
 };

@@ -2,6 +2,7 @@ export interface ListItem {
   source: string;
   backend: string;
   reranker: boolean;
+  image_only?: boolean;
   huggingface_repo_id: string;
   huggingface_file_name: string;
   backend_version?: string;

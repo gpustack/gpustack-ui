@@ -106,7 +106,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
-
       const params = {
         ...parameters,
         file: new File([audioData.data], audioData.name, {
@@ -155,12 +154,19 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleOnAudioData = useCallback(
-    (data: { chunks: Blob[]; url: string; name: string; duration: number }) => {
+    (data: {
+      chunks: Blob[];
+      url: string;
+      name: string;
+      duration: number;
+      type: string;
+    }) => {
       setAudioData(() => {
         return {
           url: data.url,
           name: data.name,
           data: data.chunks,
+          type: data.type,
           duration: data.duration
         };
       });

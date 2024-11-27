@@ -172,7 +172,6 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       audioRecorder.current.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
-
         handleAudioData({
           chunks: audioBlob,
           size: audioBlob.size,

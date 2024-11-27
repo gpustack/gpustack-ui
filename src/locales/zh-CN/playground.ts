@@ -96,5 +96,10 @@ export default {
   'playground.image.params.cfgScale': '缩放因子',
   'playground.image.params.custom': '自定义',
   'playground.image.params.custom.tips': '参数定义',
-  'playground.image.params.openai': 'OpenAI 兼容'
+  'playground.image.params.openai': 'OpenAI 兼容',
+  'playground.embedding.handler.tips': '高度调节',
+  'playground.embedding.pcatips1':
+    '采用主成分分析（PCA）对文档向量化后的数据降维，将新数据投射到PCA 空间中。',
+  'playground.embedding.pcatips2':
+    '图表中，点之间的距离表示对应文档之间的相似度。'
 };

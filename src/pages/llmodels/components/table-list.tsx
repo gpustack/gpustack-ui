@@ -423,80 +423,83 @@ const Models: React.FC<ModelsProps> = ({
     []
   );
 
-  const renderModelTags = useCallback((record: ListItem) => {
-    if (record.reranker) {
-      return (
-        <Tag
-          style={{
-            margin: 0,
-            opacity: 0.8,
-            transform: 'scale(0.9)'
-          }}
-          color="geekblue"
-        >
-          Reranker
-        </Tag>
-      );
-    }
+  const renderModelTags = useCallback(
+    (record: ListItem) => {
+      if (record.reranker) {
+        return (
+          <Tag
+            style={{
+              margin: 0,
+              opacity: 0.8,
+              transform: 'scale(0.9)'
+            }}
+            color="geekblue"
+          >
+            Reranker
+          </Tag>
+        );
+      }
 
-    if (record.embedding_only && !record.reranker) {
-      return (
-        <Tag
-          style={{
-            margin: 0,
-            opacity: 0.8,
-            transform: 'scale(0.9)'
-          }}
-          color="geekblue"
-        >
-          Embedding Only
-        </Tag>
-      );
-    }
-    if (record.text_to_speech) {
-      return (
-        <Tag
-          style={{
-            margin: 0,
-            opacity: 0.8,
-            transform: 'scale(0.9)'
-          }}
-          color="geekblue"
-        >
-          {intl.formatMessage({ id: 'playground.audio.texttospeech' })}
-        </Tag>
-      );
-    }
-    if (record.speech_to_text) {
-      return (
-        <Tag
-          style={{
-            margin: 0,
-            opacity: 0.8,
-            transform: 'scale(0.9)'
-          }}
-          color="geekblue"
-        >
-          {intl.formatMessage({ id: 'playground.audio.speechtotext' })}
-        </Tag>
-      );
-    }
-    if (record.image_only) {
-      return (
-        <Tag
-          style={{
-            margin: 0,
-            opacity: 0.8,
-            transform: 'scale(0.9)'
-          }}
-          color="geekblue"
-        >
-          Image Only
-        </Tag>
-      );
-    }
-    return null;
-  }, []);
+      if (record.embedding_only && !record.reranker) {
+        return (
+          <Tag
+            style={{
+              margin: 0,
+              opacity: 0.8,
+              transform: 'scale(0.9)'
+            }}
+            color="geekblue"
+          >
+            Embedding Only
+          </Tag>
+        );
+      }
+      if (record.text_to_speech) {
+        return (
+          <Tag
+            style={{
+              margin: 0,
+              opacity: 0.8,
+              transform: 'scale(0.9)'
+            }}
+            color="geekblue"
+          >
+            {intl.formatMessage({ id: 'playground.audio.texttospeech' })}
+          </Tag>
+        );
+      }
+      if (record.speech_to_text) {
+        return (
+          <Tag
+            style={{
+              margin: 0,
+              opacity: 0.8,
+              transform: 'scale(0.9)'
+            }}
+            color="geekblue"
+          >
+            {intl.formatMessage({ id: 'playground.audio.speechtotext' })}
+          </Tag>
+        );
+      }
+      if (record.image_only) {
+        return (
+          <Tag
+            style={{
+              margin: 0,
+              opacity: 0.8,
+              transform: 'scale(0.9)'
+            }}
+            color="geekblue"
+          >
+            Image Only
+          </Tag>
+        );
+      }
+      return null;
+    },
+    [intl]
+  );
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
       return (

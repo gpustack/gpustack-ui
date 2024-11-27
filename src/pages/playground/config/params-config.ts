@@ -263,7 +263,8 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 1,
-      max: 100
+      max: 100,
+      defaultValue: 10
     },
     rules: [
       {
@@ -275,13 +276,14 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     type: 'InputNumber',
     name: 'cfg_scale',
     label: {
-      text: 'playground.image.params.cfgScale',
-      isLocalized: true
+      text: 'CFG Scale',
+      isLocalized: false
     },
     attrs: {
       min: 1.0,
       max: 10,
-      step: 0.1
+      step: 0.1,
+      defaulValue: 4.5
     },
     rules: [
       {

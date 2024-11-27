@@ -32,6 +32,7 @@ type ParamsSettingsProps = {
   modelList: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   setParams: (params: any) => void;
+  onModelChange?: (model: string) => void;
   globalParams?: Record<string, any>;
   paramsConfig?: ParamsSchema[];
   initialValues?: Record<string, any>;
@@ -43,6 +44,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     {
       setParams,
       onValuesChange,
+      onModelChange,
       selectedModel,
       globalParams,
       initialValues,
@@ -83,6 +85,13 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         });
       }
     }, [modelList, showModelSelector, selectedModel, initialValues]);
+
+    const handleModelChange = useCallback(
+      (value: string) => {
+        onModelChange?.(value);
+      },
+      [onModelChange]
+    );
 
     const handleOnFinish = (values: any) => {
       console.log('handleOnFinish', values);
@@ -239,7 +248,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         }
         return null;
       });
-    }, [paramsConfig, params]);
+    }, [paramsConfig, params, intl]);
 
     return (
       <Form
@@ -272,6 +281,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                 ]}
               >
                 <SealSelect
+                  onChange={handleModelChange}
                   showSearch={true}
                   options={modelList}
                   label={intl.formatMessage({ id: 'playground.model' })}

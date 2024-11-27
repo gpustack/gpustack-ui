@@ -80,5 +80,13 @@ export default {
   'playground.audio.speechtotext': '语音转文本',
   'playground.audio.texttospeech.tips': '生成的语音将出现在这里',
   'playground.audio.speechtotext.tips': '上传音频文件或开始录音',
-  'playground.audio.enablemic': '请允许浏览器访问麦克风，以便开始录音'
+  'playground.audio.enablemic': '请允许浏览器访问麦克风，以便开始录音',
+  'playground.audio.startrecord': '开始录音',
+  'playground.audio.stoprecord': '停止录音',
+  'playground.audio.generating.tips': '生成的文本将出现在这里',
+  'playground.audio.uploadfile.tips': '请上传音频文件，支持格式：{formats}',
+  'playground.audio.button.generate': '生成文本',
+  'playground.input.multiplePaste': '多行粘贴',
+  'playground.multiple.on': '开启',
+  'playground.multiple.off': '关闭'
 };

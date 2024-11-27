@@ -10,10 +10,12 @@ const HighlightCode: React.FC<{
   theme?: 'light' | 'dark';
   height?: string | number;
   style?: React.CSSProperties;
+  copyValue?: string;
 }> = (props) => {
   const {
     style,
     code,
+    copyValue,
     lang = 'bash',
     copyable = true,
     theme = 'dark',
@@ -26,6 +28,7 @@ const HighlightCode: React.FC<{
         <CodeViewerDark
           lang={lang}
           code={code}
+          copyValue={copyValue}
           copyable={copyable}
           height={height}
           style={style}
@@ -35,6 +38,7 @@ const HighlightCode: React.FC<{
           style={style}
           lang={lang}
           code={code}
+          copyValue={copyValue}
           copyable={copyable}
           height={height}
         />

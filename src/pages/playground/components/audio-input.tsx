@@ -1,4 +1,5 @@
 import { AudioOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 // import '../style/audio-input.less';
@@ -19,6 +20,7 @@ interface AudioInputProps {
 }
 
 const AudioInput: React.FC<AudioInputProps> = (props) => {
+  const intl = useIntl();
   const [audioOn, setAudioOn] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [audioPermission, setAudioPermission] = useState(true);
@@ -150,9 +152,9 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       stopRecording();
       return;
     }
+
     try {
       await EnableAudio();
-      console.log('audioStream:', audioStream.current);
       audioRecorder.current = new MediaRecorder(audioStream.current);
 
       const audioChunks: any[] = [];
@@ -172,7 +174,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
         const audioUrl = URL.createObjectURL(audioBlob);
 
         handleAudioData({
-          chunks: audioChunks,
+          chunks: audioBlob,
           size: audioBlob.size,
           type: audioBlob.type,
           url: audioUrl,
@@ -188,8 +190,9 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       startTime.current = Date.now();
       audioRecorder.current.start(1000);
       generateVisualData();
+      console.log('start recording');
     } catch (error) {
-      // console.log(error);
+      console.log('error====', error);
     }
   };
 
@@ -208,7 +211,13 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     <div className="audio-input">
       <Space size={40} className="btns">
         {
-          <Tooltip title="Start Recording">
+          <Tooltip
+            title={
+              isRecording
+                ? intl.formatMessage({ id: 'playground.audio.stoprecord' })
+                : intl.formatMessage({ id: 'playground.audio.startrecord' })
+            }
+          >
             <div
               style={{
                 display: 'flex',
@@ -229,17 +238,6 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
             </div>
           </Tooltip>
         }
-        {/* {isRecording && (
-          <Tooltip title="Stop Recording">
-            <Button
-              shape="circle"
-              icon={<IconFont type="icon-stop2"></IconFont>}
-              size="middle"
-              type={props.type ?? 'text'}
-              onClick={stopRecording}
-            ></Button>
-          </Tooltip>
-        )} */}
       </Space>
     </div>
   );

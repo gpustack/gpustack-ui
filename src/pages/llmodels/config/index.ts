@@ -73,6 +73,38 @@ export const backendOptionsMap = {
   voxBox: 'vox-box'
 };
 
+export const modelTaskMap = {
+  textToSpeech: 'text-to-speech',
+  speechToText: 'speech-to-text',
+  textToText: 'text-to-text',
+  textToImage: 'text-to-image',
+  audio: 'audio',
+  image: 'image'
+};
+
+export const ModelscopeTaskMap = {
+  [modelTaskMap.textToSpeech]: 'text-to-speech',
+  [modelTaskMap.speechToText]: 'auto-speech-recognition',
+  [modelTaskMap.textToText]: 'TextToText',
+  [modelTaskMap.textToImage]: 'text-to-image',
+  audio: ['text-to-speech', 'auto-speech-recognition']
+};
+
+export const HuggingFaceTaskMap = {
+  [modelTaskMap.textToSpeech]: 'text-to-speech',
+  [modelTaskMap.speechToText]: 'automatic-speech-recognition',
+  [modelTaskMap.textToText]: 'text-2-text',
+  [modelTaskMap.textToImage]: 'text-to-image',
+  audio: ['text-to-speech', 'automatic-speech-recognition']
+};
+
+export const AudioModeTypeMap = {
+  FunASR: ['FunASR', 'funasr', 'fun-asr', 'fun_asr'],
+  Bark: ['Bark', 'bark'],
+  Whisper: ['Whisper', 'whisper'],
+  CosyVoice: ['CosyVoice', 'cosyvoice', 'cosy-voice', 'cosy_voice']
+};
+
 export const modelSourceMap: Record<string, string> = {
   huggingface: 'Hugging Face',
   ollama_library: 'Ollama Library',

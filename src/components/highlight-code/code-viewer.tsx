@@ -6,6 +6,7 @@ import { escapeHtml } from './utils';
 
 interface CodeViewerProps {
   code: string;
+  copyValue?: string;
   lang: string;
   autodetect?: boolean;
   ignoreIllegals?: boolean;
@@ -17,6 +18,7 @@ interface CodeViewerProps {
 const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   const {
     code,
+    copyValue,
     lang,
     autodetect = true,
     ignoreIllegals = true,
@@ -87,7 +89,7 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
       ></code>
       {copyable && (
         <CopyButton
-          text={code}
+          text={copyValue || code}
           size="small"
           style={{ color: '#abb2bf' }}
         ></CopyButton>

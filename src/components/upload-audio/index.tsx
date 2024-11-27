@@ -1,4 +1,5 @@
 import { UploadOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Tooltip, Upload } from 'antd';
 import React from 'react';
 
@@ -10,6 +11,7 @@ interface UploadAudioProps {
 }
 
 const UploadAudio: React.FC<UploadAudioProps> = (props) => {
+  const intl = useIntl();
   const beforeUpload = (file: any) => {
     return true;
   };
@@ -22,7 +24,13 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
     []
   );
   return (
-    <Tooltip title={`Upload an audio file, support for ${props.accept}`}>
+    <Tooltip
+      overlayInnerStyle={{ maxWidth: 265, width: 'max-content' }}
+      title={intl.formatMessage(
+        { id: 'playground.audio.uploadfile.tips' },
+        { formats: props.accept }
+      )}
+    >
       <Upload
         beforeUpload={beforeUpload}
         onChange={handleOnChange}

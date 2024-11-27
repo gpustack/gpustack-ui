@@ -1,25 +1,29 @@
 import IconFont from '@/components/icon-font';
+import SealSelect from '@/components/seal-form/seal-select';
 import SpeechContent from '@/components/speech-content';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { ThunderboltOutlined } from '@ant-design/icons';
+import { SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Spin } from 'antd';
+import { Form, Spin } from 'antd';
 import classNames from 'classnames';
+import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
   memo,
+  useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
-import { CHAT_API, textToSpeech } from '../apis';
+import { CHAT_API, queryModelVoices, textToSpeech } from '../apis';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
-import { MessageItem } from '../config/types';
+import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
-import RerankerParams from './dynamic-params';
+import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
 import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
@@ -31,7 +35,7 @@ interface MessageProps {
 }
 
 const initialValues = {
-  voice: 'Alloy',
+  voice: '',
   response_format: 'mp3',
   speed: 1
 };
@@ -41,12 +45,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<
     {
-      prompt: string;
+      input: string;
       voice: string;
       format: string;
       speed: number;
       uid: number;
       autoplay: boolean;
+      audioUrl: string;
     }[]
   >([]);
 
@@ -54,19 +59,18 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [searchParams] = useSearchParams();
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
-  const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
-  const contentRef = useRef<any>('');
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
-  const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
+  const [voiceList, setVoiceList] = useState<Global.BaseOption<string>[]>([]);
+  const formRef = useRef<any>(null);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -93,6 +97,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
+    await formRef.current?.form.validateFields();
     if (!parameters.model) return;
     try {
       setLoading(true);
@@ -104,24 +109,27 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
 
-      const chatParams = {
+      const params = {
         ...parameters,
-        prompt: current?.content || currentPrompt
+        input: current?.content || currentPrompt
       };
-      const result: any = await textToSpeech({
-        data: chatParams,
+      const audioUrl: any = await textToSpeech({
+        data: params,
         url: CHAT_API,
         signal
       });
 
+      console.log('result:', parameters, audioUrl);
+
       setMessageList([
         {
-          prompt: current?.content || currentPrompt,
+          input: current?.content || currentPrompt,
           voice: parameters.voice,
           format: parameters.response_format,
           speed: parameters.speed,
           uid: messageId.current,
-          autoplay: checkvalueRef.current
+          autoplay: checkvalueRef.current,
+          audioUrl: audioUrl
         }
       ]);
     } catch (error) {
@@ -147,11 +155,68 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
-  const handleSelectModel = () => {};
+  const handleSelectModel = useCallback(
+    async (value: string) => {
+      const data: any = modelList.find((item) => item.value === value);
+      if (!data) return;
+      try {
+        const res = await queryModelVoices({
+          name: data?.modelId as string
+        });
+        const voiceList = _.map(res.voices || [], (item: any) => {
+          return {
+            label: item,
+            value: item
+          };
+        });
+        setVoiceList(voiceList);
+        setParams((pre: any) => {
+          return {
+            ...pre,
+            voice: voiceList[0]?.value
+          };
+        });
+        formRef.current?.form.setFieldValue('voice', voiceList[0]?.value);
+      } catch (error) {
+        setVoiceList([]);
+        formRef.current?.form.setFieldValue('voice', '');
+        setParams((pre: any) => {
+          return {
+            ...pre,
+            voice: ''
+          };
+        });
+      }
+    },
+    [modelList]
+  );
 
   const handleOnCheckChange = (e: any) => {
     checkvalueRef.current = e.target.checked;
   };
+
+  const renderExtra = useMemo(() => {
+    return paramsConfig.map((item: ParamsSchema) => {
+      return (
+        <Form.Item name={item.name} rules={item.rules} key={item.name}>
+          <SealSelect
+            {...item.attrs}
+            options={item.name === 'voice' ? voiceList : item.options}
+            label={
+              item.label.isLocalized
+                ? intl.formatMessage({ id: item.label.text })
+                : item.label.text
+            }
+          ></SealSelect>
+        </Form.Item>
+      );
+    });
+  }, [paramsConfig, intl, voiceList]);
+
+  useEffect(() => {
+    handleSelectModel(parameters.model);
+  }, [parameters.model, handleSelectModel]);
+
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
@@ -233,9 +298,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}
             clearAll={handleClear}
-            setModelSelections={handleSelectModel}
             shouldResetMessage={false}
-            submitIcon={<ThunderboltOutlined></ThunderboltOutlined>}
+            submitIcon={<SendOutlined></SendOutlined>}
             modelList={modelList}
           />
         </div>
@@ -247,13 +311,14 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         ref={paramsRef}
       >
         <div className="box">
-          <RerankerParams
+          <DynamicParams
+            ref={formRef}
             setParams={setParams}
-            paramsConfig={paramsConfig}
             initialValues={initialValues}
             params={parameters}
             selectedModel={selectModel}
             modelList={modelList}
+            extra={renderExtra}
           />
         </div>
       </div>
@@ -261,7 +326,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <ViewCodeModal
         open={show}
         payLoad={{
-          prompt: currentPrompt
+          input: currentPrompt
         }}
         api="audio/speech"
         clientType="audio.speech"

@@ -4,6 +4,7 @@ import './styles/light.less';
 
 interface CodeViewerProps {
   code: string;
+  copyValue?: string;
   lang: string;
   autodetect?: boolean;
   ignoreIllegals?: boolean;
@@ -14,6 +15,7 @@ interface CodeViewerProps {
 const LightViewer: React.FC<CodeViewerProps> = (props) => {
   const {
     code,
+    copyValue,
     lang,
     autodetect,
     ignoreIllegals,
@@ -27,6 +29,7 @@ const LightViewer: React.FC<CodeViewerProps> = (props) => {
       style={style}
       height={height}
       code={code}
+      copyValue={copyValue}
       lang={lang}
       theme="light"
       autodetect={autodetect}

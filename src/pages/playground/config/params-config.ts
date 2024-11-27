@@ -5,12 +5,12 @@ export const TTSParamsConfig: ParamsSchema[] = [
     type: 'Select',
     name: 'voice',
     options: [
-      { label: 'Alloy', value: 'Alloy' },
-      { label: 'Echo', value: 'Echo' },
-      { label: 'Fable', value: 'Fable' },
-      { label: 'Onyx', value: 'Onyx' },
-      { label: 'Nova', value: 'Nova' },
-      { label: 'Shimmer', value: 'Shimmer' }
+      // { label: 'Alloy', value: 'Alloy' },
+      // { label: 'Echo', value: 'Echo' },
+      // { label: 'Fable', value: 'Fable' },
+      // { label: 'Onyx', value: 'Onyx' },
+      // { label: 'Nova', value: 'Nova' },
+      // { label: 'Shimmer', value: 'Shimmer' }
     ],
     label: {
       text: 'playground.params.voice',
@@ -64,25 +64,6 @@ export const TTSParamsConfig: ParamsSchema[] = [
       }
     ]
   }
-  // {
-  //   type: 'TextArea',
-  //   name: 'prompt',
-  //   label: {
-  //     text: 'Prompt',
-  //     isLocalized: false
-  //   },
-  //   attrs: {
-  //     autoSize: {
-  //       minRows: 2,
-  //       maxRows: 3
-  //     }
-  //   },
-  //   rules: [
-  //     {
-  //       required: false
-  //     }
-  //   ]
-  // }
 ];
 
 export const RealtimeParamsConfig: ParamsSchema[] = [

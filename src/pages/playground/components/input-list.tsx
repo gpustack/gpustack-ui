@@ -27,6 +27,7 @@ interface InputListProps {
   onChange?: (
     textList: { text: string; uid: number | string; name: string }[]
   ) => void;
+  onPaste?: (e: any, index: number) => void;
   onSort?: (
     textList: { text: string; uid: number | string; name: string }[]
   ) => void;
@@ -42,7 +43,8 @@ const InputList: React.FC<InputListProps> = forwardRef(
       height,
       onSort,
       onChange,
-      extra
+      extra,
+      onPaste
     },
     ref
   ) => {
@@ -181,6 +183,7 @@ const InputList: React.FC<InputListProps> = forwardRef(
 
     const setMessageId = () => {
       messageId.current = messageId.current + 1;
+      return messageId.current;
     };
 
     const handleAdd = () => {
@@ -222,7 +225,8 @@ const InputList: React.FC<InputListProps> = forwardRef(
     useImperativeHandle(ref, () => ({
       handleAdd,
       handleDelete,
-      handleTextChange
+      handleTextChange,
+      setMessageId
     }));
 
     return (
@@ -239,6 +243,7 @@ const InputList: React.FC<InputListProps> = forwardRef(
                     id: 'playground.embedding.inputyourtext'
                   })}
                   onChange={(e) => handleTextChange(e.target.value, text)}
+                  onPaste={(e) => onPaste?.(e, index)}
                 ></RowTextarea>
               </div>
               <span className="btn-group">

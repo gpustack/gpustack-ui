@@ -4,7 +4,10 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import ThumbImg from '@/pages/playground/components/thumb-img';
-import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
+import {
+  fetchChunkedData,
+  readLargeStreamData as readStreamData
+} from '@/utils/fetch-chunk-data';
 import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Form, Tooltip } from 'antd';
@@ -138,18 +141,28 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
+      with: 256,
+      height: 256,
       span: 12
     };
     if (parameters.n === 1) {
+      size.width = '100%';
+      size.height = '100%';
       size.span = 24;
     }
     if (parameters.n === 2) {
+      size.width = '50%';
+      size.height = 256;
       size.span = 12;
     }
     if (parameters.n === 3) {
+      size.width = '33%';
+      size.height = 256;
       size.span = 12;
     }
     if (parameters.n === 4) {
+      size.width = '25%';
+      size.height = 256;
       size.span = 12;
     }
     return size;
@@ -210,8 +223,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const params = {
         stream: true,
         stream_options: {
-          chunk_result: true,
-          chunk_size: 16 * 1024
+          chunk_result: true
         },
         prompt: current?.content || currentPrompt || '',
         ..._.omitBy(finalParameters, (value: string) => !value)
@@ -220,7 +232,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const result: any = await fetchChunkedData({
         data: params,
         url: CREAT_IMAGE_API,
-        // url: 'http://192.168.50.27:9090/v1/images/generations',
         signal: requestToken.current.signal
       });
 
@@ -235,12 +246,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           });
           return;
         }
-
+        console.log('imgItem.dataUrl:', chunk.data);
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
           if (item.b64_json) {
             imgItem.dataUrl += item.b64_json;
             // imgItem.cache.push(item.b64_json);
+            console.log('imgItem.dataUrl:', imgItem.dataUrl);
           }
           const progress = _.round(item.progress, 0);
           newImageList[item.index] = {
@@ -295,7 +307,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
       setParams((pre: object) => {
         return {
-          ...pre,
+          ..._.omit(pre, ['quality', 'style']),
           seed: null,
           sampler: 'euler_a',
           cfg_scale: 1,
@@ -306,6 +318,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     } else {
       setParams((pre: object) => {
         return {
+          quality: 'standard',
+          style: null,
           ..._.omit(pre, [
             'seed',
             'sampler',
@@ -320,6 +334,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const renderExtra = useMemo(() => {
+    if (!isOpenaiCompatible) {
+      return [];
+    }
     return ImageconstExtraConfig.map((item: ParamsSchema) => {
       return (
         <Form.Item name={item.name} rules={item.rules} key={item.name}>
@@ -335,7 +352,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </Form.Item>
       );
     });
-  }, [ImageconstExtraConfig, intl]);
+  }, [ImageconstExtraConfig, isOpenaiCompatible, intl]);
 
   const renderAdvanced = useMemo(() => {
     if (isOpenaiCompatible) {

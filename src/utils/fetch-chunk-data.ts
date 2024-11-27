@@ -59,7 +59,9 @@ export const fetchChunkedData = async (params: {
     };
   }
   const reader = response?.body?.getReader();
-  const decoder = new TextDecoder('utf-8');
+  const decoder = new TextDecoder('utf-8', {
+    fatal: true
+  });
   return {
     reader,
     decoder
@@ -77,10 +79,52 @@ export const readStreamData = async (
   }
 
   let chunk = decoder.decode(value, { stream: true });
+
   extractJSON(chunk).forEach((data) => {
     callback?.(data);
   });
   await readStreamData(reader, decoder, callback);
+};
+
+export const readLargeStreamData = async (
+  reader: any,
+  decoder: TextDecoder,
+  callback: (data: any) => void
+) => {
+  let buffer = '';
+
+  const processStream = async () => {
+    const { done, value } = await reader.read();
+    if (done) {
+      if (buffer) {
+        try {
+          extractJSON(buffer).forEach((data) => {
+            callback?.(data);
+          });
+        } catch (e) {
+          console.error('parse buffer failed:', buffer);
+        }
+      }
+      return;
+    }
+
+    // cache each chunk
+    buffer += decoder.decode(value, { stream: true });
+
+    const extractedData = extractJSON(buffer);
+
+    extractedData.forEach((data) => {
+      callback?.(data);
+    });
+
+    const lastIndex = buffer.lastIndexOf('}');
+    buffer = lastIndex !== -1 ? buffer.slice(lastIndex + 1) : buffer;
+
+    // next chunk
+    await processStream();
+  };
+
+  await processStream();
 };
 
 export const readTextEventStreamData = async (

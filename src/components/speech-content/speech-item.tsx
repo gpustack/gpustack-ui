@@ -1,9 +1,5 @@
 import IconFont from '@/components/icon-font';
-import {
-  DownloadOutlined,
-  FileTextOutlined,
-  PlayCircleOutlined
-} from '@ant-design/icons';
+import { DownloadOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import React, { useRef, useState } from 'react';
 import AudioPlayer from './audio-player';
@@ -37,7 +33,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
       <div className="speech-item">
         <div className="voice">
           <IconFont type="icon-user_voice" className="font-size-16" />
-          <span className="text">{props.voice}</span>
+          {/* <span className="text">{props.voice}</span> */}
         </div>
         <div className="wrapper">
           <AudioPlayer
@@ -69,14 +65,14 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
               size="small"
             ></Button>
           </Tooltip>
-          <Tooltip title="Show Prompt">
+          {/* <Tooltip title="Show Prompt">
             <Button
               icon={<FileTextOutlined />}
               type="text"
               size="small"
               onClick={handleCollapse}
             ></Button>
-          </Tooltip>
+          </Tooltip> */}
         </div>
       </div>
       {/* {collapsed && (

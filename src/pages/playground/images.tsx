@@ -40,7 +40,7 @@ const TextToImages: React.FC = () => {
     const getModelList = async () => {
       try {
         const params = {
-          embedding_only: false
+          image_only: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

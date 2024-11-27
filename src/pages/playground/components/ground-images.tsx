@@ -72,8 +72,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     //   width: 'auto',
     //   uid: 0,
     //   span: 12,
-    //   progress: 10
-    // },
+    //   loading: true,
+    //   progress: 60
+    // }
     // {
     //   dataUrl:
     //     'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
@@ -137,28 +138,18 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
-      with: 256,
-      height: 256,
       span: 12
     };
     if (parameters.n === 1) {
-      size.width = '100%';
-      size.height = '100%';
       size.span = 24;
     }
     if (parameters.n === 2) {
-      size.width = '50%';
-      size.height = 256;
       size.span = 12;
     }
     if (parameters.n === 3) {
-      size.width = '33%';
-      size.height = 256;
       size.span = 12;
     }
     if (parameters.n === 4) {
-      size.width = '25%';
-      size.height = 256;
       size.span = 12;
     }
     return size;
@@ -249,6 +240,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           const imgItem = newImageList[item.index];
           if (item.b64_json) {
             imgItem.dataUrl += item.b64_json;
+            // imgItem.cache.push(item.b64_json);
           }
           const progress = _.round(item.progress, 0);
           newImageList[item.index] = {
@@ -264,9 +256,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           };
         });
         setImageList([...newImageList]);
+        console.log('newImageList:', newImageList);
       });
     } catch (error) {
-      // console.log('error:', error);
+      console.log('error:', error);
       requestToken.current?.abort?.();
       setImageList([]);
     } finally {

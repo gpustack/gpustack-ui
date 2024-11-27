@@ -481,6 +481,20 @@ const Models: React.FC<ModelsProps> = ({
         </Tag>
       );
     }
+    if (record.image_only) {
+      return (
+        <Tag
+          style={{
+            margin: 0,
+            opacity: 0.8,
+            transform: 'scale(0.9)'
+          }}
+          color="geekblue"
+        >
+          Image Only
+        </Tag>
+      );
+    }
     return null;
   }, []);
   const renderChildren = useCallback(

@@ -350,13 +350,16 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       const text = e.clipboardData.getData('text');
       if (text) {
         console.log('text:', text);
-        const dataLlist = text.split('\n').map((item: string) => {
-          return {
-            text: item,
-            uid: inputListRef.current?.setMessageId(),
-            name: ''
-          };
-        });
+        const dataLlist = text
+          .split('\n')
+          .map((item: string) => {
+            return {
+              text: item,
+              uid: inputListRef.current?.setMessageId(),
+              name: ''
+            };
+          })
+          .filter((item: any) => item.text);
         setTextList([...textList.slice(0, index), ...dataLlist]);
       }
     },
@@ -390,6 +393,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     ]);
     setFileList([]);
+    setTokenResult(null);
   };
 
   useEffect(() => {

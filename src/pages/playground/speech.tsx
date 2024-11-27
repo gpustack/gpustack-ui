@@ -2,7 +2,6 @@ import IconFont from '@/components/icon-font';
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
-import { queryModelsList as queryGPUStackModels } from '@/pages/llmodels/apis';
 import { AudioOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
@@ -103,30 +102,11 @@ const Playground: React.FC = () => {
       }
     };
 
-    const getGpuStackModels = async () => {
-      try {
-        const res: any = await queryGPUStackModels({ page: 1, perPage: 100 });
-        return res.items || [];
-      } catch (error) {
-        return [];
-      }
-    };
-
     const fetchData = async () => {
       try {
-        const [modelist, list] = await Promise.all([
-          getModelList(),
-          getGpuStackModels()
-        ]);
-        const dataMap = list.reduce((acc: any, cur: any) => {
-          acc[cur.name] = cur;
-          return acc;
-        }, {});
-        const dataList = modelist.map((item: any) => {
-          item.modelId = dataMap[item.value]?.id;
-          return item;
-        });
-        setModelList(dataList);
+        const modelist = await getModelList();
+
+        setModelList(modelist);
       } catch (error) {
         setLoaded(true);
       }

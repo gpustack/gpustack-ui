@@ -109,7 +109,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const params = {
         ...parameters,
-        file: new File([audioData.data], audioData.name)
+        file: new File([audioData.data], audioData.name, {
+          type: audioData.type
+        })
       };
       const result: any = await speechToText({
         data: params

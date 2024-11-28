@@ -472,7 +472,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 loading={loading}
                 responseable={true}
                 gutter={[8, 16]}
-                autoSize={false}
+                autoSize={true}
               ></ThumbImg>
               {!imageList.length && (
                 <div className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper">

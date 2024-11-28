@@ -270,13 +270,38 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
 
             {audioData ? (
-              <div className="flex-between flex-center justify-center">
+              <div className="flex-between flex-center justify-center relative">
                 <div style={{ width: 600 }}>
                   <AudioPlayer
                     url={audioData.url}
                     name={audioData.name}
                     duration={audioData.duration}
                   ></AudioPlayer>
+                </div>
+                <div
+                  style={{
+                    padding: '16px 32px',
+                    textAlign: 'right',
+                    position: 'absolute',
+                    right: 0,
+                    top: '50%',
+                    transform: 'translateY(-50%)'
+                  }}
+                >
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'playground.audio.button.generate'
+                    })}
+                  >
+                    <Button
+                      style={{ width: 46 }}
+                      size="middle"
+                      disabled={!audioData}
+                      type="primary"
+                      onClick={handleOnGenerate}
+                      icon={<SendOutlined></SendOutlined>}
+                    ></Button>
+                  </Tooltip>
                 </div>
               </div>
             ) : (
@@ -326,22 +351,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 )}
               </>
             </div>
-          </div>
-          <div style={{ padding: '16px 32px', textAlign: 'right' }}>
-            <Tooltip
-              title={intl.formatMessage({
-                id: 'playground.audio.button.generate'
-              })}
-            >
-              <Button
-                style={{ width: 46 }}
-                size="middle"
-                disabled={!audioData}
-                type="primary"
-                onClick={handleOnGenerate}
-                icon={<SendOutlined></SendOutlined>}
-              ></Button>
-            </Tooltip>
           </div>
         </div>
       </div>

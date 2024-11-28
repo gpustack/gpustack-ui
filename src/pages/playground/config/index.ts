@@ -121,3 +121,15 @@ export const OpenAIViewCode = {
     logcommand: 'data[0].b64_json'
   }
 };
+
+export const promptList = [
+  'a lovely cat.',
+  "Digital art, portrait of an anthropomorphic roaring Tiger warrior with full armor, close up in the middle of a battle, behind him there is a banner with the text 'Open Source'.",
+  'An astronaut riding a green horse.',
+  "a female character with long, flowing hair that appears to be made of ethereal, swirling patterns resembling the Northern Lights or Aurora Borealis. The background is dominated by deep blues and purples, creating a mysterious and dramatic atmosphere. The character's face is serene, with pale skin and striking features. She wears a dark-colored outfit with subtle patterns. The overall style of the artwork is reminiscent of fantasy or supernatural genres.",
+  "A whimsical and creative image depicting a hybrid creature that is a mix of a waffle and a hippopotamus, basking in a river of melted butter amidst a breakfast-themed landscape. It features the distinctive, bulky body shape of a hippo. However, instead of the usual grey skin, the creature's body resembles a golden-brown, crispy waffle fresh off the griddle. The skin is textured with the familiar grid pattern of a waffle, each square filled with a glistening sheen of syrup. The environment combines the natural habitat of a hippo with elements of a breakfast table setting, a river of warm, melted butter, with oversized utensils or plates peeking out from the lush, pancake-like foliage in the background, a towering pepper mill standing in for a tree.  As the sun rises in this fantastical world, it casts a warm, buttery glow over the scene. The creature, content in its butter river, lets out a yawn. Nearby, a flock of birds take flight.",
+  'A cinematic shot of a baby racoon wearing an intricate italian priest robe.',
+  'Create portraits of characters in the style of classical oil painting, Capturing the essence of Chinese aristocracy in the Han Dynasty period. This portrait should feature a Chinese male character dressed in exquisite and gorgeous Chinese Han style clothing, with a dignified demeanor. The background should be a simple and elegant wallpaper pattern, with the face and upper body of the character as the focus. The lighting should be soft and diffuse, highlighting the characteristics of the character and the complex details of the clothing. The color palette should be rich and warm, with red, gold, and dark green.',
+  'photo of a young woman with long, wavy brown hair tied in a bun and glasses. She has a fair complexion and is wearing subtle makeup, emphasizing her eyes and lips. She is dressed in a black top. The background appears to be an urban setting with a building facade, and the sunlight casts a warm glow on her face.',
+  'A portrait of women with blue eyes.'
+];

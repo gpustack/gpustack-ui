@@ -28,5 +28,12 @@ export const addWorkerGuide = {
     registerWorker(server: string) {
       return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } --server-url ${server} --token mytoken"`;
     }
+  },
+  docker: {
+    getToken:
+      'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
+    registerWorker(server: string) {
+      return `docker run -d --gpus all --ipc=host --network=host gpustack/gpustack --server-url ${server} --token mytoken`;
+    }
   }
 };

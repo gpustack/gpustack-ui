@@ -82,8 +82,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
       <div className="speech-actions">
         <span className="tags">
           <span className="item">{props.format}</span>
-          <span className="item splitor"></span>
-          <span className="item">{props.speed}x</span>
+          {/* <span className="item splitor"></span>
+          <span className="item">{props.speed}x</span> */}
         </span>
         <div className="actions">
           <Tooltip

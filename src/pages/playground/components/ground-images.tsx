@@ -1,4 +1,5 @@
 import AlertInfo from '@/components/alert-info';
+import IconFont from '@/components/icon-font';
 import FieldComponent from '@/components/seal-form/field-component';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
@@ -25,7 +26,7 @@ import React, {
   useState
 } from 'react';
 import { CREAT_IMAGE_API } from '../apis';
-import { OpenAIViewCode } from '../config';
+import { OpenAIViewCode, promptList } from '../config';
 import {
   ImageAdvancedParamsConfig,
   ImageconstExtraConfig,
@@ -124,6 +125,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const requestToken = useRef<any>(null);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const form = useRef<any>(null);
+  const inputRef = useRef<any>(null);
 
   const size = Form.useWatch('size', form.current?.form);
 
@@ -141,6 +143,20 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const generateNumber = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
+
+  const handleRandomPrompt = useCallback(() => {
+    const randomIndex = generateNumber(0, promptList.length - 1);
+    const randomPrompt = promptList[randomIndex];
+    inputRef.current?.handleInputChange({
+      target: {
+        value: randomPrompt
+      }
+    });
+  }, []);
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
@@ -497,10 +513,15 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
+            ref={inputRef}
             placeholer={intl.formatMessage({
               id: 'playground.input.prompt.holder'
             })}
             actions={['clear']}
+            defaultSize={{
+              minRows: 6,
+              maxRows: 6
+            }}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!imageList.length}
@@ -509,9 +530,23 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             shouldResetMessage={false}
             clearAll={handleClear}
             tools={
-              <span className="p-l-8 font-600">
-                {intl.formatMessage({ id: 'playground.image.prompt' })}
-              </span>
+              <>
+                <span className="p-l-8 font-600">
+                  {intl.formatMessage({ id: 'playground.image.prompt' })}
+                </span>
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.image.prompt.random'
+                  })}
+                >
+                  <Button
+                    onClick={handleRandomPrompt}
+                    size="middle"
+                    type="text"
+                    icon={<IconFont type="icon-random"></IconFont>}
+                  ></Button>
+                </Tooltip>
+              </>
             }
           />
         </div>

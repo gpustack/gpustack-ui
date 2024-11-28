@@ -182,7 +182,7 @@ export default (props: any) => {
       initialState?.currentUser?.is_admin &&
       updateCheck.latest_version &&
       updateCheck.latest_version !== version?.version &&
-      updateCheck.latest_version !== '0.0.0' &&
+      updateCheck.latest_version?.indexOf('0.0.0') === -1 &&
       updateCheck.latest_version?.indexOf('rc') === -1
     );
   }, [updateCheck, version, initialState]);

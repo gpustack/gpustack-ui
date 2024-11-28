@@ -109,5 +109,6 @@ export default {
     'In the chart, the distance between points indicates the similarity between the corresponding documents. Closer points mean higher similarity.',
   'playground.audio.button.play': 'Play',
   'playground.audio.button.download': 'Download',
-  'playground.audio.button.stop': 'Stop'
+  'playground.audio.button.stop': 'Stop',
+  'playground.image.prompt.random': 'Random Prompt'
 };

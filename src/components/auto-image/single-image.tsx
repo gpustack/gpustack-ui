@@ -69,16 +69,20 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
   return (
     <div
       key={uid}
-      className={classNames('single-image', { 'auto-bg-color': autoBgColor })}
+      className={classNames('single-image', { 'auto-bg-color': false })}
     >
-      {autoBgColor && (
+      {/* {autoBgColor && (
         <div
           className="mask"
           style={{
             background: `url(${dataUrl}) center center / cover no-repeat`
           }}
         ></div>
+<<<<<<< HEAD
       )}
+=======
+      )} */}
+>>>>>>> 2c31c4a (fix: jump to playground from model list)
       <span
         className="thumb-img"
         style={{

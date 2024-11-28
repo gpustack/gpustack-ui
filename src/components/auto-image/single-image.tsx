@@ -69,16 +69,16 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
   return (
     <div
       key={uid}
-      className={classNames('single-image', { 'auto-bg-color': false })}
+      className={classNames('single-image', { 'auto-bg-color': autoBgColor })}
     >
-      {/* {autoBgColor && (
+      {autoBgColor && (
         <div
           className="mask"
           style={{
             background: `url(${dataUrl}) center center / cover no-repeat`
           }}
         ></div>
-       */}
+      )}
       <span
         className="thumb-img"
         style={{

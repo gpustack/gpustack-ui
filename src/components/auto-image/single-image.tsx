@@ -78,11 +78,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
             background: `url(${dataUrl}) center center / cover no-repeat`
           }}
         ></div>
-<<<<<<< HEAD
-      )}
-=======
-      )} */}
->>>>>>> 2c31c4a (fix: jump to playground from model list)
+       */}
       <span
         className="thumb-img"
         style={{

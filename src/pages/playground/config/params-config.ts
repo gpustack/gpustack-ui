@@ -241,7 +241,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
       { label: 'dpm++2m', value: 'dpm++2m' },
       { label: 'dpm++2mv2', value: 'dpm++2mv2' },
       { label: 'ipndm', value: 'ipndm' },
-      { label: 'pndm_v', value: 'pndm_v' },
+      { label: 'ipndm_v', value: 'ipndm_v' },
       { label: 'lcm', value: 'lcm' }
     ],
     label: {
@@ -263,8 +263,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 1,
-      max: 100,
-      defaultValue: 10
+      max: 100
     },
     rules: [
       {
@@ -282,8 +281,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     attrs: {
       min: 1.0,
       max: 10,
-      step: 0.1,
-      defaulValue: 4.5
+      step: 0.1
     },
     rules: [
       {

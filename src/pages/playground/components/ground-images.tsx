@@ -78,9 +78,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     //   width: 'auto',
     //   uid: 0,
     //   span: 12,
-    //   loading: true,
+    //   loading: false,
     //   progress: 60
-    // }
+    // },
     // {
     //   dataUrl:
     //     'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
@@ -466,12 +466,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                   flexWrap: 'unset',
                   alignItems: 'center'
                 }}
+                autoBgColor={true}
                 editable={false}
                 dataList={imageList}
                 loading={loading}
                 responseable={true}
                 gutter={[8, 16]}
-                autoSize={true}
+                autoSize={false}
               ></ThumbImg>
               {!imageList.length && (
                 <div className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper">

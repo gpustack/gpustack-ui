@@ -4,7 +4,7 @@ import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
 import { AudioOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -17,16 +17,25 @@ import './style/play-ground.less';
 
 const TabsValueMap = {
   Tab1: 'tts',
-  Tab2: 'stt'
+  Tab2: 'stt',
+  tts: 'tts',
+  stt: 'stt'
 };
 
 const Playground: React.FC = () => {
   const intl = useIntl();
+  const [searchParams] = useSearchParams();
+  const modelType = searchParams.get('type') || '';
   const { size } = useWindowResize();
-  const [activeKey, setActiveKey] = useState(TabsValueMap.Tab1);
+  const [activeKey, setActiveKey] = useState(modelType || TabsValueMap.Tab1);
   const groundTabRef1 = useRef<any>(null);
   const groundTabRef2 = useRef<any>(null);
-  const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
+  const [textToSpeechModels, setTextToSpeechModels] = useState<
+    Global.BaseOption<string>[]
+  >([]);
+  const [speechModelList, setSpeechModelList] = useState<
+    Global.BaseOption<string>[]
+  >([]);
   const [loaded, setLoaded] = useState(false);
   const optionsList = [
     {
@@ -62,14 +71,21 @@ const Playground: React.FC = () => {
       key: 'tts',
       label: 'TTS',
       children: (
-        <GroundTTS ref={groundTabRef1} modelList={modelList}></GroundTTS>
+        <GroundTTS
+          ref={groundTabRef1}
+          modelList={textToSpeechModels}
+        ></GroundTTS>
       )
     },
     {
       key: 'stt',
       label: 'Realtime',
       children: (
-        <GroundSTT modelList={modelList} loaded={loaded} ref={groundTabRef2} />
+        <GroundSTT
+          modelList={speechModelList}
+          loaded={loaded}
+          ref={groundTabRef2}
+        />
       )
     }
   ];
@@ -83,10 +99,28 @@ const Playground: React.FC = () => {
   }, [size.width]);
 
   useEffect(() => {
-    const getModelList = async () => {
+    const getTextToSpeechModels = async () => {
       try {
         const params = {
-          embedding_only: false
+          text_to_speech: true
+        };
+        const res = await queryModelsList(params);
+        const list = _.map(res.data || [], (item: any) => {
+          return {
+            value: item.id,
+            label: item.id
+          };
+        }) as Global.BaseOption<string>[];
+        return list;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    };
+    const getSpeechToText = async () => {
+      try {
+        const params = {
+          speech_to_text: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {
@@ -104,9 +138,13 @@ const Playground: React.FC = () => {
 
     const fetchData = async () => {
       try {
-        const modelist = await getModelList();
+        const [textToSpeechModels, speechToTextModels] = await Promise.all([
+          getTextToSpeechModels(),
+          getSpeechToText()
+        ]);
 
-        setModelList(modelist);
+        setTextToSpeechModels(textToSpeechModels);
+        setSpeechModelList(speechToTextModels);
       } catch (error) {
         setLoaded(true);
       }
@@ -115,9 +153,6 @@ const Playground: React.FC = () => {
   }, []);
 
   const renderExtra = () => {
-    if (activeKey === 'compare') {
-      return false;
-    }
     return (
       <Space key="buttons">
         <Button
@@ -165,6 +200,7 @@ const Playground: React.FC = () => {
                 options={optionsList}
                 size="middle"
                 className="m-l-40"
+                value={activeKey}
                 onChange={(key) => setActiveKey(key)}
               ></Segmented>
             }

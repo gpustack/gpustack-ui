@@ -12,7 +12,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Segmented, Tabs, Tooltip } from 'antd';
+import { Button, Checkbox, Segmented, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -81,7 +81,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     copyValue: ''
   });
   const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
-  const [multiplePasteEnable, setMultiplePasteEnable] = useState<boolean>(true);
+  const multiplePasteEnable = useRef<boolean>(true);
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -279,21 +279,30 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleOnPaste = useCallback(
     (e: any, index: number) => {
-      if (!multiplePasteEnable) return;
+      if (!multiplePasteEnable.current) return;
       const text = e.clipboardData.getData('text');
       if (text) {
+        const currentContent = textList[index].text;
         const dataLlist = text.split('\n').map((item: string) => {
           return {
             text: item?.trim(),
-            uid: inputListRef.current?.setMessageId(),
+            uid: setMessageId(),
             name: ''
           };
         });
+        dataLlist[0].text = currentContent + dataLlist[0].text;
         const result = [
           ...textList.slice(0, index),
           ...dataLlist,
           ...textList.slice(index + 1)
-        ].filter((item) => item.text);
+        ]
+          .filter((item) => item.text)
+          .map((item, index) => {
+            return {
+              ...item,
+              uid: setMessageId()
+            };
+          });
         setTextList(result);
       }
     },
@@ -407,19 +416,16 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                     id: 'playground.input.multiplePaste.tips'
                   })}
                 >
-                  <Button
-                    className="flex-center"
-                    variant="filled"
-                    size="middle"
-                    color={multiplePasteEnable ? 'primary' : 'default'}
-                    onClick={() => {
-                      setMultiplePasteEnable(!multiplePasteEnable);
+                  <Checkbox
+                    defaultChecked={multiplePasteEnable.current}
+                    onChange={(e: any) => {
+                      multiplePasteEnable.current = e.target.checked;
                     }}
                   >
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
-                  </Button>
+                  </Checkbox>
                 </Tooltip>
 
                 <Button size="middle" onClick={handleAddText}>

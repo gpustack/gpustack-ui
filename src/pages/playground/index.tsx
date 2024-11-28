@@ -79,7 +79,11 @@ const Playground: React.FC = () => {
     const getModelList = async () => {
       try {
         const params = {
-          embedding_only: false
+          embedding_only: false,
+          image_only: false,
+          reranker: false,
+          text_to_speech: false,
+          speech_to_text: false
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

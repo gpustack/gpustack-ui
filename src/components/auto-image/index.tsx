@@ -19,6 +19,7 @@ const AutoImage: React.FC<
     height: number | string;
     width?: number | string;
     autoSize?: boolean;
+    onLoad?: () => void;
   }
 > = (props) => {
   const { height = 100, width: w, autoSize, ...rest } = props;
@@ -62,6 +63,10 @@ const AutoImage: React.FC<
     link.remove();
   };
 
+  const handleImgLoad = useCallback(() => {
+    props.onLoad?.();
+  }, [props.onLoad]);
+
   const handleOnError = () => {
     setIsError(true);
   };
@@ -76,7 +81,9 @@ const AutoImage: React.FC<
       height={isError ? 'auto' : height}
       width={isError ? '100%' : width}
       onError={handleOnError}
+      onLoad={handleImgLoad}
       fallback={fallbackImg}
+      crossOrigin="anonymous"
       preview={{
         mask: <EyeOutlined />,
         toolbarRender: (

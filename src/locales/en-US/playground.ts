@@ -88,7 +88,10 @@ export default {
   'playground.audio.generating.tips': 'Generated text will appear here.',
   'playground.audio.uploadfile.tips':
     'Please upload an audio file, supported formats: {formats}',
-  'playground.input.multiplePaste': 'Multi-line paste',
+  'playground.input.multiplePaste': 'Batch Input Mode',
+  'playground.input.multiplePaste.tips':
+    'When enabled, pasted multi-line text will be automatically split by newline into separate entries in the form.',
+  'playground.audio.button.generate': 'Generate Text Content',
   'playground.multiple.on': 'Enable',
   'playground.multiple.off': 'Disable',
   'playground.image.params.sampler': 'Sampler',
@@ -96,12 +99,15 @@ export default {
   'playground.image.params.seed': 'Seed',
   'playground.image.params.negativePrompt': 'Negative Prompt',
   'playground.image.params.cfgScale': 'Scale Factor',
-  'playground.image.params.custom': 'Custom',
-  'playground.image.params.custom.tips': 'Parameter definition',
+  'playground.image.params.custom': 'Advanced',
+  'playground.image.params.custom.tips': 'API Style',
   'playground.image.params.openai': 'OpenAI Compatible',
   'playground.embedding.handler.tips': 'Resize Height',
   'playground.embedding.pcatips1':
-    'PCA is used to reduce the dimensionality of document vectors, projecting new data into PCA space.',
+    'PCA (Principal Component Analysis) is used to reduce the dimensionality of embedding vectors, making them easier to visualize.',
   'playground.embedding.pcatips2':
-    'In the chart, the distance between points represents the similarity between documents.'
+    'In the chart, the distance between points indicates the similarity between the corresponding documents. Closer points mean higher similarity.',
+  'playground.audio.button.play': 'Play',
+  'playground.audio.button.download': 'Download',
+  'playground.audio.button.stop': 'Stop'
 };

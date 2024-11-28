@@ -1,12 +1,14 @@
 import { formatTime } from '@/utils/index';
 import { PauseCircleFilled, PlayCircleFilled } from '@ant-design/icons';
-import { Button, Slider } from 'antd';
+import { Button, Slider, Tooltip } from 'antd';
+import { round } from 'lodash';
 import React, {
   forwardRef,
   useCallback,
   useEffect,
   useImperativeHandle
 } from 'react';
+import CheckButtons from '../check-buttons';
 import IconFont from '../icon-font';
 import './index.less';
 
@@ -20,6 +22,13 @@ interface AudioPlayerProps {
   width?: number;
   duration?: number;
 }
+
+const speedOptions = [
+  { label: '1x', value: 1 },
+  { label: '2x', value: 2 },
+  { label: '3x', value: 3 },
+  { label: '4x', value: 4 }
+];
 
 const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   const { autoplay = false, speed: defaultSpeed = 1 } = props;
@@ -45,6 +54,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
       audioRef.current?.pause();
     }
   }));
+  const handleShowVolume = useCallback(() => {
+    setSpeakerOn(!speakerOn);
+  }, [speakerOn]);
+
+  const handleSeepdChange = useCallback((value: number | string) => {
+    setSpeed(value as number);
+    audioRef.current!.playbackRate = value as number;
+  }, []);
 
   const handleAudioOnPlay = useCallback(() => {
     timer.current = setInterval(() => {
@@ -78,16 +95,22 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     setPlayOn(!playOn);
   }, [playOn]);
 
+  const handleFormatVolume = (val: number) => {
+    return `${round(val * 100)}%`;
+  };
+
+  const handleVolumeChange = useCallback((value: number) => {
+    audioRef.current!.volume = round(value, 2);
+    setVolume(round(value, 2));
+  }, []);
+
   const initPlayerConfig = useCallback(() => {
-    // set volume
     audioRef.current!.volume = volume;
-    // set playback rate
     audioRef.current!.playbackRate = speed;
   }, []);
 
   const handleLoadedMetadata = useCallback(
     (data: any) => {
-      console.log('loadmetadata++++++++');
       const duration = Math.ceil(audioRef.current?.duration || 0);
       setAudioState({
         currentTime: 0,
@@ -158,7 +181,23 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
                 onChange={handleCurrentChange}
               />
             </div>
-            <span>{props.speed ? `${props.speed}x` : '1x'}</span>
+            <Tooltip
+              overlayInnerStyle={{
+                backgroundColor: 'var(--color-white-1)'
+              }}
+              arrow={false}
+              title={
+                <CheckButtons
+                  options={speedOptions}
+                  onChange={handleSeepdChange}
+                  size="small"
+                ></CheckButtons>
+              }
+            >
+              <span style={{ cursor: 'pointer' }}>
+                {speed ? `${speed}x` : '1x'}
+              </span>
+            </Tooltip>
           </div>
           <span className="time">{formatTime(audioState.duration)}</span>
         </div>
@@ -173,6 +212,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
               ></IconFont>
             }
           ></Button>
+          {speakerOn && (
+            <Slider
+              tooltip={{ formatter: handleFormatVolume }}
+              style={{ height: '100px' }}
+              className="volume-slider"
+              min={0}
+              max={1}
+              step={0.01}
+              value={volume}
+              vertical
+              onChange={handleVolumeChange}
+            />
+          )}
         </span>
       </div>
       <audio

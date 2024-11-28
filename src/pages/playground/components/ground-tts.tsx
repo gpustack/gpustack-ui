@@ -36,8 +36,7 @@ interface MessageProps {
 
 const initialValues = {
   voice: '',
-  response_format: 'mp3',
-  speed: 1
+  response_format: 'mp3'
 };
 
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
@@ -113,13 +112,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         ...parameters,
         input: current?.content || currentPrompt
       };
-      const audioUrl: any = await textToSpeech({
+      const res: any = await textToSpeech({
         data: params,
         url: CHAT_API,
         signal
       });
 
-      console.log('result:', parameters, audioUrl);
+      console.log('result:', res);
 
       setMessageList([
         {
@@ -129,7 +128,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           speed: parameters.speed,
           uid: messageId.current,
           autoplay: checkvalueRef.current,
-          audioUrl: audioUrl
+          audioUrl: res.url
         }
       ]);
     } catch (error) {

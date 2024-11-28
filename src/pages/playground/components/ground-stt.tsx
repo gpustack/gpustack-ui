@@ -4,9 +4,9 @@ import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { readAudioFile } from '@/utils/load-audio-file';
-import { AudioOutlined, SendOutlined } from '@ant-design/icons';
+import { SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Spin, Tag, Tooltip } from 'antd';
+import { Button, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
@@ -20,7 +20,6 @@ import {
 } from 'react';
 import { speechToText } from '../apis';
 import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
-import { MessageItem } from '../config/types';
 import '../style/ground-left.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
@@ -42,14 +41,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const { modelList } = props;
   const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItem[]>([
-    {
-      content: '',
-      title: '',
-      role: '',
-      uid: messageId.current
-    }
-  ]);
+  const [messageList, setMessageList] = useState<
+    { uid: number; content: string }[]
+  >([]);
   const [searchParams] = useSearchParams();
   const selectModel = searchParams.get('model') || '';
   const [parameters, setParams] = useState<any>({});
@@ -68,7 +62,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     analyser: null
   });
   const [isRecording, setIsRecording] = useState(false);
-  const [recordEnd, setRecordEnd] = useState(false);
   const formRef = useRef<any>(null);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
@@ -127,8 +120,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageList([
         {
           content: result.text,
-          title: '',
-          role: '',
           uid: messageId.current
         }
       ]);
@@ -136,7 +127,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       console.log('error:', error);
     } finally {
       setLoading(false);
-      setRecordEnd(false);
       setIsRecording(false);
     }
   };
@@ -170,9 +160,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           duration: data.duration
         };
       });
-      setTimeout(() => {
-        setRecordEnd(true);
-      }, 200);
     },
     []
   );
@@ -183,9 +170,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleUploadChange = useCallback(
     async (data: { file: any; fileList: any }) => {
-      const res = await readAudioFile(data.file.originFileObj);
+      const res = await readAudioFile(data.file);
       setAudioData(res);
-      setRecordEnd(true);
     },
     []
   );
@@ -208,15 +194,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage();
   };
 
-  const handleOnDiscard = useCallback(() => {
-    setRecordEnd(false);
-    setAudioData(null);
-    setIsRecording(false);
-  }, []);
-
   const renderAniamtion = () => {
     if (!audioPermissionOn) {
-      return null;
+      return (
+        <div className="tips-text">
+          <IconFont type={'icon-audio'} style={{ fontSize: 20 }}></IconFont>
+          <span>
+            {intl.formatMessage({ id: 'playground.audio.enablemic' })}
+          </span>
+        </div>
+      );
     }
     if (isRecording) {
       return (
@@ -240,7 +227,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   useEffect(() => {
     console.log('parameters:', parameters);
   }, [parameters]);
-  useEffect(() => {}, [messageList]);
+
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
@@ -258,13 +245,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       updateScrollerPosition();
     }
   }, [messageList, loading]);
-
-  useEffect(() => {
-    if (messageList.length > messageListLengthCache.current) {
-      updateScrollerPosition();
-    }
-    messageListLengthCache.current = messageList.length;
-  }, [messageList.length]);
 
   return (
     <div className="ground-left-wrapper">
@@ -303,42 +283,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               renderAniamtion()
             )}
           </div>
-          {!audioPermissionOn && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%'
-              }}
-            >
-              <span>
-                <Tag
-                  style={{
-                    width: 36,
-                    height: 36,
-                    lineHeight: '36px',
-                    textAlign: 'center'
-                  }}
-                  bordered={false}
-                  color="error"
-                  icon={
-                    <AudioOutlined className="font-size-16"></AudioOutlined>
-                  }
-                ></Tag>
-              </span>
-              <span
-                style={{
-                  marginTop: 10,
-                  fontSize: 14,
-                  fontWeight: 500
-                }}
-              >
-                {intl.formatMessage({ id: 'playground.audio.enablemic' })}
-              </span>
-            </div>
-          )}
         </div>
         <div
           style={{
@@ -365,7 +309,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                     justifyContent: 'center'
                   }}
                 >
-                  {audioData ? (
+                  {messageList.length ? (
                     messageList[0]?.content
                   ) : (
                     <span className="text-tertiary">

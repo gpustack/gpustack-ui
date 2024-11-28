@@ -32,6 +32,7 @@ export const loadAudioData = async (data: any, type: string) => {
 };
 
 export const readAudioFile = async (file: File) => {
+  console.log('file====', file);
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async function (e: any) {

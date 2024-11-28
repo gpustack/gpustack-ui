@@ -28,11 +28,11 @@ export const TTSParamsConfig: ParamsSchema[] = [
     name: 'response_format',
     options: [
       { label: 'mp3', value: 'mp3' },
-      { label: 'opus', value: 'opus' },
-      { label: 'aac', value: 'aac' },
-      { label: 'flac', value: 'flac' },
-      { label: 'wav', value: 'wav' },
-      { label: 'pcm', value: 'pcm' }
+      // { label: 'opus', value: 'opus' },
+      // { label: 'aac', value: 'aac' },
+      // { label: 'flac', value: 'flac' },
+      { label: 'wav', value: 'wav' }
+      // { label: 'pcm', value: 'pcm' }
     ],
     label: {
       text: 'playground.params.format',
@@ -43,27 +43,27 @@ export const TTSParamsConfig: ParamsSchema[] = [
         required: false
       }
     ]
-  },
-  {
-    type: 'Select',
-    name: 'speed',
-    options: [
-      { label: '0.25x', value: 0.25 },
-      { label: '0.5x', value: 0.5 },
-      { label: '1x', value: 1 },
-      { label: '2x', value: 2 },
-      { label: '4x', value: 4 }
-    ],
-    label: {
-      text: 'playground.params.speed',
-      isLocalized: true
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
   }
+  // {
+  //   type: 'Select',
+  //   name: 'speed',
+  //   options: [
+  //     { label: '0.25x', value: 0.25 },
+  //     { label: '0.5x', value: 0.5 },
+  //     { label: '1x', value: 1 },
+  //     { label: '2x', value: 2 },
+  //     { label: '4x', value: 4 }
+  //   ],
+  //   label: {
+  //     text: 'playground.params.speed',
+  //     isLocalized: true
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // }
 ];
 
 export const RealtimeParamsConfig: ParamsSchema[] = [

@@ -303,7 +303,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             clearAll={handleClear}
             setModelSelections={handleSelectModel}
             presetPrompt={handlePresetPrompt}
-            modelList={modelList}
           />
         </div>
       </div>

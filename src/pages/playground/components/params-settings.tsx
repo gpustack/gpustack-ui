@@ -229,8 +229,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             variant="borderless"
           >
             <Slider
-              defaultValue={1024}
-              max={2048}
+              defaultValue={2048}
+              max={16 * 1024}
               step={1}
               style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
               tooltip={{ open: false }}

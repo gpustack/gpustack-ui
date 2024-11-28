@@ -1,7 +1,13 @@
 import { AudioOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 // import '../style/audio-input.less';
 
 interface AudioInputProps {
@@ -9,6 +15,7 @@ interface AudioInputProps {
     chunks: any[];
     url: string;
     name: string;
+    type: string;
     duration: number;
   }) => void;
   onAnalyse?: (analyseData: any, frequencyBinCount: any) => void;
@@ -18,6 +25,11 @@ interface AudioInputProps {
   voiceActivity?: boolean;
   type?: 'text' | 'primary' | 'default';
 }
+
+const recordingFormat = {
+  type: 'audio/wav',
+  suffix: '.wav'
+};
 
 const AudioInput: React.FC<AudioInputProps> = (props) => {
   const intl = useIntl();
@@ -155,6 +167,8 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
     try {
       await EnableAudio();
+      console.log('audioStream:', audioStream.current);
+
       audioRecorder.current = new MediaRecorder(audioStream.current);
 
       const audioChunks: any[] = [];
@@ -170,14 +184,14 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
       // stop recording
       audioRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunks, { type: recordingFormat.type });
         const audioUrl = URL.createObjectURL(audioBlob);
         handleAudioData({
           chunks: audioBlob,
           size: audioBlob.size,
           type: audioBlob.type,
           url: audioUrl,
-          name: `recording-${new Date().toISOString()}.wav`,
+          name: `recording-${new Date().toISOString()}${recordingFormat.suffix}`,
           duration: Math.ceil((Date.now() - startTime.current) / 1000)
         });
 
@@ -195,6 +209,25 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     }
   };
 
+  const renderRecordButtonTips = useMemo(() => {
+    if (!audioPermission) {
+      return intl.formatMessage({ id: 'playground.audio.enablemic' });
+    }
+    return isRecording
+      ? intl.formatMessage({ id: 'playground.audio.stoprecord' })
+      : intl.formatMessage({ id: 'playground.audio.startrecord' });
+  }, [audioPermission, isRecording, intl]);
+
+  const noAudioPermissionButtonStyle = useMemo(() => {
+    if (!audioPermission) {
+      return {
+        backgroundColor: 'var(--ant-color-error-bg-filled-hover)',
+        color: 'var(--ant-color-error-border-hover)',
+        border: 'none'
+      };
+    }
+  }, [audioPermission]);
+
   useEffect(() => {
     return () => {
       handleStopRecording();
@@ -210,13 +243,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     <div className="audio-input">
       <Space size={40} className="btns">
         {
-          <Tooltip
-            title={
-              isRecording
-                ? intl.formatMessage({ id: 'playground.audio.stoprecord' })
-                : intl.formatMessage({ id: 'playground.audio.startrecord' })
-            }
-          >
+          <Tooltip title={renderRecordButtonTips}>
             <div
               style={{
                 display: 'flex',
@@ -231,6 +258,9 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
                 icon={<AudioOutlined />}
                 size="middle"
                 type={props.type ?? 'text'}
+                style={{
+                  ...noAudioPermissionButtonStyle
+                }}
                 danger={isRecording}
                 onClick={StartRecording}
               ></Button>

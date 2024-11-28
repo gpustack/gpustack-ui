@@ -86,20 +86,25 @@ export default {
   'playground.audio.generating.tips': '生成的文本将出现在这里',
   'playground.audio.uploadfile.tips': '请上传音频文件，支持格式：{formats}',
   'playground.audio.button.generate': '生成文本',
-  'playground.input.multiplePaste': '多行粘贴',
+  'playground.input.multiplePaste': '批量输入',
+  'playground.input.multiplePaste.tips':
+    '启用后，粘贴的多行文本将自动按换行符分割为表单中的单独条目。',
   'playground.multiple.on': '开启',
   'playground.multiple.off': '关闭',
-  'playground.image.params.sampler': '采样器',
-  'playground.image.params.samplerSteps': '采样器步数',
+  'playground.image.params.sampler': '采样方法',
+  'playground.image.params.samplerSteps': '迭代步数',
   'playground.image.params.seed': '随机种子',
-  'playground.image.params.negativePrompt': '负面提示',
-  'playground.image.params.cfgScale': '缩放因子',
-  'playground.image.params.custom': '自定义',
-  'playground.image.params.custom.tips': '参数定义',
+  'playground.image.params.negativePrompt': '负向提示',
+  'playground.image.params.cfgScale': '提示词引导系数',
+  'playground.image.params.custom': '高级',
+  'playground.image.params.custom.tips': 'API 风格',
   'playground.image.params.openai': 'OpenAI 兼容',
   'playground.embedding.handler.tips': '高度调节',
   'playground.embedding.pcatips1':
-    '采用主成分分析（PCA）对文档向量化后的数据降维，将新数据投射到PCA 空间中。',
+    'PCA（主成分分析）用于降低嵌入向量的维数，使它们更容易可视化。',
   'playground.embedding.pcatips2':
-    '图表中，点之间的距离表示对应文档之间的相似度。'
+    '在图表中，点之间的距离表示相应文档之间的相似度。点越近意味着相似度越高。',
+  'playground.audio.button.play': '播放',
+  'playground.audio.button.download': '下载',
+  'playground.audio.button.stop': '停止'
 };

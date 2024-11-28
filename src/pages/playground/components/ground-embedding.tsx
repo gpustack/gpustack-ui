@@ -12,7 +12,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Segmented, Tabs, Tooltip } from 'antd';
+import { Button, Segmented, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -81,7 +81,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     copyValue: ''
   });
   const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
-  const multiplePasteEnable = useRef<boolean>(true);
+  const [multiplePasteEnable, setMultiplePasteEnable] = useState<boolean>(true);
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -279,7 +279,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleOnPaste = useCallback(
     (e: any, index: number) => {
-      if (!multiplePasteEnable.current) return;
+      if (!multiplePasteEnable) return;
       const text = e.clipboardData.getData('text');
       if (text) {
         const dataLlist = text.split('\n').map((item: string) => {
@@ -402,18 +402,26 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 </div>
               </h3>
               <div className="flex-center gap-10">
-                <Button className="flex-center" size="middle">
-                  <Checkbox
-                    defaultChecked={multiplePasteEnable.current}
-                    onChange={(e: any) => {
-                      multiplePasteEnable.current = e.target.checked;
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.input.multiplePaste.tips'
+                  })}
+                >
+                  <Button
+                    className="flex-center"
+                    variant="filled"
+                    size="middle"
+                    color={multiplePasteEnable ? 'primary' : 'default'}
+                    onClick={() => {
+                      setMultiplePasteEnable(!multiplePasteEnable);
                     }}
                   >
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
-                  </Checkbox>
-                </Button>
+                  </Button>
+                </Tooltip>
+
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}

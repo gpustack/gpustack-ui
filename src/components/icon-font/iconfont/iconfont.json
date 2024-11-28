@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "13059398",
+      "name": "随机",
+      "font_class": "random",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "5978743",
+      "name": "random-forest",
+      "font_class": "suijisenlin",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
       "icon_id": "15617444",
       "name": "stop",
       "font_class": "stop2",

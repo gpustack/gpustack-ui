@@ -11,7 +11,8 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
   const currentVersion = getAtomStorage(GPUStackVersionAtom)?.version;
 
   const isProd =
-    currentVersion !== '0.0.0' && currentVersion?.indexOf('rc') === -1;
+    currentVersion?.indexOf('rc') === -1 &&
+    currentVersion?.indexOf('0.0.0') === -1;
 
   const uiVersion = document.documentElement.getAttribute('data-version');
 
@@ -39,7 +40,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
                 {' '}
                 {intl.formatMessage({ id: 'common.footer.version.server' })}
               </span>
-              {currentVersion === '0.0.0'
+              {currentVersion.indexOf('0.0.0') > -1
                 ? getAtomStorage(GPUStackVersionAtom)?.git_commit
                 : getAtomStorage(GPUStackVersionAtom)?.version}
             </span>
@@ -55,7 +56,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
           <span className="m-l-5">
             {latestVersion &&
             latestVersion !== currentVersion &&
-            latestVersion !== '0.0.0'
+            latestVersion.indexOf('0.0.0') === -1
               ? intl.formatMessage(
                   { id: 'users.version.update' },
                   { version: latestVersion }

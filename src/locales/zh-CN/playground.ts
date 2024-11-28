@@ -106,5 +106,6 @@ export default {
     '在图表中，点之间的距离表示相应文档之间的相似度。点越近意味着相似度越高。',
   'playground.audio.button.play': '播放',
   'playground.audio.button.download': '下载',
-  'playground.audio.button.stop': '停止'
+  'playground.audio.button.stop': '停止',
+  'playground.image.prompt.random': '随机提示词'
 };

@@ -62,6 +62,11 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           theme="dark"
           code={addWorkerGuide.win.registerWorker(origin)}
         ></HighlightCode>
+        <h4>Docker </h4>
+        <HighlightCode
+          theme="dark"
+          code={addWorkerGuide.docker.registerWorker(origin)}
+        ></HighlightCode>
         <h3>3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}</h3>
       </div>
     </Modal>

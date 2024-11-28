@@ -47,14 +47,17 @@ interface MessageProps {
 const initialValues = {
   n: 1,
   size: '512x512',
-  quality: 'standard',
-  style: null
+  seed: null,
+  sampler: 'euler_a',
+  cfg_scale: 4.5,
+  sample_steps: 10,
+  negative_prompt: null
 };
 
 const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
-  const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(true);
+  const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(false);
   const [imageList, setImageList] = useState<
     {
       dataUrl: string;
@@ -223,7 +226,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const params = {
         stream: true,
         stream_options: {
-          chunk_result: true
+          // chunk_result: false
         },
         prompt: current?.content || currentPrompt || '',
         ..._.omitBy(finalParameters, (value: string) => !value)
@@ -251,8 +254,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           const imgItem = newImageList[item.index];
           if (item.b64_json) {
             imgItem.dataUrl += item.b64_json;
-            // imgItem.cache.push(item.b64_json);
-            console.log('imgItem.dataUrl:', imgItem.dataUrl);
           }
           const progress = _.round(item.progress, 0);
           newImageList[item.index] = {

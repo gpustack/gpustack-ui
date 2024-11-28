@@ -86,45 +86,62 @@ export const readStreamData = async (
   await readStreamData(reader, decoder, callback);
 };
 
+// Process the remainder of the buffer
+const processBuffer = (buffer: string, callback: (data: any) => void) => {
+  const lines = buffer.split('\n');
+  for (const line of lines) {
+    if (line.startsWith('data: ')) {
+      const jsonStr = line.slice(6).trim();
+      try {
+        const jsonData = JSON.parse(jsonStr);
+        callback(jsonData);
+      } catch (e) {
+        console.error(
+          'Failed to parse JSON from remaining buffer:',
+          jsonStr,
+          e
+        );
+      }
+    }
+  }
+};
+
 export const readLargeStreamData = async (
   reader: any,
   decoder: TextDecoder,
   callback: (data: any) => void
 ) => {
-  let buffer = '';
+  let buffer = ''; // cache incomplete line
 
-  const processStream = async () => {
+  while (true) {
     const { done, value } = await reader.read();
     if (done) {
-      if (buffer) {
-        try {
-          extractJSON(buffer).forEach((data) => {
-            callback?.(data);
-          });
-        } catch (e) {
-          console.error('parse buffer failed:', buffer);
-        }
+      // Process remaining buffered data
+      if (buffer.trim()) {
+        processBuffer(buffer, callback);
       }
-      return;
+      break;
     }
 
-    // cache each chunk
+    // Decode new chunk of data and append to buffer
     buffer += decoder.decode(value, { stream: true });
 
-    const extractedData = extractJSON(buffer);
+    // Try to process the complete line in the buffer
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || ''; // Keep last line (may be incomplete)
 
-    extractedData.forEach((data) => {
-      callback?.(data);
-    });
-
-    const lastIndex = buffer.lastIndexOf('}');
-    buffer = lastIndex !== -1 ? buffer.slice(lastIndex + 1) : buffer;
-
-    // next chunk
-    await processStream();
-  };
-
-  await processStream();
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const jsonStr = line.slice(6).trim();
+        try {
+          const jsonData = JSON.parse(jsonStr);
+          callback(jsonData);
+        } catch (e) {
+          console.error('Failed to parse JSON:', jsonStr, e);
+        }
+      }
+    }
+  }
 };
 
 export const readTextEventStreamData = async (

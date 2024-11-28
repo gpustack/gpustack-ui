@@ -99,25 +99,17 @@ export const textToSpeech = async (params: any, options?: any) => {
 
   const audioBlob = await res.blob();
   const audioUrl = URL.createObjectURL(audioBlob);
-  return audioUrl;
+  return {
+    url: audioUrl,
+    type: audioBlob.type
+  };
 };
-
-// export const speechToText = async (params: any, options?: any) => {
-//   const res = await fetch(AUDIO_SPEECH_TO_TEXT_API, {
-//     method: 'POST',
-//     body: JSON.stringify(params.data),
-//     signal: params.signal
-//   });
-//   if (!res.ok) {
-//     throw new Error('Network response was not ok');
-//   }
-//   return res.json();
-// };
 
 export const speechToText = async (params: any, options?: any) => {
   return request(AUDIO_SPEECH_TO_TEXT_API, {
     method: 'POST',
     data: params.data,
+    cancelToken: options?.cancelToken,
     headers: {
       'Content-Type': 'multipart/form-data'
     }

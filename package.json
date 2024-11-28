@@ -33,6 +33,7 @@
     "axios": "^1.7.2",
     "classnames": "^2.5.1",
     "clipboard": "^2.0.11",
+    "colorthief": "^2.6.0",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.11",
     "echarts": "^5.5.1",

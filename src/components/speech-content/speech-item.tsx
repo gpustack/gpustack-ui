@@ -1,11 +1,29 @@
 import IconFont from '@/components/icon-font';
-import { DownloadOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import {
+  DownloadOutlined,
+  PauseCircleOutlined,
+  PlayCircleOutlined
+} from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
 import AudioPlayer from './audio-player';
 import './styles/index.less';
 
-// const audioUrl = require('./ih.mp4');
+const audioFormat = {
+  'audio/mpeg': 'mp3',
+  'audio/wav': 'wav',
+  'audio/ogg': 'ogg',
+  'audio/webm': 'webm',
+  'audio/aac': 'aac',
+  'audio/x-flac': 'flac',
+  'audio/pcm': 'pcm',
+  'audio/flac': 'flac',
+  'audio/x-wav': 'wav',
+  'audio/L16': 'pcm',
+  'audio/opus': 'opus'
+};
 
 interface SpeechContentProps {
   prompt: string;
@@ -16,12 +34,19 @@ interface SpeechContentProps {
   audioUrl: string;
 }
 const SpeechItem: React.FC<SpeechContentProps> = (props) => {
-  console.log('porps=======', props);
+  const intl = useIntl();
   const [collapsed, setCollapsed] = useState(false);
+  const [isPlay, setIsPlay] = useState(false);
   const ref = useRef<HTMLAudioElement>(null);
 
   const handlePlay = () => {
+    if (isPlay) {
+      ref.current?.pause();
+      setIsPlay(false);
+      return;
+    }
     ref.current?.play();
+    setIsPlay(true);
   };
 
   const handleCollapse = () => {
@@ -30,7 +55,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
 
   const onDownload = () => {
     const url = props.audioUrl || '';
-    const filename = Date.now() + '';
+    const filename = `audio-${dayjs().format('YYYYMMDDHHmmss')}.${props.format}`;
 
     const link = document.createElement('a');
     link.href = url;
@@ -45,7 +70,6 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
       <div className="speech-item">
         <div className="voice">
           <IconFont type="icon-user_voice" className="font-size-16" />
-          {/* <span className="text">{props.voice}</span> */}
         </div>
         <div className="wrapper">
           <AudioPlayer
@@ -62,15 +86,25 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           <span className="item">{props.speed}x</span>
         </span>
         <div className="actions">
-          <Tooltip title="Play">
+          <Tooltip
+            title={
+              isPlay
+                ? intl.formatMessage({ id: 'playground.audio.button.stop' })
+                : intl.formatMessage({ id: 'playground.audio.button.play' })
+            }
+          >
             <Button
               onClick={handlePlay}
-              icon={<PlayCircleOutlined />}
+              icon={isPlay ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
               type="text"
               size="small"
             ></Button>
           </Tooltip>
-          <Tooltip title="Download">
+          <Tooltip
+            title={intl.formatMessage({
+              id: 'playground.audio.button.download'
+            })}
+          >
             <Button
               onClick={onDownload}
               icon={<DownloadOutlined />}
@@ -78,21 +112,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
               size="small"
             ></Button>
           </Tooltip>
-          {/* <Tooltip title="Show Prompt">
-            <Button
-              icon={<FileTextOutlined />}
-              type="text"
-              size="small"
-              onClick={handleCollapse}
-            ></Button>
-          </Tooltip> */}
         </div>
       </div>
-      {/* {collapsed && (
-        <div className="prompt-box">
-          <div className="prompt">{props.prompt}</div>
-        </div>
-      )} */}
     </div>
   );
 };

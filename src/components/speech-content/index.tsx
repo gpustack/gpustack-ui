@@ -7,7 +7,6 @@ interface SpeechContentProps {
 }
 
 const SpeechContent: React.FC<SpeechContentProps> = (props) => {
-  console.log('SpeechContent', props);
   return (
     <>
       {props.dataList.map((item) => (

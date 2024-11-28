@@ -2,7 +2,7 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import { ClearOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Input, Spin, Tag } from 'antd';
+import { Button, Input, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -77,7 +77,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
   const formRef = useRef<any>(null);
-  const multiplePasteEnable = useRef<boolean>(true);
+  const [multiplePasteEnable, setMultiplePasteEnable] = useState<boolean>(true);
   const [fileList, setFileList] = useState<
     {
       text: string;
@@ -346,7 +346,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleOnPaste = useCallback(
     (e: any, index: number) => {
-      if (!multiplePasteEnable.current) return;
+      if (!multiplePasteEnable) return;
       const text = e.clipboardData.getData('text');
       if (text) {
         console.log('text:', text);
@@ -465,18 +465,25 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 )}
               </span>
               <div className="flex-center gap-10">
-                <Button className="flex-center" size="middle">
-                  <Checkbox
-                    defaultChecked={multiplePasteEnable.current}
-                    onChange={(e: any) => {
-                      multiplePasteEnable.current = e.target.checked;
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.input.multiplePaste.tips'
+                  })}
+                >
+                  <Button
+                    className="flex-center"
+                    variant="filled"
+                    size="middle"
+                    color={multiplePasteEnable ? 'primary' : 'default'}
+                    onClick={() => {
+                      setMultiplePasteEnable(!multiplePasteEnable);
                     }}
                   >
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
-                  </Checkbox>
-                </Button>
+                  </Button>
+                </Tooltip>
                 <Button size="middle" onClick={handleAddText}>
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}

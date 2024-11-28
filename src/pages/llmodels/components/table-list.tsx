@@ -450,7 +450,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             color="geekblue"
           >
-            Embedding Only
+            Embedding
           </Tag>
         );
       }
@@ -464,7 +464,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             color="geekblue"
           >
-            {intl.formatMessage({ id: 'playground.audio.texttospeech' })}
+            Text-To-Speech
           </Tag>
         );
       }
@@ -478,7 +478,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             color="geekblue"
           >
-            {intl.formatMessage({ id: 'playground.audio.speechtotext' })}
+            Speech-To-Text
           </Tag>
         );
       }
@@ -492,7 +492,7 @@ const Models: React.FC<ModelsProps> = ({
             }}
             color="geekblue"
           >
-            Image Only
+            Image
           </Tag>
         );
       }

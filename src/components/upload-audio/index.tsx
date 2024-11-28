@@ -13,12 +13,11 @@ interface UploadAudioProps {
 const UploadAudio: React.FC<UploadAudioProps> = (props) => {
   const intl = useIntl();
   const beforeUpload = (file: any) => {
-    return true;
+    return false;
   };
 
   const handleOnChange = React.useCallback(
     (data: { file: any; fileList: any }) => {
-      console.log('handleOnChange', data);
       props.onChange?.(data);
     },
     []

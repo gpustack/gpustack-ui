@@ -131,6 +131,9 @@ export const readLargeStreamData = async (
     buffer = lines.pop() || ''; // Keep last line (may be incomplete)
 
     for (const line of lines) {
+      if (line === '[DONE]') {
+        continue;
+      }
       if (line.startsWith('data: ')) {
         const jsonStr = line.slice(6).trim();
         try {

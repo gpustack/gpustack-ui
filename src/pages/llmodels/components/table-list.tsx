@@ -347,7 +347,27 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleOpenPlayGround = (row: any) => {
-    navigate(`/playground?model=${row.name}`);
+    if (row.image_only) {
+      navigate(`/playground/text-to-image?model=${row.name}`);
+      return;
+    }
+    if (row.text_to_speech) {
+      navigate(`/playground/speech?model=${row.name}&type=tts`);
+      return;
+    }
+    if (row.speech_to_text) {
+      navigate(`/playground/speech?model=${row.name}&type=stt`);
+      return;
+    }
+    if (row.reranker) {
+      navigate(`/playground/rerank?model=${row.name}`);
+      return;
+    }
+    if (row.embedding_only) {
+      navigate(`/playground/embedding?model=${row.name}`);
+      return;
+    }
+    navigate(`/playground/chat?model=${row.name}`);
   };
 
   const handleViewLogs = async (row: any) => {

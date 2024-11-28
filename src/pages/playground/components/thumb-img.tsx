@@ -1,4 +1,5 @@
 import AutoImage from '@/components/auto-image';
+import SingleImage from '@/components/auto-image/single-image';
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { Col, Progress, Row } from 'antd';
 import _ from 'lodash';
@@ -15,13 +16,14 @@ const ThumbImg: React.FC<{
   gutter?: number | number[] | object;
   justify?: any;
   autoSize?: boolean;
+  autoBgColor?: boolean;
 }> = ({
   dataList,
   editable,
   responseable,
   gutter,
   onDelete,
-  loading,
+  autoBgColor,
   autoSize,
   style
 }) => {
@@ -112,7 +114,13 @@ const ThumbImg: React.FC<{
                       className="flex-center justify-center"
                       style={{ height: '100%', width: '100%' }}
                     >
-                      {renderImageItem(item)}
+                      <SingleImage
+                        {...item}
+                        autoSize={autoSize}
+                        editable={editable}
+                        autoBgColor={autoBgColor}
+                        onDelete={handleOnDelete}
+                      ></SingleImage>
                     </Col>
                   );
                 })}
@@ -137,7 +145,13 @@ const ThumbImg: React.FC<{
                         className="flex-center justify-center"
                         style={{ height: '100%', width: '100%' }}
                       >
-                        {renderImageItem(item)}
+                        <SingleImage
+                          {...item}
+                          autoSize={autoSize}
+                          editable={editable}
+                          autoBgColor={autoBgColor}
+                          onDelete={handleOnDelete}
+                        ></SingleImage>
                       </Col>
                     );
                   })}
@@ -147,7 +161,15 @@ const ThumbImg: React.FC<{
           ) : (
             <>
               {_.map(dataList, (item: any) => {
-                return renderImageItem(item);
+                return (
+                  <SingleImage
+                    {...item}
+                    autoSize={autoSize}
+                    editable={editable}
+                    autoBgColor={autoBgColor}
+                    onDelete={handleOnDelete}
+                  ></SingleImage>
+                );
               })}
             </>
           )}

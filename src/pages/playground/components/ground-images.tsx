@@ -466,7 +466,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                   flexWrap: 'unset',
                   alignItems: 'center'
                 }}
-                autoBgColor={true}
+                autoBgColor={false}
                 editable={false}
                 dataList={imageList}
                 loading={loading}

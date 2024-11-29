@@ -112,5 +112,9 @@ export default {
   'playground.audio.button.play': 'Play',
   'playground.audio.button.download': 'Download',
   'playground.audio.button.stop': 'Stop',
-  'playground.image.prompt.random': 'Random Prompt'
+  'playground.image.prompt.random': 'Random Prompt',
+  'playground.audio.button.fast': 'Speed Up',
+  'playground.audio.button.slow': 'Slow Down',
+  'playgorund.audio.voice.error':
+    'Voices are unavailable. The model may still be initializing. Please refresh after a brief wait.'
 };

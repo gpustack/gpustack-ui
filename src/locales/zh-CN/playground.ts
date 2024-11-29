@@ -109,5 +109,9 @@ export default {
   'playground.audio.button.play': '播放',
   'playground.audio.button.download': '下载',
   'playground.audio.button.stop': '停止',
-  'playground.image.prompt.random': '随机提示词'
+  'playground.image.prompt.random': '随机提示词',
+  'playground.audio.button.fast': '快进',
+  'playground.audio.button.slow': '慢放',
+  'playgorund.audio.voice.error':
+    '声音无法使用。该模型可能仍在初始化。请稍候后刷新。'
 };

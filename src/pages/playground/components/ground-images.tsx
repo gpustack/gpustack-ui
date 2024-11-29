@@ -12,7 +12,7 @@ import {
 } from '@/utils/fetch-chunk-data';
 import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Form, Tooltip } from 'antd';
+import { Button, Divider, Form, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -530,9 +530,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             clearAll={handleClear}
             tools={
               <>
-                <span className="p-l-8 font-600">
+                <span className="font-600">
                   {intl.formatMessage({ id: 'playground.image.prompt' })}
                 </span>
+                <Divider type="vertical" />
                 <Tooltip
                   title={intl.formatMessage({
                     id: 'playground.image.prompt.random'

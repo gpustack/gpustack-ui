@@ -37,7 +37,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     autoBgColor
   } = props;
 
-  const [color, setColor] = React.useState<string>('');
+  const [color, setColor] = React.useState({});
   const imgWrapper = React.useRef<HTMLSpanElement>(null);
 
   const thumImgWrapStyle = React.useMemo(() => {
@@ -59,10 +59,17 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
         return;
       }
       const color = palette?.Vibrant?.rgb;
-      const rgba = color
+      const mutedColor = palette?.Muted?.rgb;
+
+      const startColor = color
         ? `rgba(${color[0]}, ${color[1]}, ${color[2]},0.7)`
         : '';
-      setColor(rgba);
+      const stopColor = mutedColor
+        ? `rgba(${mutedColor[0]}, ${mutedColor[1]}, ${mutedColor[2]},0.5)`
+        : '';
+      setColor({
+        backgroundImage: `linear-gradient(135deg, ${startColor}, ${stopColor})`
+      });
     });
   }, []);
 

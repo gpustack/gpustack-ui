@@ -61,6 +61,7 @@ const useWavesurfer = (options: Options) => {
     createWavesurfer,
     play,
     pause,
+    wavesurfer,
     destroyWavesurfer
   };
 };

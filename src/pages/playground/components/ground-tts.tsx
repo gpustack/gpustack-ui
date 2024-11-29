@@ -60,7 +60,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [parameters, setParams] = useState<any>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [tokenResult, setTokenResult] = useState<any>(null);
+  const [tokenResult, setTokenResult] = useState<any>();
   const [collapse, setCollapse] = useState(false);
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
@@ -96,7 +96,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
-    // await formRef.current?.form.validateFields();
+    await formRef.current?.form.validateFields();
     if (!parameters.model) return;
     try {
       setLoading(true);
@@ -174,12 +174,26 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         const res = await queryModelVoices({
           model: value
         });
+        console.log('res:', res);
+        if (res.error) {
+          setTokenResult({
+            error: true,
+            errorMessage:
+              res?.data?.error?.message ||
+              res?.data?.error ||
+              res.error?.detail ||
+              ''
+          });
+          setVoiceList([]);
+          return;
+        }
         const voiceList = _.map(res.voices || [], (item: any) => {
           return {
             label: item,
             value: item
           };
         });
+
         setVoiceList(voiceList);
         setParams((pre: any) => {
           return {
@@ -188,7 +202,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           };
         });
         formRef.current?.form.setFieldValue('voice', voiceList[0]?.value);
-      } catch (error) {
+      } catch (error: any) {
+        const res = error?.response?.data;
+        if (res.error) {
+          setTokenResult({
+            error: true,
+            errorMessage:
+              res?.error?.message || res?.data?.error || res.error?.detail || ''
+          });
+        }
+        console.log('error:', error);
         setVoiceList([]);
         formRef.current?.form.setFieldValue('voice', '');
         setParams((pre: any) => {

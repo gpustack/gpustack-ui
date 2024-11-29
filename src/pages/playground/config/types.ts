@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface ModelSelectionItem extends Global.BaseOption<string> {
   uid: number;
   instanceId: symbol;
@@ -43,8 +45,9 @@ export interface ParamsSchema {
     when: (values: Record<string, any>) => boolean;
   };
   defaultValue?: string | number | boolean;
+  required?: boolean;
   rules: { required: boolean; message?: string }[];
-  placeholder?: string;
+  placeholder?: React.ReactNode;
   attrs?: Record<string, any>;
   description?: {
     text: string;

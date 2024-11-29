@@ -323,19 +323,6 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'Checkbox',
-    name: 'random_seed',
-    label: {
-      text: 'playground.image.params.randomseed',
-      isLocalized: true
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
     type: 'InputNumber',
     name: 'seed',
     label: {
@@ -348,6 +335,19 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     disabledConfig: {
       depends: ['random_seed'],
       when: (values: Record<string, any>): boolean => values?.random_seed
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Checkbox',
+    name: 'random_seed',
+    label: {
+      text: 'playground.image.params.randomseed',
+      isLocalized: true
     },
     rules: [
       {

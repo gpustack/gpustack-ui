@@ -130,7 +130,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           errorMessage:
             res?.data?.error?.message ||
             res?.data?.error ||
-            res.error?.detail ||
+            res?.error?.detail ||
             ''
         });
         setMessageList([]);
@@ -148,8 +148,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           audioUrl: res.url
         }
       ]);
-    } catch (error) {
-      console.log('error:', error);
+    } catch (error: any) {
+      const res = error?.response?.data;
+      if (res.error) {
+        setTokenResult({
+          error: true,
+          errorMessage:
+            res?.error?.message || res?.data?.error || res?.error?.detail || ''
+        });
+      }
     } finally {
       setLoading(false);
     }

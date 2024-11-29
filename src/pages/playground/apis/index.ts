@@ -98,7 +98,7 @@ export const textToSpeech = async (params: any, options?: any) => {
   }
 
   const audioBlob = await res.blob();
-  const audioUrl = URL.createObjectURL(audioBlob);
+  const audioUrl = audioBlob.size > 0 ? URL.createObjectURL(audioBlob) : '';
   return {
     url: audioUrl,
     type: audioBlob.type

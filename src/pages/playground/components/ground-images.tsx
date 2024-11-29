@@ -39,6 +39,7 @@ import '../style/system-message-wrap.less';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
 import ViewCodeModal from './view-code-modal';
+import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -73,45 +74,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       loading?: boolean;
       progress?: number;
     }[]
-  >([
-    // {
-    //   dataUrl:
-    //     'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    //   height: 'auto',
-    //   width: 'auto',
-    //   uid: 0,
-    //   span: 12,
-    //   loading: false,
-    //   progress: 60
-    // },
-    // {
-    //   dataUrl:
-    //     'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
-    //   height: 'auto',
-    //   width: 'auto',
-    //   uid: 1,
-    //   span: 12,
-    //   progress: 15
-    // },
-    // {
-    //   dataUrl:
-    //     'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    //   height: 'auto',
-    //   width: 'auto',
-    //   uid: 3,
-    //   span: 12,
-    //   progress: 10
-    // },
-    // {
-    //   dataUrl:
-    //     'https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp',
-    //   height: 'auto',
-    //   width: 'auto',
-    //   uid: 4,
-    //   span: 12,
-    //   progress: 15
-    // }
-  ]);
+  >([]);
 
   const intl = useIntl();
   const [searchParams] = useSearchParams();
@@ -221,6 +184,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const size: any = setImageSize();
       setLoading(true);
       setMessageId();
+      setTokenResult(null);
       setCurrentPrompt(current?.content || '');
 
       let newImageList = Array(parameters.n)
@@ -309,9 +273,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
   const handleClear = () => {
-    if (!imageList.length) {
-      return;
-    }
     setMessageId();
     setImageList([]);
     setTokenResult(null);
@@ -628,18 +589,33 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
 
-      <ViewCodeModal
-        {...OpenAIViewCode.images}
-        open={show}
-        payLoad={{
-          prompt: currentPrompt
-        }}
-        parameters={{
-          ...finalParameters
-        }}
-        onCancel={handleCloseViewCode}
-        title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCodeModal>
+      {isOpenaiCompatible ? (
+        <ViewCodeModal
+          {...OpenAIViewCode.images}
+          open={show}
+          payload={{
+            prompt: currentPrompt
+          }}
+          parameters={{
+            ...finalParameters
+          }}
+          onCancel={handleCloseViewCode}
+          title={intl.formatMessage({ id: 'playground.viewcode' })}
+        ></ViewCodeModal>
+      ) : (
+        <ViewCommonCode
+          {...OpenAIViewCode.imageAdvanced}
+          open={show}
+          payload={{
+            prompt: currentPrompt
+          }}
+          parameters={{
+            ...finalParameters
+          }}
+          onCancel={handleCloseViewCode}
+          title={intl.formatMessage({ id: 'playground.viewcode' })}
+        ></ViewCommonCode>
+      )}
     </div>
   );
 });

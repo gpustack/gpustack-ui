@@ -329,7 +329,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       <ViewCodeModal
         {...OpenAIViewCode.chat}
         open={show}
-        payLoad={{
+        payload={{
           messages: viewCodeMessage
         }}
         parameters={parameters}

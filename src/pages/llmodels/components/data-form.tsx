@@ -88,6 +88,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         value: `${item.worker_name}-${item.name}-${item.index}`
       };
     });
+    console.log('queryGPUList========', list);
     setGpuOptions(list);
   };
 

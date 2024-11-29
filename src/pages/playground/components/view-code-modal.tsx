@@ -9,7 +9,7 @@ import React, { useMemo, useState } from 'react';
 type ViewModalProps = {
   systemMessage?: string;
   messageList?: any[];
-  payLoad: Record<string, any>;
+  payload: Record<string, any>;
   parameters: any;
   title: string;
   api: string;
@@ -39,7 +39,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     clientType,
     logcommand,
     onCancel,
-    payLoad,
+    payload,
     parameters = {}
   } = props || {};
 
@@ -72,7 +72,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
-          ...payLoad
+          ...payload
         },
         null,
         2
@@ -83,7 +83,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const code = `const OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${JSON.stringify(
         {
           ...parameters,
-          ...payLoad
+          ...payload
         },
         null,
         4
@@ -105,12 +105,12 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         },
         ''
       );
-      const params = formatPyParams(payLoad);
+      const params = formatPyParams(payload);
       const code = `from openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nresponse = client.${clientType}(\n${formattedParams}${params})\n${printLog}`;
       return code;
     }
     return '';
-  }, [lang, payLoad, parameters, api, clientType, logcommand]);
+  }, [lang, payload, parameters, api, clientType, logcommand]);
 
   const handleOnChangeLang = (value: string) => {
     setLang(value);

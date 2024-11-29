@@ -2,6 +2,7 @@ import AlertInfo from '@/components/alert-info';
 import ScatterChart from '@/components/echarts/scatter';
 import HighlightCode from '@/components/highlight-code';
 import IconFont from '@/components/icon-font';
+import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -28,6 +29,7 @@ import {
   useRef,
   useState
 } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { handleEmbedding } from '../apis';
 import { OpenAIViewCode } from '../config';
 import { ParamsSchema } from '../config/types';
@@ -100,6 +102,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   ]);
 
   const [scatterData, setScatterData] = useState<any[]>([]);
+  const resizeRef = useRef<any>(null);
   const resizeMaxHeight = 400;
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
@@ -264,6 +267,14 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
 
+  const handleScaleResize = () => {
+    console.log('handleScaleResize', resizeRef.current);
+    const height = resizeRef.current?.state?.height;
+    if (height) {
+      setOutputHeight(height);
+    }
+  };
+
   const handleDeleteFile = (uid: number | string) => {
     setFileList((preList) => {
       return preList.filter((item) => item.uid !== uid);
@@ -374,6 +385,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTokenResult(null);
   }, [parameters.model]);
 
+  useHotkeys(
+    HotKeys.SUBMIT,
+    (e: any) => {
+      e.preventDefault();
+      handleSendMessage();
+    },
+    {
+      enabled: !loading,
+      preventDefault: true
+    }
+  );
+
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
@@ -427,6 +450,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
+                    <InfoCircleOutlined className="m-l-4" />
                   </Checkbox>
                 </Tooltip>
 
@@ -442,14 +466,25 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                   {intl.formatMessage({ id: 'common.button.clear' })}
                 </Button>
                 {!loading ? (
-                  <Button
-                    size="middle"
-                    type="primary"
-                    disabled={inputEmpty}
-                    onClick={handleSendMessage}
-                    icon={<SendOutlined rotate={0} className="font-size-14" />}
-                    style={{ width: 60 }}
-                  ></Button>
+                  <Tooltip
+                    title={
+                      <span>
+                        [{KeyMap.SUBMIT.textKeybinding}]{' '}
+                        {intl.formatMessage({ id: 'common.button.submit' })}
+                      </span>
+                    }
+                  >
+                    <Button
+                      size="middle"
+                      type="primary"
+                      disabled={inputEmpty}
+                      onClick={handleSendMessage}
+                      icon={
+                        <SendOutlined rotate={0} className="font-size-14" />
+                      }
+                      style={{ width: 60 }}
+                    ></Button>
+                  </Tooltip>
                 ) : (
                   <Tooltip
                     title={intl.formatMessage({ id: 'common.button.stop' })}
@@ -547,6 +582,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           </h3>
           <div className="embed-chart">
             <Resizable
+              ref={resizeRef}
               enable={{
                 top: true
               }}
@@ -577,13 +613,13 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
               }}
               maxHeight={resizeMaxHeight}
               minHeight={180}
+              onResize={handleScaleResize}
               onResizeStop={handleScaleOutputSize}
             >
               <div
                 style={{
                   border: '1px solid var(--ant-color-border)',
                   borderRadius: 'var(--border-radius-base)',
-                  overflow: 'hidden',
                   width: '100%'
                 }}
                 className="scatter "
@@ -622,7 +658,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       <ViewCodeModal
         {...OpenAIViewCode.embeddings}
         open={show}
-        payLoad={{
+        payload={{
           input: [
             ...textList.map((item) => item.text).filter((item) => item),
             ...fileList.map((item) => item.text).filter((item) => item)

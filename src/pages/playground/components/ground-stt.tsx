@@ -390,7 +390,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       <ViewCodeModal
         open={show}
-        payLoad={{}}
+        payload={{}}
         api="audio/transcriptions"
         clientType="audio.transcriptions"
         parameters={parameters}

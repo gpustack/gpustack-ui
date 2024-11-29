@@ -177,7 +177,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           <Tag color={'geekblue'} bordered={false}>
             {intl.formatMessage({ id: 'playground.rerank.rank' })}: {data.rank}
           </Tag>
-          <Tag color={'cyan'} bordered={false}>
+          <Tag color={'gold'} bordered={false}>
             {intl.formatMessage({ id: 'playground.rerank.score' })}:{' '}
             {_.round(data.score, 2)}
           </Tag>
@@ -489,7 +489,16 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                     </span>
                   }
                 >
-                  <SendOutlined rotate={0} className="font-size-14" />
+                  <Button
+                    ghost
+                    variant="filled"
+                    color="default"
+                    style={{
+                      border: 'none'
+                    }}
+                  >
+                    <SendOutlined rotate={0} className="font-size-14" />
+                  </Button>
                 </Tooltip>
               }
               placeholder={intl.formatMessage({

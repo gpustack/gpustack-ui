@@ -3,7 +3,6 @@ import HighlightCode from '@/components/highlight-code';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
-import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
@@ -72,16 +71,11 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         ...parameters,
         ...payload
       };
-      _.keys(data).forEach((key: string) => {
-        if (data[key] === null) {
-          delete data[key];
-        }
-      });
       const headers = {
         'Content-type': 'application/json',
         Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
       };
-      const code = `import requests\n\nurl="${BaseURL}"\n\nheaders = ${JSON.stringify(headers, null, 2)}\n\ndata=${JSON.stringify(data, null, 2)}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nprint(response.${logcommand.python})`;
+      const code = `import requests\n\nurl="${BaseURL}"\n\nheaders = ${JSON.stringify(headers, null, 2)}\n\ndata=${JSON.stringify(data, null, 2).replace(/null/g, 'None')}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nprint(response.${logcommand.python})`;
       setCodeValue(code);
     }
   };

@@ -56,11 +56,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const intl = useIntl();
   const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
+  const modelType = searchParams.get('type') || '';
+  const selectModel = searchParams.get('model')
+    ? modelType === 'tts' && searchParams.get('model')
+    : '';
   const [parameters, setParams] = useState<any>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [tokenResult, setTokenResult] = useState<any>();
+  const [tokenResult, setTokenResult] = useState<any>(null);
+  const [voiceError, setVoiceError] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
@@ -151,9 +155,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
   const handleClear = () => {
-    if (!messageList.length) {
-      return;
-    }
     setMessageId();
     setMessageList([]);
     setTokenResult(null);
@@ -176,7 +177,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         });
         console.log('res:', res);
         if (res.error) {
-          setTokenResult({
+          setVoiceError({
             error: true,
             errorMessage:
               res?.data?.error?.message ||
@@ -205,7 +206,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       } catch (error: any) {
         const res = error?.response?.data;
         if (res.error) {
-          setTokenResult({
+          setVoiceError({
             error: true,
             errorMessage:
               res?.error?.message || res?.data?.error || res.error?.detail || ''
@@ -246,6 +247,26 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       );
     });
   }, [paramsConfig, intl, voiceList]);
+
+  const renderVoiceError = useMemo(() => {
+    if (!voiceError) return null;
+    return (
+      <>
+        {voiceError && (
+          <div style={{ height: 40 }}>
+            <AlertInfo
+              type="danger"
+              ellipsis={false}
+              style={{ textAlign: 'left' }}
+              message={intl.formatMessage({
+                id: 'playgorund.audio.voice.error'
+              })}
+            ></AlertInfo>
+          </div>
+        )}
+      </>
+    );
+  }, [voiceError]);
 
   useEffect(() => {
     handleSelectModel(parameters.model);
@@ -324,7 +345,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            actions={['check']}
+            actions={['check', 'clear']}
             checkLabel={intl.formatMessage({
               id: 'playground.toolbar.autoplay'
             })}
@@ -358,7 +379,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             params={parameters}
             selectedModel={selectModel}
             modelList={modelList}
-            extra={renderExtra}
+            extra={[renderExtra, renderVoiceError]}
           />
         </div>
       </div>

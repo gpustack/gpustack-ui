@@ -47,7 +47,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     { uid: number; content: string }[]
   >([]);
   const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
+  const modelType = searchParams.get('type') || '';
+  const selectModel = searchParams.get('model')
+    ? modelType === 'stt' && searchParams.get('model')
+    : '';
   const [parameters, setParams] = useState<any>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);

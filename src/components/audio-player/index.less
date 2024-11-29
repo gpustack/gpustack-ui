@@ -2,19 +2,54 @@
   width: 100%;
   display: flex;
   background-color: var(--ant-color-fill-quaternary);
-  border-radius: 36px;
+  border-radius: 6px;
 
   .player-ui {
-    padding: 5px 10px;
+    padding: 8px 16px;
     flex: 1;
     display: flex;
     justify-content: flex-start;
     align-items: center;
   }
 
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-inline: 10px;
+  }
+
+  .play-btn {
+    margin-inline: 30px;
+    height: 22px;
+    width: 22px;
+    overflow: hidden;
+
+    .ant-btn {
+      height: 22px;
+      width: 22px;
+    }
+  }
+
+  .backward,
+  .forward {
+    background: none !important;
+  }
+
+  .slider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .slider-inner {
+      flex: 1;
+      margin-inline: 10px;
+    }
+  }
+
   .play-content {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     flex: 1;
   }
@@ -43,7 +78,7 @@
     }
 
     .ant-slider-horizontal {
-      margin-block: 2px;
+      margin-block: 5px;
     }
   }
 

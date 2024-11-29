@@ -1,5 +1,11 @@
 import { formatTime } from '@/utils/index';
-import { PauseCircleFilled, PlayCircleFilled } from '@ant-design/icons';
+import {
+  FastBackwardOutlined,
+  FastForwardOutlined,
+  PauseCircleFilled,
+  PlayCircleFilled
+} from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Slider, Tooltip } from 'antd';
 import { round } from 'lodash';
 import React, {
@@ -8,8 +14,6 @@ import React, {
   useEffect,
   useImperativeHandle
 } from 'react';
-import CheckButtons from '../check-buttons';
-import IconFont from '../icon-font';
 import './index.less';
 
 interface AudioPlayerProps {
@@ -30,7 +34,14 @@ const speedOptions = [
   { label: '4x', value: 4 }
 ];
 
+const speedConfig = {
+  min: 0.5,
+  max: 2,
+  step: 0.25
+};
+
 const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
+  const intl = useIntl();
   const { autoplay = false, speed: defaultSpeed = 1 } = props;
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const [audioState, setAudioState] = React.useState<{
@@ -95,7 +106,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     setPlayOn(!playOn);
   }, [playOn]);
 
-  const handleFormatVolume = (val: number) => {
+  const handleFormatVolume = (val?: number) => {
+    if (val === undefined) {
+      return `${round(volume * 100)}%`;
+    }
     return `${round(val * 100)}%`;
   };
 
@@ -132,6 +146,28 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     });
   }, []);
 
+  const handleReduceSpeed = () => {
+    setSpeed((pre) => {
+      if (pre - speedConfig.step < speedConfig.min) {
+        return speedConfig.min;
+      }
+      const next = pre - speedConfig.step;
+      audioRef.current!.playbackRate = next;
+      return next;
+    });
+  };
+
+  const handleAddSpeed = () => {
+    setSpeed((pre) => {
+      if (pre + speedConfig.step > speedConfig.max) {
+        return speedConfig.max;
+      }
+      const next = pre + speedConfig.step;
+      audioRef.current!.playbackRate = next;
+      return next;
+    });
+  };
+
   useEffect(() => {
     if (audioRef.current) {
       initPlayerConfig();
@@ -147,69 +183,115 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   return (
     <div className="player-wrap" style={{ width: props.width || '100%' }}>
       <div className="player-ui">
-        <span className="play-btn">
-          <Button
-            size="middle"
-            type="text"
-            onClick={handlePlay}
-            icon={
-              !playOn ? (
-                <PlayCircleFilled
-                  style={{ fontSize: '22px' }}
-                ></PlayCircleFilled>
-              ) : (
-                <PauseCircleFilled
-                  style={{ fontSize: '22px' }}
-                ></PauseCircleFilled>
-              )
-            }
-          ></Button>
-        </span>
         <div className="play-content">
-          <span className="time current">
-            {' '}
-            {formatTime(audioState.currentTime)}
-          </span>
           <div className="progress-bar">
             <span className="file-name">{props.name}</span>
             <div className="slider">
-              <Slider
-                tooltip={{ open: false }}
-                min={0}
-                max={audioState.duration}
-                value={audioState.currentTime}
-                onChange={handleCurrentChange}
-              />
-            </div>
-            <Tooltip
-              overlayInnerStyle={{
-                backgroundColor: 'var(--color-white-1)'
-              }}
-              arrow={false}
-              title={
-                <CheckButtons
-                  options={speedOptions}
-                  onChange={handleSeepdChange}
-                  size="small"
-                ></CheckButtons>
-              }
-            >
-              <span style={{ cursor: 'pointer' }}>
-                {speed ? `${speed}x` : '1x'}
+              <span className="time current">
+                {' '}
+                {formatTime(audioState.currentTime)}
               </span>
-            </Tooltip>
+              <div className="slider-inner">
+                <Slider
+                  tooltip={{ open: false }}
+                  min={0}
+                  max={audioState.duration}
+                  value={audioState.currentTime}
+                  onChange={handleCurrentChange}
+                />
+              </div>
+              <span className="time">{formatTime(audioState.duration)}</span>
+            </div>
+            <div className="controls">
+              {/* <Tooltip
+                overlayInnerStyle={{
+                  backgroundColor: 'var(--color-white-1)'
+                }}
+                arrow={false}
+                title={
+                  <CheckButtons
+                    options={speedOptions}
+                    onChange={handleSeepdChange}
+                    size="small"
+                  ></CheckButtons>
+                }
+              >
+                <span style={{ cursor: 'pointer' }}>
+                  {speed ? `${speed}x` : '1x'}
+                </span>
+              </Tooltip> */}
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'playground.audio.button.slow'
+                })}
+              >
+                <Button
+                  type="text"
+                  size="small"
+                  className="backward"
+                  disabled={
+                    speed === speedConfig.min || speed < speedConfig.min
+                  }
+                  onClick={handleReduceSpeed}
+                >
+                  <FastBackwardOutlined className="font-size-20" />
+                </Button>
+              </Tooltip>
+              <span className="play-btn">
+                <Button
+                  size="middle"
+                  type="text"
+                  onClick={handlePlay}
+                  disabled={!audioState?.duration}
+                  icon={
+                    !playOn ? (
+                      <PlayCircleFilled
+                        style={{ fontSize: '22px' }}
+                      ></PlayCircleFilled>
+                    ) : (
+                      <PauseCircleFilled
+                        style={{ fontSize: '22px' }}
+                      ></PauseCircleFilled>
+                    )
+                  }
+                ></Button>
+              </span>
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'playground.audio.button.fast'
+                })}
+              >
+                <Button
+                  type="text"
+                  size="small"
+                  className="forward"
+                  disabled={
+                    speed === speedConfig.max || speed > speedConfig.max
+                  }
+                  onClick={handleAddSpeed}
+                >
+                  <FastForwardOutlined className="font-size-20" />
+                </Button>
+              </Tooltip>
+            </div>
           </div>
-          <span className="time">{formatTime(audioState.duration)}</span>
         </div>
-        <span className="speaker">
+        {/* <span className="speaker">
           <Button
             size="middle"
             type="text"
             icon={
-              <IconFont
-                type="icon-SpeakerHigh"
-                style={{ fontSize: '22px' }}
-              ></IconFont>
+              volume > 0 ? (
+                <IconFont
+                  type="icon-SpeakerHigh"
+                  style={{ fontSize: '22px' }}
+                ></IconFont>
+              ) : (
+                <IconFont
+                  type="icon-speaker-slash"
+                  style={{ fontSize: '22px' }}
+                ></IconFont>
+              )
             }
           ></Button>
           {speakerOn && (
@@ -225,7 +307,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
               onChange={handleVolumeChange}
             />
           )}
-        </span>
+        </span> */}
       </div>
       <audio
         controls

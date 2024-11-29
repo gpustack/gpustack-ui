@@ -18,13 +18,14 @@ interface AudioPlayerProps {
 const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   const { autoplay, audioUrl, speed = 1, ...rest } = props;
   const container = useRef<HTMLDivElement>(null);
-  const { createWavesurfer, play, pause, destroyWavesurfer } = useWavesurfer({
-    container,
-    autoplay: autoplay,
-    url: audioUrl,
-    audioRate: speed,
-    ...rest
-  });
+  const { createWavesurfer, play, pause, destroyWavesurfer, wavesurfer } =
+    useWavesurfer({
+      container,
+      autoplay: autoplay,
+      url: audioUrl,
+      audioRate: speed,
+      ...rest
+    });
 
   useImperativeHandle(ref, () => {
     return {

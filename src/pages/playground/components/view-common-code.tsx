@@ -3,6 +3,7 @@ import HighlightCode from '@/components/highlight-code';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 
 type ViewModalProps = {
@@ -67,10 +68,15 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       const code = `import axios from 'axios';\n\nconst url = "${BaseURL}";\n\nconst headers = ${JSON.stringify(headers, null, 2)};\n\nconst data = ${JSON.stringify(data, null, 2)};\n\naxios.post(url, data, { headers }).then((response) => {\n  console.log(response.${logcommand.node});\n});`;
       setCodeValue(code);
     } else if (lang === langMap.python) {
-      const data = {
+      let data = {
         ...parameters,
         ...payload
       };
+      _.keys(data).forEach((key: string) => {
+        if (data[key] === null) {
+          delete data[key];
+        }
+      });
       const headers = {
         'Content-type': 'application/json',
         Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`

@@ -1,6 +1,7 @@
 import AlertInfo from '@/components/alert-info';
 import AudioAnimation from '@/components/audio-animation';
 import AudioPlayer from '@/components/audio-player';
+import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
@@ -252,7 +253,12 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [messageList, loading]);
 
   return (
-    <div className="ground-left-wrapper">
+    <div
+      className="ground-left-wrapper"
+      style={{
+        height: 'calc(100vh - 72px)'
+      }}
+    >
       <div className="ground-left">
         <div className="ground-left-footer" style={{ flex: 1 }}>
           <div className="speech-to-text">
@@ -319,17 +325,34 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            overflow: 'auto'
           }}
         >
           <div
             className="message-list-wrap"
-            ref={scroller}
             style={{
+              flex: 1,
+              position: 'relative',
               borderTop: '1px solid var(--ant-color-split)'
             }}
           >
-            <div className="content" style={{ height: '100%' }}>
+            {messageList?.length > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 2
+                }}
+              >
+                <CopyButton text={messageList[0]?.content}></CopyButton>
+              </span>
+            )}
+            <div
+              className="content"
+              style={{ height: '100%', overflow: 'auto' }}
+              ref={scroller}
+            >
               <>
                 {!tokenResult && (
                   <div
@@ -337,7 +360,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                       padding: '8px 14px',
                       lineHeight: '20px',
                       display: 'flex',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      textAlign: 'center'
                     }}
                   >
                     {messageList.length ? (
@@ -366,6 +390,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 )}
               </>
             </div>
+            <div></div>
           </div>
         </div>
       </div>

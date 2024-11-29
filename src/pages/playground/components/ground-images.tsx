@@ -5,6 +5,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import ThumbImg from '@/pages/playground/components/thumb-img';
+import { generateRandomNumber } from '@/utils';
 import {
   fetchChunkedData,
   readLargeStreamData as readStreamData
@@ -199,7 +200,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
     }
     return {
-      ..._.omit(parameters, ['width', 'height'])
+      ..._.omit(parameters, ['width', 'height', 'random_seed'])
     };
   }, [parameters]);
 
@@ -241,11 +242,17 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       requestToken.current = new AbortController();
 
       const params = {
+        ..._.omitBy(finalParameters, (value: string) => !value),
+        seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
         stream: true,
         stream_options: {},
-        prompt: current?.content || currentPrompt || '',
-        ..._.omitBy(finalParameters, (value: string) => !value)
+        prompt: current?.content || currentPrompt || ''
       };
+      setParams({
+        ...parameters,
+        seed: params.seed
+      });
+      form.current?.form?.setFieldValue('seed', params.seed);
 
       const result: any = await fetchChunkedData({
         data: params,
@@ -380,18 +387,32 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     });
   }, [ImageconstExtraConfig, isOpenaiCompatible, intl]);
 
+  const handleFieldChange = (e: any) => {
+    if (e.target.id.indexOf('random_seed')) {
+      form.current?.form?.setFieldValue('random_seed', e.target.checked);
+    }
+  };
   const renderAdvanced = useMemo(() => {
     if (isOpenaiCompatible) {
       return [];
     }
+    const formValues = form.current?.form?.getFieldsValue();
     return ImageAdvancedParamsConfig.map((item: ParamsSchema) => {
       return (
         <Form.Item name={item.name} rules={item.rules} key={item.name}>
-          <FieldComponent {..._.omit(item, ['name', 'rules'])}></FieldComponent>
+          <FieldComponent
+            disabled={
+              item.disabledConfig
+                ? item.disabledConfig?.when?.(formValues)
+                : item.disabled
+            }
+            onChange={item.name === 'random_seed' ? handleFieldChange : null}
+            {..._.omit(item, ['name', 'rules', 'disabledConfig'])}
+          ></FieldComponent>
         </Form.Item>
       );
     });
-  }, [ImageAdvancedParamsConfig, isOpenaiCompatible, intl]);
+  }, [ImageAdvancedParamsConfig, isOpenaiCompatible, intl, form.current]);
 
   const renderCustomSize = useMemo(() => {
     if (size === 'custom') {

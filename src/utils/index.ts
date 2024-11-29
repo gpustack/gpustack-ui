@@ -133,3 +133,9 @@ const htmlSpecialTags = /^<html>(.|\n|\r)*<\/html>$/i;
 export const isHTMLDocumentString = (str: string) => {
   return htmlSpecialTags.test(str?.trim());
 };
+
+// generate a random number between 0 and 64 bit
+
+export const generateRandomNumber = () => {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+};

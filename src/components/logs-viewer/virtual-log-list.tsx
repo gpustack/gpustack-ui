@@ -86,7 +86,9 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const getLastPage = useCallback(
     (data: string) => {
       const list = _.split(data.trim(), '\n');
-      console.log('list.length', list.length);
+      if (!enableScorllLoad) {
+        return list.join('\n');
+      }
 
       if (list.length <= pageSize) {
         setTotalPage(1);
@@ -101,7 +103,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       debounceLoading();
       return lastPage;
     },
-    [pageSize, setTotalPage, setPage, debounceLoading]
+    [pageSize, setTotalPage, setPage, debounceLoading, enableScorllLoad]
   );
 
   const getPrePage = useCallback(() => {
@@ -179,7 +181,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         setIsLoadend(true);
       }
     },
-    [loading, isLoadend, logs.length, pageSize]
+    [loading, isLoadend, logs.length, pageSize, enableScorllLoad]
   );
 
   const debouncedScroll = useCallback(

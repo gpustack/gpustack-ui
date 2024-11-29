@@ -1,6 +1,12 @@
+import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
-import { ClearOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
+import {
+  ClearOutlined,
+  InfoCircleOutlined,
+  PlusOutlined,
+  SendOutlined
+} from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Checkbox, Input, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
@@ -15,14 +21,16 @@ import {
   useRef,
   useState
 } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { rerankerQuery } from '../apis';
+import { OpenAIViewCode } from '../config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
 import DynamicParams from './dynamic-params';
 import InputList from './input-list';
-import ViewRerankCode from './view-rerank-code';
+import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -113,6 +121,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   ]);
   const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
+  const queryValueRef = useRef<string>('');
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -305,8 +314,14 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleSearch = (val: string) => {
-    console.log('val:', val);
+    if (!val) {
+      return;
+    }
     submitMessage({ content: val });
+  };
+
+  const handleQueryChange = (e: any) => {
+    queryValueRef.current = e.target.value;
   };
 
   const handleCloseViewCode = () => {
@@ -409,6 +424,18 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTokenResult(null);
   };
 
+  useHotkeys(
+    HotKeys.SUBMIT,
+    (e: any) => {
+      e.preventDefault();
+      handleSearch(queryValueRef.current);
+    },
+    {
+      enabled: !loading,
+      preventDefault: true
+    }
+  );
+
   useEffect(() => {
     setMessageId();
     setMessageList([]);
@@ -450,8 +477,21 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           </h3>
           <div style={{ margin: '16px 32px 10px' }}>
             <Input.Search
+              allowClear
               onSearch={handleSearch}
-              enterButton={<SendOutlined rotate={0} className="font-size-14" />}
+              onChange={handleQueryChange}
+              enterButton={
+                <Tooltip
+                  title={
+                    <span>
+                      [{KeyMap.SUBMIT.textKeybinding}]{' '}
+                      {intl.formatMessage({ id: 'common.button.submit' })}
+                    </span>
+                  }
+                >
+                  <SendOutlined rotate={0} className="font-size-14" />
+                </Tooltip>
+              }
               placeholder={intl.formatMessage({
                 id: 'playground.rerank.query.holder'
               })}
@@ -490,6 +530,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
+                    <InfoCircleOutlined className="m-l-4" />
                   </Checkbox>
                 </Tooltip>
                 <Button size="middle" onClick={handleAddText}>
@@ -557,7 +598,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
 
-      <ViewRerankCode
+      <ViewCommonCode
+        {...OpenAIViewCode.rerank}
         open={show}
         payload={{
           documents: [...textList, ...fileList]
@@ -570,7 +612,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         }}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewRerankCode>
+      ></ViewCommonCode>
     </div>
   );
 });

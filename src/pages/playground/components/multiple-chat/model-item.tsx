@@ -466,7 +466,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         <ViewCodeModal
           {...OpenAIViewCode.chat}
           open={show}
-          payLoad={{
+          payload={{
             messages: viewCodeMessage
           }}
           parameters={params}

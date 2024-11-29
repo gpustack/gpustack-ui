@@ -87,7 +87,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
       <Select
         {...rest}
         ref={inputRef}
-        options={_options}
+        options={children ? null : _options}
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
         onChange={handleChange}

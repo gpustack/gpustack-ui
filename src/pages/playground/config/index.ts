@@ -119,6 +119,21 @@ export const OpenAIViewCode = {
     api: 'images/generations',
     clientType: 'images.generate',
     logcommand: 'data[0].b64_json'
+  },
+  imageAdvanced: {
+    api: '/v1/images/generations',
+    clientType: 'images.generate',
+    logcommand: {
+      python: 'json().data[0].b64_json',
+      node: 'data[0].b64_json'
+    }
+  },
+  rerank: {
+    api: '/v1/rerank',
+    logcommand: {
+      python: 'json()',
+      node: 'data'
+    }
   }
 };
 

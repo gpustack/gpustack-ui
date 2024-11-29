@@ -9,8 +9,9 @@ type ViewModalProps = {
   parameters: any;
   title: string;
   open: boolean;
-  apiType?: string;
+  api: string;
   payload?: Record<string, any>;
+  logcommand: Record<string, any>;
   onCancel: () => void;
 };
 
@@ -27,17 +28,25 @@ const langOptions = [
 ];
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const { title, open, onCancel, payload, parameters = {} } = props || {};
+  const {
+    title,
+    open,
+    onCancel,
+    payload,
+    parameters = {},
+    api,
+    logcommand
+  } = props || {};
 
   const intl = useIntl();
   const [codeValue, setCodeValue] = useState('');
   const [lang, setLang] = useState(langMap.shell);
 
-  const BaseURL = `${window.location.origin}/v1/rerank`;
+  const BaseURL = `${window.location.origin}${api}`;
 
   const generateCode = () => {
     if (lang === langMap.shell) {
-      const code = `curl ${window.location.origin}/v1/rerank \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
           ...payload
@@ -55,7 +64,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         'Content-type': 'application/json',
         Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
       };
-      const code = `import axios from 'axios';\n\nconst url = "${BaseURL}";\n\nconst headers = ${JSON.stringify(headers, null, 2)};\n\nconst data = ${JSON.stringify(data, null, 2)};\n\naxios.post(url, data, { headers }).then((response) => {\n  console.log(response.data);\n});`;
+      const code = `import axios from 'axios';\n\nconst url = "${BaseURL}";\n\nconst headers = ${JSON.stringify(headers, null, 2)};\n\nconst data = ${JSON.stringify(data, null, 2)};\n\naxios.post(url, data, { headers }).then((response) => {\n  console.log(response.${logcommand.node});\n});`;
       setCodeValue(code);
     } else if (lang === langMap.python) {
       const data = {
@@ -66,7 +75,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         'Content-type': 'application/json',
         Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
       };
-      const code = `import requests\n\nurl="${BaseURL}"\n\nheaders = ${JSON.stringify(headers, null, 2)}\n\ndata=${JSON.stringify(data, null, 2)}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nprint(response.json())`;
+      const code = `import requests\n\nurl="${BaseURL}"\n\nheaders = ${JSON.stringify(headers, null, 2)}\n\ndata=${JSON.stringify(data, null, 2)}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nprint(response.${logcommand.python})`;
       setCodeValue(code);
     }
   };

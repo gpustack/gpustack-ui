@@ -34,7 +34,7 @@ const ThumbImg: React.FC<{
     [onDelete]
   );
 
-  if (_.isEmpty(dataList)) {
+  if (!dataList?.length) {
     return null;
   }
 

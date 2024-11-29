@@ -92,6 +92,7 @@ export default {
   'playground.multiple.on': '开启',
   'playground.multiple.off': '关闭',
   'playground.image.params.sampler': '采样方法',
+  'playground.image.params.schedule': '调度',
   'playground.image.params.samplerSteps': '迭代步数',
   'playground.image.params.seed': '随机种子',
   'playground.image.params.negativePrompt': '负向提示',

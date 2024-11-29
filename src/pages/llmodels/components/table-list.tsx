@@ -236,14 +236,9 @@ const Models: React.FC<ModelsProps> = ({
   const setActionList = useCallback((record: ListItem) => {
     return _.filter(ActionList, (action: any) => {
       if (action.key === 'chat') {
-        return record.ready_replicas > 0 && !record.embedding_only;
+        return record.ready_replicas > 0;
       }
-      if (action.key === 'embedding') {
-        return (
-          (record.embedding_only || record.reranker) &&
-          record.ready_replicas > 0
-        );
-      }
+
       return true;
     });
   }, []);

@@ -52,7 +52,8 @@ const initialValues = {
   sampler: 'euler_a',
   cfg_scale: 4.5,
   sample_steps: 10,
-  negative_prompt: null
+  negative_prompt: null,
+  schedule: 'discrete'
 };
 
 const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
@@ -241,9 +242,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const params = {
         stream: true,
-        stream_options: {
-          // chunk_result: false
-        },
+        stream_options: {},
         prompt: current?.content || currentPrompt || '',
         ..._.omitBy(finalParameters, (value: string) => !value)
       };
@@ -253,6 +252,15 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         url: `${CREAT_IMAGE_API}?t=${Date.now()}`,
         signal: requestToken.current.signal
       });
+      if (result.error) {
+        setTokenResult({
+          error: true,
+          errorMessage:
+            result?.data?.error?.message || result?.data?.error || ''
+        });
+        setImageList([]);
+        return;
+      }
 
       const { reader, decoder } = result;
       const imgSize = _.split(finalParameters.size, 'x');
@@ -265,7 +273,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           });
           return;
         }
-        console.log('imgItem.dataUrl:', chunk.data);
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
           if (item.b64_json) {
@@ -285,7 +292,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           };
         });
         setImageList([...newImageList]);
-        console.log('newImageList:', newImageList);
       });
     } catch (error) {
       console.log('error:', error);
@@ -320,7 +326,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         sampler: 'euler_a',
         cfg_scale: 4.5,
         sample_steps: 10,
-        negative_prompt: null
+        negative_prompt: null,
+        schedule: 'discrete'
       });
       setParams((pre: object) => {
         return {
@@ -329,7 +336,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           sampler: 'euler_a',
           cfg_scale: 4.5,
           sample_steps: 10,
-          negative_prompt: null
+          negative_prompt: null,
+          schedule: 'discrete'
         };
       });
     } else {
@@ -342,7 +350,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             'sampler',
             'cfg_scale',
             'sample_steps',
-            'negative_prompt'
+            'negative_prompt',
+            'schedule'
           ])
         };
       });
@@ -519,8 +528,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             })}
             actions={['clear']}
             defaultSize={{
-              minRows: 6,
-              maxRows: 6
+              minRows: 5,
+              maxRows: 5
             }}
             loading={loading}
             disabled={!parameters.model}

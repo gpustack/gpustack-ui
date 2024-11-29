@@ -365,6 +365,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         ]
           .filter((item) => item.text)
           .map((item, index) => {
+            item.percent = undefined;
+            item.score = undefined;
+            item.rank = undefined;
             return {
               ...item,
               uid: setMessageId()

@@ -95,6 +95,7 @@ export default {
   'playground.multiple.on': 'Enable',
   'playground.multiple.off': 'Disable',
   'playground.image.params.sampler': 'Sampler',
+  'playground.image.params.schedule': 'Schedule',
   'playground.image.params.samplerSteps': 'Sampler Steps',
   'playground.image.params.seed': 'Seed',
   'playground.image.params.negativePrompt': 'Negative Prompt',

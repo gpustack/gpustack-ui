@@ -294,6 +294,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
+            defaultSize={{
+              minRows: 5,
+              maxRows: 5
+            }}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}

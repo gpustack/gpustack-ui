@@ -119,7 +119,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           errorMessage:
             result?.data?.error?.message ||
             result?.data?.message ||
-            result.error.detail ||
+            result?.detail ||
             ''
         });
         return;
@@ -130,8 +130,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           uid: messageId.current
         }
       ]);
-    } catch (error) {
+    } catch (error: any) {
       console.log('error:', error);
+      const res = error?.response?.data;
+      if (res.error) {
+        setTokenResult({
+          error: true,
+          errorMessage:
+            res?.error?.message || res?.data?.error || res?.error?.detail || ''
+        });
+      }
     } finally {
       setLoading(false);
       setIsRecording(false);

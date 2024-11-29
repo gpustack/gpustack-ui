@@ -11,6 +11,8 @@ interface Options {
   barRadius?: number;
   autoplay?: boolean;
   audioRate?: number;
+  onReady?: () => void;
+  onClick: (value: any) => void;
 }
 const useWavesurfer = (options: Options) => {
   const wavesurfer = useRef<WaveSurfer | null>(null);
@@ -37,6 +39,13 @@ const useWavesurfer = (options: Options) => {
       cursorWidth: 0,
       ...rest
     });
+    wavesurfer.current?.on('ready', () => {
+      options.onReady?.();
+    });
+
+    wavesurfer.current?.on('click', (value) => {
+      options.onClick?.(value);
+    });
   };
 
   const destroyWavesurfer = () => {
@@ -51,6 +60,13 @@ const useWavesurfer = (options: Options) => {
     }
   };
 
+  const duration = () => {
+    if (wavesurfer.current) {
+      return wavesurfer.current.getDuration();
+    }
+    return 0;
+  };
+
   const pause = () => {
     if (wavesurfer.current) {
       wavesurfer.current.pause();
@@ -62,6 +78,7 @@ const useWavesurfer = (options: Options) => {
     play,
     pause,
     wavesurfer,
+    duration,
     destroyWavesurfer
   };
 };

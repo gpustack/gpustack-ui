@@ -1,4 +1,5 @@
 import IconFont from '@/components/icon-font';
+import { formatTime } from '@/utils/index';
 import {
   DownloadOutlined,
   PauseCircleOutlined,
@@ -37,7 +38,9 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const intl = useIntl();
   const [collapsed, setCollapsed] = useState(false);
   const [isPlay, setIsPlay] = useState(false);
-  const ref = useRef<HTMLAudioElement>(null);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const ref = useRef<any>(null);
 
   const handlePlay = () => {
     if (isPlay) {
@@ -51,6 +54,15 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
 
   const handleCollapse = () => {
     setCollapsed(!collapsed);
+  };
+
+  const handleReay = () => {
+    const duration = ref.current?.duration?.();
+    setDuration(duration < 1 ? 1 : duration);
+  };
+
+  const handleOnClick = (value: number) => {
+    console.log('current:', value);
   };
 
   const onDownload = () => {
@@ -75,6 +87,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           <AudioPlayer
             {...props}
             audioUrl={props.audioUrl}
+            onReady={handleReay}
+            onClick={handleOnClick}
             ref={ref}
           ></AudioPlayer>
         </div>
@@ -82,9 +96,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
       <div className="speech-actions">
         <span className="tags">
           <span className="item">{props.format}</span>
-          {/* <span className="item splitor"></span>
-          <span className="item">{props.speed}x</span> */}
         </span>
+        <span className="duration">{formatTime(duration)}</span>
         <div className="actions">
           <Tooltip
             title={
@@ -94,6 +107,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             }
           >
             <Button
+              disabled={!props.audioUrl || duration === 0}
               onClick={handlePlay}
               icon={isPlay ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
               type="text"
@@ -106,6 +120,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             })}
           >
             <Button
+              disabled={!props.audioUrl || duration === 0}
               onClick={onDownload}
               icon={<DownloadOutlined />}
               type="text"

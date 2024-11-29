@@ -98,6 +98,7 @@ export default {
   'playground.image.params.schedule': 'Schedule',
   'playground.image.params.samplerSteps': 'Sampler Steps',
   'playground.image.params.seed': 'Seed',
+  'playground.image.params.randomseed': 'Random Seed',
   'playground.image.params.negativePrompt': 'Negative Prompt',
   'playground.image.params.cfgScale': 'Scale Factor',
   'playground.image.params.custom': 'Advanced',

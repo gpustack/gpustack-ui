@@ -36,7 +36,9 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const updateHandler = (list: any) => {
     const data = list?.find((item: any) => item.data?.id === props.id);
     if (data) {
-      setEnableScorllLoad(!InstanceRealLogStatus.includes(data?.data?.state));
+      setEnableScorllLoad(
+        () => !InstanceRealLogStatus.includes(data?.data?.state)
+      );
     }
   };
 

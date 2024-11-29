@@ -38,6 +38,10 @@ export interface ParamsSchema {
   max?: number;
   step?: number;
   disabled?: boolean;
+  disabledConfig?: {
+    depends: string[];
+    when: (values: Record<string, any>) => boolean;
+  };
   defaultValue?: string | number | boolean;
   rules: { required: boolean; message?: string }[];
   placeholder?: string;

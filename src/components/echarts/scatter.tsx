@@ -9,8 +9,8 @@ const options: any = {
   animation: false,
   grid: {
     ...grid,
-    right: -1,
-    top: -1,
+    right: 10,
+    top: 10,
     bottom: 2,
     left: 2,
     containLabel: true,

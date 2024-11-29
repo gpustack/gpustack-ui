@@ -98,6 +98,12 @@ export const textToSpeech = async (params: any, options?: any) => {
   }
 
   const audioBlob = await res.blob();
+  if (audioBlob?.type?.indexOf('audio') === -1) {
+    return {
+      url: '',
+      type: ''
+    };
+  }
   const audioUrl = audioBlob.size > 0 ? URL.createObjectURL(audioBlob) : '';
   return {
     url: audioUrl,

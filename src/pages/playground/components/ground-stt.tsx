@@ -99,6 +99,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setLoading(true);
       setMessageId();
       setTokenResult(null);
+      setMessageList([]);
 
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
@@ -137,7 +138,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         setTokenResult({
           error: true,
           errorMessage:
-            res?.error?.message || res?.data?.error || res?.error?.detail || ''
+            res?.error?.message || res?.data?.error || res?.detail || ''
         });
       }
     } finally {
@@ -292,7 +293,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
 
             {audioData ? (
-              <div className="flex-between flex-center justify-center relative">
+              <div
+                className="flex-between flex-center justify-center relative"
+                style={{ paddingInline: 80 }}
+              >
                 <div style={{ width: 600 }}>
                   <AudioPlayer
                     url={audioData.url}
@@ -302,7 +306,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 </div>
                 <div
                   style={{
-                    padding: '16px 32px',
+                    padding: '16px',
                     textAlign: 'right',
                     position: 'absolute',
                     right: 0,
@@ -371,8 +375,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                       padding: '8px 14px',
                       lineHeight: '20px',
                       display: 'flex',
-                      justifyContent: 'center',
-                      textAlign: 'center'
+                      justifyContent: 'center'
                     }}
                   >
                     {messageList.length ? (
@@ -394,14 +397,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                     ></AlertInfo>
                   </div>
                 )}
-                {loading && (
-                  <Spin size="small">
-                    <div style={{ height: '46px' }}></div>
-                  </Spin>
-                )}
               </>
             </div>
-            <div></div>
+            {loading && (
+              <div style={{ width: '100%', flex: 1 }}>
+                <Spin size="small">
+                  <div style={{ height: '46px' }}></div>
+                </Spin>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -418,7 +422,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             paramsConfig={paramsConfig}
             initialValues={initialValues}
             params={parameters}
-            selectedModel={selectModel}
+            selectedModel={selectModel as string}
             modelList={modelList}
           />
         </div>

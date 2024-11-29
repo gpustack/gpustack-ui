@@ -12,7 +12,7 @@ interface Options {
   autoplay?: boolean;
   audioRate?: number;
   onReady?: () => void;
-  onClick: (value: any) => void;
+  onClick: (value: number) => void;
 }
 const useWavesurfer = (options: Options) => {
   const wavesurfer = useRef<WaveSurfer | null>(null);

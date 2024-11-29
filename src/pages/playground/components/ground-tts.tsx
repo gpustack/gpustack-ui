@@ -128,10 +128,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         setTokenResult({
           error: true,
           errorMessage:
-            res?.data?.error?.message ||
-            res?.data?.error ||
-            res?.error?.detail ||
-            ''
+            res?.data?.error?.message || res?.data?.error || res?.detail || ''
         });
         setMessageList([]);
         return;
@@ -154,7 +151,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         setTokenResult({
           error: true,
           errorMessage:
-            res?.error?.message || res?.data?.error || res?.error?.detail || ''
+            res?.error?.message || res?.data?.error || res?.detail || ''
         });
       }
     } finally {
@@ -384,7 +381,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             setParams={setParams}
             initialValues={initialValues}
             params={parameters}
-            selectedModel={selectModel}
+            selectedModel={selectModel as string}
             modelList={modelList}
             extra={[renderExtra, renderVoiceError]}
           />

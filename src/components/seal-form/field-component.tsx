@@ -1,8 +1,8 @@
 import { ParamsSchema } from '@/pages/playground/config/types';
 import { useIntl } from '@umijs/max';
 import React, { useCallback, useMemo } from 'react';
+import LabelInfo from './components/label-info';
 import componentsMap from './config/components';
-
 const FieldComponent: React.FC<ParamsSchema> = (props) => {
   const intl = useIntl();
   const { type, label, attrs, style, value, ...rest } = props;
@@ -10,7 +10,16 @@ const FieldComponent: React.FC<ParamsSchema> = (props) => {
     (type: string) => {
       switch (type) {
         case 'Checkbox':
-          return <span>{intl.formatMessage({ id: label.text })}</span>;
+          return (
+            <LabelInfo
+              required={props.required}
+              label={
+                label.isLocalized
+                  ? intl.formatMessage({ id: label.text })
+                  : label.text
+              }
+            ></LabelInfo>
+          );
         default:
           return null;
       }

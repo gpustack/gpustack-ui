@@ -360,7 +360,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     const formValues = form.current?.form?.getFieldsValue();
     return ImageAdvancedParamsConfig.map((item: ParamsSchema) => {
       return (
-        <Form.Item name={item.name} rules={item.rules} key={item.name}>
+        <Form.Item
+          name={item.name}
+          rules={item.rules}
+          key={item.name}
+          noStyle={item.name === 'random_seed'}
+        >
           <FieldComponent
             disabled={
               item.disabledConfig

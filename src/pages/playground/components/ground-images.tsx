@@ -209,7 +209,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         ..._.omitBy(finalParameters, (value: string) => !value),
         seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
         stream: true,
-        stream_options: {},
+        stream_options: {
+          chunk_size: 16 * 1024,
+          chunk_results: true
+        },
         prompt: current?.content || currentPrompt || ''
       };
       setParams({

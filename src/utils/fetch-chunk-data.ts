@@ -114,7 +114,7 @@ export const readLargeStreamData = async (
   let buffer = ''; // cache incomplete line
 
   while (true) {
-    const { done, value } = await reader.read();
+    const { done, value } = await reader?.read?.();
     if (done) {
       // Process remaining buffered data
       if (buffer.trim()) {
@@ -131,14 +131,14 @@ export const readLargeStreamData = async (
     buffer = lines.pop() || ''; // Keep last line (may be incomplete)
 
     for (const line of lines) {
-      if (line === '[DONE]') {
-        continue;
-      }
       if (line.startsWith('data: ')) {
         const jsonStr = line.slice(6).trim();
+
         try {
-          const jsonData = JSON.parse(jsonStr);
-          callback(jsonData);
+          if (jsonStr !== '[DONE]') {
+            const jsonData = JSON.parse(jsonStr);
+            callback(jsonData);
+          }
         } catch (e) {
           console.error('Failed to parse JSON:', jsonStr, e);
         }

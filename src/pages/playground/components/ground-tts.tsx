@@ -1,3 +1,4 @@
+import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
 import SealSelect from '@/components/seal-form/seal-select';
 import SpeechContent from '@/components/speech-content';
@@ -25,7 +26,6 @@ import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
-import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
 
 interface MessageProps {
@@ -96,7 +96,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
-    await formRef.current?.form.validateFields();
+    // await formRef.current?.form.validateFields();
     if (!parameters.model) return;
     try {
       setLoading(true);
@@ -120,6 +120,19 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       console.log('result:', res);
 
+      if (res.error) {
+        setTokenResult({
+          error: true,
+          errorMessage:
+            res?.data?.error?.message ||
+            res?.data?.error ||
+            res.error?.detail ||
+            ''
+        });
+        setMessageList([]);
+        return;
+      }
+
       setMessageList([
         {
           input: current?.content || currentPrompt,
@@ -132,7 +145,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
       ]);
     } catch (error) {
-      // console.log('error:', error);
+      console.log('error:', error);
     } finally {
       setLoading(false);
     }
@@ -280,7 +293,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
         {tokenResult && (
           <div style={{ height: 40 }}>
-            <ReferenceParams usage={tokenResult}></ReferenceParams>
+            <AlertInfo
+              type="danger"
+              message={tokenResult?.errorMessage}
+            ></AlertInfo>
           </div>
         )}
         <div className="ground-left-footer">
@@ -289,6 +305,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             checkLabel={intl.formatMessage({
               id: 'playground.toolbar.autoplay'
             })}
+            defaultSize={{
+              minRows: 5,
+              maxRows: 5
+            }}
             onCheck={handleOnCheckChange}
             loading={loading}
             disabled={!parameters.model}

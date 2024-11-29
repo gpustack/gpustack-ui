@@ -255,6 +255,26 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
+    type: 'Select',
+    name: 'schedule',
+    options: [
+      { label: 'discrete', value: 'discrete' },
+      { label: 'karras', value: 'karras' },
+      { label: 'exponential', value: 'exponential' },
+      { label: 'ays', value: 'ays' },
+      { label: 'gits', value: 'gits' }
+    ],
+    label: {
+      text: 'playground.image.params.schedule',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
     type: 'InputNumber',
     name: 'sample_steps',
     label: {

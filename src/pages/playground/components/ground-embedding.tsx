@@ -14,6 +14,7 @@ import {
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Checkbox, Segmented, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
+import _ from 'lodash';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { Resizable } from 're-resizable';
@@ -147,7 +148,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           };
         });
         setScatterData(list);
-        const embeddingJson = embeddings.map((item, index) => {
+        const embeddingJson = embeddings.map((o, index) => {
+          const item = _.cloneDeep(o);
           item.embedding = item.embedding.slice(0, 5);
           item.embedding.push(null);
           return item;
@@ -286,7 +288,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         const dataLlist = text.split('\n').map((item: string) => {
           return {
             text: item?.trim(),
-            uid: setMessageId(),
+            uid: inputListRef.current?.setMessageId(),
             name: ''
           };
         });
@@ -300,7 +302,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           .map((item, index) => {
             return {
               ...item,
-              uid: setMessageId()
+              uid: inputListRef.current?.setMessageId()
             };
           });
         setTextList(result);
@@ -449,20 +451,22 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                     style={{ width: 60 }}
                   ></Button>
                 ) : (
-                  <Button
-                    style={{ width: 80 }}
-                    size="middle"
-                    type="primary"
-                    onClick={handleStopConversation}
-                    icon={
-                      <IconFont
-                        type="icon-stop1"
-                        className="font-size-12"
-                      ></IconFont>
-                    }
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'common.button.stop' })}
                   >
-                    {intl.formatMessage({ id: 'common.button.stop' })}
-                  </Button>
+                    <Button
+                      style={{ width: 60 }}
+                      size="middle"
+                      type="primary"
+                      onClick={handleStopConversation}
+                      icon={
+                        <IconFont
+                          type="icon-stop1"
+                          className="font-size-12"
+                        ></IconFont>
+                      }
+                    ></Button>
+                  </Tooltip>
                 )}
               </div>
             </div>

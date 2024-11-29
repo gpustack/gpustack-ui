@@ -473,7 +473,10 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
           {actions.includes('paste') ? (
             <TextArea
               ref={inputRef}
-              autoSize={{ minRows: 3, maxRows: 8 }}
+              autoSize={{
+                minRows: defaultSize.minRows,
+                maxRows: defaultSize.maxRows
+              }}
               onChange={handleInputChange}
               value={message.content}
               size="large"

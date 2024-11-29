@@ -1,3 +1,4 @@
+import AlertInfo from '@/components/alert-info';
 import AudioAnimation from '@/components/audio-animation';
 import AudioPlayer from '@/components/audio-player';
 import IconFont from '@/components/icon-font';
@@ -54,7 +55,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
   const paramsRef = useRef<any>(null);
-  const messageListLengthCache = useRef<number>(0);
   const [audioPermissionOn, setAudioPermissionOn] = useState(true);
   const [audioData, setAudioData] = useState<any>(null);
   const [audioChunks, setAudioChunks] = useState<any>({
@@ -113,7 +113,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         setTokenResult({
           error: true,
           errorMessage:
-            result?.data?.error?.message || result?.data?.message || ''
+            result?.data?.error?.message ||
+            result?.data?.message ||
+            result.error.detail ||
+            ''
         });
         return;
       }
@@ -172,6 +175,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     async (data: { file: any; fileList: any }) => {
       const res = await readAudioFile(data.file);
       setAudioData(res);
+      setTokenResult(null);
     },
     []
   );
@@ -187,6 +191,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleOnRecord = useCallback((val: boolean) => {
     setIsRecording(val);
     setAudioData(null);
+    setTokenResult(null);
     console.log('data===', val);
   }, []);
 
@@ -326,24 +331,34 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           >
             <div className="content" style={{ height: '100%' }}>
               <>
-                <div
-                  style={{
-                    padding: '8px 14px',
-                    lineHeight: '20px',
-                    display: 'flex',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {messageList.length ? (
-                    messageList[0]?.content
-                  ) : (
-                    <span className="text-tertiary">
-                      {intl.formatMessage({
-                        id: 'playground.audio.generating.tips'
-                      })}
-                    </span>
-                  )}
-                </div>
+                {!tokenResult && (
+                  <div
+                    style={{
+                      padding: '8px 14px',
+                      lineHeight: '20px',
+                      display: 'flex',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {messageList.length ? (
+                      messageList[0]?.content
+                    ) : (
+                      <span className="text-tertiary">
+                        {intl.formatMessage({
+                          id: 'playground.audio.generating.tips'
+                        })}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {tokenResult && (
+                  <div style={{ height: 40 }}>
+                    <AlertInfo
+                      type="danger"
+                      message={tokenResult?.errorMessage}
+                    ></AlertInfo>
+                  </div>
+                )}
                 {loading && (
                   <Spin size="small">
                     <div style={{ height: '46px' }}></div>

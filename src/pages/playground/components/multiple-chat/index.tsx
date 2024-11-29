@@ -293,7 +293,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
       </div>
       <div>
         <MessageInput
-          scope="compare"
           loading={isLoading}
           disabled={isLoading || !modelSelections.length || !modelList.length}
           handleSubmit={handleSubmit}
@@ -303,8 +302,10 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
           updateLayout={updateLayout}
           setModelSelections={handleUpdateModelSelections}
           presetPrompt={handlePresetPrompt}
-          modelList={modelFullList}
-          showModelSelection={false}
+          defaultSize={{
+            minRows: 5,
+            maxRows: 5
+          }}
         />
       </div>
     </div>

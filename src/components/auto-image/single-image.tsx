@@ -44,10 +44,6 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     width: width,
     height: height
   });
-  const [originSize, setOriginSize] = React.useState({
-    width: width,
-    height: height
-  });
 
   const thumImgWrapStyle = React.useMemo(() => {
     return loading ? { width: '100%', height: '100%' } : {};
@@ -76,7 +72,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
         newWidth = containerWidth;
         newHeight = containerWidth / imageAspectRatio;
       }
-
+      console.log('size++++++++=', size, newWidth, newHeight);
       setImgSize({
         width: newWidth,
         height: newHeight

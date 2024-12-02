@@ -5,6 +5,7 @@ import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { useCancelToken } from '@/hooks/use-request-token';
 import { readAudioFile } from '@/utils/load-audio-file';
 import { SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
@@ -56,7 +57,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
-  const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const [audioPermissionOn, setAudioPermissionOn] = useState(true);
@@ -67,6 +67,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
   const [isRecording, setIsRecording] = useState(false);
   const formRef = useRef<any>(null);
+  const { updateCancelToken, getCanceltToken, cancelRequest } =
+    useCancelToken();
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -88,7 +90,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleStopConversation = () => {
-    controllerRef.current?.abort?.();
+    cancelRequest();
     setLoading(false);
   };
 
@@ -101,18 +103,22 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setTokenResult(null);
       setMessageList([]);
 
-      controllerRef.current?.abort?.();
-      controllerRef.current = new AbortController();
-      const signal = controllerRef.current.signal;
+      cancelRequest();
+      updateCancelToken();
       const params = {
         ...parameters,
         file: new File([audioData.data], audioData.name, {
           type: audioData.type
         })
       };
-      const result: any = await speechToText({
-        data: params
-      });
+      const result: any = await speechToText(
+        {
+          data: params
+        },
+        {
+          cancelToken: getCanceltToken()
+        }
+      );
 
       if (result?.error) {
         setTokenResult({
@@ -242,9 +248,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       </div>
     );
   };
-  useEffect(() => {
-    console.log('parameters:', parameters);
-  }, [parameters]);
 
   useEffect(() => {
     if (scroller.current) {
@@ -315,32 +318,26 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                   }}
                 >
                   <Tooltip
-                    title={intl.formatMessage({
-                      id: 'playground.audio.button.generate'
-                    })}
+                    title={
+                      loading
+                        ? intl.formatMessage({
+                            id: 'playground.audio.generating'
+                          })
+                        : intl.formatMessage({
+                            id: 'playground.audio.button.generate'
+                          })
+                    }
                   >
-                    {loading ? (
+                    {
                       <Button
                         disabled={!audioData}
-                        type="primary"
-                        shape="circle"
-                        onClick={handleStopConversation}
-                        icon={
-                          <IconFont
-                            type="icon-stop1"
-                            className="font-size-14"
-                          ></IconFont>
-                        }
-                      ></Button>
-                    ) : (
-                      <Button
-                        disabled={!audioData}
+                        loading={loading}
                         type="primary"
                         shape="circle"
                         onClick={handleOnGenerate}
                         icon={<SendOutlined></SendOutlined>}
                       ></Button>
-                    )}
+                    }
                   </Tooltip>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import { useIntl } from '@umijs/max';
 import React, { useCallback, useMemo } from 'react';
 import LabelInfo from './components/label-info';
 import componentsMap from './config/components';
+
 const FieldComponent: React.FC<ParamsSchema> = (props) => {
   const intl = useIntl();
   const { type, label, attrs, style, value, ...rest } = props;

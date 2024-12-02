@@ -270,6 +270,7 @@ export default (props: any) => {
         title={userConfig.title}
         navTheme="light"
         layout="side"
+        openKeys={false}
         disableMobile={true}
         siderWidth={220}
         onCollapse={(collapsed) => {
@@ -284,6 +285,7 @@ export default (props: any) => {
         collapsed={collapsed}
         onPageChange={(route) => {
           const { location } = history;
+          const { pathname } = location;
 
           // if user is not change password, redirect to change password page
           if (

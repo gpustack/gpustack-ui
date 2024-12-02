@@ -46,7 +46,11 @@ export interface ParamsSchema {
   };
   defaultValue?: string | number | boolean;
   required?: boolean;
-  rules: { required: boolean; message?: string }[];
+  rules: {
+    required: boolean;
+    message?: string;
+    formatter?: (value: any) => any;
+  }[];
   placeholder?: React.ReactNode;
   attrs?: Record<string, any>;
   description?: {

@@ -53,7 +53,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   });
   const [playOn, setPlayOn] = React.useState<boolean>(false);
   const [speakerOn, setSpeakerOn] = React.useState<boolean>(false);
-  const [volume, setVolume] = React.useState<number>(0.5);
+  const [volume, setVolume] = React.useState<number>(1);
   const [speed, setSpeed] = React.useState<number>(defaultSpeed);
   const timer = React.useRef<any>(null);
 
@@ -98,12 +98,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   }, []);
 
   const handlePlay = useCallback(() => {
+    setPlayOn(!playOn);
     if (playOn) {
       audioRef.current?.pause();
     } else {
       audioRef.current?.play();
     }
-    setPlayOn(!playOn);
   }, [playOn]);
 
   const handleFormatVolume = (val?: number) => {
@@ -118,10 +118,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     setVolume(round(value, 2));
   }, []);
 
-  const initPlayerConfig = useCallback(() => {
-    audioRef.current!.volume = volume;
-    audioRef.current!.playbackRate = speed;
-  }, []);
+  const initPlayerConfig = () => {
+    if (audioRef.current) {
+      audioRef.current!.volume = volume;
+      audioRef.current!.playbackRate = speed;
+    }
+  };
 
   const handleLoadedMetadata = useCallback(
     (data: any) => {
@@ -168,6 +170,10 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     });
   };
 
+  const handleOnLoad = (e: any) => {
+    console.log('onload', e);
+  };
+
   useEffect(() => {
     if (audioRef.current) {
       initPlayerConfig();
@@ -195,6 +201,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
                 <Slider
                   tooltip={{ open: false }}
                   min={0}
+                  step={1}
                   max={audioState.duration}
                   value={audioState.currentTime}
                   onChange={handleCurrentChange}
@@ -203,23 +210,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
               <span className="time">{formatTime(audioState.duration)}</span>
             </div>
             <div className="controls">
-              {/* <Tooltip
-                overlayInnerStyle={{
-                  backgroundColor: 'var(--color-white-1)'
-                }}
-                arrow={false}
-                title={
-                  <CheckButtons
-                    options={speedOptions}
-                    onChange={handleSeepdChange}
-                    size="small"
-                  ></CheckButtons>
-                }
-              >
-                <span style={{ cursor: 'pointer' }}>
-                  {speed ? `${speed}x` : '1x'}
-                </span>
-              </Tooltip> */}
               <Tooltip
                 title={intl.formatMessage({
                   id: 'playground.audio.button.slow'
@@ -276,38 +266,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
             </div>
           </div>
         </div>
-        {/* <span className="speaker">
-          <Button
-            size="middle"
-            type="text"
-            icon={
-              volume > 0 ? (
-                <IconFont
-                  type="icon-SpeakerHigh"
-                  style={{ fontSize: '22px' }}
-                ></IconFont>
-              ) : (
-                <IconFont
-                  type="icon-speaker-slash"
-                  style={{ fontSize: '22px' }}
-                ></IconFont>
-              )
-            }
-          ></Button>
-          {speakerOn && (
-            <Slider
-              tooltip={{ formatter: handleFormatVolume }}
-              style={{ height: '100px' }}
-              className="volume-slider"
-              min={0}
-              max={1}
-              step={0.01}
-              value={volume}
-              vertical
-              onChange={handleVolumeChange}
-            />
-          )}
-        </span> */}
       </div>
       <audio
         controls

@@ -6,8 +6,8 @@ export default [
     width: 'auto',
     uid: 0,
     span: 12,
-    loading: false,
-    progress: 60
+    loading: true,
+    progress: 30
   },
   {
     dataUrl:

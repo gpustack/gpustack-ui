@@ -1,0 +1,24 @@
+:local(.slider-label) {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+
+  :global(.val) {
+    color: var(--ant-color-text);
+  }
+
+  :global(.label-val) {
+    position: absolute !important;
+    top: -14px;
+    right: -14px;
+    width: 80px;
+    border-radius: var(--border-radius-base);
+    text-align: center;
+    border: 1px solid var(--ant-color-border) !important;
+
+    :global(.ant-input-number-input) {
+      text-align: center !important;
+    }
+  }
+}

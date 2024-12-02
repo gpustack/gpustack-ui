@@ -1,6 +1,7 @@
 import { AudioOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import React, {
   useCallback,
   useEffect,
@@ -8,7 +9,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-// import '../style/audio-input.less';
 
 interface AudioInputProps {
   onAudioData: (audioData: {
@@ -49,7 +49,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       window.webkitAudioContext)();
 
     analyser.current = audioContext.current.createAnalyser();
-    analyser.current.fftSize = 256;
+    analyser.current.fftSize = 512;
     dataArray.current = new Uint8Array(analyser.current.frequencyBinCount);
   }, []);
 
@@ -136,7 +136,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       setAudioPermission(true);
       initAudioContext();
     } catch (error) {
-      // console.log(error);
+      console.log('enable+++++++++', error);
     }
   };
 
@@ -158,6 +158,10 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     props.onAudioData?.(audioData);
   };
 
+  const generateFileNameByTime = () => {
+    // format: recording-YYYY-MM-DD-HH_mm_ss.wav
+    return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${recordingFormat.suffix}`;
+  };
   // start recording
   const StartRecording = async () => {
     if (isRecording) {
@@ -167,7 +171,6 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
     try {
       await EnableAudio();
-      console.log('audioStream:', audioStream.current);
 
       audioRecorder.current = new MediaRecorder(audioStream.current);
 
@@ -186,13 +189,14 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       audioRecorder.current.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: recordingFormat.type });
         const audioUrl = URL.createObjectURL(audioBlob);
+
         handleAudioData({
           chunks: audioBlob,
           size: audioBlob.size,
           type: audioBlob.type,
           url: audioUrl,
-          name: `recording-${new Date().toISOString()}${recordingFormat.suffix}`,
-          duration: Math.ceil((Date.now() - startTime.current) / 1000)
+          name: generateFileNameByTime(),
+          duration: Math.floor((Date.now() - startTime.current) / 1000)
         });
 
         props.onAnalyse?.([], null);
@@ -201,7 +205,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       setIsRecording(true);
       props.onRecord?.(true);
       startTime.current = Date.now();
-      audioRecorder.current.start(1000);
+      audioRecorder.current.start(100);
       generateVisualData();
       console.log('start recording');
     } catch (error) {
@@ -226,6 +230,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
         border: 'none'
       };
     }
+    return {};
   }, [audioPermission]);
 
   useEffect(() => {

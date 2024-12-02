@@ -45,6 +45,7 @@ export default {
   'playground.input.holder': 'Type <kbd>/</kbd> to input message',
   'playground.input.prompt.holder': 'Type <kbd>/</kbd> to input prompt',
   'playground.input.keyword.holder': 'Type <kbd>/</kbd> to input your query',
+  'playground.input.text.holder': 'Type <kbd>/</kbd> to input text',
   'playground.compare.apply': 'Apply',
   'playground.compare.applytoall': 'Apply to all models',
   'playground.model.noavailable': 'No available models',

@@ -356,3 +356,46 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   }
 ];
+
+export const ImageCustomSizeConfig: ParamsSchema[] = [
+  {
+    type: 'Slider',
+    name: 'width',
+    label: {
+      text: 'playground.params.width',
+      isLocalized: true
+    },
+    attrs: {
+      min: 256,
+      max: 1792,
+      step: 64,
+      inputnumber: false
+    },
+    rules: [
+      {
+        required: true,
+        message: 'playground.params.width'
+      }
+    ]
+  },
+  {
+    type: 'Slider',
+    name: 'height',
+    label: {
+      text: 'playground.params.height',
+      isLocalized: true
+    },
+    attrs: {
+      min: 256,
+      max: 1792,
+      step: 64,
+      inputnumber: false
+    },
+    rules: [
+      {
+        required: true,
+        message: 'playground.params.height'
+      }
+    ]
+  }
+];

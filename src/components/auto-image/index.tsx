@@ -75,6 +75,10 @@ const AutoImage: React.FC<
     handleOnLoad();
   }, [handleOnLoad]);
 
+  useEffect(() => {
+    setWidth(w || 0);
+  }, [w]);
+
   return (
     <AntImage
       {...rest}

@@ -212,7 +212,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         const res = await queryModelVoices({
           model: value
         });
-        console.log('res:', res);
         if (res?.error) {
           setVoiceError({
             error: true,
@@ -235,6 +234,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         const newList = sortVoiceList(locale, list);
 
         setVoiceList(newList);
+        setVoiceError(null);
         setParams((pre: any) => {
           return {
             ...pre,

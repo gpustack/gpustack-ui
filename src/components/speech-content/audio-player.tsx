@@ -14,10 +14,11 @@ interface AudioPlayerProps {
   ref?: any;
   height?: number;
   width?: number;
-  onReady?: () => void;
+  onReady?: (duration: number) => void;
   onClick?: (value: number) => void;
   onFinish?: () => void;
   onAnalyse?: (analyseData: any, frequencyBinCount: any) => void;
+  onAudioprocess?: (current: number) => void;
 }
 
 const AudioPlayer: React.FC<
@@ -29,7 +30,6 @@ const AudioPlayer: React.FC<
   const audioContext = useRef<any>(null);
   const analyser = useRef<any>(null);
   const dataArray = useRef<any>(null);
-  const audioStream = useRef<any>(null);
   const mediaElement = useRef<any>(null);
 
   const initAudioContext = useCallback(() => {
@@ -50,8 +50,8 @@ const AudioPlayer: React.FC<
   }, []);
 
   const listenEvents = () => {
-    wavesurfer.current?.on('ready', () => {
-      props.onReady?.();
+    wavesurfer.current?.on('ready', (duration: number) => {
+      props.onReady?.(duration);
     });
 
     wavesurfer.current?.on('click', (value) => {
@@ -60,9 +60,13 @@ const AudioPlayer: React.FC<
     wavesurfer.current?.on('finish', () => {
       props.onFinish?.();
     });
+    wavesurfer.current?.on('audioprocess', (current: number) => {
+      console.log('audioprocess==========:', current);
+      props.onAudioprocess?.(current);
+    });
     wavesurfer.current?.on('play', () => {
-      // analyser.current?.getByteFrequencyData(dataArray.current);
-      // props.onAnalyse?.(dataArray.current, analyser);
+      analyser.current?.getByteFrequencyData(dataArray.current);
+      props.onAnalyse?.(dataArray.current, analyser);
     });
   };
 

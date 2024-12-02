@@ -263,8 +263,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           const progress = _.round(item.progress, 0);
           newImageList[item.index] = {
             dataUrl: imgItem.dataUrl,
-            height: '100%',
-            width: '100%',
+            height: imgSize[1],
+            width: imgSize[0],
             maxHeight: `${imgSize[1]}px`,
             maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,

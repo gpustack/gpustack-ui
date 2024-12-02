@@ -1,3 +1,4 @@
+import useResizeObserver from '@/components/logs-viewer/use-size';
 import React, { useEffect } from 'react';
 import './index.less';
 
@@ -5,24 +6,31 @@ interface AudioAnimationProps {
   width: number;
   height: number;
   scaleFactor?: number;
+  maxBarCount?: number;
   analyserData: {
     data: Uint8Array;
     analyser: any;
   };
 }
 
-const AudioAnimation: React.FC<AudioAnimationProps> = ({
-  width,
-  height,
-  scaleFactor = 1.2,
-  analyserData
-}) => {
+const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
+  const {
+    scaleFactor = 1.2,
+    maxBarCount = 128,
+    analyserData,
+    width,
+    height
+  } = props;
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const animationId = React.useRef<number>(0);
   const isScaled = React.useRef<boolean>(false);
   const oscillationOffset = React.useRef(0);
   const direction = React.useRef(1);
-  const maxBarCount = 128;
+  // const [width, setWidth] = useState(props.width);
+  // const [height, setHeight] = useState(props.height);
+  const containerRef = React.useRef<any>(null);
+
+  const size = useResizeObserver(containerRef);
 
   const calculateJitter = (
     i: number,
@@ -120,7 +128,29 @@ const AudioAnimation: React.FC<AudioAnimationProps> = ({
     draw(performance.now());
   };
 
+  // const handleResizeThrottle = React.useCallback(
+  //   throttle(() => {
+  //     console.log('size:', size);
+  //     if (size.width && size.width !== width) {
+  //       setWidth(size.width);
+  //     }
+  //     if (size.height && size.height !== height) {
+  //       setHeight(size.height);
+  //     }
+  //   }, 100),
+  //   [size, width, height]
+  // );
+
+  // useEffect(() => {
+  //   handleResizeThrottle();
+  //   window.addEventListener('resize', handleResizeThrottle);
+  //   return () => {
+  //     handleResizeThrottle.cancel();
+  //   };
+  // }, [size, width, height]);
+
   useEffect(() => {
+    if (!canvasRef.current) return;
     const clearCanvas = () => {
       if (canvasRef.current) {
         const ctx = canvasRef.current.getContext('2d');
@@ -145,6 +175,7 @@ const AudioAnimation: React.FC<AudioAnimationProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className="canvas-wrap"
       style={{
         width: '100%',

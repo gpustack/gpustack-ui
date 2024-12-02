@@ -137,6 +137,6 @@ export const isHTMLDocumentString = (str: string) => {
 // generate a random number between 0 and 64 bit
 
 export const generateRandomNumber = () => {
-  // 0x100000000
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  // 16: 0x1000；32:0x100000000
+  return Math.floor(Math.random() * 0x100000000);
 };

@@ -311,7 +311,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   },
   {
     type: 'Input',
-    name: 'negative_prompt',
+    name: 'negative_prompt', //ng_deepnegative_v1_75t,(badhandv4:1.2),EasyNegative,(worst quality:2),
     label: {
       text: 'playground.image.params.negativePrompt',
       isLocalized: true

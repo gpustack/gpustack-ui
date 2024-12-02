@@ -4,7 +4,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import SpeechContent from '@/components/speech-content';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { SendOutlined } from '@ant-design/icons';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { getLocale, useIntl, useSearchParams } from '@umijs/max';
 import { Form, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -53,7 +53,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       audioUrl: string;
     }[]
   >([]);
-
+  const locale = getLocale();
   const intl = useIntl();
   const [searchParams] = useSearchParams();
   const modelType = searchParams.get('type') || '';
@@ -72,7 +72,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const messageListLengthCache = useRef<number>(0);
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
-  const [voiceList, setVoiceList] = useState<Global.BaseOption<string>[]>([]);
+  const [voiceDataList, setVoiceList] = useState<Global.BaseOption<string>[]>(
+    []
+  );
   const formRef = useRef<any>(null);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
@@ -89,6 +91,37 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const sortVoiceList = useCallback(
+    (locale: string, voiceDataList: Global.BaseOption<string>[]) => {
+      const lang = locale === 'en-US' ? 'english' : 'chinese';
+
+      const list = voiceDataList.sort((a, b) => {
+        const aContains = a.value.toLowerCase().includes(lang) ? 1 : 0;
+        const bContains = b.value.toLowerCase().includes(lang) ? 1 : 0;
+        return bContains - aContains;
+      });
+      return list;
+    },
+    []
+  );
+
+  const voiceList = useMemo(() => {
+    if (!voiceDataList.length) return [];
+    const newList = sortVoiceList(locale, voiceDataList);
+    return newList;
+  }, [locale, voiceDataList, sortVoiceList]);
+
+  useEffect(() => {
+    const newList = sortVoiceList(locale, voiceDataList);
+    setParams((pre: any) => {
+      return {
+        ...pre,
+        voice: newList[0]?.value
+      };
+    });
+    formRef.current?.form.setFieldValue('voice', newList[0]?.value);
+  }, [locale, voiceDataList, sortVoiceList]);
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -192,21 +225,23 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           setVoiceList([]);
           return;
         }
-        const voiceList = _.map(res.voices || [], (item: any) => {
+        const list = _.map(res.voices || [], (item: any) => {
           return {
             label: item,
             value: item
           };
         });
 
-        setVoiceList(voiceList);
+        const newList = sortVoiceList(locale, list);
+
+        setVoiceList(newList);
         setParams((pre: any) => {
           return {
             ...pre,
-            voice: voiceList[0]?.value
+            voice: newList[0]?.value
           };
         });
-        formRef.current?.form.setFieldValue('voice', voiceList[0]?.value);
+        formRef.current?.form.setFieldValue('voice', newList[0]?.value);
       } catch (error: any) {
         const res = error?.response?.data;
         if (res?.error) {
@@ -216,7 +251,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               res?.error?.message || res?.data?.error || res.error?.detail || ''
           });
         }
-        console.log('error:', error);
         setVoiceList([]);
         formRef.current?.form.setFieldValue('voice', '');
         setParams((pre: any) => {

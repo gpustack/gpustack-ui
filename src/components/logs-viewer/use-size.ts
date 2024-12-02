@@ -1,13 +1,27 @@
-import useResizeObserver from '@react-hook/resize-observer';
-import React from 'react';
+import { useEffect, useState } from 'react';
 
-export default function useSize(target: any) {
-  const [size, setSize] = React.useState();
+const useResizeObserver = (ref: React.RefObject<HTMLElement>) => {
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
-  React.useLayoutEffect(() => {
-    setSize(target.current?.getBoundingClientRect());
-  }, [target]);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
 
-  useResizeObserver(target, (entry: any) => setSize(entry?.contentRect));
+    const observer = new ResizeObserver((entries) => {
+      if (entries[0]) {
+        const { width, height } = entries[0].contentRect;
+        setSize({ width, height });
+      }
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [ref]);
+
   return size;
-}
+};
+
+export default useResizeObserver;

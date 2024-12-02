@@ -1,7 +1,5 @@
-import AutoImage from '@/components/auto-image';
 import SingleImage from '@/components/auto-image/single-image';
-import { CloseCircleOutlined } from '@ant-design/icons';
-import { Col, Progress, Row } from 'antd';
+import { Col, Row } from 'antd';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
 import '../style/thumb-img.less';
@@ -37,57 +35,6 @@ const ThumbImg: React.FC<{
   if (!dataList?.length) {
     return null;
   }
-
-  const renderImageItem = (item: any) => {
-    const thumImgWrapStyle = item.loading
-      ? { width: item.width, height: item.height }
-      : {};
-    return (
-      <span key={item.uid} className="thumb-img" style={thumImgWrapStyle}>
-        <>
-          {item.loading ? (
-            <span
-              className="progress-wrap"
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                border: '1px solid var(--ant-color-split)',
-                borderRadius: 'var(--border-radius-base)',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                overflow: 'hidden'
-              }}
-            >
-              <Progress percent={item.progress} type="circle" />
-            </span>
-          ) : (
-            <span
-              className="img"
-              style={{
-                maxHeight: `min(${item.maxHeight}, 100%)`,
-                maxWidth: `min(${item.maxWidth}, 100%)`
-              }}
-            >
-              <AutoImage
-                autoSize={autoSize}
-                src={item.dataUrl}
-                width={item.width || 100}
-                height={item.height || 100}
-              />
-            </span>
-          )}
-        </>
-
-        {editable && (
-          <span className="del" onClick={() => handleOnDelete(item.uid)}>
-            <CloseCircleOutlined />
-          </span>
-        )}
-      </span>
-    );
-  };
 
   return (
     <>
@@ -147,6 +94,7 @@ const ThumbImg: React.FC<{
                       >
                         <SingleImage
                           {...item}
+                          loading={item.loading}
                           autoSize={autoSize}
                           editable={editable}
                           autoBgColor={autoBgColor}

@@ -51,13 +51,17 @@
 }
 
 .single-image {
-  width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   border-radius: var(--border-radius-base);
+
+  &.loading {
+    width: 100%;
+    height: 100%;
+  }
 
   &.auto-bg-color {
     position: relative;

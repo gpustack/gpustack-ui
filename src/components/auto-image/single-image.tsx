@@ -2,6 +2,7 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import { Progress } from 'antd';
 import classNames from 'classnames';
 import * as Vibrant from 'node-vibrant';
+import ResizeObserver from 'rc-resize-observer';
 import React from 'react';
 import AutoImage from './index';
 import './single-image.less';
@@ -39,10 +40,14 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
 
   const [color, setColor] = React.useState({});
   const imgWrapper = React.useRef<HTMLSpanElement>(null);
+  const [imgSize, setImgSize] = React.useState({
+    width: width,
+    height: height
+  });
 
   const thumImgWrapStyle = React.useMemo(() => {
-    return loading ? { width: width, height: height } : {};
-  }, [loading, width, height]);
+    return loading ? { width: '100%', height: '100%' } : {};
+  }, [loading, imgSize]);
 
   const handleOnLoad = React.useCallback(async () => {
     if (!autoBgColor) {
@@ -73,76 +78,114 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     });
   }, []);
 
+  const handleResize = React.useCallback(
+    (size: { width: number; height: number }) => {
+      if (!autoSize) return;
+
+      const { width: containerWidth, height: containerHeight } = size;
+      const { width: originalWidth, height: originalHeight } = props;
+
+      if (!originalWidth || !originalHeight) return;
+
+      const imageAspectRatio = originalWidth / originalHeight;
+      const containerAspectRatio = containerWidth / containerHeight;
+
+      let newWidth, newHeight;
+
+      if (containerAspectRatio > imageAspectRatio) {
+        newHeight = containerHeight;
+        newWidth = containerHeight * imageAspectRatio;
+      } else {
+        newWidth = containerWidth;
+        newHeight = containerWidth / imageAspectRatio;
+      }
+
+      setImgSize({
+        width: newWidth,
+        height: newHeight
+      });
+    },
+    [autoSize, props]
+  );
+
   return (
-    <div
-      key={uid}
-      className={classNames('single-image', { 'auto-bg-color': autoBgColor })}
-    >
-      {autoBgColor && (
-        <div
-          className="mask"
-          style={{
-            background: `url(${dataUrl}) center center / cover no-repeat`
-          }}
-        ></div>
-      )}
-      <span
-        className="thumb-img"
-        style={{
-          ...thumImgWrapStyle
-        }}
-        ref={imgWrapper}
+    <ResizeObserver onResize={handleResize}>
+      <div
+        key={uid}
+        className={classNames('single-image', {
+          'auto-bg-color': autoBgColor,
+          'auto-size': autoSize,
+          loading: loading
+        })}
       >
-        <>
-          {loading ? (
-            <span
-              className="progress-wrap"
-              style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                border: '1px solid var(--ant-color-split)',
-                borderRadius: 'var(--border-radius-base)',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                overflow: 'hidden'
-              }}
-            >
-              <Progress
-                percent={progress}
-                type="dashboard"
-                steps={{ count: 50, gap: 2 }}
-                format={() => <span className="font-size-20">{progress}%</span>}
-                trailColor="var(--ant-color-fill-secondary)"
-              />
-            </span>
-          ) : (
-            <span
-              className="img"
-              style={{
-                maxHeight: `min(${maxHeight}, 100%)`,
-                maxWidth: `min(${maxWidth}, 100%)`
-              }}
-            >
-              <AutoImage
-                autoSize={autoSize}
-                src={dataUrl}
-                width={width || 100}
-                height={height || 100}
-                onLoad={handleOnLoad}
-              />
+        {autoBgColor && (
+          <div
+            className="mask"
+            style={{
+              background: `url(${dataUrl}) center center / cover no-repeat`
+            }}
+          ></div>
+        )}
+        <span
+          className="thumb-img"
+          style={{
+            ...thumImgWrapStyle
+          }}
+          ref={imgWrapper}
+        >
+          <>
+            {loading ? (
+              <span
+                className="progress-wrap"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  border: '1px solid var(--ant-color-split)',
+                  borderRadius: 'var(--border-radius-base)',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '10px',
+                  overflow: 'hidden'
+                }}
+              >
+                <Progress
+                  percent={progress}
+                  type="dashboard"
+                  steps={{ count: 50, gap: 2 }}
+                  format={() => (
+                    <span className="font-size-20">{progress}%</span>
+                  )}
+                  trailColor="var(--ant-color-fill-secondary)"
+                />
+              </span>
+            ) : (
+              <span
+                className="img"
+                style={{
+                  maxHeight: `min(${maxHeight}, 100%)`,
+                  maxWidth: `min(${maxWidth}, 100%)`
+                }}
+              >
+                <AutoImage
+                  autoSize={autoSize}
+                  src={dataUrl}
+                  width={imgSize.width || 100}
+                  height={imgSize.height || 100}
+                  onLoad={handleOnLoad}
+                />
+              </span>
+            )}
+          </>
+
+          {editable && (
+            <span className="del" onClick={() => handleOnDelete(uid)}>
+              <CloseCircleOutlined />
             </span>
           )}
-        </>
-
-        {editable && (
-          <span className="del" onClick={() => handleOnDelete(uid)}>
-            <CloseCircleOutlined />
-          </span>
-        )}
-      </span>
-    </div>
+        </span>
+      </div>
+    </ResizeObserver>
   );
 };
 

@@ -1,5 +1,4 @@
-import IconFont from '@/components/icon-font';
-import { formatTime } from '@/utils/index';
+import useResizeObserver from '@/components/logs-viewer/use-size';
 import {
   DownloadOutlined,
   PauseCircleOutlined,
@@ -8,7 +7,8 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import dayjs from 'dayjs';
-import React, { useRef, useState } from 'react';
+import _ from 'lodash';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AudioPlayer from './audio-player';
 import './styles/index.less';
 
@@ -36,15 +36,18 @@ interface SpeechContentProps {
 }
 const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const intl = useIntl();
-  const [collapsed, setCollapsed] = useState(false);
   const [isPlay, setIsPlay] = useState(props.autoplay);
   const [duration, setDuration] = useState(0);
+  const [animationSize, setAnimationSize] = useState({ width: 900, height: 0 });
   const [currentTime, setCurrentTime] = useState(0);
   const [audioChunks, setAudioChunks] = useState<any>({
-    data: [],
+    data: new Uint8Array(128),
     analyser: null
   });
+  const wrapper = useRef<any>(null);
   const ref = useRef<any>(null);
+
+  const size = useResizeObserver(wrapper);
 
   const handlePlay = () => {
     if (isPlay) {
@@ -56,24 +59,44 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     setIsPlay(true);
   };
 
-  const handleOnAnalyse = (data: any, analyser: any) => {
+  const handleOnAnalyse = useCallback((data: any, analyser: any) => {
     setAudioChunks((pre: any) => {
       return {
         data: data,
         analyser: analyser
       };
     });
-  };
+  }, []);
 
-  const handleReay = () => {
-    const duration = ref.current?.duration?.();
-    setDuration(duration < 1 ? 1 : duration);
-  };
+  const handleOnFinish = useCallback(() => {
+    setIsPlay(false);
+  }, []);
 
-  const handleOnClick = (value: number) => {
+  const handleOnAudioprocess = useCallback((current: number) => {
+    setCurrentTime(() => current);
+    console.log('current:', current, duration);
+  }, []);
+
+  const handleReay = useCallback((duration: number) => {
+    setIsPlay(props.autoplay);
+    setDuration(duration);
+  }, []);
+
+  const handleOnClick = useCallback((value: number) => {
     console.log('current:', value);
-  };
+  }, []);
 
+  const handleAnimationResize = useCallback((size: any) => {
+    console.log('size:=======', size);
+    setAnimationSize({
+      width: size.width,
+      height: size.height
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log('width:', size);
+  }, [size]);
   const onDownload = () => {
     const url = props.audioUrl || '';
     const filename = `audio-${dayjs().format('YYYYMMDDHHmmss')}.${props.format}`;
@@ -89,33 +112,37 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   return (
     <div>
       <div className="speech-item">
-        {/* {isPlay && (
-          <AudioAnimation
-            height={82}
-            width={500}
-            analyserData={audioChunks}
-          ></AudioAnimation>
-        )} */}
-        <div className="voice">
-          <IconFont type="icon-user_voice" className="font-size-16" />
-        </div>
-        <div className="wrapper">
+        <div
+          className="wrapper"
+          style={{ height: 82, width: '100%' }}
+          ref={wrapper}
+        >
           <AudioPlayer
             {...props}
             audioUrl={props.audioUrl}
             onReady={handleReay}
             onClick={handleOnClick}
-            onFinish={() => setIsPlay(false)}
+            onFinish={handleOnFinish}
             onAnalyse={handleOnAnalyse}
+            onAudioprocess={handleOnAudioprocess}
             ref={ref}
           ></AudioPlayer>
+          {/* {isPlay && (
+            <AudioAnimation
+              maxBarCount={180}
+              height={82}
+              width={800}
+              analyserData={audioChunks}
+            ></AudioAnimation>
+          )} */}
         </div>
       </div>
+      {/* <Slider value={currentTime} max={duration} step={0.01}></Slider> */}
       <div className="speech-actions">
         <span className="tags">
           <span className="item">{props.format}</span>
         </span>
-        <span className="duration">{formatTime(duration)}</span>
+        <span className="duration">{_.round(duration, 2)}</span>
         <div className="actions">
           <Tooltip
             title={

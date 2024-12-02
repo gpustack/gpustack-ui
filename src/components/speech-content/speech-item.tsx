@@ -1,3 +1,4 @@
+import AudioAnimation from '@/components/audio-animation';
 import useResizeObserver from '@/components/logs-viewer/use-size';
 import {
   DownloadOutlined,
@@ -5,12 +6,13 @@ import {
   PlayCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Tooltip } from 'antd';
+import { Button, Slider, Tooltip } from 'antd';
 import dayjs from 'dayjs';
-import _ from 'lodash';
+import _, { throttle } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import AudioPlayer from './audio-player';
 import './styles/index.less';
+import './styles/slider-progress.less';
 
 const audioFormat = {
   'audio/mpeg': 'mp3',
@@ -72,10 +74,18 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     setIsPlay(false);
   }, []);
 
-  const handleOnAudioprocess = useCallback((current: number) => {
-    setCurrentTime(() => current);
-    console.log('current:', current, duration);
-  }, []);
+  const throttleUpdateCurrentTime = throttle((current: number) => {
+    setCurrentTime(current);
+  }, 100);
+
+  const handleOnAudioprocess = useCallback(
+    (current: number) => {
+      console.log('current:', current);
+      // setCurrentTime(() => current);
+      throttleUpdateCurrentTime(current);
+    },
+    [throttleUpdateCurrentTime]
+  );
 
   const handleReay = useCallback((duration: number) => {
     setIsPlay(props.autoplay);
@@ -87,12 +97,16 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   }, []);
 
   const handleAnimationResize = useCallback((size: any) => {
-    console.log('size:=======', size);
     setAnimationSize({
       width: size.width,
       height: size.height
     });
   }, []);
+
+  const handleSliderChange = (value: number) => {
+    ref.current?.seekTo(value);
+    setCurrentTime(value);
+  };
 
   useEffect(() => {
     console.log('width:', size);
@@ -112,7 +126,6 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   return (
     <div>
       <div className="speech-item">
-        <div style={{}}></div>
         <div
           className="wrapper"
           style={{ height: 82, width: '100%' }}
@@ -128,22 +141,31 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             onAudioprocess={handleOnAudioprocess}
             ref={ref}
           ></AudioPlayer>
-          {/* {!isPlay && (
+          {isPlay && (
             <AudioAnimation
               maxBarCount={180}
+              fixedHeight={true}
               height={82}
               width={800}
               analyserData={audioChunks}
             ></AudioAnimation>
-          )} */}
+          )}
         </div>
       </div>
-      {/* <Slider value={currentTime} max={duration} step={0.01}></Slider> */}
+      <Slider
+        className="slider-progress"
+        value={currentTime}
+        max={duration}
+        step={0.01}
+        onChange={handleSliderChange}
+      ></Slider>
       <div className="speech-actions">
         <span className="tags">
           <span className="item">{props.format}</span>
         </span>
-        <span className="duration">{_.round(duration, 2)}</span>
+        <span className="duration">
+          {_.round(currentTime, 2) || _.round(duration, 2)}
+        </span>
         <div className="actions">
           <Tooltip
             title={

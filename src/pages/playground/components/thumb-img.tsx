@@ -1,7 +1,7 @@
 import SingleImage from '@/components/auto-image/single-image';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import '../style/thumb-img.less';
 
 const ThumbImg: React.FC<{
@@ -32,13 +32,67 @@ const ThumbImg: React.FC<{
     [onDelete]
   );
 
-  if (!dataList?.length) {
-    return null;
-  }
+  const responseableStyle: Record<number, any> = useMemo(() => {
+    if (!responseable) return {};
+    if (dataList.length === 1) {
+      return {
+        0: {
+          justifyContent: 'center',
+          alignItems: 'center'
+        }
+      };
+    }
+    if (dataList.length === 2) {
+      return {
+        0: {
+          justifyContent: 'flex-end',
+          alignItems: 'center'
+        },
+        1: {
+          justifyContent: 'flex-start',
+          alignItems: 'center'
+        }
+      };
+    }
+    if (dataList.length === 3) {
+      return {
+        0: {
+          justifyContent: 'flex-end',
+          alignItems: 'flex-end'
+        },
+        1: {
+          justifyContent: 'flex-start',
+          alignItems: 'flex-end'
+        },
+        2: {
+          justifyContent: 'flex-end',
+          alignItems: 'flex-start'
+        }
+      };
+    }
+    return {
+      0: {
+        justifyContent: 'flex-end',
+        alignItems: 'flex-end'
+      },
+      1: {
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end'
+      },
+      2: {
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start'
+      },
+      3: {
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
+      }
+    };
+  }, [dataList, responseable]);
 
   return (
     <>
-      {
+      {dataList?.length ? (
         <div className="thumb-list-wrap" style={{ ...style }}>
           {responseable ? (
             <>
@@ -53,7 +107,7 @@ const ThumbImg: React.FC<{
                     dataList.length === 1 ? 'center' : 'flex-start'
                 }}
               >
-                {_.map(_.slice(dataList, 0, 2), (item: any, index: string) => {
+                {_.map(_.slice(dataList, 0, 2), (item: any, index: number) => {
                   return (
                     <Col
                       span={item.span}
@@ -63,6 +117,7 @@ const ThumbImg: React.FC<{
                     >
                       <SingleImage
                         {...item}
+                        style={{ ...(responseableStyle[index] || {}) }}
                         autoSize={autoSize}
                         editable={editable}
                         autoBgColor={autoBgColor}
@@ -84,7 +139,8 @@ const ThumbImg: React.FC<{
                   }}
                   className="flex-center"
                 >
-                  {_.map(_.slice(dataList, 2), (item: any, index: string) => {
+                  {_.map(_.slice(dataList, 2), (item: any, index: number) => {
+                    console.log('index=======', index);
                     return (
                       <Col
                         span={item.span}
@@ -94,6 +150,7 @@ const ThumbImg: React.FC<{
                       >
                         <SingleImage
                           {...item}
+                          style={{ ...(responseableStyle[index + 2] || {}) }}
                           loading={item.loading}
                           autoSize={autoSize}
                           editable={editable}
@@ -122,7 +179,7 @@ const ThumbImg: React.FC<{
             </>
           )}
         </div>
-      }
+      ) : null}
     </>
   );
 };

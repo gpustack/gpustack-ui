@@ -196,7 +196,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             height: imgSize[1],
             width: imgSize[0],
             loading: true,
-            uid: index
+            uid: setMessageId()
           };
         });
       setImageList(newImageList);

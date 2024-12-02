@@ -58,7 +58,7 @@ export default {
   'models.table.layers': 'Layers',
   'models.form.backend': 'Backend',
   'models.form.backend_parameters': 'Backend Parameters',
-  'models.search.gguf.tips': '1. GGUF model backend is llama-box(llama.cpp).',
+  'models.search.gguf.tips': '1. GGUF model backend is llama-box.',
   'models.search.vllm.tips': '2. Non-GGUF model backend is vLLM.',
   'models.form.ollamalink': 'Find More in Ollama Library',
   'models.form.backend_parameters.llamabox.placeholder':

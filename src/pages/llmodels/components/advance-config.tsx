@@ -255,7 +255,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             label={intl.formatMessage({ id: 'models.form.backend' })}
             options={[
               {
-                label: `llama-box(llama.cpp)`,
+                label: `llama-box`,
                 value: backendOptionsMap.llamaBox,
                 disabled:
                   source === modelSourceMap.local_path_value ? false : !isGGUF

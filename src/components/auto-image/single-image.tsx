@@ -3,7 +3,7 @@ import { Progress } from 'antd';
 import classNames from 'classnames';
 import * as Vibrant from 'node-vibrant';
 import ResizeObserver from 'rc-resize-observer';
-import React from 'react';
+import React, { useCallback } from 'react';
 import AutoImage from './index';
 import './single-image.less';
 
@@ -20,6 +20,7 @@ interface SingleImageProps {
   onDelete: (uid: number) => void;
   autoBgColor?: boolean;
   editable?: boolean;
+  style?: React.CSSProperties;
 }
 
 const SingleImage: React.FC<SingleImageProps> = (props) => {
@@ -35,6 +36,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     maxHeight,
     maxWidth,
     dataUrl,
+    style,
     autoBgColor
   } = props;
 
@@ -49,36 +51,29 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     return loading ? { width: '100%', height: '100%' } : {};
   }, [loading, imgSize]);
 
-  const handleResize = React.useCallback(
-    async (size: { width: number; height: number }) => {
-      if (!autoSize || !dataUrl) return;
+  const handleResize = useCallback(
+    (size: { width: number; height: number }) => {
+      if (!autoSize) return;
 
       const { width: containerWidth, height: containerHeight } = size;
       const { width: originalWidth, height: originalHeight } = props;
 
-      console.log('size:', size, originalWidth, originalHeight);
-
       if (!originalWidth || !originalHeight) return;
 
-      const imageAspectRatio = originalWidth / originalHeight;
-      const containerAspectRatio = containerWidth / containerHeight;
+      const widthRatio = containerWidth / originalWidth;
+      const heightRatio = containerHeight / originalHeight;
 
-      let newWidth, newHeight;
+      const scale = Math.min(widthRatio, heightRatio, 1);
 
-      if (containerAspectRatio > imageAspectRatio) {
-        newHeight = containerHeight;
-        newWidth = containerHeight * imageAspectRatio;
-      } else {
-        newWidth = containerWidth;
-        newHeight = containerWidth / imageAspectRatio;
-      }
-      console.log('size++++++++=', size, newWidth, newHeight);
+      const newWidth = originalWidth * scale;
+      const newHeight = originalHeight * scale;
+
       setImgSize({
         width: newWidth,
         height: newHeight
       });
     },
-    [autoSize, dataUrl, props]
+    [autoSize, props.width, props.height]
   );
 
   const handleOnLoad = React.useCallback(async () => {
@@ -129,6 +124,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
   return (
     <ResizeObserver onResize={handleResize}>
       <div
+        style={{ ...style }}
         key={uid}
         className={classNames('single-image', {
           'auto-bg-color': autoBgColor,

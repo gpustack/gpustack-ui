@@ -45,6 +45,7 @@ export default {
   'playground.input.holder': '按 <kbd>/</kbd> 开始输入',
   'playground.input.keyword.holder': '按 <kbd>/</kbd> 输入你的查询',
   'playground.input.prompt.holder': '按 <kbd>/</kbd> 输入提示',
+  'playground.input.text.holder': '按 <kbd>/</kbd> 输入文本',
   'playground.compare.apply': '应用',
   'playground.compare.applytoall': '应用到所有模型',
   'playground.model.noavailable': '无可用模型',

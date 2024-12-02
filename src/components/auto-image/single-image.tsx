@@ -109,7 +109,13 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                 overflow: 'hidden'
               }}
             >
-              <Progress percent={progress} type="circle" />
+              <Progress
+                percent={progress}
+                type="dashboard"
+                steps={{ count: 50, gap: 2 }}
+                format={() => <span className="font-size-20">{progress}%</span>}
+                trailColor="var(--ant-color-fill-secondary)"
+              />
             </span>
           ) : (
             <span

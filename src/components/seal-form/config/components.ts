@@ -1,6 +1,7 @@
-import { Checkbox, Slider } from 'antd';
+import { Checkbox } from 'antd';
 import SealInput from '../seal-input';
 import SealSelect from '../seal-select';
+import Slider from '../seal-slider';
 
 const components: {
   InputNumber: typeof SealInput.Number;

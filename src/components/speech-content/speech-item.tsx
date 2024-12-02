@@ -37,9 +37,13 @@ interface SpeechContentProps {
 const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const intl = useIntl();
   const [collapsed, setCollapsed] = useState(false);
-  const [isPlay, setIsPlay] = useState(false);
+  const [isPlay, setIsPlay] = useState(props.autoplay);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audioChunks, setAudioChunks] = useState<any>({
+    data: [],
+    analyser: null
+  });
   const ref = useRef<any>(null);
 
   const handlePlay = () => {
@@ -52,8 +56,13 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     setIsPlay(true);
   };
 
-  const handleCollapse = () => {
-    setCollapsed(!collapsed);
+  const handleOnAnalyse = (data: any, analyser: any) => {
+    setAudioChunks((pre: any) => {
+      return {
+        data: data,
+        analyser: analyser
+      };
+    });
   };
 
   const handleReay = () => {
@@ -80,6 +89,13 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   return (
     <div>
       <div className="speech-item">
+        {/* {isPlay && (
+          <AudioAnimation
+            height={82}
+            width={500}
+            analyserData={audioChunks}
+          ></AudioAnimation>
+        )} */}
         <div className="voice">
           <IconFont type="icon-user_voice" className="font-size-16" />
         </div>
@@ -89,6 +105,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             audioUrl={props.audioUrl}
             onReady={handleReay}
             onClick={handleOnClick}
+            onFinish={() => setIsPlay(false)}
+            onAnalyse={handleOnAnalyse}
             ref={ref}
           ></AudioPlayer>
         </div>

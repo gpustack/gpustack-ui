@@ -134,7 +134,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     } catch (error: any) {
       console.log('error:', error);
       const res = error?.response?.data;
-      if (res.error) {
+      if (res?.error) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -226,8 +226,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (isRecording) {
       return (
         <AudioAnimation
-          height={66}
-          width={200}
+          height={82}
+          width={500}
           analyserData={audioChunks}
         ></AudioAnimation>
       );
@@ -235,7 +235,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
     return (
       <div className="tips-text">
-        <IconFont type={'icon-audio'} style={{ fontSize: 20 }}></IconFont>
+        <IconFont type={'icon-audio'} style={{ fontSize: 18 }}></IconFont>
         <span>
           {intl.formatMessage({ id: 'playground.audio.speechtotext.tips' })}
         </span>
@@ -320,10 +320,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                     })}
                   >
                     <Button
-                      style={{ width: 46 }}
-                      size="middle"
                       disabled={!audioData}
                       type="primary"
+                      shape="circle"
                       onClick={handleOnGenerate}
                       icon={<SendOutlined></SendOutlined>}
                     ></Button>

@@ -124,7 +124,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       console.log('result:', res);
 
-      if (res.error) {
+      if (res?.error) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -147,7 +147,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       ]);
     } catch (error: any) {
       const res = error?.response?.data;
-      if (res.error) {
+      if (res?.error) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -180,7 +180,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           model: value
         });
         console.log('res:', res);
-        if (res.error) {
+        if (res?.error) {
           setVoiceError({
             error: true,
             errorMessage:
@@ -209,7 +209,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         formRef.current?.form.setFieldValue('voice', voiceList[0]?.value);
       } catch (error: any) {
         const res = error?.response?.data;
-        if (res.error) {
+        if (res?.error) {
           setVoiceError({
             error: true,
             errorMessage:
@@ -352,6 +352,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             actions={['check', 'clear']}
             checkLabel={intl.formatMessage({
               id: 'playground.toolbar.autoplay'
+            })}
+            placeholer={intl.formatMessage({
+              id: 'playground.input.text.holder'
             })}
             defaultSize={{
               minRows: 5,

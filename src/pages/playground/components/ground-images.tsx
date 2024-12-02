@@ -1,7 +1,6 @@
 import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
 import FieldComponent from '@/components/seal-form/field-component';
-import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import ThumbImg from '@/pages/playground/components/thumb-img';
@@ -30,6 +29,7 @@ import { CREAT_IMAGE_API } from '../apis';
 import { OpenAIViewCode, promptList } from '../config';
 import {
   ImageAdvancedParamsConfig,
+  ImageCustomSizeConfig,
   ImageconstExtraConfig,
   ImageParamsConfig as paramsConfig
 } from '../config/params-config';
@@ -46,16 +46,24 @@ interface MessageProps {
   loaded?: boolean;
   ref?: any;
 }
-
-const initialValues = {
-  n: 1,
-  size: '512x512',
+const advancedFieldsDefaultValus = {
   seed: null,
   sampler: 'euler_a',
   cfg_scale: 4.5,
   sample_steps: 10,
   negative_prompt: null,
   schedule: 'discrete'
+};
+
+const openaiCompatibleFieldsDefaultValus = {
+  quality: 'standard',
+  style: null
+};
+
+const initialValues = {
+  n: 1,
+  size: '512x512',
+  ...advancedFieldsDefaultValus
 };
 
 const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
@@ -293,37 +301,22 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleToggleParamsStyle = () => {
     if (isOpenaiCompatible) {
       form.current?.form?.setFieldsValue({
-        seed: null,
-        sampler: 'euler_a',
-        cfg_scale: 4.5,
-        sample_steps: 10,
-        negative_prompt: null,
-        schedule: 'discrete'
+        ...advancedFieldsDefaultValus
       });
       setParams((pre: object) => {
         return {
-          ..._.omit(pre, ['quality', 'style']),
-          seed: null,
-          sampler: 'euler_a',
-          cfg_scale: 4.5,
-          sample_steps: 10,
-          negative_prompt: null,
-          schedule: 'discrete'
+          ..._.omit(pre, _.keys(openaiCompatibleFieldsDefaultValus)),
+          ...advancedFieldsDefaultValus
         };
       });
     } else {
+      form.current?.form?.setFieldsValue({
+        ...openaiCompatibleFieldsDefaultValus
+      });
       setParams((pre: object) => {
         return {
-          quality: 'standard',
-          style: null,
-          ..._.omit(pre, [
-            'seed',
-            'sampler',
-            'cfg_scale',
-            'sample_steps',
-            'negative_prompt',
-            'schedule'
-          ])
+          ...openaiCompatibleFieldsDefaultValus,
+          ..._.omit(pre, _.keys(advancedFieldsDefaultValus))
         };
       });
     }
@@ -370,6 +363,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           noStyle={item.name === 'random_seed'}
         >
           <FieldComponent
+            style={item.name === 'random_seed' ? { marginBottom: 20 } : {}}
             disabled={
               item.disabledConfig
                 ? item.disabledConfig?.when?.(formValues)
@@ -385,57 +379,62 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const renderCustomSize = useMemo(() => {
     if (size === 'custom') {
-      return (
-        <div className="flex gap-10" key="custom">
+      return ImageCustomSizeConfig.map((item: ParamsSchema) => {
+        return (
           <Form.Item
-            name="width"
-            key="width"
+            name={item.name}
             rules={[
               {
-                required: true,
                 message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  {
-                    name: intl.formatMessage({ id: 'playground.params.width' })
-                  }
-                )
+                  { id: 'common.form.rule.input' },
+                  { name: intl.formatMessage({ id: item.label.text }) }
+                ),
+                required: true
               }
             ]}
+            key={item.name}
           >
-            <SealInput.Number
-              style={{ width: '100%' }}
-              label={`${intl.formatMessage({ id: 'playground.params.width' })}(px)`}
-            ></SealInput.Number>
-          </Form.Item>
-          <Form.Item
-            name="height"
-            key="height"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  {
-                    name: intl.formatMessage({ id: 'playground.params.height' })
-                  }
-                )
+            <FieldComponent
+              label={
+                item.label.isLocalized
+                  ? intl.formatMessage({ id: item.label.text })
+                  : item.label.text
               }
-            ]}
-          >
-            <SealInput.Number
-              style={{ width: '100%' }}
-              label={`${intl.formatMessage({ id: 'playground.params.height' })}(px)`}
-            ></SealInput.Number>
+              description={
+                item.description?.isLocalized
+                  ? intl.formatMessage({ id: item.description.text })
+                  : item.description?.text
+              }
+              {...item.attrs}
+              {..._.omit(item, [
+                'name',
+                'description',
+                'rules',
+                'disabledConfig'
+              ])}
+            ></FieldComponent>
           </Form.Item>
-        </div>
-      );
+        );
+      });
     }
     return null;
   }, [size, intl]);
+
+  useEffect(() => {
+    if (size === 'custom') {
+      form.current?.form?.setFieldsValue({
+        width: 256,
+        height: 256
+      });
+      setParams((pre: object) => {
+        return {
+          ...pre,
+          width: 256,
+          height: 256
+        };
+      });
+    }
+  }, [size]);
 
   useEffect(() => {
     if (scroller.current) {

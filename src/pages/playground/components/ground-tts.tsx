@@ -338,7 +338,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   return (
     <div className="ground-left-wrapper">
       <div className="ground-left">
-        <div className="message-list-wrap" ref={scroller}>
+        <div className="message-list-wrap">
           <div
             style={{
               height: '100%',

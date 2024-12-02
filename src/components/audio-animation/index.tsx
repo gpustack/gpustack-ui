@@ -1,5 +1,5 @@
 import useResizeObserver from '@/components/logs-viewer/use-size';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './index.less';
 
 interface AudioAnimationProps {
@@ -7,6 +7,7 @@ interface AudioAnimationProps {
   height: number;
   scaleFactor?: number;
   maxBarCount?: number;
+  fixedHeight?: boolean;
   analyserData: {
     data: Uint8Array;
     analyser: any;
@@ -17,20 +18,22 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
   const {
     scaleFactor = 1.2,
     maxBarCount = 128,
+    fixedHeight = true,
     analyserData,
-    width,
-    height
+    width: initialWidth,
+    height: initialHeight
   } = props;
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const animationId = React.useRef<number>(0);
   const isScaled = React.useRef<boolean>(false);
   const oscillationOffset = React.useRef(0);
   const direction = React.useRef(1);
-  // const [width, setWidth] = useState(props.width);
-  // const [height, setHeight] = useState(props.height);
+  const scrollerRef = React.useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(initialWidth);
+  const [height, setHeight] = useState(initialHeight);
   const containerRef = React.useRef<any>(null);
 
-  const size = useResizeObserver(containerRef);
+  const size = useResizeObserver(scrollerRef);
 
   const calculateJitter = (
     i: number,
@@ -128,26 +131,14 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
     draw(performance.now());
   };
 
-  // const handleResizeThrottle = React.useCallback(
-  //   throttle(() => {
-  //     console.log('size:', size);
-  //     if (size.width && size.width !== width) {
-  //       setWidth(size.width);
-  //     }
-  //     if (size.height && size.height !== height) {
-  //       setHeight(size.height);
-  //     }
-  //   }, 100),
-  //   [size, width, height]
-  // );
-
-  // useEffect(() => {
-  //   handleResizeThrottle();
-  //   window.addEventListener('resize', handleResizeThrottle);
-  //   return () => {
-  //     handleResizeThrottle.cancel();
-  //   };
-  // }, [size, width, height]);
+  React.useEffect(() => {
+    if (size) {
+      setWidth(size?.width || 0);
+      if (!fixedHeight) {
+        setHeight(size?.height || 0);
+      }
+    }
+  }, [size]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -175,14 +166,17 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
 
   return (
     <div
-      ref={containerRef}
-      className="canvas-wrap"
-      style={{
-        width: '100%',
-        height: height
-      }}
+      className="scroller-wrapper"
+      ref={scrollerRef}
+      style={{ width: '100%', height: '100%' }}
     >
-      <canvas ref={canvasRef} style={{ width, height }}></canvas>
+      <div
+        ref={containerRef}
+        className="canvas-wrap"
+        style={{ width: '100%', height: '100%' }}
+      >
+        <canvas ref={canvasRef} style={{ display: 'block' }}></canvas>
+      </div>
     </div>
   );
 };

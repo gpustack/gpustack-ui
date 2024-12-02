@@ -232,6 +232,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (isRecording) {
       return (
         <AudioAnimation
+          fixedHeight={true}
           height={82}
           width={500}
           analyserData={audioChunks}

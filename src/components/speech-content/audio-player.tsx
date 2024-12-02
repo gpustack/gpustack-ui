@@ -106,6 +106,12 @@ const AudioPlayer: React.FC<
     }
   };
 
+  const seekTo = (value: number) => {
+    if (wavesurfer.current) {
+      wavesurfer.current.seekTo(value);
+    }
+  };
+
   const duration = () => {
     if (wavesurfer.current) {
       return wavesurfer.current.getDuration();
@@ -123,7 +129,8 @@ const AudioPlayer: React.FC<
     return {
       play,
       pause,
-      duration
+      duration,
+      seekTo
     };
   });
 
@@ -135,7 +142,13 @@ const AudioPlayer: React.FC<
       destroyWavesurfer();
     };
   }, [audioUrl, container.current]);
-  return <div ref={container} className="audio-container"></div>;
+  return (
+    <div
+      ref={container}
+      className="audio-container"
+      style={{ display: 'none' }}
+    ></div>
+  );
 });
 
 export default React.memo(AudioPlayer);

@@ -44,15 +44,52 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     width: width,
     height: height
   });
+  const [originSize, setOriginSize] = React.useState({
+    width: width,
+    height: height
+  });
 
   const thumImgWrapStyle = React.useMemo(() => {
     return loading ? { width: '100%', height: '100%' } : {};
   }, [loading, imgSize]);
 
+  const handleResize = React.useCallback(
+    async (size: { width: number; height: number }) => {
+      if (!autoSize || !dataUrl) return;
+
+      const { width: containerWidth, height: containerHeight } = size;
+      const { width: originalWidth, height: originalHeight } = props;
+
+      console.log('size:', size, originalWidth, originalHeight);
+
+      if (!originalWidth || !originalHeight) return;
+
+      const imageAspectRatio = originalWidth / originalHeight;
+      const containerAspectRatio = containerWidth / containerHeight;
+
+      let newWidth, newHeight;
+
+      if (containerAspectRatio > imageAspectRatio) {
+        newHeight = containerHeight;
+        newWidth = containerHeight * imageAspectRatio;
+      } else {
+        newWidth = containerWidth;
+        newHeight = containerWidth / imageAspectRatio;
+      }
+
+      setImgSize({
+        width: newWidth,
+        height: newHeight
+      });
+    },
+    [autoSize, dataUrl, props]
+  );
+
   const handleOnLoad = React.useCallback(async () => {
     if (!autoBgColor) {
       return;
     }
+
     const img = imgWrapper.current?.querySelector('img');
     if (!img) {
       return;
@@ -76,37 +113,22 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
         backgroundImage: `linear-gradient(135deg, ${startColor}, ${stopColor})`
       });
     });
-  }, []);
+  }, [autoBgColor]);
 
-  const handleResize = React.useCallback(
-    (size: { width: number; height: number }) => {
-      if (!autoSize) return;
-
-      const { width: containerWidth, height: containerHeight } = size;
-      const { width: originalWidth, height: originalHeight } = props;
-
-      if (!originalWidth || !originalHeight) return;
-
-      const imageAspectRatio = originalWidth / originalHeight;
-      const containerAspectRatio = containerWidth / containerHeight;
-
-      let newWidth, newHeight;
-
-      if (containerAspectRatio > imageAspectRatio) {
-        newHeight = containerHeight;
-        newWidth = containerHeight * imageAspectRatio;
-      } else {
-        newWidth = containerWidth;
-        newHeight = containerWidth / imageAspectRatio;
-      }
-
-      setImgSize({
-        width: newWidth,
-        height: newHeight
-      });
-    },
-    [autoSize, props]
-  );
+  const getImgSize = (
+    url: string
+  ): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve({ width: img.width, height: img.height });
+      };
+      img.onerror = () => {
+        resolve({ width: 0, height: 0 });
+      };
+      img.src = url;
+    });
+  };
 
   return (
     <ResizeObserver onResize={handleResize}>

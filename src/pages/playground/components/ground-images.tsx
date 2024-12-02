@@ -133,28 +133,18 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
-      with: 256,
-      height: 256,
       span: 12
     };
     if (parameters.n === 1) {
-      size.width = '100%';
-      size.height = '100%';
       size.span = 24;
     }
     if (parameters.n === 2) {
-      size.width = '50%';
-      size.height = 256;
       size.span = 12;
     }
     if (parameters.n === 3) {
-      size.width = '33%';
-      size.height = 256;
       size.span = 12;
     }
     if (parameters.n === 4) {
-      size.width = '25%';
-      size.height = 256;
       size.span = 12;
     }
     return size;
@@ -194,6 +184,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
+      const imgSize = _.split(finalParameters.size, 'x');
 
       let newImageList = Array(parameters.n)
         .fill({})
@@ -202,8 +193,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             dataUrl: 'data:image/png;base64,',
             ...size,
             progress: 0,
-            height: '100%',
-            width: '100%',
+            height: imgSize[1],
+            width: imgSize[0],
             loading: true,
             uid: index
           };
@@ -245,7 +236,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
 
       const { reader, decoder } = result;
-      const imgSize = _.split(finalParameters.size, 'x');
 
       await readStreamData(reader, decoder, (chunk: any) => {
         if (chunk?.error) {

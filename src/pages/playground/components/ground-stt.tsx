@@ -319,13 +319,28 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                       id: 'playground.audio.button.generate'
                     })}
                   >
-                    <Button
-                      disabled={!audioData}
-                      type="primary"
-                      shape="circle"
-                      onClick={handleOnGenerate}
-                      icon={<SendOutlined></SendOutlined>}
-                    ></Button>
+                    {loading ? (
+                      <Button
+                        disabled={!audioData}
+                        type="primary"
+                        shape="circle"
+                        onClick={handleStopConversation}
+                        icon={
+                          <IconFont
+                            type="icon-stop1"
+                            className="font-size-14"
+                          ></IconFont>
+                        }
+                      ></Button>
+                    ) : (
+                      <Button
+                        disabled={!audioData}
+                        type="primary"
+                        shape="circle"
+                        onClick={handleOnGenerate}
+                        icon={<SendOutlined></SendOutlined>}
+                      ></Button>
+                    )}
                   </Tooltip>
                 </div>
               </div>

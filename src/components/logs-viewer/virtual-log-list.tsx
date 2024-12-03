@@ -140,6 +140,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const updateContent = useCallback(
     (inputStr: string) => {
+      console.log('inputStr===', inputStr);
       const data = inputStr.replace(replaceLineRegex, '\n');
       if (isClean(data)) {
         cacheDataRef.current = data;

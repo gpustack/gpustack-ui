@@ -52,17 +52,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       autoplay: boolean;
       audioUrl: string;
     }[]
-  >([
-    {
-      input: '',
-      voice: '',
-      format: '',
-      speed: 0,
-      uid: 0,
-      autoplay: false,
-      audioUrl: ''
-    }
-  ]);
+  >([]);
   const locale = getLocale();
   const intl = useIntl();
   const [searchParams] = useSearchParams();

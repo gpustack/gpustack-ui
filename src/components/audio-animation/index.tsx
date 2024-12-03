@@ -5,6 +5,7 @@ import './index.less';
 interface AudioAnimationProps {
   width: number;
   height: number;
+  maxWidth?: number;
   scaleFactor?: number;
   maxBarCount?: number;
   fixedHeight?: boolean;
@@ -18,6 +19,7 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
   const {
     scaleFactor = 1.2,
     maxBarCount = 128,
+    maxWidth,
     fixedHeight = true,
     analyserData,
     width: initialWidth,
@@ -133,12 +135,16 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
 
   React.useEffect(() => {
     if (size) {
-      setWidth(size?.width || 0);
+      if (maxWidth) {
+        setWidth(Math.min(size.width, maxWidth));
+      } else {
+        setWidth(size?.width || 0);
+      }
       if (!fixedHeight) {
         setHeight(size?.height || 0);
       }
     }
-  }, [size]);
+  }, [size, maxWidth]);
 
   useEffect(() => {
     if (!canvasRef.current) return;

@@ -50,12 +50,6 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
 
   const handlePlay = useCallback(async () => {
     try {
-      console.log(
-        'isPlay:',
-        isPlay,
-        ref.current?.wavesurfer.current?.isPlaying()
-      );
-      ref.current?.pause();
       if (ref.current?.wavesurfer.current?.isPlaying()) {
         ref.current?.pause();
         setIsPlay(false);
@@ -124,6 +118,11 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     debounceSeek(value);
   };
 
+  const handleReady = useCallback((duration: number) => {
+    console.log('duration:', duration);
+    setDuration(duration);
+  }, []);
+
   const handlOnChangeComplete = useCallback((value: number) => {
     ref.current?.seekTo(value / duration);
     setCurrentTime(value);
@@ -152,8 +151,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           <AudioPlayer
             {...props}
             audioUrl={props.audioUrl}
-            onReady={handleReay}
-            onClick={handleOnClick}
+            onReady={handleReady}
             onFinish={handleOnFinish}
             onPlay={handleOnPlay}
             onPause={handleOnPause}
@@ -163,7 +161,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
           ></AudioPlayer>
           {isPlay && (
             <AudioAnimation
-              maxBarCount={180}
+              maxBarCount={100}
+              amplitude={60}
               fixedHeight={true}
               height={82}
               width={800}

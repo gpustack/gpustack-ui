@@ -419,14 +419,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   useEffect(() => {
     if (size === 'custom') {
       form.current?.form?.setFieldsValue({
-        width: 256,
-        height: 256
+        width: 512,
+        height: 512
       });
       setParams((pre: object) => {
         return {
           ...pre,
-          width: 256,
-          height: 256
+          width: 512,
+          height: 512
         };
       });
     }

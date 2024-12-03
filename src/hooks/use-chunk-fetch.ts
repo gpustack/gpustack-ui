@@ -29,7 +29,7 @@ const useSetChunkFetch = () => {
     }
 
     const chunk = decoder.decode(value, { stream: true });
-
+    console.log('chunk===', chunk);
     callback(chunk);
     // console.log('chunkDataRef.current===2', chunkDataRef.current);
 

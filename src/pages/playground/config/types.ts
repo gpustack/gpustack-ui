@@ -55,6 +55,7 @@ export interface ParamsSchema {
   attrs?: Record<string, any>;
   description?: {
     text: string;
+    html?: boolean;
     isLocalized?: boolean;
   };
 }

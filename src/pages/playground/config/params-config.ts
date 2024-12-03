@@ -117,6 +117,11 @@ export const ImageParamsConfig: ParamsSchema[] = [
       { label: '512x512', value: '512x512' },
       { label: '1024x1024', value: '1024x1024' }
     ],
+    description: {
+      text: 'playground.params.size.description',
+      html: true,
+      isLocalized: true
+    },
     label: {
       text: 'playground.params.size',
       isLocalized: true

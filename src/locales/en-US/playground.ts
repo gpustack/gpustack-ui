@@ -119,5 +119,7 @@ export default {
   'playground.audio.button.slow': 'Slow Down',
   'playground.audio.generating': 'Generating',
   'playgorund.audio.voice.error':
-    'Voices are unavailable. The model may still be initializing. Please refresh after a brief wait.'
+    'Voices are unavailable. The model may still be initializing. Please refresh after a brief wait.',
+  'playground.params.size.description':
+    'The maximum size of the generated image is controlled by the deployment parameters of the model. <a href="https://github.com/gpustack/llama-box" target="_blank">Refer to</a>'
 };

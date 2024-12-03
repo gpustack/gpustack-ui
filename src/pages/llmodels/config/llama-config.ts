@@ -100,6 +100,10 @@ const options = [
   {
     label: '--image-vae-tiling',
     value: '--image-vae-tiling'
+  },
+  {
+    label: '--image-no-vae-tiling',
+    value: '--image-no-vae-tiling'
   }
 ];
 

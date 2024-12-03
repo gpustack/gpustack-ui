@@ -116,5 +116,7 @@ export default {
   'playground.audio.button.slow': '慢放',
   'playground.audio.generating': '生成中',
   'playgorund.audio.voice.error':
-    '声音无法使用。该模型可能仍在初始化。请稍候后刷新。'
+    '声音无法使用。该模型可能仍在初始化。请稍候后刷新。',
+  'playground.params.size.description':
+    '图片生成的最大尺寸受控于模型的部署参数。<a href="https://github.com/gpustack/llama-box" target="_blank">参考文档</a>'
 };

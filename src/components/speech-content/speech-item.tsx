@@ -196,7 +196,13 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             <Button
               disabled={!props.audioUrl || duration === 0}
               onClick={handlePlay}
-              icon={isPlay ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+              icon={
+                isPlay ? (
+                  <PauseCircleOutlined className="font-size-16" />
+                ) : (
+                  <PlayCircleOutlined className="font-size-16" />
+                )
+              }
               type="text"
               size="small"
             ></Button>
@@ -209,7 +215,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             <Button
               disabled={!props.audioUrl || duration === 0}
               onClick={onDownload}
-              icon={<DownloadOutlined />}
+              icon={<DownloadOutlined className="font-size-16" />}
               type="text"
               size="small"
             ></Button>

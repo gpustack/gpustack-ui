@@ -170,6 +170,25 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       [form, handleFieldValueChange]
     );
 
+    const renderDescription = useCallback(
+      (item: ParamsSchema) => {
+        if (!item.description) {
+          return null;
+        }
+        if (item.description.html) {
+          return (
+            <div
+              className="m-t-5"
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({ id: item.description.text })
+              }}
+            ></div>
+          );
+        }
+        return intl.formatMessage({ id: item.description.text });
+      },
+      [intl]
+    );
     const renderFields = useMemo(() => {
       if (!paramsConfig?.length) {
         return null;
@@ -210,6 +229,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
             <Form.Item name={item.name} rules={item.rules} key={item.name}>
               <SealSelect
                 {...item.attrs}
+                description={renderDescription(item)}
                 options={item.options}
                 label={
                   item.label.isLocalized
@@ -249,7 +269,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         }
         return null;
       });
-    }, [paramsConfig, params, intl]);
+    }, [paramsConfig, params, renderDescription, intl]);
 
     return (
       <Form

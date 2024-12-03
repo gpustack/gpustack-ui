@@ -1,5 +1,4 @@
 import AudioAnimation from '@/components/audio-animation';
-import useResizeObserver from '@/components/logs-viewer/use-size';
 import {
   DownloadOutlined,
   PauseCircleOutlined,
@@ -9,7 +8,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Slider, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _, { throttle } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import AudioPlayer from './audio-player';
 import './styles/index.less';
 import './styles/slider-progress.less';
@@ -39,7 +38,7 @@ interface SpeechContentProps {
 const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const intl = useIntl();
   const [isPlay, setIsPlay] = useState(props.autoplay);
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState<number>(0);
   const [animationSize, setAnimationSize] = useState({ width: 900, height: 0 });
   const [currentTime, setCurrentTime] = useState(0);
   const [audioChunks, setAudioChunks] = useState<any>({
@@ -49,17 +48,26 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const wrapper = useRef<any>(null);
   const ref = useRef<any>(null);
 
-  const size = useResizeObserver(wrapper);
-
-  const handlePlay = () => {
-    if (isPlay) {
+  const handlePlay = useCallback(async () => {
+    try {
+      console.log(
+        'isPlay:',
+        isPlay,
+        ref.current?.wavesurfer.current?.isPlaying()
+      );
       ref.current?.pause();
-      setIsPlay(false);
-      return;
+      if (ref.current?.wavesurfer.current?.isPlaying()) {
+        ref.current?.pause();
+        setIsPlay(false);
+        return;
+      } else {
+        await ref.current?.wavesurfer.current?.play();
+        setIsPlay(true);
+      }
+    } catch (error) {
+      console.log('error:', error);
     }
-    ref.current?.play();
-    setIsPlay(true);
-  };
+  }, [ref.current]);
 
   const handleOnAnalyse = useCallback((data: any, analyser: any) => {
     setAudioChunks((pre: any) => {
@@ -73,6 +81,12 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   const handleOnFinish = useCallback(() => {
     setIsPlay(false);
   }, []);
+  const handleOnPlay = useCallback(() => {
+    setIsPlay(true);
+  }, []);
+  const handleOnPause = useCallback(() => {
+    setIsPlay(false);
+  }, []);
 
   const throttleUpdateCurrentTime = throttle((current: number) => {
     setCurrentTime(current);
@@ -80,8 +94,6 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
 
   const handleOnAudioprocess = useCallback(
     (current: number) => {
-      console.log('current:', current);
-      // setCurrentTime(() => current);
       throttleUpdateCurrentTime(current);
     },
     [throttleUpdateCurrentTime]
@@ -103,15 +115,16 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     });
   }, []);
 
-  const handleSliderChange = (value: number) => {
-    ref.current?.seekTo(value);
+  const debounceSeek = _.debounce((value: number) => {
+    ref.current?.seekTo(value / duration);
     setCurrentTime(value);
+  }, 200);
+
+  const handleSliderChange = (value: number) => {
+    debounceSeek(value);
   };
 
-  useEffect(() => {
-    console.log('width:', size);
-  }, [size]);
-  const onDownload = () => {
+  const onDownload = useCallback(() => {
     const url = props.audioUrl || '';
     const filename = `audio-${dayjs().format('YYYYMMDDHHmmss')}.${props.format}`;
 
@@ -121,7 +134,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     document.body.appendChild(link);
     link.click();
     link.remove();
-  };
+  }, [props.audioUrl, props.format]);
 
   return (
     <div>
@@ -137,6 +150,8 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             onReady={handleReay}
             onClick={handleOnClick}
             onFinish={handleOnFinish}
+            onPlay={handleOnPlay}
+            onPause={handleOnPause}
             onAnalyse={handleOnAnalyse}
             onAudioprocess={handleOnAudioprocess}
             ref={ref}

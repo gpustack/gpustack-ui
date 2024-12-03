@@ -256,6 +256,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                     <div>
                       {intl.formatMessage({ id: 'models.search.vllm.tips' })}
                     </div>
+                    <div>
+                      {intl.formatMessage({ id: 'models.search.voxbox.tips' })}
+                    </div>
                   </div>
                 }
               >

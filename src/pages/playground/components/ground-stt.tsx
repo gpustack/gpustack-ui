@@ -120,7 +120,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
       );
 
-      if (result?.error) {
+      if (result?.status_code !== 200) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -380,7 +380,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               style={{ height: '100%', overflow: 'auto' }}
               ref={scroller}
             >
-              <>
+              <div>
                 {!tokenResult && (
                   <div
                     style={{
@@ -409,7 +409,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                     ></AlertInfo>
                   </div>
                 )}
-              </>
+              </div>
             </div>
             {loading && (
               <div style={{ width: '100%', flex: 1 }}>

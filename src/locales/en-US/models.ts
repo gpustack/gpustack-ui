@@ -58,8 +58,10 @@ export default {
   'models.table.layers': 'Layers',
   'models.form.backend': 'Backend',
   'models.form.backend_parameters': 'Backend Parameters',
-  'models.search.gguf.tips': '1. GGUF model backend is llama-box.',
-  'models.search.vllm.tips': '2. Non-GGUF model backend is vLLM.',
+  'models.search.gguf.tips':
+    '1. GGUF models backend is llama-box(supports Linux, macOS and Windows).',
+  'models.search.vllm.tips':
+    '2. Non-GGUF models use vox-box for audio and vLLM for others.',
   'models.form.ollamalink': 'Find More in Ollama Library',
   'models.form.backend_parameters.llamabox.placeholder':
     'e.g., --ctx-size=8192',

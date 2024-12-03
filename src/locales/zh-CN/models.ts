@@ -57,8 +57,10 @@ export default {
   'models.table.layers': '层',
   'models.form.backend': '后端',
   'models.form.backend_parameters': '后端参数',
-  'models.search.gguf.tips': '1. GGUF 模型后端为 llama-box',
-  'models.search.vllm.tips': '2. 非 GGUF 模型后端为 vLLM',
+  'models.search.gguf.tips':
+    '1. GGUF 模型后端为 llama-box(支持 Linux, macOS 和 Windows)。',
+  'models.search.vllm.tips':
+    '2. 非 GGUF 的音频模型用 vox-box，其它非 GGUF 的模型用 vLLM。',
   'models.form.ollamalink': '在 Ollama Library 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
     '例如，--ctx-size=8192',

@@ -29,15 +29,20 @@ const GPUCard: React.FC<{
               {intl.formatMessage({ id: 'resources.table.used' })}/
               {intl.formatMessage({ id: 'resources.table.total' })}):{' '}
               <span>
-                {convertFileSize(data?.memory?.used || 0)} /{' '}
-                {convertFileSize(data?.memory?.total || 0)}
+                {convertFileSize(
+                  data?.memory?.used || data?.memory?.allocated || 0
+                )}{' '}
+                / {convertFileSize(data?.memory?.total || 0)}
               </span>
             </span>
             <span>
               <span>
                 {intl.formatMessage({ id: 'resources.table.gpuutilization' })}:{' '}
               </span>
-              {_.round(data?.memory?.utilization_rate || 0, 2)}%
+              {data?.memory?.used
+                ? _.round(data?.memory?.utilization_rate || 0, 2)
+                : _.round(data.memory?.allocated / data.memory?.total, 2)}
+              %
             </span>
           </>
         )}

@@ -67,11 +67,6 @@ const useParseAnsi = () => {
       const n = parseInt(match[1], 10) || 1;
       const m = parseInt(match[2], 10) || 1;
       const command = match[3];
-      console.log('command', {
-        command,
-        cursorRow,
-        n
-      });
 
       // handle ANSI control characters
       switch (command) {

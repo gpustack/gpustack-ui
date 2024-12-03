@@ -157,7 +157,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       console.log('result:', res);
 
-      if (res?.error) {
+      if (res?.status_code !== 200) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -212,14 +212,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         const res = await queryModelVoices({
           model: value
         });
-        if (res?.error) {
+        if (res?.status_code !== 200) {
           setVoiceError({
             error: true,
             errorMessage:
-              res?.data?.error?.message ||
-              res?.data?.error ||
-              res.error?.detail ||
-              ''
+              res?.data?.error?.message || res?.data?.error || res?.detail || ''
           });
           setVoiceList([]);
           return;
@@ -248,7 +245,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           setVoiceError({
             error: true,
             errorMessage:
-              res?.error?.message || res?.data?.error || res.error?.detail || ''
+              res?.error?.message || res?.data?.error || res?.detail || ''
           });
         }
         setVoiceList([]);

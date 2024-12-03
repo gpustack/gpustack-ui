@@ -120,7 +120,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
       );
 
-      if (result?.status_code !== 200) {
+      if (result?.status_code && result?.status_code !== 200) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -211,6 +211,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setIsRecording(val);
     setAudioData(null);
     setTokenResult(null);
+    setMessageList([]);
     console.log('data===', val);
   }, []);
 

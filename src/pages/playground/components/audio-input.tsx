@@ -1,3 +1,4 @@
+import { externalRefer } from '@/constants/external-links';
 import { AudioOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
@@ -215,7 +216,25 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
   const renderRecordButtonTips = useMemo(() => {
     if (!audioPermission) {
-      return intl.formatMessage({ id: 'playground.audio.enablemic' });
+      return (
+        <span>
+          <span>
+            {intl.formatMessage({ id: 'playground.audio.enablemic' })}
+            <Button
+              size="small"
+              color="primary"
+              variant="link"
+              href={`${externalRefer.audioPermission}`}
+              target="_blank"
+              style={{
+                color: 'var(--ant-blue-5)'
+              }}
+            >
+              {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}
+            </Button>
+          </span>
+        </span>
+      );
     }
     return isRecording
       ? intl.formatMessage({ id: 'playground.audio.stoprecord' })

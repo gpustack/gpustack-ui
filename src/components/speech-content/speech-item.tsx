@@ -124,6 +124,11 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
     debounceSeek(value);
   };
 
+  const handlOnChangeComplete = useCallback((value: number) => {
+    ref.current?.seekTo(value / duration);
+    setCurrentTime(value);
+  }, []);
+
   const onDownload = useCallback(() => {
     const url = props.audioUrl || '';
     const filename = `audio-${dayjs().format('YYYYMMDDHHmmss')}.${props.format}`;

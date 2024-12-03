@@ -88,11 +88,11 @@ const ListInput: React.FC<ListInputProps> = (props) => {
         <div className="flex justify-center">
           <Button
             ref={buttonRef}
-            type="text"
+            variant="filled"
+            color="default"
             block
             style={{
-              marginTop: 16,
-              backgroundColor: 'var(--ant-color-fill-secondary)'
+              marginTop: 16
             }}
             onClick={handleOnAdd}
           >

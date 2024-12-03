@@ -8,6 +8,7 @@ interface AudioAnimationProps {
   maxWidth?: number;
   scaleFactor?: number;
   maxBarCount?: number;
+  amplitude?: number;
   fixedHeight?: boolean;
   analyserData: {
     data: Uint8Array;
@@ -19,6 +20,7 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
   const {
     scaleFactor = 1.2,
     maxBarCount = 128,
+    amplitude = 40,
     maxWidth,
     fixedHeight = true,
     analyserData,
@@ -71,7 +73,7 @@ const AudioAnimation: React.FC<AudioAnimationProps> = (props) => {
     const barSpacing = 6;
     const centerLine = Math.floor(HEIGHT / 2);
 
-    const jitterAmplitude = 40;
+    const jitterAmplitude = amplitude;
     const minJitter = 10;
 
     let lastFrameTime = 0;

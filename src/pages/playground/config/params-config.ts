@@ -115,9 +115,7 @@ export const ImageParamsConfig: ParamsSchema[] = [
       { label: 'playground.params.custom', value: 'custom', locale: true },
       { label: '256x256', value: '256x256' },
       { label: '512x512', value: '512x512' },
-      { label: '1024x1024', value: '1024x1024' },
-      { label: '1792x1024', value: '1792x1024' },
-      { label: '1024x1792', value: '1024x1792' }
+      { label: '1024x1024', value: '1024x1024' }
     ],
     label: {
       text: 'playground.params.size',
@@ -367,7 +365,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 256,
-      max: 1792,
+      max: 1024,
       step: 64,
       inputnumber: false
     },
@@ -387,7 +385,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 256,
-      max: 1792,
+      max: 1024,
       step: 64,
       inputnumber: false
     },

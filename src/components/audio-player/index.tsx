@@ -75,6 +75,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   }, []);
 
   const handleAudioOnPlay = useCallback(() => {
+    console.log('audio play');
     timer.current = setInterval(() => {
       setAudioState((prestate) => {
         return {

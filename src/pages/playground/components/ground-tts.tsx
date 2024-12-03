@@ -52,7 +52,17 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       autoplay: boolean;
       audioUrl: string;
     }[]
-  >([]);
+  >([
+    {
+      input: '',
+      voice: '',
+      format: '',
+      speed: 0,
+      uid: 0,
+      autoplay: false,
+      audioUrl: ''
+    }
+  ]);
   const locale = getLocale();
   const intl = useIntl();
   const [searchParams] = useSearchParams();
@@ -140,6 +150,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
+      setMessageList([]);
 
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
@@ -157,7 +168,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       console.log('result:', res);
 
-      if (res?.status_code !== 200) {
+      if (res?.status_code && res?.status_code !== 200) {
         setTokenResult({
           error: true,
           errorMessage:
@@ -212,7 +223,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         const res = await queryModelVoices({
           model: value
         });
-        if (res?.status_code !== 200) {
+        if (res?.status_code && res?.status_code !== 200) {
           setVoiceError({
             error: true,
             errorMessage:

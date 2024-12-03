@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, {
   forwardRef,
   useCallback,
@@ -19,6 +20,8 @@ interface AudioPlayerProps {
   onFinish?: () => void;
   onAnalyse?: (analyseData: any, frequencyBinCount: any) => void;
   onAudioprocess?: (current: number) => void;
+  onPlay?: () => void;
+  onPause?: () => void;
 }
 
 const AudioPlayer: React.FC<
@@ -49,6 +52,12 @@ const AudioPlayer: React.FC<
     analyser.current.connect(audioContext.current.destination);
   }, []);
 
+  const debouncePause = _.debounce(() => {
+    if (wavesurfer.current?.isPlaying()) {
+      wavesurfer.current?.pause();
+    }
+  }, 100);
+
   const listenEvents = () => {
     wavesurfer.current?.on('ready', (duration: number) => {
       props.onReady?.(duration);
@@ -61,16 +70,31 @@ const AudioPlayer: React.FC<
       props.onFinish?.();
     });
     wavesurfer.current?.on('audioprocess', (current: number) => {
-      console.log('audioprocess==========:', current);
       props.onAudioprocess?.(current);
     });
+    wavesurfer.current?.on('seeking', (current: number) => {
+      console.log('seeking', current);
+    });
+
+    wavesurfer.current?.on('timeupdate', (current: number) => {
+      console.log('timeupdate', current);
+    });
+
     wavesurfer.current?.on('play', () => {
       analyser.current?.getByteFrequencyData(dataArray.current);
       props.onAnalyse?.(dataArray.current, analyser);
+      props.onPlay?.();
+    });
+
+    wavesurfer.current?.on('pause', () => {
+      analyser.current?.getByteFrequencyData(dataArray.current);
+      props.onAnalyse?.(dataArray.current, analyser);
+      props.onPause?.();
     });
   };
 
   const createWavesurfer = () => {
+    wavesurfer.current?.destroy();
     wavesurfer.current = WaveSurfer.create({
       container: container.current,
       url: audioUrl,
@@ -100,15 +124,54 @@ const AudioPlayer: React.FC<
     }
   };
 
-  const play = () => {
+  const play = async () => {
     if (wavesurfer.current) {
       wavesurfer.current.play();
     }
   };
+  const isPlaying = () => {
+    if (wavesurfer.current) {
+      wavesurfer.current.isPlaying();
+    }
+  };
+
+  const playPause = () => {
+    if (wavesurfer.current) {
+      wavesurfer.current.playPause();
+    }
+  };
+
+  const debounceSeekTo = _.debounce((value: number) => {
+    if (wavesurfer.current) {
+      wavesurfer.current.seekTo(value);
+    }
+  }, 50);
+
+  const debounceSetTime = _.debounce((value: number) => {
+    if (wavesurfer.current) {
+      wavesurfer.current.setTime(value);
+    }
+  }, 50);
 
   const seekTo = (value: number) => {
     if (wavesurfer.current) {
+      debounceSeekTo(value);
+    }
+  };
+  const setTime = (value: number) => {
+    if (wavesurfer.current) {
+      debounceSetTime(value);
+    }
+  };
+
+  const seekAndPlay = (value: number) => {
+    if (wavesurfer.current) {
       wavesurfer.current.seekTo(value);
+      wavesurfer.current.once('seeking', () => {
+        wavesurfer.current
+          ?.play()
+          .catch((error) => console.error('Playback error:', error));
+      });
     }
   };
 
@@ -130,7 +193,11 @@ const AudioPlayer: React.FC<
       play,
       pause,
       duration,
-      seekTo
+      seekTo,
+      setTime,
+      playPause,
+      isPlaying,
+      wavesurfer
     };
   });
 

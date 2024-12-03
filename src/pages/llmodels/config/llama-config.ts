@@ -73,9 +73,33 @@ const options = [
     value: '--image-cfg-scale'
   },
   {
+    label: '--image-slg-scale',
+    value: '--image-slg-scale'
+  },
+  {
+    label: '--image-slg-skip-layer',
+    value: '--image-slg-skip-layer'
+  },
+  {
+    label: '--image-slg-start',
+    value: '--image-slg-end'
+  },
+  {
     label: '--image-schedule',
     value: '--image-schedule',
     options: ['default', 'discrete', 'karras', 'exponential', 'ays', 'gits']
+  },
+  {
+    label: '--image-no-text-encoder-model-offload',
+    value: '--image-no-text-encoder-model-offload'
+  },
+  {
+    label: '--image-no-vae-model-offload',
+    value: '--image-no-vae-model-offload'
+  },
+  {
+    label: '--image-vae-tiling',
+    value: '--image-vae-tiling'
   }
 ];
 

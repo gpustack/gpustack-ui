@@ -9,5 +9,5 @@ const externalLinks = {
 export default externalLinks;
 
 export const externalRefer = {
-  audioPermission: `${externalLinks.documentation}latest/user-guide/playground/#audio-playground`
+  audioPermission: `${externalLinks.documentation}latest/user-guide/playground/#audio-speech-to-text`
 };

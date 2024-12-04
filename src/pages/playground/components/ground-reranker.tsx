@@ -1,3 +1,4 @@
+import AlertInfo from '@/components/alert-info';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
@@ -86,6 +87,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const requestToken = useRef<any>(null);
   const formRef = useRef<any>(null);
   const multiplePasteEnable = useRef<boolean>(true);
+  const [isEmptyText, setIsEmptyText] = useState<boolean>(false);
   const [fileList, setFileList] = useState<
     {
       text: string;
@@ -200,6 +202,15 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     await formRef.current?.form.validateFields();
     if (!parameters.model) return;
     try {
+      const documentList: any[] = [...textList, ...fileList];
+
+      const validDocus = documentList.filter((item) => item.text);
+
+      if (!validDocus.length) {
+        setIsEmptyText(true);
+        return;
+      }
+      setIsEmptyText(false);
       setLoading(true);
       setMessageId();
       setTokenResult(null);
@@ -209,8 +220,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       requestToken.current = requestSource();
 
       contentRef.current = current?.content || '';
-
-      const documentList: any[] = [...textList, ...fileList];
 
       const result: any = await rerankerQuery(
         {
@@ -422,6 +431,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     ]);
     setFileList([]);
     setTokenResult(null);
+    setIsEmptyText(false);
   };
 
   useHotkeys(
@@ -489,16 +499,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                     </span>
                   }
                 >
-                  <Button
-                    ghost
-                    variant="filled"
-                    color="default"
-                    style={{
-                      border: 'none'
-                    }}
-                  >
+                  <span className="full-wrap">
                     <SendOutlined rotate={0} className="font-size-14" />
-                  </Button>
+                  </span>
                 </Tooltip>
               }
               placeholder={intl.formatMessage({
@@ -569,6 +572,16 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 extra={renderPercent}
                 onPaste={handleOnPaste}
               ></InputList>
+              {isEmptyText && (
+                <div className="m-t-16">
+                  <AlertInfo
+                    type="danger"
+                    message={intl.formatMessage({
+                      id: 'playground.documents.verify.rerank'
+                    })}
+                  ></AlertInfo>
+                </div>
+              )}
             </div>
           </div>
           <div></div>

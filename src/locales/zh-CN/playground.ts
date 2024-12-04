@@ -77,6 +77,7 @@ export default {
   'playground.rerank.score': '分数',
   'playground.rerank.query.holder': '输入查询',
   'playground.image.prompt': '输入提示',
+  'playground.audio.textinput': '输入文本',
   'playground.audio.texttospeech': '文本转语音',
   'playground.audio.speechtotext': '语音转文本',
   'playground.audio.texttospeech.tips': '生成的语音将出现在这里',
@@ -118,5 +119,7 @@ export default {
   'playgorund.audio.voice.error':
     '声音无法使用。该模型可能仍在初始化。请稍候后刷新。',
   'playground.params.size.description':
-    '图片生成的最大尺寸受控于模型的部署参数。<a href="https://github.com/gpustack/llama-box" target="_blank">参考文档</a>'
+    '图片生成的最大尺寸受控于模型的部署参数。<a href="https://github.com/gpustack/llama-box" target="_blank">参考文档</a>',
+  'playground.documents.verify.embedding': '至少输入两条文本',
+  'playground.documents.verify.rerank': '文档不能为空'
 };

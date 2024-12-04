@@ -158,11 +158,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       console.log('result:', res);
 
-      if (res?.status_code && res?.status_code !== 200) {
+      if ((res?.status_code && res?.status_code !== 200) || res?.error) {
         setTokenResult({
           error: true,
           errorMessage:
-            res?.data?.error?.message || res?.data?.error || res?.detail || ''
+            res?.data?.error?.message ||
+            res?.error?.message ||
+            res?.data?.error ||
+            res?.detail ||
+            ''
         });
         setMessageList([]);
         return;
@@ -181,11 +185,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       ]);
     } catch (error: any) {
       const res = error?.response?.data;
+      console.log('error:', error);
       if (res?.error) {
         setTokenResult({
           error: true,
           errorMessage:
-            res?.error?.message || res?.data?.error || res?.detail || ''
+            res?.error?.message ||
+            res?.data?.error?.message ||
+            res?.data?.error ||
+            res?.detail ||
+            ''
         });
       }
     } finally {
@@ -213,11 +222,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         const res = await queryModelVoices({
           model: value
         });
-        if (res?.status_code && res?.status_code !== 200) {
+        if ((res?.status_code && res?.status_code !== 200) || res?.error) {
           setVoiceError({
             error: true,
             errorMessage:
-              res?.data?.error?.message || res?.data?.error || res?.detail || ''
+              res?.data?.error?.message ||
+              res?.error?.message ||
+              res?.data?.error ||
+              res?.detail ||
+              ''
           });
           setVoiceList([]);
           return;
@@ -242,11 +255,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         formRef.current?.form.setFieldValue('voice', newList[0]?.value);
       } catch (error: any) {
         const res = error?.response?.data;
-        if (res?.error) {
+        if (res?.error || (res?.status_code && res?.status_code !== 200)) {
           setVoiceError({
             error: true,
             errorMessage:
-              res?.error?.message || res?.data?.error || res?.detail || ''
+              res?.error?.message ||
+              res?.data?.error?.message ||
+              res?.data?.error ||
+              res?.detail ||
+              ''
           });
         }
         setVoiceList([]);

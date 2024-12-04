@@ -94,7 +94,7 @@ export const textToSpeech = async (params: any, options?: any) => {
     signal: params.signal
   });
   if (!res.ok) {
-    throw new Error('Network response was not ok');
+    return await res.json();
   }
 
   const audioBlob = await res.blob();

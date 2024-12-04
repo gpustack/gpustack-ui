@@ -174,8 +174,8 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const handleAudioData = (audioData: any) => {
     props.onAudioData?.(audioData);
   };
-  const getAudioFormat = () => {
-    const mimeType = audioRecorder.current?.mimeType;
+  const getAudioFormat = (type?: string) => {
+    const mimeType = type || audioRecorder.current?.mimeType;
 
     let resultFormat = recordingFormat;
 
@@ -190,8 +190,8 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     return resultFormat;
   };
 
-  const generateFileNameByTime = () => {
-    const res = getAudioFormat();
+  const generateFileNameByTime = (type?: string) => {
+    const res = getAudioFormat(type);
     // format: recording-YYYY-MM-DD-HH_mm_ss.wav
     return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${res.suffix}`;
   };
@@ -222,16 +222,17 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       audioRecorder.current.onstop = () => {
         const res = getAudioFormat();
         const audioBlob = new Blob(audioChunks, {
-          type: audioRecorder.current.mimeType
+          type: 'audio/mpeg'
         });
+        console.log('audioBlob:', res, audioBlob);
         const audioUrl = URL.createObjectURL(audioBlob);
 
         handleAudioData({
           chunks: audioBlob,
           size: audioBlob.size,
-          type: res.type,
+          type: audioBlob.type,
           url: audioUrl,
-          name: generateFileNameByTime(),
+          name: generateFileNameByTime(audioBlob.type),
           duration: Math.floor((Date.now() - startTime.current) / 1000)
         });
 

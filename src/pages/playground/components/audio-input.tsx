@@ -27,6 +27,21 @@ interface AudioInputProps {
   type?: 'text' | 'primary' | 'default';
 }
 
+const audioFormat: Record<string, string> = {
+  'audio/mpeg': 'mp3',
+  'audio/mp4': 'mp4',
+  'audio/wav': 'wav',
+  'audio/ogg': 'ogg',
+  'audio/webm': 'webm',
+  'audio/aac': 'aac',
+  'audio/x-flac': 'flac',
+  'audio/pcm': 'pcm',
+  'audio/flac': 'flac',
+  'audio/x-wav': 'wav',
+  'audio/L16': 'pcm',
+  'audio/opus': 'opus'
+};
+
 const recordingFormat = {
   type: 'audio/wav',
   suffix: '.wav'
@@ -52,6 +67,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     analyser.current = audioContext.current.createAnalyser();
     analyser.current.fftSize = 512;
     dataArray.current = new Uint8Array(analyser.current.frequencyBinCount);
+    console.log('audioContext:', audioContext.current, analyser.current);
   }, []);
 
   const generateVisualData = useCallback(() => {
@@ -158,10 +174,26 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const handleAudioData = (audioData: any) => {
     props.onAudioData?.(audioData);
   };
+  const getAudioFormat = () => {
+    const mimeType = audioRecorder.current?.mimeType;
+
+    let resultFormat = recordingFormat;
+
+    Object.keys(audioFormat).forEach((key: string) => {
+      if (mimeType.includes(key)) {
+        resultFormat = {
+          type: mimeType,
+          suffix: `.${audioFormat[key]}`
+        };
+      }
+    });
+    return resultFormat;
+  };
 
   const generateFileNameByTime = () => {
+    const res = getAudioFormat();
     // format: recording-YYYY-MM-DD-HH_mm_ss.wav
-    return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${recordingFormat.suffix}`;
+    return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${res.suffix}`;
   };
   // start recording
   const StartRecording = async () => {
@@ -174,7 +206,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       await EnableAudio();
 
       audioRecorder.current = new MediaRecorder(audioStream.current);
-
+      console.log('audioRecorder:', audioRecorder.current);
       const audioChunks: any[] = [];
 
       audioRecorder.current.ondataavailable = (event: any) => {
@@ -188,13 +220,16 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
       // stop recording
       audioRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: recordingFormat.type });
+        const res = getAudioFormat();
+        const audioBlob = new Blob(audioChunks, {
+          type: audioRecorder.current.mimeType
+        });
         const audioUrl = URL.createObjectURL(audioBlob);
 
         handleAudioData({
           chunks: audioBlob,
           size: audioBlob.size,
-          type: audioBlob.type,
+          type: res.type,
           url: audioUrl,
           name: generateFileNameByTime(),
           duration: Math.floor((Date.now() - startTime.current) / 1000)

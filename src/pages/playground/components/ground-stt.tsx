@@ -120,11 +120,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
       );
 
-      if (result?.status_code && result?.status_code !== 200) {
+      if (
+        (result?.status_code && result?.status_code !== 200) ||
+        result?.error
+      ) {
         setTokenResult({
           error: true,
           errorMessage:
             result?.data?.error?.message ||
+            result?.error?.message ||
             result?.data?.message ||
             result?.detail ||
             ''
@@ -140,11 +144,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     } catch (error: any) {
       console.log('error:', error);
       const res = error?.response?.data;
-      if (res?.error) {
+      if (res?.error || (res?.status_code && res?.status_code !== 200)) {
         setTokenResult({
           error: true,
           errorMessage:
-            res?.error?.message || res?.data?.error || res?.detail || ''
+            res?.error?.message ||
+            res?.data?.error?.message ||
+            res?.data?.error ||
+            res?.detail ||
+            ''
         });
       }
     } finally {
@@ -173,6 +181,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       duration: number;
       type: string;
     }) => {
+      console.log('handleOnAudioData===========', data);
       setAudioData(() => {
         return {
           url: data.url,
@@ -212,7 +221,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setAudioData(null);
     setTokenResult(null);
     setMessageList([]);
-    console.log('data===', val);
+    console.log('handleOnRecord============', val);
   }, []);
 
   const handleOnGenerate = async () => {

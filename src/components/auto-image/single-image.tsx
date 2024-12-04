@@ -1,7 +1,6 @@
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { Progress } from 'antd';
 import classNames from 'classnames';
-import * as Vibrant from 'node-vibrant';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
 import AutoImage from './index';
@@ -76,50 +75,35 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     [autoSize, props.width, props.height]
   );
 
-  const handleOnLoad = React.useCallback(async () => {
-    if (!autoBgColor) {
-      return;
-    }
+  // const handleOnLoad = React.useCallback(async () => {
+  //   if (!autoBgColor) {
+  //     return;
+  //   }
 
-    const img = imgWrapper.current?.querySelector('img');
-    if (!img) {
-      return;
-    }
+  //   const img = imgWrapper.current?.querySelector('img');
+  //   if (!img) {
+  //     return;
+  //   }
 
-    Vibrant.from(img.src).getPalette((err: any, palette: any) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      const color = palette?.Vibrant?.rgb;
-      const mutedColor = palette?.Muted?.rgb;
+  //   Vibrant.from(img.src).getPalette((err: any, palette: any) => {
+  //     if (err) {
+  //       console.error(err);
+  //       return;
+  //     }
+  //     const color = palette?.Vibrant?.rgb;
+  //     const mutedColor = palette?.Muted?.rgb;
 
-      const startColor = color
-        ? `rgba(${color[0]}, ${color[1]}, ${color[2]},0.7)`
-        : '';
-      const stopColor = mutedColor
-        ? `rgba(${mutedColor[0]}, ${mutedColor[1]}, ${mutedColor[2]},0.5)`
-        : '';
-      setColor({
-        backgroundImage: `linear-gradient(135deg, ${startColor}, ${stopColor})`
-      });
-    });
-  }, [autoBgColor]);
-
-  const getImgSize = (
-    url: string
-  ): Promise<{ width: number; height: number }> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        resolve({ width: img.width, height: img.height });
-      };
-      img.onerror = () => {
-        resolve({ width: 0, height: 0 });
-      };
-      img.src = url;
-    });
-  };
+  //     const startColor = color
+  //       ? `rgba(${color[0]}, ${color[1]}, ${color[2]},0.7)`
+  //       : '';
+  //     const stopColor = mutedColor
+  //       ? `rgba(${mutedColor[0]}, ${mutedColor[1]}, ${mutedColor[2]},0.5)`
+  //       : '';
+  //     setColor({
+  //       backgroundImage: `linear-gradient(135deg, ${startColor}, ${stopColor})`
+  //     });
+  //   });
+  // }, [autoBgColor]);
 
   return (
     <ResizeObserver onResize={handleResize}>

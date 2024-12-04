@@ -274,7 +274,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
         src={props.url}
         ref={audioRef}
         preload="metadata"
-        style={{ display: 'none' }}
+        style={{ opacity: 0, position: 'absolute', left: '-9999px' }}
         onPlay={handleAudioOnPlay}
         onLoadedMetadata={handleLoadedMetadata}
       ></audio>

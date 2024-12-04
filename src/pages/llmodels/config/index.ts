@@ -3,6 +3,13 @@ import { EditOutlined } from '@ant-design/icons';
 
 export const ollamaModelOptions = [
   {
+    label: 'qwq',
+    value: 'qwq',
+    name: 'qwq',
+    id: 'qwq',
+    tags: []
+  },
+  {
     label: 'qwen2.5-coder',
     value: 'qwen2.5-coder',
     name: 'qwen2.5-coder',

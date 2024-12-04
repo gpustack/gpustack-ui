@@ -339,6 +339,10 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     setScatterData([]);
     setTokenResult(null);
     setLessTwoInput(false);
+    setEmbeddingData({
+      code: '',
+      copyValue: ''
+    });
   };
 
   const handleOutputTypeChange = (value: string) => {
@@ -522,7 +526,9 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
               {lessTwoInput && (
                 <AlertInfo
                   type="danger"
-                  message="Please input at least two documents"
+                  message={intl.formatMessage({
+                    id: 'playground.documents.verify.embedding'
+                  })}
                 ></AlertInfo>
               )}
             </div>

@@ -85,6 +85,7 @@ interface MessageInputProps {
   submitIcon?: React.ReactNode;
   presetPrompt?: (list: CurrentMessage[]) => void;
   addMessage?: (message: CurrentMessage) => void;
+  title?: React.ReactNode;
   tools?: React.ReactNode;
   loading: boolean;
   disabled: boolean;
@@ -107,6 +108,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       updateLayout,
       addMessage,
       onCheck,
+      title,
       loading,
       disabled,
       isEmpty,

@@ -75,35 +75,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     [autoSize, props.width, props.height]
   );
 
-  // const handleOnLoad = React.useCallback(async () => {
-  //   if (!autoBgColor) {
-  //     return;
-  //   }
-
-  //   const img = imgWrapper.current?.querySelector('img');
-  //   if (!img) {
-  //     return;
-  //   }
-
-  //   Vibrant.from(img.src).getPalette((err: any, palette: any) => {
-  //     if (err) {
-  //       console.error(err);
-  //       return;
-  //     }
-  //     const color = palette?.Vibrant?.rgb;
-  //     const mutedColor = palette?.Muted?.rgb;
-
-  //     const startColor = color
-  //       ? `rgba(${color[0]}, ${color[1]}, ${color[2]},0.7)`
-  //       : '';
-  //     const stopColor = mutedColor
-  //       ? `rgba(${mutedColor[0]}, ${mutedColor[1]}, ${mutedColor[2]},0.5)`
-  //       : '';
-  //     setColor({
-  //       backgroundImage: `linear-gradient(135deg, ${startColor}, ${stopColor})`
-  //     });
-  //   });
-  // }, [autoBgColor]);
+  const handleOnLoad = React.useCallback(async () => {}, []);
 
   return (
     <ResizeObserver onResize={handleResize}>

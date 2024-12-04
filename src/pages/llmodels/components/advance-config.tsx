@@ -20,6 +20,7 @@ import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
   backendOptionsMap,
+  backendParamsHolderTips,
   modelSourceMap,
   placementStrategyOptions
 } from '../config';
@@ -81,7 +82,13 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   ];
 
   const paramsConfig = useMemo(() => {
-    return backend === backendOptionsMap.llamaBox ? llamaConfig : vllmConfig;
+    if (backend === backendOptionsMap.llamaBox) {
+      return llamaConfig;
+    }
+    if (backend === backendOptionsMap.vllm) {
+      return vllmConfig;
+    }
+    return [];
   }, [backend]);
 
   const backendParamsTips = useMemo(() => {
@@ -91,10 +98,13 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         link: 'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage'
       };
     }
-    return {
-      backend: 'vLLM',
-      link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#command-line-arguments-for-the-server'
-    };
+    if (backend === backendOptionsMap.vllm) {
+      return {
+        backend: 'vLLM',
+        link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#command-line-arguments-for-the-server'
+      };
+    }
+    return null;
   }, [backend]);
 
   const renderSelectTips = (list: Array<{ title: string; tips: string }>) => {
@@ -286,39 +296,43 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             })}
           ></SealInput.Input>
         </Form.Item>
+
         <Form.Item<FormData> name="backend_parameters">
           <ListInput
             placeholder={
-              backend === backendOptionsMap.llamaBox
+              backendParamsHolderTips[backend]
                 ? intl.formatMessage({
-                    id: 'models.form.backend_parameters.llamabox.placeholder'
+                    id: backendParamsHolderTips[backend].holder
                   })
-                : intl.formatMessage({
-                    id: 'models.form.backend_parameters.vllm.placeholder'
-                  })
+                : ''
             }
             btnText="common.button.addParams"
-            label={intl.formatMessage({ id: 'models.form.backend_parameters' })}
+            label={intl.formatMessage({
+              id: 'models.form.backend_parameters'
+            })}
             dataList={form.getFieldValue('backend_parameters') || []}
             onChange={handleBackendParametersChange}
             options={paramsConfig}
             description={
-              <span>
-                {intl.formatMessage(
-                  { id: 'models.form.backend_parameters.vllm.tips' },
-                  { backend: backendParamsTips.backend }
-                )}{' '}
-                <Typography.Link
-                  style={{ color: 'var(--ant-blue-4)' }}
-                  href={backendParamsTips.link}
-                  target="_blank"
-                >
-                  {intl.formatMessage({ id: 'common.text.here' })}
-                </Typography.Link>
-              </span>
+              backendParamsTips && (
+                <span>
+                  {intl.formatMessage(
+                    { id: 'models.form.backend_parameters.vllm.tips' },
+                    { backend: backendParamsTips.backend || '' }
+                  )}{' '}
+                  <Typography.Link
+                    style={{ color: 'var(--ant-blue-4)' }}
+                    href={backendParamsTips.link}
+                    target="_blank"
+                  >
+                    {intl.formatMessage({ id: 'common.text.here' })}
+                  </Typography.Link>
+                </span>
+              )
             }
           ></ListInput>
         </Form.Item>
+
         {backend === backendOptionsMap.llamaBox && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>

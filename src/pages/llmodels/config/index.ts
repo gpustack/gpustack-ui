@@ -3,11 +3,32 @@ import { EditOutlined } from '@ant-design/icons';
 
 export const ollamaModelOptions = [
   {
+    label: 'qwen2.5-coder',
+    value: 'qwen2.5-coder',
+    name: 'qwen2.5-coder',
+    id: 'qwen2.5-coder',
+    tags: []
+  },
+  {
+    label: 'llama3.2-vision',
+    value: 'llama3.2-vision',
+    name: 'llama3.2-vision',
+    id: 'llama3.2-vision',
+    tags: []
+  },
+  {
     label: 'llama3.2',
     value: 'llama3.2',
     name: 'llama3.2',
     id: 'llama3.2',
     tags: ['Tools', '1B', '3B']
+  },
+  {
+    label: 'nomic-embed-text',
+    value: 'nomic-embed-text',
+    name: 'nomic-embed-text',
+    id: 'nomic-embed-text',
+    tags: []
   },
   {
     label: 'qwen2.5',
@@ -71,6 +92,18 @@ export const backendOptionsMap = {
   llamaBox: 'llama-box',
   vllm: 'vllm',
   voxBox: 'vox-box'
+};
+
+export const backendParamsHolderTips = {
+  [backendOptionsMap.llamaBox]: {
+    holder: 'models.form.backend_parameters.llamabox.placeholder',
+    tooltip: 'models.form.backend_parameters.vllm.tips'
+  },
+  [backendOptionsMap.vllm]: {
+    holder: 'models.form.backend_parameters.vllm.placeholder',
+    tooltip: 'models.form.backend_parameters.vllm.tips'
+  },
+  [backendOptionsMap.voxBox]: null
 };
 
 export const modelTaskMap = {

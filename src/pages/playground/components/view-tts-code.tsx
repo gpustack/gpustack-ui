@@ -106,7 +106,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         ''
       );
       const params = formatPyParams(payload);
-      const code = `from pathlib import Path\nfrom openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\nouput_file_path = Path(__file__).parent\nresponse = client.${clientType}(\n${formattedParams}${params})\n${printLog}\nwith open(output_file_path, "wb") as f:
+      const code = `from pathlib import Path\nfrom openai import OpenAI\n\nclient = OpenAI(\n  base_url="${BaseURL}", \n  api_key="YOUR_GPUSTACK_API_KEY"\n)\n\noutput_file_path = Path(__file__).parent / "output.${parameters.response_format}"\nresponse = client.${clientType}(\n${formattedParams}${params})\n${printLog}\nwith open(output_file_path, "wb") as f:
     for chunk in response.iter_bytes(): 
         f.write(chunk)
 

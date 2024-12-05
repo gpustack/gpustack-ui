@@ -335,8 +335,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [ImageconstExtraConfig, isOpenaiCompatible, intl]);
 
   const handleFieldChange = (e: any) => {
-    if (e.target.id.indexOf('random_seed')) {
+    if (e.target.id.indexOf('random_seed') > -1) {
       form.current?.form?.setFieldValue('random_seed', e.target.checked);
+      setParams((pre: object) => {
+        return {
+          ...pre,
+          random_seed: e.target.checked
+        };
+      });
     }
   };
   const renderAdvanced = useMemo(() => {

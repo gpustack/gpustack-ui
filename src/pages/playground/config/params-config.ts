@@ -370,7 +370,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 256,
-      max: 1024,
+      max: 3200,
       step: 64,
       inputnumber: false
     },
@@ -390,7 +390,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 256,
-      max: 1024,
+      max: 3200,
       step: 64,
       inputnumber: false
     },

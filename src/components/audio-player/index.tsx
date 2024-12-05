@@ -269,7 +269,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
         </div>
       </div>
       <audio
-        controls
+        crossOrigin="anonymous"
         autoPlay={autoplay}
         src={props.url}
         ref={audioRef}

@@ -58,7 +58,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const audioContext = useRef<any>(null);
   const analyser = useRef<any>(null);
   const dataArray = useRef<any>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const audioUrl = useRef<string>('');
 
   const initAudioContext = useCallback(() => {
     audioContext.current = new (window.AudioContext ||
@@ -145,7 +145,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   // open audio
   const EnableAudio = async () => {
     try {
-      audioStream.current = await navigator.mediaDevices.getUserMedia({
+      audioStream.current = await navigator.mediaDevices?.getUserMedia({
         audio: true
       });
       getAudioTracks();
@@ -205,8 +205,10 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     try {
       await EnableAudio();
 
+      URL.revokeObjectURL(audioUrl.current);
+
       audioRecorder.current = new MediaRecorder(audioStream.current);
-      console.log('audioRecorder:', audioRecorder.current);
+
       const audioChunks: any[] = [];
 
       audioRecorder.current.ondataavailable = (event: any) => {
@@ -225,13 +227,13 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
           type: 'audio/mpeg'
         });
         console.log('audioBlob:', res, audioBlob);
-        const audioUrl = URL.createObjectURL(audioBlob);
+        audioUrl.current = URL.createObjectURL(audioBlob);
 
         handleAudioData({
           chunks: audioBlob,
           size: audioBlob.size,
           type: audioBlob.type,
-          url: audioUrl,
+          url: audioUrl.current,
           name: generateFileNameByTime(audioBlob.type),
           duration: Math.floor((Date.now() - startTime.current) / 1000)
         });
@@ -292,6 +294,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     return () => {
       handleStopRecording();
       stopAudioTracks();
+      URL.revokeObjectURL(audioUrl.current);
     };
   }, []);
 

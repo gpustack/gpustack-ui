@@ -79,7 +79,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
-  const contentRef = useRef<any>('');
   const scroller = useRef<any>(null);
   const inputListRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
@@ -198,7 +197,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setLoading(false);
   };
 
-  const submitMessage = async (current?: { content: string }) => {
+  const submitMessage = async () => {
     await formRef.current?.form.validateFields();
     if (!parameters.model) return;
     try {
@@ -219,13 +218,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 
-      contentRef.current = current?.content || '';
-
       const result: any = await rerankerQuery(
         {
           model: parameters.model,
           top_n: parameters.top_n,
-          query: contentRef.current,
+          query: queryValueRef.current,
           documents: [
             ...textList.map((item) => item.text),
             ...fileList.map((item) => item.text)
@@ -309,24 +306,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       setLoading(false);
     }
   };
-  const handleClear = () => {
-    if (!messageList.length) {
-      return;
-    }
-    setMessageId();
-    setMessageList([]);
-    setTokenResult(null);
-  };
-
-  const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    submitMessage(message);
-  };
 
   const handleSearch = (val: string) => {
-    if (!val) {
-      return;
-    }
-    submitMessage({ content: val });
+    submitMessage();
   };
 
   const handleQueryChange = (e: any) => {
@@ -630,7 +612,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         }}
         parameters={{
           ...parameters,
-          query: contentRef.current
+          query: queryValueRef.current
         }}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}

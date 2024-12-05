@@ -26,7 +26,7 @@ import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
-import ViewCodeModal from './view-code-modal';
+import ViewTTSCode from './view-tts-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -130,6 +130,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleStopConversation = () => {
     controllerRef.current?.abort?.();
     setLoading(false);
+  };
+
+  const handleInputChange = (e: any) => {
+    setCurrentPrompt(e.target.value);
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
@@ -420,6 +424,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             isEmpty={true}
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}
+            onInputChange={handleInputChange}
             clearAll={handleClear}
             shouldResetMessage={false}
             submitIcon={<SendOutlined></SendOutlined>}
@@ -445,17 +450,17 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
 
-      <ViewCodeModal
+      <ViewTTSCode
         open={show}
         payload={{
           input: currentPrompt
         }}
         api="audio/speech"
-        clientType="audio.speech"
+        clientType="audio.speech.create"
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCodeModal>
+      ></ViewTTSCode>
     </div>
   );
 });

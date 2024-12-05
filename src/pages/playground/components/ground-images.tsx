@@ -279,6 +279,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTokenResult(null);
   };
 
+  const handleInputChange = (e: any) => {
+    setCurrentPrompt(e.target.value);
+  };
+
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
     const currentMessage = message.content ? message : undefined;
     submitMessage(currentMessage);
@@ -527,6 +531,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             isEmpty={!imageList.length}
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}
+            onInputChange={handleInputChange}
             shouldResetMessage={false}
             clearAll={handleClear}
             tools={

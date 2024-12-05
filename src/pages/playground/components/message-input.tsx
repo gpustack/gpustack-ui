@@ -85,6 +85,7 @@ interface MessageInputProps {
   submitIcon?: React.ReactNode;
   presetPrompt?: (list: CurrentMessage[]) => void;
   addMessage?: (message: CurrentMessage) => void;
+  onInputChange?: (e: any) => void;
   title?: React.ReactNode;
   tools?: React.ReactNode;
   loading: boolean;
@@ -108,6 +109,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       updateLayout,
       addMessage,
       onCheck,
+      onInputChange,
       title,
       loading,
       disabled,
@@ -150,7 +152,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     };
 
     const handleInputChange = (e: any) => {
-      console.log('input change:', e.target?.value);
+      onInputChange?.(e);
       setMessage({
         ...message,
         content: e.target?.value
@@ -179,6 +181,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     const handleClearAll = (e: any) => {
       e.stopPropagation();
       clearAll();
+      handleInputChange({ target: { value: '' } });
       setMessage({
         role: Roles.User,
         content: '',

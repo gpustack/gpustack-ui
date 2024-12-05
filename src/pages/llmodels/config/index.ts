@@ -17,13 +17,6 @@ export const ollamaModelOptions = [
     tags: []
   },
   {
-    label: 'llama3.2-vision',
-    value: 'llama3.2-vision',
-    name: 'llama3.2-vision',
-    id: 'llama3.2-vision',
-    tags: []
-  },
-  {
     label: 'llama3.2',
     value: 'llama3.2',
     name: 'llama3.2',

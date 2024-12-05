@@ -28,7 +28,7 @@ import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
 import AudioInput from './audio-input';
 import DynamicParams from './dynamic-params';
-import ViewCodeModal from './view-code-modal';
+import ViewSTTCode from './view-stt-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -450,15 +450,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </div>
 
-      <ViewCodeModal
+      <ViewSTTCode
         open={show}
         payload={{}}
         api="audio/transcriptions"
-        clientType="audio.transcriptions"
+        clientType="audio.transcriptions.create"
         parameters={parameters}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCodeModal>
+      ></ViewSTTCode>
     </div>
   );
 });

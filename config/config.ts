@@ -14,7 +14,7 @@ const isProduction = env === 'production';
 const t = Date.now();
 export default defineConfig({
   proxy: {
-    ...proxy('http://192.168.50.4')
+    ...proxy(process.env.PROXY_HOST)
   },
   history: {
     type: 'hash'
@@ -23,7 +23,6 @@ export default defineConfig({
     analyzerMode: 'server',
     analyzerPort: 8888,
     openAnalyzer: true,
-    // generate stats file while ANALYZE_DUMP exist
     generateStatsFile: false,
     statsFilename: 'stats.json',
     logLevel: 'info',

@@ -80,16 +80,12 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         null,
         4
       );
-      const headers = {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer {YOUR_GPUSTACK_API_KEY}`
-      };
       const params = paramStr.replace(
         /"fs.createReadStream\(audio.mp3\)"/g,
         'fs.createReadStream("audio.mp3")'
       );
 
-      const code = `const fs = require("fs");\nconst axios = require("axios");\n\nconst url = "${BaseURL}/audio/transcriptions";\n\nconst headers = ${JSON.stringify(headers, null, 2)};\n\nconst data = ${params};\n\naxios.post(url, data, { headers }).then((response) => {\n  console.log(response.data.text);\n});`;
+      const code = `const fs = require("fs")\nconst OpenAI = require("openai");\n\nconst openai = new OpenAI({\n  "apiKey": "YOUR_GPUSTACK_API_KEY",\n  "baseURL": "${BaseURL}"\n});\n\nasync function main(){\n  const params = ${params};\nconst response = await openai.${clientType}(params);\n  ${consoleLog}}\nmain();`;
 
       return code;
     }

@@ -3,15 +3,16 @@ import HighlightCode from '@/components/highlight-code';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 type ViewModalProps = {
-  parameters: any;
   title: string;
   open: boolean;
-  api: string;
-  payload?: Record<string, any>;
-  logcommand: Record<string, any>;
+  viewCodeContent: {
+    curlCode: string;
+    pythonCode: string;
+    nodeJsCode: string;
+  };
   onCancel: () => void;
 };
 
@@ -24,61 +25,27 @@ const langMap = {
 const langOptions = [
   { label: 'Curl', value: langMap.shell },
   { label: 'Python', value: langMap.python },
-  { label: 'JavaScript', value: langMap.javascript }
+  { label: 'Nodejs', value: langMap.javascript }
 ];
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const {
-    title,
-    open,
-    onCancel,
-    payload,
-    parameters = {},
-    api,
-    logcommand
-  } = props || {};
+  const { title, open, onCancel, viewCodeContent } = props || {};
 
   const intl = useIntl();
-  const [codeValue, setCodeValue] = useState('');
   const [lang, setLang] = useState(langMap.shell);
 
-  const BaseURL = `${window.location.origin}${api}`;
-
-  const generateCode = () => {
+  const codeValue = useMemo(() => {
     if (lang === langMap.shell) {
-      const code = `curl ${window.location.origin}${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
-        {
-          ...parameters,
-          ...payload
-        },
-        null,
-        2
-      )}'`;
-      setCodeValue(code);
-    } else if (lang === langMap.javascript) {
-      const data = {
-        ...parameters,
-        ...payload
-      };
-      const headers = {
-        'Content-type': 'application/json',
-        Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
-      };
-      const code = `import axios from 'axios';\n\nconst url = "${BaseURL}";\n\nconst headers = ${JSON.stringify(headers, null, 2)};\n\nconst data = ${JSON.stringify(data, null, 2)};\n\naxios.post(url, data, { headers }).then((response) => {\n  console.log(response.${logcommand.node});\n});`;
-      setCodeValue(code);
-    } else if (lang === langMap.python) {
-      let data = {
-        ...parameters,
-        ...payload
-      };
-      const headers = {
-        'Content-type': 'application/json',
-        Authorization: `Bearer $\{YOUR_GPUSTACK_API_KEY}`
-      };
-      const code = `import requests\n\nurl="${BaseURL}"\n\nheaders = ${JSON.stringify(headers, null, 2)}\n\ndata=${JSON.stringify(data, null, 2).replace(/null/g, 'None')}\n\nresponse = requests.post(url, headers=headers, json=data)\n\nprint(response.${logcommand.python})`;
-      setCodeValue(code);
+      return viewCodeContent?.curlCode;
     }
-  };
+    if (lang === langMap.javascript) {
+      return viewCodeContent?.nodeJsCode;
+    }
+    if (lang === langMap.python) {
+      return viewCodeContent?.pythonCode;
+    }
+    return '';
+  }, [lang, viewCodeContent]);
 
   const handleOnChangeLang = (value: string) => {
     setLang(value);
@@ -88,10 +55,6 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     setLang(langMap.shell);
     onCancel();
   };
-
-  useEffect(() => {
-    generateCode();
-  }, [lang, parameters, payload]);
 
   return (
     <>
@@ -123,13 +86,20 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
               }
             }}
           >
-            <HighlightCode
-              height={380}
-              theme="dark"
-              code={codeValue}
-              lang={lang}
-              copyable={false}
-            ></HighlightCode>
+            <div
+              style={{
+                paddingRight: 2,
+                paddingBottom: 2
+              }}
+            >
+              <HighlightCode
+                height={380}
+                theme="dark"
+                code={codeValue}
+                lang={lang}
+                copyable={false}
+              ></HighlightCode>
+            </div>
           </EditorWrap>
           <div
             style={{ marginTop: 10, display: 'flex', alignItems: 'baseline' }}
@@ -165,4 +135,4 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   );
 };
 
-export default ViewCodeModal;
+export default React.memo(ViewCodeModal);

@@ -145,7 +145,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
       <div className="speech-item">
         <div
           className="wrapper"
-          style={{ height: 82, width: '100%' }}
+          style={{ height: 120, width: '100%' }}
           ref={wrapper}
         >
           <AudioPlayer
@@ -164,7 +164,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
               maxBarCount={100}
               amplitude={60}
               fixedHeight={true}
-              height={82}
+              height={120}
               width={800}
               analyserData={audioChunks}
             ></AudioAnimation>

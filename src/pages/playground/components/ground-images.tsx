@@ -26,7 +26,7 @@ import React, {
   useState
 } from 'react';
 import { CREAT_IMAGE_API } from '../apis';
-import { OpenAIViewCode, promptList } from '../config';
+import { promptList } from '../config';
 import {
   ImageAdvancedParamsConfig,
   ImageCustomSizeConfig,
@@ -36,9 +36,9 @@ import {
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
+import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
-import ViewCodeModal from './view-code-modal';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -164,6 +164,25 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       ..._.omit(parameters, ['width', 'height', 'random_seed'])
     };
   }, [parameters]);
+
+  const viewCodeContent = useMemo(() => {
+    if (isOpenaiCompatible) {
+      return generateOpenaiImageCode({
+        api: '/v1-openai/images/generations',
+        parameters: {
+          ...finalParameters,
+          prompt: currentPrompt
+        }
+      });
+    }
+    return generateImageCode({
+      api: '/v1-openai/images/generations',
+      parameters: {
+        ...finalParameters,
+        prompt: currentPrompt
+      }
+    });
+  }, [finalParameters, currentPrompt, parameters.size]);
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -603,34 +622,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-
-      {isOpenaiCompatible ? (
-        <ViewCodeModal
-          {...OpenAIViewCode.images}
-          open={show}
-          payload={{
-            prompt: currentPrompt
-          }}
-          parameters={{
-            ...finalParameters
-          }}
-          onCancel={handleCloseViewCode}
-          title={intl.formatMessage({ id: 'playground.viewcode' })}
-        ></ViewCodeModal>
-      ) : (
-        <ViewCommonCode
-          {...OpenAIViewCode.imageAdvanced}
-          open={show}
-          payload={{
-            prompt: currentPrompt
-          }}
-          parameters={{
-            ...finalParameters
-          }}
-          onCancel={handleCloseViewCode}
-          title={intl.formatMessage({ id: 'playground.viewcode' })}
-        ></ViewCommonCode>
-      )}
+      <ViewCommonCode
+        open={show}
+        viewCodeContent={viewCodeContent}
+        onCancel={handleCloseViewCode}
+        title={intl.formatMessage({ id: 'playground.viewcode' })}
+      ></ViewCommonCode>
     </div>
   );
 });

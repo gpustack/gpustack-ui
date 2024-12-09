@@ -24,9 +24,10 @@ import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
+import { TextToSpeechCode } from '../view-code/audio';
 import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
-import ViewTTSCode from './view-tts-code';
+import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -91,6 +92,16 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const viewCodeContent = useMemo(() => {
+    return TextToSpeechCode({
+      api: '/v1-openai/audio/speech',
+      parameters: {
+        ...parameters,
+        input: currentPrompt
+      }
+    });
+  }, [parameters, currentPrompt]);
 
   const sortVoiceList = useCallback(
     (locale: string, voiceDataList: Global.BaseOption<string>[]) => {
@@ -449,18 +460,12 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-
-      <ViewTTSCode
+      <ViewCommonCode
         open={show}
-        payload={{
-          input: currentPrompt
-        }}
-        api="audio/speech"
-        clientType="audio.speech.create"
-        parameters={parameters}
+        viewCodeContent={viewCodeContent}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewTTSCode>
+      ></ViewCommonCode>
     </div>
   );
 });

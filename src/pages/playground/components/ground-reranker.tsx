@@ -19,16 +19,17 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { rerankerQuery } from '../apis';
-import { OpenAIViewCode } from '../config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
+import { generateRerankCode } from '../view-code/rerank';
 import DynamicParams from './dynamic-params';
 import InputList from './input-list';
 import ViewCommonCode from './view-common-code';
@@ -122,7 +123,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   ]);
   const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
-  const queryValueRef = useRef<string>('');
+  const [queryValue, setQueryValue] = useState<string>('');
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -139,6 +140,19 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     };
   });
+
+  const viewCodeContent = useMemo(() => {
+    return generateRerankCode({
+      api: '/v1/rerank',
+      parameters: {
+        ...parameters,
+        query: queryValue,
+        documents: [...textList, ...fileList]
+          .map((item) => item.text)
+          .filter((text) => text)
+      }
+    });
+  }, [parameters, queryValue, textList, fileList]);
 
   // [0.1, 1.0]
   const normalizValue = (data: { min: number; max: number; value: number }) => {
@@ -222,7 +236,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         {
           model: parameters.model,
           top_n: parameters.top_n,
-          query: queryValueRef.current,
+          query: queryValue,
           documents: [
             ...textList.map((item) => item.text),
             ...fileList.map((item) => item.text)
@@ -312,7 +326,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleQueryChange = (e: any) => {
-    queryValueRef.current = e.target.value;
+    setQueryValue(e.target.value);
   };
 
   const handleCloseViewCode = () => {
@@ -420,7 +434,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     HotKeys.SUBMIT,
     (e: any) => {
       e.preventDefault();
-      handleSearch(queryValueRef.current);
+      handleSearch(queryValue);
     },
     {
       enabled: !loading,
@@ -601,19 +615,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-
       <ViewCommonCode
-        {...OpenAIViewCode.rerank}
         open={show}
-        payload={{
-          documents: [...textList, ...fileList]
-            .map((item) => item.text)
-            .filter((text) => text)
-        }}
-        parameters={{
-          ...parameters,
-          query: queryValueRef.current
-        }}
+        viewCodeContent={viewCodeContent}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
       ></ViewCommonCode>

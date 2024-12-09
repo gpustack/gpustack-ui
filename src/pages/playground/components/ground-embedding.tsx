@@ -31,14 +31,14 @@ import {
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { handleEmbedding } from '../apis';
-import { OpenAIViewCode } from '../config';
 import { ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
+import { generateEmbeddingCode } from '../view-code/embedding';
 import DynamicParams from './dynamic-params';
 import FileList from './file-list';
 import InputList from './input-list';
-import ViewCodeModal from './view-code-modal';
+import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -122,6 +122,19 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     };
   });
+
+  const viewCodeContent = useMemo(() => {
+    return generateEmbeddingCode({
+      api: '/v1-openai/embeddings',
+      parameters: {
+        ...parameters,
+        input: [
+          ...textList.map((item) => item.text).filter((item) => item),
+          ...fileList.map((item) => item.text).filter((item) => item)
+        ]
+      }
+    });
+  }, [parameters, textList, fileList]);
 
   const inputEmpty = useMemo(() => {
     const list = [...textList, ...fileList];
@@ -660,22 +673,12 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-
-      <ViewCodeModal
-        {...OpenAIViewCode.embeddings}
+      <ViewCommonCode
         open={show}
-        payload={{
-          input: [
-            ...textList.map((item) => item.text).filter((item) => item),
-            ...fileList.map((item) => item.text).filter((item) => item)
-          ]
-        }}
-        parameters={{
-          ...parameters
-        }}
+        viewCodeContent={viewCodeContent}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewCodeModal>
+      ></ViewCommonCode>
     </div>
   );
 });

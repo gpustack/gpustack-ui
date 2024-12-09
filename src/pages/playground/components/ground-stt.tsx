@@ -18,6 +18,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -26,9 +27,10 @@ import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
 import '../style/ground-left.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
+import { speechToTextCode } from '../view-code/audio';
 import AudioInput from './audio-input';
 import DynamicParams from './dynamic-params';
-import ViewSTTCode from './view-stt-code';
+import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -88,6 +90,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
+
+  const viewCodeContent = useMemo(() => {
+    return speechToTextCode({
+      api: '/v1-openai/audio/transcriptions',
+      parameters: {
+        ...parameters
+      }
+    });
+  }, [parameters]);
 
   const handleStopConversation = () => {
     cancelRequest();
@@ -449,16 +460,12 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
           />
         </div>
       </div>
-
-      <ViewSTTCode
+      <ViewCommonCode
         open={show}
-        payload={{}}
-        api="audio/transcriptions"
-        clientType="audio.transcriptions.create"
-        parameters={parameters}
+        viewCodeContent={viewCodeContent}
         onCancel={handleCloseViewCode}
         title={intl.formatMessage({ id: 'playground.viewcode' })}
-      ></ViewSTTCode>
+      ></ViewCommonCode>
     </div>
   );
 });

@@ -66,8 +66,10 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
     audioRef.current.addEventListener('loadeddata', () => {
       initEnvents();
-      initAudioContext();
-      generateVisualData();
+      if (!audioContext.current) {
+        initAudioContext();
+        generateVisualData();
+      }
       props.onLoadedData?.();
     });
 
@@ -107,12 +109,6 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     });
   };
 
-  const handleAudioOnPlay = () => {
-    audioRef.current?.play();
-  };
-
-  const handleLoadedMetadata = () => {};
-
   useImperativeHandle(ref, () => ({
     play: () => {
       audioRef.current?.play();
@@ -124,6 +120,8 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (audioRef.current) {
+      console.log('audioRef.current', audioRef.current, props.url);
+      initEnvents();
     }
     return () => {
       if (audioContext.current) {
@@ -150,12 +148,15 @@ const RawAudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
   return (
     <audio
-      width={props.width || 300}
-      height={props.height || 40}
       controls
       autoPlay={autoplay}
       src={props.url}
       ref={audioRef}
+      style={{
+        position: 'absolute',
+        left: '-9999px',
+        opacity: 0
+      }}
       preload="metadata"
     ></audio>
   );

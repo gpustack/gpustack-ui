@@ -82,8 +82,12 @@ const Models: React.FC<ModelsProps> = ({
   const intl = useIntl();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
-  const { handleExpandChange, updateExpandedRowKeys, expandedRowKeys } =
-    useExpandedRowKeys();
+  const {
+    handleExpandChange,
+    updateExpandedRowKeys,
+    removeExpandedRowKey,
+    expandedRowKeys
+  } = useExpandedRowKeys();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -145,6 +149,20 @@ const Models: React.FC<ModelsProps> = ({
         show: true,
         width: 600,
         source: modelSourceMap.ollama_library_value
+      });
+    },
+    {
+      preventDefault: true,
+      enabled: !openAddModal && !openDeployModal.show && !openLogModal
+    }
+  );
+  useHotkeys(
+    HotKeys.NEW4.join(','),
+    () => {
+      setOpenDeployModal({
+        show: true,
+        width: 600,
+        source: modelSourceMap.local_path_value
       });
     },
     {
@@ -299,16 +317,20 @@ const Models: React.FC<ModelsProps> = ({
 
         const result = getSourceRepoConfigValue(openDeployModal.source, data);
 
-        await createModel({
+        const modelData = await createModel({
           data: {
             ...result.values,
             ..._.omit(data, result.omits)
           }
         });
+        console.log('modelData:', modelData);
         setOpenDeployModal({
           ...openDeployModal,
           show: false
         });
+        setTimeout(() => {
+          updateExpandedRowKeys([modelData.id]);
+        }, 300);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       } catch (error) {}
     },
@@ -324,7 +346,7 @@ const Models: React.FC<ModelsProps> = ({
       name: row.name,
       async onOk() {
         await deleteModel(row.id);
-        updateExpandedRowKeys([row.id]);
+        removeExpandedRowKey([row.id]);
         rowSelection.removeSelectedKey(row.id);
       }
     });
@@ -336,7 +358,7 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
         rowSelection.clearSelections();
-        updateExpandedRowKeys(rowSelection.selectedRowKeys);
+        removeExpandedRowKey(rowSelection.selectedRowKeys);
       }
     });
   };
@@ -386,7 +408,7 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await deleteModelInstance(row.id);
         if (list.length === 1) {
-          updateExpandedRowKeys([row.model_id]);
+          removeExpandedRowKey([row.model_id]);
         }
       }
     });

@@ -62,14 +62,6 @@ const TableRow: React.FC<
     }
   }, [rowSelection]);
 
-  // useEffect(() => {
-  //   if (expandedRowKeys?.includes(record[rowKey])) {
-  //     setExpanded(true);
-  //   } else {
-  //     setExpanded(false);
-  //   }
-  // }, [expandedRowKeys]);
-
   useEffect(() => {
     return () => {
       if (pollTimer.current) {
@@ -160,8 +152,6 @@ const TableRow: React.FC<
       pollTimer.current = setInterval(() => {
         handlePolling();
       }, 1000);
-    } else {
-      handleLoadChildren();
     }
   };
 
@@ -178,6 +168,20 @@ const TableRow: React.FC<
       );
     }
   };
+
+  useEffect(() => {
+    if (expandedRowKeys?.includes(record[rowKey])) {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [expandedRowKeys]);
+
+  useEffect(() => {
+    if (expanded) {
+      handleLoadChildren();
+    }
+  }, [expanded]);
 
   useEffect(() => {
     if (!firstLoad && expanded) {

@@ -15,6 +15,10 @@ export default function useExpandedRowKeys() {
   );
 
   const updateExpandedRowKeys = (keys: React.Key[]) => {
+    setExpandedRowKeys(keys);
+  };
+
+  const removeExpandedRowKey = (keys: React.Key[]) => {
     // remove expanded row keys that are in the deleted keys
     const newExpandedRowKeys = expandedRowKeys.filter(
       (key) => !keys.includes(key)
@@ -30,6 +34,7 @@ export default function useExpandedRowKeys() {
     expandedRowKeys,
     clearExpandedRowKeys,
     updateExpandedRowKeys,
+    removeExpandedRowKey,
     handleExpandChange
   };
 }

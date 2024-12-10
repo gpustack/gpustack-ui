@@ -291,7 +291,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           <SealAutoComplete
             filterOption
             defaultActiveFirstOption
-            disabled={action === PageAction.EDIT}
+            disabled={false}
             options={ollamaModelOptions}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
@@ -503,7 +503,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         form={form}
         gpuOptions={gpuOptions}
         isGGUF={isGGUF}
-        modelTask={modelTask}
         action={action}
         source={props.source}
       ></AdvanceConfig>

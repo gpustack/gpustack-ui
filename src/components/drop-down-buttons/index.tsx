@@ -1,8 +1,10 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
 import { memo } from 'react';
+import './index.less';
 
 interface DropdownButtonsProps {
   items: MenuProps['items'];
@@ -12,7 +14,7 @@ interface DropdownButtonsProps {
 
 const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   items,
-  size = 'small',
+  size = 'middle',
   onSelect
 }) => {
   const intl = useIntl();
@@ -81,12 +83,18 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
               key="leftButton"
             >
               <Button
+                className={classNames('dropdown-button', size)}
                 onClick={handleButtonClick}
                 size={size}
                 icon={_.head(items)?.icon}
               ></Button>
             </Tooltip>,
-            <Button icon={<MoreOutlined />} size={size} key="menu"></Button>
+            <Button
+              icon={<MoreOutlined />}
+              size={size}
+              key="menu"
+              className={classNames('dropdown-button', size)}
+            ></Button>
           ]}
         ></Dropdown.Button>
       )}

@@ -20,6 +20,7 @@ const KeybindingsMap = {
   NEW1: ['Ctrl+1', 'Meta+1'],
   NEW2: ['Ctrl+2', 'Meta+2'],
   NEW3: ['Ctrl+3', 'Meta+3'],
+  NEW4: ['Ctrl+4', 'Meta+4'],
   FOCUS: ['/', '/'],
   ADD: ['Alt+Ctrl+Enter', 'Alt+Meta+Enter']
 };

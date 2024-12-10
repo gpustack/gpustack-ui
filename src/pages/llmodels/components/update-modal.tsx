@@ -1,3 +1,4 @@
+import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
@@ -5,7 +6,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Form, Modal } from 'antd';
+import { Form, Modal, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
@@ -14,6 +15,7 @@ import { queryGPUList } from '../apis';
 import {
   backendOptionsMap,
   modelSourceMap,
+  ollamaModelOptions,
   setSourceRepoConfigValue
 } from '../config';
 import { FormData, GPUListItem, ListItem } from '../config/types';
@@ -119,7 +121,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           <SealInput.Input
             label={intl.formatMessage({ id: 'models.form.repoid' })}
             required
-            disabled={true}
+            disabled={false}
           ></SealInput.Input>
         </Form.Item>
         {isGGUF && (
@@ -137,14 +139,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               }
             ]}
           >
-            <SealAutoComplete
-              filterOption
+            <SealInput.Input
               label={intl.formatMessage({ id: 'models.form.filename' })}
               required
-              options={[]}
               loading={loading}
-              disabled={action === PageAction.EDIT}
-            ></SealAutoComplete>
+              disabled={false}
+            ></SealInput.Input>
           </Form.Item>
         )}
       </>
@@ -196,12 +196,31 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             }
           ]}
         >
-          <SealInput.Input
-            disabled={action === PageAction.EDIT}
+          <SealAutoComplete
+            filterOption
+            defaultActiveFirstOption
+            disabled={false}
+            options={ollamaModelOptions}
             label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
+            addAfter={
+              <Typography.Link
+                href="https://www.ollama.com/library"
+                target="_blank"
+              >
+                <Tooltip
+                  title={intl.formatMessage({ id: 'models.form.ollamalink' })}
+                  placement="topRight"
+                >
+                  <IconFont
+                    type="icon-external-link"
+                    className="font-size-14"
+                  ></IconFont>
+                </Tooltip>
+              </Typography.Link>
+            }
             required
-          ></SealInput.Input>
+          ></SealAutoComplete>
         </Form.Item>
       </>
     );
@@ -226,7 +245,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ]}
         >
           <SealInput.Input
-            disabled={action === PageAction.EDIT}
+            disabled={false}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             required
           ></SealInput.Input>

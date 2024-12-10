@@ -64,6 +64,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   }, [ref.current]);
 
   const handleOnAnalyse = useCallback((data: any, analyser: any) => {
+    console.log('data+++++++++++++++++=:', data);
     setAudioChunks((pre: any) => {
       return {
         data: data,
@@ -88,6 +89,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
 
   const handleOnAudioprocess = useCallback(
     (current: number) => {
+      console.log('current:', current);
       throttleUpdateCurrentTime(current);
     },
     [throttleUpdateCurrentTime]
@@ -119,7 +121,7 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
   };
 
   const handleReady = useCallback((duration: number) => {
-    console.log('duration:', duration);
+    console.log('ready+++++++++++++++', duration);
     setDuration(duration);
   }, []);
 
@@ -159,6 +161,17 @@ const SpeechItem: React.FC<SpeechContentProps> = (props) => {
             onAudioprocess={handleOnAudioprocess}
             ref={ref}
           ></AudioPlayer>
+          {/* <RawAudioPlayer
+            {...props}
+            url={props.audioUrl}
+            onReady={handleReady}
+            onEnded={handleOnFinish}
+            onPlay={handleOnPlay}
+            onPause={handleOnPause}
+            onAnalyse={handleOnAnalyse}
+            onAudioProcess={handleOnAudioprocess}
+            ref={ref}
+          ></RawAudioPlayer> */}
           {isPlay && (
             <AudioAnimation
               maxBarCount={100}

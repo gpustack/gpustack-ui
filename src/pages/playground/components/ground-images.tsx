@@ -540,7 +540,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             placeholer={intl.formatMessage({
               id: 'playground.input.prompt.holder'
             })}
-            actions={['clear', 'upload']}
+            actions={['clear']}
             defaultSize={{
               minRows: 5,
               maxRows: 5

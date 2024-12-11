@@ -94,17 +94,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     if (!open) {
       setIsGGUF(false);
       form.current?.setFieldValue?.('backend', backendOptionsMap.vllm);
+    } else if (source === modelSourceMap.ollama_library_value) {
+      form.current?.setFieldValue?.('backend', backendOptionsMap.llamaBox);
+      setIsGGUF(true);
     }
+
     return () => {
       setSelectedModel({});
     };
-  }, [open]);
-
-  useEffect(() => {
-    if (source === modelSourceMap.ollama_library_value) {
-      setIsGGUF(true);
-    }
-  }, [source]);
+  }, [open, source]);
 
   return (
     <Drawer

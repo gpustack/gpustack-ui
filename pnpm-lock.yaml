@@ -14,6 +14,9 @@ dependencies:
   '@ant-design/pro-components':
     specifier: ^2.7.18
     version: 2.7.19(antd@5.21.6)(rc-field-form@2.4.0)(react-dom@18.2.0)(react@18.2.0)
+  '@ffmpeg/ffmpeg':
+    specifier: ^0.12.10
+    version: 0.12.10
   '@huggingface/gguf':
     specifier: ^0.1.7
     version: 0.1.7
@@ -4129,6 +4132,18 @@ packages:
     resolution: {integrity: sha512-5Aap/GaRupgNx/feGBwLLTVv8OQFfv3pq2lPRzPg9R+IOBnDgghTGW7l7EuVXOvg5cc/xSAlRW8rBrjIC3Nvqw==, tarball: https://registry.npmjs.org/@exodus/schemasafe/-/schemasafe-1.3.0.tgz}
     dev: false
 
+  /@ffmpeg/ffmpeg@0.12.10:
+    resolution: {integrity: sha512-lVtk8PW8e+NUzGZhPTWj2P1J4/NyuCrbDD3O9IGpSeLYtUZKBqZO8CNj1WYGghep/MXoM8e1qVY1GztTkf8YYQ==, tarball: https://registry.npmjs.org/@ffmpeg/ffmpeg/-/ffmpeg-0.12.10.tgz}
+    engines: {node: '>=18.x'}
+    dependencies:
+      '@ffmpeg/types': 0.12.2
+    dev: false
+
+  /@ffmpeg/types@0.12.2:
+    resolution: {integrity: sha512-NJtxwPoLb60/z1Klv0ueshguWQ/7mNm106qdHkB4HL49LXszjhjCCiL+ldHJGQ9ai2Igx0s4F24ghigy//ERdA==, tarball: https://registry.npmjs.org/@ffmpeg/types/-/types-0.12.2.tgz}
+    engines: {node: '>=16.x'}
+    dev: false
+
   /@floating-ui/core@0.6.2:
     resolution: {integrity: sha512-jktYRmZwmau63adUG3GKOAVCofBXkk55S/zQ94XOorAHhwqFIOFAy1rSp2N0Wp6/tGbe9V3u/ExlGZypyY17rg==, tarball: https://registry.npmjs.org/@floating-ui/core/-/core-0.6.2.tgz}
     dev: false
@@ -4995,7 +5010,7 @@ packages:
     dependencies:
       '@babel/core': 7.24.5
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -5036,7 +5051,7 @@ packages:
       postcss-syntax: '>=0.36.2'
     dependencies:
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
       remark: 13.0.0
       unist-util-find-all-after: 3.0.2
     transitivePeerDependencies:
@@ -14430,7 +14445,7 @@ packages:
     dependencies:
       htmlparser2: 3.10.1
       postcss: 7.0.39
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
     dev: false
 
   /postcss-image-set-function@4.0.7(postcss@8.4.38):
@@ -14903,30 +14918,6 @@ packages:
     dependencies:
       lodash: 4.17.21
       postcss: 8.4.38
-
-  /postcss-syntax@0.36.2(postcss@7.0.39):
-    resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
-    peerDependencies:
-      postcss: '>=5.0.0'
-      postcss-html: '*'
-      postcss-jsx: '*'
-      postcss-less: '*'
-      postcss-markdown: '*'
-      postcss-scss: '*'
-    peerDependenciesMeta:
-      postcss-html:
-        optional: true
-      postcss-jsx:
-        optional: true
-      postcss-less:
-        optional: true
-      postcss-markdown:
-        optional: true
-      postcss-scss:
-        optional: true
-    dependencies:
-      postcss: 7.0.39
-    dev: false
 
   /postcss-syntax@0.36.2(postcss@8.4.38):
     resolution: {integrity: sha512-nBRg/i7E3SOHWxF3PpF5WnJM/jQ1YpY9000OaVXlAQj6Zp/kIqJxEDWIZ67tAd7NLuk7zqN4yqe9nc0oNAOs1w==}
@@ -18198,7 +18189,7 @@ packages:
       postcss-sass: 0.4.4
       postcss-scss: 2.1.1
       postcss-selector-parser: 6.0.16
-      postcss-syntax: 0.36.2(postcss@7.0.39)
+      postcss-syntax: 0.36.2(postcss@8.4.38)
       postcss-value-parser: 4.2.0
       resolve-from: 5.0.0
       slash: 3.0.0

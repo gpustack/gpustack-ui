@@ -17,6 +17,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.7.18",
+    "@ffmpeg/ffmpeg": "^0.12.10",
     "@huggingface/gguf": "^0.1.7",
     "@huggingface/hub": "^0.15.1",
     "@huggingface/tasks": "^0.11.6",

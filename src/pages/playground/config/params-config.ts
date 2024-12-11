@@ -319,6 +319,9 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
       text: 'playground.image.params.negativePrompt',
       isLocalized: true
     },
+    attrs: {
+      trim: false
+    },
     rules: [
       {
         required: false

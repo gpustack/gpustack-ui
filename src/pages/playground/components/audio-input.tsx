@@ -1,5 +1,6 @@
 import { externalRefer } from '@/constants/external-links';
 import { AudioOutlined } from '@ant-design/icons';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
 import dayjs from 'dayjs';
@@ -43,8 +44,8 @@ const audioFormat: Record<string, string> = {
 };
 
 const recordingFormat = {
-  type: 'audio/wav',
-  suffix: '.wav'
+  type: 'audio/mpeg',
+  suffix: '.mp3'
 };
 
 const AudioInput: React.FC<AudioInputProps> = (props) => {
@@ -59,6 +60,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const analyser = useRef<any>(null);
   const dataArray = useRef<any>(null);
   const audioUrl = useRef<string>('');
+  const ffmpeg = useRef<any>(null);
 
   const initAudioContext = useCallback(() => {
     audioContext.current = new (window.AudioContext ||
@@ -89,6 +91,53 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     audioRecorder.current?.stop();
     // props.onRecord?.(false);
   };
+
+  const getAudioFormat = (type?: string) => {
+    const mimeType = type || audioRecorder.current?.mimeType;
+
+    let resultFormat = recordingFormat;
+
+    Object.keys(audioFormat).forEach((key: string) => {
+      if (mimeType.includes(key)) {
+        resultFormat = {
+          type: mimeType,
+          suffix: `.${audioFormat[key]}`
+        };
+      }
+    });
+    return resultFormat;
+  };
+
+  const convertAudioBlob2Mp3 = useCallback(
+    async (audioBlob: any, mimeType: string): Promise<Blob> => {
+      try {
+        if (!ffmpeg.current.loaded) {
+          await ffmpeg.current.load();
+        }
+        const format = getAudioFormat(mimeType);
+        const recordFile = new Uint8Array(await audioBlob.arrayBuffer());
+
+        await ffmpeg.current.writeFile(`input${format.suffix}`, recordFile);
+
+        await ffmpeg.current.exec([
+          '-i',
+          `input${format.suffix}`,
+          '-f',
+          'mp3',
+          'output.mp3'
+        ]);
+
+        const mp3Data = await ffmpeg.current.readFile('output.mp3');
+
+        const mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
+
+        return mp3Blob;
+      } catch (error) {
+        return new Blob();
+      }
+    },
+    []
+  );
 
   // get all audio tracks
   const getAudioTracks = () => {
@@ -174,26 +223,11 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const handleAudioData = (audioData: any) => {
     props.onAudioData?.(audioData);
   };
-  const getAudioFormat = (type?: string) => {
-    const mimeType = type || audioRecorder.current?.mimeType;
-
-    let resultFormat = recordingFormat;
-
-    Object.keys(audioFormat).forEach((key: string) => {
-      if (mimeType.includes(key)) {
-        resultFormat = {
-          type: mimeType,
-          suffix: `.${audioFormat[key]}`
-        };
-      }
-    });
-    return resultFormat;
-  };
 
   const generateFileNameByTime = (type?: string) => {
-    const res = getAudioFormat(type);
+    const format = getAudioFormat(type);
     // format: recording-YYYY-MM-DD-HH_mm_ss.wav
-    return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${res.suffix}`;
+    return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${format.suffix}`;
   };
   // start recording
   const StartRecording = async () => {
@@ -209,6 +243,8 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
       audioRecorder.current = new MediaRecorder(audioStream.current);
 
+      console.log('audioRecorder:', audioRecorder.current);
+
       const audioChunks: any[] = [];
 
       audioRecorder.current.ondataavailable = (event: any) => {
@@ -221,20 +257,27 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       };
 
       // stop recording
-      audioRecorder.current.onstop = () => {
-        const res = getAudioFormat();
+      audioRecorder.current.onstop = async () => {
         const audioBlob = new Blob(audioChunks, {
-          type: 'audio/mpeg'
+          type: audioRecorder.current.mimeType
         });
-        console.log('audioBlob:', res, audioBlob);
-        audioUrl.current = URL.createObjectURL(audioBlob);
+
+        // convert audio blob to mp3
+        const mp3Blob = await convertAudioBlob2Mp3(
+          audioBlob,
+          audioRecorder.current.mimeType
+        );
+
+        console.log('mp3Blob:', mp3Blob, audioBlob);
+
+        audioUrl.current = mp3Blob.size ? URL.createObjectURL(mp3Blob) : '';
 
         handleAudioData({
-          chunks: audioBlob,
-          size: audioBlob.size,
-          type: audioBlob.type,
+          chunks: mp3Blob,
+          size: mp3Blob.size,
+          type: mp3Blob.type,
           url: audioUrl.current,
-          name: generateFileNameByTime(audioBlob.type),
+          name: generateFileNameByTime(mp3Blob.type),
           duration: Math.floor((Date.now() - startTime.current) / 1000)
         });
 
@@ -300,6 +343,13 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
   useEffect(() => {
     checkMicrophonePermission();
+  }, []);
+
+  useEffect(() => {
+    ffmpeg.current = new FFmpeg();
+    return () => {
+      ffmpeg.current = null;
+    };
   }, []);
 
   return (

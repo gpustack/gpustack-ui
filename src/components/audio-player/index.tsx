@@ -175,6 +175,18 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     console.log('onload', e);
   };
 
+  const onDownload = useCallback(() => {
+    const url = props.url || '';
+    const filename = props.name;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }, [props.url, props.name]);
+
   useEffect(() => {
     if (audioRef.current) {
       initPlayerConfig();

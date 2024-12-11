@@ -11,7 +11,7 @@ import {
 } from '@/utils/fetch-chunk-data';
 import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Divider, Form, Tooltip } from 'antd';
+import { Button, Form, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -540,11 +540,16 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             placeholer={intl.formatMessage({
               id: 'playground.input.prompt.holder'
             })}
-            actions={['clear']}
+            actions={['clear', 'upload']}
             defaultSize={{
               minRows: 5,
               maxRows: 5
             }}
+            title={
+              <span className="font-600">
+                {intl.formatMessage({ id: 'playground.image.prompt' })}
+              </span>
+            }
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!imageList.length}
@@ -555,10 +560,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             clearAll={handleClear}
             tools={
               <>
-                <span className="font-600">
-                  {intl.formatMessage({ id: 'playground.image.prompt' })}
-                </span>
-                <Divider type="vertical" />
                 <Tooltip
                   title={intl.formatMessage({
                     id: 'playground.image.prompt.random'

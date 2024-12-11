@@ -169,6 +169,7 @@ const ThumbImg: React.FC<{
                 return (
                   <SingleImage
                     {...item}
+                    key={item.uid}
                     autoSize={autoSize}
                     editable={editable}
                     autoBgColor={autoBgColor}

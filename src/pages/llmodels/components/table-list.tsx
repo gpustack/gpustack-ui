@@ -323,13 +323,12 @@ const Models: React.FC<ModelsProps> = ({
             ..._.omit(data, result.omits)
           }
         });
-        console.log('modelData:', modelData);
         setOpenDeployModal({
           ...openDeployModal,
           show: false
         });
         setTimeout(() => {
-          updateExpandedRowKeys([modelData.id]);
+          updateExpandedRowKeys([modelData.id, ...expandedRowKeys]);
         }, 300);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
       } catch (error) {}

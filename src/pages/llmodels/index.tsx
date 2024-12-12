@@ -87,7 +87,6 @@ const Models: React.FC = () => {
       const res: any = await queryModelsList(params, {
         cancelToken: axiosToken.token
       });
-
       setDataSource({
         dataList: res.items || [],
         loading: false,
@@ -173,8 +172,10 @@ const Models: React.FC = () => {
 
   useEffect(() => {
     if (!firstLoad) {
-      createModelsChunkRequest();
-      createModelsInstanceChunkRequest();
+      setTimeout(() => {
+        createModelsChunkRequest();
+        createModelsInstanceChunkRequest();
+      }, 100);
     }
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
@@ -205,6 +206,7 @@ const Models: React.FC = () => {
         handleNameChange={handleNameChange}
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
+        handleDeleteSuccess={fetchData}
         queryParams={queryParams}
         loading={dataSource.loading}
         total={dataSource.total}

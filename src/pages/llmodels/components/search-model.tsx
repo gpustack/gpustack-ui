@@ -180,11 +180,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   );
   const handleSearchInputChange = useCallback((e: any) => {
     searchInputRef.current = e.target.value;
+    console.log('change:', searchInputRef.current);
   }, []);
   const handlerSearchModels = useCallback(
     async (e: any) => {
-      searchInputRef.current = e.target.value;
-      handleOnSearchRepo();
+      setTimeout(() => {
+        handleOnSearchRepo();
+      }, 100);
     },
     [handleOnSearchRepo]
   );

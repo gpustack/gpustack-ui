@@ -27,10 +27,11 @@ export function useUpdateChunkedList(options: {
   }, [options.dataList]);
 
   const debounceUpdateChunckedList = () => {
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      options.setDataList?.([...cacheDataListRef.current]);
-    }, 80);
+    // clearTimeout(timerRef.current);
+    // timerRef.current = setTimeout(() => {
+    //   options.setDataList?.([...cacheDataListRef.current]);
+    // }, 80);
+    options.setDataList?.([...cacheDataListRef.current]);
   };
   const updateChunkedList = (data: ChunkedCollection) => {
     console.log('updateChunkedList=====', {

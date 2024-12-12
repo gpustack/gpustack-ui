@@ -347,6 +347,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
   useEffect(() => {
     ffmpeg.current = new FFmpeg();
+    ffmpeg.current.load?.();
     return () => {
       ffmpeg.current = null;
     };

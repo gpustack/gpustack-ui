@@ -55,6 +55,7 @@ interface ModelsProps {
   handleNameChange: (e: any) => void;
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
+  handleDeleteSuccess: () => void;
   queryParams: {
     page: number;
     perPage: number;
@@ -71,6 +72,7 @@ const Models: React.FC<ModelsProps> = ({
   handleNameChange,
   handleSearch,
   handlePageChange,
+  handleDeleteSuccess,
   dataSource,
   gpuDeviceList,
   workerList,
@@ -347,6 +349,7 @@ const Models: React.FC<ModelsProps> = ({
         await deleteModel(row.id);
         removeExpandedRowKey([row.id]);
         rowSelection.removeSelectedKey(row.id);
+        handleDeleteSuccess();
       }
     });
   };
@@ -358,6 +361,7 @@ const Models: React.FC<ModelsProps> = ({
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
         rowSelection.clearSelections();
         removeExpandedRowKey(rowSelection.selectedRowKeys);
+        handleDeleteSuccess();
       }
     });
   };

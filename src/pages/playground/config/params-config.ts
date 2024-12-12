@@ -113,8 +113,8 @@ export const ImageParamsConfig: ParamsSchema[] = [
     name: 'size',
     options: [
       { label: 'playground.params.custom', value: 'custom', locale: true },
-      { label: '256x256', value: '256x256' },
       { label: '512x512', value: '512x512' },
+      { label: '768x1024', value: '768x1024' },
       { label: '1024x1024', value: '1024x1024' }
     ],
     description: {

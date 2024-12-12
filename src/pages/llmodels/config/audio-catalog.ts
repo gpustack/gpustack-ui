@@ -101,5 +101,80 @@ export const ModelScopeModels = [
     type: 'tts',
     org: 'iic',
     name: 'CosyVoice-300M-SFT'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-large-v2'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-large-v3'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-small.en'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-small'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-medium.en'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-medium'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-tiny'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-distil-whisper-large-v3'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-tiny.en'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-distil-whisper-large-v2'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-base'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-base.en'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-distil-whisper-medium.en'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-distil-whisper-small.en'
+  },
+  {
+    type: 'stt',
+    org: 'gpustack',
+    name: 'faster-whisper-large-v1'
   }
 ];

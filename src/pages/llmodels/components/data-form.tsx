@@ -126,12 +126,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     let data = null;
     if (props.source === modelSourceMap.huggingface_value) {
       data = HuggingFaceModels.find(
-        (item) => `${item.org}/${item.name}` === props.selectedModel.name
+        (item) =>
+          `${item.org}/${item.name}`.indexOf(props.selectedModel.name) > -1 ||
+          props.selectedModel.name.indexOf(`${item.org}/${item.name}`) > -1
       );
     }
     if (props.source === modelSourceMap.modelscope_value) {
       data = ModelScopeModels.find(
-        (item) => `${item.org}/${item.name}` === props.selectedModel.name
+        (item) =>
+          `${item.org}/${item.name}`.indexOf(props.selectedModel.name) > -1 ||
+          props.selectedModel.name.indexOf(`${item.org}/${item.name}`) > -1
       );
     }
     if (data) {

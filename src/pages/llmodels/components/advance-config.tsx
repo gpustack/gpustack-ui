@@ -278,7 +278,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               {
                 label: 'vox-box',
                 value: backendOptionsMap.voxBox,
-                disabled: false
+                disabled: source === modelSourceMap.ollama_library_value
               }
             ]}
             disabled={

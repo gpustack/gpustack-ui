@@ -87,19 +87,12 @@ const Models: React.FC = () => {
       const res: any = await queryModelsList(params, {
         cancelToken: axiosToken.token
       });
-      if (!firstLoad) {
-        setDataSource({
-          dataList: res.items || [],
-          loading: false,
-          total: res.pagination.total
-        });
-      } else {
-        setDataSource({
-          ...dataSource,
-          loading: !!res.items.length,
-          total: res.pagination.total
-        });
-      }
+
+      setDataSource({
+        dataList: res.items || [],
+        loading: false,
+        total: res.pagination.total
+      });
     } catch (error) {
       setDataSource({
         dataList: [],

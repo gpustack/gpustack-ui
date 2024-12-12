@@ -406,9 +406,6 @@ const Models: React.FC<ModelsProps> = ({
       name: row.name,
       async onOk() {
         await deleteModelInstance(row.id);
-        if (list.length === 1) {
-          removeExpandedRowKey([row.model_id]);
-        }
       }
     });
   };

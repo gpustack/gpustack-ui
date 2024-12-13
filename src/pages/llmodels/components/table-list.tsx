@@ -17,9 +17,11 @@ import {
 } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import {
+  AudioOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
+  PictureOutlined,
   SyncOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
@@ -341,6 +343,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleLogModalCancel = useCallback(() => {
     setOpenLogModal(false);
   }, []);
+
   const handleDelete = async (row: any) => {
     modalRef.current.show({
       content: 'models.table.models',
@@ -353,6 +356,7 @@ const Models: React.FC<ModelsProps> = ({
       }
     });
   };
+
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'models.table.models',
@@ -465,12 +469,15 @@ const Models: React.FC<ModelsProps> = ({
       if (record.reranker) {
         return (
           <Tag
+            icon={<IconFont type="icon-rank1"></IconFont>}
             style={{
               margin: 0,
-              opacity: 0.8,
+              opacity: 1,
+              paddingInline: 8,
+              borderRadius: 12,
               transform: 'scale(0.9)'
             }}
-            color="geekblue"
+            color="cyan"
           >
             Reranker
           </Tag>
@@ -480,12 +487,15 @@ const Models: React.FC<ModelsProps> = ({
       if (record.embedding_only && !record.reranker) {
         return (
           <Tag
+            icon={<IconFont type="icon-cube"></IconFont>}
             style={{
               margin: 0,
-              opacity: 0.8,
+              opacity: 1,
+              paddingInline: 8,
+              borderRadius: 12,
               transform: 'scale(0.9)'
             }}
-            color="geekblue"
+            color="purple"
           >
             Embedding
           </Tag>
@@ -494,9 +504,12 @@ const Models: React.FC<ModelsProps> = ({
       if (record.text_to_speech) {
         return (
           <Tag
+            icon={<IconFont type="icon-sound-wave"></IconFont>}
             style={{
               margin: 0,
-              opacity: 0.8,
+              opacity: 1,
+              paddingInline: 8,
+              borderRadius: 12,
               transform: 'scale(0.9)'
             }}
             color="geekblue"
@@ -508,12 +521,15 @@ const Models: React.FC<ModelsProps> = ({
       if (record.speech_to_text) {
         return (
           <Tag
+            icon={<AudioOutlined />}
             style={{
               margin: 0,
-              opacity: 0.8,
+              opacity: 1,
+              paddingInline: 8,
+              borderRadius: 12,
               transform: 'scale(0.9)'
             }}
-            color="geekblue"
+            color="processing"
           >
             Speech-To-Text
           </Tag>
@@ -522,12 +538,15 @@ const Models: React.FC<ModelsProps> = ({
       if (record.image_only) {
         return (
           <Tag
+            icon={<PictureOutlined />}
             style={{
               margin: 0,
-              opacity: 0.8,
+              opacity: 1,
+              paddingInline: 8,
+              borderRadius: 12,
               transform: 'scale(0.9)'
             }}
-            color="geekblue"
+            color="orange"
           >
             Image
           </Tag>
@@ -614,7 +633,12 @@ const Models: React.FC<ModelsProps> = ({
                   onClick={handleDeleteBatch}
                   disabled={!rowSelection.selectedRowKeys.length}
                 >
-                  {intl?.formatMessage?.({ id: 'common.button.delete' })}
+                  <span>
+                    {intl?.formatMessage?.({ id: 'common.button.delete' })}
+                    {rowSelection.selectedRowKeys.length > 0 && (
+                      <span>({rowSelection.selectedRowKeys?.length})</span>
+                    )}
+                  </span>
                 </Button>
               </Access>
             </Space>

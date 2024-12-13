@@ -54,9 +54,8 @@ const ModelCard: React.FC<{
       return modelData?.pipeline_tag ? [modelData?.pipeline_tag] : [];
     }
     if (modelSource === modelSourceMap.modelscope_value) {
-      return modelData?.Tasks?.map((task: any) => task?.Name)?.filter(
-        (val: string) => val
-      );
+      const tasks = modelData?.Tasks || [];
+      return tasks.map((task: any) => task?.Name)?.filter((val: string) => val);
     }
     return [];
   }, [modelSource, modelData]);

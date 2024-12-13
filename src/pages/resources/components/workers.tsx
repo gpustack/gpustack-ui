@@ -282,7 +282,12 @@ const Resources: React.FC = () => {
               onClick={handleDeleteBatch}
               disabled={!rowSelection.selectedRowKeys.length}
             >
-              {intl.formatMessage({ id: 'common.button.delete' })}
+              <span>
+                {intl?.formatMessage?.({ id: 'common.button.delete' })}
+                {rowSelection.selectedRowKeys.length > 0 && (
+                  <span>({rowSelection.selectedRowKeys?.length})</span>
+                )}
+              </span>
             </Button>
           </Space>
         }
@@ -333,7 +338,15 @@ const Resources: React.FC = () => {
               >
                 {_.map(record.labels, (item: any, index: string) => {
                   return (
-                    <AutoTooltip key={index} className="m-r-0" maxWidth={120}>
+                    <AutoTooltip
+                      key={index}
+                      className="m-r-0"
+                      maxWidth={120}
+                      style={{
+                        paddingInline: 8,
+                        borderRadius: 12
+                      }}
+                    >
                       {index}:{item}
                     </AutoTooltip>
                   );

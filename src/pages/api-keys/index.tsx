@@ -195,7 +195,12 @@ const APIKeys: React.FC = () => {
                 onClick={handleDeleteBatch}
                 disabled={!rowSelection.selectedRowKeys.length}
               >
-                {intl.formatMessage({ id: 'common.button.delete' })}
+                <span>
+                  {intl?.formatMessage?.({ id: 'common.button.delete' })}
+                  {rowSelection.selectedRowKeys.length > 0 && (
+                    <span>({rowSelection.selectedRowKeys?.length})</span>
+                  )}
+                </span>
               </Button>
             </Space>
           }

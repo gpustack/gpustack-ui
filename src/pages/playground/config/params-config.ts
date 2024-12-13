@@ -128,6 +128,67 @@ export const ImageParamsConfig: ParamsSchema[] = [
   }
 ];
 
+export const ImageEidtParamsConfig: ParamsSchema[] = [
+  // {
+  //   type: 'Slider',
+  //   name: 'brush_size',
+  //   label: {
+  //     text: 'Brush Size',
+  //     isLocalized: false
+  //   },
+  //   attrs: {
+  //     min: 25,
+  //     max: 80
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // },
+  {
+    type: 'InputNumber',
+    name: 'n',
+    label: {
+      text: 'playground.params.counts',
+      isLocalized: true
+    },
+    attrs: {
+      min: 1,
+      max: 4
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Select',
+    name: 'size',
+    options: [
+      { label: 'playground.params.custom', value: 'custom', locale: true },
+      { label: '512x512', value: '512x512' },
+      { label: '768x1024', value: '768x1024' },
+      { label: '1024x1024', value: '1024x1024' }
+    ],
+    description: {
+      text: 'playground.params.size.description',
+      html: true,
+      isLocalized: true
+    },
+    label: {
+      text: 'playground.params.size',
+      isLocalized: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  }
+];
+
 export const ImageconstExtraConfig: ParamsSchema[] = [
   {
     type: 'Select',

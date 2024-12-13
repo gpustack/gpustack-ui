@@ -2,31 +2,76 @@ import IconFont from '@/components/icon-font';
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
+import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Space } from 'antd';
+import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundImages from './components/ground-images';
+import ImageEdit from './components/image-edit';
 import './style/play-ground.less';
+
+const TabsValueMap = {
+  Tab1: 'generate',
+  Tab2: 'edit'
+};
 
 const TextToImages: React.FC = () => {
   const intl = useIntl();
   const { size } = useWindowResize();
+  const [activeKey, setActiveKey] = useState(TabsValueMap.Tab1);
   const groundTabRef1 = useRef<any>(null);
+  const groundTabRef2 = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+  const optionsList = [
+    {
+      label: 'Generate',
+      value: TabsValueMap.Tab1,
+      icon: <DiffOutlined />
+    },
+    {
+      label: 'Edit',
+      value: TabsValueMap.Tab2,
+      icon: <HighlightOutlined />
+    }
+  ];
+
   const handleViewCode = useCallback(() => {
-    groundTabRef1.current?.viewCode?.();
-  }, []);
+    if (activeKey === TabsValueMap.Tab1) {
+      groundTabRef1.current?.viewCode?.();
+    } else if (activeKey === TabsValueMap.Tab2) {
+      groundTabRef2.current?.viewCode?.();
+    }
+  }, [activeKey]);
 
   const handleToggleCollapse = useCallback(() => {
-    groundTabRef1.current?.setCollapse?.();
-  }, []);
+    if (activeKey === TabsValueMap.Tab1) {
+      groundTabRef1.current?.setCollapse?.();
+      return;
+    }
+    groundTabRef2.current?.setCollapse?.();
+  }, [activeKey]);
+
+  const items: TabsProps['items'] = [
+    {
+      key: TabsValueMap.Tab1,
+      label: 'Generate',
+      children: (
+        <GroundImages ref={groundTabRef1} modelList={modelList}></GroundImages>
+      )
+    },
+    {
+      key: TabsValueMap.Tab2,
+      label: 'Edit',
+      children: <ImageEdit modelList={modelList} ref={groundTabRef2} />
+    }
+  ];
 
   useEffect(() => {
     if (size.width < breakpoints.lg) {
@@ -105,7 +150,21 @@ const TextToImages: React.FC = () => {
     <PageContainer
       ghost
       header={{
-        title: intl.formatMessage({ id: 'menu.playground.text2images' }),
+        title: (
+          <div className="flex items-center">
+            <span className="font-600">
+              {intl.formatMessage({ id: 'menu.playground.text2images' })}
+            </span>
+            {
+              <Segmented
+                options={optionsList}
+                size="middle"
+                className="m-l-40"
+                onChange={(key) => setActiveKey(key)}
+              ></Segmented>
+            }
+          </div>
+        ),
         breadcrumb: {}
       }}
       extra={renderExtra()}
@@ -113,10 +172,7 @@ const TextToImages: React.FC = () => {
     >
       <div className="play-ground">
         <div className="chat">
-          <GroundImages
-            ref={groundTabRef1}
-            modelList={modelList}
-          ></GroundImages>
+          <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
       </div>
     </PageContainer>

@@ -21,9 +21,9 @@ import {
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
+  ExperimentOutlined,
   PictureOutlined,
-  SyncOutlined,
-  WechatWorkOutlined
+  SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
@@ -243,7 +243,7 @@ const Models: React.FC<ModelsProps> = ({
     {
       label: 'models.openinplayground',
       key: 'chat',
-      icon: <WechatWorkOutlined />
+      icon: <ExperimentOutlined />
     },
     {
       label: 'common.button.delete',

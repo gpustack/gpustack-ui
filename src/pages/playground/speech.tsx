@@ -41,12 +41,12 @@ const Playground: React.FC = () => {
     {
       label: intl.formatMessage({ id: 'playground.audio.texttospeech' }),
       value: TabsValueMap.Tab1,
-      icon: <AudioOutlined />
+      icon: <IconFont type={'icon-audio'}></IconFont>
     },
     {
       label: intl.formatMessage({ id: 'playground.audio.speechtotext' }),
       value: TabsValueMap.Tab2,
-      icon: <IconFont type={'icon-audio'}></IconFont>
+      icon: <AudioOutlined />
     }
   ];
 

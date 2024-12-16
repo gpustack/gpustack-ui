@@ -1,14 +1,32 @@
+import _ from 'lodash';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
-export const generateImageCode = ({ api, parameters }: Record<string, any>) => {
+export const generateImageCode = ({
+  api,
+  parameters,
+  isFormdata = false,
+  edit = false
+}: Record<string, any>) => {
   const host = window.location.origin;
 
   // ========================= Curl =========================
-  const curlCode = `
+  let curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
-${formatCurlArgs(parameters, false)}`.trim();
+${formatCurlArgs(parameters, isFormdata)}`.trim();
+
+  if (edit) {
+    curlCode = `
+curl ${host}${api} \\
+-H "Content-Type: multipart/form-data" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-F image="@image.png" \\
+-F mask="@mask.png" \\
+${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
+      .trim()
+      .replace(/\\$/, '');
+  }
 
   // ========================= Python =========================
   const pythonCode = `
@@ -46,16 +64,29 @@ axios.post(url, data, { headers }).then((response) => {
 
 export const generateOpenaiImageCode = ({
   api,
-  parameters
+  parameters,
+  isFormdata = false,
+  edit = false
 }: Record<string, any>) => {
   const host = window.location.origin;
 
   // ========================= Curl =========================
-  const curlCode = `
+  let curlCode = `
+curl ${host}${api} \\
+-H "Content-Type: multipart/form-data" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+${formatCurlArgs(parameters, isFormdata)}`.trim();
+  if (edit) {
+    curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
-${formatCurlArgs(parameters, false)}`.trim();
+-F image="@image.png" \\
+-F mask="@mask.png" \\
+${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
+      .trim()
+      .replace(/\\$/, '');
+  }
 
   // ========================= Python =========================
   const pythonCode = `

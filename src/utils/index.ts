@@ -140,3 +140,36 @@ export const generateRandomNumber = () => {
   // 16: 0x1000；32:0x100000000
   return Math.floor(Math.random() * 0x100000000);
 };
+
+function base64ToBlob(base64: string, contentType = '', sliceSize = 512) {
+  const byteCharacters = atob(base64.split(',')[1]); // 去掉 Base64 前缀部分
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+}
+
+export const base64ToFile = (base64String: string, fileName: string) => {
+  if (!base64String) {
+    return null;
+  }
+  console.log('base64String:', base64String);
+  const match = base64String.match(/data:(.*?);base64,/);
+  if (!match) {
+    throw new Error('Invalid base64 string');
+  }
+  const contentType = match[1];
+  const blob = base64ToBlob(base64String, contentType);
+  return new File([blob], fileName || contentType, { type: contentType });
+};

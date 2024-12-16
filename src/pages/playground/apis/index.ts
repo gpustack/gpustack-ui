@@ -3,6 +3,7 @@ import { request } from '@umijs/max';
 export const CHAT_API = '/v1-openai/chat/completions';
 
 export const CREAT_IMAGE_API = '/v1-openai/images/generations';
+export const EDIT_IMAGE_API = '/v1-openai/images/edits';
 
 export const EMBEDDING_API = '/v1-openai/embeddings';
 

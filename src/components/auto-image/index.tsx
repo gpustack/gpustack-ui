@@ -19,10 +19,11 @@ const AutoImage: React.FC<
     height: number | string;
     width?: number | string;
     autoSize?: boolean;
+    preview?: boolean;
     onLoad?: () => void;
   }
 > = (props) => {
-  const { height = 100, width: w, autoSize, ...rest } = props;
+  const { height = 100, width: w, autoSize, preview = true, ...rest } = props;
   const [width, setWidth] = useState(w || 0);
   const [isError, setIsError] = useState(false);
 
@@ -88,35 +89,37 @@ const AutoImage: React.FC<
       onLoad={handleImgLoad}
       fallback={fallbackImg}
       crossOrigin="anonymous"
-      preview={{
-        mask: <EyeOutlined />,
-        toolbarRender: (
-          _,
-          {
-            transform: { scale },
-            actions: {
-              onFlipY,
-              onFlipX,
-              onRotateLeft,
-              onRotateRight,
-              onZoomOut,
-              onZoomIn,
-              onReset
+      preview={
+        preview ?? {
+          mask: <EyeOutlined />,
+          toolbarRender: (
+            _,
+            {
+              transform: { scale },
+              actions: {
+                onFlipY,
+                onFlipX,
+                onRotateLeft,
+                onRotateRight,
+                onZoomOut,
+                onZoomIn,
+                onReset
+              }
             }
-          }
-        ) => (
-          <Space size={12} className="toolbar-wrapper">
-            <DownloadOutlined onClick={onDownload} />
-            <SwapOutlined rotate={90} onClick={onFlipY} />
-            <SwapOutlined onClick={onFlipX} />
-            <RotateLeftOutlined onClick={onRotateLeft} />
-            <RotateRightOutlined onClick={onRotateRight} />
-            <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
-            <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
-            <UndoOutlined onClick={onReset} />
-          </Space>
-        )
-      }}
+          ) => (
+            <Space size={12} className="toolbar-wrapper">
+              <DownloadOutlined onClick={onDownload} />
+              <SwapOutlined rotate={90} onClick={onFlipY} />
+              <SwapOutlined onClick={onFlipX} />
+              <RotateLeftOutlined onClick={onRotateLeft} />
+              <RotateRightOutlined onClick={onRotateRight} />
+              <ZoomOutOutlined disabled={scale === 1} onClick={onZoomOut} />
+              <ZoomInOutlined disabled={scale === 50} onClick={onZoomIn} />
+              <UndoOutlined onClick={onReset} />
+            </Space>
+          )
+        }
+      }
     />
   );
 };

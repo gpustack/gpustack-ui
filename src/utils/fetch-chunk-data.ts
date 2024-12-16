@@ -1,5 +1,4 @@
 import qs from 'query-string';
-
 const extractStreamRegx = /data:\s*({.*?})(?=\n|$)/g;
 
 const extractJSON = (dataStr: string) => {
@@ -50,6 +49,62 @@ export const fetchChunkedData = async (params: {
       'Content-Type': 'application/json',
       ...params.headers
     }
+  });
+  console.log('response====', response);
+  if (!response.ok) {
+    return {
+      error: true,
+      data: await response.json()
+    };
+  }
+  const reader = response?.body?.getReader();
+  const decoder = new TextDecoder('utf-8', {
+    fatal: true
+  });
+  return {
+    reader,
+    decoder
+  };
+};
+
+const createFormData = (data: any): FormData => {
+  const formData = new FormData();
+
+  const appendToFormData = (key: string, value: any) => {
+    if (value instanceof File) {
+      // 处理文件类型
+      formData.append(key, value);
+    } else if (typeof value === 'object' && value !== null) {
+      // 如果是对象或数组，序列化为 JSON 字符串
+      formData.append(key, JSON.stringify(value));
+    } else {
+      // 处理基本数据类型
+      formData.append(key, String(value));
+    }
+  };
+
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      appendToFormData(key, data[key]);
+    }
+  }
+
+  return formData;
+};
+
+export const fetchChunkedDataPostFormData = async (params: {
+  data?: any;
+  url: string;
+  params?: any;
+  signal?: AbortSignal;
+  method?: string;
+  headers?: any;
+}) => {
+  const { url } = params;
+  const response = await fetch(url, {
+    method: 'POST',
+    body: createFormData(params.data),
+    signal: params.signal
   });
   console.log('response====', response);
   if (!response.ok) {

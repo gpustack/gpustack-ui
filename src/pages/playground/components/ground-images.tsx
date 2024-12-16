@@ -11,7 +11,7 @@ import {
 } from '@/utils/fetch-chunk-data';
 import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Form, Tooltip } from 'antd';
+import { Button, Checkbox, Form, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -99,6 +99,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const form = useRef<any>(null);
   const inputRef = useRef<any>(null);
+  const previewRef = useRef<any>({
+    preview: false,
+    preview_faster: false
+  });
 
   const size = Form.useWatch('size', form.current?.form);
 
@@ -153,7 +157,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const finalParameters = useMemo(() => {
     if (parameters.size === 'custom') {
       return {
-        ..._.omit(parameters, ['width', 'height']),
+        ..._.omit(parameters, ['width', 'height', 'preview']),
         size:
           parameters.width && parameters.height
             ? `${parameters.width}x${parameters.height}`
@@ -161,7 +165,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
     }
     return {
-      ..._.omit(parameters, ['width', 'height', 'random_seed'])
+      ..._.omit(parameters, ['width', 'height', 'random_seed', 'preview'])
     };
   }, [parameters]);
 
@@ -205,6 +209,23 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setCurrentPrompt(current?.content || '');
       const imgSize = _.split(finalParameters.size, 'x');
 
+      // preview
+      let stream_options: Record<string, any> = {
+        chunk_size: 16 * 1024,
+        chunk_results: true
+      };
+      if (parameters.preview === 'preview') {
+        stream_options = {
+          preview: true
+        };
+      }
+
+      if (parameters.preview === 'preview_faster') {
+        stream_options = {
+          preview_faster: true
+        };
+      }
+
       let newImageList = Array(parameters.n)
         .fill({})
         .map((item, index: number) => {
@@ -215,6 +236,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             height: imgSize[1],
             width: imgSize[0],
             loading: true,
+            progressType: stream_options.chunk_results ? 'dashboard' : 'line',
             uid: setMessageId()
           };
         });
@@ -228,8 +250,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
         stream: true,
         stream_options: {
-          chunk_size: 16 * 1024,
-          chunk_results: true
+          ...stream_options
         },
         prompt: current?.content || currentPrompt || ''
       };
@@ -266,8 +287,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
-          if (item.b64_json) {
+          if (item.b64_json && stream_options.chunk_results) {
             imgItem.dataUrl += item.b64_json;
+          } else if (item.b64_json) {
+            imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
           }
           const progress = _.round(item.progress, 0);
           newImageList[item.index] = {
@@ -278,7 +301,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,
             span: imgItem.span,
-            loading: progress < 100,
+            loading: stream_options.chunk_results ? progress < 100 : false,
             progress: progress
           };
         });
@@ -439,6 +462,27 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     return null;
   }, [size, intl]);
 
+  const hanldeOnPreview = (e: any) => {
+    previewRef.current.preview = e.target.checked;
+  };
+
+  const hanldeOnPreviewFaster = (e: any) => {
+    previewRef.current.preview_faster = e.target.checked;
+  };
+
+  const renderPreview = useMemo(() => {
+    return (
+      <>
+        <Checkbox onChange={hanldeOnPreview} defaultChecked={false}>
+          Preview
+        </Checkbox>
+        <Checkbox onChange={hanldeOnPreviewFaster} defaultChecked={false}>
+          Preview Faster
+        </Checkbox>
+      </>
+    );
+  }, []);
+
   useEffect(() => {
     return () => {
       requestToken.current?.abort?.();
@@ -508,7 +552,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 autoBgColor={false}
                 editable={false}
                 dataList={imageList}
-                loading={loading}
                 responseable={true}
                 gutter={[8, 16]}
                 autoSize={true}

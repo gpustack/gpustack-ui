@@ -1,9 +1,9 @@
 import { externalRefer } from '@/constants/external-links';
 import { AudioOutlined } from '@ant-design/icons';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { useIntl } from '@umijs/max';
 import { Button, Space, Tooltip } from 'antd';
 import dayjs from 'dayjs';
+import lamejs from 'lamejs';
 import React, {
   useCallback,
   useEffect,
@@ -60,7 +60,11 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   const analyser = useRef<any>(null);
   const dataArray = useRef<any>(null);
   const audioUrl = useRef<string>('');
-  const ffmpeg = useRef<any>(null);
+  const scriptProcessor = useRef<any>(null);
+  const mp3Encoder = useRef<any>(null);
+  const mp3Data = useRef<any>(null);
+  const mediaStreamSource = useRef<any>(null);
+  const sampleRate = 44100; // mp3
 
   const initAudioContext = useCallback(() => {
     audioContext.current = new (window.AudioContext ||
@@ -69,14 +73,40 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     analyser.current = audioContext.current.createAnalyser();
     analyser.current.fftSize = 512;
     dataArray.current = new Uint8Array(analyser.current.frequencyBinCount);
-    console.log('audioContext:', audioContext.current, analyser.current);
   }, []);
 
   const generateVisualData = useCallback(() => {
-    const source = audioContext.current.createMediaStreamSource(
+    mediaStreamSource.current = audioContext.current.createMediaStreamSource(
       audioStream.current
     );
-    source.connect(analyser.current);
+    mediaStreamSource.current.connect(analyser.current);
+  }, []);
+
+  const initMp3Converter = useCallback(() => {
+    scriptProcessor.current = audioContext.current.createScriptProcessor(
+      4096,
+      1,
+      1
+    );
+
+    mp3Encoder.current = new lamejs.Mp3Encoder(1, sampleRate, 128);
+    mp3Data.current = [];
+
+    scriptProcessor.current.onaudioprocess = (event: any) => {
+      const pcmData = event.inputBuffer.getChannelData(0);
+      const samples = new Int16Array(pcmData.length);
+
+      for (let i = 0; i < pcmData.length; i++) {
+        samples[i] = Math.max(-1, Math.min(1, pcmData[i])) * 32767;
+      }
+      const mp3Chunk = mp3Encoder.current.encodeBuffer(samples);
+      if (mp3Chunk.length > 0) {
+        mp3Data.current.push(mp3Chunk);
+      }
+    };
+
+    mediaStreamSource.current.connect(scriptProcessor.current);
+    scriptProcessor.current.connect(audioContext.current.destination);
   }, []);
 
   // stop all audio tracks
@@ -84,12 +114,15 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     audioStream.current?.getTracks().forEach((track: any) => {
       track.stop();
     });
+    scriptProcessor.current.disconnect();
+    mediaStreamSource.current.disconnect();
+    audioContext.current.close();
   };
 
   const handleStopRecording = () => {
     setIsRecording(false);
     audioRecorder.current?.stop();
-    // props.onRecord?.(false);
+    stopAudioTracks();
   };
 
   const getAudioFormat = (type?: string) => {
@@ -108,36 +141,14 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     return resultFormat;
   };
 
-  const convertAudioBlob2Mp3 = useCallback(
-    async (audioBlob: any, mimeType: string): Promise<Blob> => {
-      try {
-        if (!ffmpeg.current.loaded) {
-          await ffmpeg.current.load();
-        }
-        const format = getAudioFormat(mimeType);
-        const recordFile = new Uint8Array(await audioBlob.arrayBuffer());
-
-        await ffmpeg.current.writeFile(`input${format.suffix}`, recordFile);
-
-        await ffmpeg.current.exec([
-          '-i',
-          `input${format.suffix}`,
-          '-f',
-          'mp3',
-          'output.mp3'
-        ]);
-
-        const mp3Data = await ffmpeg.current.readFile('output.mp3');
-
-        const mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mpeg' });
-
-        return mp3Blob;
-      } catch (error) {
-        return new Blob();
-      }
-    },
-    []
-  );
+  const generateMp3Data = useCallback(() => {
+    const finalChunk = mp3Encoder.current.flush();
+    if (finalChunk.length > 0) {
+      mp3Data.current.push(finalChunk);
+    }
+    const mp3Blob = new Blob(mp3Data.current, { type: 'audio/mpeg' });
+    return mp3Blob;
+  }, []);
 
   // get all audio tracks
   const getAudioTracks = () => {
@@ -172,7 +183,6 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       const permissionStatus = await navigator.permissions.query({
         name: 'microphone' as any
       });
-      console.log('permissionStatus:', permissionStatus);
       if (permissionStatus.state === 'granted') {
         setAudioPermission(true);
         props.onAudioPermission(true);
@@ -201,6 +211,8 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
       setAudioOn(true);
       setAudioPermission(true);
       initAudioContext();
+      generateVisualData();
+      initMp3Converter();
     } catch (error) {
       console.log('enable+++++++++', error);
     }
@@ -226,7 +238,6 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
   const generateFileNameByTime = (type?: string) => {
     const format = getAudioFormat(type);
-    // format: recording-YYYY-MM-DD-HH_mm_ss.wav
     return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${format.suffix}`;
   };
   // start recording
@@ -243,32 +254,19 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
       audioRecorder.current = new MediaRecorder(audioStream.current);
 
-      console.log('audioRecorder:', audioRecorder.current);
-
-      const audioChunks: any[] = [];
-
       audioRecorder.current.ondataavailable = (event: any) => {
-        audioChunks.push(event.data);
         if (props.voiceActivity) {
           analyser.current?.getByteFrequencyData(dataArray.current);
-
           props.onAnalyse?.(dataArray.current, analyser);
         }
       };
 
       // stop recording
       audioRecorder.current.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, {
-          type: audioRecorder.current.mimeType
-        });
+        handleStopRecording();
+        props.onAnalyse?.([], null);
 
-        // convert audio blob to mp3
-        const mp3Blob = await convertAudioBlob2Mp3(
-          audioBlob,
-          audioRecorder.current.mimeType
-        );
-
-        console.log('mp3Blob:', mp3Blob, audioBlob);
+        const mp3Blob = generateMp3Data();
 
         audioUrl.current = mp3Blob.size ? URL.createObjectURL(mp3Blob) : '';
 
@@ -280,16 +278,12 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
           name: generateFileNameByTime(mp3Blob.type),
           duration: Math.floor((Date.now() - startTime.current) / 1000)
         });
-
-        props.onAnalyse?.([], null);
       };
 
       setIsRecording(true);
       props.onRecord?.(true);
       startTime.current = Date.now();
       audioRecorder.current.start(100);
-      generateVisualData();
-      console.log('start recording');
     } catch (error) {
       console.log('error====', error);
     }
@@ -343,14 +337,6 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
   useEffect(() => {
     checkMicrophonePermission();
-  }, []);
-
-  useEffect(() => {
-    ffmpeg.current = new FFmpeg();
-    ffmpeg.current.load?.();
-    return () => {
-      ffmpeg.current = null;
-    };
   }, []);
 
   return (

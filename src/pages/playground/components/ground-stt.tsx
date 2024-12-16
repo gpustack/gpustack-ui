@@ -192,7 +192,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       duration: number;
       type: string;
     }) => {
-      console.log('handleOnAudioData===========', data);
       setAudioData(() => {
         return {
           url: data.url,
@@ -232,7 +231,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setAudioData(null);
     setTokenResult(null);
     setMessageList([]);
-    console.log('handleOnRecord============', val);
   }, []);
 
   const handleOnGenerate = async () => {

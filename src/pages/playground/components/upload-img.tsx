@@ -9,6 +9,10 @@ import React, { useCallback, useRef } from 'react';
 interface UploadImgProps {
   size?: 'small' | 'middle' | 'large';
   height?: number;
+  multiple?: boolean;
+  drag?: boolean;
+  disabled?: boolean;
+  children?: React.ReactNode;
   handleUpdateImgList: (
     imgList: { dataUrl: string; uid: number | string }[]
   ) => void;
@@ -16,7 +20,10 @@ interface UploadImgProps {
 
 const UploadImg: React.FC<UploadImgProps> = ({
   handleUpdateImgList,
-  height = 100,
+  multiple = true,
+  drag = false,
+  disabled = false,
+  children,
   size = 'small'
 }) => {
   const intl = useIntl();
@@ -71,19 +78,53 @@ const UploadImg: React.FC<UploadImgProps> = ({
 
   return (
     <>
-      <Upload
-        ref={uploadRef}
-        accept="image/*"
-        multiple
-        action="/"
-        fileList={[]}
-        beforeUpload={(file) => false}
-        onChange={handleChange}
-      >
-        <Tooltip title={intl.formatMessage({ id: 'playground.img.upload' })}>
-          <Button size={size} type="text" icon={<PictureOutlined />}></Button>
-        </Tooltip>
-      </Upload>
+      {drag ? (
+        <Upload.Dragger
+          ref={uploadRef}
+          accept="image/*"
+          multiple={multiple}
+          action="/"
+          fileList={[]}
+          beforeUpload={(file) => false}
+          onChange={handleChange}
+        >
+          {children ?? (
+            <Tooltip
+              title={intl.formatMessage({ id: 'playground.img.upload' })}
+            >
+              <Button
+                disabled={disabled}
+                size={size}
+                type="text"
+                icon={<PictureOutlined />}
+              ></Button>
+            </Tooltip>
+          )}
+        </Upload.Dragger>
+      ) : (
+        <Upload
+          ref={uploadRef}
+          accept="image/*"
+          multiple={multiple}
+          action="/"
+          fileList={[]}
+          beforeUpload={(file) => false}
+          onChange={handleChange}
+        >
+          {children ?? (
+            <Tooltip
+              title={intl.formatMessage({ id: 'playground.img.upload' })}
+            >
+              <Button
+                disabled={disabled}
+                size={size}
+                type="text"
+                icon={<PictureOutlined />}
+              ></Button>
+            </Tooltip>
+          )}
+        </Upload>
+      )}
     </>
   );
 };

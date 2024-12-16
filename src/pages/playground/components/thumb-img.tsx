@@ -6,8 +6,15 @@ import '../style/thumb-img.less';
 
 const ThumbImg: React.FC<{
   dataList: any[];
+  column?: number;
+  layout?: {
+    rows: number;
+    cols: number;
+  };
+  preview?: boolean;
   editable?: boolean;
   onDelete?: (uid: number) => void;
+  onClick?: (item: any) => void;
   loading?: boolean;
   style?: React.CSSProperties;
   responseable?: boolean;
@@ -16,11 +23,18 @@ const ThumbImg: React.FC<{
   autoSize?: boolean;
   autoBgColor?: boolean;
 }> = ({
+  layout = {
+    rows: 1,
+    cols: 1
+  },
+  preview = true,
+  column = 2,
   dataList,
   editable,
   responseable,
   gutter,
   onDelete,
+  onClick,
   autoBgColor,
   autoSize,
   style
@@ -30,6 +44,14 @@ const ThumbImg: React.FC<{
       onDelete?.(uid);
     },
     [onDelete]
+  );
+
+  const handleOnClick = useCallback(
+    (item: any) => {
+      console.log('item=======', item);
+      onClick?.(item);
+    },
+    [onClick]
   );
 
   const responseableStyle: Record<number, any> = useMemo(() => {
@@ -88,7 +110,7 @@ const ThumbImg: React.FC<{
         alignItems: 'flex-start'
       }
     };
-  }, [dataList, responseable]);
+  }, [dataList, responseable, column]);
 
   return (
     <>
@@ -100,34 +122,40 @@ const ThumbImg: React.FC<{
                 gutter={gutter || []}
                 className="flex-center"
                 style={{
-                  height: dataList.length > 2 ? '50%' : '100%',
+                  height: dataList.length > column ? '50%' : '100%',
                   flex: 'none',
                   width: '100%',
                   justifyContent:
                     dataList.length === 1 ? 'center' : 'flex-start'
                 }}
               >
-                {_.map(_.slice(dataList, 0, 2), (item: any, index: number) => {
-                  return (
-                    <Col
-                      span={item.span}
-                      key={`1-${index}`}
-                      className="flex-center justify-center"
-                      style={{ height: '100%', width: '100%' }}
-                    >
-                      <SingleImage
-                        {...item}
-                        style={{ ...(responseableStyle[index] || {}) }}
-                        autoSize={autoSize}
-                        editable={editable}
-                        autoBgColor={autoBgColor}
-                        onDelete={handleOnDelete}
-                      ></SingleImage>
-                    </Col>
-                  );
-                })}
+                {_.map(
+                  _.slice(dataList, 0, column),
+                  (item: any, index: number) => {
+                    return (
+                      <Col
+                        span={item.span}
+                        key={`1-${index}`}
+                        className="flex-center justify-center"
+                        style={{ height: '100%', width: '100%' }}
+                      >
+                        <SingleImage
+                          {...item}
+                          preview={preview}
+                          style={{ ...(responseableStyle[index] || {}) }}
+                          loading={item.loading}
+                          autoSize={autoSize}
+                          editable={editable}
+                          autoBgColor={autoBgColor}
+                          onDelete={handleOnDelete}
+                          onClick={() => handleOnClick(item)}
+                        ></SingleImage>
+                      </Col>
+                    );
+                  }
+                )}
               </Row>
-              {dataList.length > 2 && (
+              {dataList.length > column && (
                 <Row
                   gutter={gutter || []}
                   style={{
@@ -140,7 +168,6 @@ const ThumbImg: React.FC<{
                   className="flex-center"
                 >
                   {_.map(_.slice(dataList, 2), (item: any, index: number) => {
-                    console.log('index=======', index);
                     return (
                       <Col
                         span={item.span}
@@ -150,12 +177,14 @@ const ThumbImg: React.FC<{
                       >
                         <SingleImage
                           {...item}
+                          preview={preview}
                           style={{ ...(responseableStyle[index + 2] || {}) }}
                           loading={item.loading}
                           autoSize={autoSize}
                           editable={editable}
                           autoBgColor={autoBgColor}
                           onDelete={handleOnDelete}
+                          onClick={() => handleOnClick(item)}
                         ></SingleImage>
                       </Col>
                     );
@@ -169,11 +198,13 @@ const ThumbImg: React.FC<{
                 return (
                   <SingleImage
                     {...item}
+                    preview={preview}
                     key={item.uid}
                     autoSize={autoSize}
                     editable={editable}
                     autoBgColor={autoBgColor}
                     onDelete={handleOnDelete}
+                    onClick={() => handleOnClick(item)}
                   ></SingleImage>
                 );
               })}

@@ -331,6 +331,26 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
+    type: 'Select',
+    name: 'preview',
+    options: [
+      { label: 'Faster', value: 'preview_faster' },
+      { label: 'Normal', value: 'preview' }
+    ],
+    label: {
+      text: 'Preview',
+      isLocalized: false
+    },
+    attrs: {
+      allowClear: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
     type: 'InputNumber',
     name: 'seed',
     label: {

@@ -1,0 +1,44 @@
+.img-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.img-wrapper .auto-image {
+  display: block;
+}
+
+.img-wrapper .progress-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-square {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+}
+
+.progress-square-bg {
+  fill: none;
+}
+
+.progress-square-fg {
+  fill: none;
+  stroke-linecap: square;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+}

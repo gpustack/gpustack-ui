@@ -1,16 +1,19 @@
 import AlertInfo from '@/components/alert-info';
+import SingleImage from '@/components/auto-image/single-image';
+import IconFont from '@/components/icon-font';
+import CanvasImageEditor from '@/components/image-editor';
 import FieldComponent from '@/components/seal-form/field-component';
 import SealSelect from '@/components/seal-form/seal-select';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import ThumbImg from '@/pages/playground/components/thumb-img';
-import { generateRandomNumber } from '@/utils';
+import UploadImg from '@/pages/playground/components/upload-img';
+import { base64ToFile, generateRandomNumber } from '@/utils';
 import {
-  fetchChunkedData,
+  fetchChunkedDataPostFormData as fetchChunkedData,
   readLargeStreamData as readStreamData
 } from '@/utils/fetch-chunk-data';
-import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
+import { SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Form, Tooltip } from 'antd';
+import { Button, Divider, Form, Image, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -24,7 +27,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { CREAT_IMAGE_API } from '../apis';
+import { EDIT_IMAGE_API } from '../apis';
 import { promptList } from '../config';
 import {
   ImageAdvancedParamsConfig,
@@ -46,7 +49,7 @@ interface MessageProps {
   ref?: any;
 }
 const advancedFieldsDefaultValus = {
-  seed: null,
+  seed: 1,
   sampler: 'euler_a',
   cfg_scale: 4.5,
   sample_steps: 10,
@@ -98,6 +101,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const form = useRef<any>(null);
   const inputRef = useRef<any>(null);
+  const [image, setImage] = useState<string>('');
+  const [mask, setMask] = useState<string>('');
+  const [showOriginal, setShowOriginal] = useState<boolean>(false);
+  const [uploadList, setUploadList] = useState<any[]>([]);
 
   const size = Form.useWatch('size', form.current?.form);
 
@@ -141,10 +148,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       size.span = 12;
     }
     if (parameters.n === 3) {
-      size.span = 12;
+      size.span = 8;
     }
     if (parameters.n === 4) {
-      size.span = 12;
+      size.span = 6;
     }
     return size;
   }, [parameters.n]);
@@ -152,7 +159,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const finalParameters = useMemo(() => {
     if (parameters.size === 'custom') {
       return {
-        ..._.omit(parameters, ['width', 'height']),
+        ..._.omit(parameters, ['width', 'height', 'preview']),
+        image: base64ToFile(image, 'image'),
+        mask: base64ToFile(mask, 'mask'),
         size:
           parameters.width && parameters.height
             ? `${parameters.width}x${parameters.height}`
@@ -160,14 +169,18 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
     }
     return {
-      ..._.omit(parameters, ['width', 'height', 'random_seed'])
+      image: base64ToFile(image, 'image'),
+      mask: base64ToFile(mask, 'mask'),
+      ..._.omit(parameters, ['width', 'height', 'random_seed', 'preview'])
     };
-  }, [parameters]);
+  }, [parameters, image, mask]);
 
   const viewCodeContent = useMemo(() => {
     if (isOpenaiCompatible) {
       return generateOpenaiImageCode({
-        api: '/v1-openai/images/generations',
+        api: EDIT_IMAGE_API,
+        edit: true,
+        isFormdata: true,
         parameters: {
           ...finalParameters,
           prompt: currentPrompt
@@ -175,7 +188,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
     }
     return generateImageCode({
-      api: '/v1-openai/images/generations',
+      api: EDIT_IMAGE_API,
+      isFormdata: true,
+      edit: true,
       parameters: {
         ...finalParameters,
         prompt: currentPrompt
@@ -202,7 +217,25 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
+
       const imgSize = _.split(finalParameters.size, 'x');
+
+      // preview
+      let stream_options: Record<string, any> = {
+        chunk_size: 16 * 1024,
+        chunk_results: true
+      };
+      if (parameters.preview === 'preview') {
+        stream_options = {
+          preview: true
+        };
+      }
+
+      if (parameters.preview === 'preview_faster') {
+        stream_options = {
+          preview_faster: true
+        };
+      }
 
       let newImageList = Array(parameters.n)
         .fill({})
@@ -214,6 +247,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             height: imgSize[1],
             width: imgSize[0],
             loading: true,
+            progressType: stream_options.chunk_results ? 'dashboard' : 'line',
             uid: setMessageId()
           };
         });
@@ -227,8 +261,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
         stream: true,
         stream_options: {
-          chunk_size: 16 * 1024,
-          chunk_results: true
+          ...stream_options
         },
         prompt: current?.content || currentPrompt || ''
       };
@@ -240,7 +273,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        url: `${CREAT_IMAGE_API}?t=${Date.now()}`,
+        url: `http://192.168.50.4:40325/v1/images/edits?t=${Date.now()}`,
         signal: requestToken.current.signal
       });
       if (result.error) {
@@ -265,8 +298,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
-          if (item.b64_json) {
+          if (item.b64_json && stream_options.chunk_results) {
             imgItem.dataUrl += item.b64_json;
+          } else if (item.b64_json) {
+            imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
           }
           const progress = _.round(item.progress, 0);
           newImageList[item.index] = {
@@ -277,7 +312,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,
             span: imgItem.span,
-            loading: progress < 100,
+            loading: stream_options.chunk_results ? progress < 100 : false,
             progress: progress
           };
         });
@@ -295,6 +330,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageId();
     setImageList([]);
     setTokenResult(null);
+    setMask('');
+    setImage('');
+    setUploadList([]);
   };
 
   const handleInputChange = (e: any) => {
@@ -438,6 +476,62 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     return null;
   }, [size, intl]);
 
+  const handleUpdateImageList = useCallback((base64List: any) => {
+    const img = _.get(base64List, '[0].dataUrl', '');
+    setUploadList(base64List);
+    setImage(img);
+  }, []);
+
+  const handleOnSave = useCallback((url: string) => {
+    console.log('url:', url);
+    setMask(url);
+  }, []);
+
+  const renderImageEditor = useMemo(() => {
+    if (image) {
+      return (
+        <CanvasImageEditor
+          imageSrc={image}
+          disabled={loading}
+          onSave={handleOnSave}
+          uploadButton={
+            <Tooltip title="Upload Image">
+              <UploadImg
+                disabled={loading}
+                handleUpdateImgList={handleUpdateImageList}
+                size="middle"
+              ></UploadImg>
+            </Tooltip>
+          }
+        ></CanvasImageEditor>
+      );
+    }
+    return (
+      <UploadImg
+        drag={true}
+        multiple={false}
+        handleUpdateImgList={handleUpdateImageList}
+      >
+        <div
+          className="flex-column flex-center gap-10 justify-center"
+          style={{ width: 150, height: 150 }}
+        >
+          <IconFont
+            type="icon-upload_image"
+            className="font-size-24"
+          ></IconFont>
+          <h3>Click or drag image to this area to upload</h3>
+        </div>
+      </UploadImg>
+    );
+  }, [image, loading, handleOnSave, handleUpdateImageList]);
+
+  const handleOnImgClick = useCallback((item: any) => {
+    console.log('item:', item);
+    setImage(item.dataUrl);
+    setShowOriginal(true);
+  }, []);
+
   useEffect(() => {
     return () => {
       requestToken.current?.abort?.();
@@ -495,114 +589,183 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         >
           <>
             <div className="content" style={{ height: '100%' }}>
-              <ThumbImg
-                style={{
-                  padding: 0,
-                  height: '100%',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  flexWrap: 'unset',
-                  alignItems: 'center'
-                }}
-                autoBgColor={false}
-                editable={false}
-                dataList={imageList}
-                loading={loading}
-                responseable={true}
-                gutter={[8, 16]}
-                autoSize={true}
-              ></ThumbImg>
-              {!imageList.length && (
+              {
                 <div className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper">
-                  <span>
-                    <FileImageOutlined className="font-size-32 text-secondary" />
-                  </span>
-                  <span>
-                    {intl.formatMessage({ id: 'playground.params.empty.tips' })}
-                  </span>
+                  {renderImageEditor}
                 </div>
-              )}
+              }
             </div>
           </>
         </div>
-        {tokenResult && (
-          <div style={{ height: 40 }}>
-            <AlertInfo
-              type="danger"
-              message={tokenResult?.errorMessage}
-            ></AlertInfo>
-          </div>
-        )}
-        <div className="ground-left-footer">
-          <MessageInput
-            ref={inputRef}
-            placeholer={intl.formatMessage({
-              id: 'playground.input.prompt.holder'
-            })}
-            actions={['clear']}
-            defaultSize={{
-              minRows: 5,
-              maxRows: 5
+        <div className="ground-left-footer" style={{ padding: 10 }}>
+          {tokenResult && (
+            <div style={{ height: 40 }}>
+              <AlertInfo
+                type="danger"
+                message={tokenResult?.errorMessage}
+              ></AlertInfo>
+            </div>
+          )}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
-            title={
-              <span className="font-600">
-                {intl.formatMessage({ id: 'playground.image.prompt' })}
-              </span>
-            }
+          >
+            {uploadList.length > 0 && (
+              <Image
+                onClick={() => handleOnImgClick(uploadList[0])}
+                src={uploadList[0]?.dataUrl}
+                style={{
+                  height: 125,
+                  objectFit: 'cover'
+                }}
+              ></Image>
+            )}
+            {imageList.length > 0 && (
+              <>
+                <Divider
+                  type="vertical"
+                  style={{
+                    margin: '0 30px',
+                    height: 80
+                  }}
+                ></Divider>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: 10
+                  }}
+                >
+                  {_.map(imageList, (item: any, index: number) => {
+                    return (
+                      <div
+                        style={{
+                          height: 125,
+                          minWidth: 125,
+                          maxHeight: 125
+                        }}
+                        key={item.uid}
+                      >
+                        <SingleImage
+                          {...item}
+                          height={125}
+                          maxHeight={125}
+                          key={item.uid}
+                          preview={true}
+                          loading={item.loading}
+                          autoSize={false}
+                          editable={false}
+                          autoBgColor={false}
+                          onClick={() => handleOnImgClick(item)}
+                        ></SingleImage>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+            {/* <ThumbImg
+            column={parameters.n}
+            style={{
+              padding: 0,
+              height: '100%',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              flexWrap: 'unset',
+              alignItems: 'center'
+            }}
+            preview={false}
+            autoBgColor={false}
+            editable={false}
+            dataList={imageList}
             loading={loading}
-            disabled={!parameters.model}
-            isEmpty={!imageList.length}
-            handleSubmit={handleSendMessage}
-            handleAbortFetch={handleStopConversation}
-            onInputChange={handleInputChange}
-            shouldResetMessage={false}
-            clearAll={handleClear}
-          />
+            onClick={handleOnImgClick}
+            responseable={true}
+            gutter={[8, 16]}
+            autoSize={true}
+          ></ThumbImg> */}
+          </div>
         </div>
       </div>
       <div
         className={classNames('params-wrapper', {
           collapsed: collapse
         })}
-        ref={paramsRef}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}
       >
-        <div className="box">
-          <DynamicParams
-            ref={form}
-            parametersTitle={
-              <div className="flex-between flex-center">
-                <span>
-                  {intl.formatMessage({ id: 'playground.parameters' })}
-                </span>
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.image.params.custom.tips'
-                  })}
-                >
-                  <Button
-                    size="middle"
-                    type="text"
-                    icon={<SwapOutlined />}
-                    onClick={handleToggleParamsStyle}
+        <div style={{ flex: 1, overflow: 'auto' }} ref={paramsRef}>
+          <div className="box">
+            <DynamicParams
+              ref={form}
+              parametersTitle={
+                <div className="flex-between flex-center">
+                  <span>
+                    {intl.formatMessage({ id: 'playground.parameters' })}
+                  </span>
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'playground.image.params.custom.tips'
+                    })}
                   >
-                    {isOpenaiCompatible
-                      ? intl.formatMessage({
-                          id: 'playground.image.params.custom'
-                        })
-                      : intl.formatMessage({
-                          id: 'playground.image.params.openai'
-                        })}
-                  </Button>
-                </Tooltip>
-              </div>
+                    <Button
+                      size="middle"
+                      type="text"
+                      icon={<SwapOutlined />}
+                      onClick={handleToggleParamsStyle}
+                    >
+                      {isOpenaiCompatible
+                        ? intl.formatMessage({
+                            id: 'playground.image.params.custom'
+                          })
+                        : intl.formatMessage({
+                            id: 'playground.image.params.openai'
+                          })}
+                    </Button>
+                  </Tooltip>
+                </div>
+              }
+              setParams={setParams}
+              paramsConfig={paramsConfig}
+              initialValues={initialValues}
+              params={parameters}
+              selectedModel={selectModel}
+              modelList={modelList}
+              extra={[renderCustomSize, ...renderExtra, ...renderAdvanced]}
+            />
+          </div>
+        </div>
+        <div style={{ width: 389 }}>
+          <MessageInput
+            defaultSize={{
+              minRows: 5,
+              maxRows: 5
+            }}
+            ref={inputRef}
+            placeholer={intl.formatMessage({
+              id: 'playground.input.prompt.holder'
+            })}
+            actions={['clear']}
+            title={
+              <span className="font-600">
+                {intl.formatMessage({ id: 'playground.image.prompt' })}
+              </span>
             }
-            setParams={setParams}
-            paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            params={parameters}
-            selectedModel={selectModel}
-            modelList={modelList}
-            extra={[renderCustomSize, ...renderExtra, ...renderAdvanced]}
+            loading={loading}
+            disabled={!parameters.model || mask === ''}
+            isEmpty={!imageList.length}
+            handleSubmit={handleSendMessage}
+            handleAbortFetch={handleStopConversation}
+            onInputChange={handleInputChange}
+            shouldResetMessage={false}
+            clearAll={handleClear}
           />
         </div>
       </div>

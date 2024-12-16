@@ -24,5 +24,6 @@ declare module 'sortablejs';
 declare module 'colorthief';
 declare module 'vibrant';
 declare module 'node-vibrant';
+declare module 'lamejs';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;

@@ -203,5 +203,6 @@ export default {
   'common.text.here': '这里',
   'common.text.latest': '最新',
   'common.text.new': '新',
-  'common.text.changelog': '更新日志'
+  'common.text.changelog': '更新日志',
+  'common.button.recreate': '重新创建'
 };

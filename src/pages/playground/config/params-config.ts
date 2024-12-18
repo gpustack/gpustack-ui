@@ -4,14 +4,7 @@ export const TTSParamsConfig: ParamsSchema[] = [
   {
     type: 'Select',
     name: 'voice',
-    options: [
-      // { label: 'Alloy', value: 'Alloy' },
-      // { label: 'Echo', value: 'Echo' },
-      // { label: 'Fable', value: 'Fable' },
-      // { label: 'Onyx', value: 'Onyx' },
-      // { label: 'Nova', value: 'Nova' },
-      // { label: 'Shimmer', value: 'Shimmer' }
-    ],
+    options: [],
     label: {
       text: 'playground.params.voice',
       isLocalized: true
@@ -115,6 +108,7 @@ export const ImageParamsConfig: ParamsSchema[] = [
       { label: 'playground.params.custom', value: 'custom', locale: true },
       { label: '512x512', value: '512x512' },
       { label: '768x1024', value: '768x1024' },
+      { label: '1024x768', value: '1024x768' },
       { label: '1024x1024', value: '1024x1024' }
     ],
     description: {
@@ -132,59 +126,6 @@ export const ImageParamsConfig: ParamsSchema[] = [
       }
     ]
   }
-  // {
-  //   type: 'Select',
-  //   name: 'quality',
-  //   options: [
-  //     { label: 'standard', value: 'standard' },
-  //     { label: 'hd', value: 'hd' }
-  //   ],
-  //   label: {
-  //     text: 'playground.params.quality',
-  //     isLocalized: true
-  //   },
-  //   rules: [
-  //     {
-  //       required: false
-  //     }
-  //   ]
-  // },
-  // {
-  //   type: 'Select',
-  //   name: 'style',
-  //   options: [
-  //     { label: 'vivid', value: 'vivid' },
-  //     { label: 'natural', value: 'natural' }
-  //   ],
-  //   label: {
-  //     text: 'playground.params.style',
-  //     isLocalized: true
-  //   },
-  //   rules: [
-  //     {
-  //       required: false
-  //     }
-  //   ]
-  // }
-  // {
-  //   type: 'TextArea',
-  //   name: 'prompt',
-  //   label: {
-  //     text: 'Prompt',
-  //     isLocalized: false
-  //   },
-  //   attrs: {
-  //     autoSize: {
-  //       minRows: 2,
-  //       maxRows: 3
-  //     }
-  //   },
-  //   rules: [
-  //     {
-  //       required: false
-  //     }
-  //   ]
-  // }
 ];
 
 export const ImageconstExtraConfig: ParamsSchema[] = [

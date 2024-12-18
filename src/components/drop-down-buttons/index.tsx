@@ -38,6 +38,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
       {items?.length === 1 ? (
         <Tooltip title={intl.formatMessage({ id: _.head(items)?.label })}>
           <Button
+            className={classNames('dropdown-button', size)}
             {..._.head(items)}
             icon={_.get(items, '0.icon')}
             size={size}

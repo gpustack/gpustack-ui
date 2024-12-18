@@ -241,6 +241,16 @@ const Models: React.FC<ModelsProps> = ({
       icon: <EditOutlined />
     },
     {
+      label: 'common.button.stop',
+      key: 'stop',
+      icon: <IconFont type="icon-stop1"></IconFont>
+    },
+    {
+      label: 'common.button.start',
+      key: 'start',
+      icon: <IconFont type="icon-playcircle"></IconFont>
+    },
+    {
       label: 'models.openinplayground',
       key: 'chat',
       icon: <ExperimentOutlined />
@@ -259,6 +269,13 @@ const Models: React.FC<ModelsProps> = ({
     return _.filter(ActionList, (action: any) => {
       if (action.key === 'chat') {
         return record.ready_replicas > 0;
+      }
+      if (action.key === 'start') {
+        return record.replicas === 0;
+      }
+
+      if (action.key === 'stop') {
+        return record.replicas > 0;
       }
 
       return true;
@@ -282,6 +299,27 @@ const Models: React.FC<ModelsProps> = ({
     };
     await updateModel(params);
     message.success(intl.formatMessage({ id: 'common.message.success' }));
+  };
+
+  const handleToggleStart = async (row: ListItem, action: string) => {
+    try {
+      await updateModel({
+        id: row.id,
+        data: {
+          ..._.omit(row, [
+            'id',
+            'ready_replicas',
+            'created_at',
+            'updated_at',
+            'rowIndex'
+          ]),
+          replicas: action === 'start' ? 1 : 0
+        }
+      });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {
+      // ingore
+    }
   };
 
   const handleModalOk = useCallback(
@@ -447,6 +485,9 @@ const Models: React.FC<ModelsProps> = ({
       }
       if (val === 'delete') {
         handleDelete(row);
+      }
+      if (val === 'start' || val === 'stop') {
+        handleToggleStart(row, val);
       }
     },
     [handleEdit, handleOpenPlayGround, handleDelete]

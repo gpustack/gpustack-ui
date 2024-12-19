@@ -34,7 +34,7 @@ export interface ParamsSchema {
     isLocalized?: boolean;
   };
   style?: React.CSSProperties;
-  options?: Global.BaseOption<string | number>[];
+  options?: Global.BaseOption<string | number | null>[];
   value?: string | number | boolean | string[];
   min?: number;
   max?: number;

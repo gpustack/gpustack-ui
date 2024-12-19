@@ -52,6 +52,7 @@ const advancedFieldsDefaultValus = {
   cfg_scale: 4.5,
   sample_steps: 10,
   negative_prompt: null,
+  preview: null,
   schedule: 'discrete'
 };
 
@@ -237,6 +238,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             width: imgSize[0],
             loading: true,
             progressType: stream_options.chunk_results ? 'dashboard' : 'line',
+            preview: false,
             uid: setMessageId()
           };
         });
@@ -302,6 +304,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             uid: imgItem.uid,
             span: imgItem.span,
             loading: stream_options.chunk_results ? progress < 100 : false,
+            preview: progress >= 100,
             progress: progress
           };
         });

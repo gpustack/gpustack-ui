@@ -210,5 +210,7 @@ export default {
   'common.text.here': 'here',
   'common.text.latest': 'Latest',
   'common.text.new': 'New',
-  'common.text.changelog': 'Release Notes'
+  'common.text.changelog': 'Release Notes',
+  'common.options.all': 'All',
+  'common.options.none': 'None'
 };

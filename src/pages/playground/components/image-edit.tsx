@@ -13,7 +13,7 @@ import {
 } from '@/utils/fetch-chunk-data';
 import { SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Divider, Form, Image, Tooltip } from 'antd';
+import { Button, Divider, Form, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -28,7 +28,6 @@ import React, {
   useState
 } from 'react';
 import { EDIT_IMAGE_API } from '../apis';
-import { promptList } from '../config';
 import {
   ImageAdvancedParamsConfig,
   ImageCustomSizeConfig,
@@ -54,6 +53,7 @@ const advancedFieldsDefaultValus = {
   cfg_scale: 4.5,
   sample_steps: 10,
   negative_prompt: null,
+  preview: null,
   schedule: 'discrete'
 };
 
@@ -83,6 +83,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       span?: number;
       loading?: boolean;
       progress?: number;
+      preview?: boolean;
     }[]
   >([]);
 
@@ -103,8 +104,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const inputRef = useRef<any>(null);
   const [image, setImage] = useState<string>('');
   const [mask, setMask] = useState<string>('');
-  const [showOriginal, setShowOriginal] = useState<boolean>(false);
   const [uploadList, setUploadList] = useState<any[]>([]);
+  const [imageStatus, setImageStatus] = useState<{
+    isOriginal: boolean;
+    isResetNeeded: boolean;
+  }>({
+    isOriginal: false,
+    isResetNeeded: false
+  });
 
   const size = Form.useWatch('size', form.current?.form);
 
@@ -122,20 +129,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
-
-  const generateNumber = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-
-  const handleRandomPrompt = useCallback(() => {
-    const randomIndex = generateNumber(0, promptList.length - 1);
-    const randomPrompt = promptList[randomIndex];
-    inputRef.current?.handleInputChange({
-      target: {
-        value: randomPrompt
-      }
-    });
-  }, []);
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
@@ -156,12 +149,20 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     return size;
   }, [parameters.n]);
 
+  const imageFile = useMemo(() => {
+    return base64ToFile(image, 'image');
+  }, [image]);
+
+  const maskFile = useMemo(() => {
+    return base64ToFile(mask, 'mask');
+  }, [mask]);
+
   const finalParameters = useMemo(() => {
     if (parameters.size === 'custom') {
       return {
         ..._.omit(parameters, ['width', 'height', 'preview']),
-        image: base64ToFile(image, 'image'),
-        mask: base64ToFile(mask, 'mask'),
+        image: imageFile,
+        mask: maskFile,
         size:
           parameters.width && parameters.height
             ? `${parameters.width}x${parameters.height}`
@@ -169,11 +170,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
     }
     return {
-      image: base64ToFile(image, 'image'),
-      mask: base64ToFile(mask, 'mask'),
+      image: imageFile,
+      mask: maskFile,
       ..._.omit(parameters, ['width', 'height', 'random_seed', 'preview'])
     };
-  }, [parameters, image, mask]);
+  }, [parameters, maskFile, imageFile]);
 
   const viewCodeContent = useMemo(() => {
     if (isOpenaiCompatible) {
@@ -248,6 +249,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             width: imgSize[0],
             loading: true,
             progressType: stream_options.chunk_results ? 'dashboard' : 'line',
+            preview: false,
             uid: setMessageId()
           };
         });
@@ -313,6 +315,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             uid: imgItem.uid,
             span: imgItem.span,
             loading: stream_options.chunk_results ? progress < 100 : false,
+            preview: progress >= 100,
             progress: progress
           };
         });
@@ -480,17 +483,27 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     const img = _.get(base64List, '[0].dataUrl', '');
     setUploadList(base64List);
     setImage(img);
+    setImageStatus({
+      isOriginal: false,
+      isResetNeeded: true
+    });
+    setImageList([]);
   }, []);
 
   const handleOnSave = useCallback((url: string) => {
-    console.log('url:', url);
+    setImageStatus({
+      isOriginal: true,
+      isResetNeeded: false
+    });
     setMask(url);
   }, []);
 
   const renderImageEditor = useMemo(() => {
+    console.log('image:', image);
     if (image) {
       return (
         <CanvasImageEditor
+          imageStatus={imageStatus}
           imageSrc={image}
           disabled={loading}
           onSave={handleOnSave}
@@ -524,13 +537,36 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
       </UploadImg>
     );
-  }, [image, loading, handleOnSave, handleUpdateImageList]);
+  }, [image, loading, imageStatus, handleOnSave, handleUpdateImageList]);
 
-  const handleOnImgClick = useCallback((item: any) => {
-    console.log('item:', item);
+  const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
     setImage(item.dataUrl);
-    setShowOriginal(true);
+    setImageStatus({
+      isOriginal: isOrigin,
+      isResetNeeded: false
+    });
   }, []);
+
+  const renderOriginImage = useMemo(() => {
+    if (!uploadList.length) {
+      return null;
+    }
+    return (
+      <>
+        <SingleImage
+          {...uploadList[0]}
+          height={125}
+          maxHeight={125}
+          preview={true}
+          loading={false}
+          autoSize={false}
+          editable={false}
+          autoBgColor={false}
+          onClick={() => handleOnImgClick(uploadList[0], true)}
+        ></SingleImage>
+      </>
+    );
+  }, [uploadList, handleOnImgClick]);
 
   useEffect(() => {
     return () => {
@@ -613,16 +649,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               alignItems: 'center'
             }}
           >
-            {uploadList.length > 0 && (
-              <Image
-                onClick={() => handleOnImgClick(uploadList[0])}
-                src={uploadList[0]?.dataUrl}
-                style={{
-                  height: 125,
-                  objectFit: 'cover'
-                }}
-              ></Image>
-            )}
+            {renderOriginImage}
             {imageList.length > 0 && (
               <>
                 <Divider
@@ -655,12 +682,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                           height={125}
                           maxHeight={125}
                           key={item.uid}
-                          preview={true}
+                          preview={item.preview}
                           loading={item.loading}
                           autoSize={false}
                           editable={false}
                           autoBgColor={false}
-                          onClick={() => handleOnImgClick(item)}
+                          onClick={() => handleOnImgClick(item, false)}
                         ></SingleImage>
                       </div>
                     );
@@ -668,26 +695,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 </div>
               </>
             )}
-            {/* <ThumbImg
-            column={parameters.n}
-            style={{
-              padding: 0,
-              height: '100%',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              flexWrap: 'unset',
-              alignItems: 'center'
-            }}
-            preview={false}
-            autoBgColor={false}
-            editable={false}
-            dataList={imageList}
-            loading={loading}
-            onClick={handleOnImgClick}
-            responseable={true}
-            gutter={[8, 16]}
-            autoSize={true}
-          ></ThumbImg> */}
           </div>
         </div>
       </div>

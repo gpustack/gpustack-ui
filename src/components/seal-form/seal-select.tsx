@@ -15,6 +15,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     required,
     description,
     options,
+    allowNull,
     isInFormItems = true,
     ...rest
   } = props;
@@ -22,6 +23,8 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
   let status = '';
+
+  // the status can be controlled by Form.Item
   if (isInFormItems) {
     const statusData = Form?.Item?.useStatus?.();
     status = statusData?.status || '';
@@ -41,10 +44,10 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   }, [options, intl]);
 
   useEffect(() => {
-    if (isNotEmptyValue(props.value)) {
+    if (isNotEmptyValue(props.value) || (allowNull && props.value === null)) {
       setIsFocus(true);
     }
-  }, [props.value]);
+  }, [props.value, allowNull]);
 
   const handleClickWrapper = () => {
     if (!props.disabled && !isFocus) {
@@ -54,7 +57,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   };
 
   const handleChange = (val: any, options: any) => {
-    if (isNotEmptyValue(val)) {
+    if (isNotEmptyValue(val) || (allowNull && val === null)) {
       setIsFocus(true);
     } else {
       setIsFocus(false);
@@ -68,7 +71,9 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   };
 
   const handleOnBlur = (e: any) => {
-    if (!props.value) {
+    if (allowNull && props.value === null) {
+      setIsFocus(true);
+    } else if (!props.value) {
       setIsFocus(false);
     }
     props.onBlur?.(e);

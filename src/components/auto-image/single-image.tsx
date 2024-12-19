@@ -1,5 +1,5 @@
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { Progress, Tooltip } from 'antd';
+import { Progress } from 'antd';
 import classNames from 'classnames';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
@@ -64,7 +64,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
 
   const handleResize = useCallback(
     (size: { width: number; height: number }) => {
-      if (!autoSize) return;
+      if (!autoSize || !size.width || !size.height) return;
 
       const { width: containerWidth, height: containerHeight } = size;
       const { width: originalWidth, height: originalHeight } = props;
@@ -79,6 +79,9 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
       const newWidth = originalWidth * scale;
       const newHeight = originalHeight * scale;
 
+      if (newWidth === imgSize.width && newHeight === imgSize.height) {
+        return;
+      }
       setImgSize({
         width: newWidth,
         height: newHeight
@@ -131,43 +134,15 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                   overflow: 'hidden'
                 }}
               >
-                {progressType === 'dashboard' ? (
-                  <Progress
-                    percent={progress}
-                    type="dashboard"
-                    steps={{ count: 50, gap: 2 }}
-                    format={() => (
-                      <span className="font-size-20">{progress}%</span>
-                    )}
-                    trailColor="var(--ant-color-fill-secondary)"
-                  />
-                ) : (
-                  <span
-                    className="progress-wrapper"
-                    style={{ bottom: 'unset' }}
-                  >
-                    <Tooltip title={`${progress}%`} open={true}>
-                      <Progress
-                        style={{
-                          paddingInline: 0,
-                          borderRadius: 12,
-                          display: 'flex',
-                          alignItems: 'center',
-                          backgroundColor: 'rgba(0,0,0,0.5)'
-                        }}
-                        percent={progress}
-                        percentPosition={{
-                          align: 'center',
-                          type: 'inner'
-                        }}
-                        type="line"
-                        size={[undefined, 6]}
-                        strokeLinecap="round"
-                        strokeColor="var(--color-white-1)"
-                      />
-                    </Tooltip>
-                  </span>
-                )}
+                <Progress
+                  percent={progress}
+                  type="dashboard"
+                  steps={{ count: 50, gap: 2 }}
+                  format={() => (
+                    <span className="font-size-20">{progress}%</span>
+                  )}
+                  trailColor="var(--ant-color-fill-secondary)"
+                />
               </span>
             ) : (
               <span
@@ -187,27 +162,18 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                   onLoad={handleOnLoad}
                 />
                 {progress && progress < 100 && (
-                  <span className="progress-wrapper">
-                    <Tooltip title={`${progress}%`} open={true}>
-                      <Progress
-                        style={{
-                          paddingInline: 0,
-                          borderRadius: 12,
-                          display: 'flex',
-                          alignItems: 'center',
-                          backgroundColor: 'rgba(0,0,0,0.5)'
-                        }}
-                        percent={progress}
-                        percentPosition={{
-                          align: 'center',
-                          type: 'inner'
-                        }}
-                        type="line"
-                        size={[undefined, 6]}
-                        strokeLinecap="round"
-                        strokeColor="var(--color-white-1)"
-                      />
-                    </Tooltip>
+                  <span className="small-progress-wrap">
+                    <Progress
+                      percent={progress}
+                      type="dashboard"
+                      size="small"
+                      steps={{ count: 25, gap: 3 }}
+                      format={() => (
+                        <span className="font-size-12">{progress}%</span>
+                      )}
+                      strokeColor="var(--color-white-secondary)"
+                      trailColor="var(--ant-color-fill-secondary)"
+                    />
                   </span>
                 )}
               </span>

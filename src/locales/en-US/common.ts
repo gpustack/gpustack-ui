@@ -204,6 +204,7 @@ export default {
   'common.button.docs': 'Documentation',
   'common.button.version': 'Version',
   'common.title.delete.confirm': 'Confirm delete',
+  'common.title.recreate.confirm': 'Confirm recreate',
   'common.button.addLabel': 'Add Labels',
   'common.button.addSelector': 'Add Selectors',
   'common.button.addParams': 'Add Parameter',

@@ -8,7 +8,14 @@ const DeleteModal = forwardRef((props, ref) => {
   const intl = useIntl();
   const [visible, setVisible] = useState(false);
   const [config, setConfig] = useState<
-    ModalFuncProps & { content: string; selection?: boolean; name?: string }
+    ModalFuncProps & {
+      content: string;
+      selection?: boolean;
+      name?: string;
+      okText?: string;
+      cancelText?: string;
+      title?: string;
+    }
   >({});
 
   useImperativeHandle(ref, () => ({
@@ -17,6 +24,9 @@ const DeleteModal = forwardRef((props, ref) => {
         content: string;
         selection?: boolean;
         name?: string;
+        title?: string;
+        cancelText?: string;
+        okText?: string;
       }
     ) => {
       setConfig(data);
@@ -55,10 +65,14 @@ const DeleteModal = forwardRef((props, ref) => {
       footer={
         <Space size={20}>
           <Button onClick={handleCancel} size="middle">
-            {intl.formatMessage({ id: 'common.button.cancel' })}
+            {config.cancelText
+              ? intl.formatMessage({ id: config.cancelText })
+              : intl.formatMessage({ id: 'common.button.cancel' })}
           </Button>
           <Button type="primary" onClick={handleOk} size="middle">
-            {intl.formatMessage({ id: 'common.button.delete' })}
+            {config.okText
+              ? intl.formatMessage({ id: config.okText })
+              : intl.formatMessage({ id: 'common.button.delete' })}
           </Button>
         </Space>
       }
@@ -67,7 +81,9 @@ const DeleteModal = forwardRef((props, ref) => {
         <span className="title">
           <ExclamationCircleFilled />
           <span>
-            {intl.formatMessage({ id: 'common.title.delete.confirm' })}
+            {config.title
+              ? intl.formatMessage({ id: config.title })
+              : intl.formatMessage({ id: 'common.title.delete.confirm' })}
           </span>
         </span>
       </div>

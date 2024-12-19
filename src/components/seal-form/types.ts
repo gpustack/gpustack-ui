@@ -7,6 +7,7 @@ export interface SealFormItemProps {
   description?: React.ReactNode;
   extra?: React.ReactNode;
   addAfter?: React.ReactNode;
+  allowNull?: boolean;
   loading?: React.ReactNode;
   trim?: boolean;
   checkStatus?: 'success' | 'error' | 'warning' | '';

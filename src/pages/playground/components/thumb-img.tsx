@@ -11,7 +11,6 @@ const ThumbImg: React.FC<{
     rows: number;
     cols: number;
   };
-  preview?: boolean;
   editable?: boolean;
   onDelete?: (uid: number) => void;
   onClick?: (item: any) => void;
@@ -27,7 +26,6 @@ const ThumbImg: React.FC<{
     rows: 1,
     cols: 1
   },
-  preview = true,
   column = 2,
   dataList,
   editable,
@@ -48,7 +46,6 @@ const ThumbImg: React.FC<{
 
   const handleOnClick = useCallback(
     (item: any) => {
-      console.log('item=======', item);
       onClick?.(item);
     },
     [onClick]
@@ -110,7 +107,7 @@ const ThumbImg: React.FC<{
         alignItems: 'flex-start'
       }
     };
-  }, [dataList, responseable, column]);
+  }, [dataList.length, responseable, column]);
 
   return (
     <>
@@ -141,7 +138,7 @@ const ThumbImg: React.FC<{
                       >
                         <SingleImage
                           {...item}
-                          preview={preview}
+                          preview={item.preview}
                           style={{ ...(responseableStyle[index] || {}) }}
                           loading={item.loading}
                           autoSize={autoSize}
@@ -177,7 +174,7 @@ const ThumbImg: React.FC<{
                       >
                         <SingleImage
                           {...item}
-                          preview={preview}
+                          preview={item.preview}
                           style={{ ...(responseableStyle[index + 2] || {}) }}
                           loading={item.loading}
                           autoSize={autoSize}
@@ -198,7 +195,7 @@ const ThumbImg: React.FC<{
                 return (
                   <SingleImage
                     {...item}
-                    preview={preview}
+                    preview={item.preview}
                     key={item.uid}
                     autoSize={autoSize}
                     editable={editable}

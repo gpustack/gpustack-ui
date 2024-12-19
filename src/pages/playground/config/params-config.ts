@@ -216,14 +216,15 @@ export const ImageconstExtraConfig: ParamsSchema[] = [
         label: 'playground.params.style.natural',
         value: 'natural',
         locale: true
-      }
+      },
+      { label: 'common.options.none', value: null, locale: true }
     ],
-    attrs: {
-      allowClear: true
-    },
     label: {
       text: 'playground.params.style',
       isLocalized: true
+    },
+    attrs: {
+      allowNull: true
     },
     rules: [
       {
@@ -316,7 +317,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   },
   {
     type: 'Input',
-    name: 'negative_prompt', //ng_deepnegative_v1_75t,(badhandv4:1.2),EasyNegative,(worst quality:2),
+    name: 'negative_prompt', // e.g. ng_deepnegative_v1_75t,(badhandv4:1.2),EasyNegative,(worst quality:2),
     label: {
       text: 'playground.image.params.negativePrompt',
       isLocalized: true
@@ -335,14 +336,15 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     name: 'preview',
     options: [
       { label: 'Faster', value: 'preview_faster' },
-      { label: 'Normal', value: 'preview' }
+      { label: 'Normal', value: 'preview' },
+      { label: 'common.options.none', value: null, locale: true }
     ],
     label: {
       text: 'Preview',
       isLocalized: false
     },
     attrs: {
-      allowClear: true
+      allowNull: true
     },
     rules: [
       {

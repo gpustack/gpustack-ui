@@ -90,7 +90,8 @@ const AutoImage: React.FC<
       fallback={fallbackImg}
       crossOrigin="anonymous"
       preview={
-        preview ?? {
+        preview &&
+        !isError && {
           mask: <EyeOutlined />,
           toolbarRender: (
             _,

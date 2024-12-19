@@ -5,6 +5,13 @@ export const isNotEmptyValue = (value: any) => {
   return !!value || value === 0 || value === false;
 };
 
+export const isNotEmptyValueAllowNull = (value: any) => {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  return !!value || value === 0 || value === false || value === null;
+};
+
 export const handleBatchRequest = async (
   list: any[],
   fn: (args: any) => void

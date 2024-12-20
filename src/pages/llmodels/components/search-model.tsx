@@ -243,31 +243,35 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             </span>
           </span>
           <span>
-            <Checkbox
-              onChange={handleFilterGGUFChange}
-              className="m-r-5"
-              checked={filterGGUFRef.current}
-            >
-              <Tooltip
-                overlayInnerStyle={{ width: 'max-content' }}
-                title={
-                  <div>
-                    <div>
-                      {intl.formatMessage({ id: 'models.search.gguf.tips' })}
-                    </div>
-                    <div>
-                      {intl.formatMessage({ id: 'models.search.vllm.tips' })}
-                    </div>
-                    <div>
-                      {intl.formatMessage({ id: 'models.search.voxbox.tips' })}
-                    </div>
-                  </div>
-                }
+            <span id="filterGGUF">
+              <Checkbox
+                onChange={handleFilterGGUFChange}
+                className="m-r-5"
+                checked={filterGGUFRef.current}
               >
-                GGUF
-                <InfoCircleOutlined className="m-l-4" />
-              </Tooltip>
-            </Checkbox>
+                <Tooltip
+                  overlayInnerStyle={{ width: 'max-content' }}
+                  title={
+                    <div>
+                      <div>
+                        {intl.formatMessage({ id: 'models.search.gguf.tips' })}
+                      </div>
+                      <div>
+                        {intl.formatMessage({ id: 'models.search.vllm.tips' })}
+                      </div>
+                      <div>
+                        {intl.formatMessage({
+                          id: 'models.search.voxbox.tips'
+                        })}
+                      </div>
+                    </div>
+                  }
+                >
+                  GGUF
+                  <InfoCircleOutlined className="m-l-4" />
+                </Tooltip>
+              </Checkbox>
+            </span>
             <Select
               value={dataSource.sortType}
               onChange={handleSortChange}

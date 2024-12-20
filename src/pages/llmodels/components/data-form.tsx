@@ -9,6 +9,7 @@ import { Form, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -369,6 +370,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return null;
   }, [props.source, isGGUF, intl]);
 
+  const handleBackendChange = useCallback((val: string) => {
+    if (val === backendOptionsMap.llamaBox) {
+      form.setFieldsValue({
+        distributed_inference_across_workers: true,
+        cpu_offloading: true
+      });
+    }
+    form.setFieldValue('backend_version', '');
+  }, []);
+
   const handleOk = (formdata: FormData) => {
     const gpu = _.find(gpuOptions, (item: any) => {
       return item.value === formdata.gpu_selector;
@@ -400,6 +411,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       );
     }
   }, [isGGUF, modelTask]);
+
   useEffect(() => {
     handleOnSelectModel();
   }, [props.selectedModel.name]);
@@ -495,6 +507,39 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           required
           min={0}
         ></SealInput.Number>
+      </Form.Item>
+      <Form.Item name="backend" id="backend-field">
+        <SealSelect
+          onChange={handleBackendChange}
+          label={intl.formatMessage({ id: 'models.form.backend' })}
+          options={[
+            {
+              label: `llama-box`,
+              value: backendOptionsMap.llamaBox,
+              disabled:
+                props.source === modelSourceMap.local_path_value
+                  ? false
+                  : !isGGUF
+            },
+            {
+              label: 'vLLM',
+              value: backendOptionsMap.vllm,
+              disabled:
+                props.source === modelSourceMap.local_path_value
+                  ? false
+                  : isGGUF
+            },
+            {
+              label: 'vox-box',
+              value: backendOptionsMap.voxBox,
+              disabled: props.source === modelSourceMap.ollama_library_value
+            }
+          ]}
+          disabled={
+            action === PageAction.EDIT &&
+            props.source !== modelSourceMap.local_path_value
+          }
+        ></SealSelect>
       </Form.Item>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea

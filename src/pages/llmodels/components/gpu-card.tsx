@@ -41,7 +41,7 @@ const GPUCard: React.FC<{
               </span>
               {data?.memory?.used
                 ? _.round(data?.memory?.utilization_rate || 0, 2)
-                : _.round(data.memory?.allocated / data.memory?.total, 2)}
+                : _.round(data.memory?.allocated / data.memory?.total, 2) * 100}
               %
             </span>
           </>

@@ -70,6 +70,37 @@ interface ModelsProps {
   total: number;
 }
 
+const ActionList = [
+  {
+    label: 'common.button.edit',
+    key: 'edit',
+    icon: <EditOutlined />
+  },
+  {
+    label: 'models.openinplayground',
+    key: 'chat',
+    icon: <ExperimentOutlined />
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    icon: <IconFont type="icon-stop1"></IconFont>
+  },
+  {
+    label: 'common.button.start',
+    key: 'start',
+    icon: <IconFont type="icon-playcircle"></IconFont>
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    icon: <DeleteOutlined />
+  }
+];
+
 const Models: React.FC<ModelsProps> = ({
   handleNameChange,
   handleSearch,
@@ -231,37 +262,6 @@ const Models: React.FC<ModelsProps> = ({
           };
         });
       }
-    }
-  ];
-
-  const ActionList = [
-    {
-      label: 'common.button.edit',
-      key: 'edit',
-      icon: <EditOutlined />
-    },
-    {
-      label: 'common.button.stop',
-      key: 'stop',
-      icon: <IconFont type="icon-stop1"></IconFont>
-    },
-    {
-      label: 'common.button.start',
-      key: 'start',
-      icon: <IconFont type="icon-playcircle"></IconFont>
-    },
-    {
-      label: 'models.openinplayground',
-      key: 'chat',
-      icon: <ExperimentOutlined />
-    },
-    {
-      label: 'common.button.delete',
-      key: 'delete',
-      props: {
-        danger: true
-      },
-      icon: <DeleteOutlined />
     }
   ];
 

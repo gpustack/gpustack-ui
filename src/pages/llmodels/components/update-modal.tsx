@@ -8,7 +8,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Modal, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryGPUList } from '../apis';
@@ -278,6 +278,16 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     form.submit();
   };
 
+  const handleBackendChange = useCallback((val: string) => {
+    if (val === backendOptionsMap.llamaBox) {
+      form.setFieldsValue({
+        distributed_inference_across_workers: true,
+        cpu_offloading: true
+      });
+    }
+    form.setFieldValue('backend_version', '');
+  }, []);
+
   const handleOk = (formdata: FormData) => {
     let obj = {};
     if (formdata.backend === backendOptionsMap.vllm) {
@@ -438,6 +448,40 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               required
               min={0}
             ></SealInput.Number>
+          </Form.Item>
+          <Form.Item name="backend">
+            <SealSelect
+              onChange={handleBackendChange}
+              label={intl.formatMessage({ id: 'models.form.backend' })}
+              options={[
+                {
+                  label: `llama-box`,
+                  value: backendOptionsMap.llamaBox,
+                  disabled:
+                    props.data?.source === modelSourceMap.local_path_value
+                      ? false
+                      : !isGGUF
+                },
+                {
+                  label: 'vLLM',
+                  value: backendOptionsMap.vllm,
+                  disabled:
+                    props.data?.source === modelSourceMap.local_path_value
+                      ? false
+                      : isGGUF
+                },
+                {
+                  label: 'vox-box',
+                  value: backendOptionsMap.voxBox,
+                  disabled:
+                    props.data?.source === modelSourceMap.ollama_library_value
+                }
+              ]}
+              disabled={
+                action === PageAction.EDIT &&
+                props.data?.source !== modelSourceMap.local_path_value
+              }
+            ></SealSelect>
           </Form.Item>
           <Form.Item<FormData> name="description">
             <SealInput.TextArea

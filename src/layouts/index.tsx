@@ -23,6 +23,7 @@ import {
   type IRoute
 } from '@umijs/max';
 import { Button, Modal } from 'antd';
+import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { useCallback, useEffect, useMemo, useState } from 'react';

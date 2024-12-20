@@ -213,7 +213,7 @@ const GPUList: React.FC = () => {
                     : _.round(
                         record.memory?.allocated / record.memory?.total,
                         0
-                      )
+                      ) * 100
                 }
                 label={
                   <span className="flex-column">

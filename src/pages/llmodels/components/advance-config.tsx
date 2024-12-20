@@ -2,7 +2,6 @@ import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -21,7 +20,6 @@ import React, { useCallback, useMemo } from 'react';
 import {
   backendOptionsMap,
   backendParamsHolderTips,
-  modelSourceMap,
   placementStrategyOptions
 } from '../config';
 import llamaConfig from '../config/llama-config';
@@ -249,7 +247,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               }
             ]}
           >
-            <SealSelect label="GPU Selector" required>
+            <SealSelect
+              label={intl.formatMessage({ id: 'models.form.gpuselector' })}
+              required
+            >
               {gpuOptions.map((item) => (
                 <Select.Option key={item.value} value={item.value}>
                   <GPUCard data={item}></GPUCard>
@@ -258,35 +259,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </SealSelect>
           </Form.Item>
         )}
-        <Form.Item name="backend">
-          <SealSelect
-            onChange={handleBackendChange}
-            label={intl.formatMessage({ id: 'models.form.backend' })}
-            options={[
-              {
-                label: `llama-box`,
-                value: backendOptionsMap.llamaBox,
-                disabled:
-                  source === modelSourceMap.local_path_value ? false : !isGGUF
-              },
-              {
-                label: 'vLLM',
-                value: backendOptionsMap.vllm,
-                disabled:
-                  source === modelSourceMap.local_path_value ? false : isGGUF
-              },
-              {
-                label: 'vox-box',
-                value: backendOptionsMap.voxBox,
-                disabled: source === modelSourceMap.ollama_library_value
-              }
-            ]}
-            disabled={
-              action === PageAction.EDIT &&
-              source !== modelSourceMap.local_path_value
-            }
-          ></SealSelect>
-        </Form.Item>
         <Form.Item name="backend_version">
           <SealInput.Input
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}

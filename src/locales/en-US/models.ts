@@ -77,5 +77,6 @@ export default {
   'models.form.filePath': 'Model Path',
   'models.form.backendVersion': 'Backend Version',
   'models.form.backendVersion.tips':
-    'Pin a specific version to keep the backend stable across GPUStack upgrades.'
+    'Pin a specific version to keep the backend stable across GPUStack upgrades.',
+  'models.form.gpuselector': 'GPU Selector'
 };

@@ -1,10 +1,11 @@
 import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
+import useDriver from '@/hooks/use-driver';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import { debounce } from 'lodash';
-import { memo, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import ColumnWrapper from './column-wrapper';
@@ -26,6 +27,23 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
+const steps = [
+  {
+    element: '#filterGGUF',
+    popover: {
+      title: '筛选模型',
+      description: 'Select a model from the list'
+    }
+  },
+  {
+    element: '#backend-field',
+    popover: {
+      title: '选择推理后端',
+      description: 'Select a model from the list'
+    }
+  }
+];
+
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     title,
@@ -40,7 +58,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
-  const uid = useId();
+  const { start } = useDriver({
+    steps
+  });
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
@@ -48,9 +68,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [loadingModel, setLoadingModel] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
+  const [loadfinish, setLoadfinish] = useState<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldValue?.('file_name', item.fakeName);
+    setLoadfinish(true);
   }, []);
 
   const handleOnSelectModel = (item: any) => {
@@ -103,6 +125,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       setSelectedModel({});
     };
   }, [open, source]);
+
+  // useEffect(() => {
+  //   if (open && loadfinish) {
+  //     start();
+  //   }
+  // }, [loadfinish, open]);
 
   return (
     <Drawer

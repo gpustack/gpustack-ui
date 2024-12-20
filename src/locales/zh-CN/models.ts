@@ -74,5 +74,6 @@ export default {
   'models.form.filePath': '模型路径',
   'models.form.backendVersion': '后端版本',
   'models.form.backendVersion.tips':
-    '固定指定版本以保持后端在 GPUStack 升级过程中的稳定性'
+    '固定指定版本以保持后端在 GPUStack 升级过程中的稳定性',
+  'models.form.gpuselector': 'GPU 选择器'
 };

@@ -1,8 +1,8 @@
-import HighlightCode from '@/components/highlight-code';
 import { useIntl } from '@umijs/max';
-import { Modal } from 'antd';
+import { Modal, Tabs, TabsProps } from 'antd';
 import React from 'react';
-import { addWorkerGuide } from '../config';
+import ContainerInstall from './container-install';
+import ScriptInstall from './script-install';
 
 type ViewModalProps = {
   open: boolean;
@@ -12,8 +12,21 @@ type ViewModalProps = {
 const AddWorker: React.FC<ViewModalProps> = (props) => {
   const { open, onCancel } = props || {};
   const intl = useIntl();
+  const [token, setToken] = React.useState('');
+  const [activeKey, setActiveKey] = React.useState('script');
 
-  const origin = window.location.origin;
+  const items: TabsProps['items'] = [
+    {
+      key: 'script',
+      label: 'Script Installation',
+      children: <ScriptInstall token={token}></ScriptInstall>
+    },
+    {
+      key: 'container',
+      label: 'Container Installation',
+      children: <ContainerInstall token={token} />
+    }
+  ];
 
   return (
     <Modal
@@ -26,49 +39,19 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       maskClosable={false}
       keyboard={false}
       width={600}
+      styles={{
+        body: {
+          height: 310
+        }
+      }}
       footer={null}
     >
-      <div>
-        <h3>1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}</h3>
-        <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
-        <HighlightCode
-          code={addWorkerGuide.mac.getToken}
-          theme="dark"
-        ></HighlightCode>
-        <h4>Windows </h4>
-        <HighlightCode
-          code={addWorkerGuide.win.getToken}
-          theme="dark"
-        ></HighlightCode>
-        <h3>
-          2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
-          <span
-            className="font-size-12"
-            style={{ color: 'var(--ant-color-text-tertiary)' }}
-            dangerouslySetInnerHTML={{
-              __html: `(${intl.formatMessage({
-                id: 'resources.worker.add.step2.tips'
-              })})`
-            }}
-          ></span>
-        </h3>
-        <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
-        <HighlightCode
-          code={addWorkerGuide.mac.registerWorker(origin)}
-          theme="dark"
-        ></HighlightCode>
-        <h4>Windows </h4>
-        <HighlightCode
-          theme="dark"
-          code={addWorkerGuide.win.registerWorker(origin)}
-        ></HighlightCode>
-        <h4>Docker </h4>
-        <HighlightCode
-          theme="dark"
-          code={addWorkerGuide.docker.registerWorker(origin)}
-        ></HighlightCode>
-        <h3>3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}</h3>
-      </div>
+      <Tabs
+        items={items}
+        activeKey={activeKey}
+        type="card"
+        onChange={(key) => setActiveKey(key)}
+      ></Tabs>
     </Modal>
   );
 };

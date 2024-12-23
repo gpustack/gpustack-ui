@@ -212,5 +212,6 @@ export default {
   'common.text.latest': 'Latest',
   'common.text.new': 'New',
   'common.text.changelog': 'Release Notes',
-  'common.button.recreate': 'Recreate'
+  'common.button.recreate': 'Recreate',
+  'common.button.delrecreate': 'Delete (Recreate)'
 };

@@ -16,7 +16,7 @@ const RadioButtons: React.FC<RadioButtonsProps> = (props) => {
       {options.map((option) => (
         <span
           key={option.value}
-          onClick={() => onChange(option.value)}
+          onClick={() => onChange({ target: { value: option.value } } as any)}
           className={classNames('item', { active: value === option.value })}
         >
           {option.label}

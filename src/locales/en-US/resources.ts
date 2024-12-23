@@ -46,5 +46,9 @@ export default {
   'resources.worker.add.step2.tips':
     'Note: <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
-    'Refresh workers list, you will see the new worker.'
+    'After success, refresh the workers list to see the new worker.',
+  'resources.worker.container.supported': 'Do not support windows.',
+  'resources.worker.current.version': 'Current version is {version}.',
+  'resources.worker.select.command':
+    'Select a label to generate the command and copy it using the copy button.'
 };

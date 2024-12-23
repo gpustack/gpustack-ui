@@ -20,18 +20,9 @@ export default function createProxyTable(target?: string) {
         ws: true,
         pathRewrite: (pth: string) => pth.replace(`/^/${api}`, `/${api}`),
         // onProxyRes: (proxyRes: any, req: any, res: any) => {
-        //   console.log('proxyRes=====', req);
-
-        //   proxyRes.on('data', (chunk: any) => {
-        //     res.write(chunk);
-        //   });
-
-        //   proxyRes.on('end', () => {
-        //     res.end();
-        //   });
-
-        //   proxyRes.on('error', (err: any) => {
-        //     res.status(500).end('Stream error');
+        //   console.log('headers=========', {
+        //     res: proxyRes.headers,
+        //     req: req.headers
         //   });
         // },
         headers: {

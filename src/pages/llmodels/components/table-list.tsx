@@ -449,7 +449,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
     modalRef.current.show({
       content: 'models.instances',
-      okText: 'common.button.recreate',
+      okText: 'common.button.delrecreate',
       name: row.name,
       async onOk() {
         await deleteModelInstance(row.id);

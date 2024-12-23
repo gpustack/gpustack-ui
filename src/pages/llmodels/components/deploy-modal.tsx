@@ -1,6 +1,5 @@
 import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
-import useDriver from '@/hooks/use-driver';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
@@ -58,9 +57,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
-  const { start } = useDriver({
-    steps
-  });
+  // const { start } = useDriver({
+  //   steps,
+  //   id: 'deploy-model'
+  // });
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
@@ -128,7 +128,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   // useEffect(() => {
   //   if (open && loadfinish) {
-  //     start();
+  //     setTimeout(() => {
+  //       start();
+  //     }, 1000);
   //   }
   // }, [loadfinish, open]);
 

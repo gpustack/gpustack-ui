@@ -508,38 +508,54 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           min={0}
         ></SealInput.Number>
       </Form.Item>
-      <Form.Item name="backend" id="backend-field">
-        <SealSelect
-          onChange={handleBackendChange}
-          label={intl.formatMessage({ id: 'models.form.backend' })}
-          options={[
-            {
-              label: `llama-box`,
-              value: backendOptionsMap.llamaBox,
-              disabled:
-                props.source === modelSourceMap.local_path_value
-                  ? false
-                  : !isGGUF
-            },
-            {
-              label: 'vLLM',
-              value: backendOptionsMap.vllm,
-              disabled:
-                props.source === modelSourceMap.local_path_value
-                  ? false
-                  : isGGUF
-            },
-            {
-              label: 'vox-box',
-              value: backendOptionsMap.voxBox,
-              disabled: props.source === modelSourceMap.ollama_library_value
+      <Form.Item name="backend">
+        <div id="backend-field">
+          <SealSelect
+            onChange={handleBackendChange}
+            label={intl.formatMessage({ id: 'models.form.backend' })}
+            description={
+              <div>
+                <div>
+                  1.{' '}
+                  {intl.formatMessage({ id: 'models.form.backend.llamabox' })}
+                </div>
+                <div>
+                  2. {intl.formatMessage({ id: 'models.form.backend.vllm' })}
+                </div>
+                <div>
+                  3. {intl.formatMessage({ id: 'models.form.backend.voxbox' })}
+                </div>
+              </div>
             }
-          ]}
-          disabled={
-            action === PageAction.EDIT &&
-            props.source !== modelSourceMap.local_path_value
-          }
-        ></SealSelect>
+            options={[
+              {
+                label: `llama-box`,
+                value: backendOptionsMap.llamaBox,
+                disabled:
+                  props.source === modelSourceMap.local_path_value
+                    ? false
+                    : !isGGUF
+              },
+              {
+                label: 'vLLM',
+                value: backendOptionsMap.vllm,
+                disabled:
+                  props.source === modelSourceMap.local_path_value
+                    ? false
+                    : isGGUF
+              },
+              {
+                label: 'vox-box',
+                value: backendOptionsMap.voxBox,
+                disabled: props.source === modelSourceMap.ollama_library_value
+              }
+            ]}
+            disabled={
+              action === PageAction.EDIT &&
+              props.source !== modelSourceMap.local_path_value
+            }
+          ></SealSelect>
+        </div>
       </Form.Item>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea

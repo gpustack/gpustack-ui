@@ -75,5 +75,12 @@ export default {
   'models.form.backendVersion': '后端版本',
   'models.form.backendVersion.tips':
     '固定指定版本以保持后端在 GPUStack 升级过程中的稳定性',
-  'models.form.gpuselector': 'GPU 选择器'
+  'models.form.gpuselector': 'GPU 选择器',
+  'models.form.backend.llamabox':
+    'llama-box: 用于 GGUF 格式模型，支持 Linux, macOS 和 Windows',
+  'models.form.backend.vllm': 'vLLM: 用于非 GGUF 格式模型，仅支持 x86 Linux',
+  'models.form.backend.voxbox': 'vox-box: 用于非 GGUF 格式的音频模型',
+  'models.form.search.gguftips':
+    'Mac 和 Windows 需要使用 GGUF 格式以确保兼容性',
+  'models.form.button.addlabel': '添加标签'
 };

@@ -15,7 +15,7 @@ export const status: any = {
   [WorkerStatusMap.not_ready]: StatusMaps.error
 };
 
-export const addWorkerGuide = {
+export const addWorkerGuide: Record<string, any> = {
   mac: {
     getToken: 'cat /var/lib/gpustack/token',
     registerWorker(params: { server: string; token: string }) {
@@ -29,11 +29,32 @@ export const addWorkerGuide = {
       return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } --server-url ${params.server} --token ${params.token}"`;
     }
   },
-  docker: {
+  cuda: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
     registerWorker(params: { server: string; tag: string; token: string }) {
       return `docker run -d --gpus all --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    }
+  },
+  npu: {
+    getToken:
+      'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
+    registerWorker(params: { server: string; tag: string; token: string }) {
+      return `docker run -d --ipc=host -e ASCEND_VISIBLE_DEVICES=0 --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    }
+  },
+  musa: {
+    getToken:
+      'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
+    registerWorker(params: { server: string; tag: string; token: string }) {
+      return `docker run -d --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    }
+  },
+  cpu: {
+    getToken:
+      'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
+    registerWorker(params: { server: string; tag: string; token: string }) {
+      return `docker run -d --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
     }
   }
 };

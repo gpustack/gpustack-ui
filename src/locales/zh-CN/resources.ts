@@ -46,9 +46,13 @@ export default {
   'resources.worker.add.step2.tips':
     '注意：<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 Token',
   'resources.worker.add.step3': '成功后，刷新 worker 列表即可看到新的 worker',
-  'resources.worker.container.supported': '不支持 Windows',
+  'resources.worker.container.supported': '不支持 MacOS 和 Windows',
   'resources.worker.current.version': '当前版本为 {version}',
   'resources.worker.select.command': '选择一个标签生成命令并使用复制按钮复制',
+  'resources.worker.driver.install':
+    '在安装 GPUStack 之前，确保系统上安装了所有必需的驱动程序和库',
   'resources.worker.script.install': '脚本安装',
-  'resources.worker.container.install': '容器安装'
+  'resources.worker.container.install': '容器安装',
+  'resources.worker.cann.tips':
+    '若 GPU 数量为 1，则设 ASCEND_VISIBLE_DEVICES=0；若大于 1，则设为索引范围（如 8 张为 0-7）'
 };

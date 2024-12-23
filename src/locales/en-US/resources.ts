@@ -47,10 +47,14 @@ export default {
     'Note: <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
     'After success, refresh the workers list to see the new worker.',
-  'resources.worker.container.supported': 'Do not support windows.',
+  'resources.worker.container.supported': 'Do not support MacOS or Windows.',
   'resources.worker.current.version': 'Current version is {version}.',
+  'resources.worker.driver.install':
+    'Ensure all necessary drivers and libraries are installed on the system prior to installing GPUStack.',
   'resources.worker.select.command':
     'Select a label to generate the command and copy it using the copy button.',
   'resources.worker.script.install': 'Script Installation',
-  'resources.worker.container.install': 'Container Installation'
+  'resources.worker.container.install': 'Container Installation',
+  'resources.worker.cann.tips':
+    'Set <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES</span> to 0 for a single GPU or to the index range (e.g., 0-7 for 8 GPUs) for multiple GPUs.'
 };

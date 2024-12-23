@@ -18,12 +18,12 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
   const items: TabsProps['items'] = [
     {
       key: 'script',
-      label: 'Script Installation',
+      label: intl.formatMessage({ id: 'resources.worker.script.install' }),
       children: <ScriptInstall token={token}></ScriptInstall>
     },
     {
       key: 'container',
-      label: 'Container Installation',
+      label: intl.formatMessage({ id: 'resources.worker.container.install' }),
       children: <ContainerInstall token={token} />
     }
   ];

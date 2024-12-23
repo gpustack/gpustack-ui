@@ -50,5 +50,7 @@ export default {
   'resources.worker.container.supported': 'Do not support windows.',
   'resources.worker.current.version': 'Current version is {version}.',
   'resources.worker.select.command':
-    'Select a label to generate the command and copy it using the copy button.'
+    'Select a label to generate the command and copy it using the copy button.',
+  'resources.worker.script.install': 'Script Installation',
+  'resources.worker.container.install': 'Container Installation'
 };

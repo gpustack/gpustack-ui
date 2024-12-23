@@ -20,7 +20,10 @@ export async function getInitialState(): Promise<{
   const getUpdateCheck = async () => {
     try {
       const data = await updateCheck();
-      setAtomStorage(UpdateCheckAtom, data);
+
+      setAtomStorage(UpdateCheckAtom, {
+        ...data
+      });
       return data;
     } catch (error) {
       console.error('updateCheck error', error);
@@ -45,7 +48,11 @@ export async function getInitialState(): Promise<{
   const getAppVersionInfo = async () => {
     try {
       const data = await queryVersionInfo();
-      setAtomStorage(GPUStackVersionAtom, data);
+      const isProduction = data.version?.indexOf('0.0.0') === -1;
+      setAtomStorage(GPUStackVersionAtom, {
+        ...data,
+        isProduction
+      });
     } catch (error) {
       console.error('queryVersionInfo error', error);
     }

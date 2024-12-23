@@ -87,7 +87,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     );
   };
   return (
-    <SimpleBar style={{ height: 'calc(100vh - 194px)' }}>
+    <SimpleBar style={{ height: 'calc(100vh - 224px)' }}>
       <div style={{ ...props.style }} className="search-result-wrap">
         <Spin spinning={props.loading}>
           <div style={{ minHeight: 200 }}>

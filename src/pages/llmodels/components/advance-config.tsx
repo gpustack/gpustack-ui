@@ -153,6 +153,21 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const collapseItems = useMemo(() => {
     const children = (
       <>
+        {/* <Form.Item<FormData> name="labels">
+          <ListInput
+            placeholder={
+              backendParamsHolderTips[backend]
+                ? intl.formatMessage({
+                    id: backendParamsHolderTips[backend].holder
+                  })
+                : ''
+            }
+            btnText="models.form.button.addlabel"
+            label="Labels"
+            dataList={form.getFieldValue('backend_parameters') || []}
+            options={modelLabels}
+          ></ListInput>
+        </Form.Item> */}
         <Form.Item name="scheduleType">
           <SealSelect
             label={intl.formatMessage({ id: 'models.form.scheduletype' })}

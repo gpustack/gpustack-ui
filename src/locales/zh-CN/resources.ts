@@ -45,5 +45,8 @@ export default {
   'resources.worker.add.step2': '注册 Worker',
   'resources.worker.add.step2.tips':
     '注意：<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 Token',
-  'resources.worker.add.step3': '刷新 workers 列表，可以看到新添加的 worker'
+  'resources.worker.add.step3': '成功后，刷新 worker 列表即可看到新的 worker',
+  'resources.worker.container.supported': '不支持 Windows',
+  'resources.worker.current.version': '当前版本为 {version}',
+  'resources.worker.select.command': '选择一个标签生成命令并使用复制按钮复制'
 };

@@ -345,3 +345,11 @@ export const getVllmCliArgs = (inputString: string) => {
 
   return result;
 };
+
+export const modelLabels = [
+  { label: 'Image', value: 'image_only' },
+  { label: 'Text-to-speech', value: 'text_to_speech' },
+  { label: 'Speech-to-text', value: 'speech_to_text' },
+  { label: 'reranker', value: 'reranker' },
+  { label: 'Embedding', value: 'embedding_only' }
+];

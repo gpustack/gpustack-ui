@@ -1,4 +1,8 @@
-import { BulbOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import {
+  BulbOutlined,
+  QuestionCircleOutlined,
+  WarningOutlined
+} from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Checkbox, Select, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -233,6 +237,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           onChange={handleSearchInputChange}
           modelSource={modelSource}
         ></SearchInput>
+        <div className="gguf-tips">
+          <WarningOutlined className="font-size-14 m-r-5 warning" />
+          <span>
+            {intl.formatMessage({ id: 'models.form.search.gguftips' })}
+          </span>
+        </div>
         <div className={SearchStyle.filter}>
           <span>
             <span className="value">
@@ -268,7 +278,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                   }
                 >
                   GGUF
-                  <InfoCircleOutlined className="m-l-4" />
+                  <QuestionCircleOutlined className="m-l-4" />
                 </Tooltip>
               </Checkbox>
             </span>
@@ -318,6 +328,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           </div>
         )}
       </div>
+
       {
         <SearchResult
           loading={dataSource.loading}

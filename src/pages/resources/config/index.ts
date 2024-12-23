@@ -18,22 +18,29 @@ export const status: any = {
 export const addWorkerGuide = {
   mac: {
     getToken: 'cat /var/lib/gpustack/token',
-    registerWorker(server: string) {
-      return `curl -sfL https://get.gpustack.ai | sh -s - --server-url ${server} --token mytoken`;
+    registerWorker(params: { server: string; token: string }) {
+      return `curl -sfL https://get.gpustack.ai | sh -s - --server-url ${params.server} --token ${params.token}`;
     }
   },
   win: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
-    registerWorker(server: string) {
-      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } --server-url ${server} --token mytoken"`;
+    registerWorker(params: { server: string; token: string }) {
+      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } --server-url ${params.server} --token ${params.token}"`;
     }
   },
   docker: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
-    registerWorker(server: string) {
-      return `docker run -d --gpus all --ipc=host --network=host gpustack/gpustack --server-url ${server} --token mytoken`;
+    registerWorker(params: { server: string; tag: string; token: string }) {
+      return `docker run -d --gpus all --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
     }
   }
 };
+
+export const containerInstallOptions = [
+  { label: 'CUDA', value: 'cuda' },
+  { label: 'CANN', value: 'npu' },
+  { label: 'MUSA', value: 'musa' },
+  { label: 'CPU', value: 'cpu' }
+];

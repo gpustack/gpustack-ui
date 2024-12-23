@@ -104,6 +104,10 @@ const options = [
   {
     label: '--image-no-vae-tiling',
     value: '--image-no-vae-tiling'
+  },
+  {
+    label: '--mmproj',
+    value: '--mmproj'
   }
 ];
 

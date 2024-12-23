@@ -8,8 +8,8 @@ import {
   ListItem as WorkerListItem
 } from '@/pages/resources/config/types';
 import {
+  DeleteOutlined,
   FieldTimeOutlined,
-  FileSyncOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -71,12 +71,12 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       icon: <FieldTimeOutlined />
     },
     {
-      label: 'common.button.recreate',
+      label: 'common.button.delrecreate',
       key: 'delete',
       props: {
-        danger: false
+        danger: true
       },
-      icon: <FileSyncOutlined />
+      icon: <DeleteOutlined />
     }
   ];
 

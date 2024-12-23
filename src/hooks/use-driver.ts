@@ -2,7 +2,7 @@ import { useIntl } from '@umijs/max';
 import { driver, type Config } from 'driver.js';
 import { useEffect, useRef } from 'react';
 
-export const useDriver = (config?: Config) => {
+export const useDriver = (config?: Config & { id: string }) => {
   const intl = useIntl();
   const driverRef = useRef<any>(null);
 

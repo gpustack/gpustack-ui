@@ -78,5 +78,13 @@ export default {
   'models.form.backendVersion': 'Backend Version',
   'models.form.backendVersion.tips':
     'Pin a specific version to keep the backend stable across GPUStack upgrades.',
-  'models.form.gpuselector': 'GPU Selector'
+  'models.form.gpuselector': 'GPU Selector',
+  'models.form.backend.llamabox':
+    'llama-box: For GGUF format models, supports Linux, macOS, and Windows.',
+  'models.form.backend.vllm':
+    'vLLM: For non-GGUF format models, supports x86 Linux only.',
+  'models.form.backend.voxbox': 'vox-box: For non-GGUF format audio models.',
+  'models.form.search.gguftips':
+    'GGUF format is required for Mac and Windows compatibility.',
+  'models.form.button.addlabel': 'Add Label'
 };

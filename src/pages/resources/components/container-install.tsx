@@ -3,7 +3,7 @@ import { getAtomStorage } from '@/atoms/utils';
 import HighlightCode from '@/components/highlight-code';
 import { BulbOutlined, WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Radio } from 'antd';
+import { Button, Radio } from 'antd';
 import React from 'react';
 import { addWorkerGuide, containerInstallOptions } from '../config';
 import './styles/installation.less';
@@ -24,14 +24,17 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     if (!version || !versionInfo.isProduction) {
       version = 'main';
     }
+
+    const commandCode = addWorkerGuide[activeKey];
+
     if (activeKey === 'cuda') {
-      return addWorkerGuide.docker.registerWorker({
+      return commandCode?.registerWorker({
         server: origin,
         tag: version,
         token: props.token
       });
     }
-    return addWorkerGuide.docker.registerWorker({
+    return commandCode?.registerWorker({
       server: origin,
       tag: `${version}-${activeKey}`,
       token: props.token
@@ -40,9 +43,8 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
 
   return (
     <div className="container-install">
-      <div className="notes">
-        <span>
-          1.{' '}
+      <ul className="notes">
+        <li>
           <span>
             {intl.formatMessage({ id: 'resources.worker.container.supported' })}
           </span>
@@ -50,18 +52,32 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
             style={{ color: 'var(--ant-color-warning)' }}
             className="font-size-14 m-l-5"
           />
-        </span>
-        <span>
-          2.{' '}
+        </li>
+        <li>
           {intl.formatMessage(
             { id: 'resources.worker.current.version' },
             { version: versionInfo.version }
           )}
-        </span>
-        <span>
-          3. {intl.formatMessage({ id: 'resources.worker.select.command' })}
-        </span>
-      </div>
+        </li>
+        <li>{intl.formatMessage({ id: 'resources.worker.select.command' })}</li>
+        <li>
+          <span>
+            {intl.formatMessage({ id: 'resources.worker.driver.install' })}
+          </span>
+          <WarningOutlined
+            style={{ color: 'var(--ant-color-warning)' }}
+            className="font-size-14 m-l-5"
+          />
+          <Button
+            type="link"
+            size="small"
+            href="https://docs.gpustack.ai/latest/installation/installation-requirements/"
+            target="_blank"
+          >
+            {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}
+          </Button>
+        </li>
+      </ul>
       <div className="m-b-20">
         <Radio.Group
           block
@@ -74,6 +90,14 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           size="small"
         />
       </div>
+      {activeKey === 'npu' && (
+        <div
+          className="m-b-8 text-tertiary"
+          dangerouslySetInnerHTML={{
+            __html: intl.formatMessage({ id: 'resources.worker.cann.tips' })
+          }}
+        ></div>
+      )}
       <HighlightCode theme="dark" code={code}></HighlightCode>
       <h3>
         <BulbOutlined className="m-r-5"></BulbOutlined>

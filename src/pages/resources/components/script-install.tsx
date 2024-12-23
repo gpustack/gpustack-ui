@@ -12,7 +12,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
   const origin = window.location.origin;
 
   return (
-    <div>
+    <div className="script-install">
       <h4>{intl.formatMessage({ id: 'resources.worker.linuxormaxos' })}</h4>
       <HighlightCode
         code={addWorkerGuide.mac.registerWorker({

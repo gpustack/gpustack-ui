@@ -48,5 +48,7 @@ export default {
   'resources.worker.add.step3': '成功后，刷新 worker 列表即可看到新的 worker',
   'resources.worker.container.supported': '不支持 Windows',
   'resources.worker.current.version': '当前版本为 {version}',
-  'resources.worker.select.command': '选择一个标签生成命令并使用复制按钮复制'
+  'resources.worker.select.command': '选择一个标签生成命令并使用复制按钮复制',
+  'resources.worker.script.install': '脚本安装',
+  'resources.worker.container.install': '容器安装'
 };

@@ -48,11 +48,11 @@ interface MessageProps {
 }
 const advancedFieldsDefaultValus = {
   seed: null,
-  sampler: 'euler_a',
+  sample_method: 'euler_a',
   cfg_scale: 4.5,
-  sample_steps: 10,
+  sampling_steps: 10,
   negative_prompt: null,
-  schedule: 'discrete'
+  schedule_method: 'discrete'
 };
 
 const openaiCompatibleFieldsDefaultValus = {

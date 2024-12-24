@@ -494,6 +494,14 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (disabled) {
+      overlayCanvasRef.current!.style.pointerEvents = 'none';
+    } else {
+      overlayCanvasRef.current!.style.pointerEvents = 'auto';
+    }
+  }, [disabled]);
+
   return (
     <div className="editor-wrapper">
       <div className="flex-between">

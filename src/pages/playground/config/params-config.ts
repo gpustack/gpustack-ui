@@ -175,7 +175,7 @@ export const ImageconstExtraConfig: ParamsSchema[] = [
 export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   {
     type: 'Select',
-    name: 'sampler',
+    name: 'sample_method',
     options: [
       { label: 'euler_a', value: 'euler_a' },
       { label: 'euler', value: 'euler' },
@@ -200,7 +200,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   },
   {
     type: 'Select',
-    name: 'schedule',
+    name: 'schedule_method',
     options: [
       { label: 'discrete', value: 'discrete' },
       { label: 'karras', value: 'karras' },
@@ -220,7 +220,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   },
   {
     type: 'InputNumber',
-    name: 'sample_steps',
+    name: 'sampling_steps',
     label: {
       text: 'playground.image.params.samplerSteps',
       isLocalized: true

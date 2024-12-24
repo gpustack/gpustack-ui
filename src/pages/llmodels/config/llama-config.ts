@@ -49,8 +49,8 @@ const options = [
     value: '--image-strength'
   },
   {
-    label: '--image-sampler',
-    value: '--image-sampler',
+    label: '--image-sample-method',
+    value: '--image-sample-method',
     options: [
       'euler_a',
       'euler',
@@ -65,8 +65,8 @@ const options = [
     ]
   },
   {
-    label: '--image-sampler-steps',
-    value: '--image-sample-steps'
+    label: '--image-sampling-steps',
+    value: '--image-sampling-steps'
   },
   {
     label: '--image-cfg-scale',
@@ -85,8 +85,8 @@ const options = [
     value: '--image-slg-end'
   },
   {
-    label: '--image-schedule',
-    value: '--image-schedule',
+    label: '--image-schedule-method',
+    value: '--image-schedule-method',
     options: ['default', 'discrete', 'karras', 'exponential', 'ays', 'gits']
   },
   {

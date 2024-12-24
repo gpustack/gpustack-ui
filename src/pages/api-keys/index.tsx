@@ -118,6 +118,7 @@ const APIKeys: React.FC = () => {
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
       content: 'apikeys.table.apikeys',
+      operation: 'common.delete.single.confirm',
       name: row.name,
       async onOk() {
         console.log('OK');
@@ -130,6 +131,7 @@ const APIKeys: React.FC = () => {
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'apikeys.table.apikeys',
+      operation: 'common.delete.confirm',
       selection: true,
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);

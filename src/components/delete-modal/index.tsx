@@ -15,6 +15,7 @@ const DeleteModal = forwardRef((props, ref) => {
       okText?: string;
       cancelText?: string;
       title?: string;
+      operation: string;
     }
   >({});
 
@@ -27,6 +28,7 @@ const DeleteModal = forwardRef((props, ref) => {
         title?: string;
         cancelText?: string;
         okText?: string;
+        operation: string;
       }
     ) => {
       setConfig(data);
@@ -94,9 +96,7 @@ const DeleteModal = forwardRef((props, ref) => {
             config.content &&
             intl.formatMessage(
               {
-                id: config.selection
-                  ? 'common.delete.confirm'
-                  : 'common.delete.single.confirm'
+                id: config.operation || ''
               },
               {
                 type: intl.formatMessage({ id: config.content }),

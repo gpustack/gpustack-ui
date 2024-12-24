@@ -149,6 +149,7 @@ const Resources: React.FC = () => {
   const handleDelete = (row: ListItem) => {
     modalRef.current.show({
       content: 'worker',
+      operation: 'common.delete.single.confirm',
       name: row.name,
       async onOk() {
         console.log('OK');
@@ -161,6 +162,7 @@ const Resources: React.FC = () => {
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'wokers',
+      operation: 'common.delete.confirm',
       selection: true,
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);

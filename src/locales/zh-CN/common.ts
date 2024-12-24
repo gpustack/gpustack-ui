@@ -187,6 +187,9 @@ export default {
   'common.delete.confirm': '删除选中的{type}，确定吗？',
   'common.delete.single.confirm':
     '删除 <span style="font-size: 13px;font-weight: 700">{name}</span>，确定吗？',
+  'common.stop.confirm': '停止选中的{type}，确定吗？',
+  'common.stop.single.confirm':
+    '停止 <span style="font-size: 13px;font-weight: 700">{name}</span>，确定吗？',
   'common.filter.name': '名称查询',
   'common.form.password': '密码',
   'common.form.username': '用户名',
@@ -197,6 +200,7 @@ export default {
   'common.button.docs': '文档',
   'common.button.version': '版本',
   'common.title.delete.confirm': '确认删除',
+  'common.title.stop.confirm': '确认',
   'common.title.recreate.confirm': '确认重新创建',
   'common.button.addLabel': '添加标签',
   'common.button.addSelector': '添加选择器',

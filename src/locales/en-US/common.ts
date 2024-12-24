@@ -194,6 +194,9 @@ export default {
     'Are you sure you want to delete the selected {type}?',
   'common.delete.single.confirm':
     'Are you sure you want to delete <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+  'common.stop.confirm': 'Are you sure you want to stop the selected {type}?',
+  'common.stop.single.confirm':
+    'Are you sure you want to stop <span style="font-size: 13px;font-weight: 700">{name}</span>?',
   'common.filter.name': 'Filter by name',
   'common.form.password': 'Password',
   'common.form.username': 'Username',
@@ -204,6 +207,7 @@ export default {
   'common.button.docs': 'Documentation',
   'common.button.version': 'Version',
   'common.title.delete.confirm': 'Confirm delete',
+  'common.title.stop.confirm': 'Confirm stop',
   'common.title.recreate.confirm': 'Confirm recreate',
   'common.button.addLabel': 'Add Labels',
   'common.button.addSelector': 'Add Selectors',

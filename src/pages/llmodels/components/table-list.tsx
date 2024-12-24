@@ -301,7 +301,7 @@ const Models: React.FC<ModelsProps> = ({
     message.success(intl.formatMessage({ id: 'common.message.success' }));
   };
 
-  const handleToggleStart = async (row: ListItem, action: string) => {
+  const handleStartModel = async (row: ListItem) => {
     try {
       await updateModel({
         id: row.id,
@@ -313,7 +313,28 @@ const Models: React.FC<ModelsProps> = ({
             'updated_at',
             'rowIndex'
           ]),
-          replicas: action === 'start' ? 1 : 0
+          replicas: 1
+        }
+      });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {
+      // ingore
+    }
+  };
+
+  const handleStopModel = async (row: ListItem) => {
+    try {
+      await updateModel({
+        id: row.id,
+        data: {
+          ..._.omit(row, [
+            'id',
+            'ready_replicas',
+            'created_at',
+            'updated_at',
+            'rowIndex'
+          ]),
+          replicas: 0
         }
       });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
@@ -385,6 +406,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleDelete = async (row: any) => {
     modalRef.current.show({
       content: 'models.table.models',
+      operation: 'common.delete.single.confirm',
       name: row.name,
       async onOk() {
         await deleteModel(row.id);
@@ -398,6 +420,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleDeleteBatch = () => {
     modalRef.current.show({
       content: 'models.table.models',
+      operation: 'common.delete.confirm',
       selection: true,
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
@@ -450,6 +473,7 @@ const Models: React.FC<ModelsProps> = ({
     modalRef.current.show({
       content: 'models.instances',
       okText: 'common.button.delrecreate',
+      operation: 'common.delete.single.confirm',
       name: row.name,
       async onOk() {
         await deleteModelInstance(row.id);
@@ -487,8 +511,21 @@ const Models: React.FC<ModelsProps> = ({
       if (val === 'delete') {
         handleDelete(row);
       }
-      if (val === 'start' || val === 'stop') {
-        handleToggleStart(row, val);
+      if (val === 'start') {
+        handleStartModel(row);
+      }
+
+      if (val === 'stop') {
+        modalRef.current.show({
+          content: 'models.instances',
+          title: 'common.title.stop.confirm',
+          okText: 'common.button.stop',
+          operation: 'common.stop.single.confirm',
+          name: row.name,
+          async onOk() {
+            await handleStopModel(row);
+          }
+        });
       }
     },
     [handleEdit, handleOpenPlayGround, handleDelete]

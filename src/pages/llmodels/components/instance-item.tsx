@@ -1,5 +1,6 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import SimpleTabel from '@/components/simple-table';
 import StatusTag from '@/components/status-tag';
@@ -10,7 +11,9 @@ import {
 import {
   DeleteOutlined,
   FieldTimeOutlined,
-  InfoCircleOutlined
+  HddFilled,
+  InfoCircleOutlined,
+  ThunderboltFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Col, Divider, Row, Space, Tag, Tooltip } from 'antd';
@@ -19,6 +22,7 @@ import _ from 'lodash';
 import React, { useCallback } from 'react';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
+import '../style/instance-item.less';
 
 interface InstanceItemProps {
   list: ModelInstanceListItem[];
@@ -97,12 +101,17 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     return (
       <div>
         <div>{item.worker_name}</div>
-        <div>{workerIp}</div>
-        <div>
+        <div className="flex-center">
+          <HddFilled className="m-r-5" />
+          {workerIp}
+        </div>
+        <div className="flex-center">
+          <IconFont type="icon-filled-gpu" className="m-r-5" />
           {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
           {_.join(item.gpu_indexes?.sort?.(), ',')}]
         </div>
-        <div>
+        <div className="flex-center">
+          <ThunderboltFilled className="m-r-5" />
           {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
           {modelData?.backend || ''}
           {modelData.backend_version ? `(${modelData.backend_version})` : ''}
@@ -150,7 +159,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       {_.map(list, (item: ModelInstanceListItem, index: number) => {
         return (
           <div
-            className="_2Q2Yw"
             key={`${item.id}`}
             style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
           >
@@ -162,12 +170,14 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                     paddingInline: 'var(--ant-table-cell-padding-inline)'
                   }}
                 >
-                  <span className="flex-center">
+                  <span className="flex-center instance-name">
                     <AutoTooltip title={item.name} ghost>
                       <span className="m-r-5">{item.name}</span>
                     </AutoTooltip>
                     <Tooltip title={renderWorkerInfo(item)}>
-                      <InfoCircleOutlined />
+                      <span className="server-info">
+                        <InfoCircleOutlined />
+                      </span>
                     </Tooltip>
                   </span>
                 </Col>

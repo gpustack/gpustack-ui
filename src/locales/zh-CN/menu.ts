@@ -8,6 +8,8 @@ export default {
   'menu.playground.text2images': '文生图',
   'menu.compare': '多模型对比',
   'menu.models': '模型',
+  'menu.models.catalog': '模型库',
+  'menu.modelsCatalog': '模型库',
   'menu.resources': '资源',
   'menu.apikeys': 'API 密钥',
   'menu.users': '用户',

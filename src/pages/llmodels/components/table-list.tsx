@@ -22,6 +22,7 @@ import {
   DownOutlined,
   EditOutlined,
   ExperimentOutlined,
+  GoldOutlined,
   PictureOutlined,
   SyncOutlined,
   WechatWorkOutlined
@@ -222,60 +223,34 @@ const Models: React.FC<ModelsProps> = ({
 
   const sourceOptions = [
     {
+      label: 'Model Catalog',
+      value: 'model_catalog',
+      key: 'model_catalog',
+      icon: <GoldOutlined />
+    },
+    {
       label: 'Hugging Face',
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
-      icon: <IconFont type="icon-huggingface"></IconFont>,
-      onClick: (e: any) => {
-        setOpenDeployModal({
-          show: true,
-          width: 'calc(100vw - 220px)',
-          source: modelSourceMap.huggingface_value
-        });
-      }
+      icon: <IconFont type="icon-huggingface"></IconFont>
     },
     {
       label: 'Ollama Library',
       value: modelSourceMap.ollama_library_value,
       key: 'ollama_library',
-      icon: <IconFont type="icon-ollama"></IconFont>,
-      onClick: (e: any) => {
-        setOpenDeployModal(() => {
-          return {
-            show: true,
-            width: 600,
-            source: modelSourceMap.ollama_library_value
-          };
-        });
-      }
+      icon: <IconFont type="icon-ollama"></IconFont>
     },
     {
       label: 'ModelScope',
       value: modelSourceMap.modelscope_value,
       key: 'modelscope',
-      icon: <IconFont type="icon-tu2"></IconFont>,
-      onClick: (e: any) => {
-        setOpenDeployModal({
-          show: true,
-          width: 'calc(100vw - 220px)',
-          source: modelSourceMap.modelscope_value
-        });
-      }
+      icon: <IconFont type="icon-tu2"></IconFont>
     },
     {
       label: intl.formatMessage({ id: 'models.form.localPath' }),
       value: modelSourceMap.local_path_value,
       key: 'local_path',
-      icon: <IconFont type="icon-hard-disk"></IconFont>,
-      onClick: (e: any) => {
-        setOpenDeployModal(() => {
-          return {
-            show: true,
-            width: 600,
-            source: modelSourceMap.local_path_value
-          };
-        });
-      }
+      icon: <IconFont type="icon-hard-disk"></IconFont>
     }
   ];
 
@@ -673,6 +648,7 @@ const Models: React.FC<ModelsProps> = ({
     },
     [intl]
   );
+
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
       return (
@@ -704,6 +680,43 @@ const Models: React.FC<ModelsProps> = ({
     return '';
   }, []);
 
+  const handleClickDropdown = (item: any) => {
+    if (item.key === 'huggingface') {
+      setOpenDeployModal({
+        show: true,
+        width: 'calc(100vw - 220px)',
+        source: modelSourceMap.huggingface_value
+      });
+    }
+    if (item.key === 'model_catalog') {
+      navigate('/models/catalog');
+    }
+
+    if (item.key === 'ollama_library') {
+      setOpenDeployModal({
+        show: true,
+        width: 600,
+        source: modelSourceMap.ollama_library_value
+      });
+    }
+
+    if (item.key === 'modelscope') {
+      setOpenDeployModal({
+        show: true,
+        width: 'calc(100vw - 220px)',
+        source: modelSourceMap.modelscope_value
+      });
+    }
+
+    if (item.key === 'local_path') {
+      setOpenDeployModal({
+        show: true,
+        width: 600,
+        source: modelSourceMap.local_path_value
+      });
+    }
+  };
+
   return (
     <>
       <PageContainer
@@ -734,7 +747,13 @@ const Models: React.FC<ModelsProps> = ({
           }
           right={
             <Space size={20}>
-              <Dropdown menu={{ items: sourceOptions }} placement="bottomRight">
+              <Dropdown
+                menu={{
+                  items: sourceOptions,
+                  onClick: handleClickDropdown
+                }}
+                placement="bottomRight"
+              >
                 <Button
                   icon={<DownOutlined></DownOutlined>}
                   type="primary"
@@ -883,7 +902,6 @@ const Models: React.FC<ModelsProps> = ({
         open={openDeployModal.show}
         action={PageAction.CREATE}
         title={intl.formatMessage({ id: 'models.button.deploy' })}
-        data={currentData}
         source={openDeployModal.source}
         width={openDeployModal.width}
         onCancel={handleDeployModalCancel}

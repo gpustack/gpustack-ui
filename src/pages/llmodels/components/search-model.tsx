@@ -234,9 +234,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           modelSource={modelSource}
         ></SearchInput>
         <div className="gguf-tips">
-          <span className="m-r-5">
-            {intl.formatMessage({ id: 'common.tips.title' })}
-          </span>
           <span>
             {intl.formatMessage({ id: 'models.form.search.gguftips' })}
           </span>

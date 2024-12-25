@@ -337,7 +337,6 @@ const Models: React.FC<ModelsProps> = ({
           replicas: 0
         }
       });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       // ingore
     }

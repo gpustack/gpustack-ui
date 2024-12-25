@@ -8,6 +8,8 @@ export default {
   'menu.playground.text2images': 'Image',
   'menu.compare': 'Compare',
   'menu.models': 'Models',
+  'menu.models.catalog': 'Model Catalog',
+  'menu.modelsCatalog': 'Model Catalog',
   'menu.resources': 'Resources',
   'menu.apikeys': 'API Keys',
   'menu.users': 'Users',

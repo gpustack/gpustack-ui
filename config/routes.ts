@@ -68,6 +68,15 @@ export default [
     component: './llmodels'
   },
   {
+    name: 'modelsCatalog',
+    path: '/models/catalog',
+    key: 'modelsCatalog',
+    icon: 'Block',
+    access: 'canSeeAdmin',
+    hideInMenu: true,
+    component: './llmodels/catalog'
+  },
+  {
     name: 'resources',
     path: '/resources',
     key: 'resources',

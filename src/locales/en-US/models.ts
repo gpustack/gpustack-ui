@@ -85,6 +85,6 @@ export default {
     'vLLM: For non-GGUF format models, supports x86 Linux only.',
   'models.form.backend.voxbox': 'vox-box: For non-GGUF format audio models.',
   'models.form.search.gguftips':
-    'Mac and Windows require GGUF format for non-audio models.',
+    'Check GGUF on Mac and Windows (uncheck for seaching audio models).',
   'models.form.button.addlabel': 'Add Label'
 };

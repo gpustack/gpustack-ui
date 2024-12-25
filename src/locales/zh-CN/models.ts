@@ -81,6 +81,6 @@ export default {
   'models.form.backend.vllm': 'vLLM: 用于非 GGUF 格式模型，仅支持 x86 Linux',
   'models.form.backend.voxbox': 'vox-box: 用于非 GGUF 格式的音频模型',
   'models.form.search.gguftips':
-    'Mac 和 Windows 需要使用 GGUF 格式以确保兼容性',
+    '非音频模型，Mac 和 Windows 需要使用 GGUF 格式',
   'models.form.button.addlabel': '添加标签'
 };

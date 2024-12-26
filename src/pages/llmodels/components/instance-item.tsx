@@ -10,7 +10,6 @@ import {
 } from '@/pages/resources/config/types';
 import {
   DeleteOutlined,
-  FieldTimeOutlined,
   HddFilled,
   InfoCircleOutlined,
   ThunderboltFilled
@@ -72,7 +71,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         InstanceStatusMap.Error,
         InstanceStatusMap.Downloading
       ],
-      icon: <FieldTimeOutlined />
+      icon: <IconFont type="icon-logs" />
     },
     {
       label: 'common.button.delrecreate',
@@ -260,6 +259,21 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                   >
                     {item.state && (
                       <StatusTag
+                        actions={
+                          item.state === InstanceStatusMap.Error
+                            ? [
+                                {
+                                  label: intl.formatMessage({
+                                    id: 'common.button.viewlog'
+                                  }),
+                                  key: 'viewlog',
+                                  icon: <IconFont type="icon-logs" />,
+                                  onClick: () =>
+                                    handleChildSelect('viewlog', item, list)
+                                }
+                              ]
+                            : []
+                        }
                         download={
                           item.state === InstanceStatusMap.Downloading
                             ? { percent: item.download_progress }

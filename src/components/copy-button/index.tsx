@@ -11,6 +11,15 @@ type CopyButtonProps = {
   type?: 'text' | 'primary' | 'dashed' | 'link' | 'default';
   size?: 'small' | 'middle' | 'large';
   shape?: 'circle' | 'round' | 'default';
+  placement?:
+    | 'top'
+    | 'left'
+    | 'right'
+    | 'bottom'
+    | 'topLeft'
+    | 'topRight'
+    | 'bottomLeft'
+    | 'bottomRight';
   style?: React.CSSProperties;
 };
 
@@ -21,6 +30,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   shape = 'default',
   fontSize = '14px',
   style,
+  placement,
   size = 'middle'
 }) => {
   const intl = useIntl();
@@ -55,7 +65,10 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   }, [buttonRef]);
 
   return (
-    <Tooltip title={intl.formatMessage({ id: 'common.button.copy' })}>
+    <Tooltip
+      title={intl.formatMessage({ id: 'common.button.copy' })}
+      placement={placement}
+    >
       <Button
         className="copy-button"
         ref={buttonRef}

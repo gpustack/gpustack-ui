@@ -1,9 +1,9 @@
 import { StatusColorMap } from '@/config';
 import { StatusType } from '@/config/types';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { Button, Divider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import CopyButton from '../copy-button';
@@ -28,11 +28,19 @@ type StatusTagProps = {
   download?: {
     percent: number;
   };
+  actions?: {
+    label: string;
+    icon?: React.ReactNode;
+    key: string;
+    onClick?: () => void;
+    render?: () => React.ReactNode;
+  }[];
 };
 
 const StatusTag: React.FC<StatusTagProps> = ({
   statusValue,
   download,
+  actions = [],
   type = 'tag'
 }) => {
   const { text, status } = statusValue;
@@ -70,7 +78,30 @@ const StatusTag: React.FC<StatusTagProps> = ({
             style={{ color: 'rgba(255,255,255,.8)' }}
             text={statusValue.message || ''}
             size="small"
+            placement="right"
           ></CopyButton>
+          {actions?.map((item) => {
+            return (
+              <>
+                <Divider
+                  style={{
+                    marginBlock: 5,
+                    borderColor: 'rgba(255,255,255,.5)'
+                  }}
+                />
+                <Tooltip title={item.label} key={item.key} placement="right">
+                  <Button
+                    size="small"
+                    type="text"
+                    style={{ color: 'rgba(255,255,255,.8)', padding: 1 }}
+                    onClick={item.onClick}
+                  >
+                    <span className="font-size-14">{item.icon}</span>
+                  </Button>
+                </Tooltip>
+              </>
+            );
+          })}
         </div>
 
         <SimpleBar style={{ maxHeight: 200 }}>

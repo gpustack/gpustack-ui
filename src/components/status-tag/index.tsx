@@ -82,7 +82,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
           ></CopyButton>
           {actions?.map((item) => {
             return (
-              <>
+              <div key={item.key}>
                 <Divider
                   style={{
                     marginBlock: 5,
@@ -99,7 +99,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
                     <span className="font-size-14">{item.icon}</span>
                   </Button>
                 </Tooltip>
-              </>
+              </div>
             );
           })}
         </div>

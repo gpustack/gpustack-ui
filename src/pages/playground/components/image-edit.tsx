@@ -53,6 +53,8 @@ const advancedFieldsDefaultValus = {
   seed: 1,
   sample_method: 'euler_a',
   cfg_scale: 4.5,
+  guidance: 3.5,
+  strength: 0.75,
   sampling_steps: 10,
   negative_prompt: null,
   preview: null,
@@ -152,10 +154,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [parameters.n]);
 
   const imageFile = useMemo(() => {
+    console.log('image:', image);
     return base64ToFile(image, 'image');
   }, [image]);
 
   const maskFile = useMemo(() => {
+    console.log('mask:', mask);
     return base64ToFile(mask, 'mask');
   }, [mask]);
 
@@ -222,7 +226,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setCurrentPrompt(current?.content || '');
       setRouteCache(routeCachekey.playgroundTextToImage, true);
 
-      const imgSize = _.split(finalParameters.size, 'x');
+      const imgSize = _.split(finalParameters.size, 'x').map((item: string) =>
+        _.toNumber(item)
+      );
 
       // preview
       let stream_options: Record<string, any> = {
@@ -278,9 +284,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        url: `${EDIT_IMAGE_API}?t=${Date.now()}`,
+        url: `http://192.168.50.174:40935/v1/images/edits?t=${Date.now()}`,
+        // url: EDIT_IMAGE_API,
         signal: requestToken.current.signal
       });
+
+      console.log('result:', result);
       if (result.error) {
         setTokenResult({
           error: true,
@@ -432,6 +441,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 ? item.disabledConfig?.when?.(formValues)
                 : item.disabled
             }
+            description={
+              item.description?.isLocalized
+                ? intl.formatMessage({ id: item.description.text })
+                : item.description?.text || ''
+            }
             onChange={item.name === 'random_seed' ? handleFieldChange : null}
             {..._.omit(item, ['name', 'rules', 'disabledConfig'])}
           ></FieldComponent>
@@ -494,16 +508,16 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setImageList([]);
   }, []);
 
-  const handleOnSave = useCallback((url: string) => {
+  const handleOnSave = useCallback((data: { img: string; mask: string }) => {
     setImageStatus({
       isOriginal: true,
       isResetNeeded: false
     });
-    setMask(url);
+    setMask(data.mask);
+    setImage(data.img);
   }, []);
 
   const renderImageEditor = useMemo(() => {
-    console.log('image:', image);
     if (image) {
       return (
         <CanvasImageEditor
@@ -517,6 +531,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 disabled={loading}
                 handleUpdateImgList={handleUpdateImageList}
                 size="middle"
+                accept="image/png"
               ></UploadImg>
             </Tooltip>
           }
@@ -525,6 +540,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
     return (
       <UploadImg
+        accept="image/png"
         drag={true}
         multiple={false}
         handleUpdateImgList={handleUpdateImageList}
@@ -676,7 +692,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                       <div
                         style={{
                           height: 125,
-                          minWidth: 125,
                           maxHeight: 125
                         }}
                         key={item.uid}

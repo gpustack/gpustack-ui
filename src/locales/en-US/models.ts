@@ -44,6 +44,7 @@ export default {
   'models.search.unsupport':
     'This model is not supported and may be unusable after deployment.',
   'models.form.scheduletype': 'Schedule Type',
+  'models.form.categories': 'Model Category',
   'models.form.scheduletype.auto': 'Auto',
   'models.form.scheduletype.manual': 'Manual',
   'models.form.scheduletype.auto.tips':

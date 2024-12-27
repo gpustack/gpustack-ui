@@ -88,6 +88,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       const formData = {
         ...result.values,
         ..._.omit(props.data, result.omits),
+        categories: props.data?.categories?.length
+          ? props.data.categories[0]
+          : null,
         scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
         gpu_selector: props.data?.gpu_selector
           ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
@@ -303,6 +306,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
       onOk({
         ..._.omit(formdata, ['scheduleType']),
+        categories: formdata.categories ? [formdata.categories] : [],
         worker_selector: null,
         gpu_selector: gpu
           ? {
@@ -316,6 +320,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     } else {
       onOk({
         ..._.omit(formdata, ['scheduleType']),
+        categories: formdata.categories ? [formdata.categories] : [],
         gpu_selector: null,
         ...obj
       });

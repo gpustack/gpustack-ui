@@ -42,6 +42,7 @@ export default {
   'models.search.networkerror': '网络连接异常!',
   'models.search.hfvisit': '请确保您可以访问',
   'models.search.unsupport': '暂不支持该模型，部署后可能无法使用',
+  'models.form.categories': '模型类别',
   'models.form.scheduletype': '调度方式',
   'models.form.scheduletype.auto': '自动',
   'models.form.scheduletype.manual': '手动',

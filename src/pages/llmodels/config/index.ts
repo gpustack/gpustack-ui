@@ -240,6 +240,23 @@ export const placementStrategyOptions = [
   }
 ];
 
+export const modelCategoriesMap = {
+  image: 'image',
+  text_to_speech: 'text_to_speech',
+  speech_to_text: 'speech_to_text',
+  embedding: 'embedding',
+  reranker: 'reranker'
+};
+
+export const modelCategories = [
+  { label: 'common.options.auto', value: null, locale: true },
+  { label: 'Image', value: 'image' },
+  { label: 'Text-to-speech', value: 'text_to_speech' },
+  { label: 'Speech-to-text', value: 'speech_to_text' },
+  { label: 'Embedding', value: 'embedding' },
+  { label: 'Reranker', value: 'reranker' }
+];
+
 export const sourceRepoConfig = {
   [modelSourceMap.huggingface_value]: {
     repo_id: 'huggingface_repo_id',

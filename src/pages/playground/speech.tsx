@@ -102,7 +102,7 @@ const Playground: React.FC = () => {
     const getTextToSpeechModels = async () => {
       try {
         const params = {
-          text_to_speech: true
+          categories: 'text_to_speech'
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {
@@ -120,7 +120,7 @@ const Playground: React.FC = () => {
     const getSpeechToText = async () => {
       try {
         const params = {
-          speech_to_text: true
+          categories: 'speech_to_text'
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

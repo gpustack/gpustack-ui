@@ -212,5 +212,6 @@ export default {
   'common.button.recreate': '重新创建',
   'common.button.delrecreate': '删除(重建)',
   'common.options.all': '全部',
-  'common.options.none': '无'
+  'common.options.none': '无',
+  'common.options.auto': '自动'
 };

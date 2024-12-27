@@ -1,6 +1,7 @@
 export interface ListItem {
   source: string;
   backend: string;
+  categories?: string[];
   reranker: boolean;
   image_only?: boolean;
   huggingface_repo_id: string;
@@ -23,15 +24,14 @@ export interface ListItem {
   created_at: string;
   updated_at: string;
   gpu_selector?: {
-    worker_name: string;
-    gpu_index: number;
-    gpu_name: string;
+    gpu_ids: string[];
   };
   worker_selector?: object;
 }
 
 export interface FormData {
   backend?: string;
+  categories?: string;
   backend_parameters?: string[];
   backend_version?: string;
   source: string;
@@ -46,9 +46,7 @@ export interface FormData {
   model_scope_model_id?: string;
   model_scope_file_path?: string;
   gpu_selector?: {
-    worker_name: string;
-    gpu_index: number;
-    gpu_name: string;
+    gpu_ids: string[];
   };
   placement_strategy?: string;
   cpu_offloading?: boolean;

@@ -16,7 +16,7 @@ type Stroke = Point[];
 type CanvasImageEditorProps = {
   imageSrc: string;
   disabled?: boolean;
-  onSave: (imageData: string) => void;
+  onSave: (imageData: { mask: string; img: string }) => void;
   uploadButton: React.ReactNode;
   imageStatus: {
     isOriginal: boolean;
@@ -131,20 +131,44 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     const maskCanvas = document.createElement('canvas');
     maskCanvas.width = overlayCanvas.width;
     maskCanvas.height = overlayCanvas.height;
-    const maskCtx = maskCanvas.getContext('2d');
+    const maskCtx = maskCanvas.getContext('2d')!;
+    const overlayCtx = overlayCanvas.getContext('2d')!;
 
-    // Create the transparent overlay
-    maskCtx!.fillStyle = 'black';
-    maskCtx!.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-    maskCtx!.globalCompositeOperation = 'destination-out';
-    maskCtx!.drawImage(overlayCanvas, 0, 0);
+    const imageData = overlayCtx.getImageData(
+      0,
+      0,
+      overlayCanvas.width,
+      overlayCanvas.height
+    );
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const alpha = data[i + 3];
+      if (alpha > 0) {
+        data[i] = 255; // Red
+        data[i + 1] = 255; // Green
+        data[i + 2] = 255; // Blue
+        data[i + 3] = 255; // Alpha
+      }
+    }
+    maskCtx.putImageData(imageData, 0, 0);
+
+    maskCtx.globalCompositeOperation = 'destination-over';
+    maskCtx.fillStyle = 'black';
+    maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
 
     return maskCanvas.toDataURL('image/png');
   }, []);
 
-  const saveMask = useCallback(() => {
+  const generateImage = useCallback(() => {
+    const canvas = canvasRef.current!;
+    return canvas.toDataURL('image/png');
+  }, []);
+
+  const saveImage = useCallback(() => {
     const mask = generateMask();
-    onSave(mask);
+    const img = generateImage();
+    onSave({ mask, img });
   }, [onSave, generateMask]);
 
   const downloadMask = useCallback(() => {
@@ -273,7 +297,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
     currentStroke.current = [];
 
-    saveMask();
+    saveImage();
   };
 
   const clearOverlayCanvas = useCallback(() => {
@@ -560,7 +584,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
         <div className="tools">
           <Tooltip title="Save Mask">
             <Button onClick={downloadMask} size="middle" type="text">
-              <IconFont className="font-size-14" type="icon-save1"></IconFont>
+              <IconFont className="font-size-14" type="icon-save2"></IconFont>
             </Button>
           </Tooltip>
           <Tooltip title="Download">

@@ -299,6 +299,47 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   },
   {
     type: 'InputNumber',
+    name: 'guidance',
+    label: {
+      text: 'Guidance',
+      isLocalized: false
+    },
+    attrs: {
+      min: 1.0,
+      max: 10,
+      step: 0.1
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'strength',
+    label: {
+      text: 'Strength',
+      isLocalized: false
+    },
+    // description: {
+    //   text: '值越高，它对原图的修改越大，更多变化',
+    //   html: false,
+    //   isLocalized: false
+    // },
+    attrs: {
+      min: 0,
+      max: 1,
+      step: 0.1
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
     name: 'cfg_scale',
     label: {
       text: 'CFG Scale',

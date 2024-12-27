@@ -13,6 +13,7 @@ interface UploadImgProps {
   drag?: boolean;
   disabled?: boolean;
   children?: React.ReactNode;
+  accept?: string;
   handleUpdateImgList: (
     imgList: { dataUrl: string; uid: number | string }[]
   ) => void;
@@ -24,6 +25,7 @@ const UploadImg: React.FC<UploadImgProps> = ({
   drag = false,
   disabled = false,
   children,
+  accept = 'image/*',
   size = 'small'
 }) => {
   const intl = useIntl();
@@ -81,7 +83,7 @@ const UploadImg: React.FC<UploadImgProps> = ({
       {drag ? (
         <Upload.Dragger
           ref={uploadRef}
-          accept="image/*"
+          accept={accept}
           multiple={multiple}
           action="/"
           fileList={[]}
@@ -104,7 +106,7 @@ const UploadImg: React.FC<UploadImgProps> = ({
       ) : (
         <Upload
           ref={uploadRef}
-          accept="image/*"
+          accept={accept}
           multiple={multiple}
           action="/"
           fileList={[]}

@@ -72,13 +72,10 @@ const createFormData = (data: any): FormData => {
 
   const appendToFormData = (key: string, value: any) => {
     if (value instanceof File) {
-      // 处理文件类型
       formData.append(key, value);
     } else if (typeof value === 'object' && value !== null) {
-      // 如果是对象或数组，序列化为 JSON 字符串
       formData.append(key, JSON.stringify(value));
     } else {
-      // 处理基本数据类型
       formData.append(key, String(value));
     }
   };
@@ -106,7 +103,6 @@ export const fetchChunkedDataPostFormData = async (params: {
     body: createFormData(params.data),
     signal: params.signal
   });
-  console.log('response====', response);
   if (!response.ok) {
     return {
       error: true,
@@ -170,6 +166,7 @@ export const readLargeStreamData = async (
 
   while (true) {
     const { done, value } = await reader?.read?.();
+
     if (done) {
       // Process remaining buffered data
       if (buffer.trim()) {
@@ -197,6 +194,12 @@ export const readLargeStreamData = async (
         } catch (e) {
           console.error('Failed to parse JSON:', jsonStr, e);
         }
+      }
+
+      if (line.startsWith('error:')) {
+        const errorStr = line.slice(7).trim();
+        const jsonData = JSON.parse(errorStr);
+        callback({ error: jsonData });
       }
     }
   }

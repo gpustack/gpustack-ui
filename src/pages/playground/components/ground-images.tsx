@@ -52,6 +52,7 @@ const advancedFieldsDefaultValus = {
   seed: null,
   sample_method: 'euler_a',
   cfg_scale: 4.5,
+  guidance: 3.5,
   sampling_steps: 10,
   negative_prompt: null,
   schedule_method: 'discrete',
@@ -404,6 +405,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
     const formValues = form.current?.form?.getFieldsValue();
     return ImageAdvancedParamsConfig.map((item: ParamsSchema) => {
+      if (item.name === 'strength') {
+        return null;
+      }
       return (
         <Form.Item
           name={item.name}
@@ -417,6 +421,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               item.disabledConfig
                 ? item.disabledConfig?.when?.(formValues)
                 : item.disabled
+            }
+            description={
+              item.description?.isLocalized
+                ? intl.formatMessage({ id: item.description.text })
+                : item.description?.text
             }
             onChange={item.name === 'random_seed' ? handleFieldChange : null}
             {..._.omit(item, ['name', 'rules', 'disabledConfig'])}

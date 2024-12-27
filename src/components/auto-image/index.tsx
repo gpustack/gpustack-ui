@@ -45,6 +45,7 @@ const AutoImage: React.FC<
       return;
     }
     const { ratio } = await getImgRatio(props.src || '');
+    console.log('ratio', ratio);
     if (typeof height === 'number') {
       setWidth(height * ratio);
     } else {
@@ -66,6 +67,7 @@ const AutoImage: React.FC<
 
   const handleImgLoad = useCallback(() => {
     props.onLoad?.();
+    setIsError(false);
   }, [props.onLoad]);
 
   const handleOnError = () => {

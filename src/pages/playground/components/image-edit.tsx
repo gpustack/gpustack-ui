@@ -1,9 +1,11 @@
+import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import SingleImage from '@/components/auto-image/single-image';
 import IconFont from '@/components/icon-font';
 import CanvasImageEditor from '@/components/image-editor';
 import FieldComponent from '@/components/seal-form/field-component';
 import SealSelect from '@/components/seal-form/seal-select';
+import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import UploadImg from '@/pages/playground/components/upload-img';
 import { base64ToFile, generateRandomNumber } from '@/utils';
@@ -218,6 +220,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
+      setRouteCache(routeCachekey.playgroundTextToImage, true);
 
       const imgSize = _.split(finalParameters.size, 'x');
 
@@ -248,7 +251,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             height: imgSize[1],
             width: imgSize[0],
             loading: true,
-            progressType: stream_options.chunk_results ? 'dashboard' : 'line',
+            progressType: 'dashboard',
             preview: false,
             uid: setMessageId()
           };
@@ -275,7 +278,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        url: `http://192.168.50.4:40325/v1/images/edits?t=${Date.now()}`,
+        url: `${EDIT_IMAGE_API}?t=${Date.now()}`,
         signal: requestToken.current.signal
       });
       if (result.error) {
@@ -327,6 +330,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setImageList([]);
     } finally {
       setLoading(false);
+      setRouteCache(routeCachekey.playgroundTextToImage, false);
     }
   };
   const handleClear = () => {

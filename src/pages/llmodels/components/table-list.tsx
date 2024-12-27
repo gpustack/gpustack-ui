@@ -58,6 +58,8 @@ interface ModelsProps {
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
   handleDeleteSuccess: () => void;
+  onViewLogs: () => void;
+  onCancelViewLogs: () => void;
   queryParams: {
     page: number;
     perPage: number;
@@ -106,6 +108,8 @@ const Models: React.FC<ModelsProps> = ({
   handleSearch,
   handlePageChange,
   handleDeleteSuccess,
+  onViewLogs,
+  onCancelViewLogs,
   dataSource,
   gpuDeviceList,
   workerList,
@@ -400,6 +404,7 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleLogModalCancel = useCallback(() => {
     setOpenLogModal(false);
+    onCancelViewLogs();
   }, []);
 
   const handleDelete = async (row: any) => {
@@ -454,31 +459,38 @@ const Models: React.FC<ModelsProps> = ({
     navigate(`/playground/chat?model=${row.name}`);
   };
 
-  const handleViewLogs = async (row: any) => {
-    try {
-      setCurrentInstance({
-        url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
-        status: row.state,
-        id: row.id,
-        modelId: row.model_id,
-        tail: InstanceRealLogStatus.includes(row.state) ? undefined : PageSize
-      });
-      setOpenLogModal(true);
-    } catch (error) {
-      console.log('error:', error);
-    }
-  };
-  const handleDeleteInstace = (row: any, list: ModelInstanceListItem[]) => {
-    modalRef.current.show({
-      content: 'models.instances',
-      okText: 'common.button.delrecreate',
-      operation: 'common.delete.single.confirm',
-      name: row.name,
-      async onOk() {
-        await deleteModelInstance(row.id);
+  const handleViewLogs = useCallback(
+    async (row: any) => {
+      try {
+        setCurrentInstance({
+          url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
+          status: row.state,
+          id: row.id,
+          modelId: row.model_id,
+          tail: InstanceRealLogStatus.includes(row.state) ? undefined : PageSize
+        });
+        setOpenLogModal(true);
+        onViewLogs();
+      } catch (error) {
+        console.log('error:', error);
       }
-    });
-  };
+    },
+    [onViewLogs]
+  );
+  const handleDeleteInstace = useCallback(
+    (row: any, list: ModelInstanceListItem[]) => {
+      modalRef.current.show({
+        content: 'models.instances',
+        okText: 'common.button.delrecreate',
+        operation: 'common.delete.single.confirm',
+        name: row.name,
+        async onOk() {
+          await deleteModelInstance(row.id);
+        }
+      });
+    },
+    [deleteModelInstance]
+  );
 
   const getModelInstances = async (row: any) => {
     const params = {
@@ -539,7 +551,7 @@ const Models: React.FC<ModelsProps> = ({
         handleViewLogs(row);
       }
     },
-    []
+    [handleViewLogs, handleDeleteInstace]
   );
 
   const renderModelTags = useCallback(

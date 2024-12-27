@@ -1,9 +1,7 @@
 import TableContext from '@/components/seal-table/table-context';
-import useSetChunkRequest, {
-  createAxiosToken
-} from '@/hooks/use-chunk-request';
+import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
-import { queryGpuDevicesList, queryWorkersList } from '@/pages/resources/apis';
+import { queryWorkersList } from '@/pages/resources/apis';
 import {
   GPUDeviceItem,
   ListItem as WokerListItem
@@ -17,7 +15,7 @@ import { ListItem } from './config/types';
 const Models: React.FC = () => {
   console.log('model list====1');
 
-  const { setChunkRequest } = useSetChunkRequest();
+  const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
   const [modelInstances, setModelInstances] = useState<any[]>([]);
@@ -45,23 +43,15 @@ const Models: React.FC = () => {
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: dataSource.dataList,
     setDataList(list) {
-      setDataSource({
-        total: dataSource.total,
-        loading: false,
-        dataList: list
+      setDataSource((pre) => {
+        return {
+          total: pre.total,
+          loading: false,
+          dataList: list
+        };
       });
     }
   });
-
-  const getDeviceList = async () => {
-    try {
-      const data = await queryGpuDevicesList({ page: 1, perPage: 100 });
-      const gpuDeviceMap = _.groupBy(data.items, 'worker_name');
-      setGpuDeviceList(data.items || []);
-    } catch (error) {
-      // ingore
-    }
-  };
 
   const getWorkerList = async () => {
     try {
@@ -98,7 +88,7 @@ const Models: React.FC = () => {
         loading: false,
         total: dataSource.total
       });
-      console.log('error', error);
+      console.log('error+++', error);
     } finally {
       setFirstLoad(false);
     }
@@ -122,7 +112,6 @@ const Models: React.FC = () => {
   };
 
   const updateInstanceHandler = (list: any) => {
-    console.log('updateInstanceHandler=====', list);
     setModelInstances(list);
   };
 
@@ -170,19 +159,16 @@ const Models: React.FC = () => {
     [queryParams]
   );
 
-  useEffect(() => {
-    if (!firstLoad) {
-      setTimeout(() => {
-        createModelsChunkRequest();
-        createModelsInstanceChunkRequest();
-      }, 100);
-    }
-    return () => {
-      chunkRequedtRef.current?.current?.cancel?.();
-      cacheDataListRef.current = [];
-      chunkInstanceRequedtRef.current?.current?.cancel?.();
-    };
-  }, [firstLoad]);
+  const handleOnViewLogs = useCallback(() => {
+    chunkRequedtRef.current?.current?.cancel?.();
+    cacheDataListRef.current = [];
+    chunkInstanceRequedtRef.current?.current?.cancel?.();
+  }, []);
+
+  const handleOnCancelViewLogs = useCallback(() => {
+    createModelsChunkRequest();
+    createModelsInstanceChunkRequest();
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -193,7 +179,36 @@ const Models: React.FC = () => {
 
   useEffect(() => {
     getWorkerList();
+
+    return () => {
+      chunkRequedtRef.current?.current?.cancel?.();
+      cacheDataListRef.current = [];
+      chunkInstanceRequedtRef.current?.current?.cancel?.();
+    };
   }, []);
+
+  useEffect(() => {
+    if (!firstLoad) {
+      setTimeout(() => {
+        createModelsChunkRequest();
+        createModelsInstanceChunkRequest();
+      }, 100);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          createModelsChunkRequest();
+          createModelsInstanceChunkRequest();
+        } else {
+          chunkRequedtRef.current?.current?.cancel?.();
+          cacheDataListRef.current = [];
+          chunkInstanceRequedtRef.current?.current?.cancel?.();
+        }
+      });
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', () => {});
+    };
+  }, [firstLoad]);
 
   return (
     <TableContext.Provider
@@ -207,6 +222,8 @@ const Models: React.FC = () => {
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}
+        onViewLogs={handleOnViewLogs}
+        onCancelViewLogs={handleOnCancelViewLogs}
         queryParams={queryParams}
         loading={dataSource.loading}
         total={dataSource.total}

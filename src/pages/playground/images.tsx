@@ -5,7 +5,7 @@ import useWindowResize from '@/hooks/use-window-resize';
 import { DiffOutlined, HighlightOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
+import { Button, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -155,14 +155,14 @@ const TextToImages: React.FC = () => {
             <span className="font-600">
               {intl.formatMessage({ id: 'menu.playground.text2images' })}
             </span>
-            {
+            {/* {
               <Segmented
                 options={optionsList}
                 size="middle"
                 className="m-l-40"
                 onChange={(key) => setActiveKey(key)}
               ></Segmented>
-            }
+            } */}
           </div>
         ),
         breadcrumb: {}

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { routeCacheAtom } from '@/atoms/route-cache';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import ShortCuts, {
   modalConfig as ShortCutsConfig
@@ -14,6 +15,7 @@ import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
   Outlet,
+  dropByCacheKey,
   history,
   matchRoutes,
   useAppData,
@@ -94,6 +96,7 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller();
   const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
+  const [routeCache] = useAtom(routeCacheAtom);
   const [version] = useAtom(GPUStackVersionAtom);
   const [updateCheck] = useAtom(UpdateCheckAtom);
   const location = useLocation();
@@ -102,6 +105,8 @@ export default (props: any) => {
   const { clientRoutes, pluginManager } = useAppData();
   const [collapsed, setCollapsed] = useState(false);
   const [collapseValue, setCollapseValue] = useState(false);
+
+  console.log('routeCache========', routeCache);
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -135,6 +140,15 @@ export default (props: any) => {
     });
   };
 
+  const dropRouteCache = (pathname) => {
+    console.log('routeCache.keys()========', routeCache.keys());
+    for (let key of routeCache.keys()) {
+      if (key !== pathname && !routeCache.get(key)) {
+        dropByCacheKey(key);
+        routeCache.delete(key);
+      }
+    }
+  };
   const runtimeConfig = {
     ...initialInfo,
     logout: async (userInfo) => {
@@ -156,7 +170,7 @@ export default (props: any) => {
   };
 
   const newRoutes = filterRoutes(
-    clientRoutes.filter((route) => route.id === '@@/global-layout'),
+    clientRoutes.filter((route) => route.id === 'max-tabs'),
     (route) => {
       return (
         (!!route.isLayout && route.id !== '@@/global-layout') ||
@@ -307,6 +321,7 @@ export default (props: any) => {
               : '/playground';
             history.push(pathname);
           }
+          dropRouteCache(pathname);
         }}
         formatMessage={formatMessage}
         menu={{

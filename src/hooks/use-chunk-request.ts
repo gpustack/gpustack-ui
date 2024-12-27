@@ -1,3 +1,9 @@
+import {
+  cancelWatchRequest,
+  clearWatchRequestId,
+  updateWatchIDValue,
+  updateWatchRequest
+} from '@/atoms/watch-request';
 import { WatchEventType } from '@/config';
 import { request } from '@umijs/max';
 import axios from 'axios';
@@ -106,6 +112,7 @@ export const sliceData = (data: string, loaded: number, loadedSize: any) => {
 };
 
 const useSetChunkRequest = () => {
+  const watchRequestList = window.__GPUSTACK_WATCH_REQUEST_CLEAR__.requestList;
   const [requestReadyState, setRequestReadyState] = useState(3);
   const axiosToken = useRef<any>(null);
   const requestConfig = useRef<any>({});
@@ -124,17 +131,21 @@ const useSetChunkRequest = () => {
     setRequestReadyState(3);
   };
 
-  const resetResultSchema = (result: any[]) => {
-    //  ============ handle list data ============
-    // return _.map(result, (data: any) => {
-    //   if (data.type === WatchEventType.DELETE) {
-    //     data.ids = _.map(data.items, (item: any) => item.id);
-    //   }
-    //   data.collection = data.items || [];
-    //   return data;
-    // });
-    // ============ handle list data ============
+  const createAxiosToken = () => {
+    const { CancelToken } = axios;
+    const source = CancelToken.source();
+    const watchID = updateWatchIDValue();
+    return {
+      id: watchID,
+      token: source.token,
+      cancel() {
+        source.cancel();
+        clearWatchRequestId(watchID);
+      }
+    };
+  };
 
+  const resetResultSchema = (result: any[]) => {
     return _.map(result, (data: any) => {
       if (data.type === WatchEventType.DELETE) {
         data.ids = data.data?.id ? [data.data.id] : [];
@@ -154,6 +165,12 @@ const useSetChunkRequest = () => {
     reset();
     axiosToken.current?.cancel?.();
     axiosToken.current = createAxiosToken();
+
+    updateWatchRequest(axiosToken.current);
+    if (watchRequestList.length >= 4) {
+      cancelWatchRequest(watchRequestList.length - 4 || 1);
+    }
+
     try {
       const { request: requestData } = await request(url, {
         params: {
@@ -243,7 +260,8 @@ const useSetChunkRequest = () => {
   }, [requestReadyState]);
 
   return {
-    setChunkRequest
+    setChunkRequest,
+    createAxiosToken
   };
 };
 

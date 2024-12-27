@@ -1,7 +1,9 @@
+import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
 import FieldComponent from '@/components/seal-form/field-component';
 import SealSelect from '@/components/seal-form/seal-select';
+import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import ThumbImg from '@/pages/playground/components/thumb-img';
 import { generateRandomNumber } from '@/utils';
@@ -208,6 +210,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
+      setRouteCache(routeCachekey.playgroundTextToImage, true);
       const imgSize = _.split(finalParameters.size, 'x');
 
       // preview
@@ -237,7 +240,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             height: imgSize[1],
             width: imgSize[0],
             loading: true,
-            progressType: stream_options.chunk_results ? 'dashboard' : 'line',
+            progressType: 'dashboard',
             preview: false,
             uid: setMessageId()
           };
@@ -316,6 +319,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setImageList([]);
     } finally {
       setLoading(false);
+      setRouteCache(routeCachekey.playgroundTextToImage, false);
     }
   };
   const handleClear = () => {

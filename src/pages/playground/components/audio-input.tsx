@@ -114,9 +114,9 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
     audioStream.current?.getTracks().forEach((track: any) => {
       track.stop();
     });
-    scriptProcessor.current.disconnect();
-    mediaStreamSource.current.disconnect();
-    audioContext.current.close();
+    scriptProcessor.current?.disconnect();
+    mediaStreamSource.current?.disconnect();
+    audioContext.current?.close();
   };
 
   const handleStopRecording = () => {

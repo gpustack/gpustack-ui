@@ -44,6 +44,7 @@ import {
 import {
   InstanceRealLogStatus,
   getSourceRepoConfigValue,
+  modelCategoriesMap,
   modelSourceMap
 } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
@@ -556,7 +557,7 @@ const Models: React.FC<ModelsProps> = ({
 
   const renderModelTags = useCallback(
     (record: ListItem) => {
-      if (record.reranker) {
+      if (record.categories?.includes(modelCategoriesMap.reranker)) {
         return (
           <Tag
             icon={<IconFont type="icon-rank1"></IconFont>}
@@ -574,7 +575,7 @@ const Models: React.FC<ModelsProps> = ({
         );
       }
 
-      if (record.embedding_only && !record.reranker) {
+      if (record.categories?.includes(modelCategoriesMap.embedding)) {
         return (
           <Tag
             icon={<IconFont type="icon-cube"></IconFont>}
@@ -591,7 +592,7 @@ const Models: React.FC<ModelsProps> = ({
           </Tag>
         );
       }
-      if (record.text_to_speech) {
+      if (record.categories?.includes(modelCategoriesMap.text_to_speech)) {
         return (
           <Tag
             icon={<IconFont type="icon-sound-wave"></IconFont>}
@@ -608,7 +609,7 @@ const Models: React.FC<ModelsProps> = ({
           </Tag>
         );
       }
-      if (record.speech_to_text) {
+      if (record.categories?.includes(modelCategoriesMap.speech_to_text)) {
         return (
           <Tag
             icon={<AudioOutlined />}
@@ -625,7 +626,7 @@ const Models: React.FC<ModelsProps> = ({
           </Tag>
         );
       }
-      if (record.image_only) {
+      if (record.categories?.includes(modelCategoriesMap.image)) {
         return (
           <Tag
             icon={<PictureOutlined />}

@@ -20,6 +20,7 @@ import React, { useCallback, useMemo } from 'react';
 import {
   backendOptionsMap,
   backendParamsHolderTips,
+  modelCategories,
   placementStrategyOptions
 } from '../config';
 import llamaConfig from '../config/llama-config';
@@ -153,21 +154,16 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const collapseItems = useMemo(() => {
     const children = (
       <>
-        {/* <Form.Item<FormData> name="labels">
-          <ListInput
-            placeholder={
-              backendParamsHolderTips[backend]
-                ? intl.formatMessage({
-                    id: backendParamsHolderTips[backend].holder
-                  })
-                : ''
-            }
-            btnText="models.form.button.addlabel"
-            label="Labels"
-            dataList={form.getFieldValue('backend_parameters') || []}
-            options={modelLabels}
-          ></ListInput>
-        </Form.Item> */}
+        <Form.Item<FormData> name="categories">
+          <SealSelect
+            allowNull
+            maxCount={1}
+            label={intl.formatMessage({
+              id: 'models.form.categories'
+            })}
+            options={modelCategories}
+          ></SealSelect>
+        </Form.Item>
         <Form.Item name="scheduleType">
           <SealSelect
             label={intl.formatMessage({ id: 'models.form.scheduletype' })}
@@ -247,7 +243,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         )}
         {scheduleType === 'manual' && (
           <Form.Item<FormData>
-            name="gpu_selector"
+            name={['gpu_selector', 'gpu_ids']}
             rules={[
               {
                 required: true,
@@ -265,6 +261,8 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             <SealSelect
               label={intl.formatMessage({ id: 'models.form.gpuselector' })}
               required
+              mode="multiple"
+              maxLength={1}
             >
               {gpuOptions.map((item) => (
                 <Select.Option key={item.value} value={item.value}>

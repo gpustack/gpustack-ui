@@ -86,7 +86,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return {
         ...item,
         label: item.name,
-        value: `${item.worker_name}-${item.name}-${item.index}`
+        value: item.id
       };
     });
     console.log('queryGPUList========', list);
@@ -381,23 +381,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   }, []);
 
   const handleOk = (formdata: FormData) => {
-    const gpu = _.find(gpuOptions, (item: any) => {
-      return item.value === formdata.gpu_selector;
-    });
-    if (gpu) {
-      onOk({
-        ..._.omit(formdata, ['scheduleType']),
-        gpu_selector: {
-          gpu_name: gpu.name,
-          gpu_index: gpu.index,
-          worker_name: gpu.worker_name
-        }
-      });
+    let data = _.cloneDeep(formdata);
+    if (data.categories) {
+      data.categories = [data.categories];
     } else {
-      onOk({
-        ..._.omit(formdata, ['scheduleType'])
-      });
+      data.categories = [];
     }
+    onOk({
+      ..._.omit(data, ['scheduleType'])
+    });
   };
 
   useEffect(() => {
@@ -430,6 +422,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         placement_strategy: 'spread',
         cpu_offloading: true,
         scheduleType: 'auto',
+        categories: null,
         distributed_inference_across_workers: true
       }}
     >

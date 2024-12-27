@@ -85,7 +85,7 @@ const TextToImages: React.FC = () => {
     const getModelList = async () => {
       try {
         const params = {
-          image_only: true
+          categories: 'image'
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

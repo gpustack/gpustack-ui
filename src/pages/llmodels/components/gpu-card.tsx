@@ -14,12 +14,7 @@ const GPUCard: React.FC<{
   return (
     <div className="gpu-card">
       <div className="header" style={{ width: '100%' }}>
-        {header ?? (
-          <AutoTooltip ghost>
-            {data.label}({data.worker_name})[
-            {intl.formatMessage({ id: 'resources.table.index' })}:{data.index}]
-          </AutoTooltip>
-        )}
+        {header ?? <AutoTooltip ghost>{data.label}</AutoTooltip>}
       </div>
       <div className="info">
         {info ?? (

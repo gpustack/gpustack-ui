@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
@@ -5,13 +6,11 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-
 import {
   Checkbox,
   Collapse,
   Form,
   FormInstance,
-  Select,
   Tooltip,
   Typography
 } from 'antd';
@@ -252,7 +251,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                     id: 'common.form.rule.select'
                   },
                   {
-                    name: 'gpu_selector'
+                    name: intl.formatMessage({ id: 'models.form.gpuselector' })
                   }
                 )
               }
@@ -262,14 +261,24 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               label={intl.formatMessage({ id: 'models.form.gpuselector' })}
               required
               mode="multiple"
-              maxLength={1}
-            >
-              {gpuOptions.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  <GPUCard data={item}></GPUCard>
-                </Select.Option>
-              ))}
-            </SealSelect>
+              maxTagCount={1}
+              tagRender={(props) => {
+                return (
+                  <AutoTooltip
+                    className="m-r-0"
+                    closable={true}
+                    onClose={props.onClose}
+                    maxWidth={240}
+                  >
+                    {props.label}
+                  </AutoTooltip>
+                );
+              }}
+              options={gpuOptions}
+              optionRender={(props) => {
+                return <GPUCard data={props.data}></GPUCard>;
+              }}
+            ></SealSelect>
           </Form.Item>
         )}
         <Form.Item name="backend_version">

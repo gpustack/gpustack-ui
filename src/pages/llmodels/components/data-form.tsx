@@ -85,11 +85,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     const list = _.map(data.items, (item: GPUListItem) => {
       return {
         ...item,
-        label: item.name,
+        title: '',
+        label: ` ${item.name}(${item.worker_name})[
+            ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}]`,
         value: item.id
       };
     });
-    console.log('queryGPUList========', list);
     setGpuOptions(list);
   };
 

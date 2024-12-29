@@ -406,7 +406,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleLogModalCancel = useCallback(() => {
     setOpenLogModal(false);
     onCancelViewLogs();
-  }, []);
+  }, [onCancelViewLogs]);
 
   const handleDelete = async (row: any) => {
     modalRef.current.show({
@@ -437,23 +437,23 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleOpenPlayGround = (row: any) => {
-    if (row.image_only) {
+    if (row.categories?.includes(modelCategoriesMap.image)) {
       navigate(`/playground/text-to-image?model=${row.name}`);
       return;
     }
-    if (row.text_to_speech) {
+    if (row.categories?.includes(modelCategoriesMap.text_to_speech)) {
       navigate(`/playground/speech?model=${row.name}&type=tts`);
       return;
     }
-    if (row.speech_to_text) {
+    if (row.categories?.includes(modelCategoriesMap.speech_to_text)) {
       navigate(`/playground/speech?model=${row.name}&type=stt`);
       return;
     }
-    if (row.reranker) {
+    if (row.categories?.includes(modelCategoriesMap.reranker)) {
       navigate(`/playground/rerank?model=${row.name}`);
       return;
     }
-    if (row.embedding_only) {
+    if (row.categories?.includes(modelCategoriesMap.embedding)) {
       navigate(`/playground/embedding?model=${row.name}`);
       return;
     }

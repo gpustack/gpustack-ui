@@ -13,8 +13,6 @@ import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
 const Models: React.FC = () => {
-  console.log('model list====1');
-
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
@@ -33,6 +31,7 @@ const Models: React.FC = () => {
   const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
+  const isPageHidden = useRef(false);
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
     page: 1,
@@ -83,11 +82,13 @@ const Models: React.FC = () => {
         total: res.pagination.total
       });
     } catch (error) {
-      setDataSource({
-        dataList: [],
-        loading: false,
-        total: dataSource.total
-      });
+      if (!isPageHidden.current) {
+        setDataSource({
+          dataList: [],
+          loading: false,
+          total: dataSource.total
+        });
+      }
       console.log('error+++', error);
     } finally {
       setFirstLoad(false);
@@ -115,7 +116,7 @@ const Models: React.FC = () => {
     setModelInstances(list);
   };
 
-  const createModelsChunkRequest = () => {
+  const createModelsChunkRequest = useCallback(async () => {
     chunkRequedtRef.current?.current?.cancel?.();
     try {
       chunkRequedtRef.current = setChunkRequest({
@@ -128,8 +129,8 @@ const Models: React.FC = () => {
     } catch (error) {
       // ignore
     }
-  };
-  const createModelsInstanceChunkRequest = () => {
+  }, [queryParams]);
+  const createModelsInstanceChunkRequest = useCallback(async () => {
     chunkInstanceRequedtRef.current?.current?.cancel?.();
     try {
       chunkInstanceRequedtRef.current = setModelInstanceChunkRequest({
@@ -140,7 +141,7 @@ const Models: React.FC = () => {
     } catch (error) {
       // ignore
     }
-  };
+  }, []);
 
   const handleSearch = useCallback(
     (e: any) => {
@@ -160,15 +161,22 @@ const Models: React.FC = () => {
   );
 
   const handleOnViewLogs = useCallback(() => {
+    isPageHidden.current = true;
     chunkRequedtRef.current?.current?.cancel?.();
     cacheDataListRef.current = [];
     chunkInstanceRequedtRef.current?.current?.cancel?.();
   }, []);
 
-  const handleOnCancelViewLogs = useCallback(() => {
-    createModelsChunkRequest();
-    createModelsInstanceChunkRequest();
-  }, []);
+  const handleOnCancelViewLogs = useCallback(async () => {
+    isPageHidden.current = false;
+    await Promise.all([
+      createModelsChunkRequest(),
+      createModelsInstanceChunkRequest()
+    ]);
+    setTimeout(() => {
+      fetchData();
+    }, 100);
+  }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
   useEffect(() => {
     fetchData();
@@ -193,22 +201,32 @@ const Models: React.FC = () => {
         createModelsChunkRequest();
         createModelsInstanceChunkRequest();
       }, 100);
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-          createModelsChunkRequest();
-          createModelsInstanceChunkRequest();
-        } else {
-          chunkRequedtRef.current?.current?.cancel?.();
-          cacheDataListRef.current = [];
-          chunkInstanceRequedtRef.current?.current?.cancel?.();
-        }
-      });
     }
+  }, [firstLoad]);
+
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        isPageHidden.current = false;
+        await Promise.all([
+          createModelsChunkRequest(),
+          createModelsInstanceChunkRequest()
+        ]);
+        fetchData();
+      } else {
+        isPageHidden.current = true;
+        chunkRequedtRef.current?.current?.cancel?.();
+        cacheDataListRef.current = [];
+        chunkInstanceRequedtRef.current?.current?.cancel?.();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      document.removeEventListener('visibilitychange', () => {});
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [firstLoad]);
+  }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
   return (
     <TableContext.Provider

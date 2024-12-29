@@ -81,7 +81,11 @@ const LineChart: React.FC<ChartProps> = (props) => {
       },
       yAxis: {
         ...options.yAxis,
-        name: yAxisName
+        name: yAxisName,
+        nameTextStyle: {
+          fontSize: 12,
+          align: 'right'
+        }
       },
       xAxis: {
         ...options.xAxis,

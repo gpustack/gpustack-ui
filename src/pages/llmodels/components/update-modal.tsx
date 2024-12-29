@@ -48,8 +48,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     const list = _.map(data.items, (item: GPUListItem) => {
       return {
         ...item,
-        label: item.name,
-        value: `${item.worker_name}-${item.name}-${item.index}`
+        title: '',
+        label: ` ${item.name}(${item.worker_name})[
+            ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}]`,
+        value: item.id
       };
     });
     setGpuOptions(list);
@@ -92,9 +94,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ? props.data.categories[0]
           : null,
         scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
-        gpu_selector: props.data?.gpu_selector
-          ? `${props.data?.gpu_selector.worker_name}-${props.data?.gpu_selector.gpu_name}-${props.data?.gpu_selector.gpu_index}`
-          : null
+        gpu_selector: props.data?.gpu_selector || {
+          gpu_ids: []
+        }
       };
       form.setFieldsValue(formData);
     }
@@ -300,19 +302,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       };
     }
     if (formdata.scheduleType === 'manual') {
-      const gpu = _.find(gpuOptions, (item: any) => {
-        return item.value === formdata.gpu_selector;
-      });
-
       onOk({
         ..._.omit(formdata, ['scheduleType']),
         categories: formdata.categories ? [formdata.categories] : [],
         worker_selector: null,
-        gpu_selector: gpu
+        gpu_selector: formdata.gpu_selector?.gpu_ids?.length
           ? {
-              gpu_name: gpu.name,
-              gpu_index: gpu.index,
-              worker_name: gpu.worker_name
+              gpu_ids: formdata.gpu_selector.gpu_ids
             }
           : null,
         ...obj

@@ -1,3 +1,4 @@
+import { CloseOutlined } from '@ant-design/icons';
 import { Tag, Tooltip, type TagProps } from 'antd';
 import { throttle } from 'lodash';
 import React, {
@@ -20,6 +21,7 @@ interface AutoTooltipProps extends Omit<TagProps, 'title'> {
   ghost?: boolean;
   title?: React.ReactNode;
   showTitle?: boolean;
+  closable?: boolean;
   tooltipProps?: React.ComponentProps<typeof Tooltip>;
 }
 
@@ -35,7 +37,6 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const resizeObserver = useRef<ResizeObserver>();
 
   const checkOverflow = useCallback(() => {
     if (contentRef.current) {
@@ -43,6 +44,22 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
       setIsOverflowing(scrollWidth > clientWidth);
     }
   }, [contentRef.current]);
+
+  useEffect(() => {
+    const element = contentRef.current;
+    if (!element) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkOverflow();
+    });
+
+    resizeObserver.observe(element);
+
+    // Initial check
+    checkOverflow();
+
+    return () => resizeObserver.disconnect();
+  }, [checkOverflow]);
 
   useEffect(() => {
     const debouncedCheckOverflow = throttle(checkOverflow, 200);
@@ -89,11 +106,28 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
       {...tooltipProps}
     >
       {ghost ? (
-        <div ref={contentRef} style={tagStyle}>
+        <div ref={contentRef} style={tagStyle} data-overflow={isOverflowing}>
           {children}
         </div>
       ) : (
-        <Tag {...tagProps} ref={contentRef} style={tagStyle}>
+        <Tag
+          {...tagProps}
+          ref={contentRef}
+          style={{
+            ...tagStyle,
+            paddingInline: tagProps.closable ? '8px 22px' : 8,
+            borderRadius: 12
+          }}
+          closeIcon={
+            <CloseOutlined
+              style={{
+                position: 'absolute',
+                right: 8,
+                top: 8
+              }}
+            />
+          }
+        >
           {children}
         </Tag>
       )}

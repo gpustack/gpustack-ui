@@ -284,8 +284,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        url: `http://192.168.50.174:40935/v1/images/edits?t=${Date.now()}`,
-        // url: EDIT_IMAGE_API,
+        // url: `http://192.168.50.174:40935/v1/images/edits?t=${Date.now()}`,
+        url: `${EDIT_IMAGE_API}?t=${Date.now()}`,
         signal: requestToken.current.signal
       });
 

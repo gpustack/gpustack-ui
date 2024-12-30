@@ -161,6 +161,7 @@ export const modelSourceValueMap = {
 
 export const InstanceStatusMap = {
   Initializing: 'initializing',
+  Starting: 'starting',
   Pending: 'pending',
   Running: 'running',
   Scheduled: 'scheduled',
@@ -183,7 +184,8 @@ export const InstanceStatusMapValue = {
   [InstanceStatusMap.Error]: 'Error',
   [InstanceStatusMap.Downloading]: 'Downloading',
   [InstanceStatusMap.Unknown]: 'Unknown',
-  [InstanceStatusMap.Analyzing]: 'Analyzing'
+  [InstanceStatusMap.Analyzing]: 'Analyzing',
+  [InstanceStatusMap.Starting]: 'Starting'
 };
 
 export const status: any = {
@@ -194,7 +196,8 @@ export const status: any = {
   [InstanceStatusMap.Error]: StatusMaps.error,
   [InstanceStatusMap.Downloading]: StatusMaps.transitioning,
   [InstanceStatusMap.Unknown]: StatusMaps.inactive,
-  [InstanceStatusMap.Analyzing]: StatusMaps.transitioning
+  [InstanceStatusMap.Analyzing]: StatusMaps.transitioning,
+  [InstanceStatusMap.Starting]: StatusMaps.transitioning
 };
 
 export const ActionList = [

@@ -121,5 +121,8 @@ export default {
   'playground.params.size.description':
     '图片生成的最大尺寸受控于模型的部署参数。<a href="https://github.com/gpustack/llama-box" target="_blank">参考文档</a>',
   'playground.documents.verify.embedding': '至少输入两条文本',
-  'playground.documents.verify.rerank': '文档不能为空'
+  'playground.documents.verify.rerank': '文档不能为空',
+  'playground.image.guidance.tip': '值越低，多样性越高，对提示词的贴合度越低',
+  'playground.image.cfg_scale.tip': '值越低，多样性越高',
+  'playground.image.strength.tip': '值越高，它对原图的修改越大'
 };

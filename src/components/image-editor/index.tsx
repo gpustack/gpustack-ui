@@ -199,7 +199,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       ctx.beginPath();
 
       stroke.forEach((point, i) => {
-        console.log('Drawing Point:', point);
         if (i === 0) {
           ctx.moveTo(point.x, point.y);
         } else {

@@ -119,13 +119,17 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
             borderRadius: 12
           }}
           closeIcon={
-            <CloseOutlined
-              style={{
-                position: 'absolute',
-                right: 8,
-                top: 8
-              }}
-            />
+            tagProps.closable ? (
+              <CloseOutlined
+                style={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8
+                }}
+              />
+            ) : (
+              false
+            )
           }
         >
           {children}

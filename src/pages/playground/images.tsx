@@ -85,13 +85,15 @@ const TextToImages: React.FC = () => {
     const getModelList = async () => {
       try {
         const params = {
-          categories: 'image'
+          categories: 'image',
+          with_meta: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,
-            label: item.id
+            label: item.id,
+            meta: item.meta
           };
         }) as Global.BaseOption<string>[];
         return list;

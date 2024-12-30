@@ -31,7 +31,7 @@ export interface ListItem {
 
 export interface FormData {
   backend?: string;
-  categories?: string;
+  categories?: string[];
   backend_parameters?: string[];
   backend_version?: string;
   source: string;

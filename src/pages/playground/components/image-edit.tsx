@@ -33,8 +33,9 @@ import { EDIT_IMAGE_API } from '../apis';
 import {
   ImageAdvancedParamsConfig,
   ImageCustomSizeConfig,
+  ImageParamsConfig,
   ImageconstExtraConfig,
-  ImageEidtParamsConfig as paramsConfig
+  imageSizeOptions
 } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
@@ -49,6 +50,18 @@ interface MessageProps {
   loaded?: boolean;
   ref?: any;
 }
+
+// for advanced fields
+const METAKEYS = [
+  'sample_method',
+  'sampling_steps',
+  'schedule_method',
+  'cfg_scale',
+  'guidance',
+  'negative_prompt',
+  'strength'
+];
+
 const advancedFieldsDefaultValus = {
   seed: 1,
   sample_method: 'euler_a',
@@ -58,7 +71,7 @@ const advancedFieldsDefaultValus = {
   sampling_steps: 10,
   negative_prompt: null,
   preview: null,
-  schedule_method: 'discrete'
+  schedule_method: 'default'
 };
 
 const openaiCompatibleFieldsDefaultValus = {
@@ -109,6 +122,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [image, setImage] = useState<string>('');
   const [mask, setMask] = useState<string>('');
   const [uploadList, setUploadList] = useState<any[]>([]);
+  const [modelMeta, setModelMeta] = useState<any>({});
   const [imageStatus, setImageStatus] = useState<{
     isOriginal: boolean;
     isResetNeeded: boolean;
@@ -116,7 +130,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     isOriginal: false,
     isResetNeeded: false
   });
-
+  const cacheFormData = useRef<any>({});
   const size = Form.useWatch('size', form.current?.form);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
@@ -133,6 +147,48 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const updateCacheFormData = (values: Record<string, any>) => {
+    cacheFormData.current = {
+      ...cacheFormData.current,
+      ...values
+    };
+  };
+
+  const paramsConfig = useMemo(() => {
+    const { max_height, max_width } = modelMeta || {};
+    if (
+      !max_height ||
+      !max_width ||
+      (max_height === 1024 && max_width === 1024)
+    ) {
+      return ImageParamsConfig;
+    }
+    const newImageSizeOptions = imageSizeOptions.filter((item) => {
+      return item.width <= max_width && item.height <= max_height;
+    });
+    if (
+      !newImageSizeOptions.find(
+        (item) => item.width === max_width && item.height === max_height
+      )
+    ) {
+      newImageSizeOptions.push({
+        width: max_width,
+        height: max_height,
+        label: `${max_width}x${max_height}`,
+        value: `${max_width}x${max_height}`
+      });
+    }
+    return ImageParamsConfig.map((item) => {
+      if (item.name === 'size') {
+        return {
+          ...item,
+          options: newImageSizeOptions
+        };
+      }
+      return item;
+    });
+  }, [modelMeta]);
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
@@ -154,12 +210,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [parameters.n]);
 
   const imageFile = useMemo(() => {
-    console.log('image:', image);
     return base64ToFile(image, 'image');
   }, [image]);
 
   const maskFile = useMemo(() => {
-    console.log('mask:', mask);
     return base64ToFile(mask, 'mask');
   }, [mask]);
 
@@ -224,7 +278,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
-      setRouteCache(routeCachekey.playgroundTextToImage, true);
+      setRouteCache(routeCachekey['/playground/text-to-image'], true);
 
       const imgSize = _.split(finalParameters.size, 'x').map((item: string) =>
         _.toNumber(item)
@@ -284,7 +338,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        // url: `http://192.168.50.174:40935/v1/images/edits?t=${Date.now()}`,
+        // url: `http:///v1/images/edits?t=${Date.now()}`,
         url: `${EDIT_IMAGE_API}?t=${Date.now()}`,
         signal: requestToken.current.signal
       });
@@ -339,7 +393,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setImageList([]);
     } finally {
       setLoading(false);
-      setRouteCache(routeCachekey.playgroundTextToImage, false);
+      setRouteCache(routeCachekey['/playground/text-to-image'], false);
     }
   };
   const handleClear = () => {
@@ -447,7 +501,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 : item.description?.text || ''
             }
             onChange={item.name === 'random_seed' ? handleFieldChange : null}
-            {..._.omit(item, ['name', 'rules', 'disabledConfig'])}
+            {..._.omit(item, [
+              'name',
+              'rules',
+              'disabledConfig',
+              'description'
+            ])}
           ></FieldComponent>
         </Form.Item>
       );
@@ -489,13 +548,44 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 'rules',
                 'disabledConfig'
               ])}
+              max={
+                item.name === 'height'
+                  ? modelMeta.max_height || item.attrs?.max
+                  : modelMeta.max_width || item.attrs?.max
+              }
             ></FieldComponent>
           </Form.Item>
         );
       });
     }
     return null;
-  }, [size, intl]);
+  }, [size, intl, modelMeta]);
+
+  const handleOnModelChange = useCallback(
+    (val: string) => {
+      if (!val) return;
+
+      const model = modelList.find((item) => item.value === val);
+
+      setModelMeta(model?.meta || {});
+
+      if (!isOpenaiCompatible) {
+        setParams((pre: object) => {
+          return {
+            ...pre,
+            ..._.pick(model?.meta, METAKEYS, {})
+          };
+        });
+        form.current?.form?.setFieldsValue({
+          ..._.pick(model?.meta, METAKEYS, {})
+        });
+      }
+      updateCacheFormData({
+        ..._.pick(model?.meta, METAKEYS, {})
+      });
+    },
+    [modelList, isOpenaiCompatible]
+  );
 
   const handleUpdateImageList = useCallback((base64List: any) => {
     const img = _.get(base64List, '[0].dataUrl', '');
@@ -758,6 +848,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                   </Tooltip>
                 </div>
               }
+              onModelChange={handleOnModelChange}
               setParams={setParams}
               paramsConfig={paramsConfig}
               initialValues={initialValues}

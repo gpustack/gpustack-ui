@@ -1,5 +1,25 @@
 import { ParamsSchema } from './types';
 
+export const imageSizeOptions: {
+  label: string;
+  value: string;
+  width: number;
+  height: number;
+  locale?: boolean;
+}[] = [
+  {
+    label: 'playground.params.custom',
+    value: 'custom',
+    locale: true,
+    width: 0,
+    height: 0
+  },
+  { label: '512x512', value: '512x512', width: 512, height: 512 },
+  { label: '768x1024', value: '768x1024', width: 768, height: 1024 },
+  { label: '1024x768', value: '1024x768', width: 1024, height: 768 },
+  { label: '1024x1024', value: '1024x1024', width: 1024, height: 1024 }
+];
+
 export const TTSParamsConfig: ParamsSchema[] = [
   {
     type: 'Select',
@@ -104,13 +124,7 @@ export const ImageParamsConfig: ParamsSchema[] = [
   {
     type: 'Select',
     name: 'size',
-    options: [
-      { label: 'playground.params.custom', value: 'custom', locale: true },
-      { label: '512x512', value: '512x512' },
-      { label: '768x1024', value: '768x1024' },
-      { label: '1024x768', value: '1024x768' },
-      { label: '1024x1024', value: '1024x1024' }
-    ],
+    options: imageSizeOptions,
     description: {
       text: 'playground.params.size.description',
       html: true,
@@ -264,6 +278,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     type: 'Select',
     name: 'schedule_method',
     options: [
+      { label: 'default', value: 'default' },
       { label: 'discrete', value: 'discrete' },
       { label: 'karras', value: 'karras' },
       { label: 'exponential', value: 'exponential' },
@@ -304,6 +319,11 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
       text: 'Guidance',
       isLocalized: false
     },
+    description: {
+      text: 'playground.image.guidance.tip',
+      html: false,
+      isLocalized: true
+    },
     attrs: {
       min: 1.0,
       max: 10,
@@ -322,11 +342,11 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
       text: 'Strength',
       isLocalized: false
     },
-    // description: {
-    //   text: '值越高，它对原图的修改越大，更多变化',
-    //   html: false,
-    //   isLocalized: false
-    // },
+    description: {
+      text: 'playground.image.strength.tip',
+      html: false,
+      isLocalized: true
+    },
     attrs: {
       min: 0,
       max: 1,
@@ -344,6 +364,11 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     label: {
       text: 'CFG Scale',
       isLocalized: false
+    },
+    description: {
+      text: 'playground.image.cfg_scale.tip',
+      html: false,
+      isLocalized: true
     },
     attrs: {
       min: 1.0,

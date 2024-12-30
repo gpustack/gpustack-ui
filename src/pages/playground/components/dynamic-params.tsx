@@ -67,25 +67,21 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     }));
 
     useEffect(() => {
+      let model = selectedModel || '';
+
       if (showModelSelector) {
-        form.setFieldsValue({
-          model: selectedModel || _.get(modelList, '[0].value'),
-          ...initialValues
-        });
-        setParams({
-          model: selectedModel || _.get(modelList, '[0].value'),
-          ...initialValues
-        });
-      } else {
-        form.setFieldsValue({
-          model: selectedModel || '',
-          ...initialValues
-        });
-        setParams({
-          model: selectedModel || '',
-          ...initialValues
-        });
+        model = model || _.get(modelList, '[0].value');
       }
+
+      form.setFieldsValue({
+        model: model,
+        ...initialValues
+      });
+      setParams({
+        model: model,
+        ...initialValues
+      });
+      onModelChange?.(model);
     }, [modelList, showModelSelector, selectedModel, initialValues]);
 
     const handleModelChange = useCallback(

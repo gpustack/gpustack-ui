@@ -1,11 +1,12 @@
 // @ts-nocheck
 
-import { routeCacheAtom } from '@/atoms/route-cache';
+import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import ShortCuts, {
   modalConfig as ShortCutsConfig
 } from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
+import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
@@ -106,8 +107,6 @@ export default (props: any) => {
   const [collapsed, setCollapsed] = useState(false);
   const [collapseValue, setCollapseValue] = useState(false);
 
-  console.log('routeCache========', routeCache);
-
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
     loading: false,
@@ -140,10 +139,15 @@ export default (props: any) => {
     });
   };
 
+  const initRouteCacheValue = (pathname) => {
+    if (routeCache.get(pathname) === undefined && routeCachekey[pathname]) {
+      setRouteCache(pathname, false);
+    }
+  };
+
   const dropRouteCache = (pathname) => {
-    console.log('routeCache.keys()========', routeCache.keys());
     for (let key of routeCache.keys()) {
-      if (key !== pathname && !routeCache.get(key)) {
+      if (key !== pathname && !routeCache.get(key) && routeCachekey[key]) {
         dropByCacheKey(key);
         routeCache.delete(key);
       }
@@ -302,6 +306,9 @@ export default (props: any) => {
           const { location } = history;
           const { pathname } = location;
 
+          initRouteCacheValue(pathname);
+          dropRouteCache(pathname);
+
           // if user is not change password, redirect to change password page
           if (
             location.pathname !== loginPath &&
@@ -321,7 +328,6 @@ export default (props: any) => {
               : '/playground';
             history.push(pathname);
           }
-          dropRouteCache(pathname);
         }}
         formatMessage={formatMessage}
         menu={{

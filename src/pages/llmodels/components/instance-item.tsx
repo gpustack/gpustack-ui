@@ -69,6 +69,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         InstanceStatusMap.Initializing,
         InstanceStatusMap.Running,
         InstanceStatusMap.Error,
+        InstanceStatusMap.Starting,
         InstanceStatusMap.Downloading
       ],
       icon: <IconFont type="icon-logs" />

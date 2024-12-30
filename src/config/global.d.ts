@@ -32,6 +32,7 @@ declare namespace Global {
     label: string;
     locale?: boolean;
     value: T;
+    meta?: Record<string, any>;
   }
 
   interface HintOptions {

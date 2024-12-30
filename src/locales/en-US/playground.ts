@@ -124,5 +124,11 @@ export default {
   'playground.params.size.description':
     'The maximum size of the generated image is controlled by the deployment parameters of the model. <a href="https://github.com/gpustack/llama-box" target="_blank">Refer to</a>',
   'playground.documents.verify.embedding': 'At least add two pieces of text.',
-  'playground.documents.verify.rerank': 'The documents cannot be empty.'
+  'playground.documents.verify.rerank': 'The documents cannot be empty.',
+  'playground.image.guidance.tip':
+    'The lower the value, the higher the diversity, and the lower the adherence to the prompt.',
+  'playground.image.cfg_scale.tip':
+    'The lower the value, the higher the diversity.',
+  'playground.image.strength.tip':
+    'The higher the value, the greater the modification to the original image.'
 };

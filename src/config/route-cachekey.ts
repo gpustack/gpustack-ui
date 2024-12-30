@@ -1,3 +1,3 @@
 export default {
-  playgroundTextToImage: '/playground/text-to-image'
+  '/playground/text-to-image': '/playground/text-to-image'
 };

@@ -156,7 +156,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         <Form.Item<FormData> name="categories">
           <SealSelect
             allowNull
-            maxCount={1}
             label={intl.formatMessage({
               id: 'models.form.categories'
             })}

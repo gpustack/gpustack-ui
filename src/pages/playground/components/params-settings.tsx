@@ -29,6 +29,14 @@ type ParamsSettingsProps = {
   globalParams?: ParamsSettingsFormProps;
 };
 
+const METAKEYS: Record<string, string> = {
+  seed: 'seed',
+  stop: 'stop',
+  temperature: 'temperature',
+  top_p: 'top_p',
+  max_tokens: 'n_ctx'
+};
+
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   selectedModel,
   setParams,
@@ -48,28 +56,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   };
   const [form] = Form.useForm();
   const formId = useId();
-
-  useEffect(() => {
-    if (showModelSelector) {
-      form.setFieldsValue({
-        ...initialValues,
-        model: selectedModel || _.get(modelList, '[0].value')
-      });
-      setParams({
-        ...initialValues,
-        model: selectedModel || _.get(modelList, '[0].value')
-      });
-    } else {
-      form.setFieldsValue({
-        ...initialValues,
-        model: selectedModel || ''
-      });
-      setParams({
-        ...initialValues,
-        model: selectedModel || ''
-      });
-    }
-  }, [modelList, showModelSelector, selectedModel]);
 
   const handleOnFinish = (values: any) => {
     console.log('handleOnFinish', values);
@@ -108,10 +94,41 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     [form, setParams, onValuesChange]
   );
 
-  const handleResetParams = () => {
-    form.setFieldsValue(initialValues);
-    setParams(initialValues);
+  const handleModelChange = (val: string) => {
+    const model = _.find(modelList, { value: val });
+    const modelMeta = model?.meta || {};
+    const keys = Object.keys(METAKEYS).map((k: string) => {
+      return METAKEYS[k];
+    });
+    const modelMetaKeys = _.pick(modelMeta, keys);
+    const obj = _.reduce(
+      METAKEYS,
+      (result: any, value: any, key: string) => {
+        result[key] = modelMetaKeys[value];
+        return result;
+      },
+      {}
+    );
+    return obj;
   };
+
+  useEffect(() => {
+    let model = selectedModel || '';
+    if (showModelSelector) {
+      model = model || _.get(modelList, '[0].value');
+    }
+    const modelMetaData = handleModelChange(model);
+    form.setFieldsValue({
+      ...initialValues,
+      ...modelMetaData,
+      model: model
+    });
+    setParams({
+      ...initialValues,
+      ...modelMetaData,
+      model: model
+    });
+  }, [modelList, showModelSelector, selectedModel]);
 
   useEffect(() => {
     form.setFieldsValue(globalParams);

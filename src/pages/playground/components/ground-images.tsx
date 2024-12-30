@@ -13,7 +13,7 @@ import {
 } from '@/utils/fetch-chunk-data';
 import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Form, Tooltip } from 'antd';
+import { Button, Form, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -32,8 +32,9 @@ import { promptList } from '../config';
 import {
   ImageAdvancedParamsConfig,
   ImageCustomSizeConfig,
+  ImageParamsConfig,
   ImageconstExtraConfig,
-  ImageParamsConfig as paramsConfig
+  imageSizeOptions
 } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
@@ -48,6 +49,17 @@ interface MessageProps {
   loaded?: boolean;
   ref?: any;
 }
+
+// for advanced fields
+const METAKEYS = [
+  'sample_method',
+  'sampling_steps',
+  'schedule_method',
+  'cfg_scale',
+  'guidance',
+  'negative_prompt'
+];
+
 const advancedFieldsDefaultValus = {
   seed: null,
   sample_method: 'euler_a',
@@ -55,7 +67,7 @@ const advancedFieldsDefaultValus = {
   guidance: 3.5,
   sampling_steps: 10,
   negative_prompt: null,
-  schedule_method: 'discrete',
+  schedule_method: 'default',
   preview: null
 };
 
@@ -101,12 +113,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
+  const [modelMeta, setModelMeta] = useState<any>({});
   const form = useRef<any>(null);
   const inputRef = useRef<any>(null);
-  const previewRef = useRef<any>({
-    preview: false,
-    preview_faster: false
-  });
+  const cacheFormData = useRef<Record<string, any>>({});
 
   const size = Form.useWatch('size', form.current?.form);
 
@@ -125,8 +135,50 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
+  const paramsConfig = useMemo(() => {
+    const { max_height, max_width } = modelMeta || {};
+    if (
+      !max_height ||
+      !max_width ||
+      (max_height === 1024 && max_width === 1024)
+    ) {
+      return ImageParamsConfig;
+    }
+    const newImageSizeOptions = imageSizeOptions.filter((item) => {
+      return item.width <= max_width && item.height <= max_height;
+    });
+    if (
+      !newImageSizeOptions.find(
+        (item) => item.width === max_width && item.height === max_height
+      )
+    ) {
+      newImageSizeOptions.push({
+        width: max_width,
+        height: max_height,
+        label: `${max_width}x${max_height}`,
+        value: `${max_width}x${max_height}`
+      });
+    }
+    return ImageParamsConfig.map((item) => {
+      if (item.name === 'size') {
+        return {
+          ...item,
+          options: newImageSizeOptions
+        };
+      }
+      return item;
+    });
+  }, [modelMeta]);
+
   const generateNumber = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  };
+
+  const updateCacheFormData = (values: Record<string, any>) => {
+    cacheFormData.current = {
+      ...cacheFormData.current,
+      ...values
+    };
   };
 
   const handleRandomPrompt = useCallback(() => {
@@ -211,8 +263,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
-      setRouteCache(routeCachekey.playgroundTextToImage, true);
-      const imgSize = _.split(finalParameters.size, 'x');
+      setRouteCache(routeCachekey['/playground/text-to-image'], true);
+      const imgSize = _.split(finalParameters.size, 'x').map((item: number) =>
+        _.toNumber(item)
+      );
 
       // preview
       let stream_options: Record<string, any> = {
@@ -320,7 +374,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setImageList([]);
     } finally {
       setLoading(false);
-      setRouteCache(routeCachekey.playgroundTextToImage, false);
+      setRouteCache(routeCachekey['/playground/text-to-image'], false);
     }
   };
   const handleClear = () => {
@@ -345,12 +399,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleToggleParamsStyle = () => {
     if (isOpenaiCompatible) {
       form.current?.form?.setFieldsValue({
-        ...advancedFieldsDefaultValus
+        ...advancedFieldsDefaultValus,
+        ..._.pick(cacheFormData.current, _.keys(advancedFieldsDefaultValus))
       });
       setParams((pre: object) => {
         return {
           ..._.omit(pre, _.keys(openaiCompatibleFieldsDefaultValus)),
-          ...advancedFieldsDefaultValus
+          ...advancedFieldsDefaultValus,
+          ..._.pick(cacheFormData.current, _.keys(advancedFieldsDefaultValus))
         };
       });
     } else {
@@ -365,6 +421,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
     }
     setIsOpenaiCompatible(!isOpenaiCompatible);
+    updateCacheFormData(parameters);
   };
 
   const renderExtra = useMemo(() => {
@@ -428,7 +485,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 : item.description?.text
             }
             onChange={item.name === 'random_seed' ? handleFieldChange : null}
-            {..._.omit(item, ['name', 'rules', 'disabledConfig'])}
+            {..._.omit(item, [
+              'name',
+              'rules',
+              'disabledConfig',
+              'description'
+            ])}
           ></FieldComponent>
         </Form.Item>
       );
@@ -470,34 +532,44 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 'rules',
                 'disabledConfig'
               ])}
+              max={
+                item.name === 'height'
+                  ? modelMeta.max_height || item.attrs?.max
+                  : modelMeta.max_width || item.attrs?.max
+              }
             ></FieldComponent>
           </Form.Item>
         );
       });
     }
     return null;
-  }, [size, intl]);
+  }, [size, intl, modelMeta]);
 
-  const hanldeOnPreview = (e: any) => {
-    previewRef.current.preview = e.target.checked;
-  };
+  const handleOnModelChange = useCallback(
+    (val: string) => {
+      if (!val) return;
 
-  const hanldeOnPreviewFaster = (e: any) => {
-    previewRef.current.preview_faster = e.target.checked;
-  };
+      const model = modelList.find((item) => item.value === val);
 
-  const renderPreview = useMemo(() => {
-    return (
-      <>
-        <Checkbox onChange={hanldeOnPreview} defaultChecked={false}>
-          Preview
-        </Checkbox>
-        <Checkbox onChange={hanldeOnPreviewFaster} defaultChecked={false}>
-          Preview Faster
-        </Checkbox>
-      </>
-    );
-  }, []);
+      setModelMeta(model?.meta || {});
+
+      if (!isOpenaiCompatible) {
+        setParams((pre: object) => {
+          return {
+            ...pre,
+            ..._.pick(model?.meta, METAKEYS, {})
+          };
+        });
+        form.current?.form?.setFieldsValue({
+          ..._.pick(model?.meta, METAKEYS, {})
+        });
+      }
+      updateCacheFormData({
+        ..._.pick(model?.meta, METAKEYS, {})
+      });
+    },
+    [modelList, isOpenaiCompatible]
+  );
 
   useEffect(() => {
     return () => {
@@ -672,6 +744,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                 </Tooltip>
               </div>
             }
+            onModelChange={handleOnModelChange}
             setParams={setParams}
             paramsConfig={paramsConfig}
             initialValues={initialValues}

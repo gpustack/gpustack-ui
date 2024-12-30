@@ -8,7 +8,14 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Modal, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { queryGPUList } from '../apis';
@@ -35,6 +42,29 @@ const SEARCH_SOURCE = [
   modelSourceMap.modelscope_value
 ];
 
+const sourceOptions = [
+  {
+    label: 'Hugging Face',
+    value: modelSourceMap.huggingface_value,
+    key: 'huggingface'
+  },
+  {
+    label: 'Ollama Library',
+    value: modelSourceMap.ollama_library_value,
+    key: 'ollama_library'
+  },
+  {
+    label: 'ModelScope',
+    value: modelSourceMap.modelscope_value,
+    key: 'model_scope'
+  },
+  {
+    label: 'models.form.localPath',
+    value: modelSourceMap.local_path_value,
+    key: 'local_path'
+  }
+];
+
 const UpdateModal: React.FC<AddModalProps> = (props) => {
   const { title, action, open, onOk, onCancel } = props || {};
   const [form] = Form.useForm();
@@ -42,6 +72,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const [gpuOptions, setGpuOptions] = useState<any[]>([]);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const localPathCache = useRef<string>('');
 
   const getGPUList = async () => {
     const data = await queryGPUList();
@@ -56,29 +87,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     });
     setGpuOptions(list);
   };
-
-  const sourceOptions = [
-    {
-      label: 'Hugging Face',
-      value: modelSourceMap.huggingface_value,
-      key: 'huggingface'
-    },
-    {
-      label: 'Ollama Library',
-      value: modelSourceMap.ollama_library_value,
-      key: 'ollama_library'
-    },
-    {
-      label: 'ModelScope',
-      value: modelSourceMap.modelscope_value,
-      key: 'model_scope'
-    },
-    {
-      label: intl.formatMessage({ id: 'models.form.localPath' }),
-      value: modelSourceMap.local_path_value,
-      key: 'local_path'
-    }
-  ];
 
   useEffect(() => {
     if (action === PageAction.EDIT && open) {
@@ -105,6 +113,34 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   useEffect(() => {
     setIsGGUF(props.data?.backend === backendOptionsMap.llamaBox);
   }, [props.data?.backend]);
+
+  const handleBackendChange = useCallback((val: string) => {
+    if (val === backendOptionsMap.llamaBox) {
+      form.setFieldsValue({
+        distributed_inference_across_workers: true,
+        cpu_offloading: true
+      });
+    }
+    form.setFieldValue('backend_version', '');
+  }, []);
+
+  const handleOnFocus = () => {
+    localPathCache.current = form.getFieldValue('local_path');
+  };
+
+  const handleLocalPathBlur = (e: any) => {
+    const value = e.target.value;
+    if (value === localPathCache.current && value) {
+      return;
+    }
+    const isEndwithGGUF = _.endsWith(value, '.gguf');
+    let backend = backendOptionsMap.llamaBox;
+    if (!isEndwithGGUF) {
+      backend = backendOptionsMap.vllm;
+    }
+    handleBackendChange?.(backend);
+    form.setFieldValue('backend', backend);
+  };
 
   const renderHuggingfaceFields = () => {
     return (
@@ -250,6 +286,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ]}
         >
           <SealInput.Input
+            onBlur={handleLocalPathBlur}
+            onFocus={handleOnFocus}
             disabled={false}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             required
@@ -282,16 +320,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const handleSumit = () => {
     form.submit();
   };
-
-  const handleBackendChange = useCallback((val: string) => {
-    if (val === backendOptionsMap.llamaBox) {
-      form.setFieldsValue({
-        distributed_inference_across_workers: true,
-        cpu_offloading: true
-      });
-    }
-    form.setFieldValue('backend_version', '');
-  }, []);
 
   const handleOk = (formdata: FormData) => {
     let obj = {};

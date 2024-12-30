@@ -13,6 +13,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState
 } from 'react';
 import { queryGPUList } from '../apis';
@@ -43,6 +44,30 @@ const SEARCH_SOURCE = [
   modelSourceMap.modelscope_value
 ];
 
+const sourceOptions = [
+  {
+    label: 'Hugging Face',
+    value: modelSourceMap.huggingface_value,
+    key: 'huggingface'
+  },
+  {
+    label: 'Ollama Library',
+    value: modelSourceMap.ollama_library_value,
+    key: 'ollama_library'
+  },
+  {
+    label: 'ModelScope',
+    value: modelSourceMap.modelscope_value,
+    key: 'model_scope'
+  },
+  {
+    label: 'models.form.localPath',
+    locale: true,
+    value: modelSourceMap.local_path_value,
+    key: 'local_path'
+  }
+];
+
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const { action, isGGUF, onOk } = props;
   const [form] = Form.useForm();
@@ -57,28 +82,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     speech2text: false
   });
 
-  const sourceOptions = [
-    {
-      label: 'Hugging Face',
-      value: modelSourceMap.huggingface_value,
-      key: 'huggingface'
-    },
-    {
-      label: 'Ollama Library',
-      value: modelSourceMap.ollama_library_value,
-      key: 'ollama_library'
-    },
-    {
-      label: 'ModelScope',
-      value: modelSourceMap.modelscope_value,
-      key: 'model_scope'
-    },
-    {
-      label: intl.formatMessage({ id: 'models.form.localPath' }),
-      value: modelSourceMap.local_path_value,
-      key: 'local_path'
-    }
-  ];
+  const localPathCache = useRef<string>('');
 
   const getGPUList = async () => {
     const data = await queryGPUList();
@@ -186,8 +190,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
+  const handleOnFocus = () => {
+    localPathCache.current = form.getFieldValue('local_path');
+  };
+
   const handleLocalPathBlur = (e: any) => {
     const value = e.target.value;
+    if (value === localPathCache.current && value) {
+      return;
+    }
     const isEndwithGGUF = _.endsWith(value, '.gguf');
     let backend = backendOptionsMap.llamaBox;
     if (!isEndwithGGUF) {
@@ -344,6 +355,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         >
           <SealInput.Input
             onBlur={handleLocalPathBlur}
+            onFocus={handleOnFocus}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             required
           ></SealInput.Input>

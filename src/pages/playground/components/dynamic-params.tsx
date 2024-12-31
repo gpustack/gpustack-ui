@@ -186,6 +186,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       [intl]
     );
     const renderFields = useMemo(() => {
+      console.log('paramsConfig++++++++++++');
       if (!paramsConfig?.length) {
         return null;
       }

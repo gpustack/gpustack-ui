@@ -122,7 +122,12 @@ export default {
     '图片生成的最大尺寸受控于模型的部署参数。<a href="https://github.com/gpustack/llama-box" target="_blank">参考文档</a>',
   'playground.documents.verify.embedding': '至少输入两条文本',
   'playground.documents.verify.rerank': '文档不能为空',
-  'playground.image.guidance.tip': '值越低，多样性越高，对提示词的贴合度越低',
-  'playground.image.cfg_scale.tip': '值越低，多样性越高',
-  'playground.image.strength.tip': '值越高，它对原图的修改越大'
+  'playground.image.guidance.tip': '引导比例，影响图片的质量和多样性',
+  'playground.image.cfg_scale.tip':
+    '无分类器引导比例，影响图片的对Prompt的贴合度',
+  'playground.image.strength.tip': '值越高，它对原图的修改越大',
+  'playground.image.edit.tips': '点击或拖动图片到此区域上传',
+  'playground.image.saveMask': '保存遮罩',
+  'playground.image.brushSize': '画笔大小',
+  'playground.image.download': '下载图片'
 };

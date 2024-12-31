@@ -1,9 +1,11 @@
+import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import AudioAnimation from '@/components/audio-animation';
 import AudioPlayer from '@/components/audio-player';
 import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
+import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { useCancelToken } from '@/hooks/use-request-token';
 import { readAudioFile } from '@/utils/load-audio-file';
@@ -116,6 +118,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       cancelRequest();
       updateCancelToken();
+
+      setRouteCache(routeCachekey['/playground/speech'], true);
       const params = {
         ...parameters,
         file: new File([audioData.data], audioData.name, {
@@ -169,6 +173,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     } finally {
       setLoading(false);
       setIsRecording(false);
+      setRouteCache(routeCachekey['/playground/speech'], false);
     }
   };
   const handleClear = () => {

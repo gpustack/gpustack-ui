@@ -90,7 +90,7 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
-  keepalive: ['/playground/text-to-image'],
+  keepalive: ['/playground/text-to-image', '/playground/speech'],
   locale: {
     antd: true,
     baseNavigator: true,

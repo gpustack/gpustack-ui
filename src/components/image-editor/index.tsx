@@ -4,6 +4,7 @@ import {
   SyncOutlined,
   UndoOutlined
 } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -33,6 +34,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   onSave,
   uploadButton
 }) => {
+  const intl = useIntl();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -541,7 +543,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
             }}
             title={
               <div className="flex-column" style={{ width: '100%' }}>
-                <span className="text-secondary">Brush Size</span>
+                <span className="text-secondary">
+                  {intl.formatMessage({ id: 'playground.image.brushSize' })}
+                </span>
                 <Slider
                   disabled={disabled}
                   style={{ marginBlock: '4px 6px', marginLeft: 0, flex: 1 }}
@@ -558,7 +562,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
               <FormatPainterOutlined className="font-size-14" />
             </Button>
           </Tooltip>
-          <Tooltip title="Undo">
+          <Tooltip title={intl.formatMessage({ id: 'common.button.undo' })}>
             <Button
               onClick={undo}
               size="middle"
@@ -569,7 +573,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
             </Button>
           </Tooltip>
           {uploadButton}
-          <Tooltip title="Reset">
+          <Tooltip title={intl.formatMessage({ id: 'common.button.reset' })}>
             <Button
               onClick={onReset}
               size="middle"
@@ -581,12 +585,16 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           </Tooltip>
         </div>
         <div className="tools">
-          <Tooltip title="Save Mask">
+          <Tooltip
+            title={intl.formatMessage({ id: 'playground.image.saveMask' })}
+          >
             <Button onClick={downloadMask} size="middle" type="text">
               <IconFont className="font-size-14" type="icon-save2"></IconFont>
             </Button>
           </Tooltip>
-          <Tooltip title="Download">
+          <Tooltip
+            title={intl.formatMessage({ id: 'playground.image.download' })}
+          >
             <Button onClick={download} size="middle" type="text">
               <DownloadOutlined className="font-size-14" />
             </Button>

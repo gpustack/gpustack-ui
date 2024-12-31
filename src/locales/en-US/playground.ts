@@ -126,9 +126,13 @@ export default {
   'playground.documents.verify.embedding': 'At least add two pieces of text.',
   'playground.documents.verify.rerank': 'The documents cannot be empty.',
   'playground.image.guidance.tip':
-    'The lower the value, the higher the diversity, and the lower the adherence to the prompt.',
+    'Guidance scale, affecting the quality and diversity of the image.',
   'playground.image.cfg_scale.tip':
-    'The lower the value, the higher the diversity.',
+    "Classifier-free guidance scale, affecting the image's adherence to the prompt.",
   'playground.image.strength.tip':
-    'The higher the value, the greater the modification to the original image.'
+    'The higher the value, the greater the modification to the original image.',
+  'playground.image.edit.tips': 'Click or drag image to this area to upload',
+  'playground.image.saveMask': 'Save Mask',
+  'playground.image.brushSize': 'Brush Size',
+  'playground.image.download': 'Download Image'
 };

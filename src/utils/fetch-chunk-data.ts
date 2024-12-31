@@ -8,7 +8,6 @@ const extractJSON = (dataStr: string) => {
   if (!dataStr) {
     return results;
   }
-
   while ((match = extractStreamRegx.exec(dataStr)) !== null) {
     try {
       const jsonData = JSON.parse(match[1]);
@@ -131,9 +130,16 @@ export const readStreamData = async (
 
   let chunk = decoder.decode(value, { stream: true });
 
-  extractJSON(chunk).forEach((data) => {
-    callback?.(data);
-  });
+  if (chunk.startsWith('error:')) {
+    const errorStr = chunk.slice(7).trim();
+    const jsonData = JSON.parse(errorStr);
+    callback({ error: jsonData });
+  } else {
+    extractJSON(chunk).forEach((data) => {
+      callback?.(data);
+    });
+  }
+
   await readStreamData(reader, decoder, callback);
 };
 

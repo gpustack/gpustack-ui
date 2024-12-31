@@ -291,6 +291,9 @@ export default (props: any) => {
         layout="side"
         openKeys={false}
         disableMobile={true}
+        header={{
+          title: <div style={{ fontSize: 36 }}> gpuStack </div>
+        }}
         siderWidth={220}
         onCollapse={(collapsed) => {
           setCollapsed(collapsed);

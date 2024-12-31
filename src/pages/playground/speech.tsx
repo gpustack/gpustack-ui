@@ -102,13 +102,15 @@ const Playground: React.FC = () => {
     const getTextToSpeechModels = async () => {
       try {
         const params = {
-          categories: 'text_to_speech'
+          categories: 'text_to_speech',
+          with_meta: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,
-            label: item.id
+            label: item.id,
+            meta: item.meta
           };
         }) as Global.BaseOption<string>[];
         return list;
@@ -120,13 +122,15 @@ const Playground: React.FC = () => {
     const getSpeechToText = async () => {
       try {
         const params = {
-          categories: 'speech_to_text'
+          categories: 'speech_to_text',
+          with_meta: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,
-            label: item.id
+            label: item.id,
+            meta: item.meta
           };
         }) as Global.BaseOption<string>[];
         return list;

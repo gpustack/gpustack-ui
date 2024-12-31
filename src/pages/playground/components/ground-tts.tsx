@@ -1,7 +1,9 @@
+import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
 import SealSelect from '@/components/seal-form/seal-select';
 import SpeechContent from '@/components/speech-content';
+import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { SendOutlined } from '@ant-design/icons';
 import { getLocale, useIntl, useSearchParams } from '@umijs/max';
@@ -157,6 +159,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setCurrentPrompt(current?.content || '');
       setMessageList([]);
 
+      setRouteCache(routeCachekey['/playground/speech'], true);
+
       controllerRef.current?.abort?.();
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
@@ -214,6 +218,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
     } finally {
       setLoading(false);
+      setRouteCache(routeCachekey['/playground/speech'], false);
     }
   };
   const handleClear = () => {

@@ -94,6 +94,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const joinMessage = (chunk: any) => {
+    console.log('chunk:', chunk);
     setTokenResult({
       ...(chunk?.usage ?? {})
     });

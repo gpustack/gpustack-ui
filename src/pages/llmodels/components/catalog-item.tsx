@@ -1,17 +1,19 @@
 import IMG from '@/assets/images/small-logo-200x200.png';
 import AutoTooltip from '@/components/auto-tooltip';
-import { Button, Tag, Typography } from 'antd';
+import { Tag, Typography } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
 import '../style/catalog-item.less';
 
+const COLORS = ['blue', 'purple', 'orange'];
 interface CatalogItemProps {
   activeId: number;
   itemId: number;
+  data: any;
   onDeploy: () => void;
 }
 const CatalogItem: React.FC<CatalogItemProps> = (props) => {
-  const { onDeploy, itemId, activeId } = props;
+  const { onDeploy, itemId, activeId, data } = props;
 
   const handleOnDeploy = () => {
     onDeploy();
@@ -26,22 +28,23 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
             <img src={IMG} alt="" />
           </div>
           <AutoTooltip ghost style={{ flex: 1 }}>
-            gpustack/stable-diffusion-v3-5-medium-GGUF
+            {data.name}
           </AutoTooltip>
         </div>
         <Typography.Paragraph className="desc" ellipsis={{ rows: 2 }}>
-          this is description this is description this is description this is
-          this is description this isthis is description this isthis is
-          description this is this is description this isthis is description
-          this isthis is description this isthis is description this isthis is
-          description this isthis is description this isthis is description this
-          is this is description this isthis is description this isthis is
-          description this isthis is description this is
+          {data.description}
         </Typography.Paragraph>
       </div>
       <div className="item-footer">
         <div className="tags">
-          <Tag color="blue" className="tag-item">
+          {data.tags.map((sItem, i) => {
+            return (
+              <Tag key={sItem} className="tag-item" color={COLORS[i]}>
+                {sItem}
+              </Tag>
+            );
+          })}
+          {/* <Tag color="blue" className="tag-item">
             Audio
           </Tag>
           <Tag color="purple" className="tag-item">
@@ -49,11 +52,24 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
           </Tag>
           <Tag color="orange" className="tag-item">
             Qwen
-          </Tag>
+          </Tag> */}
+          {/* <span className="dot"></span>
+          <Tag className="tag-item">Audio</Tag>
+          <Tag className="tag-item">GGUF</Tag>
+          <Tag className="tag-item">Qwen</Tag> */}
+          {data.size?.length > 0 && (
+            <>
+              <span className="dot"></span>
+              {data.size.map((sItem, i) => {
+                return (
+                  <Tag key={sItem} className="tag-item">
+                    {sItem}
+                  </Tag>
+                );
+              })}
+            </>
+          )}
         </div>
-        <Button size="small" type="primary" onClick={handleOnDeploy}>
-          Deploy
-        </Button>
       </div>
     </div>
   );

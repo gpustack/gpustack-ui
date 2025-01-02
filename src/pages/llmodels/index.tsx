@@ -19,10 +19,12 @@ const Models: React.FC = () => {
   const [modelInstances, setModelInstances] = useState<any[]>([]);
   const [dataSource, setDataSource] = useState<{
     dataList: ListItem[];
+    deletedIds: number[];
     loading: boolean;
     total: number;
   }>({
     dataList: [],
+    deletedIds: [],
     loading: false,
     total: 0
   });
@@ -39,18 +41,20 @@ const Models: React.FC = () => {
     search: ''
   });
 
-  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
-    dataList: dataSource.dataList,
-    setDataList(list) {
-      setDataSource((pre) => {
-        return {
-          total: pre.total,
-          loading: false,
-          dataList: list
-        };
-      });
-    }
-  });
+  const { updateChunkedList, cacheDataListRef, deletedIdsRef } =
+    useUpdateChunkedList({
+      dataList: dataSource.dataList,
+      setDataList(list, opts?: any) {
+        setDataSource((pre) => {
+          return {
+            total: pre.total,
+            loading: false,
+            dataList: list,
+            deletedIds: opts?.deletedIds || []
+          };
+        });
+      }
+    });
 
   const getWorkerList = async () => {
     try {
@@ -79,21 +83,23 @@ const Models: React.FC = () => {
       setDataSource({
         dataList: res.items || [],
         loading: false,
-        total: res.pagination.total
+        total: res.pagination.total,
+        deletedIds: []
       });
     } catch (error) {
       if (!isPageHidden.current) {
         setDataSource({
           dataList: [],
           loading: false,
-          total: dataSource.total
+          total: dataSource.total,
+          deletedIds: []
         });
       }
       console.log('error+++', error);
     } finally {
       setFirstLoad(false);
     }
-  }, [queryParams, firstLoad]);
+  }, [queryParams]);
 
   const handlePageChange = useCallback(
     (page: number, pageSize: number | undefined) => {
@@ -110,6 +116,8 @@ const Models: React.FC = () => {
     _.each(list, (data: any) => {
       updateChunkedList(data);
     });
+
+    console.log('deletedIdsRef=======', deletedIdsRef.current);
   };
 
   const updateInstanceHandler = (list: any) => {
@@ -143,22 +151,10 @@ const Models: React.FC = () => {
     }
   }, []);
 
-  const handleSearch = useCallback(
-    (e: any) => {
-      fetchData();
-    },
-    [fetchData]
-  );
-
-  const handleNameChange = useCallback(
-    (e: any) => {
-      setQueryParams({
-        ...queryParams,
-        search: e.target.value
-      });
-    },
-    [queryParams]
-  );
+  const getList = async () => {
+    await fetchData();
+    await createModelsChunkRequest();
+  };
 
   const handleOnViewLogs = useCallback(() => {
     isPageHidden.current = true;
@@ -178,8 +174,24 @@ const Models: React.FC = () => {
     }, 100);
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
+  const handleSearch = useCallback(
+    async (e: any) => {
+      await fetchData();
+    },
+    [fetchData]
+  );
+
+  const debounceUpdateFilter = _.debounce((e: any) => {
+    setQueryParams({
+      ...queryParams,
+      search: e.target.value
+    });
+  }, 350);
+
+  const handleNameChange = useCallback(debounceUpdateFilter, [queryParams]);
+
   useEffect(() => {
-    fetchData();
+    getList();
     return () => {
       axiosToken?.cancel?.();
     };
@@ -187,6 +199,7 @@ const Models: React.FC = () => {
 
   useEffect(() => {
     getWorkerList();
+    createModelsInstanceChunkRequest();
 
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
@@ -194,15 +207,6 @@ const Models: React.FC = () => {
       chunkInstanceRequedtRef.current?.current?.cancel?.();
     };
   }, []);
-
-  useEffect(() => {
-    if (!firstLoad) {
-      setTimeout(() => {
-        createModelsChunkRequest();
-        createModelsInstanceChunkRequest();
-      }, 100);
-    }
-  }, [firstLoad]);
 
   useEffect(() => {
     const handleVisibilityChange = async () => {
@@ -245,6 +249,7 @@ const Models: React.FC = () => {
         queryParams={queryParams}
         loading={dataSource.loading}
         total={dataSource.total}
+        deleteIds={dataSource.deletedIds}
         gpuDeviceList={gpuDeviceList}
         workerList={workerList}
       ></TableList>

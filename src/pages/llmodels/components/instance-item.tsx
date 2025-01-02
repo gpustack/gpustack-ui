@@ -221,7 +221,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         <Tag
                           color="cyan"
                           style={{
-                            opacity: 0.75
+                            opacity: 0.75,
+                            borderRadius: 12
                           }}
                         >
                           <InfoCircleOutlined className="m-r-5" />
@@ -241,7 +242,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         <Tag
                           color="processing"
                           style={{
-                            opacity: 0.75
+                            opacity: 0.75,
+                            borderRadius: 12
                           }}
                         >
                           <InfoCircleOutlined className="m-r-5" />

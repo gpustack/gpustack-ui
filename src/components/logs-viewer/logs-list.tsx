@@ -14,7 +14,7 @@ import './styles/logs-list.less';
 interface LogsListProps {
   dataList: any[];
   height?: number;
-  onScroll?: (isTop: boolean) => void;
+  onScroll?: (data: { isTop: boolean; isBottom: boolean }) => void;
   diffHeight?: number;
   ref?: any;
 }
@@ -61,13 +61,26 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
       const scrollTop = scrollEventElement?.scrollTop;
       const scrollHeight = scrollEventElement?.scrollHeight;
       const clientHeight = scrollEventElement?.clientHeight;
-      // is scroll to bottom
+
       stopScroll.current = scrollTop + clientHeight <= scrollHeight;
+      // is scroll to bottom
+      const isBottom = scrollTop + clientHeight === scrollHeight;
       // is scroll to top
       if (scrollTop === 0) {
-        onScroll?.(true);
+        onScroll?.({
+          isTop: true,
+          isBottom: false
+        });
+      } else if (isBottom) {
+        onScroll?.({
+          isTop: false,
+          isBottom: true
+        });
       } else {
-        onScroll?.(false);
+        onScroll?.({
+          isTop: false,
+          isBottom: false
+        });
       }
       debounceResetStopScroll();
     },

@@ -175,10 +175,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const updateCacheFormData = (values: Record<string, any>) => {
-    cacheFormData.current = {
-      ...cacheFormData.current,
-      ...values
-    };
+    _.merge(cacheFormData.current, values);
   };
 
   const handleRandomPrompt = useCallback(() => {
@@ -555,10 +552,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       if (!isOpenaiCompatible) {
         setParams((pre: object) => {
-          return {
-            ...pre,
-            ..._.pick(model?.meta, METAKEYS, {})
-          };
+          return _.merge({}, pre, _.pick(model?.meta, METAKEYS, {}));
         });
         form.current?.form?.setFieldsValue({
           ..._.pick(model?.meta, METAKEYS, {})

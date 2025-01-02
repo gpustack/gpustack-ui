@@ -3,7 +3,7 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { replaceLineRegex } from './config';
 import useParseAnsi from './parse-ansi';
 import './styles/index.less';
@@ -91,13 +91,6 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     generateInstance();
     updateScrollerPosition(0);
   }, 200);
-
-  const copyText = useMemo(() => {
-    if (!logs.length) {
-      return '';
-    }
-    return logs?.map((item) => item.content).join('\n');
-  }, [logs]);
 
   useEffect(() => {
     createChunkConnection();

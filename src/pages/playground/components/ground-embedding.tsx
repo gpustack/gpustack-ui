@@ -13,7 +13,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Segmented, Tabs, Tooltip } from 'antd';
+import { Button, Checkbox, Segmented, Spin, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { PCA } from 'ml-pca';
@@ -600,6 +600,23 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
             ></Segmented>
           </h3>
           <div className="embed-chart">
+            {loading && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 10,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <Spin spinning={true}></Spin>
+              </div>
+            )}
             <Resizable
               ref={resizeRef}
               enable={{

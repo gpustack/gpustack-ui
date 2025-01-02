@@ -35,6 +35,11 @@ interface DataFormProps {
   action: PageActionType;
   selectedModel: any;
   isGGUF: boolean;
+  sizeOptions?: Global.BaseOption<number>[];
+  quantizationOptions?: Global.BaseOption<string>[];
+  sourceDisable?: boolean;
+  byBuiltIn?: boolean;
+  backendOptions?: Global.BaseOption<string>[];
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
 }
@@ -69,7 +74,14 @@ const sourceOptions = [
 ];
 
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
-  const { action, isGGUF, onOk } = props;
+  const {
+    action,
+    isGGUF,
+    sourceDisable = true,
+    backendOptions,
+    byBuiltIn,
+    onOk
+  } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
   const [gpuOptions, setGpuOptions] = useState<
@@ -259,34 +271,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     );
   };
 
-  const renderS3Fields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="s3_address"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.s3address' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({
-              id: 'models.form.s3address'
-            })}
-            required
-          ></SealInput.Input>
-        </Form.Item>
-      </>
-    );
-  };
-
   const renderOllamaModelFields = () => {
     return (
       <>
@@ -364,6 +348,71 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     );
   };
 
+  const handleSizeChange = (val: any) => {
+    form.setFieldsValue({
+      quantization: ''
+    });
+  };
+
+  const renderFieldsFromCatalog = useMemo(() => {
+    if (!byBuiltIn) {
+      return null;
+    }
+    return (
+      <>
+        <Form.Item<FormData>
+          name="size"
+          key="size"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.select'
+                },
+                { name: 'size' }
+              )
+            }
+          ]}
+        >
+          <SealAutoComplete
+            filterOption
+            onChange={handleSizeChange}
+            defaultActiveFirstOption
+            disabled={false}
+            options={props.sizeOptions}
+            label="Size"
+            required
+          ></SealAutoComplete>
+        </Form.Item>
+        <Form.Item<FormData>
+          name="quantization"
+          key="quantization"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                {
+                  id: 'common.form.rule.select'
+                },
+                { name: 'quantization' }
+              )
+            }
+          ]}
+        >
+          <SealAutoComplete
+            filterOption
+            defaultActiveFirstOption
+            disabled={false}
+            options={props.quantizationOptions}
+            label="Quantization"
+            required
+          ></SealAutoComplete>
+        </Form.Item>
+      </>
+    );
+  }, [props.sizeOptions, props.quantizationOptions, byBuiltIn]);
+
   const renderFieldsBySource = useMemo(() => {
     if (SEARCH_SOURCE.includes(props.source)) {
       return renderHuggingfaceFields();
@@ -373,9 +422,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return renderOllamaModelFields();
     }
 
-    if (props.source === modelSourceMap.s3_value) {
-      return renderS3Fields();
-    }
     if (props.source === modelSourceMap.local_path_value) {
       return renderLocalPathFields();
     }
@@ -477,7 +523,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         >
           {
             <SealSelect
-              disabled={true}
+              disabled={sourceDisable}
               label={intl.formatMessage({
                 id: 'models.form.source'
               })}
@@ -531,35 +577,38 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               </div>
             </div>
           }
-          options={[
-            {
-              label: `llama-box`,
-              value: backendOptionsMap.llamaBox,
-              disabled:
-                props.source === modelSourceMap.local_path_value
-                  ? false
-                  : !isGGUF
-            },
-            {
-              label: 'vLLM',
-              value: backendOptionsMap.vllm,
-              disabled:
-                props.source === modelSourceMap.local_path_value
-                  ? false
-                  : isGGUF
-            },
-            {
-              label: 'vox-box',
-              value: backendOptionsMap.voxBox,
-              disabled: props.source === modelSourceMap.ollama_library_value
-            }
-          ]}
+          options={
+            backendOptions ?? [
+              {
+                label: `llama-box`,
+                value: backendOptionsMap.llamaBox,
+                disabled:
+                  props.source === modelSourceMap.local_path_value
+                    ? false
+                    : !isGGUF
+              },
+              {
+                label: 'vLLM',
+                value: backendOptionsMap.vllm,
+                disabled:
+                  props.source === modelSourceMap.local_path_value
+                    ? false
+                    : isGGUF
+              },
+              {
+                label: 'vox-box',
+                value: backendOptionsMap.voxBox,
+                disabled: props.source === modelSourceMap.ollama_library_value
+              }
+            ]
+          }
           disabled={
             action === PageAction.EDIT &&
             props.source !== modelSourceMap.local_path_value
           }
         ></SealSelect>
       </Form.Item>
+      {renderFieldsFromCatalog}
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           label={intl.formatMessage({

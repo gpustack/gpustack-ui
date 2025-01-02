@@ -31,6 +31,8 @@ export interface ListItem {
 
 export interface FormData {
   backend?: string;
+  size?: number;
+  quantization?: number;
   categories?: string[];
   backend_parameters?: string[];
   backend_version?: string;
@@ -117,4 +119,17 @@ export interface GPUListItem {
   worker_id: number;
   worker_name: string;
   worker_ip: string;
+}
+
+export interface CatalogItem {
+  name: string;
+  id: number;
+  description: string;
+  home: string;
+  icon: string;
+  categories: string[];
+  capabilities: string[];
+  sizes: number[];
+  licenses: string[];
+  release_date: string;
 }

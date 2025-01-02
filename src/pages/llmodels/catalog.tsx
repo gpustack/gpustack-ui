@@ -8,48 +8,68 @@ import { Button, Col, Input, Pagination, Row, Space, message } from 'antd';
 import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback, useEffect, useState } from 'react';
-import { createModel, queryHuggingfaceModels } from './apis';
+import { createModel, queryCatalogList } from './apis';
 import CatalogItem from './components/catalog-item';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
 import { getSourceRepoConfigValue, modelSourceMap } from './config';
-import testData from './config/test';
-import { FormData } from './config/types';
+import { CatalogItem as CatalogItemType, FormData } from './config/types';
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
   const [span, setSpan] = React.useState(8);
   const [activeId, setActiveId] = React.useState(-1);
+  const [dataSource, setDataSource] = useState<{
+    dataList: CatalogItemType[];
+    loading: boolean;
+    total: number;
+  }>({
+    dataList: [],
+    loading: false,
+    total: 0
+  });
+  const [queryParams, setQueryParams] = useState({
+    page: 1,
+    perPage: 9,
+    search: ''
+  });
   const [openDeployModal, setOpenDeployModal] = useState<any>({
     show: false,
     width: 600,
     source: modelSourceMap.huggingface_value
   });
 
-  const [dataList, setDataList] = useState<any[]>([]);
-
-  const getModelsFromHuggingface = useCallback(async (sort: string) => {
-    console.log('getModelsFromHuggingface:', sort);
+  const fetchData = useCallback(async () => {
+    setDataSource((pre) => {
+      pre.loading = true;
+      return { ...pre };
+    });
     try {
       const params = {
-        search: {
-          query: 'gpustack',
-          tags: ['gguf']
-        }
+        ..._.pickBy(queryParams, (val: any) => !!val)
       };
-      const data = await queryHuggingfaceModels(params);
-      let list = _.map(data || [], (item: any) => {
-        return {
-          ...item,
-          value: item.name,
-          label: item.name
-        };
+      const res = await queryCatalogList(params);
+
+      setDataSource({
+        dataList: res.items,
+        loading: false,
+        total: res.pagination.total
       });
-      setDataList(list);
     } catch (error) {
-      console.log('error:', error);
-      return [];
+      setDataSource({
+        dataList: [],
+        loading: false,
+        total: dataSource.total
+      });
+      console.log('error', error);
     }
-  }, []);
+  }, [queryParams]);
+
+  const handleDeployModalCancel = () => {
+    setOpenDeployModal({
+      ...openDeployModal,
+      show: false
+    });
+  };
 
   const handleResize = useCallback(
     _.throttle((size: { width: number; height: number }) => {
@@ -65,29 +85,18 @@ const Catalog: React.FC = () => {
       } else {
         setSpan(8);
       }
-      console.log('size:', size);
     }, 100),
     []
   );
 
-  const handleDeployModalCancel = () => {
+  const handleOnDeploy = useCallback((item: CatalogItemType) => {
+    setActiveId(item.id);
     setOpenDeployModal({
-      ...openDeployModal,
-      show: false
+      show: true,
+      source: modelSourceMap.huggingface_value,
+      width: 600
     });
-  };
-
-  const handleOnDeploy = useCallback(
-    (index: number) => {
-      setActiveId(index);
-      setOpenDeployModal({
-        show: true,
-        source: modelSourceMap.huggingface_value,
-        width: 600
-      });
-    },
-    [openDeployModal]
-  );
+  }, []);
 
   const handleCreateModel = useCallback(
     async (data: FormData) => {
@@ -112,14 +121,34 @@ const Catalog: React.FC = () => {
     [openDeployModal]
   );
 
+  const handleOnPageChange = useCallback((page: number, pageSize?: number) => {
+    setQueryParams({
+      ...queryParams,
+      page,
+      perPage: pageSize || 10
+    });
+  }, []);
+
+  const handleSearch = (e: any) => {
+    fetchData();
+  };
+
+  const handleNameChange = (e: any) => {
+    setQueryParams({
+      ...queryParams,
+      search: e.target.value
+    });
+  };
+
   useEffect(() => {
-    getModelsFromHuggingface('desc');
-  }, [getModelsFromHuggingface]);
+    fetchData();
+  }, [queryParams]);
+
   return (
     <PageContainer
       ghost
       header={{
-        title: intl.formatMessage({ id: 'menu.models.catalog' }),
+        title: intl.formatMessage({ id: 'menu.modelCatalog' }),
         breadcrumb: {}
       }}
       extra={[]}
@@ -133,25 +162,26 @@ const Catalog: React.FC = () => {
               style={{ width: 300 }}
               size="large"
               allowClear
+              onChange={handleNameChange}
             ></Input>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}
               icon={<SyncOutlined></SyncOutlined>}
+              onClick={handleSearch}
             ></Button>
           </Space>
         }
       ></PageTools>
       <ResizeObserver onResize={handleResize}>
         <Row gutter={[16, 16]}>
-          {testData.map((item, index) => {
+          {dataSource.dataList.map((item: CatalogItemType, index) => {
             return (
-              <Col span={span} key={index}>
+              <Col span={span} key={item.id}>
                 <CatalogItem
-                  onDeploy={() => handleOnDeploy(index)}
+                  onClick={handleOnDeploy}
                   activeId={activeId}
                   data={item}
-                  itemId={index}
                 ></CatalogItem>
               </Col>
             );
@@ -159,7 +189,15 @@ const Catalog: React.FC = () => {
         </Row>
       </ResizeObserver>
       <div style={{ marginBlock: '32px 16px' }}>
-        <Pagination align="end" defaultCurrent={1} total={50} showSizeChanger />
+        <Pagination
+          hideOnSinglePage={queryParams.perPage === 9}
+          align="end"
+          defaultCurrent={1}
+          total={dataSource.total}
+          pageSize={queryParams.perPage}
+          showSizeChanger
+          onChange={handleOnPageChange}
+        />
       </div>
       <DelopyBuiltInModal
         open={openDeployModal.show}

@@ -3,6 +3,7 @@ import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import qs from 'query-string';
 import {
+  CatalogItem,
   FormData,
   GPUListItem,
   ListItem,
@@ -313,4 +314,23 @@ export async function downloadModelScopeModelfile(
     throw new Error('Network response was not ok');
   }
   return res.json();
+}
+
+// ===================== catalog =====================
+
+export async function queryCatalogList(
+  params: Global.SearchParams,
+  options?: any
+) {
+  return request<Global.PageResponse<CatalogItem>>(`/model-sets`, {
+    methos: 'GET',
+    ...options,
+    params
+  });
+}
+
+export async function queryCatalogItemSpec(id: number) {
+  return request(`/model-sets/${id}/specs`, {
+    method: 'GET'
+  });
 }

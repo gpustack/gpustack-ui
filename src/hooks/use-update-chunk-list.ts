@@ -2,7 +2,7 @@ import { WatchEventType } from '@/config';
 import { useEffect, useRef } from 'react';
 
 interface ChunkedCollection {
-  ids: string[];
+  ids: string[] | number[];
   data: any;
   collection: any[];
   type: string | number;
@@ -11,12 +11,13 @@ interface ChunkedCollection {
 export function useUpdateChunkedList(options: {
   dataList?: any[];
   limit?: number;
-  setDataList: (args: any) => void;
+  setDataList: (args: any, opts?: any) => void;
   callback?: (args: any) => void;
   filterFun?: (args: any) => boolean;
   mapFun?: (args: any) => any;
   computedID?: (d: object) => string;
 }) {
+  const deletedIdsRef = useRef<Set<number | string>>(new Set());
   const cacheDataListRef = useRef<any[]>(options.dataList || []);
   const timerRef = useRef<any>(null);
   const countRef = useRef<number>(0);
@@ -26,6 +27,9 @@ export function useUpdateChunkedList(options: {
     cacheDataListRef.current = [...(options.dataList || [])];
   }, [options.dataList]);
 
+  const setDeletedIds = (ids: number[]) => {
+    deletedIdsRef.current = new Set([...deletedIdsRef.current, ...ids]);
+  };
   const debounceUpdateChunckedList = () => {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
@@ -51,7 +55,7 @@ export function useUpdateChunkedList(options: {
     if (options?.mapFun) {
       collections = data?.collection?.map(options?.mapFun);
     }
-    const ids = data?.ids || [];
+    const ids: any[] = data?.ids || [];
     // CREATE
     if (data?.type === WatchEventType.CREATE) {
       const newDataList = collections.reduce((acc: any[], item: any) => {
@@ -79,7 +83,10 @@ export function useUpdateChunkedList(options: {
           return !ids?.includes(item.id);
         }
       );
-      options.setDataList?.([...cacheDataListRef.current]);
+      setDeletedIds(ids as number[]);
+      options.setDataList?.([...cacheDataListRef.current], {
+        deletedIds: [...deletedIdsRef.current]
+      });
     }
     // UPDATE
     if (data?.type === WatchEventType.UPDATE) {
@@ -106,7 +113,8 @@ export function useUpdateChunkedList(options: {
   };
   return {
     updateChunkedList,
-    cacheDataListRef
+    cacheDataListRef,
+    deletedIdsRef
   };
 }
 

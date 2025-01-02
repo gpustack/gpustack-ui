@@ -129,5 +129,7 @@ export default {
   'playground.image.edit.tips': '点击或拖动图片到此区域上传',
   'playground.image.saveMask': '保存遮罩',
   'playground.image.brushSize': '画笔大小',
-  'playground.image.download': '下载图片'
+  'playground.image.download': '下载图片',
+  'playground.image.generate': '生成图片',
+  'playground.image.edit': '编辑图片'
 };

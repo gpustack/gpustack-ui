@@ -30,7 +30,7 @@ import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button, Dropdown, Input, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import {
   MODELS_API,
@@ -66,6 +66,7 @@ interface ModelsProps {
     perPage: number;
     query?: string;
   };
+  deleteIds?: number[];
   gpuDeviceList: GPUDeviceItem[];
   workerList: WorkerListItem[];
   dataSource: ListItem[];
@@ -111,6 +112,7 @@ const Models: React.FC<ModelsProps> = ({
   handleDeleteSuccess,
   onViewLogs,
   onCancelViewLogs,
+  deleteIds,
   dataSource,
   gpuDeviceList,
   workerList,
@@ -210,6 +212,12 @@ const Models: React.FC<ModelsProps> = ({
       enabled: !openAddModal && !openDeployModal.show && !openLogModal
     }
   );
+
+  useEffect(() => {
+    if (deleteIds?.length) {
+      rowSelection.removeSelectedKey(deleteIds);
+    }
+  }, [deleteIds]);
 
   const sourceOptions = [
     {

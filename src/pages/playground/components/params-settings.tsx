@@ -118,14 +118,13 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       model = model || _.get(modelList, '[0].value');
     }
     const modelMetaData = handleModelChange(model);
+    const mergeData = _.merge({}, initialValues, modelMetaData);
     form.setFieldsValue({
-      ...initialValues,
-      ...modelMetaData,
+      ...mergeData,
       model: model
     });
     setParams({
-      ...initialValues,
-      ...modelMetaData,
+      ...mergeData,
       model: model
     });
   }, [modelList, showModelSelector, selectedModel]);

@@ -42,6 +42,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const [isAtTop, setIsAtTop] = useState(false);
   const [scrollPos, setScrollPos] = useState<any[]>([]);
   const logListRef = useRef<any>(null);
+  const loadMoreDone = useRef(false);
 
   useImperativeHandle(ref, () => ({
     abort() {
@@ -171,18 +172,28 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   };
 
   const handleOnScroll = useCallback(
-    async (isTop: boolean) => {
+    async (data: { isTop: boolean; isBottom: boolean }) => {
+      const { isTop, isBottom } = data;
       setIsAtTop(isTop);
-      if (loading || isLoadend || logs.length < pageSize || !enableScorllLoad) {
+      if (
+        loading ||
+        (logs.length > 0 && logs.length < pageSize && !loadMoreDone.current) ||
+        !enableScorllLoad
+      ) {
         return;
       }
-      if (isTop && !isLoadend) {
+
+      if (isTop && !loadMoreDone.current) {
         tail.current = undefined;
         createChunkConnection();
-        setIsLoadend(true);
+        loadMoreDone.current = true;
+      } else if (isTop && page <= totalPage && page > 1) {
+        getPrePage();
+      } else if (isBottom && page < totalPage) {
+        getNextPage();
       }
     },
-    [loading, isLoadend, logs.length, pageSize, enableScorllLoad]
+    [loading, logs.length, pageSize, enableScorllLoad, page, totalPage]
   );
 
   const debouncedScroll = useCallback(
@@ -204,9 +215,9 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     };
   }, [url, props.params]);
 
-  useEffect(() => {
-    debouncedScroll();
-  }, [scrollPos]);
+  // useEffect(() => {
+  //   debouncedScroll();
+  // }, [scrollPos]);
 
   return (
     <div className="logs-viewer-wrap-w2">

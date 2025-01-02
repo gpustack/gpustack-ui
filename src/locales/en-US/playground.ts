@@ -134,5 +134,7 @@ export default {
   'playground.image.edit.tips': 'Click or drag image to this area to upload',
   'playground.image.saveMask': 'Save Mask',
   'playground.image.brushSize': 'Brush Size',
-  'playground.image.download': 'Download Image'
+  'playground.image.download': 'Download Image',
+  'playground.image.generate': 'Generate',
+  'playground.image.edit': 'Edit'
 };

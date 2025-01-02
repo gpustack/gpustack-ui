@@ -52,7 +52,7 @@ const VersionInfo: React.FC<{ intl: any }> = ({ intl }) => {
         )}
       </div>
       {getAtomStorage(userAtom)?.is_admin && isProd && (
-        <div className="upgrade">
+        <div className="upgrade-text">
           <span className="m-l-5">
             {latestVersion &&
             latestVersion !== currentVersion &&

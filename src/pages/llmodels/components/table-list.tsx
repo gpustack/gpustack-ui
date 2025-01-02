@@ -22,7 +22,6 @@ import {
   DownOutlined,
   EditOutlined,
   ExperimentOutlined,
-  GoldOutlined,
   PictureOutlined,
   SyncOutlined,
   WechatWorkOutlined
@@ -222,12 +221,6 @@ const Models: React.FC<ModelsProps> = ({
   }, [deleteIds]);
 
   const sourceOptions = [
-    {
-      label: 'Model Catalog',
-      value: 'model_catalog',
-      key: 'model_catalog',
-      icon: <GoldOutlined />
-    },
     {
       label: 'Hugging Face',
       value: modelSourceMap.huggingface_value,
@@ -688,9 +681,6 @@ const Models: React.FC<ModelsProps> = ({
         source: modelSourceMap.huggingface_value
       });
     }
-    if (item.key === 'model_catalog') {
-      navigate('/models/catalog');
-    }
 
     if (item.key === 'ollama_library') {
       setOpenDeployModal({
@@ -722,7 +712,8 @@ const Models: React.FC<ModelsProps> = ({
       <PageContainer
         ghost
         header={{
-          title: intl.formatMessage({ id: 'models.title' })
+          title: intl.formatMessage({ id: 'models.title' }),
+          breadcrumb: {}
         }}
         extra={[]}
       >

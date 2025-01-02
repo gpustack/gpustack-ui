@@ -9,11 +9,6 @@ import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData, ListItem } from '../config/types';
 import ColumnWrapper from './column-wrapper';
 import DataForm from './data-form';
-import HFModelFile from './hf-model-file';
-import ModelCard from './model-card';
-import SearchModel from './search-model';
-import Separator from './separator';
-import TitleWrapper from './title-wrapper';
 
 type AddModalProps = {
   title: string;
@@ -158,41 +153,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       footer={false}
     >
       <div style={{ display: 'flex', height: '100%' }}>
-        {SEARCH_SOURCE.includes(props.source) && (
-          <>
-            <div style={{ display: 'flex', flex: 1 }}>
-              <ColumnWrapper>
-                <SearchModel
-                  modelSource={props.source}
-                  onSelectModel={handleOnSelectModel}
-                  setLoadingModel={setLoadingModel}
-                ></SearchModel>
-              </ColumnWrapper>
-              <Separator></Separator>
-            </div>
-            <div style={{ display: 'flex', flex: 1 }}>
-              <ColumnWrapper>
-                <ModelCard
-                  selectedModel={selectedModel}
-                  onCollapse={setCollapsed}
-                  collapsed={collapsed}
-                  modelSource={props.source}
-                  setIsGGUF={handleSetIsGGUF}
-                ></ModelCard>
-                {isGGUF && (
-                  <HFModelFile
-                    ref={modelFileRef}
-                    selectedModel={selectedModel}
-                    modelSource={props.source}
-                    onSelectFile={handleSelectModelFile}
-                    collapsed={collapsed}
-                  ></HFModelFile>
-                )}
-              </ColumnWrapper>
-              <Separator></Separator>
-            </div>
-          </>
-        )}
         <ColumnWrapper
           footer={
             <ModalFooter
@@ -207,12 +167,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           }
         >
           <>
-            {SEARCH_SOURCE.includes(source) && (
-              <TitleWrapper>
-                {intl.formatMessage({ id: 'models.form.configurations' })}
-                <span style={{ display: 'flex', height: 24 }}></span>
-              </TitleWrapper>
-            )}
             <DataForm
               source={source}
               action={action}

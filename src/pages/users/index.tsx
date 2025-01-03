@@ -118,6 +118,7 @@ const Users: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
+      page: 1,
       search: e.target.value
     });
   };

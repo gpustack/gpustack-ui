@@ -21,7 +21,7 @@ import {
   useRef,
   useState
 } from 'react';
-import { CHAT_API, queryModelVoices, textToSpeech } from '../apis';
+import { CHAT_API, textToSpeech } from '../apis';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
@@ -237,64 +237,35 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleSelectModel = useCallback(
     async (value: string) => {
-      if (!value) return;
-      try {
-        const res = await queryModelVoices({
-          model: value
-        });
-        if ((res?.status_code && res?.status_code !== 200) || res?.error) {
-          setVoiceError({
-            error: true,
-            errorMessage:
-              res?.data?.error?.message ||
-              res?.error?.message ||
-              res?.data?.error ||
-              res?.detail ||
-              ''
-          });
-          setVoiceList([]);
-          return;
-        }
-        const list = _.map(res.voices || [], (item: any) => {
-          return {
-            label: item,
-            value: item
-          };
-        });
-
-        const newList = sortVoiceList(locale, list);
-
-        setVoiceList(newList);
-        setVoiceError(null);
-        setParams((pre: any) => {
-          return {
-            ...pre,
-            voice: newList[0]?.value
-          };
-        });
-        formRef.current?.form.setFieldValue('voice', newList[0]?.value);
-      } catch (error: any) {
-        const res = error?.response?.data;
-        if (res?.error || (res?.status_code && res?.status_code !== 200)) {
-          setVoiceError({
-            error: true,
-            errorMessage:
-              res?.error?.message ||
-              res?.data?.error?.message ||
-              res?.data?.error ||
-              res?.detail ||
-              ''
-          });
-        }
+      if (!value) {
         setVoiceList([]);
-        formRef.current?.form.setFieldValue('voice', '');
         setParams((pre: any) => {
           return {
             ...pre,
             voice: ''
           };
         });
+        formRef.current?.form.setFieldValue('voice', '');
+        return;
       }
+      const model = modelList.find((item) => item.value === value);
+      const list = _.map(model?.meta?.voices || [], (item: any) => {
+        return {
+          label: item,
+          value: item
+        };
+      });
+
+      const newList = sortVoiceList(locale, list);
+
+      setVoiceList(newList);
+      setParams((pre: any) => {
+        return {
+          ...pre,
+          voice: newList[0]?.value
+        };
+      });
+      formRef.current?.form.setFieldValue('voice', newList[0]?.value);
     },
     [modelList]
   );

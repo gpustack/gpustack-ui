@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
@@ -30,7 +31,7 @@ const PlaygroundEmbedding: React.FC = () => {
     const getModelListByEmbedding = async () => {
       try {
         const params = {
-          categories: 'embedding'
+          categories: modelCategoriesMap.embedding
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

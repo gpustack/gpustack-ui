@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { AudioOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useSearchParams } from '@umijs/max';
@@ -102,7 +103,7 @@ const Playground: React.FC = () => {
     const getTextToSpeechModels = async () => {
       try {
         const params = {
-          categories: 'text_to_speech',
+          categories: modelCategoriesMap.text_to_speech,
           with_meta: true
         };
         const res = await queryModelsList(params);
@@ -122,7 +123,7 @@ const Playground: React.FC = () => {
     const getSpeechToText = async () => {
       try {
         const params = {
-          categories: 'speech_to_text',
+          categories: modelCategoriesMap.speech_to_text,
           with_meta: true
         };
         const res = await queryModelsList(params);

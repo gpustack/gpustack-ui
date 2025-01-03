@@ -23,7 +23,8 @@ import {
   EditOutlined,
   ExperimentOutlined,
   PictureOutlined,
-  SyncOutlined
+  SyncOutlined,
+  WechatWorkOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
@@ -648,6 +649,23 @@ const Models: React.FC<ModelsProps> = ({
             color="orange"
           >
             Image
+          </Tag>
+        );
+      }
+      if (record.categories?.includes(modelCategoriesMap.llm)) {
+        return (
+          <Tag
+            icon={<WechatWorkOutlined />}
+            style={{
+              margin: 0,
+              opacity: 1,
+              paddingInline: 8,
+              borderRadius: 12,
+              transform: 'scale(0.9)'
+            }}
+            color="green"
+          >
+            LLM
           </Tag>
         );
       }

@@ -248,11 +248,13 @@ export const modelCategoriesMap = {
   text_to_speech: 'text_to_speech',
   speech_to_text: 'speech_to_text',
   embedding: 'embedding',
-  reranker: 'reranker'
+  reranker: 'reranker',
+  llm: 'llm'
 };
 
 export const modelCategories = [
   { label: 'common.options.auto', value: null, locale: true },
+  { label: 'LLM', value: modelCategoriesMap.llm },
   { label: 'Image', value: 'image' },
   { label: 'Text-to-speech', value: 'text_to_speech' },
   { label: 'Speech-to-text', value: 'speech_to_text' },

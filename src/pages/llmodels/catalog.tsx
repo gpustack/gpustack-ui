@@ -81,6 +81,7 @@ const Catalog: React.FC = () => {
       ...openDeployModal,
       show: false
     });
+    setActiveId(-1);
   };
 
   const handleResize = useCallback(

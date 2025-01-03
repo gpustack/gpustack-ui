@@ -82,7 +82,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
             {_.map(data.licenses, (license: string, index: number) => {
               return (
                 <span key={license} className="flex-center m-r-16">
-                  <IconFont type="icon-justice" className="m-r-5"></IconFont>
+                  <IconFont type="icon-justice1" className="m-r-5"></IconFont>
                   <span>{license}</span>
                 </span>
               );

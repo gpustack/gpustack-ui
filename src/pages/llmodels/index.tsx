@@ -7,6 +7,7 @@ import {
   ListItem as WokerListItem
 } from '@/pages/resources/config/types';
 import _ from 'lodash';
+import qs from 'query-string';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
 import TableList from './components/table-list';
@@ -38,7 +39,8 @@ const Models: React.FC = () => {
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 10,
-    search: ''
+    search: '',
+    categories: []
   });
 
   const { updateChunkedList, cacheDataListRef, deletedIdsRef } =
@@ -128,10 +130,7 @@ const Models: React.FC = () => {
     chunkRequedtRef.current?.current?.cancel?.();
     try {
       chunkRequedtRef.current = setChunkRequest({
-        url: `${MODELS_API}`,
-        params: {
-          ..._.pickBy(queryParams, (val: any) => !!val)
-        },
+        url: `${MODELS_API}?${qs.stringify(_.pickBy(queryParams, (val: any) => !!val))}`,
         handler: updateHandler
       });
     } catch (error) {
@@ -191,6 +190,17 @@ const Models: React.FC = () => {
 
   const handleNameChange = useCallback(debounceUpdateFilter, [queryParams]);
 
+  const handleCategoryChange = useCallback(
+    (value: any) => {
+      setQueryParams({
+        ...queryParams,
+        page: 1,
+        categories: value
+      });
+    },
+    [queryParams]
+  );
+
   useEffect(() => {
     getList();
     return () => {
@@ -242,6 +252,7 @@ const Models: React.FC = () => {
       <TableList
         dataSource={dataSource.dataList}
         handleNameChange={handleNameChange}
+        handleCategoryChange={handleCategoryChange}
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}

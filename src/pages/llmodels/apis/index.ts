@@ -25,11 +25,13 @@ export async function queryModelsList(
   params: Global.SearchParams,
   options?: any
 ) {
-  return request<Global.PageResponse<ListItem>>(`${MODELS_API}`, {
-    methos: 'GET',
-    ...options,
-    params
-  });
+  return request<Global.PageResponse<ListItem>>(
+    `${MODELS_API}?${qs.stringify(params)}`,
+    {
+      methos: 'GET',
+      ...options
+    }
+  );
 }
 
 export async function queryGPUList() {

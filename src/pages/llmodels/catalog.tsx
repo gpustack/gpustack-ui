@@ -50,6 +50,8 @@ const Catalog: React.FC = () => {
     source: modelSourceMap.huggingface_value
   });
 
+  const categoryOptions = [...modelCategories.filter((item) => item.value)];
+
   const fetchData = useCallback(async () => {
     setDataSource((pre) => {
       pre.loading = true;
@@ -190,13 +192,13 @@ const Catalog: React.FC = () => {
             ></Input>
             <Select
               allowClear
-              placeholder="Filter by category"
+              placeholder={intl.formatMessage({ id: 'models.filter.category' })}
               style={{ width: 240 }}
               size="large"
               mode="multiple"
               maxTagCount={1}
               onChange={handleCategoryChange}
-              options={modelCategories.filter((item) => item.value)}
+              options={categoryOptions}
             ></Select>
             <Button
               type="text"

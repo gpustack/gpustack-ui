@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Dropdown, Input, Space, Tag, message } from 'antd';
+import { Button, Dropdown, Input, Select, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -45,6 +45,7 @@ import {
 import {
   InstanceRealLogStatus,
   getSourceRepoConfigValue,
+  modelCategories,
   modelCategoriesMap,
   modelSourceMap
 } from '../config';
@@ -60,12 +61,14 @@ interface ModelsProps {
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
   handleDeleteSuccess: () => void;
+  handleCategoryChange: (val: any) => void;
   onViewLogs: () => void;
   onCancelViewLogs: () => void;
   queryParams: {
     page: number;
     perPage: number;
     query?: string;
+    categories?: string[];
   };
   deleteIds?: number[];
   gpuDeviceList: GPUDeviceItem[];
@@ -113,6 +116,7 @@ const Models: React.FC<ModelsProps> = ({
   handleDeleteSuccess,
   onViewLogs,
   onCancelViewLogs,
+  handleCategoryChange,
   deleteIds,
   dataSource,
   gpuDeviceList,
@@ -732,11 +736,23 @@ const Models: React.FC<ModelsProps> = ({
             <Space>
               <Input
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 300 }}
+                style={{ width: 200 }}
                 size="large"
                 allowClear
                 onChange={handleNameChange}
               ></Input>
+              <Select
+                allowClear
+                placeholder={intl.formatMessage({
+                  id: 'models.filter.category'
+                })}
+                style={{ width: 240 }}
+                size="large"
+                mode="multiple"
+                maxTagCount={1}
+                onChange={handleCategoryChange}
+                options={modelCategories.filter((item) => item.value)}
+              ></Select>
               <Button
                 type="text"
                 style={{ color: 'var(--ant-color-text-tertiary)' }}

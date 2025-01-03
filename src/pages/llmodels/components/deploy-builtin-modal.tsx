@@ -128,7 +128,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     selectSpecRef.current = spec;
     return {
       ..._.omit(spec, ['name']),
-      categories: _.get(spec, 'categories.0', null)
+      categories: _.get(current, 'categories.0', null)
     };
   };
 
@@ -136,7 +136,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     selectSpecRef.current = data;
     form.current?.setFieldsValue({
       ..._.omit(data, ['name']),
-      categories: _.get(data, 'categories.0', null)
+      categories: _.get(current, 'categories.0', null)
     });
   };
 

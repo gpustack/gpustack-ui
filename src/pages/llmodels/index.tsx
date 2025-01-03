@@ -184,6 +184,7 @@ const Models: React.FC = () => {
   const debounceUpdateFilter = _.debounce((e: any) => {
     setQueryParams({
       ...queryParams,
+      page: 1,
       search: e.target.value
     });
   }, 350);

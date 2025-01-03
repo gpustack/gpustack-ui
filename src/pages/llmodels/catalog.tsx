@@ -3,19 +3,29 @@ import { PageAction } from '@/config';
 import breakpoints from '@/config/breakpoints';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
-import { Button, Col, Input, Pagination, Row, Space, message } from 'antd';
+import { useIntl, useNavigate } from '@umijs/max';
+import {
+  Button,
+  Col,
+  Input,
+  Pagination,
+  Row,
+  Select,
+  Space,
+  message
+} from 'antd';
 import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback, useEffect, useState } from 'react';
 import { createModel, queryCatalogList } from './apis';
 import CatalogItem from './components/catalog-item';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
-import { getSourceRepoConfigValue, modelSourceMap } from './config';
+import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
+  const navigate = useNavigate();
   const [span, setSpan] = React.useState(8);
   const [activeId, setActiveId] = React.useState(-1);
   const [dataSource, setDataSource] = useState<{
@@ -30,11 +40,13 @@ const Catalog: React.FC = () => {
   const [queryParams, setQueryParams] = useState({
     page: 1,
     perPage: 9,
-    search: ''
+    search: '',
+    categories: []
   });
   const [openDeployModal, setOpenDeployModal] = useState<any>({
     show: false,
     width: 600,
+    current: {},
     source: modelSourceMap.huggingface_value
   });
 
@@ -47,7 +59,7 @@ const Catalog: React.FC = () => {
       const params = {
         ..._.pickBy(queryParams, (val: any) => !!val)
       };
-      const res = await queryCatalogList(params);
+      const res: any = await queryCatalogList(params);
 
       setDataSource({
         dataList: res.items,
@@ -94,6 +106,7 @@ const Catalog: React.FC = () => {
     setOpenDeployModal({
       show: true,
       source: modelSourceMap.huggingface_value,
+      current: item,
       width: 600
     });
   }, []);
@@ -103,12 +116,9 @@ const Catalog: React.FC = () => {
       try {
         console.log('data:', data, openDeployModal);
 
-        const result = getSourceRepoConfigValue(openDeployModal.source, data);
-
         const modelData = await createModel({
           data: {
-            ...result.values,
-            ..._.omit(data, result.omits)
+            ..._.omit(data, ['size', 'quantization'])
           }
         });
         setOpenDeployModal({
@@ -116,18 +126,22 @@ const Catalog: React.FC = () => {
           show: false
         });
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        navigate('/models/list');
       } catch (error) {}
     },
     [openDeployModal]
   );
 
-  const handleOnPageChange = useCallback((page: number, pageSize?: number) => {
-    setQueryParams({
-      ...queryParams,
-      page,
-      perPage: pageSize || 10
-    });
-  }, []);
+  const handleOnPageChange = useCallback(
+    (page: number, pageSize?: number) => {
+      setQueryParams({
+        ...queryParams,
+        page,
+        perPage: pageSize || 10
+      });
+    },
+    [queryParams]
+  );
 
   const handleSearch = (e: any) => {
     fetchData();
@@ -136,7 +150,16 @@ const Catalog: React.FC = () => {
   const handleNameChange = (e: any) => {
     setQueryParams({
       ...queryParams,
+      page: 1,
       search: e.target.value
+    });
+  };
+
+  const handleCategoryChange = (value: any) => {
+    setQueryParams({
+      ...queryParams,
+      page: 1,
+      categories: value
     });
   };
 
@@ -159,11 +182,21 @@ const Catalog: React.FC = () => {
           <Space>
             <Input
               placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-              style={{ width: 300 }}
+              style={{ width: 200 }}
               size="large"
               allowClear
               onChange={handleNameChange}
             ></Input>
+            <Select
+              allowClear
+              placeholder="Filter by category"
+              style={{ width: 240 }}
+              size="large"
+              mode="multiple"
+              maxTagCount={1}
+              onChange={handleCategoryChange}
+              options={modelCategories.filter((item) => item.value)}
+            ></Select>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}
@@ -190,6 +223,7 @@ const Catalog: React.FC = () => {
       </ResizeObserver>
       <div style={{ marginBlock: '32px 16px' }}>
         <Pagination
+          pageSizeOptions={['9', '12', '36', '100']}
           hideOnSinglePage={queryParams.perPage === 9}
           align="end"
           defaultCurrent={1}
@@ -205,6 +239,7 @@ const Catalog: React.FC = () => {
         title={intl.formatMessage({ id: 'models.button.deploy' })}
         source={openDeployModal.source}
         width={openDeployModal.width}
+        current={openDeployModal.current}
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DelopyBuiltInModal>

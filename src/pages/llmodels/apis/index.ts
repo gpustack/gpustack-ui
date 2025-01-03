@@ -4,6 +4,7 @@ import { request } from '@umijs/max';
 import qs from 'query-string';
 import {
   CatalogItem,
+  CatalogSpec,
   FormData,
   GPUListItem,
   ListItem,
@@ -322,15 +323,25 @@ export async function queryCatalogList(
   params: Global.SearchParams,
   options?: any
 ) {
-  return request<Global.PageResponse<CatalogItem>>(`/model-sets`, {
-    methos: 'GET',
-    ...options,
-    params
-  });
+  return request<Global.PageResponse<CatalogItem>>(
+    `/model-sets?${qs.stringify(params)}`,
+    {
+      methos: 'GET',
+      ...options
+    }
+  );
 }
 
-export async function queryCatalogItemSpec(id: number) {
-  return request(`/model-sets/${id}/specs`, {
-    method: 'GET'
-  });
+export async function queryCatalogItemSpec(
+  params: { id: number },
+  options?: any
+) {
+  return await request<Global.PageResponse<CatalogSpec>>(
+    `/model-sets/${params.id}/specs`,
+    {
+      method: 'GET',
+      ...options,
+      params
+    }
+  );
 }

@@ -453,33 +453,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             )}
           </Form.Item>
           {renderFieldsBySource}
-          <Form.Item<FormData>
-            name="replicas"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  {
-                    name: intl.formatMessage({ id: 'models.form.replicas' })
-                  }
-                )
-              }
-            ]}
-          >
-            <SealInput.Number
-              style={{ width: '100%' }}
-              label={intl.formatMessage({
-                id: 'models.form.replicas'
-              })}
-              required
-              min={0}
-            ></SealInput.Number>
-          </Form.Item>
-          <Form.Item name="backend">
+          <Form.Item name="backend" rules={[{ required: true }]}>
             <SealSelect
+              required
               onChange={handleBackendChange}
               label={intl.formatMessage({ id: 'models.form.backend' })}
               options={[
@@ -511,6 +487,31 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                 props.data?.source !== modelSourceMap.local_path_value
               }
             ></SealSelect>
+          </Form.Item>
+          <Form.Item<FormData>
+            name="replicas"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.input'
+                  },
+                  {
+                    name: intl.formatMessage({ id: 'models.form.replicas' })
+                  }
+                )
+              }
+            ]}
+          >
+            <SealInput.Number
+              style={{ width: '100%' }}
+              label={intl.formatMessage({
+                id: 'models.form.replicas'
+              })}
+              required
+              min={0}
+            ></SealInput.Number>
           </Form.Item>
           <Form.Item<FormData> name="description">
             <SealInput.TextArea

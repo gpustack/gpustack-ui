@@ -23,7 +23,8 @@ import {
   backendOptionsMap,
   modelSourceMap,
   modelTaskMap,
-  ollamaModelOptions
+  ollamaModelOptions,
+  sourceOptions
 } from '../config';
 import { HuggingFaceModels, ModelScopeModels } from '../config/audio-catalog';
 import { FormData, GPUListItem } from '../config/types';
@@ -40,6 +41,10 @@ interface DataFormProps {
   sourceDisable?: boolean;
   byBuiltIn?: boolean;
   backendOptions?: Global.BaseOption<string>[];
+  sourceList?: Global.BaseOption<string>[];
+  onSizeChange?: (val: number) => void;
+  onQuantizationChange?: (val: string) => void;
+  onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
 }
@@ -49,37 +54,17 @@ const SEARCH_SOURCE = [
   modelSourceMap.modelscope_value
 ];
 
-const sourceOptions = [
-  {
-    label: 'Hugging Face',
-    value: modelSourceMap.huggingface_value,
-    key: 'huggingface'
-  },
-  {
-    label: 'Ollama Library',
-    value: modelSourceMap.ollama_library_value,
-    key: 'ollama_library'
-  },
-  {
-    label: 'ModelScope',
-    value: modelSourceMap.modelscope_value,
-    key: 'model_scope'
-  },
-  {
-    label: 'models.form.localPath',
-    locale: true,
-    value: modelSourceMap.local_path_value,
-    key: 'local_path'
-  }
-];
-
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const {
     action,
     isGGUF,
     sourceDisable = true,
     backendOptions,
+    sourceList,
     byBuiltIn,
+    sizeOptions = [],
+    quantizationOptions = [],
+    onSourceChange,
     onOk
   } = props;
   const [form] = Form.useForm();
@@ -349,71 +334,83 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleSizeChange = (val: any) => {
-    form.setFieldsValue({
-      quantization: ''
-    });
+    props.onSizeChange?.(val);
   };
 
+  const handleOnQuantizationChange = (val: any) => {
+    props.onQuantizationChange?.(val);
+  };
+
+  // from catalog
   const renderFieldsFromCatalog = useMemo(() => {
-    if (!byBuiltIn) {
+    if (!byBuiltIn && !sizeOptions?.length && !quantizationOptions?.length) {
       return null;
     }
     return (
       <>
-        <Form.Item<FormData>
-          name="size"
-          key="size"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.select'
-                },
-                { name: 'size' }
-              )
-            }
-          ]}
-        >
-          <SealAutoComplete
-            filterOption
-            onChange={handleSizeChange}
-            defaultActiveFirstOption
-            disabled={false}
-            options={props.sizeOptions}
-            label="Size"
-            required
-          ></SealAutoComplete>
-        </Form.Item>
-        <Form.Item<FormData>
-          name="quantization"
-          key="quantization"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.select'
-                },
-                { name: 'quantization' }
-              )
-            }
-          ]}
-        >
-          <SealAutoComplete
-            filterOption
-            defaultActiveFirstOption
-            disabled={false}
-            options={props.quantizationOptions}
-            label="Quantization"
-            required
-          ></SealAutoComplete>
-        </Form.Item>
+        {sizeOptions?.length > 0 && (
+          <Form.Item<FormData>
+            name="size"
+            key="size"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.select'
+                  },
+                  { name: 'size' }
+                )
+              }
+            ]}
+          >
+            <SealSelect
+              filterOption
+              onChange={handleSizeChange}
+              defaultActiveFirstOption
+              disabled={false}
+              options={sizeOptions}
+              label="Size"
+              required
+            ></SealSelect>
+          </Form.Item>
+        )}
+        {quantizationOptions?.length > 0 && (
+          <Form.Item<FormData>
+            name="quantization"
+            key="quantization"
+            rules={[
+              {
+                required: true,
+                message: intl.formatMessage(
+                  {
+                    id: 'common.form.rule.select'
+                  },
+                  { name: 'quantization' }
+                )
+              }
+            ]}
+          >
+            <SealSelect
+              filterOption
+              defaultActiveFirstOption
+              disabled={false}
+              options={quantizationOptions}
+              onChange={handleOnQuantizationChange}
+              label="Quantization"
+              required
+            ></SealSelect>
+          </Form.Item>
+        )}
       </>
     );
-  }, [props.sizeOptions, props.quantizationOptions, byBuiltIn]);
+  }, [sizeOptions, quantizationOptions, byBuiltIn]);
 
   const renderFieldsBySource = useMemo(() => {
+    // from catalog
+    if (byBuiltIn) {
+      return null;
+    }
     if (SEARCH_SOURCE.includes(props.source)) {
       return renderHuggingfaceFields();
     }
@@ -427,7 +424,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
 
     return null;
-  }, [props.source, isGGUF, intl]);
+  }, [props.source, isGGUF, byBuiltIn, intl]);
 
   const handleBackendChange = useCallback((val: string) => {
     if (val === backendOptionsMap.llamaBox) {
@@ -437,6 +434,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       });
     }
     form.setFieldValue('backend_version', '');
+    props.onBackendChange?.(val);
   }, []);
 
   const handleOk = (formdata: FormData) => {
@@ -449,6 +447,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk({
       ..._.omit(data, ['scheduleType'])
     });
+  };
+
+  const handleOnSourceChange = (val: string) => {
+    onSourceChange?.(val);
   };
 
   useEffect(() => {
@@ -523,11 +525,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         >
           {
             <SealSelect
+              onChange={handleOnSourceChange}
               disabled={sourceDisable}
               label={intl.formatMessage({
                 id: 'models.form.source'
               })}
-              options={sourceOptions}
+              options={sourceList ?? sourceOptions}
               required
             ></SealSelect>
           }
@@ -535,33 +538,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       }
 
       {renderFieldsBySource}
-      <Form.Item<FormData>
-        name="replicas"
-        rules={[
-          {
-            required: true,
-            message: intl.formatMessage(
-              {
-                id: 'common.form.rule.input'
-              },
-              {
-                name: intl.formatMessage({ id: 'models.form.replicas' })
-              }
-            )
-          }
-        ]}
-      >
-        <SealInput.Number
-          style={{ width: '100%' }}
-          label={intl.formatMessage({
-            id: 'models.form.replicas'
-          })}
-          required
-          min={0}
-        ></SealInput.Number>
-      </Form.Item>
-      <Form.Item name="backend">
+      <Form.Item name="backend" rules={[{ required: true }]}>
         <SealSelect
+          required
           onChange={handleBackendChange}
           label={intl.formatMessage({ id: 'models.form.backend' })}
           description={
@@ -609,6 +588,31 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         ></SealSelect>
       </Form.Item>
       {renderFieldsFromCatalog}
+      <Form.Item<FormData>
+        name="replicas"
+        rules={[
+          {
+            required: true,
+            message: intl.formatMessage(
+              {
+                id: 'common.form.rule.input'
+              },
+              {
+                name: intl.formatMessage({ id: 'models.form.replicas' })
+              }
+            )
+          }
+        ]}
+      >
+        <SealInput.Number
+          style={{ width: '100%' }}
+          label={intl.formatMessage({
+            id: 'models.form.replicas'
+          })}
+          required
+          min={0}
+        ></SealInput.Number>
+      </Form.Item>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           label={intl.formatMessage({

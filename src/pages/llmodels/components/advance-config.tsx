@@ -140,16 +140,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     form.setFieldValue('backend_parameters', list);
   }, []);
 
-  const handleBackendChange = useCallback((val: string) => {
-    if (val === backendOptionsMap.llamaBox) {
-      form.setFieldsValue({
-        distributed_inference_across_workers: true,
-        cpu_offloading: true
-      });
-    }
-    form.setFieldValue('backend_version', '');
-  }, []);
-
   const collapseItems = useMemo(() => {
     const children = (
       <>

@@ -222,6 +222,12 @@ const Models: React.FC<ModelsProps> = ({
 
   const sourceOptions = [
     {
+      label: intl.formatMessage({ id: 'menu.models.modelCatalog' }),
+      value: 'catalog',
+      key: 'catalog',
+      icon: <IconFont type="icon-catalog"></IconFont>
+    },
+    {
       label: 'Hugging Face',
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
@@ -704,6 +710,9 @@ const Models: React.FC<ModelsProps> = ({
         width: 600,
         source: modelSourceMap.local_path_value
       });
+    }
+    if (item.key === 'catalog') {
+      navigate('/models/catalog');
     }
   };
 

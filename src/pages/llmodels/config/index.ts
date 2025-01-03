@@ -159,6 +159,30 @@ export const modelSourceValueMap = {
   [modelSourceMap.local_path_value]: modelSourceMap.local_path
 };
 
+export const sourceOptions = [
+  {
+    label: 'Hugging Face',
+    value: modelSourceMap.huggingface_value,
+    key: 'huggingface'
+  },
+  {
+    label: 'Ollama Library',
+    value: modelSourceMap.ollama_library_value,
+    key: 'ollama_library'
+  },
+  {
+    label: 'ModelScope',
+    value: modelSourceMap.modelscope_value,
+    key: 'model_scope'
+  },
+  {
+    label: 'models.form.localPath',
+    locale: true,
+    value: modelSourceMap.local_path_value,
+    key: 'local_path'
+  }
+];
+
 export const InstanceStatusMap = {
   Initializing: 'initializing',
   Starting: 'starting',
@@ -255,11 +279,11 @@ export const modelCategoriesMap = {
 export const modelCategories = [
   { label: 'common.options.auto', value: null, locale: true },
   { label: 'LLM', value: modelCategoriesMap.llm },
-  { label: 'Image', value: 'image' },
-  { label: 'Text-to-speech', value: 'text_to_speech' },
-  { label: 'Speech-to-text', value: 'speech_to_text' },
-  { label: 'Embedding', value: 'embedding' },
-  { label: 'Reranker', value: 'reranker' }
+  { label: 'Image', value: modelCategoriesMap.image },
+  { label: 'Text-to-Speech', value: modelCategoriesMap.text_to_speech },
+  { label: 'Speech-to-Text', value: modelCategoriesMap.speech_to_text },
+  { label: 'Embedding', value: modelCategoriesMap.embedding },
+  { label: 'Reranker', value: modelCategoriesMap.reranker }
 ];
 
 export const sourceRepoConfig = {

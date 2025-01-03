@@ -25,23 +25,6 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
-const steps = [
-  {
-    element: '#filterGGUF',
-    popover: {
-      title: '筛选模型',
-      description: 'Select a model from the list'
-    }
-  },
-  {
-    element: '#backend-field',
-    popover: {
-      title: '选择推理后端',
-      description: 'Select a model from the list'
-    }
-  }
-];
-
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     title,

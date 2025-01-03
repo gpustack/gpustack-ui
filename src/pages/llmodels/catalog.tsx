@@ -147,13 +147,13 @@ const Catalog: React.FC = () => {
     fetchData();
   };
 
-  const handleNameChange = (e: any) => {
+  const handleNameChange = _.debounce((e: any) => {
     setQueryParams({
       ...queryParams,
       page: 1,
       search: e.target.value
     });
-  };
+  }, 350);
 
   const handleCategoryChange = (value: any) => {
     setQueryParams({

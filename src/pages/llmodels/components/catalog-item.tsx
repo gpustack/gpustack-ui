@@ -1,12 +1,11 @@
 import fallbackImg from '@/assets/images/img.png';
-import IMG from '@/assets/images/small-logo-200x200.png';
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import TagWrapper from '@/components/tags-wrapper';
 import { Tag, Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { modelCategories } from '../config';
 import { CatalogItem as CatalogItemType } from '../config/types';
 import '../style/catalog-item.less';
@@ -23,15 +22,6 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
   const handleOnClick = useCallback(() => {
     onClick(data);
   }, [data, onClick]);
-
-  const icon = useMemo(() => {
-    const home = data.home?.replace(/\/$/, '');
-    const icon = data.icon?.replace(/^\//, '');
-    if (icon) {
-      return data.icon;
-    }
-    return IMG;
-  }, [data]);
 
   const handleOnError = (e: any) => {
     e.target.src = fallbackImg;

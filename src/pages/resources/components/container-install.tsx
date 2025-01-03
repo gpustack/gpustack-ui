@@ -1,7 +1,7 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { getAtomStorage } from '@/atoms/utils';
 import HighlightCode from '@/components/highlight-code';
-import { BulbOutlined, WarningOutlined } from '@ant-design/icons';
+import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Radio } from 'antd';
 import React from 'react';
@@ -31,13 +31,13 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       return commandCode?.registerWorker({
         server: origin,
         tag: version,
-        token: props.token
+        token: '${mytoken}'
       });
     }
     return commandCode?.registerWorker({
       server: origin,
       tag: `${version}-${activeKey}`,
-      token: props.token
+      token: '${mytoken}'
     });
   }, [versionInfo, activeKey, props.token, origin]);
 
@@ -78,6 +78,23 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           </Button>
         </li>
       </ul>
+      <h3>1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}</h3>
+      <HighlightCode
+        code={addWorkerGuide.mac.getToken}
+        theme="dark"
+      ></HighlightCode>
+      <h3>
+        2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
+        <span
+          className="font-size-12"
+          style={{ color: 'var(--ant-color-text-tertiary)' }}
+          dangerouslySetInnerHTML={{
+            __html: `(${intl.formatMessage({
+              id: 'resources.worker.add.step2.tips'
+            })})`
+          }}
+        ></span>
+      </h3>
       <div className="m-b-20">
         <Radio.Group
           block
@@ -99,9 +116,8 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         ></div>
       )}
       <HighlightCode theme="dark" code={code}></HighlightCode>
-      <h3>
-        <BulbOutlined className="m-r-5"></BulbOutlined>
-        {intl.formatMessage({ id: 'resources.worker.add.step3' })}
+      <h3 className="m-b-0">
+        3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
       </h3>
     </div>
   );

@@ -43,6 +43,8 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const [scrollPos, setScrollPos] = useState<any[]>([]);
   const logListRef = useRef<any>(null);
   const loadMoreDone = useRef(false);
+  const pageRef = useRef<any>(page);
+  const totalPageRef = useRef<any>(totalPage);
 
   useImperativeHandle(ref, () => ({
     abort() {
@@ -84,28 +86,47 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     return command === 'J' && n === 2;
   }, []);
 
-  const getLastPage = useCallback(
-    (data: string) => {
-      const list = _.split(data.trim(), '\n');
-      if (!enableScorllLoad) {
-        return list.join('\n');
-      }
+  const getLastPage = (data: string) => {
+    const list = _.split(data.trim(), '\n');
 
-      if (list.length <= pageSize) {
-        setTotalPage(1);
-        return data;
-      }
+    if (!enableScorllLoad) {
+      return list.join('\n');
+    }
 
-      setLoading(true);
-      const totalPage = Math.ceil(list.length / pageSize);
-      setTotalPage(totalPage);
-      setPage(totalPage);
-      const lastPage = list.slice(-pageSize).join('\n');
-      debounceLoading();
-      return lastPage;
-    },
-    [pageSize, setTotalPage, setPage, debounceLoading, enableScorllLoad]
-  );
+    if (list.length <= pageSize) {
+      setTotalPage(1);
+      return data;
+    }
+
+    setLoading(true);
+    const totalPage = Math.ceil(list.length / pageSize);
+    setTotalPage(totalPage);
+    setPage(() => totalPage);
+    pageRef.current = totalPage;
+    totalPageRef.current = totalPage;
+    const lastPage = list.slice(-pageSize).join('\n');
+    console.log('list.length===', list.length, totalPage, page);
+    debounceLoading();
+    return lastPage;
+  };
+
+  const getCurrentPage = () => {
+    const list = _.split(cacheDataRef.current.trim(), '\n');
+    let newPage = page;
+    if (newPage < 1) {
+      newPage = 1;
+    }
+    console.log('currentpage===', newPage);
+    const start = (newPage - 1) * pageSize;
+    const end = newPage * pageSize;
+    const currentPage = list.slice(start, end).join('\n');
+    setPage(() => newPage);
+    setScrollPos(['bottom', newPage]);
+    pageRef.current = newPage;
+    logParseWorker.current.postMessage({
+      inputStr: currentPage
+    });
+  };
 
   const getPrePage = useCallback(() => {
     const list = _.split(cacheDataRef.current.trim(), '\n');
@@ -116,8 +137,10 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const start = (newPage - 1) * pageSize;
     const end = newPage * pageSize;
     const prePage = list.slice(start, end).join('\n');
-    setPage(newPage);
+    console.log('prePage===', newPage);
+    setPage(() => newPage);
     setScrollPos(['bottom', newPage]);
+    pageRef.current = newPage;
     logParseWorker.current.postMessage({
       inputStr: prePage
     });
@@ -132,29 +155,36 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const start = (newPage - 1) * pageSize;
     const end = newPage * pageSize;
     const nextPage = list.slice(start, end).join('\n');
-    setPage(newPage);
+    console.log('nextPage===', newPage);
+    setPage(() => newPage);
     setScrollPos(['top', newPage]);
+    pageRef.current = newPage;
     logParseWorker.current.postMessage({
       inputStr: nextPage
     });
   }, [totalPage, page, pageSize]);
 
-  const updateContent = useCallback(
-    (inputStr: string) => {
-      console.log('inputStr===', inputStr);
-      const data = inputStr.replace(replaceLineRegex, '\n');
-      if (isClean(data)) {
-        cacheDataRef.current = data;
-      } else {
-        cacheDataRef.current += data;
-      }
-
+  const debounceParseData = _.debounce(() => {
+    if (pageRef.current === totalPageRef.current) {
       logParseWorker.current.postMessage({
         inputStr: getLastPage(cacheDataRef.current)
       });
-    },
-    [getLastPage]
-  );
+    } else {
+      getCurrentPage();
+    }
+  }, 100);
+
+  const updateContent = (inputStr: string) => {
+    console.log('inputStr===', inputStr);
+    const data = inputStr.replace(replaceLineRegex, '\n');
+    if (isClean(data)) {
+      cacheDataRef.current = data;
+    } else {
+      cacheDataRef.current += data;
+    }
+    console.log('page===', pageRef.current, totalPageRef.current);
+    debounceParseData();
+  };
 
   const createChunkConnection = async () => {
     cacheDataRef.current = '';
@@ -188,12 +218,20 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         createChunkConnection();
         loadMoreDone.current = true;
       } else if (isTop && page <= totalPage && page > 1) {
-        getPrePage();
+        // getPrePage();
       } else if (isBottom && page < totalPage) {
-        getNextPage();
+        // getNextPage();
       }
     },
-    [loading, logs.length, pageSize, enableScorllLoad, page, totalPage]
+    [
+      loading,
+      logs.length,
+      pageSize,
+      enableScorllLoad,
+      page,
+      totalPage,
+      createChunkConnection
+    ]
   );
 
   const debouncedScroll = useCallback(
@@ -215,9 +253,9 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     };
   }, [url, props.params]);
 
-  // useEffect(() => {
-  //   debouncedScroll();
-  // }, [scrollPos]);
+  useEffect(() => {
+    debouncedScroll();
+  }, [scrollPos]);
 
   return (
     <div className="logs-viewer-wrap-w2">

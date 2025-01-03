@@ -52,7 +52,7 @@ export default {
   'resources.worker.driver.install':
     '在安装 GPUStack 之前，确保系统上安装了所有必需的驱动程序和库',
   'resources.worker.script.install': '脚本安装',
-  'resources.worker.container.install': '容器安装',
+  'resources.worker.container.install': '容器安装(仅支持 Linux)',
   'resources.worker.cann.tips':
     '若 GPU 数量为 1，则设 ASCEND_VISIBLE_DEVICES=0；若大于 1，则设为索引范围（如 8 张为 0-7）'
 };

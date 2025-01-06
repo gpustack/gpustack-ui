@@ -74,8 +74,8 @@ const createFormData = (data: any): FormData => {
       formData.append(key, value);
     } else if (typeof value === 'object' && value !== null) {
       formData.append(key, JSON.stringify(value));
-    } else {
-      formData.append(key, String(value));
+    } else if (value !== undefined && value !== null) {
+      formData.append(key, value);
     }
   };
 

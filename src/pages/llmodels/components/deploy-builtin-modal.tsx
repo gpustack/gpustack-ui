@@ -7,7 +7,12 @@ import { Button, Drawer } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { queryCatalogItemSpec } from '../apis';
-import { backendOptionsMap, modelSourceMap, sourceOptions } from '../config';
+import {
+  backendOptionsMap,
+  modelCategoriesMap,
+  modelSourceMap,
+  sourceOptions
+} from '../config';
 import { CatalogSpec, FormData, ListItem } from '../config/types';
 import ColumnWrapper from './column-wrapper';
 import DataForm from './data-form';
@@ -40,6 +45,7 @@ const backendOptions = [
 ];
 
 const defaultQuant = ['Q4_K_M'];
+const EmbeddingRerankFirstQuant = ['FP16'];
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     title,
@@ -51,7 +57,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     current,
     width = 600
   } = props || {};
-  const SEARCH_SOURCE = [];
 
   const form = useRef<any>({});
   const intl = useIntl();
@@ -67,6 +72,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleSumit = () => {
     form.current?.submit?.();
+  };
+
+  const getDefaultQuant = (data: { category: string; quantOption: string }) => {
+    if (
+      data.category === modelCategoriesMap.embedding ||
+      data.category === modelCategoriesMap.reranker
+    ) {
+      return EmbeddingRerankFirstQuant.includes(data.quantOption);
+    }
+    return defaultQuant.includes(data.quantOption);
   };
 
   const getModelFile = (spec: CatalogSpec) => {
@@ -234,7 +249,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       size: _.get(sizeList, '0.value', 0),
       quantization:
         _.find(quantizaList, (item: { label: string; value: string }) =>
-          defaultQuant.includes(item.value)
+          getDefaultQuant({
+            category: _.get(current, 'categories.0', ''),
+            quantOption: item.value
+          })
         )?.value || _.get(quantizaList, '0.value', '')
     });
 
@@ -264,7 +282,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       const source = _.get(sources, '0.value', '');
       const defaultSpec =
         _.find(groupList[source], (item: CatalogSpec) => {
-          return defaultQuant.includes(item.quantization);
+          return getDefaultQuant({
+            category: _.get(current, 'categories.0', ''),
+            quantOption: item.quantization
+          });
         }) || _.get(groupList, `${source}.0`, {});
 
       setSourceList(sources);
@@ -320,7 +341,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       size: val,
       quantization:
         _.find(list, (item: { label: string; value: string }) =>
-          defaultQuant.includes(item.value)
+          getDefaultQuant({
+            category: _.get(current, 'categories.0', ''),
+            quantOption: item.value
+          })
         )?.value || _.get(list, '0.value', '')
     });
 

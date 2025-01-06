@@ -56,7 +56,7 @@ import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
 
 interface ModelsProps {
-  handleSearch: (e: any) => void;
+  handleSearch: () => void;
   handleNameChange: (e: any) => void;
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
@@ -337,7 +337,6 @@ const Models: React.FC<ModelsProps> = ({
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
-        console.log('data:', data, openDeployModal);
         const result = getSourceRepoConfigValue(currentData?.source, data);
         await updateModel({
           data: {
@@ -348,6 +347,7 @@ const Models: React.FC<ModelsProps> = ({
         });
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        handleSearch();
       } catch (error) {}
     },
     [currentData]
@@ -385,6 +385,7 @@ const Models: React.FC<ModelsProps> = ({
           updateExpandedRowKeys([modelData.id, ...expandedRowKeys]);
         }, 300);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        handleSearch?.();
       } catch (error) {}
     },
     [openDeployModal]
@@ -405,6 +406,7 @@ const Models: React.FC<ModelsProps> = ({
         removeExpandedRowKey([row.id]);
         rowSelection.removeSelectedKey(row.id);
         handleDeleteSuccess();
+        handleSearch();
       }
     });
   };
@@ -419,6 +421,7 @@ const Models: React.FC<ModelsProps> = ({
         rowSelection.clearSelections();
         removeExpandedRowKey(rowSelection.selectedRowKeys);
         handleDeleteSuccess();
+        handleSearch();
       }
     });
   };

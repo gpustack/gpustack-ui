@@ -45,6 +45,7 @@ const Models: React.FC = () => {
 
   const { updateChunkedList, cacheDataListRef, deletedIdsRef } =
     useUpdateChunkedList({
+      events: ['UPDATE'],
       dataList: dataSource.dataList,
       setDataList(list, opts?: any) {
         setDataSource((pre) => {
@@ -118,8 +119,6 @@ const Models: React.FC = () => {
     _.each(list, (data: any) => {
       updateChunkedList(data);
     });
-
-    console.log('deletedIdsRef=======', deletedIdsRef.current);
   };
 
   const updateInstanceHandler = (list: any) => {
@@ -129,14 +128,19 @@ const Models: React.FC = () => {
   const createModelsChunkRequest = useCallback(async () => {
     chunkRequedtRef.current?.current?.cancel?.();
     try {
+      const query = {
+        search: queryParams.search,
+        categories: queryParams.categories
+      };
       chunkRequedtRef.current = setChunkRequest({
-        url: `${MODELS_API}?${qs.stringify(_.pickBy(queryParams, (val: any) => !!val))}`,
+        url: `${MODELS_API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
         handler: updateHandler
       });
     } catch (error) {
       // ignore
     }
-  }, [queryParams]);
+  }, [queryParams.categories, queryParams.search]);
+
   const createModelsInstanceChunkRequest = useCallback(async () => {
     chunkInstanceRequedtRef.current?.current?.cancel?.();
     try {
@@ -149,11 +153,6 @@ const Models: React.FC = () => {
       // ignore
     }
   }, []);
-
-  const getList = async () => {
-    await fetchData();
-    await createModelsChunkRequest();
-  };
 
   const handleOnViewLogs = useCallback(() => {
     isPageHidden.current = true;
@@ -173,12 +172,9 @@ const Models: React.FC = () => {
     }, 100);
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
-  const handleSearch = useCallback(
-    async (e: any) => {
-      await fetchData();
-    },
-    [fetchData]
-  );
+  const handleSearch = useCallback(async () => {
+    await fetchData();
+  }, [fetchData]);
 
   const debounceUpdateFilter = _.debounce((e: any) => {
     setQueryParams({
@@ -202,11 +198,15 @@ const Models: React.FC = () => {
   );
 
   useEffect(() => {
-    getList();
+    fetchData();
     return () => {
       axiosToken?.cancel?.();
     };
   }, [queryParams]);
+
+  useEffect(() => {
+    createModelsChunkRequest();
+  }, [createModelsChunkRequest]);
 
   useEffect(() => {
     getWorkerList();

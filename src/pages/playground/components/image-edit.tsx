@@ -63,7 +63,7 @@ const METAKEYS = [
 ];
 
 const advancedFieldsDefaultValus = {
-  seed: 1,
+  seed: null,
   sample_method: 'euler_a',
   cfg_scale: 4.5,
   guidance: 3.5,
@@ -278,6 +278,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
+      setUploadList((pre) => {
+        return pre.map((item) => {
+          return {
+            ...item,
+            dataUrl: image
+          };
+        });
+      });
       setRouteCache(routeCachekey['/playground/text-to-image'], true);
 
       const imgSize = _.split(finalParameters.size, 'x').map((item: string) =>
@@ -338,8 +346,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        // url: `http:///v1/images/edits?t=${Date.now()}`,
-        url: `${EDIT_IMAGE_API}?t=${Date.now()}`,
+        // url: 'http://192.168.50.174:40053/v1/images/edits',
+        url: EDIT_IMAGE_API,
         signal: requestToken.current.signal
       });
 
@@ -372,6 +380,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
           }
           const progress = _.round(item.progress, 0);
+          console.log('progress:', item, progress);
           newImageList[item.index] = {
             dataUrl: imgItem.dataUrl,
             height: imgSize[1],
@@ -381,7 +390,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             uid: imgItem.uid,
             span: imgItem.span,
             loading: stream_options.chunk_results ? progress < 100 : false,
-            preview: progress >= 100,
+            preview: false,
             progress: progress
           };
         });
@@ -588,6 +597,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 
   const handleUpdateImageList = useCallback((base64List: any) => {
+    console.log('updateimagelist=========', base64List);
     const img = _.get(base64List, '[0].dataUrl', '');
     setUploadList(base64List);
     setImage(img);
@@ -667,7 +677,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           {...uploadList[0]}
           height={125}
           maxHeight={125}
-          preview={true}
+          preview={false}
           loading={false}
           autoSize={false}
           editable={false}
@@ -728,11 +738,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   return (
     <div className="ground-left-wrapper">
       <div className="ground-left">
-        <div
-          className="message-list-wrap"
-          ref={scroller}
-          style={{ paddingBottom: 16 }}
-        >
+        <div className="message-list-wrap" style={{ paddingBottom: 16 }}>
           <>
             <div className="content" style={{ height: '100%' }}>
               {

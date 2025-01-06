@@ -30,6 +30,7 @@ const Catalog: React.FC = () => {
   const navigate = useNavigate();
   const [span, setSpan] = React.useState(8);
   const [activeId, setActiveId] = React.useState(-1);
+  const [isFirst, setIsFirst] = React.useState(true);
   const [dataSource, setDataSource] = useState<{
     dataList: CatalogItemType[];
     loading: boolean;
@@ -102,6 +103,8 @@ const Catalog: React.FC = () => {
         total: dataSource.total
       });
       console.log('error', error);
+    } finally {
+      setIsFirst(false);
     }
   }, [queryParams]);
 
@@ -297,7 +300,7 @@ const Catalog: React.FC = () => {
                 style={{ width: '100%' }}
                 wrapperClassName="skelton-wrapper"
               >
-                <CatalogSkelton span={span}></CatalogSkelton>
+                {isFirst && <CatalogSkelton span={span}></CatalogSkelton>}
               </Spin>
             </div>
           )}

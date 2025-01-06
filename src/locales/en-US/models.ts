@@ -88,5 +88,5 @@ export default {
   'models.form.search.gguftips':
     'If using macOS or Windows as a worker, check GGUF (uncheck for audio models).',
   'models.form.button.addlabel': 'Add Label',
-  'models.filter.category': 'Filter by Category'
+  'models.filter.category': 'Filter by category'
 };

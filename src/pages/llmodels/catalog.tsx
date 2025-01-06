@@ -12,6 +12,7 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   message
 } from 'antd';
 import _ from 'lodash';
@@ -19,6 +20,7 @@ import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback, useEffect, useState } from 'react';
 import { createModel, queryCatalogList } from './apis';
 import CatalogItem from './components/catalog-item';
+import CatalogSkelton from './components/catalog-skelton';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
@@ -39,7 +41,7 @@ const Catalog: React.FC = () => {
   });
   const [queryParams, setQueryParams] = useState({
     page: 1,
-    perPage: 9,
+    perPage: 100,
     search: '',
     categories: []
   });
@@ -49,8 +51,31 @@ const Catalog: React.FC = () => {
     current: {},
     source: modelSourceMap.huggingface_value
   });
+  const cacheData = React.useRef<CatalogItemType[]>([]);
 
   const categoryOptions = [...modelCategories.filter((item) => item.value)];
+
+  const filterData = (data: { search: string; categories: string[] }) => {
+    const { search, categories } = data;
+    const dataList = cacheData.current.filter((item) => {
+      if (search && categories.length > 0) {
+        return (
+          _.toLower(item.name).includes(search) &&
+          categories.some((category) => item.categories.includes(category))
+        );
+      }
+      if (search) {
+        return _.toLower(item.name).includes(search);
+      }
+      if (categories.length > 0) {
+        return categories.some((category) =>
+          item.categories.includes(category)
+        );
+      }
+      return true;
+    });
+    return dataList;
+  };
 
   const fetchData = useCallback(async () => {
     setDataSource((pre) => {
@@ -59,16 +84,18 @@ const Catalog: React.FC = () => {
     });
     try {
       const params = {
-        ..._.pickBy(queryParams, (val: any) => !!val)
+        ..._.pick(queryParams, ['page', 'perPage'])
       };
       const res: any = await queryCatalogList(params);
 
+      cacheData.current = res.items || [];
       setDataSource({
         dataList: res.items,
         loading: false,
         total: res.pagination.total
       });
     } catch (error) {
+      cacheData.current = [];
       setDataSource({
         dataList: [],
         loading: false,
@@ -151,24 +178,44 @@ const Catalog: React.FC = () => {
   };
 
   const handleNameChange = _.debounce((e: any) => {
+    const dataList = filterData({
+      search: e.target.value,
+      categories: queryParams.categories
+    });
+
     setQueryParams({
       ...queryParams,
       page: 1,
       search: e.target.value
     });
-  }, 350);
+
+    setDataSource({
+      dataList,
+      loading: false,
+      total: dataSource.total
+    });
+  }, 200);
 
   const handleCategoryChange = (value: any) => {
+    const dataList = filterData({
+      search: queryParams.search,
+      categories: value
+    });
     setQueryParams({
       ...queryParams,
       page: 1,
       categories: value
     });
+    setDataSource({
+      dataList,
+      loading: false,
+      total: dataSource.total
+    });
   };
 
   useEffect(() => {
     fetchData();
-  }, [queryParams]);
+  }, []);
 
   return (
     <PageContainer
@@ -188,6 +235,13 @@ const Catalog: React.FC = () => {
               style={{ width: 200 }}
               size="large"
               allowClear
+              onClear={() =>
+                handleNameChange({
+                  target: {
+                    value: ''
+                  }
+                })
+              }
               onChange={handleNameChange}
             ></Input>
             <Select
@@ -209,25 +263,49 @@ const Catalog: React.FC = () => {
           </Space>
         }
       ></PageTools>
-      <ResizeObserver onResize={handleResize}>
-        <Row gutter={[16, 16]}>
-          {dataSource.dataList.map((item: CatalogItemType, index) => {
-            return (
-              <Col span={span} key={item.id}>
-                <CatalogItem
-                  onClick={handleOnDeploy}
-                  activeId={activeId}
-                  data={item}
-                ></CatalogItem>
-              </Col>
-            );
-          })}
-        </Row>
-      </ResizeObserver>
+      <div className="relative" style={{ width: '100%' }}>
+        <ResizeObserver onResize={handleResize}>
+          <Row gutter={[16, 16]}>
+            {dataSource.dataList.map((item: CatalogItemType, index) => {
+              return (
+                <Col span={span} key={item.id}>
+                  <CatalogItem
+                    onClick={handleOnDeploy}
+                    activeId={activeId}
+                    data={item}
+                  ></CatalogItem>
+                </Col>
+              );
+            })}
+          </Row>
+          {dataSource.loading && (
+            <div
+              style={{
+                width: '100%',
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                top: 0,
+                left: 0,
+                height: 400,
+                right: 0
+              }}
+            >
+              <Spin
+                spinning={dataSource.loading}
+                style={{ width: '100%' }}
+                wrapperClassName="skelton-wrapper"
+              >
+                <CatalogSkelton span={span}></CatalogSkelton>
+              </Spin>
+            </div>
+          )}
+        </ResizeObserver>
+      </div>
       <div style={{ marginBlock: '32px 16px' }}>
         <Pagination
-          pageSizeOptions={['9', '12', '36', '100']}
-          hideOnSinglePage={queryParams.perPage === 9}
+          hideOnSinglePage={queryParams.perPage === 100}
           align="end"
           defaultCurrent={1}
           total={dataSource.total}
@@ -250,4 +328,4 @@ const Catalog: React.FC = () => {
   );
 };
 
-export default Catalog;
+export default React.memo(Catalog);

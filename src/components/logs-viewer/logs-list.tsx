@@ -76,13 +76,14 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
           isTop: false,
           isBottom: true
         });
+        stopScroll.current = false;
       } else {
         onScroll?.({
           isTop: false,
           isBottom: false
         });
       }
-      debounceResetStopScroll();
+      // debounceResetStopScroll();
     },
     [debounceResetStopScroll, scrollEventElement]
   );

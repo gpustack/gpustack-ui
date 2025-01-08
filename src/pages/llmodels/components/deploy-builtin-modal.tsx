@@ -116,13 +116,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const getModelSpec = (data: {
-    source: string;
     backend: string;
     size: number;
     quantization: string;
   }) => {
-    const groupList = sourceGroupMap.current[data.source];
-    const spec = _.find(groupList, (item: CatalogSpec) => {
+    const spec = _.find(specListRef.current, (item: CatalogSpec) => {
       if (data.size && data.quantization) {
         return (
           item.size === data.size &&
@@ -156,11 +154,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
   };
 
-  const handleSetSizeOptions = (data: { source: string; backend: string }) => {
-    const groupList = sourceGroupMap.current[source];
-    const list = _.filter(groupList, (item: CatalogSpec) => item.size);
+  const handleSetSizeOptions = (data: { backend: string }) => {
     const sizeGroup = _.groupBy(
-      _.filter(list, (item: CatalogSpec) => {
+      _.filter(specListRef.current, (item: CatalogSpec) => {
         return item.backend === data.backend;
       }),
       'size'
@@ -180,13 +176,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSetQuantizationOptions = (data: {
-    source: string;
     size: number;
     backend: string;
   }) => {
-    const groupList = sourceGroupMap.current[data.source];
-    console.log('groupList====', data, groupList);
-    const sizeGroup = _.filter(groupList, (item: CatalogSpec) => {
+    const sizeGroup = _.filter(specListRef.current, (item: CatalogSpec) => {
       return item.size === data.size && item.backend === data.backend;
     });
 
@@ -200,10 +193,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     return quantizationList;
   };
 
-  const handleSetBackendOptions = (source: string) => {
-    const groupList = sourceGroupMap.current[source];
-    const backendGroup = _.groupBy(groupList, 'backend');
-    console.log('backendGroup====', backendGroup, source);
+  const handleSetBackendOptions = () => {
+    const backendGroup = _.groupBy(specListRef.current, 'backend');
 
     const backendList = _.filter(backendOptions, (item: any) => {
       return backendGroup[item.value];
@@ -214,14 +205,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleSourceChange = (source: string) => {
     const defaultSpec = _.get(sourceGroupMap.current, `${source}.0`, {});
-    console.log('source====', source, defaultSpec);
     initFormDataBySource(defaultSpec);
     handleSetSizeOptions({
-      source: source,
       backend: defaultSpec.backend
     });
     handleSetQuantizationOptions({
-      source: source,
       size: defaultSpec.size,
       backend: defaultSpec.backend
     });
@@ -265,14 +253,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       setIsGGUF(true);
     }
     const sizeList = handleSetSizeOptions({
-      source: form.current.getFieldValue('source'),
       backend: backend
     });
 
     const size = checkSize(sizeList);
 
     const quantizaList = handleSetQuantizationOptions({
-      source: form.current.getFieldValue('source'),
       size: size,
       backend: backend
     });
@@ -280,7 +266,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     const quantization = checkQuantization(quantizaList);
 
     const data = getModelSpec({
-      source: form.current.getFieldValue('source'),
       backend: backend,
       size: size,
       quantization: quantization
@@ -304,29 +289,30 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         }
       );
       const groupList = _.groupBy(res.items, 'source');
+
       sourceGroupMap.current = groupList;
+
+      specListRef.current = res.items;
 
       const sources = _.filter(sourceOptions, (item: any) => {
         return groupList[item.value];
       });
-      const source = _.get(sources, '0.value', '');
+
       const defaultSpec =
-        _.find(groupList[source], (item: CatalogSpec) => {
+        _.find(res.items, (item: CatalogSpec) => {
           return getDefaultQuant({
             category: _.get(current, 'categories.0', ''),
             quantOption: item.quantization
           });
-        }) || _.get(groupList, `${source}.0`, {});
+        }) || _.get(res.items, `0`, {});
 
       selectSpecRef.current = defaultSpec;
       setSourceList(sources);
-      handleSetBackendOptions(source);
+      handleSetBackendOptions();
       handleSetSizeOptions({
-        source: source,
         backend: defaultSpec.backend
       });
       handleSetQuantizationOptions({
-        source: source,
         size: defaultSpec.size,
         backend: defaultSpec.backend
       });
@@ -349,7 +335,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleOnQuantizationChange = (val: string) => {
     const data = getModelSpec({
-      source: form.current.getFieldValue('source'),
       backend: form.current.getFieldValue('backend'),
       size: form.current.getFieldValue('size'),
       quantization: val
@@ -361,7 +346,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleOnSizeChange = (val: number) => {
     const list = handleSetQuantizationOptions({
-      source: form.current.getFieldValue('source'),
       backend: form.current.getFieldValue('backend'),
       size: val
     });
@@ -369,7 +353,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     const quantization = checkQuantization(list);
 
     const data = getModelSpec({
-      source: form.current.getFieldValue('source'),
       backend: form.current.getFieldValue('backend'),
       size: val,
       quantization: quantization
@@ -383,9 +366,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const handleOk = (values: FormData) => {
     onOk({
-      ...values,
-      ...getModelFile(selectSpecRef.current),
-      ..._.omit(selectSpecRef.current, ['name'])
+      ..._.omit(selectSpecRef.current, ['name']),
+      ...values
     });
   };
 

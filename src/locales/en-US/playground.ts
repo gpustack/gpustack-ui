@@ -85,7 +85,7 @@ export default {
     'Upload an audio file or start recording',
   'playground.audio.enablemic':
     "Enable microphone access in your browser's settings.",
-  'playground.audio.enablemic.doc': 'Refer to',
+  'playground.audio.enablemic.doc': 'Refer to this link',
   'playground.audio.startrecord': 'Start Recording',
   'playground.audio.stoprecord': 'Stop Recording',
   'playground.audio.generating.tips': 'Generated text will appear here.',

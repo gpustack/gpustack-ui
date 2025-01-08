@@ -151,7 +151,7 @@ export async function queryModelScopeModels(
   config?: any
 ) {
   const tagsCriterion = params.tags?.map((tag: string) => {
-    return { category: 'tags', predicate: 'contains', values: [tag] };
+    return { category: 'libraries', predicate: 'contains', values: [tag] };
   });
   const tasksCriterion = params.tasks?.map((task: string) => {
     return { category: 'tasks', predicate: 'contains', values: [task] };

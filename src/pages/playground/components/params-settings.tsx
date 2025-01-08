@@ -6,7 +6,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useId } from 'react';
+import { memo, useCallback, useEffect, useId, useState } from 'react';
 import CustomLabelStyles from '../style/custom-label.less';
 
 type ParamsSettingsFormProps = {
@@ -29,12 +29,13 @@ type ParamsSettingsProps = {
   globalParams?: ParamsSettingsFormProps;
 };
 
-const METAKEYS: Record<string, string> = {
+const METAKEYS: Record<string, any> = {
   seed: 'seed',
   stop: 'stop',
   temperature: 'temperature',
   top_p: 'top_p',
-  max_tokens: 'n_ctx'
+  n_slot_ctx: 'max_tokens',
+  max_model_len: 'max_tokens'
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
@@ -56,6 +57,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   };
   const [form] = Form.useForm();
   const formId = useId();
+  const [metaData, setMetaData] = useState<Record<string, any>>({});
+  const [firstLoad, setFirstLoad] = useState(true);
 
   const handleOnFinish = (values: any) => {
     console.log('handleOnFinish', values);
@@ -97,18 +100,16 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
   const handleModelChange = (val: string) => {
     const model = _.find(modelList, { value: val });
     const modelMeta = model?.meta || {};
-    const keys = Object.keys(METAKEYS).map((k: string) => {
-      return METAKEYS[k];
-    });
-    const modelMetaKeys = _.pick(modelMeta, keys);
-    const obj = _.reduce(
-      METAKEYS,
-      (result: any, value: any, key: string) => {
-        result[key] = modelMetaKeys[value];
-        return result;
-      },
-      {}
-    );
+    const modelMetaValue = _.pick(modelMeta, _.keys(METAKEYS));
+    const obj = Object.entries(METAKEYS).reduce((acc: any, [key, value]) => {
+      const val = modelMetaValue[key];
+      if (val && _.hasIn(modelMetaValue, key)) {
+        acc[value] = val;
+      }
+      return acc;
+    }, {});
+    form.setFieldsValue(obj);
+    setMetaData(obj);
     return obj;
   };
 
@@ -127,11 +128,14 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       ...mergeData,
       model: model
     });
+    setFirstLoad(false);
   }, [modelList, showModelSelector, selectedModel]);
 
   useEffect(() => {
-    form.setFieldsValue(globalParams);
-  }, [globalParams]);
+    if (!firstLoad) {
+      form.setFieldsValue(globalParams);
+    }
+  }, [globalParams, firstLoad]);
 
   const renderLabel = (args: {
     field: string;
@@ -196,7 +200,11 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
                 }
               ]}
             >
-              <SealSelect showSearch={true} options={modelList}></SealSelect>
+              <SealSelect
+                showSearch={true}
+                options={modelList}
+                onChange={handleModelChange}
+              ></SealSelect>
             </Form.Item>
           </>
         )}
@@ -246,7 +254,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
           >
             <Slider
               defaultValue={2048}
-              max={16 * 1024}
+              max={metaData.max_tokens || 16 * 1024}
               step={1}
               style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
               tooltip={{ open: false }}

@@ -51,6 +51,8 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
+    } else {
+      logsViewerRef.current?.abort();
     }
     return () => {
       requestRef.current?.current?.cancel?.();

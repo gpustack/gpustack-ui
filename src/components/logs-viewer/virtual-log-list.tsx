@@ -49,6 +49,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     abort() {
       chunkRequedtRef.current?.current?.abort?.();
+      logParseWorker.current?.terminate?.();
     }
   }));
 
@@ -65,6 +66,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
     logParseWorker.current.onmessage = (event: any) => {
       const res = event.data;
+      console.log('res===', res);
       setLogs(res);
     };
 
@@ -73,7 +75,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         logParseWorker.current.terminate();
       }
     };
-  }, [setLogs, logParseWorker.current]);
+  }, []);
 
   const debounceLoading = _.debounce(() => {
     setLoading(false);
@@ -88,26 +90,26 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const getLastPage = (data: string) => {
     const list = _.split(data.trim(), '\n');
-
-    if (!enableScorllLoad) {
-      return list.join('\n');
-    }
-
-    if (list.length <= pageSize) {
-      setTotalPage(1);
-      return data;
-    }
-
+    let result = '';
+    console.log('getlastPage===', list.length, enableScorllLoad, pageSize);
     setLoading(true);
-    const totalPage = Math.ceil(list.length / pageSize);
-    setTotalPage(totalPage);
-    setPage(() => totalPage);
-    pageRef.current = totalPage;
-    totalPageRef.current = totalPage;
-    const lastPage = list.slice(-pageSize).join('\n');
-    console.log('list.length===', list.length, totalPage, page);
+    if (!enableScorllLoad) {
+      result = list.join('\n');
+    } else if (list.length <= pageSize) {
+      setTotalPage(1);
+      result = data;
+    } else {
+      const totalPage = Math.ceil(list.length / pageSize);
+      setTotalPage(totalPage);
+      setPage(() => totalPage);
+      pageRef.current = totalPage;
+      totalPageRef.current = totalPage;
+      const lastPage = list.slice(-pageSize).join('\n');
+
+      result = lastPage;
+    }
     debounceLoading();
-    return lastPage;
+    return result;
   };
 
   const getCurrentPage = () => {
@@ -116,7 +118,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     if (newPage < 1) {
       newPage = 1;
     }
-    console.log('currentpage===', newPage);
     const start = (newPage - 1) * pageSize;
     const end = newPage * pageSize;
     const currentPage = list.slice(start, end).join('\n');
@@ -164,6 +165,20 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     });
   }, [totalPage, page, pageSize]);
 
+  const handleonBackend = useCallback(() => {
+    const list = _.split(cacheDataRef.current.trim(), '\n');
+    let newPage = totalPage;
+    const start = (newPage - 1) * pageSize;
+    const end = newPage * pageSize;
+    const nextPage = list.slice(start, end).join('\n');
+    setPage(() => newPage);
+    setScrollPos(['bottom', newPage]);
+    pageRef.current = newPage;
+    logParseWorker.current.postMessage({
+      inputStr: nextPage
+    });
+  }, [totalPage, page, pageSize]);
+
   const debounceParseData = _.debounce(() => {
     if (pageRef.current === totalPageRef.current) {
       logParseWorker.current.postMessage({
@@ -175,20 +190,25 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   }, 100);
 
   const updateContent = (inputStr: string) => {
-    console.log('inputStr===', inputStr);
     const data = inputStr.replace(replaceLineRegex, '\n');
     if (isClean(data)) {
       cacheDataRef.current = data;
     } else {
       cacheDataRef.current += data;
     }
-    console.log('page===', pageRef.current, totalPageRef.current);
-    debounceParseData();
+    if (pageRef.current === totalPageRef.current) {
+      logParseWorker.current.postMessage({
+        inputStr: getLastPage(cacheDataRef.current)
+      });
+    } else {
+      getCurrentPage();
+    }
   };
 
   const createChunkConnection = async () => {
     cacheDataRef.current = '';
     chunkRequedtRef.current?.current?.abort?.();
+
     chunkRequedtRef.current = setChunkFetch({
       url,
       params: {
@@ -287,6 +307,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
                 pageSize={pageSize}
                 onNext={getNextPage}
                 onPrev={getPrePage}
+                onBackend={handleonBackend}
               ></LogsPagination>
             </div>
           </div>

@@ -125,6 +125,10 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     return [...shardFileListResult, ...newGeneralFileList];
   }, []);
 
+  const hfFileFilter = (file: any) => {
+    return filterRegGGUF.test(file.path) || _.includes(file.path, '.gguf');
+  };
+
   // hugging face files
   const getHuggingfaceFiles = async () => {
     try {
@@ -139,13 +143,17 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       });
 
       const list = _.filter(fileList, (file: any) => {
-        return filterRegGGUF.test(file.path) || _.includes(file.path, '.gguf');
+        return hfFileFilter(file);
       });
 
       return list;
     } catch (error) {
       return [];
     }
+  };
+
+  const modelscopeFileFilter = (file: any) => {
+    return filterRegGGUF.test(file.Path) && file.Type === 'blob';
   };
 
   // modelscope files
@@ -161,7 +169,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         }
       );
       const fileList = _.filter(_.get(data, ['Data', 'Files']), (file: any) => {
-        return filterRegGGUF.test(file.Path) && file.Type === 'blob';
+        return modelscopeFileFilter(file);
       });
 
       const list = _.map(fileList, (item: any) => {

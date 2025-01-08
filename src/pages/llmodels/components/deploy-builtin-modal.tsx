@@ -69,6 +69,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const sourceGroupMap = useRef<any>({});
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
+  const specListRef = useRef<any[]>([]);
 
   const handleSumit = () => {
     form.current?.submit?.();
@@ -165,14 +166,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       'size'
     );
 
-    const sizeList = _.keys(sizeGroup).map((size: string) => {
-      return {
-        label: `${size}B`,
-        value: _.toNumber(size)
-      };
-    });
-    setSizeOptions(sizeList);
-    return sizeList;
+    const sizeList = _.keys(sizeGroup)
+      .map((size: string) => {
+        return {
+          label: `${size}B`,
+          value: _.toNumber(size)
+        };
+      })
+      .filter((item: any) => item.value);
+    const result = _.sortBy(sizeList, 'value');
+    setSizeOptions(result);
+    return result;
   };
 
   const handleSetQuantizationOptions = (data: {
@@ -225,6 +229,33 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     initFormDataBySource(defaultSpec);
   };
 
+  const checkSize = (list: any[]) => {
+    return (
+      _.find(
+        list,
+        (item: { label: string; value: string }) =>
+          item.value === form.current.getFieldValue('size')
+      )?.value || _.get(list, '0.value', 0)
+    );
+  };
+
+  const checkQuantization = (list: any[]) => {
+    return (
+      _.find(
+        list,
+        (item: { label: string; value: string }) =>
+          item.value === form.current.getFieldValue('quantization')
+      )?.value ||
+      _.find(list, (item: { label: string; value: string }) =>
+        getDefaultQuant({
+          category: _.get(current, 'categories.0', ''),
+          quantOption: item.value
+        })
+      )?.value ||
+      _.get(list, '0.value', '')
+    );
+  };
+
   const handleBackendChange = (backend: string) => {
     if (backend === backendOptionsMap.vllm) {
       setIsGGUF(false);
@@ -237,23 +268,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       source: form.current.getFieldValue('source'),
       backend: backend
     });
+
+    const size = checkSize(sizeList);
+
     const quantizaList = handleSetQuantizationOptions({
       source: form.current.getFieldValue('source'),
-      size: _.get(sizeList, '0.value', 0),
+      size: size,
       backend: backend
     });
+
+    const quantization = checkQuantization(quantizaList);
 
     const data = getModelSpec({
       source: form.current.getFieldValue('source'),
       backend: backend,
-      size: _.get(sizeList, '0.value', 0),
-      quantization:
-        _.find(quantizaList, (item: { label: string; value: string }) =>
-          getDefaultQuant({
-            category: _.get(current, 'categories.0', ''),
-            quantOption: item.value
-          })
-        )?.value || _.get(quantizaList, '0.value', '')
+      size: size,
+      quantization: quantization
     });
 
     form.current.setFieldsValue({
@@ -288,6 +318,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           });
         }) || _.get(groupList, `${source}.0`, {});
 
+      selectSpecRef.current = defaultSpec;
       setSourceList(sources);
       handleSetBackendOptions(source);
       handleSetSizeOptions({
@@ -335,17 +366,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       size: val
     });
 
+    const quantization = checkQuantization(list);
+
     const data = getModelSpec({
       source: form.current.getFieldValue('source'),
       backend: form.current.getFieldValue('backend'),
       size: val,
-      quantization:
-        _.find(list, (item: { label: string; value: string }) =>
-          getDefaultQuant({
-            category: _.get(current, 'categories.0', ''),
-            quantOption: item.value
-          })
-        )?.value || _.get(list, '0.value', '')
+      quantization: quantization
     });
 
     // set form data
@@ -357,7 +384,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleOk = (values: FormData) => {
     onOk({
       ...values,
-      ...getModelFile(selectSpecRef.current)
+      ...getModelFile(selectSpecRef.current),
+      ..._.omit(selectSpecRef.current, ['name'])
     });
   };
 
@@ -428,6 +456,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         >
           <>
             <DataForm
+              fields={[]}
               source={source}
               action={action}
               selectedModel={{}}

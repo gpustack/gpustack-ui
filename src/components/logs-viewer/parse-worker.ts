@@ -150,5 +150,10 @@ self.onmessage = function (event) {
     content: item.content,
     uid: item.uid
   }));
+  console.log('result===', result);
   self.postMessage(result);
+};
+
+self.onerror = function (event) {
+  console.error('parse logs error===', event);
 };

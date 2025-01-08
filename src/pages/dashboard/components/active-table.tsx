@@ -50,7 +50,7 @@ const ActiveTable = () => {
       render: (text: any, record: any) => {
         return (
           <AutoTooltip ghost>
-            <span>{text}</span>
+            <span>{text || 'N/A'}</span>
           </AutoTooltip>
         );
       }

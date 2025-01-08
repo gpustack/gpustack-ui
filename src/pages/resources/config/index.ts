@@ -56,6 +56,10 @@ export const addWorkerGuide: Record<string, any> = {
     registerWorker(params: { server: string; tag: string; token: string }) {
       return `docker run -d --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
     }
+  },
+  container: {
+    getToken:
+      'docker run -it ${gpustack_container_id} cat /var/lib/gpustack/token'
   }
 };
 

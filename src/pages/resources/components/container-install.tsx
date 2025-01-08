@@ -80,7 +80,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       </ul>
       <h3>1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}</h3>
       <HighlightCode
-        code={addWorkerGuide.mac.getToken}
+        code={addWorkerGuide.container.getToken}
         theme="dark"
       ></HighlightCode>
       <h3>

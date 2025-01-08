@@ -302,7 +302,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
               href={`${externalRefer.audioPermission}`}
               target="_blank"
               style={{
-                color: 'var(--ant-blue-5)'
+                paddingInline: 0
               }}
             >
               {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}

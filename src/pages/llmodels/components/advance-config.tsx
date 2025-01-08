@@ -303,7 +303,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                     { backend: backendParamsTips.backend || '' }
                   )}{' '}
                   <Typography.Link
-                    style={{ color: 'var(--ant-blue-4)' }}
                     href={backendParamsTips.link}
                     target="_blank"
                   >

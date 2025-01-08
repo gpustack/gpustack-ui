@@ -29,7 +29,7 @@ export default {
       contentPadding: '12px 16px'
     },
     Tooltip: {
-      colorBgSpotlight: 'rgba(110,110,110,1)'
+      colorBgSpotlight: '#3e3e3e'
       // sizePopupArrow: 0
     },
     Slider: {

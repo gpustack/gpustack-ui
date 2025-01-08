@@ -1,5 +1,5 @@
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { Progress } from 'antd';
+import { Progress, ProgressProps } from 'antd';
 import classNames from 'classnames';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
@@ -21,6 +21,7 @@ interface SingleImageProps {
   autoBgColor?: boolean;
   editable?: boolean;
   style?: React.CSSProperties;
+  loadingSize?: ProgressProps['size'];
   progressType?: 'line' | 'circle' | 'dashboard';
   progressColor?: string;
   progressWidth?: number;
@@ -42,10 +43,8 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     dataUrl,
     style,
     autoBgColor,
-    progressColor = 'var(--ant-color-primary)',
-    progressWidth = 2,
     preview = true,
-    progressType = 'dashboard'
+    loadingSize = 'default'
   } = props;
 
   const imgWrapper = React.useRef<HTMLSpanElement>(null);
@@ -137,6 +136,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                 <Progress
                   percent={progress}
                   type="dashboard"
+                  size={loadingSize}
                   steps={{ count: 50, gap: 2 }}
                   format={() => (
                     <span className="font-size-20">{progress}%</span>

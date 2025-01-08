@@ -55,6 +55,5 @@ export default {
     'Select a label to generate the command and copy it using the copy button.',
   'resources.worker.script.install': 'Script Installation',
   'resources.worker.container.install': 'Container Installation(Linux Only)',
-  'resources.worker.cann.tips':
-    'Set <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES</span> to 0 for a single GPU or to the index range (e.g., 0-7 for 8 GPUs) for multiple GPUs.'
+  'resources.worker.cann.tips': `Set <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> to the required GPU indices. For GPU0 to GPU3, use <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> or <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`
 };

@@ -34,6 +34,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   onSave,
   uploadButton
 }) => {
+  const MIN_SCALE = 0.4;
+  const MAX_SCALE = 10;
+  const zoomFactor = 1.1;
   const intl = useIntl();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,25 +50,20 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const autoScale = useRef<number>(1);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [imgLoaded, setImgLoaded] = useState(false);
-
-  let scale = 1;
-  let offsetX = 0;
-  let offsetY = 0;
-
-  const MIN_SCALE = 0.5;
-  const MAX_SCALE = 5;
+  const offsetRef = useRef({ x: 0, y: 0 });
+  const originPosition = useRef({ x: 0, y: 0 });
 
   const getTransformedPoint = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const overlayCanvas = overlayCanvasRef.current!;
     const rect = overlayCanvas.getBoundingClientRect();
 
+    // 获取鼠标在画布上的原始坐标
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    const transformedX = x - overlayCanvas.width / 2;
-    const transformedY = y - overlayCanvas.height / 2;
-
-    console.log('Mouse Coordinates (Transformed):', transformedX, transformedY);
+    // 考虑缩放比例和偏移量
+    const transformedX = (x - offsetRef.current.x) / autoScale.current;
+    const transformedY = (y - offsetRef.current.y) / autoScale.current;
 
     return { x: transformedX, y: transformedY };
   };
@@ -113,6 +111,10 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     overlayCtx!.translate(ctx!.canvas.width / 2, ctx!.canvas.height / 2);
     ctx!.translate(ctx!.canvas.width / 2, ctx!.canvas.height / 2);
     offscreenCtx!.translate(ctx!.canvas.width / 2, ctx!.canvas.height / 2);
+    originPosition.current = {
+      x: ctx!.canvas.width / 2,
+      y: ctx!.canvas.height / 2
+    };
   }, [canvasRef.current, overlayCanvasRef.current]);
 
   const scaleCanvasSize = useCallback(() => {
@@ -439,8 +441,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           1
         );
 
-        canvas!.width = img.width * scale;
-        canvas!.height = img.height * scale;
+        canvas!.width = img.width;
+        canvas!.height = img.height;
 
         autoScale.current = scale / autoScale.current;
 
@@ -457,6 +459,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           canvas!.width,
           canvas!.height
         );
+        canvas!.style.transform = `scale(${scale})`;
         resolve();
       };
     });
@@ -502,61 +505,102 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     const y = event.clientY - rect.top;
 
     // 考虑缩放比例和偏移量
-    const transformedX = (x - offsetX) / scale;
-    const transformedY = (y - offsetY) / scale;
+    const transformedX = (x - offsetRef.current.x) / autoScale.current;
+    const transformedY = (y - offsetRef.current.y) / autoScale.current;
 
     return { x: transformedX, y: transformedY };
+  };
+
+  const getMousePosition = (event: any) => {
+    const canvas = overlayCanvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    const { x: originX, y: originY } = originPosition.current;
+    const canvasX = (mouseX - originX) / autoScale.current;
+    const canvasY = (mouseY - originY) / autoScale.current;
+
+    return { x: canvasX, y: canvasY };
+  };
+
+  const updateCavasTransform = (event: any) => {
+    const canvas = overlayCanvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // 鼠标在中心坐标系中的位置
+    const { x: originX, y: originY } = originPosition.current;
+    const canvasX = (mouseX - originX) / autoScale.current;
+    const canvasY = (mouseY - originY) / autoScale.current;
+
+    // 更新缩放比例
+    // max scale: 2, min scale: 0.3
+    const zoomIn = event.deltaY < 0;
+    let newScale = autoScale.current;
+    if (zoomIn) {
+      newScale = Math.min(MAX_SCALE, autoScale.current * zoomFactor);
+    } else {
+      newScale = Math.max(MIN_SCALE, autoScale.current / zoomFactor);
+    }
+
+    console.log('New Scale:', newScale);
+
+    autoScale.current = newScale;
+    // 更新原点
+    const neworiginX = mouseX - canvasX * newScale;
+    const neworiginY = mouseY - canvasY * newScale;
+    originPosition.current = { x: neworiginX, y: neworiginY };
+
+    const overlayCtx = overlayCanvasRef.current!.getContext('2d')!;
+    const canvasCtx = canvasRef.current!.getContext('2d')!;
+    // 更新 Canvas 的变换
+    overlayCtx.setTransform(
+      autoScale.current,
+      0,
+      0,
+      autoScale.current,
+      neworiginX,
+      neworiginY
+    );
+    canvasCtx.setTransform(
+      autoScale.current,
+      0,
+      0,
+      autoScale.current,
+      neworiginX,
+      neworiginY
+    );
   };
 
   const handleOnWheel = (event: WheelEvent) => {
     event.preventDefault();
 
-    const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
-    const newScale = Math.min(
-      MAX_SCALE,
-      Math.max(MIN_SCALE, scale * zoomFactor)
-    );
+    updateCavasTransform(event);
 
-    const rect = canvasRef.current!.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    // 计算新的偏移量
-    offsetX = mouseX - (mouseX - offsetX) * (newScale / scale);
-    offsetY = mouseY - (mouseY - offsetY) * (newScale / scale);
-
-    // 更新缩放比例
-    scale = newScale;
-
-    // 设置画布的变换
-    const overlayCtx = overlayCanvasRef.current!.getContext('2d')!;
-    overlayCtx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
-    const canvasCtx = canvasRef.current!.getContext('2d')!;
-    canvasCtx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
-    overlayCanvasRef.current!.style.transform = `scale(${scale})`;
-    canvasRef.current!.style.transform = `scale(${scale})`;
-
-    console.log('Zoom:', scale, offsetX, offsetY);
+    overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
+    canvasRef.current!.style.transform = `scale(${autoScale.current})`;
   };
 
   useEffect(() => {
     initializeImage();
   }, [initializeImage]);
 
-  // useEffect(() => {
-  //   const container = containerRef.current;
-  //   if (!container) return;
-  //   if (container) {
-  //     resizeObserver.current = new ResizeObserver(
-  //       _.throttle(handleResize, 100)
-  //     );
-  //     resizeObserver.current.observe(container);
-  //   }
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (container) {
+      resizeObserver.current = new ResizeObserver(
+        _.throttle(handleResize, 100)
+      );
+      resizeObserver.current.observe(container);
+    }
 
-  //   return () => {
-  //     resizeObserver.current?.disconnect();
-  //   };
-  // }, [handleResize, containerRef.current]);
+    return () => {
+      resizeObserver.current?.disconnect();
+    };
+  }, [handleResize, containerRef.current]);
 
   useEffect(() => {
     createOffscreenCanvas();

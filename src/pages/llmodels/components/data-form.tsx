@@ -47,6 +47,7 @@ interface DataFormProps {
   onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
+  fields?: string[];
 }
 
 const SEARCH_SOURCE = [
@@ -64,6 +65,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     byBuiltIn,
     sizeOptions = [],
     quantizationOptions = [],
+    fields = ['source'],
     onSourceChange,
     onOk
   } = props;
@@ -508,7 +510,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           required
         ></SealInput.Input>
       </Form.Item>
-      {
+      {fields.includes('source') && (
         <Form.Item<FormData>
           name="source"
           rules={[
@@ -535,7 +537,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             ></SealSelect>
           }
         </Form.Item>
-      }
+      )}
 
       {renderFieldsBySource}
       <Form.Item name="backend" rules={[{ required: true }]}>

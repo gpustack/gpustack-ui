@@ -189,8 +189,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         value: item.quantization
       };
     });
-    setQuantizationOptions(quantizationList);
-    return quantizationList;
+    const result = _.uniqBy(quantizationList, 'value');
+    setQuantizationOptions(result);
+    return result;
   };
 
   const handleSetBackendOptions = () => {

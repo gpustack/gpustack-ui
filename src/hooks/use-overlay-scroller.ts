@@ -42,6 +42,7 @@ export default function useOverlayScroller(options?: any) {
         clickScroll: 'instant'
       }
     },
+
     defer: true
   });
 

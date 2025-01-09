@@ -129,8 +129,10 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const currentPage = list.slice(start, end).join('\n');
     setPage(newPage);
     setTotalPage(totalPage);
+    if (pageRef.current === totalPageRef.current && scrollPos[0] === 'bottom') {
+      setScrollPos(['bottom', newPage]);
+    }
     pageRef.current = newPage;
-    totalPageRef.current = totalPage;
     logParseWorker.current.postMessage({
       inputStr: currentPage
     });
@@ -232,6 +234,18 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     async (data: { isTop: boolean; isBottom: boolean }) => {
       const { isTop, isBottom } = data;
       setIsAtTop(isTop);
+      console.log('scroll========', { isTop, isBottom });
+      // if (isBottom) {
+      //   setScrollPos((pre) => {
+      //     return ['bottom', pre[1]];
+      //   });
+      // } else if (isTop) {
+      //   setScrollPos((pre) => {
+      //     return ['top', pre[1]];
+      //   });
+      // } else {
+      //   setScrollPos([]);
+      // }
       if (
         loading ||
         (logs.length > 0 && logs.length < pageSize && !loadMoreDone.current) ||
@@ -287,8 +301,9 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   return (
     <div className="logs-viewer-wrap-w2">
+      <span></span>
       <div className="wrap">
-        <div className={classNames('content')}>
+        <div>
           <LogsList
             ref={logListRef}
             dataList={logs}

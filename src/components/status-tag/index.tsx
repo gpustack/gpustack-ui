@@ -28,6 +28,7 @@ type StatusTagProps = {
   download?: {
     percent: number;
   };
+  extra?: React.ReactNode;
   actions?: {
     label: string;
     icon?: React.ReactNode;
@@ -40,6 +41,7 @@ type StatusTagProps = {
 const StatusTag: React.FC<StatusTagProps> = ({
   statusValue,
   download,
+  extra,
   actions = [],
   type = 'tag'
 }) => {
@@ -78,7 +80,6 @@ const StatusTag: React.FC<StatusTagProps> = ({
             style={{ color: 'rgba(255,255,255,.8)' }}
             text={statusValue.message || ''}
             size="small"
-            placement="right"
           ></CopyButton>
           {actions?.map((item) => {
             return (
@@ -104,7 +105,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
           })}
         </div>
 
-        <SimpleBar style={{ maxHeight: 200 }}>
+        <SimpleBar style={{ maxHeight: 200 }} autoHide={false}>
           <div
             style={{
               width: 'max-content',
@@ -115,6 +116,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
             }}
           >
             {statusValue.message}
+            {extra}
           </div>
         </SimpleBar>
       </div>

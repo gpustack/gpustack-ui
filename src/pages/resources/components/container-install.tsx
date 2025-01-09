@@ -59,7 +59,6 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
             { version: versionInfo.version }
           )}
         </li>
-        <li>{intl.formatMessage({ id: 'resources.worker.select.command' })}</li>
         <li>
           <span>
             {intl.formatMessage({ id: 'resources.worker.driver.install' })}

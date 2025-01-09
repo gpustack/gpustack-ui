@@ -15,7 +15,7 @@ import {
   ThunderboltFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, Divider, Row, Space, Tag, Tooltip } from 'antd';
+import { Button, Col, Divider, Row, Space, Tag, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
@@ -281,6 +281,21 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                           item.state === InstanceStatusMap.Downloading
                             ? { percent: item.download_progress }
                             : undefined
+                        }
+                        extra={
+                          item.state === InstanceStatusMap.Error ? (
+                            <Button
+                              type="link"
+                              size="small"
+                              onClick={() =>
+                                handleChildSelect('viewlog', item, list)
+                              }
+                            >
+                              {intl.formatMessage({
+                                id: 'models.list.more.logs'
+                              })}
+                            </Button>
+                          ) : null
                         }
                         statusValue={{
                           status:

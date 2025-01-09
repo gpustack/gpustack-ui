@@ -108,6 +108,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       }
       return acc;
     }, {});
+    console.log('handleModelChange', obj);
     form.setFieldsValue(obj);
     setMetaData(obj);
     return obj;
@@ -120,12 +121,18 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     }
     const modelMetaData = handleModelChange(model);
     const mergeData = _.merge({}, initialValues, modelMetaData);
+    const defaultMaxTokens = mergeData?.max_tokens
+      ? _.divide(mergeData?.max_tokens, 2)
+      : 1024;
+
     form.setFieldsValue({
       ...mergeData,
+      max_tokens: defaultMaxTokens,
       model: model
     });
     setParams({
       ...mergeData,
+      max_tokens: defaultMaxTokens,
       model: model
     });
     setFirstLoad(false);

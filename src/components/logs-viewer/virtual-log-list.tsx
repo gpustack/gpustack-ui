@@ -114,16 +114,20 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const getCurrentPage = () => {
     const list = _.split(cacheDataRef.current.trim(), '\n');
-    let newPage = page;
+    const totalPage = Math.ceil(list.length / pageSize);
+
+    let newPage = pageRef.current;
     if (newPage < 1) {
       newPage = 1;
     }
+
     const start = (newPage - 1) * pageSize;
     const end = newPage * pageSize;
     const currentPage = list.slice(start, end).join('\n');
-    setPage(() => newPage);
-    setScrollPos(['bottom', newPage]);
+    setPage(newPage);
+    setTotalPage(totalPage);
     pageRef.current = newPage;
+    totalPageRef.current = totalPage;
     logParseWorker.current.postMessage({
       inputStr: currentPage
     });

@@ -27,6 +27,28 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
     e.target.src = fallbackImg;
   };
 
+  const renderTag = (sItem: any) => {
+    return (
+      <Tag
+        key={sItem}
+        className="tag-item"
+        style={{
+          marginRight: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '2px 6px',
+          borderRadius: 4,
+          fontSize: 12,
+          opacity: 0.7,
+          height: 22
+        }}
+      >
+        {sItem}B
+      </Tag>
+    );
+  };
+
   return (
     <div
       onClick={handleOnClick}
@@ -81,7 +103,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
           <span className="flex-center">
             {_.map(data.licenses, (license: string, index: number) => {
               return (
-                <span key={license} className="flex-center m-r-16">
+                <span key={license} className="flex-center m-r-8">
                   <IconFont type="icon-justice1" className="m-r-5"></IconFont>
                   <span>{license}</span>
                 </span>
@@ -113,15 +135,11 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
             <>
               <span className="dot"></span>
               <div className="box">
-                <TagWrapper>
-                  {data.sizes.map((sItem, i) => {
-                    return (
-                      <Tag key={sItem} className="tag-item">
-                        {sItem}B
-                      </Tag>
-                    );
-                  })}
-                </TagWrapper>
+                <TagWrapper
+                  gap={8}
+                  dataList={data.sizes}
+                  renderTag={renderTag}
+                ></TagWrapper>
               </div>
             </>
           )}

@@ -1,99 +1,126 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { Dropdown, Tag } from 'antd';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import _ from 'lodash';
+import ResizeObserver from 'rc-resize-observer';
+import React, { useEffect, useRef, useState } from 'react';
 import './index.less';
 
-const TagsWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface TagsWrapperProps {
+  gap?: number;
+  dataList: any[];
+  renderTag: (item: any) => React.ReactNode;
+}
+
+const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
+  const { gap = 0, dataList, renderTag } = props;
+  const tagsContentRef = useRef<HTMLDivElement>(null);
+  const [hiddenIndices, setHiddenIndices] = useState({
+    start: 0,
+    end: dataList.length
+  });
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const observer = useRef<IntersectionObserver | null>(null);
-  const resizeObserver = useRef<ResizeObserver | null>(null);
-  const [hiddenIndex, setHiddenIndex] = useState<number>(4);
-  const uid = useRef(0);
+  const moreBtnRef = useRef<HTMLDivElement>(null);
+  const moreButtonWidth = useRef(0);
+  const nodeSizeList = useRef<number[]>([]);
 
-  const updateUid = () => {
-    uid.current += 1;
-    return uid.current;
-  };
+  const calculateHiddenIndices = () => {
+    const wrapperWidth = wrapperRef.current?.offsetWidth || 0;
+    const childNodes = tagsContentRef.current?.childNodes;
+    let sizeList = nodeSizeList.current;
 
-  const dropItems = useMemo(() => {
-    return React.Children.toArray(children)
-      .slice(hiddenIndex)
-      .map((child) => ({
-        label: child,
-        key: updateUid()
-      }));
-  }, [children, hiddenIndex]);
+    if (!sizeList.length && childNodes?.length) {
+      sizeList = _.map(childNodes, (node: HTMLDivElement, index: number) => {
+        if (index === childNodes.length - 1) {
+          return node.offsetWidth;
+        }
+        return node.offsetWidth + gap;
+      });
+      nodeSizeList.current = sizeList;
+    }
 
-  const updateHiddenIndex = () => {
-    if (!wrapperRef.current || !observer.current) return;
+    if (wrapperWidth === 0 || !sizeList.length) return;
 
-    const childrenList = Array.from(wrapperRef.current.children);
-    let newHiddenIndex = 0;
+    // cache more button width
+    if (moreBtnRef.current?.offsetWidth) {
+      moreButtonWidth.current = moreBtnRef.current?.offsetWidth + gap;
+    }
 
-    childrenList.forEach((child, index) => {
-      const rect = child.getBoundingClientRect();
-      // visible in wrapperRef
-      const issivible =
-        rect.top < wrapperRef.current!.clientHeight &&
-        rect.bottom > 0 &&
-        rect.left < wrapperRef.current!.clientWidth &&
-        rect.right > 0;
+    let totalWidth = 0;
+    let start = 0;
+    let end = dataList.length;
 
-      if (!issivible) {
-        newHiddenIndex = Math.max(newHiddenIndex, index + 1);
+    for (let i = 0; i < sizeList.length; i++) {
+      const nodeWidth = sizeList[i];
+
+      if (totalWidth + moreButtonWidth.current >= wrapperWidth) {
+        end = i - 1;
+        break;
       }
-    });
+      totalWidth += nodeWidth;
 
-    setHiddenIndex(newHiddenIndex);
+      if (totalWidth >= wrapperWidth) {
+        end = i;
+        break;
+      }
+    }
+
+    if (hiddenIndices.start !== start || hiddenIndices.end !== end) {
+      setHiddenIndices({
+        start,
+        end
+      });
+    }
   };
 
   useEffect(() => {
-    if (!wrapperRef.current) return;
+    if (tagsContentRef.current) {
+      calculateHiddenIndices();
+    }
+  }, [dataList, gap]);
 
-    // observer.current = new IntersectionObserver(
-    //   (entries) => {
-    //     const lastEntry = entries[entries.length - 1];
-    //     if (lastEntry && lastEntry.intersectionRatio < 1) {
-    //       setHiddenIndex((prev) =>
-    //         Math.max(prev, React.Children.count(children))
-    //       );
-    //     }
-    //   },
-    //   { root: wrapperRef.current, threshold: 1 }
-    // );
-
-    // const childrenList = wrapperRef.current.children;
-    // if (childrenList.length > 0) {
-    //   observer.current.observe(childrenList[childrenList.length - 1]);
-    // }
-
-    resizeObserver.current = new ResizeObserver(() => {
-      // updateHiddenIndex();
-    });
-    resizeObserver.current.observe(wrapperRef.current);
-
-    return () => {
-      observer.current?.disconnect();
-      resizeObserver.current?.disconnect();
-    };
-  }, [children]);
+  const handleContentResize = _.throttle(() => {
+    calculateHiddenIndices();
+  }, 200);
 
   return (
-    <div className="tags-wrapper" ref={wrapperRef}>
-      {React.Children.toArray(children).slice(0, hiddenIndex)}
-      {React.Children.toArray(children).length > 4 && (
-        <Dropdown
-          trigger={['hover']}
-          menu={{
-            items: dropItems
-          }}
-        >
-          <Tag className="more">
-            <MoreOutlined rotate={90} />
-          </Tag>
-        </Dropdown>
-      )}
-    </div>
+    <ResizeObserver onResize={handleContentResize}>
+      <div className="tags-wrapper" ref={wrapperRef}>
+        <ResizeObserver onResize={handleContentResize}>
+          <div className="tags-content" ref={tagsContentRef} style={{ gap }}>
+            {_.map(
+              _.slice(dataList, hiddenIndices.start, hiddenIndices.end),
+              (item: any, index: number) => {
+                return <span key={index}>{renderTag?.(item)}</span>;
+              }
+            )}
+          </div>
+        </ResizeObserver>
+        {hiddenIndices.end < dataList.length && (
+          <Dropdown
+            trigger={['hover']}
+            menu={{
+              items: _.map(
+                _.slice(dataList, hiddenIndices.end),
+                (item: any, index: number) => {
+                  return {
+                    label: renderTag?.(item),
+                    key: index
+                  };
+                }
+              )
+            }}
+          >
+            <Tag
+              className="more"
+              style={{ marginInline: `${gap}px 0` }}
+              ref={moreBtnRef}
+            >
+              <MoreOutlined rotate={90} />
+            </Tag>
+          </Dropdown>
+        )}
+      </div>
+    </ResizeObserver>
   );
 };
 

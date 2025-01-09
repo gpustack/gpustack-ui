@@ -33,7 +33,8 @@ const PlaygroundRerank: React.FC = () => {
     const getModelListByReranker = async () => {
       try {
         const params = {
-          categories: modelCategoriesMap.reranker
+          categories: modelCategoriesMap.reranker,
+          with_meta: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

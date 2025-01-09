@@ -85,5 +85,6 @@ export default {
   'models.form.search.gguftips':
     '当 macOS 或 Windows 作 worker 时勾选 GGUF（搜索音频模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',
-  'models.filter.category': '按类别筛选'
+  'models.filter.category': '按类别筛选',
+  'models.list.more.logs': '查看更多'
 };

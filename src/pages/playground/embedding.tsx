@@ -31,7 +31,8 @@ const PlaygroundEmbedding: React.FC = () => {
     const getModelListByEmbedding = async () => {
       try {
         const params = {
-          categories: modelCategoriesMap.embedding
+          categories: modelCategoriesMap.embedding,
+          with_meta: true
         };
         const res = await queryModelsList(params);
         const list = _.map(res.data || [], (item: any) => {

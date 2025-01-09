@@ -57,6 +57,11 @@ export const addWorkerGuide: Record<string, any> = {
       return `docker run -d --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
     }
   },
+  rocm: {
+    registerWorker(params: { server: string; tag: string; token: string }) {
+      return `docker run -d --network=host --ipc=host --group-add=video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device /dev/kfd --device /dev/dri gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    }
+  },
   container: {
     getToken:
       'docker run -it ${gpustack_container_id} cat /var/lib/gpustack/token'
@@ -65,6 +70,7 @@ export const addWorkerGuide: Record<string, any> = {
 
 export const containerInstallOptions = [
   { label: 'CUDA', value: 'cuda' },
+  { label: 'AMD', value: 'rocm' },
   { label: 'CANN', value: 'npu' },
   { label: 'MUSA', value: 'musa' },
   { label: 'CPU', value: 'cpu' }

@@ -45,6 +45,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const loadMoreDone = useRef(false);
   const pageRef = useRef<any>(page);
   const totalPageRef = useRef<any>(totalPage);
+  const isLoadingMoreRef = useRef(false);
 
   useImperativeHandle(ref, () => ({
     abort() {
@@ -79,6 +80,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const debounceLoading = _.debounce(() => {
     setLoading(false);
+    isLoadingMoreRef.current = false;
   }, 200);
 
   const isClean = useCallback((input: string) => {
@@ -91,8 +93,9 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const getLastPage = (data: string) => {
     const list = _.split(data.trim(), '\n');
     let result = '';
-    console.log('getlastPage===', list.length, enableScorllLoad, pageSize);
-    setLoading(true);
+    if (isLoadingMoreRef.current) {
+      setLoading(true);
+    }
     if (!enableScorllLoad) {
       result = list.join('\n');
     } else if (list.length <= pageSize) {
@@ -142,7 +145,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const start = (newPage - 1) * pageSize;
     const end = newPage * pageSize;
     const prePage = list.slice(start, end).join('\n');
-    console.log('prePage===', newPage);
+
     setPage(() => newPage);
     setScrollPos(['bottom', newPage]);
     pageRef.current = newPage;
@@ -160,7 +163,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     const start = (newPage - 1) * pageSize;
     const end = newPage * pageSize;
     const nextPage = list.slice(start, end).join('\n');
-    console.log('nextPage===', newPage);
+
     setPage(() => newPage);
     setScrollPos(['top', newPage]);
     pageRef.current = newPage;
@@ -241,6 +244,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         tail.current = undefined;
         createChunkConnection();
         loadMoreDone.current = true;
+        isLoadingMoreRef.current = true;
       } else if (isTop && page <= totalPage && page > 1) {
         // getPrePage();
       } else if (isBottom && page < totalPage) {

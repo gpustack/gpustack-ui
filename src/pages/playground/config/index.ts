@@ -137,6 +137,8 @@ export const OpenAIViewCode = {
   }
 };
 
+export const SpeechToTextFormat = ['.mp3', '.mp4', '.wav', '.m4a'];
+
 export const promptList = [
   'a lovely cat.',
   "Digital art, portrait of an anthropomorphic roaring Tiger warrior with full armor, close up in the middle of a battle, behind him there is a banner with the text 'Open Source'.",

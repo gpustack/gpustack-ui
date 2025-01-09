@@ -4,23 +4,11 @@ import breakpoints from '@/config/breakpoints';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
-import {
-  Button,
-  Col,
-  Input,
-  Pagination,
-  Row,
-  Select,
-  Space,
-  Spin,
-  message
-} from 'antd';
+import { Button, Input, Pagination, Select, Space, message } from 'antd';
 import _ from 'lodash';
-import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback, useEffect, useState } from 'react';
 import { createModel, queryCatalogList } from './apis';
-import CatalogItem from './components/catalog-item';
-import CatalogSkelton from './components/catalog-skelton';
+import CatalogList from './components/catalog-list';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
@@ -266,46 +254,13 @@ const Catalog: React.FC = () => {
           </Space>
         }
       ></PageTools>
-      <div className="relative" style={{ width: '100%' }}>
-        <ResizeObserver onResize={handleResize}>
-          <Row gutter={[16, 16]}>
-            {dataSource.dataList.map((item: CatalogItemType, index) => {
-              return (
-                <Col span={span} key={item.id}>
-                  <CatalogItem
-                    onClick={handleOnDeploy}
-                    activeId={activeId}
-                    data={item}
-                  ></CatalogItem>
-                </Col>
-              );
-            })}
-          </Row>
-          {dataSource.loading && (
-            <div
-              style={{
-                width: '100%',
-                position: 'absolute',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                top: 0,
-                left: 0,
-                height: 400,
-                right: 0
-              }}
-            >
-              <Spin
-                spinning={dataSource.loading}
-                style={{ width: '100%' }}
-                wrapperClassName="skelton-wrapper"
-              >
-                {isFirst && <CatalogSkelton span={span}></CatalogSkelton>}
-              </Spin>
-            </div>
-          )}
-        </ResizeObserver>
-      </div>
+      <CatalogList
+        dataList={dataSource.dataList}
+        loading={dataSource.loading}
+        onDeploy={handleOnDeploy}
+        activeId={-1}
+        isFirst={isFirst}
+      ></CatalogList>
       <div style={{ marginBlock: '32px 16px' }}>
         <Pagination
           hideOnSinglePage={queryParams.perPage === 100}

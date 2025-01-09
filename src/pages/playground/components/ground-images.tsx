@@ -67,7 +67,7 @@ const advancedFieldsDefaultValus = {
   guidance: 3.5,
   sampling_steps: 10,
   negative_prompt: null,
-  schedule_method: 'default',
+  schedule_method: 'discrete',
   preview: null
 };
 

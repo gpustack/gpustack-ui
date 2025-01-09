@@ -43,27 +43,30 @@ const Catalog: React.FC = () => {
 
   const categoryOptions = [...modelCategories.filter((item) => item.value)];
 
-  const filterData = (data: { search: string; categories: string[] }) => {
-    const { search, categories } = data;
-    const dataList = cacheData.current.filter((item) => {
-      if (search && categories.length > 0) {
-        return (
-          _.toLower(item.name).includes(search) &&
-          categories.some((category) => item.categories.includes(category))
-        );
-      }
-      if (search) {
-        return _.toLower(item.name).includes(search);
-      }
-      if (categories.length > 0) {
-        return categories.some((category) =>
-          item.categories.includes(category)
-        );
-      }
-      return true;
-    });
-    return dataList;
-  };
+  const filterData = useCallback(
+    (data: { search: string; categories: string[] }) => {
+      const { search, categories } = data;
+      const dataList = cacheData.current.filter((item) => {
+        if (search && categories.length > 0) {
+          return (
+            _.toLower(item.name).includes(search) &&
+            categories.some((category) => item.categories.includes(category))
+          );
+        }
+        if (search) {
+          return _.toLower(item.name).includes(search);
+        }
+        if (categories.length > 0) {
+          return categories.some((category) =>
+            item.categories.includes(category)
+          );
+        }
+        return true;
+      });
+      return dataList;
+    },
+    [cacheData.current]
+  );
 
   const fetchData = useCallback(async () => {
     setDataSource((pre) => {
@@ -77,8 +80,12 @@ const Catalog: React.FC = () => {
       const res: any = await queryCatalogList(params);
 
       cacheData.current = res.items || [];
+      const dataList = filterData({
+        search: queryParams.search,
+        categories: queryParams.categories
+      });
       setDataSource({
-        dataList: res.items,
+        dataList: dataList,
         loading: false,
         total: res.pagination.total
       });
@@ -93,7 +100,7 @@ const Catalog: React.FC = () => {
     } finally {
       setIsFirst(false);
     }
-  }, [queryParams]);
+  }, [queryParams, cacheData.current]);
 
   const handleDeployModalCancel = () => {
     setOpenDeployModal({

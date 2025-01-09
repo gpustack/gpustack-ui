@@ -294,18 +294,20 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       // preview
       let stream_options: Record<string, any> = {
-        chunk_size: 16 * 1024,
-        chunk_results: true
+        stream_options_chunk_size: 16 * 1024,
+        stream_options_chunk_result: true
       };
       if (parameters.preview === 'preview') {
         stream_options = {
-          preview: true
+          ...stream_options,
+          stream_options_preview: true
         };
       }
 
       if (parameters.preview === 'preview_faster') {
         stream_options = {
-          preview_faster: true
+          ...stream_options,
+          stream_options_preview_faster: true
         };
       }
 
@@ -333,9 +335,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         ..._.omitBy(finalParameters, (value: string) => !value),
         seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
         stream: true,
-        stream_options: {
-          ...stream_options
-        },
+        ...stream_options,
         prompt: current?.content || currentPrompt || ''
       };
       setParams({
@@ -346,7 +346,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       const result: any = await fetchChunkedData({
         data: params,
-        // url: 'http://192.168.50.174:40053/v1/images/edits',
         url: EDIT_IMAGE_API,
         signal: requestToken.current.signal
       });
@@ -374,11 +373,15 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
-          if (item.b64_json && stream_options.chunk_results) {
+          if (item.b64_json && params.stream_options_chunk_result) {
             imgItem.dataUrl += item.b64_json;
           } else if (item.b64_json) {
             imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
           }
+          console.log(
+            'stream_options_chunk_result:',
+            params.stream_options_chunk_result
+          );
           const progress = _.round(item.progress, 0);
           console.log('progress:', item, progress);
           newImageList[item.index] = {
@@ -389,7 +392,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,
             span: imgItem.span,
-            loading: stream_options.chunk_results ? progress < 100 : false,
+            loading: params.stream_options_chunk_result
+              ? false
+              : progress < 100,
             preview: false,
             progress: progress
           };

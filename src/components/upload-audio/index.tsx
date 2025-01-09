@@ -24,7 +24,7 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
   );
   return (
     <Tooltip
-      overlayInnerStyle={{ maxWidth: 265, width: 'max-content' }}
+      overlayInnerStyle={{ maxWidth: 290, width: 'max-content' }}
       title={intl.formatMessage(
         { id: 'playground.audio.uploadfile.tips' },
         { formats: props.accept }

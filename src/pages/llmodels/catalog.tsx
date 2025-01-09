@@ -1,6 +1,5 @@
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
-import breakpoints from '@/config/breakpoints';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -103,24 +102,6 @@ const Catalog: React.FC = () => {
     });
     setActiveId(-1);
   };
-
-  const handleResize = useCallback(
-    _.throttle((size: { width: number; height: number }) => {
-      const { width } = size;
-      if (width < breakpoints.xs) {
-        setSpan(24);
-      } else if (width < breakpoints.sm) {
-        setSpan(24);
-      } else if (width < breakpoints.md) {
-        setSpan(12);
-      } else if (width < breakpoints.lg) {
-        setSpan(12);
-      } else {
-        setSpan(8);
-      }
-    }, 100),
-    []
-  );
 
   const handleOnDeploy = useCallback((item: CatalogItemType) => {
     setActiveId(item.id);

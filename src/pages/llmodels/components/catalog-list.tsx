@@ -1,5 +1,5 @@
 import breakpoints from '@/config/breakpoints';
-import { Col, Row, Spin } from 'antd';
+import { Col, FloatButton, Row, Spin } from 'antd';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
 import { CatalogItem as CatalogItemType } from '../config/types';
@@ -80,6 +80,7 @@ const CatalogList: React.FC<CatalogListProps> = (props) => {
           )}
         </div>
       </ResizeObserver>
+      <FloatButton.BackTop visibilityHeight={1000} />
     </div>
   );
 };

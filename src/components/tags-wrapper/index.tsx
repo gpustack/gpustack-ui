@@ -53,7 +53,7 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
       const nodeWidth = sizeList[i];
 
       if (totalWidth + moreButtonWidth.current >= wrapperWidth) {
-        end = i - 1;
+        end = i - 1 < 0 ? 0 : i - 1;
         break;
       }
       totalWidth += nodeWidth;

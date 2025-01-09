@@ -71,7 +71,7 @@ const advancedFieldsDefaultValus = {
   sampling_steps: 10,
   negative_prompt: null,
   preview: null,
-  schedule_method: 'default'
+  schedule_method: 'discrete'
 };
 
 const openaiCompatibleFieldsDefaultValus = {

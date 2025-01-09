@@ -15,8 +15,8 @@ export const imageSizeOptions: {
     height: 0
   },
   { label: '512x512', value: '512x512', width: 512, height: 512 },
-  { label: '768x1024', value: '768x1024', width: 768, height: 1024 },
-  { label: '1024x768', value: '1024x768', width: 1024, height: 768 },
+  { label: '768x1024(3:4)', value: '768x1024', width: 768, height: 1024 },
+  { label: '1024x768(4:3)', value: '1024x768', width: 1024, height: 768 },
   { label: '1024x1024', value: '1024x1024', width: 1024, height: 1024 }
 ];
 
@@ -278,7 +278,6 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     type: 'Select',
     name: 'schedule_method',
     options: [
-      { label: 'default', value: 'default' },
       { label: 'discrete', value: 'discrete' },
       { label: 'karras', value: 'karras' },
       { label: 'exponential', value: 'exponential' },

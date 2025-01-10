@@ -273,7 +273,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                               type="link"
                               size="small"
                               style={{ paddingLeft: 0 }}
-                              icon={<IconFont type="icon-logs" />}
                               onClick={() =>
                                 handleChildSelect('viewlog', item, list)
                               }

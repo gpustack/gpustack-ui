@@ -2,17 +2,20 @@ import { StatusMaps } from '@/config';
 
 export const WorkerStatusMap = {
   ready: 'ready',
-  not_ready: 'not_ready'
+  not_ready: 'not_ready',
+  unreachable: 'unreachable'
 };
 
 export const WorkerStatusMapValue = {
   [WorkerStatusMap.ready]: 'Ready',
-  [WorkerStatusMap.not_ready]: 'Not Ready'
+  [WorkerStatusMap.not_ready]: 'Not Ready',
+  [WorkerStatusMap.unreachable]: 'Unreachable'
 };
 
 export const status: any = {
   [WorkerStatusMap.ready]: StatusMaps.success,
-  [WorkerStatusMap.not_ready]: StatusMaps.error
+  [WorkerStatusMap.not_ready]: StatusMaps.error,
+  [WorkerStatusMap.unreachable]: StatusMaps.error
 };
 
 export const addWorkerGuide: Record<string, any> = {

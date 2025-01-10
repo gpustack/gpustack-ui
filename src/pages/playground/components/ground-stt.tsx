@@ -412,7 +412,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                       padding: '8px 14px',
                       lineHeight: '20px',
                       display: 'flex',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      wordBreak: 'break-word'
                     }}
                   >
                     {messageList.length ? (

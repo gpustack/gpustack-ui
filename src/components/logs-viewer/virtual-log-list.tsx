@@ -50,7 +50,8 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     pos: 'bottom',
     page: 1
   });
-  const dataLenRef = useRef(0);
+  const dataLengthRef = useRef(0);
+  const lineCountRef = useRef(0);
 
   useImperativeHandle(ref, () => ({
     abort() {
@@ -71,9 +72,9 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     );
 
     logParseWorker.current.onmessage = (event: any) => {
-      const res = event.data;
-      console.log('res===', res);
-      setLogs(res);
+      const { result, lines } = event.data;
+      lineCountRef.current = lines;
+      setLogs(result);
     };
 
     return () => {
@@ -100,7 +101,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     let result = '';
 
     const totalPage = Math.ceil(list.length / pageSize);
-    console.log('loading== getLastPage ========', isLoadingMoreRef.current);
 
     pageRef.current = totalPage;
     totalPageRef.current = totalPage;
@@ -122,7 +122,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const getCurrentPage = () => {
     const list = _.split(cacheDataRef.current.trim(), '\n');
     const totalPage = Math.ceil(list.length / pageSize);
-    console.log('loading== getCurrentPage ========', isLoadingMoreRef.current);
     let newPage = pageRef.current;
     if (newPage < 1) {
       newPage = 1;
@@ -208,7 +207,8 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       pos: 'bottom',
       page: newPage
     };
-    pageRef.current = newPage;
+    pageRef.current = totalPage;
+    totalPageRef.current = totalPage;
     logParseWorker.current.postMessage({
       inputStr: nextPage
     });
@@ -216,7 +216,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const updateContent = (inputStr: string) => {
     const data = inputStr.replace(replaceLineRegex, '\n');
-    dataLenRef.current = data.length;
     if (isClean(data)) {
       cacheDataRef.current = data;
     } else {
@@ -259,7 +258,8 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         isBottom,
         loadMoreDone: loadMoreDone.current,
         loading: loading,
-        loglen: dataLenRef.current
+        lineCount: lineCountRef.current,
+        dataLength: dataLengthRef.current
       });
       if (isBottom) {
         scrollPosRef.current = {
@@ -280,7 +280,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       if (
         loading ||
         (logs.length > 0 &&
-          dataLenRef.current < pageSize &&
+          lineCountRef.current < pageSize &&
           !loadMoreDone.current) ||
         !enableScorllLoad
       ) {

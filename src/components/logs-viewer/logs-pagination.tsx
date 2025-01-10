@@ -31,22 +31,24 @@ const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
 
   return (
     <div className="pagination">
-      <Tooltip
-        placement="left"
-        title={intl.formatMessage(
-          { id: 'models.logs.pagination.prev' },
-          { lines: pageSize }
-        )}
-      >
-        <Button
-          onClick={handleOnPrev}
-          type="text"
-          shape="circle"
-          style={{ color: 'rgba(255,255,255,.7)' }}
+      {page > 1 && (
+        <Tooltip
+          placement="left"
+          title={intl.formatMessage(
+            { id: 'models.logs.pagination.prev' },
+            { lines: pageSize }
+          )}
         >
-          <UpOutlined />
-        </Button>
-      </Tooltip>
+          <Button
+            onClick={handleOnPrev}
+            type="text"
+            shape="circle"
+            style={{ color: 'rgba(255,255,255,.7)' }}
+          >
+            <UpOutlined />
+          </Button>
+        </Tooltip>
+      )}
       <span className="pages">
         <span className="curr">{page}</span> /{' '}
         <span className="total">{total}</span>

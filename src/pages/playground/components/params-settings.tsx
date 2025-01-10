@@ -36,7 +36,7 @@ const METAKEYS: Record<string, any> = {
   top_p: 'top_p',
   n_ctx: 'n_ctx',
   n_slot: 'n_slot',
-  max_model_len: 'max_tokens'
+  max_model_len: 'max_model_len'
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = ({
@@ -114,18 +114,21 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
 
     if (obj.n_ctx && obj.n_slot) {
       defaultMaxTokens = _.divide(obj.n_ctx / 2, obj.n_slot);
+    } else if (obj.max_model_len) {
+      defaultMaxTokens = obj.max_model_len / 2;
     }
 
     form.setFieldsValue({
-      ..._.omit(obj, ['n_ctx', 'n_slot']),
+      ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
       max_tokens: defaultMaxTokens
     });
+
     setMetaData({
       ...obj,
-      max_tokens: _.divide(obj.n_ctx, obj.n_slot)
+      max_tokens: obj.max_model_len || _.divide(obj.n_ctx, obj.n_slot)
     });
     return {
-      ..._.omit(obj, ['n_ctx', 'n_slot']),
+      ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
       max_tokens: defaultMaxTokens
     };
   };

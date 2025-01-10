@@ -9,7 +9,7 @@ export const WorkerStatusMap = {
 export const WorkerStatusMapValue = {
   [WorkerStatusMap.ready]: 'Ready',
   [WorkerStatusMap.not_ready]: 'Not Ready',
-  [WorkerStatusMap.unreachable]: 'Unreachable'
+  [WorkerStatusMap.unreachable]: 'Not Ready'
 };
 
 export const status: any = {

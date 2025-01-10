@@ -27,6 +27,7 @@ import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
 import GPUCard from './gpu-card';
+import gpuOptions from './test';
 
 interface AdvanceConfigProps {
   isGGUF: boolean;
@@ -37,7 +38,8 @@ interface AdvanceConfigProps {
 }
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, gpuOptions, isGGUF, action, source } = props;
+  const { form, isGGUF, action, source } = props;
+  console.log('gpucardoptions', gpuOptions);
 
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
@@ -254,8 +256,8 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               tagRender={(props) => {
                 return (
                   <AutoTooltip
-                    className="m-r-0"
-                    closable={true}
+                    className="m-r-4"
+                    closable={props.closable}
                     onClose={props.onClose}
                     maxWidth={240}
                   >

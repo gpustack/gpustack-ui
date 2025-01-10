@@ -23,8 +23,7 @@ const parseAnsi = (input: string, setId: () => number) => {
   let cursorCol = 0;
   let screen = [['']];
   let lastIndex = 0;
-
-  // let input = inputStr.replace(replaceLineRegex, '\n');
+  let rawDataRows = 1;
 
   // handle the \r and \n characters in the text
   const handleText = (text: string) => {
@@ -33,6 +32,7 @@ const parseAnsi = (input: string, setId: () => number) => {
       if (char === '\r') {
         cursorCol = 0; // move to the beginning of the line
       } else if (char === '\n') {
+        rawDataRows++;
         cursorRow++; // move to the next line
         cursorCol = 0; // move to the beginning of the line
         screen[cursorRow] = screen[cursorRow] || ['']; // create a new line if it does not exist
@@ -138,20 +138,25 @@ const parseAnsi = (input: string, setId: () => number) => {
     uid: setId()
   });
 
-  return result;
+  return {
+    data: result,
+    lines: rawDataRows
+  };
 };
 
 self.onmessage = function (event) {
   const { inputStr } = event.data;
 
-  const parsedData = Array.from(parseAnsi(inputStr, setId));
+  const { data: parsedData, lines } = parseAnsi(inputStr, setId);
 
   const result = parsedData.map((item) => ({
     content: item.content,
     uid: item.uid
   }));
-  console.log('result===', result);
-  self.postMessage(result);
+  self.postMessage({
+    result,
+    lines
+  });
 };
 
 self.onerror = function (event) {

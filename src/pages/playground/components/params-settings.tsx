@@ -122,7 +122,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     });
     setMetaData({
       ...obj,
-      max_tokens: defaultMaxTokens
+      max_tokens: _.divide(obj.n_ctx, obj.n_slot)
     });
     return {
       ..._.omit(obj, ['n_ctx', 'n_slot']),
@@ -271,7 +271,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             variant="borderless"
           >
             <Slider
-              defaultValue={metaData.max_tokens || 2048}
+              defaultValue={2048}
               max={metaData.max_tokens || 16 * 1024}
               step={1}
               style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}

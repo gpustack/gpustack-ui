@@ -31,13 +31,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       return commandCode?.registerWorker({
         server: origin,
         tag: version,
-        token: '${mytoken}'
+        token: '${mytoken}',
+        workerip: '${myworkerip}'
       });
     }
     return commandCode?.registerWorker({
       server: origin,
       tag: `${version}-${activeKey}`,
-      token: '${mytoken}'
+      token: '${mytoken}',
+      workerip: '${myworkerip}'
     });
   }, [versionInfo, activeKey, props.token, origin]);
 

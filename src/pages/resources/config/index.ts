@@ -32,34 +32,59 @@ export const addWorkerGuide: Record<string, any> = {
   cuda: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
-    registerWorker(params: { server: string; tag: string; token: string }) {
-      return `docker run -d --gpus all --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack-worker --restart=unless-stopped --gpus all -p 10150:10150 -p 40000-41024:40000-41024 -p 50000-51024:50000-51024 --ipc=host -v gpustack-worker-data:/var/lib/gpustack gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   npu: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
-    registerWorker(params: { server: string; tag: string; token: string }) {
-      return `docker run -d --ipc=host -e ASCEND_VISIBLE_DEVICES=0 --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack-worker --restart=unless-stopped -e ASCEND_VISIBLE_DEVICES=0 -p 10150:10150 -p 40000-41024:40000-41024 -p 50000-51024:50000-51024 --ipc=host -v gpustack-worker-data:/var/lib/gpustack gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   musa: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
-    registerWorker(params: { server: string; tag: string; token: string }) {
-      return `docker run -d --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack-worker --restart=unless-stopped -p 10150:10150 -p 40000-41024:40000-41024 -p 50000-51024:50000-51024 --ipc=host -v gpustack-worker-data:/var/lib/gpustack gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   cpu: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
-    registerWorker(params: { server: string; tag: string; token: string }) {
-      return `docker run -d --ipc=host --network=host gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack-worker --restart=unless-stopped -p 10150:10150 -p 40000-41024:40000-41024 -p 50000-51024:50000-51024 --ipc=host -v gpustack-worker-data:/var/lib/gpustack gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   rocm: {
-    registerWorker(params: { server: string; tag: string; token: string }) {
-      return `docker run -d --network=host --ipc=host --group-add=video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device /dev/kfd --device /dev/dri gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token}`;
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack-worker --restart=unless-stopped -p 10150:10150 -p 40000-41024:40000-41024 -p 50000-51024:50000-51024 --ipc=host --group-add=video --security-opt seccomp=unconfined --device /dev/kfd --device /dev/dri -v gpustack-worker-data:/var/lib/gpustack gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   container: {

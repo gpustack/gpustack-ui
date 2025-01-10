@@ -1,4 +1,4 @@
-import { split } from 'lodash';
+import { split, throttle } from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef } from 'react';
 
@@ -23,17 +23,20 @@ const useSetChunkFetch = () => {
     decoder: TextDecoder,
     callback: (data: any) => void
   ) => {
-    const { done, value } = await reader.read();
-    if (done) {
-      return;
+    const throttledCallback = throttle((data: any) => {
+      callback(data);
+    }, 200);
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      const chunk = decoder.decode(value, { stream: true });
+      throttledCallback(chunk);
     }
-
-    const chunk = decoder.decode(value, { stream: true });
-    console.log('chunk===', chunk);
-    callback(chunk);
-    // console.log('chunkDataRef.current===2', chunkDataRef.current);
-
-    await readTextEventStreamData(reader, decoder, callback);
   };
 
   const readTextEventStreamDataByLine = async (

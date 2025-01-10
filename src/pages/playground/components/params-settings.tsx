@@ -34,7 +34,8 @@ const METAKEYS: Record<string, any> = {
   stop: 'stop',
   temperature: 'temperature',
   top_p: 'top_p',
-  n_slot_ctx: 'max_tokens',
+  n_ctx: 'n_ctx',
+  n_slot: 'n_slot',
   max_model_len: 'max_tokens'
 };
 
@@ -108,9 +109,25 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       }
       return acc;
     }, {});
-    form.setFieldsValue(obj);
-    setMetaData(obj);
-    return obj;
+
+    let defaultMaxTokens = 1024;
+
+    if (obj.n_ctx && obj.n_slot) {
+      defaultMaxTokens = _.divide(obj.n_ctx / 2, obj.n_slot);
+    }
+
+    form.setFieldsValue({
+      ..._.omit(obj, ['n_ctx', 'n_slot']),
+      max_tokens: defaultMaxTokens
+    });
+    setMetaData({
+      ...obj,
+      max_tokens: defaultMaxTokens
+    });
+    return {
+      ..._.omit(obj, ['n_ctx', 'n_slot']),
+      max_tokens: defaultMaxTokens
+    };
   };
 
   useEffect(() => {
@@ -120,18 +137,13 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
     }
     const modelMetaData = handleModelChange(model);
     const mergeData = _.merge({}, initialValues, modelMetaData);
-    const defaultMaxTokens = modelMetaData?.max_tokens
-      ? _.divide(modelMetaData?.max_tokens, 2)
-      : 1024;
 
     form.setFieldsValue({
       ...mergeData,
-      max_tokens: defaultMaxTokens,
       model: model
     });
     setParams({
       ...mergeData,
-      max_tokens: defaultMaxTokens,
       model: model
     });
     setFirstLoad(false);
@@ -259,7 +271,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             variant="borderless"
           >
             <Slider
-              defaultValue={2048}
+              defaultValue={metaData.max_tokens || 2048}
               max={metaData.max_tokens || 16 * 1024}
               step={1}
               style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}

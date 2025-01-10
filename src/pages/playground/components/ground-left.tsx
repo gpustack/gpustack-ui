@@ -228,6 +228,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageList(userMsg);
   };
 
+  const throttleUpdatePosition = _.throttle(updateScrollerPosition, 100);
+
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
@@ -242,6 +244,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (loading) {
+      console.log('loading:', loading);
       updateScrollerPosition();
     }
   }, [messageList, loading]);

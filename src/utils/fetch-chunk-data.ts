@@ -1,4 +1,6 @@
+import { throttle } from 'lodash';
 import qs from 'query-string';
+
 const extractStreamRegx = /data:\s*({.*?})(?=\n|$)/g;
 
 const extractJSON = (dataStr: string) => {
@@ -119,28 +121,66 @@ export const fetchChunkedDataPostFormData = async (params: {
 };
 
 export const readStreamData = async (
-  reader: any,
+  reader: ReadableStreamDefaultReader<Uint8Array>,
   decoder: TextDecoder,
-  callback: (data: any) => void
+  callback: (data: any[]) => void,
+  throttleDelay = 200
 ) => {
-  const { done, value } = await reader.read();
-  if (done) {
-    return;
+  class BufferManager {
+    private buffer: any[] = [];
+
+    public add(data: any) {
+      this.buffer.push(data);
+    }
+
+    public flush() {
+      if (this.buffer.length > 0) {
+        const currentBuffer = [...this.buffer];
+        this.buffer = [];
+        currentBuffer.forEach((item) => callback(item));
+      }
+    }
+
+    public getBuffer() {
+      return this.buffer;
+    }
   }
 
-  let chunk = decoder.decode(value, { stream: true });
+  const bufferManager = new BufferManager();
 
-  if (chunk.startsWith('error:')) {
-    const errorStr = chunk.slice(7).trim();
-    const jsonData = JSON.parse(errorStr);
-    callback({ error: jsonData });
-  } else {
-    extractJSON(chunk).forEach((data) => {
-      callback?.(data);
-    });
+  const throttledCallback = throttle(() => {
+    bufferManager.flush();
+  }, throttleDelay);
+
+  let isReading = true;
+
+  while (isReading) {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      isReading = false;
+      bufferManager.flush();
+      break;
+    }
+
+    try {
+      const chunk = decoder.decode(value, { stream: true });
+
+      if (chunk.startsWith('error:')) {
+        const errorStr = chunk.slice(7).trim();
+        const jsonData = JSON.parse(errorStr);
+        bufferManager.add({ error: jsonData });
+      } else {
+        extractJSON(chunk).forEach((data) => {
+          bufferManager.add(data);
+        });
+      }
+
+      throttledCallback();
+    } catch (error) {
+      bufferManager.add({ error });
+    }
   }
-
-  await readStreamData(reader, decoder, callback);
 };
 
 // Process the remainder of the buffer

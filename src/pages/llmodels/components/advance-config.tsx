@@ -27,7 +27,6 @@ import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
 import GPUCard from './gpu-card';
-import gpuOptions from './test';
 
 interface AdvanceConfigProps {
   isGGUF: boolean;
@@ -38,8 +37,7 @@ interface AdvanceConfigProps {
 }
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, isGGUF, action, source } = props;
-  console.log('gpucardoptions', gpuOptions);
+  const { form, isGGUF, action, gpuOptions, source } = props;
 
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);

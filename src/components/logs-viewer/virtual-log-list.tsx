@@ -50,7 +50,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     pos: 'bottom',
     page: 1
   });
-  const dataLengthRef = useRef(0);
   const lineCountRef = useRef(0);
 
   useImperativeHandle(ref, () => ({
@@ -251,7 +250,12 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       );
       setLogs(result);
       setTotalPage(totalPageRef.current);
-      setPage(pageRef.current);
+      if (isLoadingMoreRef.current) {
+        setPage(totalPageRef.current);
+        pageRef.current = totalPageRef.current;
+      } else {
+        setPage(pageRef.current);
+      }
       setCurrentData(currentLogs);
       debounceLoading();
     };

@@ -1,0 +1,50 @@
+.logs-viewer-wrap-w2 {
+  .wrap {
+    padding: 5px 0 5px 10px;
+    background-color: var(--color-logs-bg);
+    border-radius: var(--border-radius-mini);
+    overflow: hidden;
+
+    .content {
+      word-wrap: break-word;
+      height: 100%;
+
+      &.line-break {
+        word-wrap: break-word;
+      }
+
+      .text {
+        height: 100%;
+      }
+
+      color: var(--color-logs-text);
+      font-size: var(--font-size-small);
+      line-height: 22px;
+      white-space: pre-wrap;
+      background-color: var(--color-logs-bg);
+    }
+  }
+
+  .xterm {
+    // height: 100% !important;
+
+    .xterm-viewport {
+      overflow-y: auto !important;
+
+      &::-webkit-scrollbar {
+        width: var(--scrollbar-size);
+        height: var(--scrollbar-size);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background-color: var(--color-scrollbar-track);
+        border-radius: 4px;
+      }
+    }
+  }
+}

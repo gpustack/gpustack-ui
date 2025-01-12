@@ -85,17 +85,19 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       width={modalSize.width}
       footer={null}
     >
-      <LogsViewer
-        ref={logsViewerRef}
-        height={modalSize.height}
-        diffHeight={93}
-        url={url}
-        tail={tail}
-        enableScorllLoad={enableScorllLoad}
-        params={{
-          follow: true
-        }}
-      ></LogsViewer>
+      <div className="viewer-wrapper">
+        <LogsViewer
+          ref={logsViewerRef}
+          height={modalSize.height}
+          diffHeight={93}
+          url={url}
+          tail={tail}
+          enableScorllLoad={enableScorllLoad}
+          params={{
+            follow: true
+          }}
+        ></LogsViewer>
+      </div>
     </Modal>
   );
 };

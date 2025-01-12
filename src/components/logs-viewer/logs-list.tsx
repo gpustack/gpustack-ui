@@ -16,10 +16,11 @@ interface LogsListProps {
   height?: number;
   onScroll?: (data: { isTop: boolean; isBottom: boolean }) => void;
   diffHeight?: number;
+  showNum?: boolean;
   ref?: any;
 }
 const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
-  const { dataList, height, onScroll, diffHeight = 96 } = props;
+  const { dataList, height, showNum, onScroll, diffHeight = 96 } = props;
   const {
     initialize,
     updateScrollerPosition,
@@ -83,7 +84,6 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
           isBottom: false
         });
       }
-      // debounceResetStopScroll();
     },
     [debounceResetStopScroll, scrollEventElement]
   );
@@ -136,7 +136,7 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
       <div className={classNames('content')}>
         {_.map(dataList, (item: any, index: number) => {
           return (
-            <div key={item.uid} className="text">
+            <div key={item.uid} className={classNames('text')}>
               {item.content}
             </div>
           );

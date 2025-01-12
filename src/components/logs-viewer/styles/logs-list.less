@@ -15,6 +15,22 @@
 
     .text {
       min-height: 22px;
+
+      &.numable {
+        position: relative;
+        padding-left: 45px;
+
+        .line-num {
+          display: flex;
+          align-items: center;
+          width: 40px;
+          justify-content: center;
+          position: absolute;
+          left: 0;
+          top: 0;
+          background-color: rgba(71, 71, 71, 50%);
+        }
+      }
     }
 
     color: var(--color-logs-text);

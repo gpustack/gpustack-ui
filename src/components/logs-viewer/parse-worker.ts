@@ -31,9 +31,15 @@ class AnsiParser {
   }
 
   private handleText(text: string) {
-    for (const char of text) {
+    for (let i = 0; i < text.length; i++) {
+      let char = text[i];
       if (char === '\r') {
-        this.cursorCol = 0; // move to the beginning of the line
+        let nextChar = text[i + 1];
+        if (nextChar === '\n') {
+          continue; // windows new line: \r\n
+        } else {
+          this.cursorCol = 0; // move to the beginning of the line
+        }
       } else if (char === '\n') {
         this.rawDataRows++;
         this.cursorRow++;

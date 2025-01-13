@@ -11,7 +11,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { replaceLineRegex } from './config';
 import LogsList from './logs-list';
 import LogsPagination from './logs-pagination';
 import './styles/index.less';
@@ -33,7 +32,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     useLogsPagination();
   const { setChunkFetch } = useSetChunkFetch();
   const chunkRequedtRef = useRef<any>(null);
-  const cacheDataRef = useRef<any>('');
   const [logs, setLogs] = useState<any[]>([]);
   const logParseWorker = useRef<any>(null);
   const tail = useRef<any>(pageSize - 1);
@@ -62,7 +60,10 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const debounceLoading = _.debounce(() => {
     setLoading(false);
     isLoadingMoreRef.current = false;
-  }, 200);
+    if (logListRef.current?.scroller) {
+      logListRef.current.scroller.style['pointer-events'] = 'auto';
+    }
+  }, 1000);
 
   const getCurrent = useCallback(() => {
     if (pageRef.current < 1) {
@@ -111,11 +112,12 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     };
   }, [getCurrent]);
 
-  const updateContent = (inputStr: string) => {
-    const data = inputStr.replace(replaceLineRegex, '\n');
-    cacheDataRef.current = data;
+  const updateContent = (data: string) => {
     if (isLoadingMoreRef.current) {
       setLoading(true);
+      if (logListRef.current?.scroller) {
+        logListRef.current.scroller.style['pointer-events'] = 'none';
+      }
     }
     logParseWorker.current.postMessage({
       inputStr: data
@@ -238,24 +240,34 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       if (pageRef.current < 1) {
         pageRef.current = 1;
       }
+
+      const oldTotalPage = totalPageRef.current;
+
+      totalPageRef.current = Math.ceil(result.length / pageSize);
+
+      if (isLoadingMoreRef.current) {
+        pageRef.current = totalPageRef.current;
+      }
+
+      if (
+        pageRef.current === oldTotalPage &&
+        scrollPosRef.current.pos === 'bottom'
+      ) {
+        scrollPosRef.current = {
+          pos: 'bottom',
+          page: pageRef.current
+        };
+        pageRef.current = totalPageRef.current;
+        setScrollPos(['bottom', pageRef.current]);
+      }
+
       const start = (pageRef.current - 1) * pageSize;
       const end = pageRef.current * pageSize;
       const currentLogs = result.slice(start, end);
-      totalPageRef.current = Math.ceil(result.length / pageSize);
 
-      console.log(
-        'lineCountRef.current+++++++++++',
-        lineCountRef.current,
-        result.length
-      );
       setLogs(result);
       setTotalPage(totalPageRef.current);
-      if (isLoadingMoreRef.current) {
-        setPage(totalPageRef.current);
-        pageRef.current = totalPageRef.current;
-      } else {
-        setPage(pageRef.current);
-      }
+      setPage(pageRef.current);
       setCurrentData(currentLogs);
       debounceLoading();
     };

@@ -146,23 +146,6 @@ export const ImageParamsConfig: ParamsSchema[] = [
 ];
 
 export const ImageEidtParamsConfig: ParamsSchema[] = [
-  // {
-  //   type: 'Slider',
-  //   name: 'brush_size',
-  //   label: {
-  //     text: 'Brush Size',
-  //     isLocalized: false
-  //   },
-  //   attrs: {
-  //     min: 25,
-  //     max: 80
-  //   },
-  //   rules: [
-  //     {
-  //       required: false
-  //     }
-  //   ]
-  // },
   {
     type: 'InputNumber',
     name: 'n',
@@ -339,29 +322,6 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   },
   {
     type: 'InputNumber',
-    name: 'strength',
-    label: {
-      text: 'Strength',
-      isLocalized: false
-    },
-    description: {
-      text: 'playground.image.strength.tip',
-      html: false,
-      isLocalized: true
-    },
-    attrs: {
-      min: 0,
-      max: 1,
-      step: 0.1
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
-    type: 'InputNumber',
     name: 'cfg_scale',
     label: {
       text: 'CFG Scale',
@@ -375,6 +335,29 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     attrs: {
       min: 1.0,
       max: 10,
+      step: 0.1
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'strength',
+    label: {
+      text: 'Strength',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.image.strength.tip',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      min: 0,
+      max: 1,
       step: 0.1
     },
     rules: [

@@ -578,15 +578,15 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         form.current?.form?.setFieldsValue({
           ..._.pick(model?.meta, METAKEYS, {}),
           size: defaultSize,
-          width: model?.meta?.default_width || 512,
-          height: model?.meta?.default_height || 512
+          width: w,
+          height: h
         });
       }
       updateCacheFormData({
         ..._.pick(model?.meta, METAKEYS, {}),
         size: defaultSize,
-        width: model?.meta?.default_width || 512,
-        height: model?.meta?.default_height || 512
+        width: w,
+        height: h
       });
     },
     [modelList, isOpenaiCompatible]

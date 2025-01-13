@@ -60,11 +60,11 @@ export default {
   'models.form.backend': 'Backend',
   'models.form.backend_parameters': 'Backend Parameters',
   'models.search.gguf.tips':
-    '1. GGUF models use llama-box(supports Linux, macOS and Windows).',
+    'GGUF models use llama-box(supports Linux, macOS and Windows).',
   'models.search.vllm.tips':
-    '2. Non-GGUF models use vox-box for audio and vLLM(x86 Linux only) for others.',
+    'Non-GGUF models use vox-box for audio and vLLM(x86 Linux only) for others.',
   'models.search.voxbox.tips':
-    '3. To deploy an audio model, uncheck the GGUF checkbox.',
+    'To deploy an audio model, uncheck the GGUF checkbox.',
   'models.form.ollamalink': 'Find More in Ollama Library',
   'models.form.backend_parameters.llamabox.placeholder':
     'e.g., --ctx-size=8192',
@@ -83,13 +83,22 @@ export default {
     'Pin a specific version to keep the backend stable across GPUStack upgrades.',
   'models.form.gpuselector': 'GPU Selector',
   'models.form.backend.llamabox':
-    'llama-box: For GGUF format models, supports Linux, macOS, and Windows.',
+    'For GGUF format models, supports Linux, macOS, and Windows.',
   'models.form.backend.vllm':
-    'vLLM: For non-GGUF format models, supports x86 Linux only.',
-  'models.form.backend.voxbox': 'vox-box: For non-GGUF format audio models.',
+    'For non-GGUF format models, supports x86 Linux only.',
+  'models.form.backend.voxbox': 'For non-GGUF format audio models.',
   'models.form.search.gguftips':
     'If using macOS or Windows as a worker, check GGUF (uncheck for audio models).',
   'models.form.button.addlabel': 'Add Label',
   'models.filter.category': 'Filter by category',
-  'models.list.more.logs': 'View More'
+  'models.list.more.logs': 'View More',
+  'models.catalog.release.date': 'Release Date',
+  'models.localpath.gguf.tips.title': 'GGUF format model',
+  'models.localpat.safe.tips.title': 'Safetensors format model',
+  'models.localpath.shared.tips.title': 'Sharded model',
+  'models.localpath.gguf.tips':
+    ' Specify the model file, e.g., /usr/local/models/model.gguf.',
+  'models.localpath.safe.tips':
+    'Specify the model directory, e.g., /usr/local/models/.',
+  'models.localpath.chunks.tips': `Specify one of the model's shard files, e.g., /usr/local/models/model-00001-of-00004.(gguf|safetensors).`
 };

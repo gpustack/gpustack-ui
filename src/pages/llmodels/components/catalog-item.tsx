@@ -2,6 +2,7 @@ import fallbackImg from '@/assets/images/img.png';
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import TagWrapper from '@/components/tags-wrapper';
+import { useIntl } from '@umijs/max';
 import { Tag, Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -17,6 +18,7 @@ interface CatalogItemProps {
   onClick: (data: CatalogItemType) => void;
 }
 const CatalogItem: React.FC<CatalogItemProps> = (props) => {
+  const intl = useIntl();
   const { onClick, activeId, data } = props;
 
   const handleOnClick = useCallback(() => {
@@ -92,7 +94,10 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
       </div>
       <div className="item-footer">
         <div className="update-time">
-          <span className="flex-center">
+          <span
+            className="flex-center"
+            title={intl.formatMessage({ id: 'models.catalog.release.date' })}
+          >
             <IconFont
               type="icon-new_release_outlined"
               className="m-r-5"

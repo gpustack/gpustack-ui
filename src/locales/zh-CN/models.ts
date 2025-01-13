@@ -59,10 +59,10 @@ export default {
   'models.form.backend': '后端',
   'models.form.backend_parameters': '后端参数',
   'models.search.gguf.tips':
-    '1. GGUF 模型用 llama-box(支持 Linux, macOS 和 Windows)。',
+    'GGUF 模型用 llama-box(支持 Linux, macOS 和 Windows)。',
   'models.search.vllm.tips':
-    '2. 非 GGUF 的音频模型用 vox-box，其它非 GGUF 的模型用 vLLM(仅支持 x86 Linux)。',
-  'models.search.voxbox.tips': '3. 若需部署音频模型取消勾选 GGUF 复选框。',
+    ' 非 GGUF 的音频模型用 vox-box，其它非 GGUF 的模型用 vLLM(仅支持 x86 Linux)。',
+  'models.search.voxbox.tips': '若需部署音频模型取消勾选 GGUF 复选框。',
   'models.form.ollamalink': '在 Ollama Library 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
     '例如，--ctx-size=8192',
@@ -80,12 +80,21 @@ export default {
     '固定指定版本以保持后端在 GPUStack 升级过程中的稳定性',
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
-    'llama-box: 用于 GGUF 格式模型，支持 Linux, macOS 和 Windows',
-  'models.form.backend.vllm': 'vLLM: 用于非 GGUF 格式模型，仅支持 x86 Linux',
-  'models.form.backend.voxbox': 'vox-box: 用于非 GGUF 格式的音频模型',
+    '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows',
+  'models.form.backend.vllm': '用于非 GGUF 格式模型，仅支持 x86 Linux',
+  'models.form.backend.voxbox': '用于非 GGUF 格式的音频模型',
   'models.form.search.gguftips':
     '当 macOS 或 Windows 作 worker 时勾选 GGUF（搜索音频模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',
   'models.filter.category': '按类别筛选',
-  'models.list.more.logs': '查看更多'
+  'models.list.more.logs': '查看更多',
+  'models.catalog.release.date': '发布日期',
+  'models.localpath.gguf.tips.title': 'GGUF 格式模型',
+  'models.localpat.safe.tips.title': 'safetensors 格式模型',
+  'models.localpath.shared.tips.title': '分片的模型',
+  'models.localpath.gguf.tips':
+    '指向模型文件，例如 /usr/local/models/model.gguf',
+  'models.localpath.safe.tips': '指向模型目录，例如 /usr/local/models/',
+  'models.localpath.chunks.tips':
+    '指向模型其中一个分片文件，例如 /usr/local/models/model-00001-of-00004.(gguf|safetensors)'
 };

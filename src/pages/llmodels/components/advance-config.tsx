@@ -3,6 +3,7 @@ import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import TooltipList from '@/components/tooltip-list';
 import { PageActionType } from '@/config/types';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -104,31 +105,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     return null;
   }, [backend]);
 
-  const renderSelectTips = (list: Array<{ title: string; tips: string }>) => {
-    return (
-      <div>
-        {list.map((item, index) => {
-          return (
-            <div className="m-b-8" key={index}>
-              <Typography.Title
-                level={5}
-                style={{
-                  color: 'var(--color-white-1)',
-                  marginRight: 10
-                }}
-              >
-                {item.title}:
-              </Typography.Title>
-              <Typography.Text style={{ color: 'var(--color-white-1)' }}>
-                {item.tips}
-              </Typography.Text>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
   const handleWorkerLabelsChange = useCallback(
     (labels: Record<string, any>) => {
       form.setFieldValue('worker_selector', labels);
@@ -155,7 +131,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         <Form.Item name="scheduleType">
           <SealSelect
             label={intl.formatMessage({ id: 'models.form.scheduletype' })}
-            description={renderSelectTips(scheduleTypeTips)}
+            description={<TooltipList list={scheduleTypeTips}></TooltipList>}
             options={[
               {
                 label: intl.formatMessage({
@@ -180,7 +156,9 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                   id: 'resources.form.placementStrategy'
                 })}
                 options={placementStrategyOptions}
-                description={renderSelectTips(placementStrategyTips)}
+                description={
+                  <TooltipList list={placementStrategyTips}></TooltipList>
+                }
               ></SealSelect>
             </Form.Item>
             <Form.Item<FormData>

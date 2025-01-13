@@ -19,7 +19,7 @@ export const imageSizeOptions: {
   { label: '768x1024(3:4)', value: '768x1024', width: 768, height: 1024 },
   { label: '1024x768(4:3)', value: '1024x768', width: 1024, height: 768 },
   { label: '1024x576(16:9)', value: '1024x576', width: 1024, height: 576 },
-  { label: '576x1024(9:16)', value: '576xx1024', width: 576, height: 1024 },
+  { label: '576x1024(9:16)', value: '576x1024', width: 576, height: 1024 },
   { label: '1024x1024(1:1)', value: '1024x1024', width: 1024, height: 1024 }
 ];
 

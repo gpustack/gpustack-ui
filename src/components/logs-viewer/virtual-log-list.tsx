@@ -215,7 +215,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   );
 
   const debouncedScroll = useCallback(
-    _.debounce(() => {
+    _.throttle(() => {
       if (scrollPos[0] === 'top' && scrollPosRef.current.pos === 'top') {
         logListRef.current?.scrollToTop();
       }

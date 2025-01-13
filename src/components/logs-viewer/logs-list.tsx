@@ -65,8 +65,8 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
       const clientHeight = scrollEventElement?.clientHeight;
 
       stopScroll.current = scrollTop + clientHeight <= scrollHeight;
-      // is scroll to bottom
-      const isBottom = scrollTop + clientHeight === scrollHeight;
+
+      const isBottom = scrollTop + clientHeight + 150 >= scrollHeight;
       // is scroll to top
       if (scrollTop === 0) {
         onScroll?.({

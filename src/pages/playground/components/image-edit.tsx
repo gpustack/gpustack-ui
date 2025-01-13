@@ -600,8 +600,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       if (!isOpenaiCompatible) {
         setParams((pre: object) => {
-          const w = model?.meta?.default_width || 512;
-          const h = model?.meta?.default_height || 512;
           const obj = _.merge({}, pre, _.pick(model?.meta, METAKEYS, {}));
 
           return { ...obj, size: defaultSize, width: w, height: h };
@@ -609,15 +607,15 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         form.current?.form?.setFieldsValue({
           ..._.pick(model?.meta, METAKEYS, {}),
           size: defaultSize,
-          width: model?.meta?.default_width || 512,
-          height: model?.meta?.default_height || 512
+          width: w,
+          height: h
         });
       }
       updateCacheFormData({
         ..._.pick(model?.meta, METAKEYS, {}),
         size: defaultSize,
-        width: model?.meta?.default_width || 512,
-        height: model?.meta?.default_height || 512
+        width: w,
+        height: h
       });
     },
     [modelList, isOpenaiCompatible]

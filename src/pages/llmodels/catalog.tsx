@@ -15,7 +15,6 @@ import { CatalogItem as CatalogItemType, FormData } from './config/types';
 const Catalog: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
-  const [span, setSpan] = React.useState(8);
   const [activeId, setActiveId] = React.useState(-1);
   const [isFirst, setIsFirst] = React.useState(true);
   const [dataSource, setDataSource] = useState<{

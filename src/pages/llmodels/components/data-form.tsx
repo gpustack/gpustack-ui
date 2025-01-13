@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
@@ -82,6 +83,36 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   });
 
   const localPathCache = useRef<string>('');
+
+  const backendTipsList = [
+    {
+      title: 'llama-box',
+      tips: intl.formatMessage({ id: 'models.form.backend.llamabox' })
+    },
+    {
+      title: 'vLLM',
+      tips: intl.formatMessage({ id: 'models.form.backend.vllm' })
+    },
+    {
+      title: 'vox-box',
+      tips: intl.formatMessage({ id: 'models.form.backend.voxbox' })
+    }
+  ];
+
+  const localPathTipsList = [
+    {
+      title: intl.formatMessage({ id: 'models.localpath.gguf.tips.title' }),
+      tips: intl.formatMessage({ id: 'models.localpath.gguf.tips' })
+    },
+    {
+      title: intl.formatMessage({ id: 'models.localpat.safe.tips.title' }),
+      tips: intl.formatMessage({ id: 'models.localpath.safe.tips' })
+    },
+    {
+      title: intl.formatMessage({ id: 'models.localpath.shared.tips.title' }),
+      tips: intl.formatMessage({ id: 'models.localpath.chunks.tips' })
+    }
+  ];
 
   const getGPUList = async () => {
     const data = await queryGPUList();
@@ -325,10 +356,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           ]}
         >
           <SealInput.Input
+            required
             onBlur={handleLocalPathBlur}
             onFocus={handleOnFocus}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
-            required
+            description={<TooltipList list={localPathTipsList}></TooltipList>}
           ></SealInput.Input>
         </Form.Item>
       </>
@@ -545,19 +577,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           required
           onChange={handleBackendChange}
           label={intl.formatMessage({ id: 'models.form.backend' })}
-          description={
-            <div>
-              <div>
-                1. {intl.formatMessage({ id: 'models.form.backend.llamabox' })}
-              </div>
-              <div>
-                2. {intl.formatMessage({ id: 'models.form.backend.vllm' })}
-              </div>
-              <div>
-                3. {intl.formatMessage({ id: 'models.form.backend.voxbox' })}
-              </div>
-            </div>
-          }
+          description={<TooltipList list={backendTipsList}></TooltipList>}
           options={
             backendOptions ?? [
               {

@@ -155,10 +155,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   };
 
-  const paramsConfig = useMemo(() => {
-    const { max_height, max_width } = modelMeta;
+  const getNewImageSizeOptions = useCallback((metaData: any) => {
+    const { max_height, max_width } = metaData || {};
     if (!max_height || !max_width) {
-      return ImageParamsConfig;
+      return imageSizeOptions;
     }
     const newImageSizeOptions = imageSizeOptions.filter((item) => {
       return item.width <= max_width && item.height <= max_height;
@@ -175,6 +175,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         value: `${max_width}x${max_height}`
       });
     }
+    return newImageSizeOptions;
+  }, []);
+
+  const paramsConfig = useMemo(() => {
+    const newImageSizeOptions = getNewImageSizeOptions(modelMeta);
     let result = ImageParamsConfig.map((item) => {
       if (item.name === 'size') {
         return {
@@ -188,7 +193,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       result = result.filter((item) => item.name !== 'size');
     }
     return result;
-  }, [modelMeta]);
+  }, [modelMeta, getNewImageSizeOptions]);
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {
@@ -680,6 +685,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [image, loading, imageStatus, handleOnSave, handleUpdateImageList]);
 
   const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
+    console.log('item:', item);
+    if (item.progress < 100) {
+      return;
+    }
     setImage(item.dataUrl);
     setImageStatus({
       isOriginal: isOrigin,

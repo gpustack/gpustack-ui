@@ -155,8 +155,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   };
 
-  const getNewImageSizeOptions = useCallback((metaData: any) => {
-    const { max_height, max_width } = metaData || {};
+  const paramsConfig = useMemo(() => {
+    const { max_height, max_width } = modelMeta;
     if (!max_height || !max_width) {
       return ImageParamsConfig;
     }
@@ -175,11 +175,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         value: `${max_width}x${max_height}`
       });
     }
-    return newImageSizeOptions;
-  }, []);
-
-  const paramsConfig = useMemo(() => {
-    const newImageSizeOptions = getNewImageSizeOptions(modelMeta);
     let result = ImageParamsConfig.map((item) => {
       if (item.name === 'size') {
         return {
@@ -193,7 +188,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       result = result.filter((item) => item.name !== 'size');
     }
     return result;
-  }, [modelMeta, getNewImageSizeOptions]);
+  }, [modelMeta]);
 
   const setImageSize = useCallback(() => {
     let size: Record<string, string | number> = {

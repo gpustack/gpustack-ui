@@ -54,7 +54,8 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     scrollToBottom,
-    scrollToTop
+    scrollToTop,
+    scroller: scroller.current
   }));
 
   const handleOnWheel = useCallback(

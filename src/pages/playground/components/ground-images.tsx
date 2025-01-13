@@ -135,13 +135,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
-  const paramsConfig = useMemo(() => {
-    const { max_height, max_width } = modelMeta || {};
-    if (
-      !max_height ||
-      !max_width ||
-      (max_height === 1024 && max_width === 1024)
-    ) {
+  const getNewImageSizeOptions = useCallback((metaData: any) => {
+    const { max_height, max_width } = metaData || {};
+    if (!max_height || !max_width) {
       return ImageParamsConfig;
     }
     const newImageSizeOptions = imageSizeOptions.filter((item) => {
@@ -159,7 +155,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         value: `${max_width}x${max_height}`
       });
     }
-    return ImageParamsConfig.map((item) => {
+    return newImageSizeOptions;
+  }, []);
+
+  const paramsConfig = useMemo(() => {
+    const newImageSizeOptions = getNewImageSizeOptions(modelMeta);
+    let result = ImageParamsConfig.map((item) => {
       if (item.name === 'size') {
         return {
           ...item,
@@ -168,7 +169,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       }
       return item;
     });
-  }, [modelMeta]);
+    if (!newImageSizeOptions.length) {
+      result = result.filter((item) => item.name !== 'size');
+    }
+    return result;
+  }, [modelMeta, getNewImageSizeOptions]);
 
   const generateNumber = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -522,13 +527,19 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                   ? intl.formatMessage({ id: item.description.text })
                   : item.description?.text
               }
-              {...item.attrs}
               {..._.omit(item, [
                 'name',
                 'description',
                 'rules',
-                'disabledConfig'
+                'disabledConfig',
+                'attrs'
               ])}
+              {...item.attrs}
+              defaultValue={
+                item.name === 'height'
+                  ? modelMeta.default_height
+                  : modelMeta.default_width
+              }
               max={
                 item.name === 'height'
                   ? modelMeta.max_height || item.attrs?.max
@@ -549,17 +560,33 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       const model = modelList.find((item) => item.value === val);
 
       setModelMeta(model?.meta || {});
-
+      const imageSizeOptions = getNewImageSizeOptions(model?.meta);
+      const w = model?.meta?.default_width || 512;
+      const h = model?.meta?.default_height || 512;
+      const defaultSize = imageSizeOptions.length ? `${w}x${h}` : 'custom';
       if (!isOpenaiCompatible) {
         setParams((pre: object) => {
-          return _.merge({}, pre, _.pick(model?.meta, METAKEYS, {}));
+          const obj = _.merge({}, pre, _.pick(model?.meta, METAKEYS, {}));
+
+          return {
+            ...obj,
+            size: defaultSize,
+            width: w,
+            height: h
+          };
         });
         form.current?.form?.setFieldsValue({
-          ..._.pick(model?.meta, METAKEYS, {})
+          ..._.pick(model?.meta, METAKEYS, {}),
+          size: defaultSize,
+          width: model?.meta?.default_width || 512,
+          height: model?.meta?.default_height || 512
         });
       }
       updateCacheFormData({
-        ..._.pick(model?.meta, METAKEYS, {})
+        ..._.pick(model?.meta, METAKEYS, {}),
+        size: defaultSize,
+        width: model?.meta?.default_width || 512,
+        height: model?.meta?.default_height || 512
       });
     },
     [modelList, isOpenaiCompatible]
@@ -574,14 +601,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   useEffect(() => {
     if (size === 'custom') {
       form.current?.form?.setFieldsValue({
-        width: 512,
-        height: 512
+        width: cacheFormData.current.width || 512,
+        height: cacheFormData.current.height || 512
       });
       setParams((pre: object) => {
         return {
           ...pre,
-          width: 512,
-          height: 512
+          width: cacheFormData.current.width || 512,
+          height: cacheFormData.current.height || 512
         };
       });
     }

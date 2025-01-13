@@ -262,9 +262,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
       if (isLoadingMoreRef.current) {
         pageRef.current = totalPageRef.current;
-      }
-
-      if (
+      } else if (
         pageRef.current === oldTotalPage &&
         scrollPosRef.current.pos === 'bottom'
       ) {
@@ -279,7 +277,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       const start = (pageRef.current - 1) * pageSize;
       const end = pageRef.current * pageSize;
       const currentLogs = result.slice(start, end);
-      console.log('result+++++++', result);
+
       setLogs(result);
       setTotalPage(totalPageRef.current);
       setPage(pageRef.current);

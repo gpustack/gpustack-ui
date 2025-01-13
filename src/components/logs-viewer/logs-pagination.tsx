@@ -15,10 +15,11 @@ interface LogsPaginationProps {
   onPrev?: () => void;
   onNext?: () => void;
   onBackend?: () => void;
+  onToFirst?: () => void;
 }
 
 const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
-  const { page, total, pageSize, onNext, onPrev, onBackend } = props;
+  const { page, total, pageSize, onNext, onPrev, onBackend, onToFirst } = props;
   const intl = useIntl();
 
   const handleOnPrev = () => {
@@ -32,22 +33,37 @@ const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
   return (
     <div className="pagination">
       {page > 1 && (
-        <Tooltip
-          placement="left"
-          title={intl.formatMessage(
-            { id: 'models.logs.pagination.prev' },
-            { lines: pageSize }
-          )}
-        >
-          <Button
-            onClick={handleOnPrev}
-            type="text"
-            shape="circle"
-            style={{ color: 'rgba(255,255,255,.7)' }}
+        <>
+          <Tooltip
+            title={intl.formatMessage({ id: 'models.logs.pagination.first' })}
+            placement="left"
           >
-            <UpOutlined />
-          </Button>
-        </Tooltip>
+            <Button
+              onClick={onToFirst}
+              type="text"
+              shape="circle"
+              style={{ color: 'rgba(255,255,255,.7)', marginBottom: 10 }}
+            >
+              <VerticalLeftOutlined rotate={-90} />
+            </Button>
+          </Tooltip>
+          <Tooltip
+            placement="left"
+            title={intl.formatMessage(
+              { id: 'models.logs.pagination.prev' },
+              { lines: pageSize }
+            )}
+          >
+            <Button
+              onClick={handleOnPrev}
+              type="text"
+              shape="circle"
+              style={{ color: 'rgba(255,255,255,.7)' }}
+            >
+              <UpOutlined />
+            </Button>
+          </Tooltip>
+        </>
       )}
       <span className="pages">
         <span className="curr">{page}</span> /{' '}

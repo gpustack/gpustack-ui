@@ -22,7 +22,7 @@ class AnsiParser {
     this.cursorCol = 0;
     this.screen = [['']];
     this.rawDataRows = 0;
-    this.uid = 0;
+    this.uid = this.uid + 1;
   }
 
   private setId() {
@@ -129,14 +129,16 @@ class AnsiParser {
     this.isProcessing = true;
 
     while (this.taskQueue.length > 0) {
-      const input = this.taskQueue.join('');
-      this.taskQueue = [];
-      const result = this.processInput(input);
+      const input = this.taskQueue.shift();
 
-      self.postMessage({
-        result: result.data,
-        lines: result.lines
-      });
+      if (input) {
+        try {
+          const result = this.processInput(input);
+          self.postMessage({ result: result.data, lines: result.lines });
+        } catch (error) {
+          console.error('Error processing input:', error);
+        }
+      }
 
       await new Promise((resolve) => {
         setTimeout(resolve, 0);
@@ -144,18 +146,25 @@ class AnsiParser {
     }
 
     this.isProcessing = false;
+    if (this.taskQueue.length > 0) {
+      this.processQueue();
+    }
   }
 
   public enqueueData(input: string): void {
     this.taskQueue.push(input);
-    this.processQueue();
+    if (!this.isProcessing) {
+      this.processQueue();
+    }
   }
 }
 const parser = new AnsiParser();
 
 self.onmessage = function (event) {
-  const { inputStr } = event.data;
-
+  const { inputStr, reset } = event.data;
+  if (reset) {
+    parser.reset();
+  }
   parser.enqueueData(inputStr);
 };
 

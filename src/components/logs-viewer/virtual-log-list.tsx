@@ -49,6 +49,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     page: 1
   });
   const lineCountRef = useRef(0);
+  const clearScreen = useRef(false);
 
   useImperativeHandle(ref, () => ({
     abort() {
@@ -103,11 +104,22 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const handleonBackend = useCallback(() => {
     pageRef.current = totalPageRef.current;
     getCurrent();
-    setPage(pageRef.current);
+
     console.log('pageRef.current', pageRef.current);
     setScrollPos(['bottom', pageRef.current]);
     scrollPosRef.current = {
       pos: 'bottom',
+      page: pageRef.current
+    };
+  }, [getCurrent]);
+
+  const handleonToFirst = useCallback(() => {
+    pageRef.current = 1;
+    getCurrent();
+    console.log('pageRef.current', pageRef.current);
+    setScrollPos(['top', pageRef.current]);
+    scrollPosRef.current = {
+      pos: 'top',
       page: pageRef.current
     };
   }, [getCurrent]);
@@ -120,8 +132,10 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       }
     }
     logParseWorker.current.postMessage({
-      inputStr: data
+      inputStr: data,
+      reset: clearScreen.current
     });
+    clearScreen.current = false;
   };
 
   const createChunkConnection = async () => {
@@ -181,6 +195,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
         createChunkConnection();
         loadMoreDone.current = true;
         isLoadingMoreRef.current = true;
+        clearScreen.current = true;
       } else if (isTop && page <= totalPage && page > 1) {
         // getPrePage();
       } else if (isBottom && page < totalPage) {
@@ -264,7 +279,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       const start = (pageRef.current - 1) * pageSize;
       const end = pageRef.current * pageSize;
       const currentLogs = result.slice(start, end);
-
+      console.log('result+++++++', result);
       setLogs(result);
       setTotalPage(totalPageRef.current);
       setPage(pageRef.current);
@@ -309,6 +324,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
                 pageSize={pageSize}
                 onNext={getNextPage}
                 onPrev={getPrePage}
+                onToFirst={handleonToFirst}
                 onBackend={handleonBackend}
               ></LogsPagination>
             </div>

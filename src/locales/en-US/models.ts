@@ -75,6 +75,7 @@ export default {
   'models.logs.pagination.prev': 'Previous {lines} Lines',
   'models.logs.pagination.next': 'Next {lines} Lines',
   'models.logs.pagination.last': 'Last Page',
+  'models.logs.pagination.first': 'First Page',
   'models.form.localPath': 'Local Path',
   'models.form.filePath': 'Model Path',
   'models.form.backendVersion': 'Backend Version',

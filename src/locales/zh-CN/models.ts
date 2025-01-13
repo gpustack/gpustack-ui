@@ -72,6 +72,7 @@ export default {
   'models.logs.pagination.prev': '上一 {lines} 行',
   'models.logs.pagination.next': '下一 {lines} 行',
   'models.logs.pagination.last': '最后一页',
+  'models.logs.pagination.first': '第一页',
   'models.form.localPath': '本地路径',
   'models.form.filePath': '模型路径',
   'models.form.backendVersion': '后端版本',

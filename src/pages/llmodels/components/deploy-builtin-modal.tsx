@@ -2,7 +2,6 @@ import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { CloseOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -44,6 +43,13 @@ const backendOptions = [
   }
 ];
 
+const quantiCapitMap: Record<string, string> = {
+  F16: 'FP16',
+  f16: 'FP16',
+  F32: 'FP32',
+  f32: 'FP32'
+};
+
 const defaultQuant = ['Q4_K_M'];
 const EmbeddingRerankFirstQuant = ['FP16'];
 const AddModal: React.FC<AddModalProps> = (props) => {
@@ -59,7 +65,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   } = props || {};
 
   const form = useRef<any>({});
-  const intl = useIntl();
 
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [sourceList, setSourceList] = useState<any[]>([]);
@@ -185,7 +190,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
     const quantizationList = _.map(sizeGroup, (item: CatalogSpec) => {
       return {
-        label: item.quantization,
+        label: quantiCapitMap[item.quantization] ?? item.quantization,
         value: item.quantization
       };
     });

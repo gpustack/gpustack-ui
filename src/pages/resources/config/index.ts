@@ -92,7 +92,7 @@ export const addWorkerGuide: Record<string, any> = {
   },
   container: {
     getToken:
-      'docker run -it ${gpustack_container_id} cat /var/lib/gpustack/token'
+      'docker exec -it ${gpustack_container_id} cat /var/lib/gpustack/token'
   }
 };
 

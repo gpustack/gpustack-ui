@@ -582,12 +582,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   }, [disabled]);
 
   return (
-    <div
-      className="editor-wrapper"
-      style={{
-        border: '1px solid #ddd'
-      }}
-    >
+    <div className="editor-wrapper">
       <div className="flex-between">
         <div className="tools">
           <Tooltip

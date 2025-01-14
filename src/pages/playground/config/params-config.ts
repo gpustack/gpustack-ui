@@ -311,7 +311,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 1.0,
-      max: 10,
+      max: 100,
       step: 0.1
     },
     rules: [
@@ -334,7 +334,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 1.0,
-      max: 10,
+      max: 100,
       step: 0.1
     },
     rules: [

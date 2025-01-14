@@ -68,7 +68,7 @@ const advancedFieldsDefaultValus = {
   sampling_steps: 10,
   negative_prompt: null,
   schedule_method: 'discrete',
-  preview: null
+  preview: 'preview_faster'
 };
 
 const openaiCompatibleFieldsDefaultValus = {

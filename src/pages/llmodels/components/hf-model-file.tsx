@@ -143,7 +143,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       });
 
       const list = _.filter(fileList, (file: any) => {
-        return hfFileFilter(file);
+        return hfFileFilter(file) && file.path.indexOf('mmproj') === -1;
       });
 
       return list;
@@ -153,7 +153,11 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   };
 
   const modelscopeFileFilter = (file: any) => {
-    return filterRegGGUF.test(file.Path) && file.Type === 'blob';
+    return (
+      filterRegGGUF.test(file.Path) &&
+      file.Type === 'blob' &&
+      file.Path.indexOf('mmproj') === -1
+    );
   };
 
   // modelscope files

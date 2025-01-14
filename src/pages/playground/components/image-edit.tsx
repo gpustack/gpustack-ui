@@ -70,7 +70,7 @@ const advancedFieldsDefaultValus = {
   strength: 0.75,
   sampling_steps: 10,
   negative_prompt: null,
-  preview: null,
+  preview: 'preview_faster',
   schedule_method: 'discrete'
 };
 

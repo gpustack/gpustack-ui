@@ -131,5 +131,6 @@ export default {
   'playground.image.brushSize': '画笔大小',
   'playground.image.download': '下载图片',
   'playground.image.generate': '生成图片',
-  'playground.image.edit': '编辑图片'
+  'playground.image.edit': '编辑图片',
+  'playground.image.fitview': '适应视图'
 };

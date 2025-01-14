@@ -136,5 +136,6 @@ export default {
   'playground.image.brushSize': 'Brush Size',
   'playground.image.download': 'Download Image',
   'playground.image.generate': 'Generate',
-  'playground.image.edit': 'Edit'
+  'playground.image.edit': 'Edit',
+  'playground.image.fitview': 'Fit View'
 };

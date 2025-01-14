@@ -215,10 +215,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [parameters.n]);
 
   const imageFile = useMemo(() => {
+    if (!image) return null;
     return base64ToFile(image, 'image');
   }, [image]);
 
   const maskFile = useMemo(() => {
+    if (!mask) return null;
     return base64ToFile(mask, 'mask');
   }, [mask]);
 
@@ -664,23 +666,25 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       );
     }
     return (
-      <UploadImg
-        accept="image/png"
-        drag={true}
-        multiple={false}
-        handleUpdateImgList={handleUpdateImageList}
-      >
-        <div
-          className="flex-column flex-center gap-10 justify-center"
-          style={{ width: 150, height: 150 }}
+      <>
+        <UploadImg
+          accept="image/png"
+          drag={true}
+          multiple={false}
+          handleUpdateImgList={handleUpdateImageList}
         >
-          <IconFont
-            type="icon-upload_image"
-            className="font-size-24"
-          ></IconFont>
-          <h3>{intl.formatMessage({ id: 'playground.image.edit.tips' })}</h3>
-        </div>
-      </UploadImg>
+          <div
+            className="flex-column flex-center gap-10 justify-center"
+            style={{ width: 150, height: 150 }}
+          >
+            <IconFont
+              type="icon-upload_image"
+              className="font-size-24"
+            ></IconFont>
+            <h3>{intl.formatMessage({ id: 'playground.image.edit.tips' })}</h3>
+          </div>
+        </UploadImg>
+      </>
     );
   }, [image, loading, imageStatus, handleOnSave, handleUpdateImageList]);
 
@@ -911,7 +915,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               </span>
             }
             loading={loading}
-            disabled={!parameters.model || mask === ''}
+            disabled={!parameters.model}
             isEmpty={!imageList.length}
             handleSubmit={handleSendMessage}
             handleAbortFetch={handleStopConversation}

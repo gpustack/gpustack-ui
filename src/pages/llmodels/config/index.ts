@@ -192,7 +192,8 @@ export const InstanceStatusMap = {
   Error: 'error',
   Downloading: 'downloading',
   Unknown: 'unknown',
-  Analyzing: 'analyzing'
+  Analyzing: 'analyzing',
+  Unreachable: 'unreachable'
 };
 
 export const InstanceRealLogStatus = [
@@ -209,7 +210,8 @@ export const InstanceStatusMapValue = {
   [InstanceStatusMap.Downloading]: 'Downloading',
   [InstanceStatusMap.Unknown]: 'Unknown',
   [InstanceStatusMap.Analyzing]: 'Analyzing',
-  [InstanceStatusMap.Starting]: 'Starting'
+  [InstanceStatusMap.Starting]: 'Starting',
+  [InstanceStatusMap.Unreachable]: 'Unreachable'
 };
 
 export const status: any = {
@@ -221,7 +223,8 @@ export const status: any = {
   [InstanceStatusMap.Downloading]: StatusMaps.transitioning,
   [InstanceStatusMap.Unknown]: StatusMaps.inactive,
   [InstanceStatusMap.Analyzing]: StatusMaps.transitioning,
-  [InstanceStatusMap.Starting]: StatusMaps.transitioning
+  [InstanceStatusMap.Starting]: StatusMaps.transitioning,
+  [InstanceStatusMap.Unreachable]: StatusMaps.error
 };
 
 export const ActionList = [

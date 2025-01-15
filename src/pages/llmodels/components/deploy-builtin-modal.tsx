@@ -274,32 +274,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         return groupList[item.value];
       });
 
-      const list72B =
-        _.toLower(current.name) === 'qwen2.5'
-          ? _.filter(res.items, (item: CatalogSpec) => {
-              return item.size === 72;
-            })
-          : [];
+      const list = _.sortBy(res.items, 'size');
 
-      let defaultSpec: any = {};
-
-      if (list72B.length) {
-        defaultSpec =
-          _.find(list72B, (item: CatalogSpec) => {
-            return getDefaultQuant({
-              category: _.get(current, 'categories.0', ''),
-              quantOption: item.quantization
-            });
-          }) || _.get(list72B, `0`, {});
-      } else {
-        defaultSpec =
-          _.find(res.items, (item: CatalogSpec) => {
-            return getDefaultQuant({
-              category: _.get(current, 'categories.0', ''),
-              quantOption: item.quantization
-            });
-          }) || _.get(res.items, `0`, {});
-      }
+      const defaultSpec =
+        _.find(list, (item: CatalogSpec) => {
+          return getDefaultQuant({
+            category: _.get(current, 'categories.0', ''),
+            quantOption: item.quantization
+          });
+        }) || _.get(res.items, `0`, {});
 
       selectSpecRef.current = defaultSpec;
       setSourceList(sources);

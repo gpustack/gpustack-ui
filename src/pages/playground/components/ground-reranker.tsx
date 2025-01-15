@@ -580,6 +580,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 onChange={handleTextListChange}
                 onSort={handleOnSort}
                 extra={renderPercent}
+                onSelect={handleonSelect}
                 onPaste={handleOnPaste}
               ></InputList>
               {isEmptyText && (

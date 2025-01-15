@@ -36,6 +36,7 @@ interface InputListProps {
     end: number;
     beforeText: string;
     afterText: string;
+    index: number;
   }) => void;
 }
 

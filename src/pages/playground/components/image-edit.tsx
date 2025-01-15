@@ -292,6 +292,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         return pre.map((item) => {
           return {
             ...item,
+            uid: setMessageId(),
             dataUrl: image
           };
         });
@@ -830,6 +831,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                       <div
                         style={{
                           height: 125,
+                          maxWidth: 125,
                           maxHeight: 125
                         }}
                         key={item.uid}
@@ -838,7 +840,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                           {...item}
                           height={125}
                           maxHeight={125}
-                          key={item.uid}
+                          maxWidth={125}
                           preview={item.preview}
                           loading={item.loading}
                           autoSize={false}

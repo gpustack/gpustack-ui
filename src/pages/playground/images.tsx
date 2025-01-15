@@ -32,12 +32,12 @@ const TextToImages: React.FC = () => {
 
   const optionsList = [
     {
-      label: 'Generate',
+      label: intl.formatMessage({ id: 'playground.image.generate' }),
       value: TabsValueMap.Tab1,
       icon: <DiffOutlined />
     },
     {
-      label: 'Edit',
+      label: intl.formatMessage({ id: 'playground.image.edit' }),
       value: TabsValueMap.Tab2,
       icon: <HighlightOutlined />
     }

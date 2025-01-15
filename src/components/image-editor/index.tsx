@@ -18,6 +18,7 @@ type Stroke = Point[];
 type CanvasImageEditorProps = {
   imageSrc: string;
   disabled?: boolean;
+  imguid: string | number;
   onSave: (imageData: { mask: string; img: string }) => void;
   uploadButton: React.ReactNode;
   imageStatus: {
@@ -33,6 +34,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   disabled,
   imageStatus,
   onSave,
+  imguid,
   uploadButton
 }) => {
   const MIN_SCALE = 0.5;
@@ -55,8 +57,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const translatePos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const contentPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const animationFrameIdRef = useRef<number | null>(null);
-  const originRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const preAutoScale = useRef<number>(1);
+  const strokeCache = useRef<any>({});
+  const preImguid = useRef<string | number>('');
 
   const getTransformedPoint = (offsetX: number, offsetY: number) => {
     const { current: scale } = autoScale;
@@ -67,13 +69,13 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     const transformedY = (offsetY + lineWidth / 2 - translateY) / scale;
 
     return {
-      x: Math.round(transformedX),
-      y: Math.round(transformedY)
+      x: _.round(transformedX),
+      y: _.round(transformedY)
     };
   };
 
   const getTransformLineWidth = (lineWidth: number) => {
-    return lineWidth / autoScale.current;
+    return lineWidth;
   };
 
   const setCanvasTransformOrigin = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -214,6 +216,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
       stroke.forEach((point, i) => {
         const { x, y } = getTransformedPoint(point.x, point.y);
+        console.log('Drawing point:');
         ctx.lineWidth = getTransformLineWidth(point.lineWidth);
         if (i === 0) {
           ctx.moveTo(x, y);
@@ -487,6 +490,15 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     await drawImage();
     setImgLoaded(true);
     console.log('Image Loaded:', imageStatus, strokesRef.current);
+    // if (strokeCache.current[imguid]) {
+    //   strokesRef.current = strokeCache.current[imguid];
+    // } else if (preImguid.current !== imguid) {
+    //   strokeCache.current[preImguid.current] = strokesRef.current;
+    //   onReset();
+    //   resetCanvas();
+    //   preImguid.current = imguid;
+    // }
+
     if (imageStatus.isOriginal) {
       redrawStrokes(strokesRef.current, 'initialize');
     } else if (imageStatus.isResetNeeded) {
@@ -540,6 +552,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const handleOnWheel = (event: any) => {
     handleZoom(event);
     updateCursorSize();
+    // redrawStrokes(strokesRef.current);
   };
 
   const handleFitView = () => {
@@ -552,6 +565,11 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     redrawStrokes(strokesRef.current);
   };
 
+  const handleBrushSizeChange = (value: number) => {
+    setLineWidth(value);
+    cursorRef.current!.style.width = `${value * autoScale.current}px`;
+    cursorRef.current!.style.height = `${value * autoScale.current}px`;
+  };
   useEffect(() => {
     initializeImage();
   }, [initializeImage]);
@@ -607,7 +625,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
                   defaultValue={lineWidth}
                   min={10}
                   max={60}
-                  onChange={(value) => setLineWidth(value)}
+                  onChange={handleBrushSizeChange}
                 />
               </div>
             }
@@ -680,7 +698,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
         <canvas ref={canvasRef} style={{ position: 'absolute', zIndex: 1 }} />
         <canvas
           ref={overlayCanvasRef}
-          style={{ position: 'absolute', zIndex: 2 }}
+          className="overlay-canvas"
+          style={{ position: 'absolute', zIndex: 10, cursor: 'none' }}
           onMouseDown={startDrawing}
           onMouseUp={endDrawing}
           onMouseEnter={handleMouseEnter}
@@ -699,12 +718,13 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           style={{
             display: 'none',
             position: 'fixed',
-            width: lineWidth,
-            height: lineWidth,
+            width: lineWidth * autoScale.current,
+            height: lineWidth * autoScale.current,
             backgroundColor: COLOR,
             borderRadius: '50%',
             pointerEvents: 'none',
-            zIndex: 100
+            cursor: 'none',
+            zIndex: 5
           }}
         />
       </div>

@@ -490,22 +490,20 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     await drawImage();
     setImgLoaded(true);
     console.log('Image Loaded:', imageStatus, strokesRef.current);
-    // if (strokeCache.current[imguid]) {
-    //   strokesRef.current = strokeCache.current[imguid];
-    // } else if (preImguid.current !== imguid) {
-    //   strokeCache.current[preImguid.current] = strokesRef.current;
-    //   onReset();
-    //   resetCanvas();
-    //   preImguid.current = imguid;
-    // }
-
-    if (imageStatus.isOriginal) {
-      redrawStrokes(strokesRef.current, 'initialize');
-    } else if (imageStatus.isResetNeeded) {
+    if (strokeCache.current[imguid]) {
+      strokeCache.current[preImguid.current] = strokesRef.current;
+      strokesRef.current = strokeCache.current[imguid];
+    } else if (preImguid.current !== imguid) {
+      strokeCache.current[preImguid.current] = strokesRef.current;
       onReset();
       resetCanvas();
     }
-  }, [drawImage, onReset, redrawStrokes, imageStatus]);
+    preImguid.current = imguid;
+
+    if (strokesRef.current.length) {
+      redrawStrokes(strokesRef.current);
+    }
+  }, [drawImage, onReset, redrawStrokes, imguid, imageStatus]);
 
   const updateZoom = (scaleChange: number, mouseX: number, mouseY: number) => {
     const newScale = _.round(autoScale.current + scaleChange, 2);

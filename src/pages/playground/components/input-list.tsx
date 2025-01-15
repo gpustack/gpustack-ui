@@ -31,6 +31,12 @@ interface InputListProps {
   onSort?: (
     textList: { text: string; uid: number | string; name: string }[]
   ) => void;
+  onSelect?: (data: {
+    start: number;
+    end: number;
+    beforeText: string;
+    afterText: string;
+  }) => void;
 }
 
 const InputList: React.FC<InputListProps> = forwardRef(
@@ -44,7 +50,8 @@ const InputList: React.FC<InputListProps> = forwardRef(
       onSort,
       onChange,
       extra,
-      onPaste
+      onPaste,
+      onSelect
     },
     ref
   ) => {
@@ -244,6 +251,7 @@ const InputList: React.FC<InputListProps> = forwardRef(
                   })}
                   onChange={(e) => handleTextChange(e.target.value, text)}
                   onPaste={(e) => onPaste?.(e, index)}
+                  onSelect={(data) => onSelect?.({ ...data, index })}
                 ></RowTextarea>
               </div>
               <span className="btn-group">

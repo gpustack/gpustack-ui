@@ -124,6 +124,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   ]);
   const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
   const [queryValue, setQueryValue] = useState<string>('');
+  const selectionTextRef = useRef<any>(null);
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -364,6 +365,19 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     []
   );
 
+  const handleonSelect = useCallback(
+    (data: {
+      start: number;
+      end: number;
+      beforeText: string;
+      afterText: string;
+      index: number;
+    }) => {
+      selectionTextRef.current = data;
+    },
+    []
+  );
+
   const handleOnPaste = useCallback(
     (e: any, index: number) => {
       if (!multiplePasteEnable.current) return;
@@ -377,7 +391,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             name: ''
           };
         });
-        dataLlist[0].text = currentContent + dataLlist[0].text;
+        dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
         const result = [
           ...textList.slice(0, index),
           ...dataLlist,

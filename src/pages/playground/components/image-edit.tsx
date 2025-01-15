@@ -218,7 +218,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const imageFile = useMemo(() => {
     if (!image) return null;
-    console.log('image>>>>>>>>>>>>>>', image);
     return base64ToFile(image, 'image');
   }, [image]);
 
@@ -283,6 +282,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     try {
       await form.current?.form?.validateFields();
       if (!parameters.model) return;
+      doneImage.current = false;
       const size: any = setImageSize();
       setLoading(true);
       setMessageId();
@@ -688,7 +688,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [image, loading, imageStatus, handleOnSave, handleUpdateImageList]);
 
   const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
-    console.log('item:99', item);
     if (item.progress < 100) {
       return;
     }

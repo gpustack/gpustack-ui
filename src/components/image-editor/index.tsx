@@ -79,7 +79,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   );
 
   const getTransformLineWidth = useCallback((lineWidth: number) => {
-    return lineWidth;
+    return lineWidth / autoScale.current;
   }, []);
 
   const setCanvasTransformOrigin = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -518,7 +518,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (strokesRef.current.length) {
       redrawStrokes(strokesRef.current);
     }
-  }, [drawImage, onReset, redrawStrokes, imguid, imageStatus]);
+  }, [drawImage, onReset, redrawStrokes, imguid]);
 
   const updateZoom = (scaleChange: number, mouseX: number, mouseY: number) => {
     const newScale = _.round(autoScale.current + scaleChange, 2);
@@ -574,14 +574,15 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     setTransform();
     overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
     canvasRef.current!.style.transform = `scale(${autoScale.current})`;
+    setActiveScale(autoScale.current);
     updateCursorSize();
     redrawStrokes(strokesRef.current);
   };
 
   const handleBrushSizeChange = (value: number) => {
     setLineWidth(value);
-    cursorRef.current!.style.width = `${value * autoScale.current}px`;
-    cursorRef.current!.style.height = `${value * autoScale.current}px`;
+    cursorRef.current!.style.width = `${value}px`;
+    cursorRef.current!.style.height = `${value}px`;
   };
   useEffect(() => {
     initializeImage();

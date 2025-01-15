@@ -85,6 +85,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
   const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
   const multiplePasteEnable = useRef<boolean>(true);
+  const selectionTextRef = useRef<any>(null);
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -303,6 +304,19 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTextList(list);
   };
 
+  const handleonSelect = useCallback(
+    (data: {
+      start: number;
+      end: number;
+      beforeText: string;
+      afterText: string;
+      index: number;
+    }) => {
+      selectionTextRef.current = data;
+    },
+    []
+  );
+
   const handleOnPaste = useCallback(
     (e: any, index: number) => {
       if (!multiplePasteEnable.current) return;
@@ -316,7 +330,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
             name: ''
           };
         });
-        dataLlist[0].text = currentContent + dataLlist[0].text;
+        dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
         const result = [
           ...textList.slice(0, index),
           ...dataLlist,
@@ -527,6 +541,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 ref={inputListRef}
                 textList={textList}
                 onChange={handleTextListChange}
+                onSelect={handleonSelect}
                 onPaste={handleOnPaste}
               ></InputList>
               <div style={{ marginTop: 8 }}>

@@ -9,7 +9,6 @@ import { queryCatalogItemSpec } from '../apis';
 import {
   backendOptionsMap,
   modelCategoriesMap,
-  modelSourceMap,
   sourceOptions
 } from '../config';
 import { CatalogSpec, FormData, ListItem } from '../config/types';
@@ -51,7 +50,7 @@ const quantiCapitMap: Record<string, string> = {
 };
 
 const defaultQuant = ['Q4_K_M'];
-const EmbeddingRerankFirstQuant = ['FP16'];
+const EmbeddingRerankFirstQuant = ['FP16', 'F16'];
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     title,
@@ -85,39 +84,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       data.category === modelCategoriesMap.embedding ||
       data.category === modelCategoriesMap.reranker
     ) {
-      return EmbeddingRerankFirstQuant.includes(data.quantOption);
+      return EmbeddingRerankFirstQuant.includes(_.toUpper(data.quantOption));
     }
-    return defaultQuant.includes(data.quantOption);
-  };
-
-  const getModelFile = (spec: CatalogSpec) => {
-    let modelInfo = {};
-    if (spec.source === modelSourceMap.huggingface_value) {
-      modelInfo = {
-        huggingface_repo_id: spec?.huggingface_repo_id,
-        huggingface_filename: spec?.huggingface_filename
-      };
-    }
-
-    if (spec.source === modelSourceMap.modelscope_value) {
-      modelInfo = {
-        model_scope_model_id: spec?.model_scope_model_id,
-        model_scope_file_path: spec?.model_scope_file_path
-      };
-    }
-
-    if (spec.source === modelSourceMap.ollama_library_value) {
-      modelInfo = {
-        ollama_library_model_name: spec?.ollama_library_model_name
-      };
-    }
-
-    if (spec.source === modelSourceMap.local_path_value) {
-      modelInfo = {
-        local_path: spec?.local_path
-      };
-    }
-    return modelInfo;
+    return defaultQuant.includes(_.toUpper(data.quantOption));
   };
 
   const getModelSpec = (data: {
@@ -190,7 +159,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
     const quantizationList = _.map(sizeGroup, (item: CatalogSpec) => {
       return {
-        label: quantiCapitMap[item.quantization] ?? item.quantization,
+        label:
+          quantiCapitMap[item.quantization] ?? _.toUpper(item.quantization),
         value: item.quantization
       };
     });
@@ -304,9 +274,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         return groupList[item.value];
       });
 
-      const list72B = _.filter(res.items, (item: CatalogSpec) => {
-        return item.size === 72;
-      });
+      const list72B =
+        _.toLower(current.name) === 'qwen2.5'
+          ? _.filter(res.items, (item: CatalogSpec) => {
+              return item.size === 72;
+            })
+          : [];
 
       let defaultSpec: any = {};
 

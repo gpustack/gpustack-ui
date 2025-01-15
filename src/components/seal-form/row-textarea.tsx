@@ -13,10 +13,24 @@ interface SystemMessageProps {
   height?: number;
   onChange: (e: any) => void;
   onPaste?: (e: any) => void;
+  onSelect?: (data: {
+    start: number;
+    end: number;
+    beforeText: string;
+    afterText: string;
+  }) => void;
 }
 
 const RowTextarea: React.FC<SystemMessageProps> = (props) => {
-  const { value, onChange, style, label, placeholder, height = 46 } = props;
+  const {
+    value,
+    onChange,
+    onSelect,
+    style,
+    label,
+    placeholder,
+    height = 46
+  } = props;
   const intl = useIntl();
   const rowTextAreaRef = React.useRef<any>(null);
   const [autoSize, setAutoSize] = useState<{
@@ -57,6 +71,21 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
     props.onPaste?.(e);
   };
 
+  const handleOnSelect = (e: any) => {
+    e.stopPropagation();
+    const start = e.target.selectionStart;
+    const end = e.target.selectionEnd;
+
+    const beforeText = value.substring(0, start);
+    const afterText = value.substring(end, value.length);
+    onSelect?.({
+      start,
+      end,
+      beforeText,
+      afterText
+    });
+  };
+
   return (
     <div
       className={classNames('row-textarea', {
@@ -87,6 +116,7 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
             onBlur={handleBlur}
             allowClear={false}
             onChange={handleOnChange}
+            onSelect={handleOnSelect}
             onPaste={handleOnPaste}
           ></Input.TextArea>
         </div>

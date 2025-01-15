@@ -65,7 +65,7 @@ const useSetChunkFetch = () => {
         bufferManager.add(chunk);
         throttledCallback();
       } catch (error) {
-        console.log('error:', error);
+        console.log('error============:', error);
       }
     }
   };
@@ -96,6 +96,8 @@ const useSetChunkFetch = () => {
       );
 
       if (!response.ok) {
+        const error = await response.json();
+        handler(error?.message);
         return;
       }
 

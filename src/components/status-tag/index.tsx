@@ -10,6 +10,7 @@ import CopyButton from '../copy-button';
 import CopyStyle from './copy.less';
 import './index.less';
 
+const linkReg = /<a (.*?)>(.*?)<\/a>/g;
 export const StatusMaps = {
   transitioning: 'blue',
   error: 'red',
@@ -59,6 +60,18 @@ const StatusTag: React.FC<StatusTagProps> = ({
     setStatusColor(StatusColorMap[status]);
   }, [status]);
 
+  const statusMessage = useMemo(() => {
+    return statusValue.message?.replace(linkReg, '');
+  }, [statusValue.message]);
+
+  const messageLink = useMemo(() => {
+    const link = statusValue.message?.match(linkReg);
+    if (link) {
+      return link?.[0].replace(linkReg, '<a $1 target="_blank">$2</a>');
+    }
+    return null;
+  }, [statusValue.message]);
+
   const renderContent = () => {
     const percent = download?.percent || 0;
 
@@ -78,7 +91,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
         <div className="copy-button-wrapper">
           <CopyButton
             style={{ color: 'rgba(255,255,255,.8)' }}
-            text={statusValue.message || ''}
+            text={statusMessage || ''}
             size="small"
           ></CopyButton>
           {actions?.map((item) => {
@@ -115,8 +128,12 @@ const StatusTag: React.FC<StatusTagProps> = ({
               wordBreak: 'break-word'
             }}
           >
-            {statusValue.message}
+            {statusMessage}
+            {statusMessage && <span className="m-r-5"></span>}
             {extra}
+            {messageLink && (
+              <span dangerouslySetInnerHTML={{ __html: messageLink }}></span>
+            )}
           </div>
         </SimpleBar>
       </div>

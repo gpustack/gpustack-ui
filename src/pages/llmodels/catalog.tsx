@@ -210,7 +210,7 @@ const Catalog: React.FC = () => {
           <Space>
             <Input
               placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-              style={{ width: 200 }}
+              style={{ width: 230 }}
               size="large"
               allowClear
               onClear={() =>
@@ -224,8 +224,9 @@ const Catalog: React.FC = () => {
             ></Input>
             <Select
               allowClear
+              showSearch={false}
               placeholder={intl.formatMessage({ id: 'models.filter.category' })}
-              style={{ width: 240 }}
+              style={{ width: 230 }}
               size="large"
               mode="multiple"
               maxTagCount={1}

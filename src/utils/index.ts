@@ -149,7 +149,8 @@ export const generateRandomNumber = () => {
 };
 
 function base64ToBlob(base64: string, contentType = '', sliceSize = 512) {
-  const byteCharacters = atob(base64.split(',')[1]); // 去掉 Base64 前缀部分
+  const base64Content = base64.replace(/^data:image\/(png|jpg);base64,/, '');
+  const byteCharacters = atob(base64Content);
   const byteArrays = [];
 
   for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {

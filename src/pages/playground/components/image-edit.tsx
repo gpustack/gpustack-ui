@@ -130,8 +130,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     isOriginal: false,
     isResetNeeded: false
   });
+  const doneImage = useRef<boolean>(false);
   const cacheFormData = useRef<any>({});
   const size = Form.useWatch('size', form.current?.form);
+  const [imguid, setImgUid] = useState<number>(0);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -216,6 +218,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const imageFile = useMemo(() => {
     if (!image) return null;
+    console.log('image>>>>>>>>>>>>>>', image);
     return base64ToFile(image, 'image');
   }, [image]);
 
@@ -306,14 +309,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
       if (parameters.preview === 'preview') {
         stream_options = {
-          ...stream_options,
           stream_options_preview: true
         };
       }
 
       if (parameters.preview === 'preview_faster') {
         stream_options = {
-          ...stream_options,
           stream_options_preview_faster: true
         };
       }
@@ -385,12 +386,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           } else if (item.b64_json) {
             imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
           }
-          console.log(
-            'stream_options_chunk_result:',
-            params.stream_options_chunk_result
-          );
           const progress = _.round(item.progress, 0);
-          console.log('progress:', item, progress);
+
           newImageList[item.index] = {
             dataUrl: imgItem.dataUrl,
             height: imgSize[1],
@@ -400,8 +397,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             uid: imgItem.uid,
             span: imgItem.span,
             loading: params.stream_options_chunk_result
-              ? false
-              : progress < 100,
+              ? progress < 100
+              : false,
             preview: false,
             progress: progress
           };
@@ -628,6 +625,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     const img = _.get(base64List, '[0].dataUrl', '');
     setUploadList(base64List);
     setImage(img);
+    setImgUid(_.get(base64List, '[0].uid', ''));
     setImageStatus({
       isOriginal: false,
       isResetNeeded: true
@@ -648,6 +646,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (image) {
       return (
         <CanvasImageEditor
+          imguid={imguid}
           imageStatus={imageStatus}
           imageSrc={image}
           disabled={loading}
@@ -689,16 +688,27 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [image, loading, imageStatus, handleOnSave, handleUpdateImageList]);
 
   const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
-    console.log('item:', item);
+    console.log('item:99', item);
     if (item.progress < 100) {
       return;
     }
+    setImgUid(item.uid);
     setImage(item.dataUrl);
     setImageStatus({
       isOriginal: isOrigin,
       isResetNeeded: false
     });
   }, []);
+
+  useEffect(() => {
+    if (imageList.length > 0) {
+      const doneImg = imageList.find((item) => item.progress === 100);
+      if (doneImg && !doneImage.current) {
+        doneImage.current = true;
+        handleOnImgClick(doneImg, false);
+      }
+    }
+  }, [imageList, handleOnImgClick]);
 
   const renderOriginImage = useMemo(() => {
     if (!uploadList.length) {

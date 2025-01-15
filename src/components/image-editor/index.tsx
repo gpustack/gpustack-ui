@@ -59,24 +59,28 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const animationFrameIdRef = useRef<number | null>(null);
   const strokeCache = useRef<any>({});
   const preImguid = useRef<string | number>('');
+  const [activeScale, setActiveScale] = useState<number>(1);
 
-  const getTransformedPoint = (offsetX: number, offsetY: number) => {
-    const { current: scale } = autoScale;
+  const getTransformedPoint = useCallback(
+    (offsetX: number, offsetY: number) => {
+      const { current: scale } = autoScale;
 
-    const { x: translateX, y: translateY } = translatePos.current;
+      const { x: translateX, y: translateY } = translatePos.current;
 
-    const transformedX = (offsetX + lineWidth / 2 - translateX) / scale;
-    const transformedY = (offsetY + lineWidth / 2 - translateY) / scale;
+      const transformedX = (offsetX - translateX) / scale;
+      const transformedY = (offsetY - translateY) / scale;
 
-    return {
-      x: _.round(transformedX),
-      y: _.round(transformedY)
-    };
-  };
+      return {
+        x: transformedX,
+        y: transformedY
+      };
+    },
+    []
+  );
 
-  const getTransformLineWidth = (lineWidth: number) => {
+  const getTransformLineWidth = useCallback((lineWidth: number) => {
     return lineWidth;
-  };
+  }, []);
 
   const setCanvasTransformOrigin = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (autoScale.current <= MIN_SCALE) {
@@ -229,7 +233,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       }
       ctx.stroke();
     },
-    []
+    [getTransformLineWidth, getTransformedPoint]
   );
 
   const drawLine = useCallback(
@@ -257,7 +261,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       }
       ctx.stroke();
     },
-    [lineWidth]
+    [getTransformLineWidth]
   );
 
   const setTransform = useCallback(() => {
@@ -280,9 +284,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (!isDrawing.current) return;
 
     const { offsetX, offsetY } = e.nativeEvent;
+    const currentX = offsetX + lineWidth / 2;
+    const currentY = offsetY + lineWidth / 2;
+
     currentStroke.current.push({
-      x: offsetX,
-      y: offsetY,
+      x: currentX,
+      y: currentY,
       lineWidth
     });
 
@@ -292,12 +299,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
     drawLine(
       ctx!,
-      { x: offsetX, y: offsetY, lineWidth },
+      { x: currentX, y: currentY, lineWidth },
       { lineWidth, color: COLOR, compositeOperation: 'destination-out' }
     );
     drawLine(
       ctx!,
-      { x: offsetX, y: offsetY, lineWidth },
+      { x: currentX, y: currentY, lineWidth },
       { lineWidth, color: COLOR, compositeOperation: 'source-over' }
     );
 
@@ -309,15 +316,19 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
     currentStroke.current = [];
     const { offsetX, offsetY } = e.nativeEvent;
+
+    const currentX = offsetX + lineWidth / 2;
+    const currentY = offsetY + lineWidth / 2;
+
     currentStroke.current.push({
-      x: offsetX,
-      y: offsetY,
+      x: currentX,
+      y: currentY,
       lineWidth
     });
 
     const ctx = overlayCanvasRef.current!.getContext('2d');
     setTransform();
-    const { x, y } = getTransformedPoint(offsetX, offsetY);
+    const { x, y } = getTransformedPoint(currentX, currentY);
     ctx!.beginPath();
     ctx!.moveTo(x, y);
 
@@ -486,10 +497,14 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   }, []);
 
   const initializeImage = useCallback(async () => {
+    if (imguid === preImguid.current) {
+      return;
+    }
+
     setImgLoaded(false);
     await drawImage();
     setImgLoaded(true);
-    console.log('Image Loaded:', imageStatus, strokesRef.current);
+
     if (strokeCache.current[imguid]) {
       strokeCache.current[preImguid.current] = strokesRef.current;
       strokesRef.current = strokeCache.current[imguid];
@@ -550,7 +565,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const handleOnWheel = (event: any) => {
     handleZoom(event);
     updateCursorSize();
-    // redrawStrokes(strokesRef.current);
+    setActiveScale(autoScale.current);
   };
 
   const handleFitView = () => {
@@ -716,8 +731,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           style={{
             display: 'none',
             position: 'fixed',
-            width: lineWidth * autoScale.current,
-            height: lineWidth * autoScale.current,
+            width: lineWidth * activeScale,
+            height: lineWidth * activeScale,
             backgroundColor: COLOR,
             borderRadius: '50%',
             pointerEvents: 'none',

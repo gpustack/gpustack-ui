@@ -2,6 +2,7 @@ import AlertInfo from '@/components/alert-info';
 import ScatterChart from '@/components/echarts/scatter';
 import HighlightCode from '@/components/highlight-code';
 import IconFont from '@/components/icon-font';
+import SealInputNumber from '@/components/seal-form/input-number';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
@@ -13,7 +14,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Segmented, Spin, Tabs, Tooltip } from 'antd';
+import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { PCA } from 'ml-pca';
@@ -86,6 +87,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
   const multiplePasteEnable = useRef<boolean>(true);
   const selectionTextRef = useRef<any>(null);
+  const [metaData, setMetaData] = useState<Record<string, any>>({});
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -374,6 +376,14 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleOutputTypeChange = (value: string) => {
     setOutputType(value);
+  };
+
+  const handleModelChange = (value: string) => {
+    const model = modelList.find((item) => item.value === value);
+    if (model) {
+      console.log('model:', model);
+      setMetaData(model.meta || {});
+    }
   };
 
   const outputItems = useMemo(() => {
@@ -696,12 +706,25 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
+            onModelChange={handleModelChange}
             setParams={setParams}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
             params={parameters}
             selectedModel={selectModel}
             modelList={modelList}
+            extra={
+              metaData?.n_ctx &&
+              metaData?.n_slot && (
+                <Form.Item>
+                  <SealInputNumber
+                    disabled
+                    label="Max Tokens"
+                    value={_.divide(metaData?.n_ctx, metaData?.n_slot)}
+                  ></SealInputNumber>
+                </Form.Item>
+              )
+            }
           />
         </div>
       </div>

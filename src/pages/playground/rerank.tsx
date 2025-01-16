@@ -40,7 +40,8 @@ const PlaygroundRerank: React.FC = () => {
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,
-            label: item.id
+            label: item.id,
+            meta: item.meta
           };
         }) as Global.BaseOption<string>[];
         return list;

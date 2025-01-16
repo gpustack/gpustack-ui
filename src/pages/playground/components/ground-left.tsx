@@ -164,7 +164,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         url: CHAT_API,
         signal
       });
-
       if (result?.error) {
         setTokenResult({
           error: true,
@@ -186,7 +185,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         joinMessage(chunk);
       });
     } catch (error) {
-      // console.log('error:', error);
+      console.log('error:', error);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import AlertInfo from '@/components/alert-info';
+import SealInputNumber from '@/components/seal-form/input-number';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
@@ -9,7 +10,7 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Checkbox, Input, Spin, Tag, Tooltip } from 'antd';
+import { Button, Checkbox, Form, Input, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -125,6 +126,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
   const [queryValue, setQueryValue] = useState<string>('');
   const selectionTextRef = useRef<any>(null);
+  const [metaData, setMetaData] = useState<any>({});
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -426,6 +428,13 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     []
   );
 
+  const handleModelChange = (value: string) => {
+    const model = modelList.find((item) => item.value === value);
+    if (model) {
+      setMetaData(model.meta || {});
+    }
+  };
+
   const handleClearDocuments = () => {
     setTextList([
       {
@@ -623,10 +632,23 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             ref={formRef}
             setParams={setParams}
             params={parameters}
+            onModelChange={handleModelChange}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
             selectedModel={selectModel}
             modelList={modelList}
+            extra={
+              metaData?.n_ctx &&
+              metaData?.n_slot && (
+                <Form.Item>
+                  <SealInputNumber
+                    disabled
+                    label="Max Tokens"
+                    value={_.divide(metaData?.n_ctx, metaData?.n_slot)}
+                  ></SealInputNumber>
+                </Form.Item>
+              )
+            }
           />
         </div>
       </div>

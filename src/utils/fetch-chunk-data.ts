@@ -24,6 +24,21 @@ const extractJSON = (dataStr: string) => {
   return results;
 };
 
+const errorHandler = async (res: any) => {
+  try {
+    const data = await res.json();
+    return {
+      error: true,
+      data: data
+    };
+  } catch (error) {
+    return {
+      error: true,
+      message: res.statusText
+    };
+  }
+};
+
 /**
  *
  * @param params data: for post request, params: for get request
@@ -51,11 +66,11 @@ export const fetchChunkedData = async (params: {
       ...params.headers
     }
   });
-  console.log('response====', response);
+
   if (!response.ok) {
     return {
       error: true,
-      data: await response.json()
+      data: await errorHandler(response)
     };
   }
   const reader = response?.body?.getReader();
@@ -107,7 +122,7 @@ export const fetchChunkedDataPostFormData = async (params: {
   if (!response.ok) {
     return {
       error: true,
-      data: await response.json()
+      data: await errorHandler(response)
     };
   }
   const reader = response?.body?.getReader();

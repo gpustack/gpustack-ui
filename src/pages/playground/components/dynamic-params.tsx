@@ -37,7 +37,7 @@ type ParamsSettingsProps = {
   globalParams?: Record<string, any>;
   paramsConfig?: ParamsSchema[];
   initialValues?: Record<string, any>;
-  extra?: React.ReactNode[];
+  extra?: React.ReactNode;
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(

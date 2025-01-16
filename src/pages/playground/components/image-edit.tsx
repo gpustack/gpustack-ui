@@ -62,6 +62,8 @@ const METAKEYS = [
   'strength'
 ];
 
+const ODD_STRING = 'AAAABJRU5ErkJgg===';
+
 const advancedFieldsDefaultValus = {
   seed: null,
   sample_method: 'euler_a',
@@ -149,6 +151,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const removeBase64Suffix = (str: string, suffix: string) => {
+    return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
+  };
 
   const updateCacheFormData = (values: Record<string, any>) => {
     cacheFormData.current = {
@@ -383,11 +389,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
           if (item.b64_json && params.stream_options_chunk_result) {
-            imgItem.dataUrl += item.b64_json;
+            imgItem.dataUrl += removeBase64Suffix(item.b64_json, ODD_STRING);
           } else if (item.b64_json) {
-            imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
+            imgItem.dataUrl = `data:image/png;base64,${removeBase64Suffix(item.b64_json, ODD_STRING)}`;
           }
-          const progress = _.round(item.progress, 0);
+          const progress = item.progress;
 
           newImageList[item.index] = {
             dataUrl: imgItem.dataUrl,
@@ -832,7 +838,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                         style={{
                           height: 125,
                           maxWidth: 125,
-                          maxHeight: 125
+                          maxHeight: 125,
+                          overflow: 'hidden'
                         }}
                         key={item.uid}
                       >

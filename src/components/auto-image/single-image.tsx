@@ -1,6 +1,7 @@
 import { CloseCircleOutlined } from '@ant-design/icons';
 import { Progress, ProgressProps } from 'antd';
 import classNames from 'classnames';
+import { round } from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
 import AutoImage from './index';
@@ -40,7 +41,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     progress,
     maxHeight,
     maxWidth,
-    dataUrl,
+    dataUrl = '',
     style,
     autoBgColor,
     preview = true,
@@ -134,12 +135,12 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                 }}
               >
                 <Progress
-                  percent={progress}
+                  percent={round(progress, 0)}
                   type="dashboard"
                   size={loadingSize}
                   steps={{ count: 50, gap: 2 }}
                   format={() => (
-                    <span className="font-size-20">{progress}%</span>
+                    <span className="font-size-20">{round(progress, 0)}%</span>
                   )}
                   trailColor="var(--ant-color-fill-secondary)"
                 />
@@ -164,12 +165,14 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                 {progress && progress < 100 && (
                   <span className="small-progress-wrap">
                     <Progress
-                      percent={progress}
+                      percent={round(progress, 0)}
                       type="dashboard"
                       size="small"
                       steps={{ count: 25, gap: 3 }}
                       format={() => (
-                        <span className="font-size-12">{progress}%</span>
+                        <span className="font-size-12">
+                          {round(progress, 0)}%
+                        </span>
                       )}
                       strokeColor="var(--color-white-secondary)"
                       trailColor="var(--ant-color-fill-secondary)"

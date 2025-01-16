@@ -1,10 +1,17 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import PageTools from '@/components/page-tools';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Col, Row, Table } from 'antd';
 import { memo, useContext } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
+
+const NACategories = [
+  modelCategoriesMap.llm,
+  modelCategoriesMap.embedding,
+  modelCategoriesMap.reranker
+];
 
 const ActiveTable = () => {
   const intl = useIntl();
@@ -48,9 +55,13 @@ const ActiveTable = () => {
       key: 'token_count',
       ellipsis: true,
       render: (text: any, record: any) => {
+        let val = text;
+        if (!text) {
+          val = NACategories.includes(record.category?.[0]) ? 'N/A' : 0;
+        }
         return (
           <AutoTooltip ghost>
-            <span>{text || 'N/A'}</span>
+            <span>{val}</span>
           </AutoTooltip>
         );
       }

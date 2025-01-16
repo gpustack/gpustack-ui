@@ -149,35 +149,46 @@ export const generateRandomNumber = () => {
 };
 
 function base64ToBlob(base64: string, contentType = '', sliceSize = 512) {
-  const base64Content = base64.replace(/^data:image\/(png|jpg);base64,/, '');
-  const byteCharacters = atob(base64Content);
-  const byteArrays = [];
+  try {
+    const base64Content = base64.replace(/^data:image\/(png|jpg);base64,/, '');
+    const byteCharacters = atob(base64Content);
+    const byteArrays = [];
 
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
 
-    const byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
     }
 
-    const byteArray = new Uint8Array(byteNumbers);
-    byteArrays.push(byteArray);
+    return new Blob(byteArrays, { type: contentType });
+  } catch (error) {
+    return null;
   }
-
-  return new Blob(byteArrays, { type: contentType });
 }
 
 export const base64ToFile = (base64String: string, fileName: string) => {
-  if (!base64String) {
+  try {
+    if (!base64String) {
+      return null;
+    }
+    console.log('base64String:', base64String);
+    const match = base64String.match(/data:(.*?);base64,/);
+    if (!match) {
+      throw new Error('Invalid base64 string');
+    }
+    const contentType = match[1];
+    const blob = base64ToBlob(base64String, contentType);
+    if (!blob) {
+      throw new Error('Failed to convert base64 to blob');
+    }
+    return new File([blob], fileName || contentType, { type: contentType });
+  } catch (error) {
     return null;
   }
-  console.log('base64String:', base64String);
-  const match = base64String.match(/data:(.*?);base64,/);
-  if (!match) {
-    throw new Error('Invalid base64 string');
-  }
-  const contentType = match[1];
-  const blob = base64ToBlob(base64String, contentType);
-  return new File([blob], fileName || contentType, { type: contentType });
 };

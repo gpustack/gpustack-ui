@@ -352,6 +352,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           if (item.b64_json && stream_options.chunk_results) {
             imgItem.dataUrl += item.b64_json;
           } else if (item.b64_json) {
+            console.log('item.b64_json:', item.b64_json, item.index);
             imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
           }
           const progress = _.round(item.progress, 0);

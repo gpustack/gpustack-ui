@@ -19,7 +19,7 @@ type CanvasImageEditorProps = {
   imageSrc: string;
   disabled?: boolean;
   imguid: string | number;
-  onSave: (imageData: { mask: string; img: string }) => void;
+  onSave: (imageData: { mask: string | null; img: string }) => void;
   uploadButton: React.ReactNode;
   imageStatus: {
     isOriginal: boolean;
@@ -148,6 +148,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const generateMask = useCallback(() => {
+    if (strokesRef.current.length === 0) {
+      return null;
+    }
     const overlayCanvas = overlayCanvasRef.current!;
     const maskCanvas = document.createElement('canvas');
     maskCanvas.width = overlayCanvas.width;
@@ -197,7 +200,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
     const link = document.createElement('a');
     link.download = 'mask.png';
-    link.href = mask;
+    link.href = mask || '';
     link.click();
   }, [generateMask]);
 
@@ -524,6 +527,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       redrawStrokes(strokesRef.current);
     }
     updateCursorSize();
+    saveImage();
   }, [drawImage, onReset, redrawStrokes, imguid]);
 
   const updateZoom = (scaleChange: number, mouseX: number, mouseY: number) => {

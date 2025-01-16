@@ -122,7 +122,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const form = useRef<any>(null);
   const inputRef = useRef<any>(null);
   const [image, setImage] = useState<string>('');
-  const [mask, setMask] = useState<string>('');
+  const [mask, setMask] = useState<string | null>(null);
   const [uploadList, setUploadList] = useState<any[]>([]);
   const [modelMeta, setModelMeta] = useState<any>({});
   const [imageStatus, setImageStatus] = useState<{
@@ -640,14 +640,17 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setImageList([]);
   }, []);
 
-  const handleOnSave = useCallback((data: { img: string; mask: string }) => {
-    setImageStatus({
-      isOriginal: true,
-      isResetNeeded: false
-    });
-    setMask(data.mask);
-    setImage(data.img);
-  }, []);
+  const handleOnSave = useCallback(
+    (data: { img: string; mask: string | null }) => {
+      setImageStatus({
+        isOriginal: true,
+        isResetNeeded: false
+      });
+      setMask(data.mask || null);
+      setImage(data.img);
+    },
+    []
+  );
 
   const renderImageEditor = useMemo(() => {
     if (image) {

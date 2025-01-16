@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
+import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -122,6 +123,24 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     form.setFieldValue('backend_parameters', list);
   }, []);
 
+  const gpuOptionRender = (data: any) => {
+    let width = {
+      maxWidth: 180,
+      minWidth: 180
+    };
+    if (!data.parent) {
+      width = { maxWidth: 180, minWidth: 180 };
+    }
+    if (data.parent) {
+      return (
+        <AutoTooltip ghost {...width}>
+          {data.label}
+        </AutoTooltip>
+      );
+    }
+    return <GPUCard data={data}></GPUCard>;
+  };
+
   const collapseItems = useMemo(() => {
     const children = (
       <>
@@ -214,47 +233,94 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           </>
         )}
         {scheduleType === 'manual' && (
-          <Form.Item<FormData>
-            name={['gpu_selector', 'gpu_ids']}
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.select'
-                  },
-                  {
-                    name: intl.formatMessage({ id: 'models.form.gpuselector' })
-                  }
-                )
-              }
-            ]}
-          >
-            <SealSelect
-              allowClear
-              label={intl.formatMessage({ id: 'models.form.gpuselector' })}
-              required
-              mode="multiple"
-              maxTagCount={1}
-              tagRender={(props) => {
-                return (
-                  <AutoTooltip
-                    className="m-r-4"
-                    closable={props.closable}
-                    onClose={props.onClose}
-                    maxWidth={240}
-                  >
-                    {props.label}
-                  </AutoTooltip>
-                );
-              }}
-              options={gpuOptions}
-              optionRender={(props) => {
-                return <GPUCard data={props.data}></GPUCard>;
-              }}
-            ></SealSelect>
-          </Form.Item>
+          <>
+            {/* <Form.Item<FormData>
+              name={['gpu_selector', 'gpu_ids']}
+              rules={[
+                {
+                  required: true,
+                  message: intl.formatMessage(
+                    {
+                      id: 'common.form.rule.select'
+                    },
+                    {
+                      name: intl.formatMessage({
+                        id: 'models.form.gpuselector'
+                      })
+                    }
+                  )
+                }
+              ]}
+            >
+              <SealSelect
+                label={intl.formatMessage({ id: 'models.form.gpuselector' })}
+                required
+                mode="multiple"
+                maxTagCount={1}
+                tagRender={(props) => {
+                  return (
+                    <AutoTooltip
+                      className="m-r-4"
+                      closable={props.closable}
+                      onClose={props.onClose}
+                      maxWidth={240}
+                    >
+                      {props.label}
+                    </AutoTooltip>
+                  );
+                }}
+                options={gpuOptions}
+                optionRender={(props) => {
+                  return <GPUCard data={props.data}></GPUCard>;
+                }}
+              ></SealSelect>
+            </Form.Item> */}
+            <Form.Item
+              name={['gpu_selector', 'gpu_ids']}
+              rules={[
+                {
+                  required: true,
+                  message: intl.formatMessage(
+                    {
+                      id: 'common.form.rule.select'
+                    },
+                    {
+                      name: intl.formatMessage({
+                        id: 'models.form.gpuselector'
+                      })
+                    }
+                  )
+                }
+              ]}
+            >
+              <SealCascader
+                required
+                multiple={backend !== backendOptionsMap.voxBox}
+                popupClassName="cascader-popup-wrapper"
+                maxTagCount="responsive"
+                label={intl.formatMessage({ id: 'models.form.gpuselector' })}
+                options={gpuOptions.map((item) => {
+                  item.disableCheckbox = backend !== backendOptionsMap.llamaBox;
+                  return item;
+                })}
+                tagRender={(props) => {
+                  return (
+                    <AutoTooltip
+                      className="m-r-4"
+                      closable={props.closable}
+                      onClose={props.onClose}
+                      maxWidth={240}
+                    >
+                      {props.label}
+                    </AutoTooltip>
+                  );
+                }}
+                optionRender={gpuOptionRender}
+              ></SealCascader>
+            </Form.Item>
+          </>
         )}
+
         <Form.Item name="backend_version">
           <SealInput.Input
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}

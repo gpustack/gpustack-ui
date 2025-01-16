@@ -777,6 +777,40 @@ body {
   font-weight: var(--font-weight-bold);
 }
 
+.ant-cascader-menu-item.ant-cascader-menu-item-active {
+  background-color: var(--ant-select-option-selected-bg) !important;
+}
+
+.cascader-popup-wrapper {
+  .ant-cascader-menu {
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      width: var(--scrollbar-size);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 4px;
+      }
+    }
+
+    .ant-cascader-checkbox.ant-cascader-checkbox-disabled {
+      display: none;
+    }
+  }
+}
+
 .ant-tooltip-content {
   .ant-tooltip-inner {
     a {

@@ -7,7 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import CopyButton from '../copy-button';
-import CopyStyle from './copy.less';
+import CopyStyle from './copy-btn.less';
 import './index.less';
 
 const linkReg = /<a (.*?)>(.*?)<\/a>/g;

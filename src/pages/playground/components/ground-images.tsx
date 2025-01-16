@@ -60,6 +60,8 @@ const METAKEYS = [
   'negative_prompt'
 ];
 
+const ODD_STRING = 'AAAABJRU5ErkJgg===';
+
 const advancedFieldsDefaultValus = {
   seed: null,
   sample_method: 'euler_a',
@@ -134,6 +136,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       collapse: collapse
     };
   });
+
+  const removeBase64Suffix = (str: string, suffix: string) => {
+    return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
+  };
 
   const getNewImageSizeOptions = useCallback((metaData: any) => {
     const { max_height, max_width } = metaData || {};
@@ -350,12 +356,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
           if (item.b64_json && stream_options.chunk_results) {
-            imgItem.dataUrl += item.b64_json;
+            imgItem.dataUrl += removeBase64Suffix(item.b64_json, ODD_STRING);
           } else if (item.b64_json) {
-            console.log('item.b64_json:', item.b64_json, item.index);
-            imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
+            imgItem.dataUrl = `data:image/png;base64,${removeBase64Suffix(item.b64_json, ODD_STRING)}`;
           }
-          const progress = _.round(item.progress, 0);
+          const progress = item.progress;
+
           newImageList[item.index] = {
             dataUrl: imgItem.dataUrl,
             height: imgSize[1],

@@ -71,9 +71,6 @@ const AutoImage: React.FC<
   }, [props.onLoad]);
 
   const handleOnError = () => {
-    console.log('error===img=========', {
-      src: props.src
-    });
     setIsError(true);
   };
 

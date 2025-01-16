@@ -210,7 +210,6 @@ const processBuffer = async (buffer: string, callback: (data: any) => void) => {
       const jsonStr = trimmedLine.slice(6).trim();
       try {
         if (jsonStr !== '[DONE]') {
-          console.log('jsonStr>>>>>>>>>>>>>done:', jsonStr);
           const jsonData = JSON.parse(jsonStr);
           callback(jsonData);
         }
@@ -219,7 +218,6 @@ const processBuffer = async (buffer: string, callback: (data: any) => void) => {
       }
     } else if (trimmedLine.startsWith('error:')) {
       const errorStr = trimmedLine.slice(7).trim();
-      console.log('jsonStr>>>>>>>>>>>>>error:', errorStr);
       try {
         const jsonData = JSON.parse(errorStr);
         callback({ error: jsonData });
@@ -307,6 +305,8 @@ export const readLargeStreamData = async (
       // Try to process the complete line in the buffer
       const lines = buffer.split('\n');
       buffer = lines.pop() || ''; // Keep last line (may be incomplete)
+
+      console.log('buffer>>>>>>>>>>>>>:', buffer);
 
       for (const line of lines) {
         bufferManager.add(line);

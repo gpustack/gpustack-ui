@@ -51,6 +51,13 @@ interface DataFormProps {
   fields?: string[];
 }
 
+interface GPUOption {
+  label: string;
+  value: string;
+  disableCheckbox?: boolean;
+  children: GPUOption[];
+}
+
 const SEARCH_SOURCE = [
   modelSourceMap.huggingface_value,
   modelSourceMap.modelscope_value
@@ -72,9 +79,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
-  const [gpuOptions, setGpuOptions] = useState<
-    Array<GPUListItem & { label: string; value: string }>
-  >([]);
+  const [gpuOptions, setGpuOptions] = useState<Array<GPUOption>>([]);
   const [modelTask, setModelTask] = useState<Record<string, any>>({
     type: '',
     value: '',
@@ -114,17 +119,37 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   ];
 
-  const getGPUList = async () => {
-    const data = await queryGPUList();
-    const list = _.map(data.items, (item: GPUListItem) => {
+  const generateCascaderOptions = (list: GPUListItem[]) => {
+    const workerFields = ['worker_name', 'worker_id', 'worker_ip'];
+
+    const workers = _.groupBy(list, 'worker_name');
+
+    const workerList = _.map(workers, (value: GPUListItem[]) => {
       return {
-        ...item,
-        title: '',
-        label: ` ${item.name}(${item.worker_name}) [${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}]`,
-        value: item.id
+        label: `${value[0].worker_name}`,
+        value: value[0].worker_name,
+        parent: true,
+        disableCheckbox: true,
+        ..._.pick(value[0], workerFields),
+        children: _.map(value, (item: GPUListItem) => {
+          return {
+            label: `[
+            ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}] ${item.name}`,
+            value: item.id,
+            disableCheckbox: false,
+            ..._.omit(item, workerFields)
+          };
+        })
       };
     });
-    setGpuOptions(list);
+
+    return workerList;
+  };
+
+  const getGPUList = async () => {
+    const data = await queryGPUList();
+    const gpuList = generateCascaderOptions(data.items);
+    setGpuOptions(gpuList);
   };
 
   useEffect(() => {
@@ -470,6 +495,34 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     props.onBackendChange?.(val);
   }, []);
 
+  const generateGPUIds = (data: FormData) => {
+    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+    if (!gpu_ids.length) {
+      return {};
+    }
+    const result: string[] = [];
+
+    _.each(gpu_ids, (item: string[]) => {
+      if (item.length > 1) {
+        result.push(..._.tail(item));
+      }
+      if (item.length === 1) {
+        const worker = _.find(gpuOptions, { value: item[0] });
+        const gpus = _.map(worker?.children, 'value');
+        result.push(...gpus);
+      }
+    });
+
+    if (result.length) {
+      return {
+        gpu_selector: {
+          gpu_ids: result
+        }
+      };
+    }
+    return {};
+  };
+
   const handleOk = (formdata: FormData) => {
     let data = _.cloneDeep(formdata);
     if (data.categories) {
@@ -477,8 +530,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     } else {
       data.categories = [];
     }
+    const gpuSelector = generateGPUIds(data);
     onOk({
-      ..._.omit(data, ['scheduleType'])
+      ..._.omit(data, ['scheduleType']),
+      ...gpuSelector
     });
   };
 

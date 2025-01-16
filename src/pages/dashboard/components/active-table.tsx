@@ -57,7 +57,7 @@ const ActiveTable = () => {
       render: (text: any, record: any) => {
         let val = text;
         if (!text) {
-          val = NACategories.includes(record.category?.[0]) ? 'N/A' : 0;
+          val = !NACategories.includes(record.categories?.[0]) ? 'N/A' : 0;
         }
         return (
           <AutoTooltip ghost>

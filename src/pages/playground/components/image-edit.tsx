@@ -133,7 +133,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const doneImage = useRef<boolean>(false);
   const cacheFormData = useRef<any>({});
   const size = Form.useWatch('size', form.current?.form);
-  const [imguid, setImgUid] = useState<number>(0);
+  const [activeImgUid, setActiveImgUid] = useState<number>(0);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -292,7 +292,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         return pre.map((item) => {
           return {
             ...item,
-            uid: setMessageId(),
+            uid: activeImgUid,
             dataUrl: image
           };
         });
@@ -626,7 +626,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     const img = _.get(base64List, '[0].dataUrl', '');
     setUploadList(base64List);
     setImage(img);
-    setImgUid(_.get(base64List, '[0].uid', ''));
+    setActiveImgUid(_.get(base64List, '[0].uid', ''));
     setImageStatus({
       isOriginal: false,
       isResetNeeded: true
@@ -647,7 +647,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (image) {
       return (
         <CanvasImageEditor
-          imguid={imguid}
+          imguid={activeImgUid}
           imageStatus={imageStatus}
           imageSrc={image}
           disabled={loading}
@@ -692,7 +692,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (item.progress < 100) {
       return;
     }
-    setImgUid(item.uid);
+    setActiveImgUid(item.uid);
     setImage(item.dataUrl);
     setImageStatus({
       isOriginal: isOrigin,

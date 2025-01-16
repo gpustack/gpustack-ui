@@ -120,8 +120,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return {
         ...item,
         title: '',
-        label: ` ${item.name}(${item.worker_name})[
-            ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}]`,
+        label: ` ${item.name}(${item.worker_name}) [${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}]`,
         value: item.id
       };
     });

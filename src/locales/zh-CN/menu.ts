@@ -5,7 +5,7 @@ export default {
   'menu.playground.embedding': '文本嵌入',
   'menu.playground.chat': '对话',
   'menu.playground.speech': '语音',
-  'menu.playground.text2images': '文生图',
+  'menu.playground.text2images': '图像',
   'menu.compare': '多模型对比',
   'menu.models': '模型',
   'menu.models.modelList': '部署与管理',

@@ -1,9 +1,11 @@
+import { modelsExpandKeysAtom } from '@/atoms/models';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Pagination, Select, Space, message } from 'antd';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { createModel, queryCatalogList } from './apis';
@@ -38,6 +40,7 @@ const Catalog: React.FC = () => {
     current: {},
     source: modelSourceMap.huggingface_value
   });
+  const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const cacheData = React.useRef<CatalogItemType[]>([]);
 
   const categoryOptions = [...modelCategories.filter((item) => item.value)];
@@ -53,7 +56,7 @@ const Catalog: React.FC = () => {
           );
         }
         if (search) {
-          return _.toLower(item.name).includes(search);
+          return _.toLower(item.name).includes(_.toLower(search));
         }
         if (categories.length > 0) {
           return categories.some((category) =>
@@ -134,6 +137,7 @@ const Catalog: React.FC = () => {
           show: false
         });
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        setModelsExpandKeys([modelData.id]);
         navigate('/models/list');
       } catch (error) {}
     },

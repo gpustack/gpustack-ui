@@ -1,3 +1,4 @@
+import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
@@ -30,6 +31,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
 import { Button, Dropdown, Input, Select, Space, Tag, message } from 'antd';
 import dayjs from 'dayjs';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -125,6 +127,7 @@ const Models: React.FC<ModelsProps> = ({
   loading,
   total
 }) => {
+  const [expandAtom] = useAtom(modelsExpandKeysAtom);
   const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
@@ -134,7 +137,7 @@ const Models: React.FC<ModelsProps> = ({
     updateExpandedRowKeys,
     removeExpandedRowKey,
     expandedRowKeys
-  } = useExpandedRowKeys();
+  } = useExpandedRowKeys(expandAtom);
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -309,6 +312,7 @@ const Models: React.FC<ModelsProps> = ({
         }
       });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
+      updateExpandedRowKeys([row.id, ...expandedRowKeys]);
     } catch (error) {
       // ingore
     }
@@ -329,6 +333,7 @@ const Models: React.FC<ModelsProps> = ({
           replicas: 0
         }
       });
+      removeExpandedRowKey([row.id]);
     } catch (error) {
       // ingore
     }

@@ -4,7 +4,7 @@ export default {
   'playground.system': '系统',
   'playground.systemMessage': '系统消息',
   'playground.user': '用户',
-  'playground.assistant': '小助手',
+  'playground.assistant': 'AI助手',
   'playground.newMessage': '新消息',
   'playground.viewcode': '查看代码',
   'playground.model': '模型',

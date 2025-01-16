@@ -496,6 +496,11 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     overlayCtx!.resetTransform();
   }, []);
 
+  const updateCursorSize = () => {
+    cursorRef.current!.style.width = `${lineWidth * autoScale.current}px`;
+    cursorRef.current!.style.height = `${lineWidth * autoScale.current}px`;
+  };
+
   const initializeImage = useCallback(async () => {
     if (imguid === preImguid.current) {
       return;
@@ -518,6 +523,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (strokesRef.current.length) {
       redrawStrokes(strokesRef.current);
     }
+    updateCursorSize();
   }, [drawImage, onReset, redrawStrokes, imguid]);
 
   const updateZoom = (scaleChange: number, mouseX: number, mouseY: number) => {
@@ -555,11 +561,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
     overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
     canvasRef.current!.style.transform = `scale(${autoScale.current})`;
-  };
-
-  const updateCursorSize = () => {
-    cursorRef.current!.style.width = `${lineWidth * autoScale.current}px`;
-    cursorRef.current!.style.height = `${lineWidth * autoScale.current}px`;
   };
 
   const handleOnWheel = (event: any) => {

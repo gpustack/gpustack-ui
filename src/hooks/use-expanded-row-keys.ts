@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
 
-export default function useExpandedRowKeys() {
-  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
+export default function useExpandedRowKeys(defaultKeys: React.Key[] = []) {
+  const [expandedRowKeys, setExpandedRowKeys] =
+    useState<React.Key[]>(defaultKeys);
 
   const handleExpandChange = useCallback(
     (expanded: boolean, record: any, rowKey: any) => {

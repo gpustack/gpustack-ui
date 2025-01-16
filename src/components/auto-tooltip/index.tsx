@@ -124,7 +124,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
                 style={{
                   position: 'absolute',
                   right: 8,
-                  top: 8
+                  top: 7
                 }}
               />
             ) : (

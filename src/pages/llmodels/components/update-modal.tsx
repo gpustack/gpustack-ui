@@ -75,18 +75,59 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const [loading, setLoading] = useState(false);
   const localPathCache = useRef<string>('');
 
-  const getGPUList = async () => {
-    const data = await queryGPUList();
-    const list = _.map(data.items, (item: GPUListItem) => {
+  const generateCascaderOptions = (list: GPUListItem[]) => {
+    const workerFields = ['worker_name', 'worker_id', 'worker_ip'];
+
+    const workers = _.groupBy(list, 'worker_name');
+
+    const workerList = _.map(workers, (value: GPUListItem[]) => {
       return {
-        ...item,
-        title: '',
-        label: ` ${item.name}(${item.worker_name})[
-            ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}]`,
-        value: item.id
+        label: `${value[0].worker_name}`,
+        value: value[0].worker_name,
+        parent: true,
+        ..._.pick(value[0], workerFields),
+        children: _.map(value, (item: GPUListItem) => {
+          return {
+            label: `[
+              ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}] ${item.name}`,
+            value: item.id,
+            ..._.omit(item, workerFields)
+          };
+        })
       };
     });
-    setGpuOptions(list);
+
+    return workerList;
+  };
+
+  const getGPUList = async () => {
+    const data = await queryGPUList();
+    const gpuList = generateCascaderOptions(data.items);
+    setGpuOptions(gpuList);
+  };
+
+  const generateGPUSelector = (data: any) => {
+    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+    if (gpu_ids.length === 0) {
+      return [];
+    }
+    const dataList = _.reduce(
+      gpuOptions,
+      (list: string[], item: any) => {
+        const gpuIds = _.filter(
+          gpu_ids,
+          (id: string) => id.indexOf(item.worker_name) > -1
+        );
+        if (gpuIds.length && gpuIds.length === item.children.length) {
+          list.push(item.worker_name);
+        } else if (gpuIds.length) {
+          list.push(item.worker_name, ...gpuIds);
+        }
+        return list;
+      },
+      {}
+    );
+    return dataList;
   };
 
   useEffect(() => {
@@ -96,6 +137,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         props.data
       );
 
+      const gpu_ids = generateGPUSelector(props.data);
+
+      console.log('gpu_ids+++++++++', gpu_ids);
+
       const formData = {
         ...result.values,
         ..._.omit(props.data, result.omits),
@@ -104,7 +149,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           : null,
         scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
         gpu_selector: props.data?.gpu_selector || {
-          gpu_ids: []
+          gpu_ids: gpu_ids
         }
       };
       form.setFieldsValue(formData);

@@ -104,6 +104,10 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (disabled) {
+      overlayCanvasRef.current!.style.cursor = 'default';
+      return;
+    }
     overlayCanvasRef.current!.style.cursor = 'none';
     cursorRef.current!.style.display = 'block';
     cursorRef.current!.style.top = `${e.clientY}px`;
@@ -111,6 +115,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (disabled) {
+      return;
+    }
     overlayCanvasRef.current!.style.cursor = 'none';
     cursorRef.current!.style.display = 'block';
     cursorRef.current!.style.top = `${e.clientY}px`;
@@ -118,6 +125,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const handleMouseLeave = () => {
+    if (disabled) {
+      return;
+    }
     overlayCanvasRef.current!.style.cursor = 'default';
     cursorRef.current!.style.display = 'none';
   };
@@ -284,6 +294,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   }, []);
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (disabled) {
+      return;
+    }
     if (!isDrawing.current) return;
 
     const { offsetX, offsetY } = e.nativeEvent;
@@ -315,6 +328,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (disabled) {
+      return;
+    }
     isDrawing.current = true;
 
     currentStroke.current = [];
@@ -340,6 +356,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
   const endDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     console.log('End Drawing:', e);
+    if (disabled) {
+      return;
+    }
     if (!isDrawing.current) {
       return;
     }
@@ -610,13 +629,13 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    if (disabled) {
-      overlayCanvasRef.current!.style.pointerEvents = 'none';
-    } else {
-      overlayCanvasRef.current!.style.pointerEvents = 'auto';
-    }
-  }, [disabled]);
+  // useEffect(() => {
+  //   if (disabled) {
+  //     overlayCanvasRef.current!.style.pointerEvents = 'none';
+  //   } else {
+  //     overlayCanvasRef.current!.style.pointerEvents = 'auto';
+  //   }
+  // }, [disabled]);
 
   return (
     <div className="editor-wrapper">

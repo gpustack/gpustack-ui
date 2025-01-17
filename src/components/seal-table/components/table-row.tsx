@@ -184,6 +184,20 @@ const TableRow: React.FC<
   }, [expanded]);
 
   useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'hidden') {
+        cacheDataListRef.current = [];
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!firstLoad && expanded) {
       cacheDataListRef.current = childrenData;
       filterUpdateChildrenHandler();

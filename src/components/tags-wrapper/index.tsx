@@ -72,6 +72,10 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
     }
   };
 
+  const handleClick = (data: any) => {
+    data.domEvent?.stopPropagation();
+  };
+
   useEffect(() => {
     if (tagsContentRef.current) {
       calculateHiddenIndices();
@@ -98,13 +102,15 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
         {hiddenIndices.end < dataList.length && (
           <Dropdown
             trigger={['hover']}
+            overlayClassName="tags-wrapper-dropdown"
             menu={{
               items: _.map(
                 _.slice(dataList, hiddenIndices.end),
                 (item: any, index: number) => {
                   return {
                     label: renderTag?.(item),
-                    key: index
+                    key: index,
+                    onClick: handleClick
                   };
                 }
               )

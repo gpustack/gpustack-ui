@@ -43,21 +43,20 @@ const Models: React.FC = () => {
     categories: []
   });
 
-  const { updateChunkedList, cacheDataListRef, deletedIdsRef } =
-    useUpdateChunkedList({
-      events: ['UPDATE'],
-      dataList: dataSource.dataList,
-      setDataList(list, opts?: any) {
-        setDataSource((pre) => {
-          return {
-            total: pre.total,
-            loading: false,
-            dataList: list,
-            deletedIds: opts?.deletedIds || []
-          };
-        });
-      }
-    });
+  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
+    events: ['UPDATE'],
+    dataList: dataSource.dataList,
+    setDataList(list, opts?: any) {
+      setDataSource((pre) => {
+        return {
+          total: pre.total,
+          loading: false,
+          dataList: list,
+          deletedIds: opts?.deletedIds || []
+        };
+      });
+    }
+  });
 
   const getWorkerList = async () => {
     try {

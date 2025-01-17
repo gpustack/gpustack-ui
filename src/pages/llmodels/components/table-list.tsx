@@ -127,7 +127,7 @@ const Models: React.FC<ModelsProps> = ({
   loading,
   total
 }) => {
-  const [expandAtom] = useAtom(modelsExpandKeysAtom);
+  const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
   const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
@@ -226,6 +226,12 @@ const Models: React.FC<ModelsProps> = ({
       rowSelection.removeSelectedKey(deleteIds);
     }
   }, [deleteIds]);
+
+  useEffect(() => {
+    return () => {
+      setExpandAtom([]);
+    };
+  }, []);
 
   const sourceOptions = [
     {

@@ -29,6 +29,7 @@ const Models: React.FC = () => {
     loading: false,
     total: 0
   });
+  const [pageHidden, setPageHidden] = useState(false);
   const [gpuDeviceList, setGpuDeviceList] = useState<GPUDeviceItem[]>([]);
   const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -122,6 +123,10 @@ const Models: React.FC = () => {
 
   const updateInstanceHandler = (list: any) => {
     setModelInstances(list);
+    window.postMessage(
+      { type: 'modelInstance', data: list },
+      window.location.origin
+    );
   };
 
   const createModelsChunkRequest = useCallback(async () => {
@@ -241,6 +246,38 @@ const Models: React.FC = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
+
+  useEffect(() => {
+    const handleOnWindowMessage = (event: any) => {
+      const data = event.data;
+      console.log(
+        'event.origin=======',
+        event.origin !== window.location.origin ||
+          data.type !== 'modelInstance',
+        data,
+        event.origin,
+        window.location.origin
+      );
+
+      if (
+        event.origin !== window.location.origin ||
+        data.type !== 'modelInstance'
+      ) {
+        return;
+      }
+
+      if (document.visibilityState === 'hidden') {
+        console.log('isPageHidden=======', document.visibilityState, data.data);
+
+        setModelInstances(data.data);
+      }
+    };
+
+    window.addEventListener('message', handleOnWindowMessage);
+    return () => {
+      window.removeEventListener('message', handleOnWindowMessage);
+    };
+  }, []);
 
   return (
     <TableContext.Provider

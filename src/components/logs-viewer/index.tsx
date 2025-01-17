@@ -24,7 +24,9 @@ const LogsViewer: React.FC<LogsViewerProps> = (props) => {
     instance,
     initialized
   } = useOverlayScroller({
-    theme: 'os-theme-light'
+    options: {
+      theme: 'os-theme-light'
+    }
   });
   const { isClean, parseAnsi } = useParseAnsi();
   const { setChunkFetch } = useSetChunkFetch();

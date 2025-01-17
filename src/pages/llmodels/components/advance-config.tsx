@@ -44,6 +44,12 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const wokerSelector = Form.useWatch('worker_selector', form);
   const scheduleType = Form.useWatch('scheduleType', form);
   const backend = Form.useWatch('backend', form);
+  const backend_parameters = Form.useWatch('backend_parameters', form);
+  const categories = Form.useWatch('categories', form);
+  const backend_version = Form.useWatch('backend_version', form);
+  const placement_strategy = Form.useWatch('placement_strategy', form);
+  const gpuSelectorIds = Form.useWatch('gpu_selector.gpu_ids', form);
+  const worker_selector = Form.useWatch('worker_selector', form);
 
   const placementStrategyTips = [
     {
@@ -371,7 +377,13 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     scheduleType,
     wokerSelector,
     backend,
-    isGGUF
+    backend_parameters,
+    isGGUF,
+    categories,
+    backend_version,
+    placement_strategy,
+    gpuSelectorIds,
+    worker_selector
   ]);
 
   return (

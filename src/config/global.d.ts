@@ -43,3 +43,7 @@ declare namespace Global {
 
   type SearchParams = Pagination & { search?: string };
 }
+
+interface Window {
+  __GPUSTACK_BODY_SCROLLER__?: any;
+}

@@ -30,7 +30,9 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
     instance,
     initialized
   } = useOverlayScroller({
-    theme: 'os-theme-light'
+    options: {
+      theme: 'os-theme-light'
+    }
   });
   const viewportHeight = window.innerHeight;
   const viewHeight = viewportHeight - diffHeight;

@@ -94,7 +94,9 @@ const mapRoutes = (routes: IRoute[], role: string) => {
 };
 
 export default (props: any) => {
-  const { initialize: initialize } = useOverlayScroller();
+  const { initialize: initialize } = useOverlayScroller({
+    defer: false
+  });
   const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
   const [routeCache] = useAtom(routeCacheAtom);
@@ -209,7 +211,8 @@ export default (props: any) => {
   useEffect(() => {
     const body = document.querySelector('body');
     if (body) {
-      initialize(body);
+      const ins = initialize(body);
+      window.__GPUSTACK_BODY_SCROLLER__ = ins;
     }
   }, [initialize]);
 

@@ -21,6 +21,16 @@ const setProxyUrl = (url: string) => {
 };
 
 // ===================== Models =====================
+
+export async function queryModelsInstances(options?: any) {
+  return request<Global.PageResponse<ModelInstanceListItem>>(
+    MODEL_INSTANCE_API,
+    {
+      method: 'GET',
+      cancelToken: options?.token
+    }
+  );
+}
 export async function queryModelsList(
   params: Global.SearchParams,
   options?: any
@@ -69,13 +79,15 @@ export async function queryModelDetail(id: number) {
 // ===================== Model Instances start =====================
 
 export async function queryModelInstancesList(
-  params: Global.Pagination & { query?: string; id: number }
+  params: Global.Pagination & { query?: string; id: number },
+  options?: any
 ) {
   return request<Global.PageResponse<ModelInstanceListItem>>(
     `${MODELS_API}/${params.id}/instances`,
     {
       method: 'GET',
-      params
+      params,
+      cancelToken: options?.token
     }
   );
 }

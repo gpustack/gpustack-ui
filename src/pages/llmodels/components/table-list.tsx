@@ -66,6 +66,7 @@ interface ModelsProps {
   handleCategoryChange: (val: any) => void;
   onViewLogs: () => void;
   onCancelViewLogs: () => void;
+  allInstances: ModelInstanceListItem[];
   queryParams: {
     page: number;
     perPage: number;
@@ -119,6 +120,7 @@ const Models: React.FC<ModelsProps> = ({
   onViewLogs,
   onCancelViewLogs,
   handleCategoryChange,
+  allInstances,
   deleteIds,
   dataSource,
   gpuDeviceList,
@@ -494,13 +496,15 @@ const Models: React.FC<ModelsProps> = ({
     [deleteModelInstance]
   );
 
-  const getModelInstances = async (row: any) => {
+  const getModelInstances = async (row: any, options?: any) => {
     const params = {
       id: row.id,
       page: 1,
       perPage: 100
     };
-    const data = await queryModelInstancesList(params);
+    const data = await queryModelInstancesList(params, {
+      token: options?.token
+    });
     return data.items || [];
   };
 
@@ -668,9 +672,15 @@ const Models: React.FC<ModelsProps> = ({
 
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
+      let childList = list;
+      if (allInstances.length) {
+        childList = list.filter((item: any) => {
+          return allInstances.some((instance) => instance.id === item.id);
+        });
+      }
       return (
         <InstanceItem
-          list={list}
+          list={childList}
           modelData={parent}
           gpuDeviceList={gpuDeviceList}
           workerList={workerList}
@@ -678,7 +688,7 @@ const Models: React.FC<ModelsProps> = ({
         ></InstanceItem>
       );
     },
-    [workerList]
+    [workerList, allInstances]
   );
 
   const generateSource = useCallback((record: ListItem) => {

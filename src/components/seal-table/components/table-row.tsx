@@ -1,4 +1,6 @@
-import useSetChunkRequest from '@/hooks/use-chunk-request';
+import useSetChunkRequest, {
+  createAxiosToken
+} from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
@@ -32,6 +34,7 @@ const TableRow: React.FC<
   } = props;
   const tableContext: any = React.useContext<{
     allChildren?: any[];
+    allSubChildren?: any[];
   }>(TableContext);
   const { setChunkRequest } = useSetChunkRequest();
   const [expanded, setExpanded] = useState(false);
@@ -43,6 +46,7 @@ const TableRow: React.FC<
   const chunkRequestRef = useRef<any>(null);
   const childrenDataRef = useRef<any[]>([]);
   childrenDataRef.current = childrenData;
+  const axiosToken = useRef<any>(null);
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
@@ -68,6 +72,7 @@ const TableRow: React.FC<
         clearInterval(pollTimer.current);
       }
       chunkRequestRef.current?.current?.cancel?.();
+      axiosToken.current?.cancel?.();
     };
   }, []);
 
@@ -88,8 +93,12 @@ const TableRow: React.FC<
 
   const handleLoadChildren = async () => {
     try {
+      axiosToken.current?.cancel?.();
+      axiosToken.current = createAxiosToken();
       setLoading(true);
-      const data = await loadChildren?.(record);
+      const data = await loadChildren?.(record, {
+        token: axiosToken.current?.token
+      });
 
       setChildrenData(data || []);
       setLoading(false);
@@ -144,6 +153,7 @@ const TableRow: React.FC<
     }
 
     if (expanded) {
+      axiosToken.current?.cancel?.();
       return;
     }
 
@@ -207,6 +217,10 @@ const TableRow: React.FC<
       cacheDataListRef.current = [];
     };
   }, [firstLoad, expanded, tableContext.allChildren]);
+
+  useEffect(() => {
+    console.log('allSubChildren===', tableContext.allSubChildren);
+  }, [tableContext.allSubChildren]);
 
   const renderRowPrefix = () => {
     if (expandable && rowSelection) {

@@ -53,7 +53,7 @@ export interface SealTableProps {
   onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
   onExpand?: (expanded: boolean, record: any, rowKey: any) => void;
   renderChildren?: (data: any, parent?: any) => React.ReactNode;
-  loadChildren?: (record: any) => Promise<any[]>;
+  loadChildren?: (record: any, options?: any) => Promise<any[]>;
   loadChildrenAPI?: (record: any) => string;
   contentRendered?: () => void;
   rowKey: string;

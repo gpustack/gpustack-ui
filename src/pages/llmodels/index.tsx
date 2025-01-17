@@ -1,5 +1,7 @@
 import TableContext from '@/components/seal-table/table-context';
-import useSetChunkRequest from '@/hooks/use-chunk-request';
+import useSetChunkRequest, {
+  createAxiosToken as generateAxiosToken
+} from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { queryWorkersList } from '@/pages/resources/apis';
 import {
@@ -9,9 +11,16 @@ import {
 import _ from 'lodash';
 import qs from 'query-string';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
+import {
+  MODELS_API,
+  MODEL_INSTANCE_API,
+  queryModelsInstances,
+  queryModelsList
+} from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
+
+const INSTANCE_SYNC = 'instance_sync';
 
 const Models: React.FC = () => {
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
@@ -29,13 +38,14 @@ const Models: React.FC = () => {
     loading: false,
     total: 0
   });
-  const [pageHidden, setPageHidden] = useState(false);
+
+  const [allInstances, setAllInstances] = useState<any[]>([]);
   const [gpuDeviceList, setGpuDeviceList] = useState<GPUDeviceItem[]>([]);
   const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
-  const [firstLoad, setFirstLoad] = useState(true);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
   const isPageHidden = useRef(false);
+  const instancesToken = useRef<any>();
   let axiosToken = createAxiosToken();
   const [queryParams, setQueryParams] = useState({
     page: 1,
@@ -58,6 +68,21 @@ const Models: React.FC = () => {
       });
     }
   });
+
+  const fetchModelsInstances = async () => {
+    try {
+      instancesToken.current?.cancel?.();
+      instancesToken.current = generateAxiosToken();
+      const data: any = await queryModelsInstances({
+        token: instancesToken.current?.token
+      });
+      console.log('instance====', data);
+      setAllInstances(data.items || []);
+    } catch (error) {
+      // ignore
+      setAllInstances([]);
+    }
+  };
 
   const getWorkerList = async () => {
     try {
@@ -98,9 +123,6 @@ const Models: React.FC = () => {
           deletedIds: []
         });
       }
-      console.log('error+++', error);
-    } finally {
-      setFirstLoad(false);
     }
   }, [queryParams]);
 
@@ -124,7 +146,7 @@ const Models: React.FC = () => {
   const updateInstanceHandler = (list: any) => {
     setModelInstances(list);
     window.postMessage(
-      { type: 'modelInstance', data: list },
+      { type: INSTANCE_SYNC, data: list },
       window.location.origin
     );
   };
@@ -220,6 +242,7 @@ const Models: React.FC = () => {
       chunkRequedtRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
       chunkInstanceRequedtRef.current?.current?.cancel?.();
+      instancesToken.current?.cancel?.();
     };
   }, []);
 
@@ -227,6 +250,7 @@ const Models: React.FC = () => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
+        await fetchModelsInstances();
         await Promise.all([
           createModelsChunkRequest(),
           createModelsInstanceChunkRequest()
@@ -247,38 +271,6 @@ const Models: React.FC = () => {
     };
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
-  useEffect(() => {
-    const handleOnWindowMessage = (event: any) => {
-      const data = event.data;
-      console.log(
-        'event.origin=======',
-        event.origin !== window.location.origin ||
-          data.type !== 'modelInstance',
-        data,
-        event.origin,
-        window.location.origin
-      );
-
-      if (
-        event.origin !== window.location.origin ||
-        data.type !== 'modelInstance'
-      ) {
-        return;
-      }
-
-      if (document.visibilityState === 'hidden') {
-        console.log('isPageHidden=======', document.visibilityState, data.data);
-
-        setModelInstances(data.data);
-      }
-    };
-
-    window.addEventListener('message', handleOnWindowMessage);
-    return () => {
-      window.removeEventListener('message', handleOnWindowMessage);
-    };
-  }, []);
-
   return (
     <TableContext.Provider
       value={{
@@ -293,6 +285,7 @@ const Models: React.FC = () => {
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}
         onViewLogs={handleOnViewLogs}
+        allInstances={allInstances}
         onCancelViewLogs={handleOnCancelViewLogs}
         queryParams={queryParams}
         loading={dataSource.loading}

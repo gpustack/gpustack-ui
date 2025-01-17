@@ -73,7 +73,11 @@ const Models: React.FC = () => {
     try {
       instancesToken.current?.cancel?.();
       instancesToken.current = generateAxiosToken();
-      const data: any = await queryModelsInstances({
+      const params = {
+        page: 1,
+        perPage: 100
+      };
+      const data: any = await queryModelsInstances(params, {
         token: instancesToken.current?.token
       });
       console.log('instance====', data);

@@ -80,7 +80,6 @@ const Models: React.FC = () => {
       const data: any = await queryModelsInstances(params, {
         token: instancesToken.current?.token
       });
-      console.log('instance====', data);
       setAllInstances(data.items || []);
     } catch (error) {
       // ignore

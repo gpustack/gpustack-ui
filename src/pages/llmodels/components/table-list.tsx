@@ -144,6 +144,7 @@ const Models: React.FC<ModelsProps> = ({
     defaultSortOrder: 'descend'
   });
 
+  const updateRef = useRef(false);
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<any>({
@@ -673,10 +674,11 @@ const Models: React.FC<ModelsProps> = ({
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
       let childList = list;
-      if (allInstances.length) {
+      if (allInstances.length && !updateRef.current) {
         childList = list.filter((item: any) => {
           return allInstances.some((instance) => instance.id === item.id);
         });
+        updateRef.current = true;
       }
       return (
         <InstanceItem
@@ -743,6 +745,20 @@ const Models: React.FC<ModelsProps> = ({
       navigate('/models/catalog');
     }
   };
+
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'hidden') {
+        updateRef.current = false;
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   return (
     <>

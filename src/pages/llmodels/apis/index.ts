@@ -22,10 +22,14 @@ const setProxyUrl = (url: string) => {
 
 // ===================== Models =====================
 
-export async function queryModelsInstances(options?: any) {
+export async function queryModelsInstances(
+  params: Global.SearchParams,
+  options?: any
+) {
   return request<Global.PageResponse<ModelInstanceListItem>>(
     MODEL_INSTANCE_API,
     {
+      params,
       method: 'GET',
       cancelToken: options?.token
     }

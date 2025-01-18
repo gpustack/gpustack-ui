@@ -367,14 +367,15 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'Input',
+    type: 'TextArea',
     name: 'negative_prompt', // e.g. ng_deepnegative_v1_75t,(badhandv4:1.2),EasyNegative,(worst quality:2),
     label: {
       text: 'playground.image.params.negativePrompt',
       isLocalized: true
     },
     attrs: {
-      trim: false
+      trim: false,
+      autoSize: { minRows: 2, maxRows: 2 }
     },
     rules: [
       {
@@ -450,7 +451,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       min: 256,
       max: 3200,
       step: 64,
-      inputnumber: false
+      inputnumber: true
     },
     rules: [
       {
@@ -470,7 +471,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       min: 256,
       max: 3200,
       step: 64,
-      inputnumber: false
+      inputnumber: true
     },
     rules: [
       {

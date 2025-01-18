@@ -3,7 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Tooltip, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload';
 import { RcFile } from 'antd/es/upload';
-import { debounce } from 'lodash';
+import { debounce, round } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 
 interface UploadImgProps {
@@ -15,7 +15,12 @@ interface UploadImgProps {
   children?: React.ReactNode;
   accept?: string;
   handleUpdateImgList: (
-    imgList: { dataUrl: string; uid: number | string }[]
+    imgList: {
+      dataUrl: string;
+      uid: number | string;
+      rawWidth: number;
+      rawHeight: number;
+    }[]
   ) => void;
 }
 
@@ -31,6 +36,25 @@ const UploadImg: React.FC<UploadImgProps> = ({
   const intl = useIntl();
   const uploadRef = useRef<any>(null);
 
+  const getImgSize = useCallback(
+    (url: string): Promise<{ rawWidth: number; rawHeight: number }> => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve({
+            rawWidth: round(img.width, 0),
+            rawHeight: round(img.height, 0)
+          });
+        };
+        img.onerror = () => {
+          resolve({ rawWidth: 0, rawHeight: 0 });
+        };
+        img.src = url;
+      });
+    },
+    []
+  );
+
   const getBase64 = useCallback((file: RcFile): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -41,9 +65,19 @@ const UploadImg: React.FC<UploadImgProps> = ({
   }, []);
 
   const debouncedUpdate = useCallback(
-    debounce((base64List: { dataUrl: string; uid: number | string }[]) => {
-      handleUpdateImgList(base64List);
-    }, 300),
+    debounce(
+      (
+        base64List: {
+          dataUrl: string;
+          uid: number | string;
+          rawWidth: number;
+          rawHeight: number;
+        }[]
+      ) => {
+        handleUpdateImgList(base64List);
+      },
+      300
+    ),
     [handleUpdateImgList, intl]
   );
 
@@ -52,23 +86,32 @@ const UploadImg: React.FC<UploadImgProps> = ({
       const { fileList } = info;
 
       const newFileList = await Promise.all(
-        fileList.map(async (item: UploadFile) => {
-          if (item.originFileObj && !item.url) {
-            const base64 = await getBase64(item.originFileObj as RcFile);
+        fileList.map(
+          async (
+            item: UploadFile & { rawWidth: number; rawHeight: number }
+          ) => {
+            if (item.originFileObj && !item.url) {
+              const base64 = await getBase64(item.originFileObj as RcFile);
+              const { rawWidth, rawHeight } = await getImgSize(base64);
 
-            item.url = base64;
+              item.url = base64;
+              item.rawWidth = rawWidth;
+              item.rawHeight = rawHeight;
+            }
+            return item;
           }
-          return item;
-        })
+        )
       );
 
       if (newFileList.length > 0) {
         const base64List = newFileList
           .filter((sitem) => sitem.url)
-          .map((item: UploadFile) => {
+          .map((item: UploadFile & { rawHeight: number; rawWidth: number }) => {
             return {
               dataUrl: item.url as string,
-              uid: item.uid
+              uid: item.uid,
+              rawWidth: item.rawWidth,
+              rawHeight: item.rawHeight
             };
           });
 

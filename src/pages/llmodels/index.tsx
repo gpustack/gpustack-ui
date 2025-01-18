@@ -148,10 +148,6 @@ const Models: React.FC = () => {
 
   const updateInstanceHandler = (list: any) => {
     setModelInstances(list);
-    window.postMessage(
-      { type: INSTANCE_SYNC, data: list },
-      window.location.origin
-    );
   };
 
   const createModelsChunkRequest = useCallback(async () => {

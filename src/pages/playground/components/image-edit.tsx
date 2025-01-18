@@ -370,7 +370,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         setTokenResult({
           error: true,
           errorMessage:
-            result?.data?.error?.message || result?.data?.error || ''
+            result?.data?.data?.detail ||
+            result?.data?.error?.message ||
+            result?.data?.error ||
+            ''
         });
         setImageList([]);
         return;
@@ -627,6 +630,31 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     [modelList, isOpenaiCompatible]
   );
 
+  const handleOnScaleImageSize = useCallback(
+    (data: { width: number; height: number }) => {
+      const { width, height } = data;
+      form.current?.form?.setFieldsValue({
+        size: 'custom',
+        width: width || 512,
+        height: height || 512
+      });
+      setParams((pre: object) => {
+        return {
+          ...pre,
+          size: 'custom',
+          width: width || 512,
+          height: height || 512
+        };
+      });
+      updateCacheFormData({
+        size: 'custom',
+        width: width || 512,
+        height: height || 512
+      });
+    },
+    []
+  );
+
   const handleUpdateImageList = useCallback((base64List: any) => {
     console.log('updateimagelist=========', base64List);
     const currentImg = _.get(base64List, '[0]', {});
@@ -639,24 +667,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       isResetNeeded: true
     });
     setImageList([]);
-    form.current?.form?.setFieldsValue({
-      size: 'custom',
-      width: currentImg.rawWidth || 512,
-      height: currentImg.rawHeight || 512
-    });
-    setParams((pre: object) => {
-      return {
-        ...pre,
-        size: 'custom',
-        width: currentImg.rawWidth || 512,
-        height: currentImg.rawHeight || 512
-      };
-    });
-    updateCacheFormData({
-      size: 'custom',
-      width: currentImg.rawWidth || 512,
-      height: currentImg.rawHeight || 512
-    });
   }, []);
 
   const handleOnSave = useCallback(
@@ -859,9 +869,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                       <div
                         style={{
                           height: 125,
-                          maxWidth: 125,
-                          maxHeight: 125,
-                          overflow: 'hidden'
+                          maxHeight: 125
                         }}
                         key={item.uid}
                       >
@@ -869,7 +877,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                           {...item}
                           height={125}
                           maxHeight={125}
-                          maxWidth={125}
                           preview={item.preview}
                           loading={item.loading}
                           autoSize={false}

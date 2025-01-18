@@ -20,6 +20,7 @@ type CanvasImageEditorProps = {
   disabled?: boolean;
   imguid: string | number;
   onSave: (imageData: { mask: string | null; img: string }) => void;
+  onScaleImageSize?: (data: { width: number; height: number }) => void;
   uploadButton: React.ReactNode;
   imageStatus: {
     isOriginal: boolean;
@@ -34,6 +35,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   disabled,
   imageStatus,
   onSave,
+  onScaleImageSize,
   imguid,
   uploadButton
 }) => {
@@ -110,8 +112,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     }
     overlayCanvasRef.current!.style.cursor = 'none';
     cursorRef.current!.style.display = 'block';
-    cursorRef.current!.style.top = `${e.clientY}px`;
-    cursorRef.current!.style.left = `${e.clientX}px`;
+    cursorRef.current!.style.top = `${e.clientY - (lineWidth / 2) * autoScale.current}px`;
+    cursorRef.current!.style.left = `${e.clientX - (lineWidth / 2) * autoScale.current}px`;
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -120,8 +122,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     }
     overlayCanvasRef.current!.style.cursor = 'none';
     cursorRef.current!.style.display = 'block';
-    cursorRef.current!.style.top = `${e.clientY}px`;
-    cursorRef.current!.style.left = `${e.clientX}px`;
+    cursorRef.current!.style.top = `${e.clientY - (lineWidth / 2) * autoScale.current}px`;
+    cursorRef.current!.style.left = `${e.clientX - (lineWidth / 2) * autoScale.current}px`;
   };
 
   const handleMouseLeave = () => {
@@ -300,8 +302,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (!isDrawing.current) return;
 
     const { offsetX, offsetY } = e.nativeEvent;
-    const currentX = offsetX + lineWidth / 2;
-    const currentY = offsetY + lineWidth / 2;
+    const currentX = offsetX;
+    const currentY = offsetY;
 
     currentStroke.current.push({
       x: currentX,
@@ -336,8 +338,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     currentStroke.current = [];
     const { offsetX, offsetY } = e.nativeEvent;
 
-    const currentX = offsetX + lineWidth / 2;
-    const currentY = offsetY + lineWidth / 2;
+    const currentX = offsetX;
+    const currentY = offsetY;
 
     currentStroke.current.push({
       x: currentX,
@@ -530,6 +532,10 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
     setImgLoaded(false);
     await drawImage();
+    onScaleImageSize?.({
+      width: canvasRef.current!.width,
+      height: canvasRef.current!.height
+    });
     setImgLoaded(true);
 
     if (strokeCache.current[imguid]) {
@@ -586,9 +592,15 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     canvasRef.current!.style.transform = `scale(${autoScale.current})`;
   };
 
+  const updateCursorPosOnZoom = (e: any) => {
+    cursorRef.current!.style.top = `${e.clientY - (lineWidth / 2) * autoScale.current}px`;
+    cursorRef.current!.style.left = `${e.clientX - (lineWidth / 2) * autoScale.current}px`;
+  };
+
   const handleOnWheel = (event: any) => {
     handleZoom(event);
     updateCursorSize();
+    updateCursorPosOnZoom(event);
     setActiveScale(autoScale.current);
   };
 

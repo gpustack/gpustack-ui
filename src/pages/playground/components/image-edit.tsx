@@ -629,7 +629,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleUpdateImageList = useCallback((base64List: any) => {
     console.log('updateimagelist=========', base64List);
-    const img = _.get(base64List, '[0].dataUrl', '');
+    const currentImg = _.get(base64List, '[0]', {});
+    const img = _.get(currentImg, 'dataUrl', '');
     setUploadList(base64List);
     setImage(img);
     setActiveImgUid(_.get(base64List, '[0].uid', ''));
@@ -638,6 +639,24 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       isResetNeeded: true
     });
     setImageList([]);
+    form.current?.form?.setFieldsValue({
+      size: 'custom',
+      width: currentImg.rawWidth || 512,
+      height: currentImg.rawHeight || 512
+    });
+    setParams((pre: object) => {
+      return {
+        ...pre,
+        size: 'custom',
+        width: currentImg.rawWidth || 512,
+        height: currentImg.rawHeight || 512
+      };
+    });
+    updateCacheFormData({
+      size: 'custom',
+      width: currentImg.rawWidth || 512,
+      height: currentImg.rawHeight || 512
+    });
   }, []);
 
   const handleOnSave = useCallback(

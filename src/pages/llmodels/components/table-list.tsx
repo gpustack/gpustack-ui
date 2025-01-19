@@ -66,7 +66,6 @@ interface ModelsProps {
   handleCategoryChange: (val: any) => void;
   onViewLogs: () => void;
   onCancelViewLogs: () => void;
-  allInstances: ModelInstanceListItem[];
   queryParams: {
     page: number;
     perPage: number;
@@ -120,7 +119,6 @@ const Models: React.FC<ModelsProps> = ({
   onViewLogs,
   onCancelViewLogs,
   handleCategoryChange,
-  allInstances,
   deleteIds,
   dataSource,
   gpuDeviceList,
@@ -144,7 +142,6 @@ const Models: React.FC<ModelsProps> = ({
     defaultSortOrder: 'descend'
   });
 
-  const updateRef = useRef(false);
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<any>({
@@ -673,24 +670,17 @@ const Models: React.FC<ModelsProps> = ({
 
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
-      let childList = list;
-      if (allInstances.length && !updateRef.current) {
-        childList = list.filter((item: any) => {
-          return allInstances.some((instance) => instance.id === item.id);
-        });
-        updateRef.current = true;
-      }
       return (
         <InstanceItem
-          list={childList}
+          list={list}
           modelData={parent}
-          gpuDeviceList={gpuDeviceList}
+          gpuDeviceList={[]}
           workerList={workerList}
           handleChildSelect={handleChildSelect}
         ></InstanceItem>
       );
     },
-    [workerList, allInstances]
+    [workerList]
   );
 
   const generateSource = useCallback((record: ListItem) => {
@@ -745,20 +735,6 @@ const Models: React.FC<ModelsProps> = ({
       navigate('/models/catalog');
     }
   };
-
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'hidden') {
-        updateRef.current = false;
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
 
   return (
     <>

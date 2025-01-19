@@ -61,6 +61,7 @@ const sourceOptions = [
   {
     label: 'models.form.localPath',
     value: modelSourceMap.local_path_value,
+    locale: true,
     key: 'local_path'
   }
 ];

@@ -1,7 +1,5 @@
 import TableContext from '@/components/seal-table/table-context';
-import useSetChunkRequest, {
-  createAxiosToken as generateAxiosToken
-} from '@/hooks/use-chunk-request';
+import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { queryWorkersList } from '@/pages/resources/apis';
 import {
@@ -11,16 +9,9 @@ import {
 import _ from 'lodash';
 import qs from 'query-string';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  MODELS_API,
-  MODEL_INSTANCE_API,
-  queryModelsInstances,
-  queryModelsList
-} from './apis';
+import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
-
-const INSTANCE_SYNC = 'instance_sync';
 
 const Models: React.FC = () => {
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
@@ -39,7 +30,6 @@ const Models: React.FC = () => {
     total: 0
   });
 
-  const [allInstances, setAllInstances] = useState<any[]>([]);
   const [gpuDeviceList, setGpuDeviceList] = useState<GPUDeviceItem[]>([]);
   const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
   const chunkRequedtRef = useRef<any>();
@@ -68,24 +58,6 @@ const Models: React.FC = () => {
       });
     }
   });
-
-  const fetchModelsInstances = async () => {
-    try {
-      instancesToken.current?.cancel?.();
-      instancesToken.current = generateAxiosToken();
-      const params = {
-        page: 1,
-        perPage: 100
-      };
-      const data: any = await queryModelsInstances(params, {
-        token: instancesToken.current?.token
-      });
-      setAllInstances(data.items || []);
-    } catch (error) {
-      // ignore
-      setAllInstances([]);
-    }
-  };
 
   const getWorkerList = async () => {
     try {
@@ -249,7 +221,7 @@ const Models: React.FC = () => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
-        await fetchModelsInstances();
+        // await fetchModelsInstances();
         await Promise.all([
           createModelsChunkRequest(),
           createModelsInstanceChunkRequest()
@@ -284,7 +256,6 @@ const Models: React.FC = () => {
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}
         onViewLogs={handleOnViewLogs}
-        allInstances={allInstances}
         onCancelViewLogs={handleOnCancelViewLogs}
         queryParams={queryParams}
         loading={dataSource.loading}

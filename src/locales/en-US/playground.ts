@@ -133,6 +133,7 @@ export default {
     'The higher the value, the greater the modification to the original image.',
   'playground.image.edit.tips': 'Click or drag image to this area to upload',
   'playground.image.saveMask': 'Save Mask',
+  'playground.image.negativeMask': 'Negative Mask',
   'playground.image.brushSize': 'Brush Size',
   'playground.image.download': 'Download Image',
   'playground.image.generate': 'Generate',

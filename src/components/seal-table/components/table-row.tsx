@@ -197,6 +197,7 @@ const TableRow: React.FC<
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
         cacheDataListRef.current = [];
+        setChildrenData([]);
       }
     };
 
@@ -217,10 +218,6 @@ const TableRow: React.FC<
       cacheDataListRef.current = [];
     };
   }, [firstLoad, expanded, tableContext.allChildren]);
-
-  useEffect(() => {
-    console.log('allSubChildren===', tableContext.allSubChildren);
-  }, [tableContext.allSubChildren]);
 
   const renderRowPrefix = () => {
     if (expandable && rowSelection) {

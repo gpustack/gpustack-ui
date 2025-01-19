@@ -451,7 +451,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       min: 256,
       max: 3200,
       step: 64,
-      inputnumber: true
+      inputnumber: false
     },
     rules: [
       {
@@ -471,7 +471,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       min: 256,
       max: 3200,
       step: 64,
-      inputnumber: true
+      inputnumber: false
     },
     rules: [
       {

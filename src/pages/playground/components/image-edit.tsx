@@ -30,6 +30,7 @@ import React, {
   useState
 } from 'react';
 import { EDIT_IMAGE_API } from '../apis';
+import { extractErrorMessage } from '../config';
 import {
   ImageAdvancedParamsConfig,
   ImageCustomSizeConfig,
@@ -369,11 +370,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (result.error) {
         setTokenResult({
           error: true,
-          errorMessage:
-            result?.data?.data?.detail ||
-            result?.data?.error?.message ||
-            result?.data?.error ||
-            ''
+          errorMessage: extractErrorMessage(result)
         });
         setImageList([]);
         return;

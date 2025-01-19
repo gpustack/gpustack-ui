@@ -62,6 +62,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const strokeCache = useRef<any>({});
   const preImguid = useRef<string | number>('');
   const [activeScale, setActiveScale] = useState<number>(1);
+  const negativeMaskRef = useRef<boolean>(false);
 
   const getTransformedPoint = useCallback(
     (offsetX: number, offsetY: number) => {
@@ -159,6 +160,41 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     strokesRef.current = strokes;
   };
 
+  const inpaintArea = useCallback(
+    (data: Uint8ClampedArray<ArrayBufferLike>) => {
+      for (let i = 0; i < data.length; i += 4) {
+        const alpha = data[i + 3];
+        if (alpha > 0) {
+          data[i] = 255; // Red
+          data[i + 1] = 255; // Green
+          data[i + 2] = 255; // Blue
+          data[i + 3] = 255; // Alpha
+        }
+      }
+    },
+    []
+  );
+
+  const inpaintBackground = useCallback(
+    (data: Uint8ClampedArray<ArrayBufferLike>) => {
+      for (let i = 0; i < data.length; i += 4) {
+        const alpha = data[i + 3];
+        if (alpha > 0) {
+          data[i] = 0; // Red
+          data[i + 1] = 0; // Green
+          data[i + 2] = 0; // Blue
+          data[i + 3] = 255; // Alpha
+        } else {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+          data[i + 3] = 255;
+        }
+      }
+    },
+    []
+  );
+
   const generateMask = useCallback(() => {
     if (strokesRef.current.length === 0) {
       return null;
@@ -178,15 +214,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     );
     const data = imageData.data;
 
-    for (let i = 0; i < data.length; i += 4) {
-      const alpha = data[i + 3];
-      if (alpha > 0) {
-        data[i] = 255; // Red
-        data[i + 1] = 255; // Green
-        data[i + 2] = 255; // Blue
-        data[i + 3] = 255; // Alpha
-      }
+    if (negativeMaskRef.current) {
+      inpaintBackground(data);
+    } else {
+      inpaintArea(data);
     }
+
     maskCtx.putImageData(imageData, 0, 0);
 
     maskCtx.globalCompositeOperation = 'destination-over';
@@ -620,6 +653,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     cursorRef.current!.style.width = `${value}px`;
     cursorRef.current!.style.height = `${value}px`;
   };
+
+  const handleOnChangeMask = (e: any) => {
+    negativeMaskRef.current = e.target.checked;
+    saveImage();
+  };
+
   useEffect(() => {
     initializeImage();
   }, [initializeImage]);
@@ -719,6 +758,15 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           </Tooltip>
         </div>
         <div className="tools">
+          {/* <Checkbox
+            onChange={handleOnChangeMask}
+            className="flex-center"
+            value={negativeMaskRef.current}
+          >
+            <span className="font-size-12">
+              {intl.formatMessage({ id: 'playground.image.negativeMask' })}
+            </span>
+          </Checkbox> */}
           <Tooltip
             title={intl.formatMessage({ id: 'playground.image.saveMask' })}
           >

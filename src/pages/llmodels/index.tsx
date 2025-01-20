@@ -128,6 +128,7 @@ const Models: React.FC = () => {
   };
 
   const updateInstanceHandler = (list: any) => {
+    // filter the data
     _.each(list, (data: any) => {
       updateInstanceChunkedList(data);
     });

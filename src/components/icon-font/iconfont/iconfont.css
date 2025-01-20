@@ -1,9 +1,9 @@
 @font-face {
   font-family: iconfont; /* Project id 4613488 */
   src:
-    url('iconfont.woff2?t=1734062014514') format('woff2'),
-    url('iconfont.woff?t=1734062014514') format('woff'),
-    url('iconfont.ttf?t=1734062014514') format('truetype');
+    url('iconfont.woff2?t=1737340346059') format('woff2'),
+    url('iconfont.woff?t=1737340346059') format('woff'),
+    url('iconfont.ttf?t=1737340346059') format('truetype');
 }
 
 .iconfont {
@@ -12,6 +12,86 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-SelectionInverse::before {
+  content: '\eace';
+}
+
+.icon-justice1::before {
+  content: '\e652';
+}
+
+.icon-New_img::before {
+  content: '\e733';
+}
+
+.icon-new_release_outlined::before {
+  content: '\e66c';
+}
+
+.icon-new-releases::before {
+  content: '\e60f';
+}
+
+.icon-catalog::before {
+  content: '\e62b';
+}
+
+.icon-save2::before {
+  content: '\e635';
+}
+
+.icon-left-template::before {
+  content: '\e62a';
+}
+
+.icon-logs::before {
+  content: '\e6ec';
+}
+
+.icon-gpu::before {
+  content: '\e71e';
+}
+
+.icon-filled-gpu::before {
+  content: '\e6de';
+}
+
+.icon-outline-gpu::before {
+  content: '\e641';
+}
+
+.icon-ts-tubiao_webserver::before {
+  content: '\e716';
+}
+
+.icon-server::before {
+  content: '\e66a';
+}
+
+.icon-host::before {
+  content: '\e7c6';
+}
+
+.icon-playcircle::before {
+  content: '\e80f';
+}
+
+.icon-recreate::before {
+  content: '\e6a5';
+}
+
+.icon-save1::before {
+  content: '\e647';
+}
+
+.icon-save::before {
+  content: '\e67c';
+}
+
+.icon-upload_image::before {
+  content: '\e613';
 }
 
 .icon-sound-wave::before {

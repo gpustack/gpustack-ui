@@ -21,7 +21,13 @@ const TitleTip: React.FC<TitleTipProps> = (props) => {
 
   return (
     <div style={{ maxHeight: 200, overflowY: 'auto' }} ref={scrollRef}>
-      <div style={{ width: 'max-content', maxWidth: 250, paddingInline: 10 }}>
+      <div
+        style={{
+          width: 'max-content',
+          maxWidth: 250,
+          paddingInline: 10
+        }}
+      >
         {isOverflowing || showTitle ? title || children : ''}
       </div>
     </div>

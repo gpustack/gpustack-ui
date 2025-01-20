@@ -49,6 +49,7 @@ export interface SealTableProps {
   pollingChildren?: boolean;
   watchChildren?: boolean;
   loading?: boolean;
+  loadend?: boolean;
   onCell?: (record: any, dataIndex: string) => void;
   onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
   onExpand?: (expanded: boolean, record: any, rowKey: any) => void;

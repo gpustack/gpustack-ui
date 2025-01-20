@@ -26,6 +26,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     onCell,
     expandedRowKeys,
     loading,
+    loadend,
     expandable,
     pollingChildren,
     watchChildren,
@@ -117,7 +118,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     if (!props.dataSource.length) {
       return (
         <div className="empty-wrapper">
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>
+          <Empty image={loadend ? Empty.PRESENTED_IMAGE_SIMPLE : null}></Empty>
         </div>
       );
     }

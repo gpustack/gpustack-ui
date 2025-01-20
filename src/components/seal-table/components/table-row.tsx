@@ -196,7 +196,7 @@ const TableRow: React.FC<
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
         cacheDataListRef.current = [];
-        setChildrenData([]);
+        // setChildrenData([]);
       }
     };
 
@@ -295,7 +295,13 @@ const TableRow: React.FC<
               {childrenData.length ? (
                 renderChildrenData()
               ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>
+                <Empty
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  style={{
+                    marginBlock: 0,
+                    height: 54
+                  }}
+                ></Empty>
               )}
             </Spin>
           </div>

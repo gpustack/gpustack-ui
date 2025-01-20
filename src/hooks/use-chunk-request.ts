@@ -123,6 +123,7 @@ const useSetChunkRequest = () => {
   const particalConfig = { params: {}, contentType: 'json' };
   const timer = useRef<any>(null);
   const loadedSize = useRef(0);
+  const bufferedDataRef = useRef('');
 
   const reset = () => {
     loaded.current = 0;
@@ -187,17 +188,33 @@ const useSetChunkRequest = () => {
           loaded.current = e.loaded || 0;
           total.current = e.total || 0;
 
-          let result = response;
-          let cres = '';
-          console.log('chunkrequest============e==', result);
+          let currentRes = sliceData(response, e.loaded, loadedSize);
+          let result: any[] = [];
+          let cres = currentRes;
+
           if (contentType === 'json') {
-            const currentRes = sliceData(response, e.loaded, loadedSize);
-            result = parseData(currentRes);
-            result = resetResultSchema(result);
-            cres = currentRes;
+            // Append the new data to the buffered data
+            bufferedDataRef.current += currentRes;
+
+            // Find valid JSON strings in the buffered data
+            let validJSON = findValidJSONStrings(bufferedDataRef.current);
+            if (validJSON.length > 0) {
+              result = resetResultSchema(validJSON);
+
+              // Calculate the position of the last complete JSON fragment, keeping the unfinished part
+              const lastValidJSON = validJSON[validJSON.length - 1];
+              const lastJSONIndex = bufferedDataRef.current.lastIndexOf(
+                JSON.stringify(lastValidJSON)
+              );
+              bufferedDataRef.current = bufferedDataRef.current.slice(
+                lastJSONIndex + JSON.stringify(lastValidJSON).length
+              );
+            }
+            handler(result);
+          } else {
+            handler(currentRes);
           }
 
-          handler(result);
           console.log('chunkrequest===', {
             result,
             url,

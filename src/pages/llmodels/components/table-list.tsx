@@ -77,6 +77,7 @@ interface ModelsProps {
   workerList: WorkerListItem[];
   dataSource: ListItem[];
   loading: boolean;
+  loadend: boolean;
   total: number;
 }
 
@@ -125,6 +126,7 @@ const Models: React.FC<ModelsProps> = ({
   workerList,
   queryParams,
   loading,
+  loadend,
   total
 }) => {
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
@@ -819,6 +821,7 @@ const Models: React.FC<ModelsProps> = ({
           expandedRowKeys={expandedRowKeys}
           onExpand={handleExpandChange}
           loading={loading}
+          loadend={loadend}
           rowKey="id"
           childParentKey="model_id"
           expandable={true}

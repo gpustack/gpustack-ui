@@ -22,11 +22,13 @@ const Models: React.FC = () => {
     dataList: ListItem[];
     deletedIds: number[];
     loading: boolean;
+    loadend: boolean;
     total: number;
   }>({
     dataList: [],
     deletedIds: [],
     loading: false,
+    loadend: false,
     total: 0
   });
 
@@ -52,6 +54,7 @@ const Models: React.FC = () => {
         return {
           total: pre.total,
           loading: false,
+          loadend: true,
           dataList: list,
           deletedIds: opts?.deletedIds || []
         };
@@ -95,6 +98,7 @@ const Models: React.FC = () => {
       setDataSource({
         dataList: res.items || [],
         loading: false,
+        loadend: true,
         total: res.pagination.total,
         deletedIds: []
       });
@@ -103,6 +107,7 @@ const Models: React.FC = () => {
         setDataSource({
           dataList: [],
           loading: false,
+          loadend: true,
           total: dataSource.total,
           deletedIds: []
         });
@@ -173,13 +178,9 @@ const Models: React.FC = () => {
 
   const handleOnCancelViewLogs = useCallback(async () => {
     isPageHidden.current = false;
-    await Promise.all([
-      createModelsChunkRequest(),
-      createModelsInstanceChunkRequest()
-    ]);
-    setTimeout(() => {
-      fetchData();
-    }, 100);
+    await createModelsInstanceChunkRequest();
+    await createModelsChunkRequest();
+    fetchData();
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
   const handleSearch = useCallback(async () => {
@@ -235,10 +236,8 @@ const Models: React.FC = () => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
-        await Promise.all([
-          createModelsChunkRequest(),
-          createModelsInstanceChunkRequest()
-        ]);
+        await createModelsInstanceChunkRequest();
+        await createModelsChunkRequest();
         fetchData();
       } else {
         isPageHidden.current = true;
@@ -273,6 +272,7 @@ const Models: React.FC = () => {
         onCancelViewLogs={handleOnCancelViewLogs}
         queryParams={queryParams}
         loading={dataSource.loading}
+        loadend={dataSource.loadend}
         total={dataSource.total}
         deleteIds={dataSource.deletedIds}
         gpuDeviceList={gpuDeviceList}

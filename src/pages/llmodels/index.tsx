@@ -59,6 +59,15 @@ const Models: React.FC = () => {
     }
   });
 
+  const {
+    updateChunkedList: updateInstanceChunkedList,
+    cacheDataListRef: cacheInsDataListRef
+  } = useUpdateChunkedList({
+    dataList: modelInstances,
+    limit: 100,
+    setDataList: setModelInstances
+  });
+
   const getWorkerList = async () => {
     try {
       const data = await queryWorkersList({ page: 1, perPage: 100 });
@@ -119,7 +128,9 @@ const Models: React.FC = () => {
   };
 
   const updateInstanceHandler = (list: any) => {
-    setModelInstances(list);
+    _.each(list, (data: any) => {
+      updateInstanceChunkedList(data);
+    });
   };
 
   const createModelsChunkRequest = useCallback(async () => {
@@ -155,6 +166,7 @@ const Models: React.FC = () => {
     isPageHidden.current = true;
     chunkRequedtRef.current?.current?.cancel?.();
     cacheDataListRef.current = [];
+    cacheInsDataListRef.current = [];
     chunkInstanceRequedtRef.current?.current?.cancel?.();
   }, []);
 
@@ -212,6 +224,7 @@ const Models: React.FC = () => {
     return () => {
       chunkRequedtRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
+      cacheInsDataListRef.current = [];
       chunkInstanceRequedtRef.current?.current?.cancel?.();
       instancesToken.current?.cancel?.();
     };
@@ -221,7 +234,6 @@ const Models: React.FC = () => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
-        // await fetchModelsInstances();
         await Promise.all([
           createModelsChunkRequest(),
           createModelsInstanceChunkRequest()
@@ -231,6 +243,7 @@ const Models: React.FC = () => {
         isPageHidden.current = true;
         chunkRequedtRef.current?.current?.cancel?.();
         cacheDataListRef.current = [];
+        cacheInsDataListRef.current = [];
         chunkInstanceRequedtRef.current?.current?.cancel?.();
       }
     };

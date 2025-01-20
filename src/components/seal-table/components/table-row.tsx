@@ -111,11 +111,10 @@ const TableRow: React.FC<
   };
 
   const filterUpdateChildrenHandler = () => {
-    _.each(tableContext.allChildren || [], (data: any) => {
-      if (_.get(data, ['data', [childParentKey]]) === _.get(record, [rowKey])) {
-        updateChunkedList(data);
-      }
+    const dataList = _.filter(tableContext.allChildren, (data: any) => {
+      return _.get(data, [childParentKey]) === _.get(record, [rowKey]);
     });
+    setChildrenData(dataList);
   };
 
   const updateChildrenHandler = (list: any) => {

@@ -6,6 +6,146 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "27116743",
+      "name": "SelectionInverse",
+      "font_class": "SelectionInverse",
+      "unicode": "eace",
+      "unicode_decimal": 60110
+    },
+    {
+      "icon_id": "43035036",
+      "name": "justice",
+      "font_class": "justice1",
+      "unicode": "e652",
+      "unicode_decimal": 58962
+    },
+    {
+      "icon_id": "1740853",
+      "name": "New_img",
+      "font_class": "New_img",
+      "unicode": "e733",
+      "unicode_decimal": 59187
+    },
+    {
+      "icon_id": "9745732",
+      "name": "new_release_outlined",
+      "font_class": "new_release_outlined",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
+    },
+    {
+      "icon_id": "40667024",
+      "name": "new-releases",
+      "font_class": "new-releases",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "41920256",
+      "name": "catalog",
+      "font_class": "catalog",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "13851416",
+      "name": "save",
+      "font_class": "save2",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
+      "icon_id": "3238366",
+      "name": "模板",
+      "font_class": "left-template",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "26746089",
+      "name": "logs",
+      "font_class": "logs",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
+    },
+    {
+      "icon_id": "1132892",
+      "name": "gpu",
+      "font_class": "gpu",
+      "unicode": "e71e",
+      "unicode_decimal": 59166
+    },
+    {
+      "icon_id": "38418656",
+      "name": "GPUxCPU",
+      "font_class": "filled-gpu",
+      "unicode": "e6de",
+      "unicode_decimal": 59102
+    },
+    {
+      "icon_id": "7556336",
+      "name": "gpu",
+      "font_class": "outline-gpu",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "8040181",
+      "name": "webserver",
+      "font_class": "ts-tubiao_webserver",
+      "unicode": "e716",
+      "unicode_decimal": 59158
+    },
+    {
+      "icon_id": "6587064",
+      "name": "server",
+      "font_class": "server",
+      "unicode": "e66a",
+      "unicode_decimal": 58986
+    },
+    {
+      "icon_id": "40493325",
+      "name": "host",
+      "font_class": "host",
+      "unicode": "e7c6",
+      "unicode_decimal": 59334
+    },
+    {
+      "icon_id": "6151262",
+      "name": "play circle",
+      "font_class": "playcircle",
+      "unicode": "e80f",
+      "unicode_decimal": 59407
+    },
+    {
+      "icon_id": "25197526",
+      "name": "recreate",
+      "font_class": "recreate",
+      "unicode": "e6a5",
+      "unicode_decimal": 59045
+    },
+    {
+      "icon_id": "12689724",
+      "name": "save",
+      "font_class": "save1",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    },
+    {
+      "icon_id": "15838524",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e67c",
+      "unicode_decimal": 59004
+    },
+    {
+      "icon_id": "8782480",
+      "name": "upload_image",
+      "font_class": "upload_image",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
       "icon_id": "14464883",
       "name": "sound-wave",
       "font_class": "sound-wave",

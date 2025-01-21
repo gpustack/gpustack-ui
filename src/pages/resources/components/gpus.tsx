@@ -5,7 +5,7 @@ import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space, Table } from 'antd';
+import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
 import _ from 'lodash';
 import { memo, useEffect, useState } from 'react';
 import { queryGpuDevicesList } from '../apis';
@@ -21,10 +21,12 @@ const GPUList: React.FC = () => {
   const [dataSource, setDataSource] = useState<{
     dataList: GPUDeviceItem[];
     loading: boolean;
+    loadend: boolean;
     total: number;
   }>({
     dataList: [],
     loading: false,
+    loadend: false,
     total: 0
   });
   const [queryParams, setQueryParams] = useState({
@@ -60,12 +62,14 @@ const GPUList: React.FC = () => {
       setDataSource({
         dataList: res.items || [],
         loading: false,
+        loadend: true,
         total: res.pagination.total
       });
     } catch (error) {
       setDataSource({
         dataList: [],
         loading: false,
+        loadend: true,
         total: dataSource.total
       });
       console.log('error', error);
@@ -81,6 +85,18 @@ const GPUList: React.FC = () => {
       page: 1,
       search: e.target.value
     });
+  };
+
+  const renderEmpty = (type?: string) => {
+    if (type !== 'Table') return;
+    if (
+      !dataSource.loading &&
+      dataSource.loadend &&
+      !dataSource.dataList.length
+    ) {
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
+    }
+    return <div></div>;
   };
 
   useEffect(() => {
@@ -111,131 +127,127 @@ const GPUList: React.FC = () => {
           </Space>
         }
       ></PageTools>
-      <Table
-        dataSource={dataSource.dataList}
-        loading={dataSource.loading}
-        rowKey="id"
-        onChange={handleTableChange}
-        pagination={{
-          showSizeChanger: true,
-          pageSize: queryParams.perPage,
-          current: queryParams.page,
-          total: dataSource.total,
-          hideOnSinglePage: queryParams.perPage === 10,
-          onChange: handlePageChange
-        }}
-      >
-        <Column
-          title={intl.formatMessage({ id: 'common.table.name' })}
-          dataIndex="name"
-          key="name"
-          render={(text, record) => {
-            return (
-              <AutoTooltip ghost style={{ width: '100%' }}>
-                {text}
-              </AutoTooltip>
-            );
+      <ConfigProvider renderEmpty={renderEmpty}>
+        <Table
+          dataSource={dataSource.dataList}
+          loading={dataSource.loading}
+          rowKey="id"
+          onChange={handleTableChange}
+          pagination={{
+            showSizeChanger: true,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
+            total: dataSource.total,
+            hideOnSinglePage: queryParams.perPage === 10,
+            onChange: handlePageChange
           }}
-        />
-        <Column
-          title={intl.formatMessage({ id: 'resources.table.index' })}
-          dataIndex="index"
-          key="index"
-          render={(text, record: GPUDeviceItem) => {
-            return <span>{record.index}</span>;
-          }}
-        />
-        <Column
-          title={intl.formatMessage({ id: 'resources.table.workername' })}
-          dataIndex="worker_name"
-          key="worker_name"
-          width={200}
-          render={(text, record: GPUDeviceItem) => {
-            return (
-              <span style={{ display: 'flex', width: '100%' }}>
-                <AutoTooltip ghost maxWidth={340}>
+        >
+          <Column
+            title={intl.formatMessage({ id: 'common.table.name' })}
+            dataIndex="name"
+            key="name"
+            render={(text, record) => {
+              return (
+                <AutoTooltip ghost style={{ width: '100%' }}>
                   {text}
                 </AutoTooltip>
-              </span>
-            );
-          }}
-        />
-        <Column
-          title={intl.formatMessage({ id: 'resources.table.vender' })}
-          dataIndex="vendor"
-          key="vendor"
-        />
+              );
+            }}
+          />
+          <Column
+            title={intl.formatMessage({ id: 'resources.table.index' })}
+            dataIndex="index"
+            key="index"
+            render={(text, record: GPUDeviceItem) => {
+              return <span>{record.index}</span>;
+            }}
+          />
+          <Column
+            title={intl.formatMessage({ id: 'resources.table.workername' })}
+            dataIndex="worker_name"
+            key="worker_name"
+            width={200}
+            render={(text, record: GPUDeviceItem) => {
+              return (
+                <span style={{ display: 'flex', width: '100%' }}>
+                  <AutoTooltip ghost maxWidth={340}>
+                    {text}
+                  </AutoTooltip>
+                </span>
+              );
+            }}
+          />
+          <Column
+            title={intl.formatMessage({ id: 'resources.table.vender' })}
+            dataIndex="vendor"
+            key="vendor"
+          />
 
-        <Column
-          title={`${intl.formatMessage({ id: 'resources.table.temperature' })} (°C)`}
-          dataIndex="temperature"
-          key="Temperature"
-          render={(text, record: GPUDeviceItem) => {
-            return <span>{text ? _.round(text, 1) : '-'}</span>;
-          }}
-        />
-        {/* <Column
-          title={intl.formatMessage({ id: 'resources.table.core' })}
-          dataIndex="core"
-          key="Core"
-          render={(text, record: GPUDeviceItem) => {
-            return <>{record.core ? <span>{record.core?.total}</span> : '-'}</>;
-          }}
-        /> */}
-        <Column
-          title={intl.formatMessage({ id: 'resources.table.gpuutilization' })}
-          dataIndex="gpuUtil"
-          key="gpuUtil"
-          render={(text, record: GPUDeviceItem) => {
-            return (
-              <>
-                {record.core ? (
-                  <ProgressBar
-                    percent={_.round(record.core?.utilization_rate, 2)}
-                  ></ProgressBar>
-                ) : (
-                  '-'
-                )}
-              </>
-            );
-          }}
-        />
+          <Column
+            title={`${intl.formatMessage({ id: 'resources.table.temperature' })} (°C)`}
+            dataIndex="temperature"
+            key="Temperature"
+            render={(text, record: GPUDeviceItem) => {
+              return <span>{text ? _.round(text, 1) : '-'}</span>;
+            }}
+          />
+          <Column
+            title={intl.formatMessage({ id: 'resources.table.gpuutilization' })}
+            dataIndex="gpuUtil"
+            key="gpuUtil"
+            render={(text, record: GPUDeviceItem) => {
+              return (
+                <>
+                  {record.core ? (
+                    <ProgressBar
+                      percent={_.round(record.core?.utilization_rate, 2)}
+                    ></ProgressBar>
+                  ) : (
+                    '-'
+                  )}
+                </>
+              );
+            }}
+          />
 
-        <Column
-          title={intl.formatMessage({ id: 'resources.table.vramutilization' })}
-          dataIndex="VRAM"
-          key="VRAM"
-          render={(text, record: GPUDeviceItem) => {
-            return (
-              <ProgressBar
-                percent={
-                  record.memory?.used
-                    ? _.round(record.memory?.utilization_rate, 0)
-                    : _.round(
-                        record.memory?.allocated / record.memory?.total,
-                        0
-                      ) * 100
-                }
-                label={
-                  <span className="flex-column">
-                    <span>
-                      {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
-                      {convertFileSize(record.memory?.total, 0)}
+          <Column
+            title={intl.formatMessage({
+              id: 'resources.table.vramutilization'
+            })}
+            dataIndex="VRAM"
+            key="VRAM"
+            render={(text, record: GPUDeviceItem) => {
+              return (
+                <ProgressBar
+                  percent={
+                    record.memory?.used
+                      ? _.round(record.memory?.utilization_rate, 0)
+                      : _.round(
+                          record.memory?.allocated / record.memory?.total,
+                          0
+                        ) * 100
+                  }
+                  label={
+                    <span className="flex-column">
+                      <span>
+                        {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
+                        {convertFileSize(record.memory?.total, 0)}
+                      </span>
+                      <span>
+                        {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
+                        {convertFileSize(
+                          record.memory?.used || record.memory?.allocated,
+                          0
+                        )}
+                      </span>
                     </span>
-                    <span>
-                      {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-                      {convertFileSize(
-                        record.memory?.used || record.memory?.allocated,
-                        0
-                      )}
-                    </span>
-                  </span>
-                }
-              ></ProgressBar>
-            );
-          }}
-        />
-      </Table>
+                  }
+                ></ProgressBar>
+              );
+            }}
+          />
+        </Table>
+      </ConfigProvider>
     </>
   );
 };

@@ -118,7 +118,10 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     if (!props.dataSource.length) {
       return (
         <div className="empty-wrapper">
-          <Empty image={loadend ? Empty.PRESENTED_IMAGE_SIMPLE : null}></Empty>
+          <Empty
+            image={loadend ? Empty.PRESENTED_IMAGE_SIMPLE : null}
+            description={loadend ? undefined : null}
+          ></Empty>
         </div>
       );
     }

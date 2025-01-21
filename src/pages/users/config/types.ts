@@ -10,7 +10,7 @@ export interface ListItem {
 export interface FormData {
   username: string;
   id?: number;
-  is_admin: boolean;
+  is_admin: boolean | string;
   full_name: string;
   password: string;
 }

@@ -18,7 +18,15 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space, Table, message } from 'antd';
+import {
+  Button,
+  ConfigProvider,
+  Empty,
+  Input,
+  Space,
+  Table,
+  message
+} from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
@@ -40,10 +48,12 @@ const Users: React.FC = () => {
   const [dataSource, setDataSource] = useState<{
     dataList: ListItem[];
     loading: boolean;
+    loadend: boolean;
     total: number;
   }>({
     dataList: [],
     loading: false,
+    loadend: false,
     total: 0
   });
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
@@ -85,12 +95,14 @@ const Users: React.FC = () => {
       setDataSource({
         dataList: res.items || [],
         loading: false,
+        loadend: true,
         total: res.pagination.total
       });
     } catch (error) {
       setDataSource({
         dataList: [],
         loading: false,
+        loadend: true,
         total: dataSource.total
       });
       console.log('error', error);
@@ -199,6 +211,18 @@ const Users: React.FC = () => {
     }
   };
 
+  const renderEmpty = (type?: string) => {
+    if (type !== 'Table') return;
+    if (
+      !dataSource.loading &&
+      dataSource.loadend &&
+      !dataSource.dataList.length
+    ) {
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
+    }
+    return <div></div>;
+  };
+
   useEffect(() => {
     fetchData();
   }, [queryParams]);
@@ -265,111 +289,113 @@ const Users: React.FC = () => {
             </Space>
           }
         ></PageTools>
-        <Table
-          dataSource={dataSource.dataList}
-          rowSelection={rowSelection}
-          loading={dataSource.loading}
-          rowKey="id"
-          onChange={handleTableChange}
-          pagination={{
-            showSizeChanger: true,
-            pageSize: queryParams.perPage,
-            current: queryParams.page,
-            total: dataSource.total,
-            hideOnSinglePage: queryParams.perPage === 10,
-            onChange: handlePageChange
-          }}
-        >
-          <Column
-            title={intl.formatMessage({ id: 'common.table.name' })}
-            dataIndex="username"
-            key="name"
-            ellipsis={{
-              showTitle: false
+        <ConfigProvider renderEmpty={renderEmpty}>
+          <Table
+            dataSource={dataSource.dataList}
+            rowSelection={rowSelection}
+            loading={dataSource.loading}
+            rowKey="id"
+            onChange={handleTableChange}
+            pagination={{
+              showSizeChanger: true,
+              pageSize: queryParams.perPage,
+              current: queryParams.page,
+              total: dataSource.total,
+              hideOnSinglePage: queryParams.perPage === 10,
+              onChange: handlePageChange
             }}
-            render={(text, record) => {
-              return (
-                <AutoTooltip ghost minWidth={20}>
-                  {text}
-                </AutoTooltip>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'users.table.role' })}
-            dataIndex="role"
-            key="role"
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record: ListItem) => {
-              return record.is_admin ? (
-                <AutoTooltip ghost minWidth={50}>
-                  <UserSwitchOutlined className="size-16" />
-                  <span className="m-l-5">
-                    {intl.formatMessage({ id: 'users.form.admin' })}
-                  </span>
-                </AutoTooltip>
-              ) : (
-                <AutoTooltip ghost minWidth={50}>
-                  <UserOutlined className="size-16" />
-                  <span className="m-l-5">
-                    {intl.formatMessage({ id: 'users.form.user' })}
-                  </span>
-                </AutoTooltip>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'users.form.fullname' })}
-            dataIndex="full_name"
-            key="full_name"
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record) => {
-              return (
-                <AutoTooltip ghost minWidth={20}>
-                  {text}
-                </AutoTooltip>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.createTime' })}
-            dataIndex="created_at"
-            key="createTime"
-            defaultSortOrder="descend"
-            sortOrder={sortOrder}
-            showSorterTooltip={false}
-            sorter={false}
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record) => {
-              return (
-                <AutoTooltip ghost minWidth={20}>
-                  {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-                </AutoTooltip>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.operation' })}
-            key="operation"
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record: ListItem) => {
-              return (
-                <DropdownButtons
-                  items={ActionList}
-                  onSelect={(val) => handleSelect(val, record)}
-                ></DropdownButtons>
-              );
-            }}
-          />
-        </Table>
+          >
+            <Column
+              title={intl.formatMessage({ id: 'common.table.name' })}
+              dataIndex="username"
+              key="name"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'users.table.role' })}
+              dataIndex="role"
+              key="role"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record: ListItem) => {
+                return record.is_admin ? (
+                  <AutoTooltip ghost minWidth={50}>
+                    <UserSwitchOutlined className="size-16" />
+                    <span className="m-l-5">
+                      {intl.formatMessage({ id: 'users.form.admin' })}
+                    </span>
+                  </AutoTooltip>
+                ) : (
+                  <AutoTooltip ghost minWidth={50}>
+                    <UserOutlined className="size-16" />
+                    <span className="m-l-5">
+                      {intl.formatMessage({ id: 'users.form.user' })}
+                    </span>
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'users.form.fullname' })}
+              dataIndex="full_name"
+              key="full_name"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.createTime' })}
+              dataIndex="created_at"
+              key="createTime"
+              defaultSortOrder="descend"
+              sortOrder={sortOrder}
+              showSorterTooltip={false}
+              sorter={false}
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.operation' })}
+              key="operation"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record: ListItem) => {
+                return (
+                  <DropdownButtons
+                    items={ActionList}
+                    onSelect={(val) => handleSelect(val, record)}
+                  ></DropdownButtons>
+                );
+              }}
+            />
+          </Table>
+        </ConfigProvider>
       </PageContainer>
       <AddModal
         open={openAddModal}

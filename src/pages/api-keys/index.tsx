@@ -10,7 +10,15 @@ import { handleBatchRequest } from '@/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Space, Table, Tooltip } from 'antd';
+import {
+  Button,
+  ConfigProvider,
+  Empty,
+  Input,
+  Space,
+  Table,
+  Tooltip
+} from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
@@ -31,10 +39,12 @@ const APIKeys: React.FC = () => {
   const [dataSource, setDataSource] = useState<{
     dataList: ListItem[];
     loading: boolean;
+    loadend: boolean;
     total: number;
   }>({
     dataList: [],
     loading: false,
+    loadend: false,
     total: 0
   });
   const [openAddModal, setOpenAddModal] = useState(false);
@@ -71,6 +81,7 @@ const APIKeys: React.FC = () => {
       setDataSource({
         dataList: res.items || [],
         loading: false,
+        loadend: true,
         total: res.pagination.total
       });
     } catch (error) {
@@ -78,6 +89,7 @@ const APIKeys: React.FC = () => {
       setDataSource({
         dataList: [],
         loading: false,
+        loadend: true,
         total: dataSource.total
       });
     }
@@ -137,6 +149,18 @@ const APIKeys: React.FC = () => {
         fetchData();
       }
     });
+  };
+
+  const renderEmpty = (type?: string) => {
+    if (type !== 'Table') return;
+    if (
+      !dataSource.loading &&
+      dataSource.loadend &&
+      !dataSource.dataList.length
+    ) {
+      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
+    }
+    return <div></div>;
   };
 
   useEffect(() => {
@@ -205,110 +229,112 @@ const APIKeys: React.FC = () => {
             </Space>
           }
         ></PageTools>
-        <Table
-          dataSource={dataSource.dataList}
-          rowSelection={rowSelection}
-          loading={dataSource.loading}
-          rowKey="id"
-          onChange={handleTableChange}
-          pagination={{
-            showSizeChanger: true,
-            pageSize: queryParams.perPage,
-            current: queryParams.page,
-            total: dataSource.total,
-            hideOnSinglePage: queryParams.perPage === 10,
-            onChange: handlePageChange
-          }}
-        >
-          <Column
-            title={intl.formatMessage({ id: 'common.table.name' })}
-            dataIndex="name"
-            key="name"
-            ellipsis={{
-              showTitle: false
+        <ConfigProvider renderEmpty={renderEmpty}>
+          <Table
+            dataSource={dataSource.dataList}
+            rowSelection={rowSelection}
+            loading={dataSource.loading}
+            rowKey="id"
+            onChange={handleTableChange}
+            pagination={{
+              showSizeChanger: true,
+              pageSize: queryParams.perPage,
+              current: queryParams.page,
+              total: dataSource.total,
+              hideOnSinglePage: queryParams.perPage === 10,
+              onChange: handlePageChange
             }}
-            render={(text, record) => {
-              return (
-                <AutoTooltip ghost style={{ maxWidth: 400 }}>
-                  {text}
-                </AutoTooltip>
-              );
-            }}
-          />
+          >
+            <Column
+              title={intl.formatMessage({ id: 'common.table.name' })}
+              dataIndex="name"
+              key="name"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost style={{ maxWidth: 400 }}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
 
-          <Column
-            title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
-            dataIndex="expires_at"
-            key="expiration"
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record) => {
-              return (
-                <AutoTooltip ghost>
-                  {text
-                    ? dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-                    : intl.formatMessage({
-                        id: 'apikeys.form.expiration.never'
-                      })}
-                </AutoTooltip>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.description' })}
-            dataIndex="description"
-            key="description"
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record) => {
-              return <AutoTooltip ghost>{text}</AutoTooltip>;
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.createTime' })}
-            dataIndex="created_at"
-            key="createTime"
-            defaultSortOrder="descend"
-            sortOrder={sortOrder}
-            showSorterTooltip={false}
-            sorter={false}
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record) => {
-              return (
-                <AutoTooltip ghost>
-                  {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-                </AutoTooltip>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.operation' })}
-            key="operation"
-            ellipsis={{
-              showTitle: false
-            }}
-            render={(text, record: ListItem) => {
-              return (
-                <Space size={20}>
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'common.button.delete' })}
-                  >
-                    <Button
-                      onClick={() => handleDelete(record)}
-                      size="small"
-                      danger
-                      icon={<DeleteOutlined></DeleteOutlined>}
-                    ></Button>
-                  </Tooltip>
-                </Space>
-              );
-            }}
-          />
-        </Table>
+            <Column
+              title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
+              dataIndex="expires_at"
+              key="expiration"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost>
+                    {text
+                      ? dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+                      : intl.formatMessage({
+                          id: 'apikeys.form.expiration.never'
+                        })}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.description' })}
+              dataIndex="description"
+              key="description"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return <AutoTooltip ghost>{text}</AutoTooltip>;
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.createTime' })}
+              dataIndex="created_at"
+              key="createTime"
+              defaultSortOrder="descend"
+              sortOrder={sortOrder}
+              showSorterTooltip={false}
+              sorter={false}
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost>
+                    {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.operation' })}
+              key="operation"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record: ListItem) => {
+                return (
+                  <Space size={20}>
+                    <Tooltip
+                      title={intl.formatMessage({ id: 'common.button.delete' })}
+                    >
+                      <Button
+                        onClick={() => handleDelete(record)}
+                        size="small"
+                        danger
+                        icon={<DeleteOutlined></DeleteOutlined>}
+                      ></Button>
+                    </Tooltip>
+                  </Space>
+                );
+              }}
+            />
+          </Table>
+        </ConfigProvider>
       </PageContainer>
       <AddAPIKeyModal
         open={openAddModal}

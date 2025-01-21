@@ -47,6 +47,7 @@ const TableRow: React.FC<
   const childrenDataRef = useRef<any[]>([]);
   childrenDataRef.current = childrenData;
   const axiosToken = useRef<any>(null);
+  const [updateChild, setUpdateChild] = useState(true);
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
@@ -111,6 +112,9 @@ const TableRow: React.FC<
   };
 
   const filterUpdateChildrenHandler = () => {
+    if (!expanded) {
+      return;
+    }
     const dataList = _.filter(tableContext.allChildren, (data: any) => {
       return _.get(data, [childParentKey]) === _.get(record, [rowKey]);
     });
@@ -161,6 +165,8 @@ const TableRow: React.FC<
       pollTimer.current = setInterval(() => {
         handlePolling();
       }, 1000);
+    } else {
+      handleLoadChildren();
     }
   };
 
@@ -187,16 +193,12 @@ const TableRow: React.FC<
   }, [expandedRowKeys]);
 
   useEffect(() => {
-    if (expanded) {
-      handleLoadChildren();
-    }
-  }, [expanded]);
-
-  useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
         cacheDataListRef.current = [];
-        // setChildrenData([]);
+        setUpdateChild(false);
+      } else {
+        setUpdateChild(true);
       }
     };
 
@@ -208,15 +210,15 @@ const TableRow: React.FC<
   }, []);
 
   useEffect(() => {
-    if (!firstLoad && expanded) {
-      cacheDataListRef.current = childrenData;
+    if (updateChild) {
+      // for update watch data
       filterUpdateChildrenHandler();
     }
     return () => {
       chunkRequestRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
     };
-  }, [firstLoad, expanded, tableContext.allChildren]);
+  }, [updateChild, tableContext.allChildren]);
 
   const renderRowPrefix = () => {
     if (expandable && rowSelection) {
@@ -296,7 +298,8 @@ const TableRow: React.FC<
                 renderChildrenData()
               ) : (
                 <Empty
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  image={loading ? null : Empty.PRESENTED_IMAGE_SIMPLE}
+                  description={loading ? null : undefined}
                   style={{
                     marginBlock: 0,
                     height: 54

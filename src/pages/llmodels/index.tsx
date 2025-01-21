@@ -9,7 +9,12 @@ import {
 import _ from 'lodash';
 import qs from 'query-string';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { MODELS_API, MODEL_INSTANCE_API, queryModelsList } from './apis';
+import {
+  MODELS_API,
+  MODEL_INSTANCE_API,
+  queryModelsInstances,
+  queryModelsList
+} from './apis';
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
@@ -81,39 +86,60 @@ const Models: React.FC = () => {
     }
   };
 
-  const fetchData = useCallback(async () => {
-    axiosToken?.cancel?.();
-    axiosToken = createAxiosToken();
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
+  const getAllModelInstances = useCallback(async () => {
     try {
+      instancesToken.current?.cancel?.();
+      instancesToken.current = createAxiosToken();
       const params = {
-        ..._.pickBy(queryParams, (val: any) => !!val)
+        page: 1,
+        perPage: 100
       };
-      const res: any = await queryModelsList(params, {
-        cancelToken: axiosToken.token
+      const res: any = await queryModelsInstances(params, {
+        token: instancesToken.current.token
       });
-      setDataSource({
-        dataList: res.items || [],
-        loading: false,
-        loadend: true,
-        total: res.pagination.total,
-        deletedIds: []
-      });
+      cacheInsDataListRef.current = res.items || [];
+      setModelInstances(res.items || []);
     } catch (error) {
-      if (!isPageHidden.current) {
+      // ignore
+    }
+  }, []);
+
+  const fetchData = useCallback(
+    async (loadingVal?: boolean) => {
+      axiosToken?.cancel?.();
+      axiosToken = createAxiosToken();
+      setDataSource((pre) => {
+        pre.loading = loadingVal ?? true;
+        return { ...pre };
+      });
+      try {
+        const params = {
+          ..._.pickBy(queryParams, (val: any) => !!val)
+        };
+        const res: any = await queryModelsList(params, {
+          cancelToken: axiosToken.token
+        });
         setDataSource({
-          dataList: [],
+          dataList: res.items || [],
           loading: false,
           loadend: true,
-          total: dataSource.total,
+          total: res.pagination.total,
           deletedIds: []
         });
+      } catch (error) {
+        if (!isPageHidden.current) {
+          setDataSource({
+            dataList: [],
+            loading: false,
+            loadend: true,
+            total: dataSource.total,
+            deletedIds: []
+          });
+        }
       }
-    }
-  }, [queryParams]);
+    },
+    [queryParams]
+  );
 
   const handlePageChange = useCallback(
     (page: number, pageSize: number | undefined) => {
@@ -135,6 +161,7 @@ const Models: React.FC = () => {
   const updateInstanceHandler = (list: any) => {
     // filter the data
     _.each(list, (data: any) => {
+      console.log('updateInstanceHandler====', data);
       updateInstanceChunkedList(data);
     });
   };
@@ -166,7 +193,7 @@ const Models: React.FC = () => {
     } catch (error) {
       // ignore
     }
-  }, []);
+  }, [updateInstanceHandler]);
 
   const handleOnViewLogs = useCallback(() => {
     isPageHidden.current = true;
@@ -174,13 +201,15 @@ const Models: React.FC = () => {
     cacheDataListRef.current = [];
     cacheInsDataListRef.current = [];
     chunkInstanceRequedtRef.current?.current?.cancel?.();
+    instancesToken.current?.cancel?.();
   }, []);
 
   const handleOnCancelViewLogs = useCallback(async () => {
     isPageHidden.current = false;
+    await getAllModelInstances();
     await createModelsInstanceChunkRequest();
     await createModelsChunkRequest();
-    fetchData();
+    fetchData(false);
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
   const handleSearch = useCallback(async () => {
@@ -233,18 +262,24 @@ const Models: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    console.log('modelInstances====', modelInstances);
+  }, [modelInstances]);
+
+  useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
+        await getAllModelInstances();
         await createModelsInstanceChunkRequest();
         await createModelsChunkRequest();
-        fetchData();
+        fetchData(false);
       } else {
         isPageHidden.current = true;
         chunkRequedtRef.current?.current?.cancel?.();
         cacheDataListRef.current = [];
         cacheInsDataListRef.current = [];
         chunkInstanceRequedtRef.current?.current?.cancel?.();
+        instancesToken.current?.cancel?.();
       }
     };
 

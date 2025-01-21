@@ -6,7 +6,7 @@ import {
   UndoOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Slider, Tooltip } from 'antd';
+import { Button, Checkbox, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import IconFont from '../icon-font';
@@ -758,7 +758,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           </Tooltip>
         </div>
         <div className="tools">
-          {/* <Checkbox
+          <Checkbox
             onChange={handleOnChangeMask}
             className="flex-center"
             value={negativeMaskRef.current}
@@ -766,7 +766,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
             <span className="font-size-12">
               {intl.formatMessage({ id: 'playground.image.negativeMask' })}
             </span>
-          </Checkbox> */}
+          </Checkbox>
           <Tooltip
             title={intl.formatMessage({ id: 'playground.image.saveMask' })}
           >

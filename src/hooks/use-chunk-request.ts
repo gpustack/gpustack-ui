@@ -36,69 +36,6 @@ export const sliceJsonStr = (text: string) => {
   return result;
 };
 
-export const parseJsonStr = (list: string[]) => {
-  return _.map(list, (str: string) => {
-    return JSON.parse(str);
-  });
-};
-
-const findMatchingClosingBracket = (inputStr: string, startIndex: number) => {
-  let count = 0;
-  for (let i = startIndex; i < inputStr.length; i += 1) {
-    if (inputStr[i] === '{') {
-      count += 1;
-    } else if (inputStr[i] === '}') {
-      count -= 1;
-    }
-
-    if (count === 0) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-const findValidJSONStrings = (inputStr: string) => {
-  const validJSONStrings: any[] = [];
-  let startIndex = 0;
-
-  while (startIndex < inputStr.length) {
-    const openingBraceIndex = inputStr.indexOf('{', startIndex);
-    if (openingBraceIndex === -1) {
-      break; // No more opening braces
-    }
-
-    const closingBraceIndex = findMatchingClosingBracket(
-      inputStr,
-      openingBraceIndex
-    );
-    if (closingBraceIndex === -1) {
-      // If no matching closing brace, set startIndex to next character
-      startIndex = openingBraceIndex + 1;
-    } else {
-      const jsonString = inputStr.substring(
-        openingBraceIndex,
-        closingBraceIndex + 1
-      );
-      try {
-        const data = JSON.parse(jsonString);
-        validJSONStrings.push(data);
-      } catch (error) {
-        // Ignore invalid JSON
-      }
-
-      startIndex = closingBraceIndex + 1;
-    }
-  }
-
-  return validJSONStrings;
-};
-
-const parseData = (data: string) => {
-  const res = findValidJSONStrings(data);
-  return res;
-};
-
 export const createAxiosToken = () => {
   const { CancelToken } = axios;
   const source = CancelToken.source();
@@ -123,7 +60,7 @@ const useSetChunkRequest = () => {
   const particalConfig = { params: {}, contentType: 'json' };
   const timer = useRef<any>(null);
   const loadedSize = useRef(0);
-  const bufferedDataRef = useRef('');
+  const workerRef = useRef<any>(null);
 
   const reset = () => {
     loaded.current = 0;
@@ -172,6 +109,23 @@ const useSetChunkRequest = () => {
       cancelWatchRequest(watchRequestList.length - 4 || 1);
     }
 
+    if (contentType === 'json') {
+      workerRef.current?.terminate();
+
+      workerRef.current = new Worker(
+        // @ts-ignore
+        new URL('./json-parser-worker.ts', import.meta.url)
+      );
+
+      workerRef.current.onmessage = function (event: any) {
+        const validJSON = event.data;
+        if (validJSON.length > 0) {
+          const result = resetResultSchema(validJSON);
+          handler(result);
+        }
+      };
+    }
+
     try {
       const { request: requestData } = await request(url, {
         params: {
@@ -188,38 +142,17 @@ const useSetChunkRequest = () => {
           loaded.current = e.loaded || 0;
           total.current = e.total || 0;
 
-          let currentRes = sliceData(response, e.loaded, loadedSize);
-          let result: any[] = [];
-          let cres = currentRes;
-
           if (contentType === 'json') {
-            // Append the new data to the buffered data
-            bufferedDataRef.current += currentRes;
-
-            // Find valid JSON strings in the buffered data
-            let validJSON = findValidJSONStrings(bufferedDataRef.current);
-            if (validJSON.length > 0) {
-              result = resetResultSchema(validJSON);
-
-              // Calculate the position of the last complete JSON fragment, keeping the unfinished part
-              const lastValidJSON = validJSON[validJSON.length - 1];
-              const lastJSONIndex = bufferedDataRef.current.lastIndexOf(
-                JSON.stringify(lastValidJSON)
-              );
-              bufferedDataRef.current = bufferedDataRef.current.slice(
-                lastJSONIndex + JSON.stringify(lastValidJSON).length
-              );
-            }
-            handler(result);
+            let currentRes = sliceData(response, e.loaded, loadedSize);
+            workerRef.current.postMessage(currentRes);
           } else {
-            handler(currentRes);
+            handler(response);
           }
 
           console.log('chunkrequest===', {
-            result,
+            result: response,
             url,
-            params,
-            raw: cres
+            params
           });
         }
       });

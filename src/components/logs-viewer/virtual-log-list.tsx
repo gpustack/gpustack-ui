@@ -231,7 +231,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     return () => {
       chunkRequedtRef.current?.current?.abort?.();
     };
-  }, [url, props.params]);
+  }, [url]);
 
   useEffect(() => {
     debouncedScroll();

@@ -52,6 +52,7 @@ import {
   modelSourceMap
 } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
+import DeployDropdown from './deploy-dropdown';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
 import UpdateModel from './update-modal';
@@ -787,6 +788,13 @@ const Models: React.FC<ModelsProps> = ({
                   items: sourceOptions,
                   onClick: handleClickDropdown
                 }}
+                trigger={['hover']}
+                dropdownRender={() => (
+                  <DeployDropdown
+                    items={sourceOptions}
+                    onSelect={handleClickDropdown}
+                  ></DeployDropdown>
+                )}
                 placement="bottomRight"
               >
                 <Button

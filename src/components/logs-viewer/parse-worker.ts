@@ -12,6 +12,16 @@ class AnsiParser {
   private uid: number = 0;
   private isProcessing: boolean = false;
   private taskQueue: string[] = [];
+  private colorMap = {
+    '30': 'black',
+    '31': 'red',
+    '32': 'green',
+    '33': 'yellow',
+    '34': 'blue',
+    '35': 'magenta',
+    '36': 'cyan',
+    '37': 'white'
+  };
 
   constructor() {
     this.reset();
@@ -82,7 +92,12 @@ class AnsiParser {
           this.reset();
         }
         break;
-      case 'm': // style: do not handle now
+      case 'm':
+        // if (match[1] === '0') {
+        //   currentStyle = '';
+        // } else if (colorMap[match[1]]) {
+        //   currentStyle = `color: ${colorMap[match[1]]};`;
+        // }
         break;
     }
 

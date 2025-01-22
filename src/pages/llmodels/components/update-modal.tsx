@@ -88,8 +88,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         ..._.pick(value[0], workerFields),
         children: _.map(value, (item: GPUListItem) => {
           return {
-            label: `[
-              ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}] ${item.name}`,
+            label: `${item.name}`,
             value: item.id,
             ..._.omit(item, workerFields)
           };
@@ -111,23 +110,17 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     if (gpu_ids.length === 0) {
       return [];
     }
-    const dataList = _.reduce(
-      gpuOptions,
-      (list: string[], item: any) => {
-        const gpuIds = _.filter(
-          gpu_ids,
-          (id: string) => id.indexOf(item.worker_name) > -1
-        );
-        if (gpuIds.length && gpuIds.length === item.children.length) {
-          list.push(item.worker_name);
-        } else if (gpuIds.length) {
-          list.push(item.worker_name, ...gpuIds);
+    const gpuids: string[][] = [];
+
+    gpuOptions?.forEach((item) => {
+      item.children?.forEach((child: any) => {
+        if (gpu_ids.includes(child.value)) {
+          gpuids.push([item.value, child.value]);
         }
-        return list;
-      },
-      {}
-    );
-    return dataList;
+      });
+    });
+
+    return data.backend === backendOptionsMap.voxBox ? gpuids[0] : gpuids;
   };
 
   useEffect(() => {
@@ -137,10 +130,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         props.data
       );
 
-      const gpu_ids = generateGPUSelector(props.data);
-
-      console.log('gpu_ids+++++++++', gpu_ids);
-
       const formData = {
         ...result.values,
         ..._.omit(props.data, result.omits),
@@ -148,9 +137,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ? props.data.categories[0]
           : null,
         scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
-        gpu_selector: props.data?.gpu_selector || {
-          gpu_ids: gpu_ids
-        }
+        gpu_selector: props.data?.gpu_selector?.gpu_ids.length
+          ? {
+              gpu_ids: generateGPUSelector(props.data)
+            }
+          : []
       };
       form.setFieldsValue(formData);
     }
@@ -160,6 +151,20 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     setIsGGUF(props.data?.backend === backendOptionsMap.llamaBox);
   }, [props.data?.backend]);
 
+  const handleSetGPUIds = (backend: string) => {
+    if (backend === backendOptionsMap.llamaBox) {
+      return;
+    }
+    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']);
+
+    if (!gpuids?.length) {
+      return;
+    }
+    if (gpuids.length > 1 && Array.isArray(gpuids[0])) {
+      form.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
+    }
+  };
+
   const handleBackendChange = useCallback((val: string) => {
     if (val === backendOptionsMap.llamaBox) {
       form.setFieldsValue({
@@ -168,6 +173,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       });
     }
     form.setFieldValue('backend_version', '');
+    handleSetGPUIds(val);
   }, []);
 
   const handleOnFocus = () => {
@@ -367,6 +373,29 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     form.submit();
   };
 
+  const generateGPUIds = (data: FormData) => {
+    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+    if (!gpu_ids.length) {
+      return {};
+    }
+
+    const result = _.map(gpu_ids, (item: string[][] | string[]) => {
+      if (Array.isArray(item)) {
+        return item[1];
+      }
+      return item;
+    });
+
+    if (result.length) {
+      return {
+        gpu_selector: {
+          gpu_ids: result
+        }
+      };
+    }
+    return {};
+  };
+
   const handleOk = (formdata: FormData) => {
     let obj = {};
     if (
@@ -380,6 +409,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       };
     }
     if (formdata.scheduleType === 'manual') {
+      const gpuSelector = generateGPUIds(formdata);
       onOk({
         ..._.omit(formdata, ['scheduleType']),
         categories: formdata.categories ? [formdata.categories] : [],
@@ -389,7 +419,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               gpu_ids: formdata.gpu_selector.gpu_ids
             }
           : null,
-        ...obj
+        ...obj,
+        ...gpuSelector
       });
     } else {
       onOk({

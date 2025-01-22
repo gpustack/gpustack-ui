@@ -14,7 +14,12 @@ const GPUCard: React.FC<{
   return (
     <div className="gpu-card">
       <div className="header" style={{ width: '100%' }}>
-        {header ?? <AutoTooltip ghost>{data.label}</AutoTooltip>}
+        {header ?? (
+          <AutoTooltip ghost>
+            <span className="font-700">[{data.index}] </span>
+            {data.label}
+          </AutoTooltip>
+        )}
       </div>
       <div className="info">
         {info ?? (

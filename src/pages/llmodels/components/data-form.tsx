@@ -129,12 +129,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         label: `${value[0].worker_name}`,
         value: value[0].worker_name,
         parent: true,
-        disableCheckbox: true,
+        disableCheckbox: false,
         ..._.pick(value[0], workerFields),
         children: _.map(value, (item: GPUListItem) => {
           return {
-            label: `[
-            ${intl.formatMessage({ id: 'resources.table.index' })}:${item.index}] ${item.name}`,
+            label: `${item.name}`,
             value: item.id,
             disableCheckbox: false,
             ..._.omit(item, workerFields)
@@ -484,6 +483,20 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return null;
   }, [props.source, isGGUF, byBuiltIn, intl]);
 
+  const handleSetGPUIds = (backend: string) => {
+    if (backend === backendOptionsMap.llamaBox) {
+      return;
+    }
+    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']);
+
+    if (!gpuids?.length) {
+      return;
+    }
+    if (gpuids.length > 1 && Array.isArray(gpuids[0])) {
+      form.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
+    }
+  };
+
   const handleBackendChange = useCallback((val: string) => {
     if (val === backendOptionsMap.llamaBox) {
       form.setFieldsValue({
@@ -492,6 +505,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       });
     }
     form.setFieldValue('backend_version', '');
+    handleSetGPUIds(val);
     props.onBackendChange?.(val);
   }, []);
 
@@ -500,17 +514,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     if (!gpu_ids.length) {
       return {};
     }
-    const result: string[] = [];
 
-    _.each(gpu_ids, (item: string[]) => {
-      if (item.length > 1) {
-        result.push(..._.tail(item));
+    const result = _.map(gpu_ids, (item: string[][] | string[]) => {
+      if (Array.isArray(item)) {
+        return item[1];
       }
-      if (item.length === 1) {
-        const worker = _.find(gpuOptions, { value: item[0] });
-        const gpus = _.map(worker?.children, 'value');
-        result.push(...gpus);
-      }
+      return item;
     });
 
     if (result.length) {

@@ -365,10 +365,10 @@ const Resources: React.FC = () => {
                     maxWidth: 200
                   }}
                 >
-                  {_.map(record.labels, (item: any, index: string) => {
+                  {_.map(record.labels, (value: any, key: string) => {
                     return (
                       <AutoTooltip
-                        key={index}
+                        key={key}
                         className="m-r-0"
                         maxWidth={120}
                         style={{
@@ -376,7 +376,8 @@ const Resources: React.FC = () => {
                           borderRadius: 12
                         }}
                       >
-                        {index}:{item}
+                        <span className="font-700">{key}</span>
+                        <span className="text-tertiary">:{value}</span>
                       </AutoTooltip>
                     );
                   })}

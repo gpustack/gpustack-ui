@@ -112,7 +112,7 @@ const TableRow: React.FC<
   };
 
   const filterUpdateChildrenHandler = () => {
-    if (!expanded) {
+    if (!expandedRowKeys?.includes(record[rowKey])) {
       return;
     }
     const dataList = _.filter(tableContext.allChildren, (data: any) => {

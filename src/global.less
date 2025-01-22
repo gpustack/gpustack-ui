@@ -782,6 +782,23 @@ body {
 }
 
 .cascader-popup-wrapper {
+  width: 100%;
+
+  &.gpu-selector {
+    .ant-cascader-menu:last-child {
+      flex: auto;
+
+      .ant-cascader-menu-item {
+        display: flex;
+
+        .ant-cascader-checkbox {
+          align-self: flex-start;
+          margin-top: 5px;
+        }
+      }
+    }
+  }
+
   .ant-cascader-menu {
     overflow-x: hidden;
 
@@ -805,8 +822,9 @@ body {
       }
     }
 
-    .ant-cascader-checkbox.ant-cascader-checkbox-disabled {
-      display: none;
+    .ant-cascader-menu-item-content {
+      width: 100%;
+      padding-right: 11px;
     }
   }
 }

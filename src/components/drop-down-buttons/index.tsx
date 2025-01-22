@@ -6,20 +6,22 @@ import _ from 'lodash';
 import { memo } from 'react';
 import './index.less';
 
+type Trigger = 'click' | 'hover';
 interface DropdownButtonsProps {
   items: MenuProps['items'];
   size?: 'small' | 'middle' | 'large';
+  trigger?: Trigger[];
   onSelect: (val: any, item?: any) => void;
 }
 
 const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   items,
   size = 'middle',
+  trigger = ['hover'],
   onSelect
 }) => {
   const intl = useIntl();
   const handleMenuClick = (item: any) => {
-    console.log('menu click', item.key);
     const selectItem = _.find(items, { key: item.key });
     onSelect(item.key, selectItem);
   };
@@ -48,6 +50,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
         </Tooltip>
       ) : (
         <Dropdown.Button
+          trigger={trigger}
           dropdownRender={(menus: any) => {
             return (
               <div

@@ -123,13 +123,31 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     form.setFieldValue('backend_parameters', list);
   }, []);
 
+  const handleGPUSelectorChange = (gpuIds: any[]) => {
+    console.log('GPU Selector Change:', gpuIds);
+    if (
+      backend === backendOptionsMap.llamaBox ||
+      backend === backendOptionsMap.voxBox ||
+      !gpuIds?.length
+    ) {
+      return;
+    }
+    const lastGroupName = gpuIds[gpuIds.length - 1][0];
+
+    const lastGroupItems = gpuIds.filter((item) => item[0] === lastGroupName);
+
+    console.log('Last Group Items:', lastGroupItems);
+
+    form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
+  };
+
   const gpuOptionRender = (data: any) => {
-    let width = {
-      maxWidth: 180,
-      minWidth: 180
+    let width: any = {
+      maxWidth: 140,
+      minWidth: 140
     };
     if (!data.parent) {
-      width = { maxWidth: 180, minWidth: 180 };
+      width = undefined;
     }
     if (data.parent) {
       return (
@@ -234,47 +252,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         )}
         {scheduleType === 'manual' && (
           <>
-            {/* <Form.Item<FormData>
-              name={['gpu_selector', 'gpu_ids']}
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    {
-                      id: 'common.form.rule.select'
-                    },
-                    {
-                      name: intl.formatMessage({
-                        id: 'models.form.gpuselector'
-                      })
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealSelect
-                label={intl.formatMessage({ id: 'models.form.gpuselector' })}
-                required
-                mode="multiple"
-                maxTagCount={1}
-                tagRender={(props) => {
-                  return (
-                    <AutoTooltip
-                      className="m-r-4"
-                      closable={props.closable}
-                      onClose={props.onClose}
-                      maxWidth={240}
-                    >
-                      {props.label}
-                    </AutoTooltip>
-                  );
-                }}
-                options={gpuOptions}
-                optionRender={(props) => {
-                  return <GPUCard data={props.data}></GPUCard>;
-                }}
-              ></SealSelect>
-            </Form.Item> */}
             <Form.Item
               name={['gpu_selector', 'gpu_ids']}
               rules={[
@@ -295,14 +272,14 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             >
               <SealCascader
                 required
+                onChange={handleGPUSelectorChange}
                 multiple={backend !== backendOptionsMap.voxBox}
-                popupClassName="cascader-popup-wrapper"
-                maxTagCount="responsive"
+                popupClassName="cascader-popup-wrapper gpu-selector"
+                maxTagCount={1}
                 label={intl.formatMessage({ id: 'models.form.gpuselector' })}
-                options={gpuOptions.map((item) => {
-                  item.disableCheckbox = backend !== backendOptionsMap.llamaBox;
-                  return item;
-                })}
+                options={gpuOptions}
+                showCheckedStrategy="SHOW_CHILD"
+                value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
                 tagRender={(props) => {
                   return (
                     <AutoTooltip
@@ -316,6 +293,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                   );
                 }}
                 optionRender={gpuOptionRender}
+                getPopupContainer={(triggerNode) => triggerNode.parentNode}
               ></SealCascader>
             </Form.Item>
           </>

@@ -1,0 +1,28 @@
+.deploy-dropdown {
+  display: flex;
+  justify-content: flex-start;
+  padding: var(--ant-padding-xxs);
+  background-color: var(--ant-color-bg-elevated);
+  background-clip: padding-box;
+  border-radius: var(--ant-border-radius-lg);
+  outline: none;
+  box-shadow: var(--ant-box-shadow-secondary);
+
+  .item {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--ant-dropdown-padding-block)
+      var(--ant-control-padding-horizontal);
+
+    &:hover {
+      background-color: var(--ant-control-item-bg-hover);
+    }
+
+    .icon {
+      font-size: 20px;
+    }
+  }
+}

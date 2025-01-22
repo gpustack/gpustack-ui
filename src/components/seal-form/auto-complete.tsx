@@ -13,6 +13,7 @@ const SealAutoComplete: React.FC<
     required,
     description,
     isInFormItems = true,
+    trim = true,
     onSelect,
     extra,
     style,
@@ -41,7 +42,11 @@ const SealAutoComplete: React.FC<
     }
   };
 
-  const handleChange = (value: string, option: any) => {
+  const handleChange = (val: string, option: any) => {
+    let value = val;
+    if (trim) {
+      value = value?.trim?.();
+    }
     props.onChange?.(value, option);
   };
 
@@ -54,6 +59,7 @@ const SealAutoComplete: React.FC<
     if (!props.value) {
       setIsFocus(false);
     }
+    e.target.value = e.target.value?.trim?.();
     props.onBlur?.(e);
   };
 

@@ -118,7 +118,11 @@ const StatusTag: React.FC<StatusTagProps> = ({
           })}
         </div>
 
-        <SimpleBar style={{ maxHeight: 200 }} autoHide={false}>
+        <SimpleBar
+          style={{ maxHeight: 200 }}
+          autoHide={false}
+          className="tooltip-scrollbar"
+        >
           <div
             style={{
               width: 'max-content',

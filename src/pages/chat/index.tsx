@@ -104,7 +104,7 @@ const ChatPanel = () => {
           onValuesChange={handleOnValuesChange}
         ></Header>
         <Content>
-          {current.categoris?.[0] === modelCategoriesMap.llm ? (
+          {current.categories?.[0] === modelCategoriesMap.llm ? (
             <>
               <MessageContent
                 showTitle={false}

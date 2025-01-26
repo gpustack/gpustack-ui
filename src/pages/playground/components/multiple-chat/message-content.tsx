@@ -9,6 +9,7 @@ interface MessageContentProps {
   editable?: boolean;
   showTitle?: boolean;
   messageList: MessageItem[];
+  messageStyle?: 'roler' | 'content';
   setMessageList?: (list: any) => void;
 }
 
@@ -17,6 +18,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
   messageList,
   editable,
   showTitle = true,
+  messageStyle = 'content',
   actions = ['upload', 'delete', 'copy']
 }) => {
   const updateMessage = (index: number, message: MessageItem) => {
@@ -37,6 +39,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
         <div className="message-content-list">
           {messageList.map((item, index) => (
             <ContentItem
+              messageStyle={messageStyle}
               key={item.uid}
               data={item}
               editable={editable}

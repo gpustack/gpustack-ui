@@ -129,6 +129,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
+      zIndex={2000}
       styles={{
         body: {
           height: 'calc(100vh - 57px)',

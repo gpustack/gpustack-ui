@@ -115,6 +115,14 @@ export default [
     component: './login'
   },
   {
+    name: 'chat',
+    path: '/chat',
+    key: 'chat',
+    layout: false,
+    hideInMenu: true,
+    component: './chat'
+  },
+  {
     name: '404',
     path: '*',
     key: '404',

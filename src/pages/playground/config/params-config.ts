@@ -145,6 +145,26 @@ export const ImageParamsConfig: ParamsSchema[] = [
   }
 ];
 
+export const ImageCountConfig: ParamsSchema[] = [
+  {
+    type: 'InputNumber',
+    name: 'n',
+    label: {
+      text: 'playground.params.counts',
+      isLocalized: true
+    },
+    attrs: {
+      min: 1,
+      max: 4
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  }
+];
+
 export const ImageEidtParamsConfig: ParamsSchema[] = [
   {
     type: 'InputNumber',
@@ -343,29 +363,29 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
       }
     ]
   },
-  {
-    type: 'InputNumber',
-    name: 'strength',
-    label: {
-      text: 'Strength',
-      isLocalized: false
-    },
-    description: {
-      text: 'playground.image.strength.tip',
-      html: false,
-      isLocalized: true
-    },
-    attrs: {
-      min: 0,
-      max: 1,
-      step: 0.1
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
+  // {
+  //   type: 'InputNumber',
+  //   name: 'strength',
+  //   label: {
+  //     text: 'Strength',
+  //     isLocalized: false
+  //   },
+  //   description: {
+  //     text: 'playground.image.strength.tip',
+  //     html: false,
+  //     isLocalized: true
+  //   },
+  //   attrs: {
+  //     min: 0,
+  //     max: 1,
+  //     step: 0.1
+  //   },
+  //   rules: [
+  //     {
+  //       required: false
+  //     }
+  //   ]
+  // },
   {
     type: 'TextArea',
     name: 'negative_prompt', // e.g. ng_deepnegative_v1_75t,(badhandv4:1.2),EasyNegative,(worst quality:2),
@@ -449,7 +469,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 256,
-      max: 3200,
+      max: 1024,
       step: 64,
       inputnumber: false
     },
@@ -469,7 +489,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
     },
     attrs: {
       min: 256,
-      max: 3200,
+      max: 1024,
       step: 64,
       inputnumber: false
     },
@@ -477,6 +497,122 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       {
         required: true,
         message: 'playground.params.height'
+      }
+    ]
+  }
+];
+
+export const ChatParamsConfig: ParamsSchema[] = [
+  {
+    type: 'Slider',
+    name: 'temperature',
+    label: {
+      text: 'Temperature',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.temperature.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      max: 2,
+      step: 0.1,
+      inputnumber: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Slider',
+    name: 'max_tokens',
+    label: {
+      text: 'Max Tokens',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.maxtokens.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      max: 1024,
+      step: 1,
+      inputnumber: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Slider',
+    name: 'top_p',
+    label: {
+      text: 'Top P',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.topp.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      max: 1,
+      step: 0.1,
+      inputnumber: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'InputNumber',
+    name: 'seed',
+    label: {
+      text: 'Seed',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.seed.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      min: 0
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Input',
+    name: 'stop',
+    label: {
+      text: 'Stop Sequence',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.stop.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      normalize(value: string) {
+        return value || null;
+      }
+    },
+    rules: [
+      {
+        required: false
       }
     ]
   }

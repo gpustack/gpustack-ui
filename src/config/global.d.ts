@@ -32,6 +32,8 @@ declare namespace Global {
     label: string;
     locale?: boolean;
     value: T;
+    title?: string;
+    options?: BaseOption<T>[];
     meta?: Record<string, any>;
   }
 

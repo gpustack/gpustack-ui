@@ -1,4 +1,5 @@
 import { request } from '@umijs/max';
+import qs from 'query-string';
 
 export const CHAT_API = '/v1-openai/chat/completions';
 
@@ -23,9 +24,8 @@ export async function execChatCompletions(params: any) {
 }
 
 export const queryModelsList = async (params: any) => {
-  return request(`${OPENAI_MODELS}`, {
-    method: 'GET',
-    params
+  return request(`${OPENAI_MODELS}?${qs.stringify(params)}`, {
+    method: 'GET'
   });
 };
 

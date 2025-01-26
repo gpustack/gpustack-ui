@@ -11,7 +11,11 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  MessageOutlined
+} from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
@@ -237,10 +241,25 @@ export default (props: any) => {
     return () => clearTimeout(timeout);
   }, [initializeMenu, matchedRoute, location]);
 
+  const renderMenuExtra = useCallback(() => {
+    return (
+      <Button
+        variant="filled"
+        size="middle"
+        block
+        style={{ overflow: 'hidden' }}
+        icon={<MessageOutlined />}
+        onClick={() => navigate('/chat')}
+      >
+        {collapsed ? '' : 'Enter Chat Panel'}
+      </Button>
+    );
+  }, [collapsed]);
+
   const renderMenuHeader = useCallback(
     (logo, title) => {
       return (
-        <>
+        <div className="flex-center flex-between" style={{ flex: 'auto' }}>
           {logo}
           <div className="collapse-wrap">
             <Button
@@ -259,7 +278,7 @@ export default (props: any) => {
               </>
             </Button>
           </div>
-        </>
+        </div>
       );
     },
     [collapsed]
@@ -348,6 +367,7 @@ export default (props: any) => {
         onCollapse={handleOnCollapse}
         onMenuHeaderClick={handleMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
+        menuExtraRender={renderMenuExtra}
         collapsed={collapsed}
         onPageChange={hanlePageChange}
         formatMessage={formatMessage}

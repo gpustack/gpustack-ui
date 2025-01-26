@@ -1,7 +1,7 @@
 import CopyButton from '@/components/copy-button';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Tooltip } from 'antd';
+import { Avatar, Button, Input, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback, useRef } from 'react';
@@ -17,6 +17,7 @@ interface MessageItemProps {
   loading?: boolean;
   showTitle?: boolean;
   actions?: MessageItemAction[];
+  messageStyle?: 'roler' | 'content';
   updateMessage?: (message: MessageItem) => void;
   onDelete?: () => void;
 }
@@ -28,6 +29,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
   data,
   editable,
   showTitle = true,
+  messageStyle = 'content',
   actions = ['upload', 'delete', 'copy']
 }) => {
   const intl = useIntl();
@@ -170,82 +172,106 @@ const ContentItem: React.FC<MessageItemProps> = ({
   };
 
   return (
-    <div className="content-item">
+    <div
+      className={classNames('content-item', data.role, `${messageStyle}-style`)}
+    >
+      {messageStyle === 'roler' && data.role === Roles.Assistant && (
+        <Avatar
+          size={32}
+          style={{
+            fontSize: 18,
+            backgroundColor: 'var(--ant-blue-3)',
+            marginRight: 6
+          }}
+        >
+          AI
+        </Avatar>
+      )}
       <div
-        className="content-item-role"
-        style={{ display: !showTitle && !actions.length ? 'none' : 'flex' }}
+        className={classNames(
+          'content-item-box',
+          data.role,
+          `${messageStyle}-style`
+        )}
       >
-        {showTitle && (
-          <div className="role">
-            {data.title ??
-              intl.formatMessage({ id: `playground.${data.role}` })}
+        <div
+          className="content-item-role"
+          style={{ display: !showTitle && !actions.length ? 'none' : 'flex' }}
+        >
+          {showTitle && (
+            <div className="role">
+              {data.title ??
+                intl.formatMessage({ id: `playground.${data.role}` })}
+            </div>
+          )}
+          <div className="actions">
+            {actions.includes('upload') && data.role === Roles.User && (
+              <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>
+            )}
+            {data.content && actions.includes('copy') && (
+              <CopyButton
+                text={data.content}
+                size="small"
+                shape="default"
+                type="text"
+                fontSize="12px"
+              ></CopyButton>
+            )}
+            {actions.includes('delete') && (
+              <Tooltip
+                title={intl.formatMessage({ id: 'common.button.delete' })}
+              >
+                <Button
+                  size="small"
+                  type="text"
+                  onClick={onDelete}
+                  icon={<MinusCircleOutlined />}
+                ></Button>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+        {editable ? (
+          <div
+            className={classNames('message-content-input', {
+              'has-img': data.imgs?.length
+            })}
+            onClick={handleClickWrapper}
+          >
+            <ThumbImg
+              editable={editable}
+              dataList={data.imgs || []}
+              onDelete={handleDeleteImg}
+            ></ThumbImg>
+            <Input.TextArea
+              ref={inputRef}
+              value={data.content}
+              variant="filled"
+              autoSize={{ minRows: 1 }}
+              style={{
+                borderRadius: 'var(--border-radius-mini)'
+              }}
+              readOnly={loading}
+              onKeyDown={handleKeyDown}
+              onChange={handleMessageChange}
+              onPaste={handleOnPaste}
+            ></Input.TextArea>
+          </div>
+        ) : (
+          <div
+            className={classNames('content-item-content', {
+              'has-img': data.imgs?.length
+            })}
+          >
+            <ThumbImg
+              editable={editable}
+              dataList={data.imgs || []}
+              onDelete={handleDeleteImg}
+            ></ThumbImg>
+            {data.content && <div className="text">{data.content}</div>}
           </div>
         )}
-        <div className="actions">
-          {actions.includes('upload') && data.role === Roles.User && (
-            <UploadImg handleUpdateImgList={handleUpdateImgList}></UploadImg>
-          )}
-          {data.content && actions.includes('copy') && (
-            <CopyButton
-              text={data.content}
-              size="small"
-              shape="default"
-              type="text"
-              fontSize="12px"
-            ></CopyButton>
-          )}
-          {actions.includes('delete') && (
-            <Tooltip title={intl.formatMessage({ id: 'common.button.delete' })}>
-              <Button
-                size="small"
-                type="text"
-                onClick={onDelete}
-                icon={<MinusCircleOutlined />}
-              ></Button>
-            </Tooltip>
-          )}
-        </div>
       </div>
-      {editable ? (
-        <div
-          className={classNames('message-content-input', {
-            'has-img': data.imgs?.length
-          })}
-          onClick={handleClickWrapper}
-        >
-          <ThumbImg
-            editable={editable}
-            dataList={data.imgs || []}
-            onDelete={handleDeleteImg}
-          ></ThumbImg>
-          <Input.TextArea
-            ref={inputRef}
-            value={data.content}
-            variant="filled"
-            autoSize={{ minRows: 1 }}
-            style={{
-              borderRadius: 'var(--border-radius-mini)'
-            }}
-            readOnly={loading}
-            onKeyDown={handleKeyDown}
-            onChange={handleMessageChange}
-            onPaste={handleOnPaste}
-          ></Input.TextArea>
-        </div>
-      ) : (
-        <div
-          className={classNames('content-item-content', {
-            'has-img': data.imgs?.length
-          })}
-        >
-          <ThumbImg
-            editable={editable}
-            dataList={data.imgs || []}
-            onDelete={handleDeleteImg}
-          ></ThumbImg>
-          {data.content && <div className="text">{data.content}</div>}
-        </div>
-      )}
     </div>
   );
 };

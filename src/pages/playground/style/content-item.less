@@ -10,6 +10,43 @@
     height: 24px;
   }
 
+  &.assistant.roler-style {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .content-item-box {
+    flex: 1;
+
+    &.roler-style {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    &.assistant.roler-style {
+      .ant-input {
+        background-color: var(--color-white-1);
+      }
+    }
+
+    &.user.roler-style {
+      align-items: flex-end;
+
+      &:focus-within {
+        align-items: initial;
+      }
+
+      .message-content-input {
+        justify-content: flex-end;
+      }
+
+      .content-item-role {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+
   .role {
     position: relative;
     padding: 0 4px;

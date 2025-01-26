@@ -25,6 +25,7 @@ interface SearchInputProps {
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   const intl = useIntl();
+
   const { modelSource, setLoadingModel, onSelectModel } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];

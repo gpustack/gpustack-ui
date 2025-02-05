@@ -183,7 +183,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 </Col>
                 <Col span={6}>
                   <span
-                    style={{ paddingLeft: '58px' }}
+                    style={{
+                      paddingLeft: '58px',
+                      flexWrap: 'wrap',
+                      gap: '5px'
+                    }}
                     className="flex align-center"
                   >
                     {item.computed_resource_claim?.total_layers !==
@@ -221,6 +225,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         <Tag
                           color="cyan"
                           style={{
+                            maxWidth: '100%',
+                            minWidth: 50,
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
                             opacity: 0.75,
                             borderRadius: 12
                           }}
@@ -242,6 +251,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         <Tag
                           color="processing"
                           style={{
+                            maxWidth: '100%',
+                            minWidth: 50,
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
                             opacity: 0.75,
                             borderRadius: 12
                           }}

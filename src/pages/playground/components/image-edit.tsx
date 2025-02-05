@@ -129,9 +129,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [imageStatus, setImageStatus] = useState<{
     isOriginal: boolean;
     isResetNeeded: boolean;
+    width: number;
+    height: number;
   }>({
     isOriginal: false,
-    isResetNeeded: false
+    isResetNeeded: false,
+    width: 512,
+    height: 512
   });
   const doneImage = useRef<boolean>(false);
   const cacheFormData = useRef<any>({});
@@ -661,16 +665,20 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setActiveImgUid(_.get(base64List, '[0].uid', ''));
     setImageStatus({
       isOriginal: false,
-      isResetNeeded: true
+      isResetNeeded: true,
+      width: _.get(currentImg, 'width', 512),
+      height: _.get(currentImg, 'height', 512)
     });
     setImageList([]);
   }, []);
 
   const handleOnSave = useCallback(
     (data: { img: string; mask: string | null }) => {
-      setImageStatus({
-        isOriginal: true,
-        isResetNeeded: false
+      setImageStatus((pre) => {
+        return {
+          ...pre,
+          isResetNeeded: false
+        };
       });
       setMask(data.mask || null);
       setImage(data.img);
@@ -731,7 +739,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setImage(item.dataUrl);
     setImageStatus({
       isOriginal: isOrigin,
-      isResetNeeded: false
+      isResetNeeded: false,
+      width: item.width,
+      height: item.height
     });
   }, []);
 

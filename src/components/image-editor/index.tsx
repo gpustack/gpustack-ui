@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Slider, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import IconFont from '../icon-font';
@@ -25,6 +26,8 @@ type CanvasImageEditorProps = {
   imageStatus: {
     isOriginal: boolean;
     isResetNeeded: boolean;
+    width: number;
+    height: number;
   };
 };
 
@@ -244,7 +247,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     const mask = generateMask();
 
     const link = document.createElement('a');
-    link.download = 'mask.png';
+    link.download = `mask_${dayjs().format('YYYYMMDDHHmmss')}.png`;
     link.href = mask || '';
     link.click();
   }, [generateMask]);
@@ -494,13 +497,35 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     redrawStrokes(newStrokes);
   };
 
-  const download = () => {
+  const downloadOriginImage = () => {
+    console.log('Downloading original image', imageStatus);
     const canvas = canvasRef.current!;
     const link = document.createElement('a');
-    link.download = 'image.png';
+    link.download = `image_${dayjs().format('YYYYMMDDHHmmss')}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     link.remove();
+  };
+
+  const downloadNewImage = () => {
+    const url = imageSrc || '';
+    const filename = `${imageStatus.width}x${imageStatus.height}_${dayjs().format('YYYYMMDDHHmmss')}.png`;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const download = () => {
+    console.log('Downloading image:', imageStatus);
+    if (imageStatus.isOriginal) {
+      downloadOriginImage();
+    } else {
+      downloadNewImage();
+    }
   };
 
   const drawImage = useCallback(async () => {

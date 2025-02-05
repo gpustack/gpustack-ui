@@ -1,6 +1,7 @@
 @import url('src/assets/styles/common.less');
 @import url('src/assets/styles/menu.less');
 @import url('src/assets/styles/driver.less');
+@import url('./overrides.less');
 
 html {
   --font-family: 'noto sans', sans-serif;
@@ -601,21 +602,6 @@ body {
       background-color: var(--color-scrollbar-thumb);
       border-radius: 4px;
     }
-  }
-}
-
-.simplebar-scrollbar.simplebar-visible::before {
-  opacity: 1;
-}
-
-.simplebar-scrollbar::before {
-  background: var(--scrollbar-handle-bg);
-  width: var(--scrollbar-size);
-}
-
-.simplebar-scrollbar.simplebar-visible.simplebar-hover {
-  &::before {
-    background: var(--scrollbar-handle-hover-bg);
   }
 }
 

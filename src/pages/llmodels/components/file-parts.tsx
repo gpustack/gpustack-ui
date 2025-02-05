@@ -7,7 +7,10 @@ const FileParts: React.FC<{
   fileList: any[];
 }> = ({ fileList }) => {
   return (
-    <SimpleBar style={{ maxHeight: 200 }}>
+    <SimpleBar
+      style={{ maxHeight: 200 }}
+      classNames={{ scrollbar: 'scrollbar-handle-light simplebar-scrollbar' }}
+    >
       <div style={{ padding: 10 }}>
         {fileList.map((file, index) => {
           return (

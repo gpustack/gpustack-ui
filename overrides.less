@@ -1,1 +1,28 @@
 // only for third party libraries styles
+
+.simplebar-scrollbar.simplebar-visible::before {
+  opacity: 1;
+}
+
+.simplebar-scrollbar::before {
+  background: var(--scrollbar-handle-bg);
+  width: var(--scrollbar-size);
+}
+
+.simplebar-scrollbar.simplebar-visible.simplebar-hover {
+  &::before {
+    background: var(--scrollbar-handle-hover-bg);
+  }
+}
+
+.simplebar-scrollbar.scrollbar-handle-light {
+  &::before {
+    background-color: var(--scrollbar-handle-light-bg);
+  }
+}
+
+.simplebar-scrollbar.simplebar-visible.simplebar-hover.scrollbar-handle-light {
+  &::before {
+    background: var(--scrollbar-handle-light-bg);
+  }
+}

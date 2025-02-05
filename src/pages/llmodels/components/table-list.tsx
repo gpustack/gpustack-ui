@@ -238,12 +238,6 @@ const Models: React.FC<ModelsProps> = ({
 
   const sourceOptions = [
     {
-      label: intl.formatMessage({ id: 'menu.models.modelCatalog' }),
-      value: 'catalog',
-      key: 'catalog',
-      icon: <IconFont type="icon-catalog"></IconFont>
-    },
-    {
       label: 'Hugging Face',
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
@@ -260,6 +254,12 @@ const Models: React.FC<ModelsProps> = ({
       value: modelSourceMap.modelscope_value,
       key: 'modelscope',
       icon: <IconFont type="icon-tu2"></IconFont>
+    },
+    {
+      label: intl.formatMessage({ id: 'menu.models.modelCatalog' }),
+      value: 'catalog',
+      key: 'catalog',
+      icon: <IconFont type="icon-catalog"></IconFont>
     },
     {
       label: intl.formatMessage({ id: 'models.form.localPath' }),

@@ -174,12 +174,16 @@ const TableRow: React.FC<
     if (e.target.checked) {
       // update selectedRowKeys
       rowSelection?.onChange(
-        _.uniq([...rowSelection?.selectedRowKeys, record[rowKey]])
+        _.uniq([...rowSelection?.selectedRowKeys, record[rowKey]]),
+        _.uniqBy([...rowSelection?.selectedRows, record], rowKey)
       );
     } else {
       // update selectedRowKeys
       rowSelection?.onChange(
-        rowSelection?.selectedRowKeys.filter((key) => key !== record[rowKey])
+        rowSelection?.selectedRowKeys.filter((key) => key !== record[rowKey]),
+        rowSelection?.selectedRows.filter(
+          (row) => row[rowKey] !== record[rowKey]
+        )
       );
     }
   };

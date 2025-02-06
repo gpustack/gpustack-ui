@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
-import { InstanceRealLogStatus } from '../config';
+import { InstanceRealtimeLogStatus } from '../config';
 
 type ViewModalProps = {
   open: boolean;
@@ -35,10 +35,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
 
   const updateHandler = (list: any) => {
     const data = list?.find((item: any) => item.data?.id === props.id);
-    // state in InstanceRealLogStatus will not enable scorll load, because it is in the trasisition state
+    // state in InstanceRealtimeLogStatus will not enable scorll load, because it is in the trasisition state
     if (data) {
       setEnableScorllLoad(
-        () => !InstanceRealLogStatus.includes(data?.data?.state)
+        () => !InstanceRealtimeLogStatus.includes(data?.data?.state)
       );
     }
   };

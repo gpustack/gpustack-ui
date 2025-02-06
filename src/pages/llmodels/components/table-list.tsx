@@ -45,7 +45,7 @@ import {
   updateModel
 } from '../apis';
 import {
-  InstanceRealLogStatus,
+  InstanceRealtimeLogStatus,
   getSourceRepoConfigValue,
   modelCategories,
   modelCategoriesMap,
@@ -472,7 +472,9 @@ const Models: React.FC<ModelsProps> = ({
           status: row.state,
           id: row.id,
           modelId: row.model_id,
-          tail: InstanceRealLogStatus.includes(row.state) ? undefined : PageSize
+          tail: InstanceRealtimeLogStatus.includes(row.state)
+            ? undefined
+            : PageSize
         });
         setOpenLogModal(true);
         onViewLogs();
@@ -739,6 +741,32 @@ const Models: React.FC<ModelsProps> = ({
     }
   };
 
+  const handleStartBatch = async () => {
+    modalRef.current.show({
+      content: 'models.table.models',
+      title: 'common.title.start.confirm',
+      okText: 'common.button.start',
+      operation: 'common.start.confirm',
+      async onOk() {
+        await handleBatchRequest(rowSelection.selectedRows, handleStartModel);
+        rowSelection.clearSelections();
+      }
+    });
+  };
+
+  const handleStopBatch = async () => {
+    modalRef.current.show({
+      content: 'models.table.models',
+      title: 'common.title.stop.confirm',
+      okText: 'common.button.stop',
+      operation: 'common.stop.confirm',
+      async onOk() {
+        await handleBatchRequest(rowSelection.selectedRows, handleStopModel);
+        rowSelection.clearSelections();
+      }
+    });
+  };
+
   return (
     <>
       <PageContainer
@@ -820,6 +848,30 @@ const Models: React.FC<ModelsProps> = ({
                   </span>
                 </Button>
               </Access>
+              <Button
+                icon={<IconFont type="icon-outline-play"></IconFont>}
+                onClick={handleStartBatch}
+                disabled={!rowSelection.selectedRows.length}
+              >
+                <span>
+                  {intl?.formatMessage?.({ id: 'common.button.start' })}
+                  {rowSelection.selectedRows.length > 0 && (
+                    <span>({rowSelection.selectedRows?.length})</span>
+                  )}
+                </span>
+              </Button>
+              <Button
+                icon={<IconFont type="icon-stop1"></IconFont>}
+                onClick={handleStopBatch}
+                disabled={!rowSelection.selectedRows.length}
+              >
+                <span>
+                  {intl?.formatMessage?.({ id: 'common.button.stop' })}
+                  {rowSelection.selectedRows.length > 0 && (
+                    <span>({rowSelection.selectedRows?.length})</span>
+                  )}
+                </span>
+              </Button>
             </Space>
           }
         ></PageTools>

@@ -36,7 +36,8 @@ export interface TableHeaderProps {
 
 export interface RowSelectionProps {
   selectedRowKeys: React.Key[];
-  onChange: (selectedRowKeys: React.Key[]) => void;
+  selectedRows: any[];
+  onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => void;
 }
 export interface SealTableProps {
   childParentKey?: string;

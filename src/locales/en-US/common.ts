@@ -197,6 +197,9 @@ export default {
   'common.stop.confirm': 'Are you sure you want to stop the selected {type}?',
   'common.stop.single.confirm':
     'Are you sure you want to stop <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+  'common.start.confirm': 'Are you sure you want to start the selected {type}?',
+  'common.start.single.confirm':
+    'Are you sure you want to start <span style="font-size: 13px;font-weight: 700">{name}</span>?',
   'common.filter.name': 'Filter by name',
   'common.form.password': 'Password',
   'common.form.username': 'Username',
@@ -208,6 +211,7 @@ export default {
   'common.button.version': 'Version',
   'common.title.delete.confirm': 'Confirm delete',
   'common.title.stop.confirm': 'Confirm stop',
+  'common.title.start.confirm': 'Confirm start',
   'common.title.recreate.confirm': 'Confirm recreate',
   'common.button.addLabel': 'Add Labels',
   'common.button.addSelector': 'Add Selectors',

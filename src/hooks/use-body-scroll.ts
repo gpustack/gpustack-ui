@@ -7,6 +7,7 @@ export default function useBodyScroll() {
   const bodyScroller = React.useRef<any>(null);
 
   const instanceRef = React.useRef<any>(null);
+  const timer = React.useRef<any>(null);
 
   const int = () => {
     bodyScroller.current =
@@ -16,9 +17,10 @@ export default function useBodyScroll() {
   };
 
   const saveScrollHeight = React.useCallback(() => {
+    if (!bodyScroller.current) {
+      int();
+    }
     scrollerState.current = instanceRef.current?.state();
-
-    console.log('saveScrollHeight', scrollerState.current?.overflowAmount?.y);
 
     const scrollTop = scrollerState.current?.overflowAmount?.y;
     scrollHeight.current = scrollTop;
@@ -31,21 +33,17 @@ export default function useBodyScroll() {
   }, []);
 
   const restoreScrollHeight = React.useCallback(() => {
-    console.log('saveScrollHeight++++++++++', scrollHeight.current);
-
-    bodyScroller.current?.scrollTo?.({
-      top: scrollHeight.current,
-      behavior: 'smooth'
-    });
-
-    instanceRef.current?.options?.({
-      overflow: {
-        x: 'hidden',
-        y: 'scroll'
-      }
-    });
-
-    instanceRef.current?.update?.();
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(() => {
+      instanceRef.current?.options?.({
+        overflow: {
+          x: 'hidden',
+          y: 'scroll'
+        }
+      });
+    }, 1000);
   }, []);
 
   React.useEffect(() => {

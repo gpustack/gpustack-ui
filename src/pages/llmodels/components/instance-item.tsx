@@ -225,6 +225,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         <Tag
                           color="cyan"
                           style={{
+                            display: 'flex',
+                            alignItems: 'center',
                             maxWidth: '100%',
                             minWidth: 50,
                             textOverflow: 'ellipsis',
@@ -251,6 +253,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                         <Tag
                           color="processing"
                           style={{
+                            display: 'flex',
+                            alignItems: 'center',
                             maxWidth: '100%',
                             minWidth: 50,
                             textOverflow: 'ellipsis',

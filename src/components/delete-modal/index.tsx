@@ -1,3 +1,4 @@
+import useBodyScroll from '@/hooks/use-body-scroll';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal, Space, message, type ModalFuncProps } from 'antd';
@@ -6,6 +7,7 @@ import Styles from './index.less';
 
 const DeleteModal = forwardRef((props, ref) => {
   const intl = useIntl();
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [visible, setVisible] = useState(false);
   const [config, setConfig] = useState<
     ModalFuncProps & {
@@ -31,23 +33,27 @@ const DeleteModal = forwardRef((props, ref) => {
         operation: string;
       }
     ) => {
+      saveScrollHeight();
       setConfig(data);
       setVisible(true);
     },
     hide: () => {
       setVisible(false);
+      restoreScrollHeight();
     }
   }));
 
   const handleCancel = () => {
     setVisible(false);
     config.onCancel?.();
+    restoreScrollHeight();
   };
 
   const handleOk = async () => {
     await config.onOk?.();
     message.success(intl.formatMessage({ id: 'common.message.success' }));
     setVisible(false);
+    restoreScrollHeight();
   };
 
   return (

@@ -62,11 +62,14 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
 
   const handleSelectAllChange = (e: any) => {
     if (e.target.checked) {
-      rowSelection?.onChange(props.dataSource.map((record) => record[rowKey]));
+      rowSelection?.onChange(
+        props.dataSource.map((record) => record[rowKey]),
+        props.dataSource
+      );
       setSelectAll(true);
       setIndeterminate(false);
     } else {
-      rowSelection?.onChange([]);
+      rowSelection?.onChange([], []);
       setSelectAll(false);
       setIndeterminate(false);
     }

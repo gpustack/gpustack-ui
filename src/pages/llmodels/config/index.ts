@@ -196,7 +196,7 @@ export const InstanceStatusMap = {
   Unreachable: 'unreachable'
 };
 
-export const InstanceRealLogStatus = [
+export const InstanceRealtimeLogStatus = [
   InstanceStatusMap.Downloading,
   InstanceStatusMap.Initializing
 ];

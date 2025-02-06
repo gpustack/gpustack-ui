@@ -122,7 +122,7 @@ export default {
   'playgorund.audio.voice.error':
     'Voices are unavailable. The model may still be initializing. Please refresh after a brief wait.',
   'playground.params.size.description':
-    'The maximum size of the generated image is controlled by the deployment parameters of the model. <a href="https://github.com/gpustack/llama-box" target="_blank">Refer to</a>',
+    'The maximum size of the generated image is controlled by the deployment parameters of the model. <a href="https://github.com/gpustack/llama-box" target="_blank">Refer to this link</a>',
   'playground.documents.verify.embedding': 'At least add two pieces of text.',
   'playground.documents.verify.rerank': 'The documents cannot be empty.',
   'playground.image.guidance.tip':

@@ -498,7 +498,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const downloadOriginImage = () => {
-    console.log('Downloading original image', imageStatus);
     const canvas = canvasRef.current!;
     const link = document.createElement('a');
     link.download = `image_${dayjs().format('YYYYMMDDHHmmss')}.png`;
@@ -508,19 +507,31 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const downloadNewImage = () => {
-    const url = imageSrc || '';
-    const filename = `${imageStatus.width}x${imageStatus.height}_${dayjs().format('YYYYMMDDHHmmss')}.png`;
+    if (!imageSrc) return;
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const img = new Image();
+    img.src = imageSrc;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = imageStatus.width;
+      canvas.height = imageStatus.height;
+
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const url = canvas.toDataURL('image/png');
+      const filename = `${canvas.width}x${canvas.height}_${dayjs().format('YYYYMMDDHHmmss')}.png`;
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    };
   };
 
   const download = () => {
-    console.log('Downloading image:', imageStatus);
     if (imageStatus.isOriginal) {
       downloadOriginImage();
     } else {

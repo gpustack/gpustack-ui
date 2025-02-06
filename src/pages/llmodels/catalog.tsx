@@ -1,6 +1,7 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
+import useBodyScroll from '@/hooks/use-body-scroll';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -16,6 +17,7 @@ import { CatalogItem as CatalogItemType, FormData } from './config/types';
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const navigate = useNavigate();
   const [activeId, setActiveId] = React.useState(-1);
   const [isFirst, setIsFirst] = React.useState(true);
@@ -109,10 +111,12 @@ const Catalog: React.FC = () => {
       ...openDeployModal,
       show: false
     });
+    restoreScrollHeight();
     setActiveId(-1);
   };
 
   const handleOnDeploy = useCallback((item: CatalogItemType) => {
+    saveScrollHeight();
     setActiveId(item.id);
     setOpenDeployModal({
       show: true,

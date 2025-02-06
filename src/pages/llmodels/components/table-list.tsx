@@ -9,6 +9,7 @@ import SealTable from '@/components/seal-table';
 import SealColumn from '@/components/seal-table/components/seal-column';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
+import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -130,6 +131,7 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
   const access = useAccess();
   const intl = useIntl();
@@ -362,6 +364,7 @@ const Models: React.FC<ModelsProps> = ({
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
         handleSearch();
+        restoreScrollHeight();
       } catch (error) {}
     },
     [currentData]
@@ -369,6 +372,7 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleModalCancel = useCallback(() => {
     setOpenAddModal(false);
+    restoreScrollHeight();
   }, []);
 
   const handleDeployModalCancel = () => {
@@ -408,6 +412,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleLogModalCancel = useCallback(() => {
     setOpenLogModal(false);
     onCancelViewLogs();
+    restoreScrollHeight();
   }, [onCancelViewLogs]);
 
   const handleDelete = async (row: any) => {
@@ -478,6 +483,7 @@ const Models: React.FC<ModelsProps> = ({
         });
         setOpenLogModal(true);
         onViewLogs();
+        saveScrollHeight();
       } catch (error) {
         console.log('error:', error);
       }
@@ -518,6 +524,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleEdit = (row: ListItem) => {
     setCurrentData(row);
     setOpenAddModal(true);
+    saveScrollHeight();
   };
 
   const handleSelect = useCallback(

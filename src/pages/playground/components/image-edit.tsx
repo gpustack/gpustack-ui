@@ -657,7 +657,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 
   const handleUpdateImageList = useCallback((base64List: any) => {
-    console.log('updateimagelist=========', base64List);
     const currentImg = _.get(base64List, '[0]', {});
     const img = _.get(currentImg, 'dataUrl', '');
     setUploadList(base64List);

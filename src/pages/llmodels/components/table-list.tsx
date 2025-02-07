@@ -479,7 +479,7 @@ const Models: React.FC<ModelsProps> = ({
           modelId: row.model_id,
           tail: InstanceRealtimeLogStatus.includes(row.state)
             ? undefined
-            : PageSize
+            : PageSize - 1
         });
         setOpenLogModal(true);
         onViewLogs();
@@ -840,21 +840,6 @@ const Models: React.FC<ModelsProps> = ({
                   {intl?.formatMessage?.({ id: 'models.button.deploy' })}
                 </Button>
               </Dropdown>
-              <Access accessible={access.canDelete}>
-                <Button
-                  icon={<DeleteOutlined />}
-                  danger
-                  onClick={handleDeleteBatch}
-                  disabled={!rowSelection.selectedRowKeys.length}
-                >
-                  <span>
-                    {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                    {rowSelection.selectedRowKeys.length > 0 && (
-                      <span>({rowSelection.selectedRowKeys?.length})</span>
-                    )}
-                  </span>
-                </Button>
-              </Access>
               <Button
                 icon={<IconFont type="icon-outline-play"></IconFont>}
                 onClick={handleStartBatch}
@@ -879,6 +864,21 @@ const Models: React.FC<ModelsProps> = ({
                   )}
                 </span>
               </Button>
+              <Access accessible={access.canDelete}>
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  onClick={handleDeleteBatch}
+                  disabled={!rowSelection.selectedRowKeys.length}
+                >
+                  <span>
+                    {intl?.formatMessage?.({ id: 'common.button.delete' })}
+                    {rowSelection.selectedRowKeys.length > 0 && (
+                      <span>({rowSelection.selectedRowKeys?.length})</span>
+                    )}
+                  </span>
+                </Button>
+              </Access>
             </Space>
           }
         ></PageTools>

@@ -7,7 +7,6 @@ interface RequestConfig {
   handler: (data: any) => any;
   beforeReconnect?: () => void;
   params?: object;
-  byLine?: boolean;
   watch?: boolean;
   contentType?: 'json' | 'text';
 }
@@ -16,8 +15,6 @@ const useSetChunkFetch = () => {
   const axiosToken = useRef<any>(null);
   const requestConfig = useRef<any>({});
   const chunkDataRef = useRef<any>([]);
-  const bufferCacheRef = useRef<any>('');
-
   const readTextEventStreamData = async (
     reader: ReadableStreamDefaultReader<Uint8Array>,
     decoder: TextDecoder,
@@ -74,7 +71,6 @@ const useSetChunkFetch = () => {
     url,
     handler,
     watch,
-    byLine = false,
     params = {}
   }: RequestConfig) => {
     axiosToken.current?.abort?.();

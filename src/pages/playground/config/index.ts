@@ -166,3 +166,11 @@ export const extractErrorMessage = (result: any) => {
     ''
   );
 };
+
+export const scaleImageSize = (size: { width: number; height: number }) => {
+  const { width, height } = size;
+  const scale = 64;
+  const newWidth = Math.floor(width / scale) * scale;
+  const newHeight = Math.floor(height / scale) * scale;
+  return { width: newWidth, height: newHeight };
+};

@@ -14,6 +14,8 @@ interface UploadImgProps {
   disabled?: boolean;
   children?: React.ReactNode;
   accept?: string;
+  icon?: React.ReactNode;
+  title?: React.ReactNode;
   handleUpdateImgList: (
     imgList: {
       dataUrl: string;
@@ -30,6 +32,8 @@ const UploadImg: React.FC<UploadImgProps> = ({
   drag = false,
   disabled = false,
   children,
+  icon,
+  title,
   accept = 'image/*',
   size = 'small'
 }) => {
@@ -135,13 +139,15 @@ const UploadImg: React.FC<UploadImgProps> = ({
         >
           {children ?? (
             <Tooltip
-              title={intl.formatMessage({ id: 'playground.img.upload' })}
+              title={
+                title ?? intl.formatMessage({ id: 'playground.img.upload' })
+              }
             >
               <Button
                 disabled={disabled}
                 size={size}
                 type="text"
-                icon={<PictureOutlined />}
+                icon={icon ?? <PictureOutlined />}
               ></Button>
             </Tooltip>
           )}
@@ -158,13 +164,15 @@ const UploadImg: React.FC<UploadImgProps> = ({
         >
           {children ?? (
             <Tooltip
-              title={intl.formatMessage({ id: 'playground.img.upload' })}
+              title={
+                title ?? intl.formatMessage({ id: 'playground.img.upload' })
+              }
             >
               <Button
                 disabled={disabled}
                 size={size}
                 type="text"
-                icon={<PictureOutlined />}
+                icon={icon ?? <PictureOutlined />}
               ></Button>
             </Tooltip>
           )}

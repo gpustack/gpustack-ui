@@ -34,7 +34,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const chunkRequedtRef = useRef<any>(null);
   const [logs, setLogs] = useState<any[]>([]);
   const logParseWorker = useRef<any>(null);
-  const tail = useRef<any>(pageSize - 1);
+  const tail = useRef<any>(defaultTail);
   const [loading, setLoading] = useState(false);
   const [isAtTop, setIsAtTop] = useState(false);
   const [scrollPos, setScrollPos] = useState<any[]>([]);

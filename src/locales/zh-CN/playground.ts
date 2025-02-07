@@ -134,5 +134,7 @@ export default {
   'playground.image.generate': '生成图片',
   'playground.image.edit': '编辑图片',
   'playground.image.fitview': '适应视图',
-  'playground.chat.aithought': '思考过程'
+  'playground.chat.aithought': '思考过程',
+  'playground.image.mask.uploaded': '遮罩已上传',
+  'playground.image.mask.upload': '上传遮罩'
 };

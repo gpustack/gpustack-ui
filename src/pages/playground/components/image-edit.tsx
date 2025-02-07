@@ -125,6 +125,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [image, setImage] = useState<string>('');
   const [mask, setMask] = useState<string | null>(null);
   const [uploadList, setUploadList] = useState<any[]>([]);
+  const [maskUpload, setMaskUpload] = useState<any[]>([]);
   const [modelMeta, setModelMeta] = useState<any>({});
   const [imageStatus, setImageStatus] = useState<{
     isOriginal: boolean;
@@ -299,15 +300,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       setMessageId();
       setTokenResult(null);
       setCurrentPrompt(current?.content || '');
-      setUploadList((pre) => {
-        return pre.map((item) => {
-          return {
-            ...item,
-            uid: activeImgUid,
-            dataUrl: image
-          };
-        });
-      });
+      // setUploadList((pre) => {
+      //   return pre.map((item) => {
+      //     return {
+      //       ...item,
+      //       uid: activeImgUid
+      //     };
+      //   });
+      // });
       setRouteCache(routeCachekey['/playground/text-to-image'], true);
 
       const imgSize = _.split(finalParameters.size, 'x').map((item: string) =>
@@ -659,16 +659,28 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleUpdateImageList = useCallback((base64List: any) => {
     const currentImg = _.get(base64List, '[0]', {});
     const img = _.get(currentImg, 'dataUrl', '');
+    handleOnScaleImageSize(currentImg);
     setUploadList(base64List);
     setImage(img);
     setActiveImgUid(_.get(base64List, '[0].uid', ''));
     setImageStatus({
-      isOriginal: false,
+      isOriginal: true,
       isResetNeeded: true,
       width: _.get(currentImg, 'width', 512),
       height: _.get(currentImg, 'height', 512)
     });
     setImageList([]);
+  }, []);
+
+  const handleUpdateMaskList = useCallback((base64List: any) => {
+    setMaskUpload(base64List);
+    const mask = _.get(base64List, '[0].dataUrl', '');
+    setMask(mask);
+  }, []);
+
+  const handleClearUploadMask = useCallback(() => {
+    setMaskUpload([]);
+    setMask(null);
   }, []);
 
   const handleOnSave = useCallback(
@@ -680,7 +692,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         };
       });
       setMask(data.mask || null);
-      setImage(data.img);
+      setImage(data.img || maskUpload[0]?.dataUrl || null);
     },
     []
   );
@@ -692,17 +704,29 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           imguid={activeImgUid}
           imageStatus={imageStatus}
           imageSrc={image}
-          disabled={loading}
+          disabled={loading || !imageStatus.isOriginal}
           onSave={handleOnSave}
+          clearUploadMask={handleClearUploadMask}
+          maskUpload={maskUpload}
           uploadButton={
-            <Tooltip title="Upload Image">
+            <>
               <UploadImg
                 disabled={loading}
                 handleUpdateImgList={handleUpdateImageList}
                 size="middle"
-                accept="image/png"
+                accept="image/*"
               ></UploadImg>
-            </Tooltip>
+              <UploadImg
+                title={intl.formatMessage({
+                  id: 'playground.image.mask.upload'
+                })}
+                icon={<IconFont type="icon-mosaic-2"></IconFont>}
+                disabled={loading}
+                handleUpdateImgList={handleUpdateMaskList}
+                size="middle"
+                accept="image/*"
+              ></UploadImg>
+            </>
           }
         ></CanvasImageEditor>
       );
@@ -728,7 +752,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </UploadImg>
       </>
     );
-  }, [image, loading, imageStatus, handleOnSave, handleUpdateImageList]);
+  }, [
+    image,
+    loading,
+    maskUpload,
+    imageStatus,
+    handleOnSave,
+    handleUpdateImageList
+  ]);
 
   const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
     if (item.progress < 100) {
@@ -909,7 +940,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           overflow: 'hidden'
         }}
       >
-        <div style={{ flex: 1, overflow: 'auto' }} ref={paramsRef}>
+        <div
+          style={{ flex: 1, overflow: 'auto' }}
+          ref={paramsRef}
+          data-overlayscrollbars-initialize
+        >
           <div className="box">
             <DynamicParams
               ref={form}
@@ -961,7 +996,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             placeholer={intl.formatMessage({
               id: 'playground.input.prompt.holder'
             })}
-            actions={['clear']}
+            actions={[]}
             title={
               <span className="font-600">
                 {intl.formatMessage({ id: 'playground.image.prompt' })}

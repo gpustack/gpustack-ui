@@ -139,5 +139,7 @@ export default {
   'playground.image.generate': 'Generate',
   'playground.image.edit': 'Edit',
   'playground.image.fitview': 'Fit View',
-  'playground.chat.aithought': 'CoT'
+  'playground.chat.aithought': 'CoT',
+  'playground.image.mask.uploaded': 'Mask Uploaded',
+  'playground.image.mask.upload': 'Upload Mask'
 };

@@ -198,7 +198,8 @@ export const InstanceStatusMap = {
 
 export const InstanceRealtimeLogStatus = [
   InstanceStatusMap.Downloading,
-  InstanceStatusMap.Initializing
+  InstanceStatusMap.Initializing,
+  InstanceStatusMap.Starting
 ];
 
 export const InstanceStatusMapValue = {

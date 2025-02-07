@@ -43,7 +43,7 @@ export default function useBodyScroll() {
           y: 'scroll'
         }
       });
-    }, 1000);
+    }, 500);
   }, []);
 
   React.useEffect(() => {

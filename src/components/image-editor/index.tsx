@@ -1,8 +1,9 @@
 import {
+  ClearOutlined,
+  CloseOutlined,
   DownloadOutlined,
   ExpandOutlined,
   FormatPainterOutlined,
-  SyncOutlined,
   UndoOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -20,6 +21,8 @@ type CanvasImageEditorProps = {
   imageSrc: string;
   disabled?: boolean;
   imguid: string | number;
+  maskUpload?: any[];
+  clearUploadMask?: () => void;
   onSave: (imageData: { mask: string | null; img: string }) => void;
   onScaleImageSize?: (data: { width: number; height: number }) => void;
   uploadButton: React.ReactNode;
@@ -37,10 +40,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   imageSrc,
   disabled,
   imageStatus,
+  clearUploadMask,
   onSave,
   onScaleImageSize,
   imguid,
-  uploadButton
+  uploadButton,
+  maskUpload
 }) => {
   const MIN_SCALE = 0.5;
   const MAX_SCALE = 8;
@@ -52,20 +57,18 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const [lineWidth, setLineWidth] = useState<number>(60);
   const isDrawing = useRef<boolean>(false);
   const currentStroke = useRef<Point[]>([]);
-  const resizeObserver = useRef<ResizeObserver | null>(null);
   const strokesRef = useRef<Stroke[]>([]);
   const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const autoScale = useRef<number>(1);
   const baseScale = useRef<number>(1);
   const cursorRef = useRef<HTMLDivElement>(null);
-  const [imgLoaded, setImgLoaded] = useState(false);
   const translatePos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const contentPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const animationFrameIdRef = useRef<number | null>(null);
   const strokeCache = useRef<any>({});
   const preImguid = useRef<string | number>('');
   const [activeScale, setActiveScale] = useState<number>(1);
   const negativeMaskRef = useRef<boolean>(false);
+  const mouseDownState = useRef<boolean>(false);
 
   const getTransformedPoint = useCallback(
     (offsetX: number, offsetY: number) => {
@@ -110,10 +113,14 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    console.log('mouse enter:', mouseDownState.current);
     if (disabled) {
       overlayCanvasRef.current!.style.cursor = 'default';
       return;
     }
+    // if (mouseDownState.current) {
+    //   isDrawing.current = true;
+    // }
     overlayCanvasRef.current!.style.cursor = 'none';
     cursorRef.current!.style.display = 'block';
     cursorRef.current!.style.top = `${e.clientY - (lineWidth / 2) * autoScale.current}px`;
@@ -134,6 +141,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (disabled) {
       return;
     }
+    isDrawing.current = false;
     overlayCanvasRef.current!.style.cursor = 'default';
     cursorRef.current!.style.display = 'none';
   };
@@ -335,12 +343,18 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (disabled) {
       return;
     }
-    if (!isDrawing.current) return;
+    console.log(
+      'Drawing:',
+      isDrawing.current,
+      currentStroke.current,
+      strokesRef.current
+    );
+    if (!isDrawing.current || !mouseDownState.current) return;
 
     const { offsetX, offsetY } = e.nativeEvent;
     const currentX = offsetX;
     const currentY = offsetY;
-
+    console.log('currentStroke:', currentStroke.current);
     currentStroke.current.push({
       x: currentX,
       y: currentY,
@@ -369,6 +383,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     if (disabled) {
       return;
     }
+
     isDrawing.current = true;
 
     currentStroke.current = [];
@@ -393,13 +408,14 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const endDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    console.log('End Drawing:', e);
     if (disabled) {
       return;
     }
     if (!isDrawing.current) {
       return;
     }
+
+    console.log('End Drawing:', e);
 
     isDrawing.current = false;
 
@@ -440,9 +456,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
   const onReset = useCallback(() => {
     clearOverlayCanvas();
-    console.log('Resetting strokes');
     setStrokes([]);
     currentStroke.current = [];
+    console.log('Resetting strokes', currentStroke.current);
   }, []);
 
   const redrawStrokes = useCallback(
@@ -599,13 +615,11 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       return;
     }
 
-    setImgLoaded(false);
     await drawImage();
     onScaleImageSize?.({
       width: canvasRef.current!.width,
       height: canvasRef.current!.height
     });
-    setImgLoaded(true);
 
     if (strokeCache.current[imguid]) {
       strokeCache.current[preImguid.current] = strokesRef.current;
@@ -616,12 +630,16 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       resetCanvas();
     }
     preImguid.current = imguid;
-
-    if (strokesRef.current.length) {
+    console.log(
+      'Image initialized:',
+      strokesRef.current.length,
+      imageStatus.isOriginal
+    );
+    if (strokesRef.current.length && imageStatus.isOriginal) {
       redrawStrokes(strokesRef.current);
+      saveImage();
     }
     updateCursorSize();
-    saveImage();
   }, [drawImage, onReset, redrawStrokes, imguid]);
 
   const updateZoom = (scaleChange: number, mouseX: number, mouseY: number) => {
@@ -707,12 +725,24 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       }
     };
 
+    const handleMouseDown = (e: MouseEvent) => {
+      mouseDownState.current = true;
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      mouseDownState.current = false;
+    };
+
     window.addEventListener('keydown', handleUndoShortcut);
+    // mouse down
+    window.addEventListener('mousedown', handleMouseDown);
+
+    // mouse up
+    window.addEventListener('mouseup', handleMouseUp);
     return () => {
       window.removeEventListener('keydown', handleUndoShortcut);
-      if (animationFrameIdRef.current !== null) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
 
@@ -769,17 +799,17 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
               <UndoOutlined className="font-size-14" />
             </Button>
           </Tooltip>
-          {uploadButton}
-          <Tooltip title={intl.formatMessage({ id: 'common.button.reset' })}>
+          <Tooltip title={intl.formatMessage({ id: 'common.button.clear' })}>
             <Button
               onClick={onReset}
               size="middle"
               type="text"
               disabled={disabled}
             >
-              <SyncOutlined className="font-size-14" />
+              <ClearOutlined className="font-size-14" />
             </Button>
           </Tooltip>
+          {uploadButton}
           <Tooltip
             title={intl.formatMessage({ id: 'playground.image.fitview' })}
           >
@@ -794,22 +824,50 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           </Tooltip>
         </div>
         <div className="tools">
-          <Checkbox
-            onChange={handleOnChangeMask}
-            className="flex-center"
-            value={negativeMaskRef.current}
-          >
-            <span className="font-size-12">
-              {intl.formatMessage({ id: 'playground.image.negativeMask' })}
+          {maskUpload?.length ? (
+            <span className="flex-center upload-mask">
+              <span className="font-size-12">
+                {intl.formatMessage({ id: 'playground.image.mask.uploaded' })}
+                ...
+              </span>
+              <Button
+                onClick={clearUploadMask}
+                size="small"
+                type="text"
+                icon={<CloseOutlined className="close-btn"></CloseOutlined>}
+              ></Button>
             </span>
-          </Checkbox>
-          <Tooltip
-            title={intl.formatMessage({ id: 'playground.image.saveMask' })}
-          >
-            <Button onClick={downloadMask} size="middle" type="text">
-              <IconFont className="font-size-14" type="icon-save2"></IconFont>
-            </Button>
-          </Tooltip>
+          ) : (
+            <>
+              {imageStatus.isOriginal && (
+                <>
+                  <Checkbox
+                    onChange={handleOnChangeMask}
+                    className="flex-center"
+                    value={negativeMaskRef.current}
+                  >
+                    <span className="font-size-12">
+                      {intl.formatMessage({
+                        id: 'playground.image.negativeMask'
+                      })}
+                    </span>
+                  </Checkbox>
+                  <Tooltip
+                    title={intl.formatMessage({
+                      id: 'playground.image.saveMask'
+                    })}
+                  >
+                    <Button onClick={downloadMask} size="middle" type="text">
+                      <IconFont
+                        className="font-size-14"
+                        type="icon-save2"
+                      ></IconFont>
+                    </Button>
+                  </Tooltip>
+                </>
+              )}
+            </>
+          )}
           <Tooltip
             title={intl.formatMessage({ id: 'playground.image.download' })}
           >
@@ -834,8 +892,14 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           ref={overlayCanvasRef}
           className="overlay-canvas"
           style={{ position: 'absolute', zIndex: 10, cursor: 'none' }}
-          onMouseDown={startDrawing}
-          onMouseUp={endDrawing}
+          onMouseDown={(event) => {
+            mouseDownState.current = true;
+            startDrawing(event);
+          }}
+          onMouseUp={(event) => {
+            mouseDownState.current = false;
+            endDrawing(event);
+          }}
           onMouseEnter={handleMouseEnter}
           onWheel={handleOnWheel}
           onMouseMove={(e) => {
@@ -843,8 +907,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
             draw(e);
           }}
           onMouseLeave={(e) => {
-            handleMouseLeave();
             endDrawing(e);
+            handleMouseLeave();
           }}
         />
         <div

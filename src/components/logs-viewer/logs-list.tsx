@@ -139,7 +139,11 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
       <div className={classNames('content')}>
         {_.map(dataList, (item: any, index: number) => {
           return (
-            <div key={item.uid} className={classNames('text')}>
+            <div
+              key={item.uid}
+              className={classNames('text')}
+              data-uid={item.uid}
+            >
               {item.content}
             </div>
           );

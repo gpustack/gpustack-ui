@@ -133,6 +133,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     }
     logParseWorker.current.postMessage({
       inputStr: data,
+      page: pageRef.current,
       reset: clearScreen.current
     });
     clearScreen.current = false;

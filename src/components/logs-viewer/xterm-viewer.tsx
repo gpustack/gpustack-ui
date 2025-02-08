@@ -1,6 +1,5 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import { FitAddon } from '@xterm/addon-fit';
-import { WebglAddon } from '@xterm/addon-webgl';
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import classNames from 'classnames';
@@ -126,7 +125,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     });
     fitAddonRef.current = new FitAddon();
     termRef.current.loadAddon(fitAddonRef.current);
-    termRef.current.loadAddon(new WebglAddon());
     termRef.current.open(termwrapRef.current);
 
     // add event

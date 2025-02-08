@@ -11,6 +11,10 @@
     margin-bottom: 0;
   }
 
+  b {
+    font-weight: var(--font-weight-bold);
+  }
+
   h1,
   h2,
   h3,
@@ -79,6 +83,10 @@
   img {
     max-width: 100%;
     height: auto;
+  }
+  img[src^="https://img.shields.io/"], img[src*="badge.svg"]
+  {
+    margin-bottom: 6px;
   }
 
   video {

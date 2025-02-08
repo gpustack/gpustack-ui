@@ -1,7 +1,7 @@
 .player-wrap {
   width: 100%;
   display: flex;
-  background-color: var(--ant-color-fill-quaternary);
+  // background-color: var(--ant-color-fill-quaternary);
   border-radius: 6px;
 
   .player-ui {
@@ -13,10 +13,10 @@
   }
 
   .controls {
+    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    margin-inline: 10px;
   }
 
   .play-btn {
@@ -43,7 +43,6 @@
 
     .slider-inner {
       flex: 1;
-      margin-inline: 10px;
     }
   }
 
@@ -55,8 +54,11 @@
   }
 
   .time {
+    width: 52px;
+    text-align: right;
+
     &.current {
-      margin-left: 6px;
+      text-align: left;
     }
   }
 
@@ -65,7 +67,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 
     .slider {

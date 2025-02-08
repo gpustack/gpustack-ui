@@ -307,7 +307,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               {!isRecording && (
                 <UploadAudio
                   type="default"
-                  accept={SpeechToTextFormat.join(',')}
+                  accept={SpeechToTextFormat.join(', ')}
                   onChange={handleUploadChange}
                 ></UploadAudio>
               )}
@@ -322,18 +322,40 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
 
             {audioData ? (
-              <div
-                className="flex-between flex-center justify-center relative"
-                style={{ paddingInline: 80 }}
-              >
+              <div className="flex-between flex-center justify-center relative">
                 <div style={{ width: 600 }}>
                   <AudioPlayer
                     url={audioData.url}
                     name={audioData.name}
                     duration={audioData.duration}
+                    extra={
+                      <Tooltip
+                        title={
+                          loading
+                            ? intl.formatMessage({
+                                id: 'playground.audio.generating'
+                              })
+                            : intl.formatMessage({
+                                id: 'playground.audio.button.generate'
+                              })
+                        }
+                      >
+                        {
+                          <Button
+                            disabled={!audioData}
+                            loading={loading}
+                            type="primary"
+                            size="middle"
+                            shape="circle"
+                            onClick={handleOnGenerate}
+                            icon={<SendOutlined></SendOutlined>}
+                          ></Button>
+                        }
+                      </Tooltip>
+                    }
                   ></AudioPlayer>
                 </div>
-                <div
+                {/* <div
                   style={{
                     padding: '16px',
                     textAlign: 'right',
@@ -365,7 +387,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                       ></Button>
                     }
                   </Tooltip>
-                </div>
+                </div> */}
               </div>
             ) : (
               renderAniamtion()
@@ -385,15 +407,14 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             className="message-list-wrap"
             style={{
               flex: 1,
-              position: 'relative',
-              borderTop: '1px solid var(--ant-color-split)'
+              position: 'relative'
             }}
           >
             {messageList?.length > 0 && (
               <span
                 style={{
                   position: 'absolute',
-                  top: 0,
+                  top: 20,
                   right: 2
                 }}
               >

@@ -4,6 +4,10 @@ const removeBrackets = (str: string) => {
   return str?.replace?.(/^\(…\)/, '');
 };
 
+const removeBracketsFromLine = (row: string) => {
+  return row.startsWith('(…)') ? row.slice(3) : row;
+};
+
 class AnsiParser {
   private cursorRow: number = 0;
   private cursorCol: number = 0;
@@ -12,6 +16,8 @@ class AnsiParser {
   private uid: number = 0;
   private isProcessing: boolean = false;
   private taskQueue: string[] = [];
+  private page: number = 1;
+  private pageSize: number = 500;
   private colorMap = {
     '30': 'black',
     '31': 'red',
@@ -33,6 +39,11 @@ class AnsiParser {
     this.screen = [['']];
     this.rawDataRows = 0;
     this.uid = this.uid + 1;
+    this.page = 1;
+  }
+
+  public setPage(page: number) {
+    this.page = page;
   }
 
   private setId() {
@@ -125,9 +136,9 @@ class AnsiParser {
     const remainingText = input.slice(lastIndex);
     this.handleText(remainingText);
 
-    const result = this.screen.map((row) => ({
-      content: removeBrackets(row.join('')),
-      uid: this.setId()
+    const result = this.screen.map((row, index) => ({
+      content: removeBracketsFromLine(row.join('')),
+      uid: `${this.page}-${index}`
     }));
 
     return {
@@ -176,7 +187,8 @@ class AnsiParser {
 const parser = new AnsiParser();
 
 self.onmessage = function (event) {
-  const { inputStr, reset } = event.data;
+  const { inputStr, reset, page } = event.data;
+  parser.setPage(page);
   if (reset) {
     parser.reset();
   }

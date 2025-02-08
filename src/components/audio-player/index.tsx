@@ -25,6 +25,7 @@ interface AudioPlayerProps {
   height?: number;
   width?: number;
   duration?: number;
+  extra?: React.ReactNode;
 }
 
 const speedOptions = [
@@ -42,7 +43,7 @@ const speedConfig = {
 
 const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   const intl = useIntl();
-  const { autoplay = false, speed: defaultSpeed = 1 } = props;
+  const { autoplay = false, speed: defaultSpeed = 1, extra } = props;
   const audioRef = React.useRef<HTMLAudioElement>(null);
   const [audioState, setAudioState] = React.useState<{
     currentTime: number;
@@ -206,76 +207,89 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
           <div className="progress-bar">
             <span className="file-name">{props.name}</span>
             <div className="slider">
-              <span className="time current">
+              {/* <span className="time current">
                 {' '}
                 {formatTime(audioState.currentTime)}
-              </span>
+              </span> */}
               <div className="slider-inner">
                 <Slider
                   tooltip={{ open: false }}
                   min={0}
                   step={1}
+                  styles={{
+                    rail: {
+                      // height: 6
+                    }
+                  }}
                   max={audioState.duration}
                   value={audioState.currentTime}
                   onChange={handleCurrentChange}
                 />
               </div>
-              <span className="time">{formatTime(audioState.duration)}</span>
+              {/* <span className="time">{formatTime(audioState.duration)}</span> */}
             </div>
             <div className="controls">
-              <Tooltip
-                title={intl.formatMessage({
-                  id: 'playground.audio.button.slow'
-                })}
-              >
-                <Button
-                  type="text"
-                  size="small"
-                  className="backward"
-                  disabled={
-                    speed === speedConfig.min || speed < speedConfig.min
-                  }
-                  onClick={handleReduceSpeed}
+              <div className="audio-control flex-center">
+                <span className="time current">
+                  {' '}
+                  {formatTime(audioState.currentTime)}
+                </span>
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.audio.button.slow'
+                  })}
                 >
-                  <FastBackwardOutlined className="font-size-20" />
-                </Button>
-              </Tooltip>
-              <span className="play-btn">
-                <Button
-                  size="middle"
-                  type="text"
-                  onClick={handlePlay}
-                  disabled={!audioState?.duration}
-                  icon={
-                    !playOn ? (
-                      <PlayCircleFilled
-                        style={{ fontSize: '22px' }}
-                      ></PlayCircleFilled>
-                    ) : (
-                      <PauseCircleFilled
-                        style={{ fontSize: '22px' }}
-                      ></PauseCircleFilled>
-                    )
-                  }
-                ></Button>
-              </span>
-              <Tooltip
-                title={intl.formatMessage({
-                  id: 'playground.audio.button.fast'
-                })}
-              >
-                <Button
-                  type="text"
-                  size="small"
-                  className="forward"
-                  disabled={
-                    speed === speedConfig.max || speed > speedConfig.max
-                  }
-                  onClick={handleAddSpeed}
+                  <Button
+                    type="text"
+                    size="small"
+                    className="backward"
+                    disabled={
+                      speed === speedConfig.min || speed < speedConfig.min
+                    }
+                    onClick={handleReduceSpeed}
+                  >
+                    <FastBackwardOutlined className="font-size-20" />
+                  </Button>
+                </Tooltip>
+                <span className="play-btn">
+                  <Button
+                    size="middle"
+                    type="text"
+                    onClick={handlePlay}
+                    disabled={!audioState?.duration}
+                    icon={
+                      !playOn ? (
+                        <PlayCircleFilled
+                          style={{ fontSize: '22px' }}
+                        ></PlayCircleFilled>
+                      ) : (
+                        <PauseCircleFilled
+                          style={{ fontSize: '22px' }}
+                        ></PauseCircleFilled>
+                      )
+                    }
+                  ></Button>
+                </span>
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.audio.button.fast'
+                  })}
                 >
-                  <FastForwardOutlined className="font-size-20" />
-                </Button>
-              </Tooltip>
+                  <Button
+                    type="text"
+                    size="small"
+                    className="forward"
+                    disabled={
+                      speed === speedConfig.max || speed > speedConfig.max
+                    }
+                    onClick={handleAddSpeed}
+                  >
+                    <FastForwardOutlined className="font-size-20" />
+                  </Button>
+                </Tooltip>
+                <span className="time">{formatTime(audioState.duration)}</span>
+              </div>
+              {extra}
             </div>
           </div>
         </div>

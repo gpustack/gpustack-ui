@@ -45,10 +45,6 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
     // 'bibtex'
   ];
 
-  // renderer.link = ({ href, title, text }) => {
-  //   return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-  // };
-
   const isValidURL = useCallback((url: string) => {
     const pattern = /^(https?:\/\/|\/\/)([^\s/$.?#].[^\s]*)$/;
 

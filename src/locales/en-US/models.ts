@@ -99,6 +99,6 @@ export default {
   'models.localpath.gguf.tips':
     ' Specify the model file, e.g., /usr/local/models/model.gguf.',
   'models.localpath.safe.tips':
-    'Specify the model directory, e.g., /usr/local/models/.',
-  'models.localpath.chunks.tips': `Specify one of the model's shard files, e.g., /usr/local/models/model-00001-of-00004.(gguf|safetensors).`
+    'Specify the model directory that contains .safetensors and config.json files, e.g., /usr/local/models/.',
+  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.(gguf|safetensors).`
 };

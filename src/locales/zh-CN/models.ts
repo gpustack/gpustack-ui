@@ -94,7 +94,8 @@ export default {
   'models.localpath.shared.tips.title': '分片的模型',
   'models.localpath.gguf.tips':
     '指向模型文件，例如 /usr/local/models/model.gguf',
-  'models.localpath.safe.tips': '指向模型目录，例如 /usr/local/models/',
+  'models.localpath.safe.tips':
+    '指向包含 .safetensors, config.json 文件的模型目录，例如 /usr/local/models/',
   'models.localpath.chunks.tips':
-    '指向模型其中一个分片文件，例如 /usr/local/models/model-00001-of-00004.(gguf|safetensors)'
+    '指向模型第一个分片文件，例如 /usr/local/models/model-00001-of-00004.(gguf|safetensors)'
 };

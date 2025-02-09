@@ -324,7 +324,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const handleOk = (formdata: FormData) => {
     let obj = {};
-    if (formdata.backend === backendOptionsMap.vllm) {
+    if (
+      [backendOptionsMap.vllm, backendOptionsMap.voxBox].includes(
+        formdata.backend
+      )
+    ) {
       obj = {
         distributed_inference_across_workers: false,
         cpu_offloading: false

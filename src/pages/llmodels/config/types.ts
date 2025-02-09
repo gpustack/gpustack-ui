@@ -30,7 +30,7 @@ export interface ListItem {
 }
 
 export interface FormData {
-  backend?: string;
+  backend: string;
   size?: number;
   quantization?: number;
   categories?: string[];

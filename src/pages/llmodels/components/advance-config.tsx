@@ -231,6 +231,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             ]}
           >
             <SealSelect
+              allowClear
               label={intl.formatMessage({ id: 'models.form.gpuselector' })}
               required
               mode="multiple"

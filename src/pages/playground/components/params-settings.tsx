@@ -2,7 +2,7 @@ import FieldWrapper from '@/components/seal-form/field-wrapper';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { INPUT_WIDTH } from '@/constants';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber, Slider, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -173,7 +173,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
             <Tooltip title={args.description}>
               <span> {args.label}</span>
               <span className="m-l-5">
-                <InfoCircleOutlined />
+                <QuestionCircleOutlined />
               </span>
             </Tooltip>
           ) : (

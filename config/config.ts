@@ -1,4 +1,5 @@
 import { defineConfig } from '@umijs/max';
+import keepAlive from './keep-alive';
 import proxy from './proxy';
 import routes from './routes';
 import theme from './theme';
@@ -90,7 +91,7 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
-  keepalive: ['/playground/text-to-image', '/playground/speech'],
+  keepalive: keepAlive,
   locale: {
     antd: true,
     baseNavigator: true,

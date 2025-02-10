@@ -19,6 +19,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     variant,
     extra,
     addAfter,
+    trim,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);

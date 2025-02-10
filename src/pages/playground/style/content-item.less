@@ -20,6 +20,18 @@
     display: none;
   }
 
+  .actions .mrkd-switch {
+    border-radius: 12px;
+
+    .ant-segmented-thumb,
+    .ant-segmented-item-selected,
+    .ant-segmented-item,
+    .ant-segmented-item::after {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+  }
+
   &:hover {
     .actions {
       display: flex;

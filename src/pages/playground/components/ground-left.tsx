@@ -16,7 +16,7 @@ import {
 } from 'react';
 import { CHAT_API } from '../apis';
 import { OpenAIViewCode, Roles, generateMessages } from '../config';
-import { MessageItem } from '../config/types';
+import { MessageItem, MessageItemAction } from '../config/types';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
 import MessageInput from './message-input';
@@ -53,6 +53,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const reasonContentRef = useRef<any>('');
+  const [actions, setActions] = useState<MessageItemAction[]>([
+    'upload',
+    'delete',
+    'copy'
+  ]);
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -249,6 +254,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setMessageList(userMsg);
   };
 
+  const handleOnCheck = (e: any) => {
+    const checked = e.target.checked;
+    if (checked) {
+      setActions(['upload', 'delete', 'copy', 'markdown']);
+    } else {
+      setActions(['upload', 'delete', 'copy']);
+    }
+  };
+
   const throttleUpdatePosition = _.throttle(updateScrollerPosition, 100);
 
   useEffect(() => {
@@ -303,6 +317,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                 setMessageList={setMessageList}
                 editable={true}
                 loading={loading}
+                actions={actions}
               />
               {loading && (
                 <Spin size="small">
@@ -323,6 +338,18 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               minRows: 5,
               maxRows: 5
             }}
+            actions={[
+              'clear',
+              'layout',
+              'role',
+              'upload',
+              'add',
+              'paste',
+              'check'
+            ]}
+            defaultChecked={false}
+            checkLabel="Markdown"
+            onCheck={handleOnCheck}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}

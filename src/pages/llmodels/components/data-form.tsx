@@ -105,12 +105,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       tips: intl.formatMessage({ id: 'models.localpath.gguf.tips' })
     },
     {
-      title: intl.formatMessage({ id: 'models.localpat.safe.tips.title' }),
-      tips: intl.formatMessage({ id: 'models.localpath.safe.tips' })
-    },
-    {
       title: intl.formatMessage({ id: 'models.localpath.shared.tips.title' }),
       tips: intl.formatMessage({ id: 'models.localpath.chunks.tips' })
+    },
+    {
+      title: intl.formatMessage({ id: 'models.localpat.safe.tips.title' }),
+      tips: intl.formatMessage({ id: 'models.localpath.safe.tips' })
     }
   ];
 

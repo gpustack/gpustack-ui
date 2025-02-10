@@ -95,10 +95,10 @@ export default {
   'models.catalog.release.date': 'Release Date',
   'models.localpath.gguf.tips.title': 'GGUF format model',
   'models.localpat.safe.tips.title': 'Safetensors format model',
-  'models.localpath.shared.tips.title': 'Sharded model',
+  'models.localpath.shared.tips.title': 'Sharded GGUF Format Model',
   'models.localpath.gguf.tips':
     ' Specify the model file, e.g., /usr/local/models/model.gguf.',
   'models.localpath.safe.tips':
-    'Specify the model directory that contains .safetensors and config.json files, e.g., /usr/local/models/.',
-  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.(gguf|safetensors).`
+    'Specify the model directory that contains .safetensors and config.json files, e.g., /usr/local/models/model/.',
+  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.gguf.`
 };

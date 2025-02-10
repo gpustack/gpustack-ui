@@ -96,6 +96,7 @@ interface MessageInputProps {
   style?: React.CSSProperties;
   actions?: ActionType[];
   checkLabel?: React.ReactNode;
+  defaultChecked?: boolean;
   defaultSize?: { minRows: number; maxRows: number };
 }
 
@@ -116,6 +117,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       isEmpty,
       submitIcon,
       placeholer,
+      defaultChecked = true,
       tools,
       style,
       checkLabel,
@@ -356,35 +358,31 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
         <div className="tool-bar">
           <div className="actions">
             {title}
-            {
+            {actions.includes('role') && (
               <>
-                {actions.includes('role') && (
-                  <>
-                    <Button
-                      type="text"
-                      size="middle"
-                      onClick={handleToggleRole}
-                      icon={<SwapOutlined rotate={90} />}
-                    >
-                      {intl.formatMessage({ id: `playground.${message.role}` })}
-                    </Button>
-                    <Divider type="vertical" style={{ margin: 0 }} />
-                  </>
-                )}
-                {actions.includes('upload') && message.role === Roles.User && (
-                  <UploadImg
-                    handleUpdateImgList={handleUpdateImgList}
-                    size="middle"
-                  ></UploadImg>
-                )}
+                <Button
+                  type="text"
+                  size="middle"
+                  onClick={handleToggleRole}
+                  icon={<SwapOutlined rotate={90} />}
+                >
+                  {intl.formatMessage({ id: `playground.${message.role}` })}
+                </Button>
+                <Divider type="vertical" style={{ margin: 0 }} />
               </>
-            }
-            {tools}
+            )}
             {actions.includes('check') && (
-              <Checkbox onChange={onCheck} defaultChecked={true}>
+              <Checkbox onChange={onCheck} defaultChecked={defaultChecked}>
                 {checkLabel}
               </Checkbox>
             )}
+            {actions.includes('upload') && message.role === Roles.User && (
+              <UploadImg
+                handleUpdateImgList={handleUpdateImgList}
+                size="middle"
+              ></UploadImg>
+            )}
+            {tools}
             {actions.includes('clear') && (
               <Tooltip
                 title={intl.formatMessage({ id: 'common.button.clear' })}

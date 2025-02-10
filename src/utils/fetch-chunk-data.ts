@@ -27,6 +27,7 @@ const extractJSON = (dataStr: string) => {
 const errorHandler = async (res: any) => {
   try {
     const data = await res.json();
+    console.log('errorHandler:', data);
     return {
       error: true,
       data: data

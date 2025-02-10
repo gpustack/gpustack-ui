@@ -52,6 +52,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const currentMessageRef = useRef<any>(null);
   const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
+  const reasonContentRef = useRef<any>('');
 
   const { initialize, updateScrollerPosition } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
@@ -79,6 +80,19 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     messageId.current = messageId.current + 1;
   };
 
+  const formatContent = (data: {
+    content: string;
+    reasoningContent: string;
+  }) => {
+    if (data.reasoningContent && !data.content) {
+      return `<think>${data.reasoningContent}${data.content}`;
+    }
+    if (data.reasoningContent && data.content) {
+      return `<think>${data.reasoningContent}</think>${data.content}`;
+    }
+    return data.content;
+  };
+
   const handleNewMessage = (message?: { role: string; content: string }) => {
     const newMessage = message || {
       role:
@@ -102,6 +116,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (!chunk || !_.get(chunk, 'choices', []).length) {
       return;
     }
+
+    reasonContentRef.current =
+      reasonContentRef.current +
+      _.get(chunk, 'choices.0.delta.reasoning_content', '');
     contentRef.current =
       contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
     setMessageList([
@@ -109,7 +127,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       ...currentMessageRef.current,
       {
         role: Roles.Assistant,
-        content: contentRef.current,
+        content: formatContent({
+          content: contentRef.current,
+          reasoningContent: reasonContentRef.current
+        }),
         uid: messageId.current
       }
     ]);
@@ -139,6 +160,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         : [];
 
       contentRef.current = '';
+      reasonContentRef.current = '';
       setMessageList((pre) => {
         return [...pre, ...currentMessageRef.current];
       });

@@ -1,3 +1,5 @@
+import { keepAliveRoutes } from './keep-alive';
+
 export default [
   {
     name: 'dashboard',
@@ -28,7 +30,7 @@ export default [
       {
         name: 'text2images',
         title: 'Text2Images',
-        path: '/playground/text-to-image',
+        path: keepAliveRoutes.text2images,
         key: 'text2images',
         icon: 'Comment',
         component: './playground/images'
@@ -36,7 +38,7 @@ export default [
       {
         name: 'speech',
         title: 'Speech',
-        path: '/playground/speech',
+        path: keepAliveRoutes.speech,
         key: 'speech',
         icon: 'Comment',
         component: './playground/speech'

@@ -386,9 +386,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
   const handleClear = () => {
-    setMessageId();
-    setImageList([]);
-    setTokenResult(null);
+    // setMessageId();
+    // setImageList([]);
+    // setTokenResult(null);
   };
 
   const handleInputChange = (e: any) => {

@@ -15,6 +15,11 @@ interface MessageItemProps {
   onDelete?: () => void;
 }
 
+const contentRenderOptions = [
+  { label: 'Markdown', value: 'markdown' },
+  { label: 'Plain Text', value: 'plain' }
+];
+
 const ContentItem: React.FC<MessageItemProps> = ({
   updateMessage,
   onDelete,

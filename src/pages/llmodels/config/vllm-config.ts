@@ -97,7 +97,34 @@ const options = [
   {
     label: '--tool-call-parser',
     value: '--tool-call-parser',
-    options: ['mistral', 'hermes', 'internlm', 'llama3_json']
+    options: [
+      'mistral',
+      'hermes',
+      'internlm',
+      'jamba',
+      'llama3_json',
+      'granite-20b-fc',
+      'granite',
+      'pythonic'
+    ]
+  },
+  {
+    label: '--task',
+    value: '--task',
+    options: [
+      'auto',
+      'generate',
+      'embedding',
+      'embed',
+      'classify',
+      'score',
+      'reward'
+    ]
+  },
+  {
+    label: '--allowed-local-media-path',
+    value: '--allowed-local-media-path',
+    options: []
   },
   {
     label: '--tool-parser-plugin',
@@ -162,8 +189,24 @@ const options = [
       'sharded_state',
       'gguf',
       'bitsandbytes',
-      'mistral'
+      'mistral',
+      'runai_streamer'
     ]
+  },
+  {
+    label: '--chat-template-content-format',
+    value: '--chat-template-content-format',
+    options: ['auto', 'string', 'openai']
+  },
+  {
+    label: '--enable-reasoning',
+    value: '--enable-reasoning',
+    options: []
+  },
+  {
+    label: '--reasoning-parser',
+    value: '--reasoning-parser',
+    options: ['deepseek_r1']
   },
   {
     label: '--config-format',
@@ -193,12 +236,23 @@ const options = [
   {
     label: '--guided-decoding-backend',
     value: '--guided-decoding-backend',
-    options: ['outlines', 'lm-format-enforcer']
+    options: ['outlines', 'lm-format-enforcer', 'xgrammar']
+  },
+  {
+    label: '--logits-processor-pattern',
+    value: '--logits-processor-pattern',
+    options: []
+  },
+
+  {
+    label: '--model-impl',
+    value: '--model-impl',
+    options: ['auto', 'vllm', 'transformers']
   },
   {
     label: '--distributed-executor-backend',
     value: '--distributed-executor-backend',
-    options: ['ray', 'mp']
+    options: ['ray', 'mp', 'uni', 'external_launcher']
   },
   {
     label: '--worker-use-ray',
@@ -228,7 +282,7 @@ const options = [
   {
     label: '--block-size',
     value: '--block-size',
-    options: ['8', '16', '32']
+    options: ['8', '16', '32', '64', '128']
   },
   {
     label: '--enable-prefix-caching',
@@ -296,6 +350,16 @@ const options = [
     options: []
   },
   {
+    label: '--hf-overrides',
+    value: '--hf-overrides',
+    options: []
+  },
+  {
+    label: '--disable-mm-preprocessor-cache',
+    value: '--disable-mm-preprocessor-cache',
+    options: []
+  },
+  {
     label: '--quantization',
     value: '--quantization',
     options: [
@@ -308,10 +372,13 @@ const options = [
       'modelopt',
       'marlin',
       'gguf',
+      'hqq',
       'gptq_marlin_24',
       'gptq_marlin',
       'awq_marlin',
       'gptq',
+      'quark',
+      'moe_wna16',
       'compressed-tensors',
       'bitsandbytes',
       'qqq',
@@ -320,6 +387,11 @@ const options = [
       'ipex',
       'None'
     ]
+  },
+  {
+    label: '--enable-lora-bias',
+    value: '--enable-lora-bias',
+    options: []
   },
   {
     label: '--rope-scaling',
@@ -399,7 +471,7 @@ const options = [
   {
     label: '--lora-dtype',
     value: '--lora-dtype',
-    options: ['auto', 'float16', 'bfloat16', 'float32']
+    options: ['auto', 'float16', 'bfloat16']
   },
   {
     label: '--long-lora-scaling-factors',
@@ -434,7 +506,7 @@ const options = [
   {
     label: '--device',
     value: '--device',
-    options: ['auto', 'cuda', 'neuron', 'cpu', 'openvino', 'tpu', 'xpu']
+    options: ['auto', 'cuda', 'neuron', 'cpu', 'openvino', 'tpu', 'xpu', 'hpu']
   },
   {
     label: '--num-scheduler-steps',
@@ -481,9 +553,12 @@ const options = [
       'compressed-tensors',
       'bitsandbytes',
       'qqq',
+      'hqq',
       'experts_int8',
       'neuron_quant',
       'ipex',
+      'quark',
+      'moe_wna16',
       'None'
     ]
   },
@@ -588,6 +663,47 @@ const options = [
     options: []
   },
   {
+    label: '--compilation-config',
+    value: '--compilation-config',
+    options: []
+  },
+  {
+    label: '--override-pooler-config',
+    value: '--override-pooler-config',
+    options: []
+  },
+  {
+    label: '--kv-transfer-config',
+    value: '--kv-transfer-config',
+    options: []
+  },
+  {
+    label: '--worker-cls',
+    value: '--worker-cls',
+    options: []
+  },
+  {
+    label: '--override-generation-config',
+    value: '--override-generation-config',
+    options: []
+  },
+  {
+    label: '--enable-sleep-mode',
+    value: '--enable-sleep-mode',
+    options: []
+  },
+
+  {
+    label: '--calculate-kv-scales',
+    value: '--calculate-kv-scales',
+    options: []
+  },
+  {
+    label: '--generation-config',
+    value: '--generation-config',
+    options: []
+  },
+  {
     label: '--scheduling-policy',
     value: '--scheduling-policy',
     options: ['fcfs', 'priority']
@@ -605,6 +721,11 @@ const options = [
   {
     label: '--disable-fastapi-docs',
     value: '--disable-fastapi-docs',
+    options: []
+  },
+  {
+    label: '--enable-prompt-tokens-details',
+    value: '--enable-prompt-tokens-details',
     options: []
   }
 ];

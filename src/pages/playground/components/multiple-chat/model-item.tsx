@@ -68,6 +68,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const currentMessageRef = useRef<MessageItem[]>([]);
     const modelScrollRef = useRef<any>(null);
     const messageListLengthCache = useRef<number>(0);
+    const reasonContentRef = useRef<any>('');
 
     const { initialize, updateScrollerPosition } = useOverlayScroller();
 
@@ -87,6 +88,19 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       setLoadingStatus(instanceId, false);
     };
 
+    const formatContent = (data: {
+      content: string;
+      reasoningContent: string;
+    }) => {
+      if (data.reasoningContent && !data.content) {
+        return `<think>${data.reasoningContent}${data.content}`;
+      }
+      if (data.reasoningContent && data.content) {
+        return `<think>${data.reasoningContent}</think>${data.content}`;
+      }
+      return data.content;
+    };
+
     const joinMessage = (chunk: any) => {
       setTokenResult({
         ...(chunk?.usage ?? {})
@@ -96,6 +110,10 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         return;
       }
 
+      reasonContentRef.current =
+        reasonContentRef.current +
+        _.get(chunk, 'choices.0.delta.reasoning_content', '');
+
       contentRef.current =
         contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
 
@@ -104,7 +122,10 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         ...currentMessageRef.current,
         {
           role: Roles.Assistant,
-          content: contentRef.current,
+          content: formatContent({
+            content: contentRef.current,
+            reasoningContent: reasonContentRef.current
+          }),
           uid: messageId.current
         }
       ]);
@@ -132,6 +153,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         });
 
         contentRef.current = '';
+        reasonContentRef.current = '';
         // ====== payload =================
 
         const messageParams = [

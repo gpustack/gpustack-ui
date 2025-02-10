@@ -1,4 +1,4 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import React from 'react';
 import './label-info.less';
@@ -25,9 +25,9 @@ const NoteInfo: React.FC<NoteInfoProps> = (props) => {
             )}
             <span
               style={{ marginLeft: required ? 5 : 0, color: 'gray' }}
-              className="desc"
+              className="desc desc-icon"
             >
-              <InfoCircleOutlined />
+              <QuestionCircleOutlined />
             </span>
           </span>
         </Tooltip>

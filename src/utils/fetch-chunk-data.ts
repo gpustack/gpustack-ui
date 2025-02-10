@@ -68,10 +68,7 @@ export const fetchChunkedData = async (params: {
   });
 
   if (!response.ok) {
-    return {
-      error: true,
-      data: await errorHandler(response)
-    };
+    return await errorHandler(response);
   }
   const reader = response?.body?.getReader();
   const decoder = new TextDecoder('utf-8', {

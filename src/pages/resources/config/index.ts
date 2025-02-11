@@ -90,6 +90,16 @@ export const addWorkerGuide: Record<string, any> = {
       return `docker run -d --name gpustack-worker --restart=unless-stopped -p 10150:10150 -p 40000-41024:40000-41024 -p 50000-51024:50000-51024 --ipc=host --group-add=video --security-opt seccomp=unconfined --device /dev/kfd --device /dev/dri -v gpustack-worker-data:/var/lib/gpustack gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
+  dcu: {
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -itd --shm-size 500g --network=host --privileged --group-add video --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device=/dev/kfd --device=/dev/dri -v /opt/hyhal:/opt/hyhal:ro gpustack/gpustack:${params.tag} --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    }
+  },
   container: {
     getToken:
       'docker exec -it ${gpustack_container_id} cat /var/lib/gpustack/token'
@@ -97,9 +107,10 @@ export const addWorkerGuide: Record<string, any> = {
 };
 
 export const containerInstallOptions = [
-  { label: 'CUDA', value: 'cuda' },
-  { label: 'AMD', value: 'rocm' },
-  { label: 'CANN', value: 'npu' },
-  { label: 'MUSA', value: 'musa' },
+  { label: 'NVIDIA CUDA', value: 'cuda' },
+  { label: 'AMD ROCm', value: 'rocm' },
+  { label: 'Ascend CANN', value: 'npu' },
+  { label: 'Moore Threads MUSA', value: 'musa' },
+  { label: 'Hygon DCU', value: 'dcu' },
   { label: 'CPU', value: 'cpu' }
 ];

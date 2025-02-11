@@ -38,7 +38,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      width={700}
       styles={{
         body: {
           height: 550

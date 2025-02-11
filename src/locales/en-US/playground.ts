@@ -138,5 +138,6 @@ export default {
   'playground.image.download': 'Download Image',
   'playground.image.generate': 'Generate',
   'playground.image.edit': 'Edit',
-  'playground.image.fitview': 'Fit View'
+  'playground.image.fitview': 'Fit View',
+  'playground.chat.aithought': 'CoT'
 };

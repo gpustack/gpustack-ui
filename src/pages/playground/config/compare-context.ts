@@ -1,10 +1,12 @@
 import React from 'react';
+import { MessageItemAction } from './types';
 
 interface CompareContextProps {
   spans: {
     span: number;
     count: number;
   };
+  actions?: MessageItemAction[];
   systemMessage?: string;
   globalParams: Record<string, any>;
   loadingStatus: Record<symbol, boolean>;

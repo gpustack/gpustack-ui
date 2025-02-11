@@ -70,7 +70,6 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
   const renderItem = useCallback(
     (token: any, render: any) => {
-      console.log('token====', token);
       if (!reDefineTypes.includes(token.type)) {
         return (
           <span

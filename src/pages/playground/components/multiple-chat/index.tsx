@@ -3,7 +3,11 @@ import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CompareContext from '../../config/compare-context';
-import { MessageItem, ModelSelectionItem } from '../../config/types';
+import {
+  MessageItem,
+  MessageItemAction,
+  ModelSelectionItem
+} from '../../config/types';
 import '../../style/multiple-chat.less';
 import EmptyModels from '../empty-models';
 import MessageInput from '../message-input';
@@ -42,6 +46,11 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   const modelRefs = useRef<any>({});
   const chatListScrollRef = useRef<any>(null);
   const boxHeight = 'calc(100vh - 72px)';
+  const [actions, setActions] = useState<MessageItemAction[]>([
+    'upload',
+    'delete',
+    'copy'
+  ]);
 
   const isLoading = useMemo(() => {
     const modelRefList = Object.getOwnPropertySymbols(loadingStatus);
@@ -228,6 +237,15 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
     handleUpdateModelList(value);
   };
 
+  const handleOnCheck = (e: any) => {
+    const checked = e.target.checked;
+    if (checked) {
+      setActions(['upload', 'delete', 'copy', 'markdown']);
+    } else {
+      setActions(['upload', 'delete', 'copy']);
+    }
+  };
+
   useEffect(() => {
     modelRefs.current = {};
     let list = _.take(modelList, spans.count);
@@ -268,6 +286,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
               globalParams,
               loadingStatus,
               modelFullList: modelList,
+              actions,
               handleApplySystemChangeToAll,
               setGlobalParams,
               setLoadingStatus: handleSetLoadingStatus,
@@ -302,6 +321,18 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
           updateLayout={updateLayout}
           setModelSelections={handleUpdateModelSelections}
           presetPrompt={handlePresetPrompt}
+          actions={[
+            'clear',
+            'layout',
+            'role',
+            'upload',
+            'add',
+            'paste',
+            'check'
+          ]}
+          defaultChecked={false}
+          checkLabel="Markdown"
+          onCheck={handleOnCheck}
           defaultSize={{
             minRows: 5,
             maxRows: 5

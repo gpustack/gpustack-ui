@@ -50,7 +50,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       handleDeleteModel,
       handleApplySystemChangeToAll,
       modelFullList,
-      loadingStatus
+      loadingStatus,
+      actions
     } = useContext(CompareContext);
     const intl = useIntl();
     const isApplyToAllModels = useRef(false);
@@ -93,7 +94,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       reasoningContent: string;
     }) => {
       if (data.reasoningContent && !data.content) {
-        return `<think>${data.reasoningContent}${data.content}`;
+        return `<think>${data.reasoningContent}`;
       }
       if (data.reasoningContent && data.content) {
         return `<think>${data.reasoningContent}</think>${data.content}`;
@@ -117,15 +118,16 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       contentRef.current =
         contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
 
+      const content = formatContent({
+        content: contentRef.current,
+        reasoningContent: reasonContentRef.current
+      });
       setMessageList([
         ...messageList,
         ...currentMessageRef.current,
         {
           role: Roles.Assistant,
-          content: formatContent({
-            content: contentRef.current,
-            reasoningContent: reasonContentRef.current
-          }),
+          content,
           uid: messageId.current
         }
       ]);
@@ -476,6 +478,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
             <MessageContent
               messageList={messageList}
               setMessageList={setMessageList}
+              actions={actions}
               editable={true}
             />
             <Spin

@@ -90,7 +90,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     reasoningContent: string;
   }) => {
     if (data.reasoningContent && !data.content) {
-      return `<think>${data.reasoningContent}${data.content}`;
+      return `<think>${data.reasoningContent}`;
     }
     if (data.reasoningContent && data.content) {
       return `<think>${data.reasoningContent}</think>${data.content}`;
@@ -127,15 +127,18 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       _.get(chunk, 'choices.0.delta.reasoning_content', '');
     contentRef.current =
       contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
+
+    const content = formatContent({
+      content: contentRef.current,
+      reasoningContent: reasonContentRef.current
+    });
+
     setMessageList([
       ...messageList,
       ...currentMessageRef.current,
       {
         role: Roles.Assistant,
-        content: formatContent({
-          content: contentRef.current,
-          reasoningContent: reasonContentRef.current
-        }),
+        content: content,
         uid: messageId.current
       }
     ]);

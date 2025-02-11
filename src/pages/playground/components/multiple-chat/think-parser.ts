@@ -1,8 +1,8 @@
 class ThinkParser {
+  private lastCheckedIndex: number;
+  private collecting: boolean;
   thought: string;
   result: string;
-  collecting: boolean;
-  lastCheckedIndex: number;
 
   constructor() {
     this.thought = '';
@@ -12,40 +12,33 @@ class ThinkParser {
   }
 
   parse(chunk: string) {
-    if (this.lastCheckedIndex < chunk.length) {
-      const currentChunk = chunk.substring(this.lastCheckedIndex);
-
+    while (this.lastCheckedIndex < chunk.length) {
       if (!this.collecting) {
-        //  find <think> tag
-        let startIndex = currentChunk.indexOf('<think>');
+        let startIndex = chunk.indexOf('<think>', this.lastCheckedIndex);
         if (startIndex !== -1) {
-          // handle text before <think> tag
-          this.result += currentChunk.substring(0, startIndex);
-          // handle thought part
-          this.thought += currentChunk.substring(startIndex + 7);
+          this.result += chunk.substring(this.lastCheckedIndex, startIndex);
           this.collecting = true;
+          this.lastCheckedIndex = startIndex + 7;
         } else {
-          // if no <think> tag found, just append the whole chunk to result
-          this.result += currentChunk;
+          this.result += chunk.substring(this.lastCheckedIndex);
+          this.lastCheckedIndex = chunk.length;
+          break;
         }
       } else {
-        // find </think> tag
-        let endIndex = currentChunk.indexOf('</think>');
+        let endIndex = chunk.indexOf('</think>', this.lastCheckedIndex);
         if (endIndex !== -1) {
-          // handle text before </think> tag
-          this.thought += currentChunk.substring(0, endIndex);
-          // handle result part
-          this.result += currentChunk.substring(endIndex + 8);
-
+          this.thought += chunk.substring(this.lastCheckedIndex, endIndex);
           this.collecting = false;
+          this.lastCheckedIndex = endIndex + 8;
         } else {
-          this.thought += currentChunk;
+          this.thought += chunk.substring(this.lastCheckedIndex);
+          this.lastCheckedIndex = chunk.length;
+          break;
         }
-        this.lastCheckedIndex = chunk.length;
       }
     }
 
-    return { thought: this.thought.trim(), result: this.result };
+    return { thought: this.thought.trimStart(), result: this.result };
   }
 
   reset() {

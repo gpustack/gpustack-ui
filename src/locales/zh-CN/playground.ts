@@ -133,5 +133,6 @@ export default {
   'playground.image.download': '下载图片',
   'playground.image.generate': '生成图片',
   'playground.image.edit': '编辑图片',
-  'playground.image.fitview': '适应视图'
+  'playground.image.fitview': '适应视图',
+  'playground.chat.aithought': '思考过程'
 };

@@ -41,9 +41,6 @@ dependencies:
   '@xterm/addon-fit':
     specifier: ^0.10.0
     version: 0.10.0(@xterm/xterm@5.5.0)
-  '@xterm/addon-webgl':
-    specifier: ^0.18.0
-    version: 0.18.0(@xterm/xterm@5.5.0)
   '@xterm/xterm':
     specifier: ^5.5.0
     version: 5.5.0
@@ -92,6 +89,9 @@ dependencies:
   jszip:
     specifier: ^3.10.1
     version: 3.10.1
+  katex:
+    specifier: ^0.16.21
+    version: 0.16.21
   lamejs:
     specifier: github:zhuker/lamejs
     version: github.com/zhuker/lamejs/582bbba6a12f981b984d8fb9e1874499fed85675
@@ -107,6 +107,9 @@ dependencies:
   marked:
     specifier: ^14.1.0
     version: 14.1.0
+  marked-katex-extension:
+    specifier: ^5.1.4
+    version: 5.1.4(katex@0.16.21)(marked@14.1.0)
   ml-dataset-iris:
     specifier: ^1.2.1
     version: 1.2.1
@@ -7217,14 +7220,6 @@ packages:
       '@xterm/xterm': 5.5.0
     dev: false
 
-  /@xterm/addon-webgl@0.18.0(@xterm/xterm@5.5.0):
-    resolution: {integrity: sha512-xCnfMBTI+/HKPdRnSOHaJDRqEpq2Ugy8LEj9GiY4J3zJObo3joylIFaMvzBwbYRg8zLtkO0KQaStCeSfoaI2/w==, tarball: https://registry.npmjs.org/@xterm/addon-webgl/-/addon-webgl-0.18.0.tgz}
-    peerDependencies:
-      '@xterm/xterm': ^5.0.0
-    dependencies:
-      '@xterm/xterm': 5.5.0
-    dev: false
-
   /@xterm/xterm@5.5.0:
     resolution: {integrity: sha512-hqJHYaQb5OptNunnyAnkHyM8aCjZ1MEIDTQu1iIbbTD/xops91NB5yq1ZK/dC2JDbVWtF23zUtl9JE2NqwT87A==, tarball: https://registry.npmjs.org/@xterm/xterm/-/xterm-5.5.0.tgz}
     dev: false
@@ -12349,6 +12344,13 @@ packages:
       setimmediate: 1.0.5
     dev: false
 
+  /katex@0.16.21:
+    resolution: {integrity: sha512-XvqR7FgOHtWupfMiigNzmh+MgUVmDGU2kXZm899ZkPfcuoPuFxyHmXsgATDpFZDAXCI8tvinaVcDo8PIIJSo4A==, tarball: https://registry.npmjs.org/katex/-/katex-0.16.21.tgz}
+    hasBin: true
+    dependencies:
+      commander: 8.3.0
+    dev: false
+
   /keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
     dependencies:
@@ -12800,6 +12802,16 @@ packages:
   /map-obj@4.3.0:
     resolution: {integrity: sha512-hdN1wVrZbb29eBGiGjJbeP8JbKjq1urkHJ/LIP/NY48MZ1QVXUsQBV1G1zvYFHn1XE06cwjBsOI2K3Ulnj1YXQ==}
     engines: {node: '>=8'}
+    dev: false
+
+  /marked-katex-extension@5.1.4(katex@0.16.21)(marked@14.1.0):
+    resolution: {integrity: sha512-GQOio4vCp0laxB1IY+2oNVo5nbn82yWMDP/jILRYHmyu2WXMVlXCB+krq2/U2fQn+V9j8aqDmnNdrsgqG2AkGQ==, tarball: https://registry.npmjs.org/marked-katex-extension/-/marked-katex-extension-5.1.4.tgz}
+    peerDependencies:
+      katex: '>=0.16 <0.17'
+      marked: '>=4 <16'
+    dependencies:
+      katex: 0.16.21
+      marked: 14.1.0
     dev: false
 
   /marked@14.1.0:

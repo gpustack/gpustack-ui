@@ -123,6 +123,9 @@ const MessageBody: React.FC<MessageBodyProps> = ({
       content: e.target.value,
       uid: data.uid
     });
+    if (data.role === Roles.Assistant) {
+      thinkerRef.current?.reset();
+    }
   };
 
   const handleDeleteLastImage = useCallback(() => {

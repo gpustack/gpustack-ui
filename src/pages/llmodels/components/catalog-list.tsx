@@ -1,5 +1,6 @@
 import breakpoints from '@/config/breakpoints';
 import { Col, FloatButton, Row, Spin } from 'antd';
+import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
 import { CatalogItem as CatalogItemType } from '../config/types';

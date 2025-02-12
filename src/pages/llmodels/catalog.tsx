@@ -278,4 +278,4 @@ const Catalog: React.FC = () => {
   );
 };
 
-export default React.memo(Catalog);
+export default Catalog;

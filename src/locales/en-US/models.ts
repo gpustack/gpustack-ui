@@ -100,5 +100,7 @@ export default {
     ' Specify the model file, e.g., /usr/local/models/model.gguf.',
   'models.localpath.safe.tips':
     'Specify the model directory that contains .safetensors and config.json files, e.g., /usr/local/models/model/.',
-  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.gguf.`
+  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.gguf.`,
+  'models.form.replicas.tips':
+    'Multiple replicas enable load balancing for inference requests.'
 };

@@ -25,12 +25,22 @@ import {
   EditOutlined,
   ExperimentOutlined,
   PictureOutlined,
+  QuestionCircleOutlined,
   SyncOutlined,
   WechatWorkOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Dropdown, Input, Select, Space, Tag, message } from 'antd';
+import {
+  Button,
+  Dropdown,
+  Input,
+  Select,
+  Space,
+  Tag,
+  Tooltip,
+  message
+} from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -944,7 +954,14 @@ const Models: React.FC<ModelsProps> = ({
             }}
           />
           <SealColumn
-            title={intl.formatMessage({ id: 'models.form.replicas' })}
+            title={
+              <Tooltip
+                title={intl.formatMessage({ id: 'models.form.replicas.tips' })}
+              >
+                {intl.formatMessage({ id: 'models.form.replicas' })}
+                <QuestionCircleOutlined className="m-l-5" />
+              </Tooltip>
+            }
             dataIndex="replicas"
             key="replicas"
             align="center"

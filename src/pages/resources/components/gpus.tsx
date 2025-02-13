@@ -7,7 +7,7 @@ import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
 import _ from 'lodash';
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
@@ -252,4 +252,4 @@ const GPUList: React.FC = () => {
   );
 };
 
-export default memo(GPUList);
+export default GPUList;

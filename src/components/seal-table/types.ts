@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface SealColumnProps {
-  title: string;
+  title: React.ReactNode;
   render?: (text: any, record: any) => React.ReactNode;
   dataIndex: string;
   width?: number;

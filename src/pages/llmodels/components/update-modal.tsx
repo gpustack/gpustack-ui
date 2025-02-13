@@ -591,6 +591,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                 id: 'models.form.replicas'
               })}
               required
+              description={intl.formatMessage({
+                id: 'models.form.replicas.tips'
+              })}
               min={0}
             ></SealInput.Number>
           </Form.Item>

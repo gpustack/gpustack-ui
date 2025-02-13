@@ -8,7 +8,7 @@ import {
 } from '@/pages/resources/config/types';
 import _ from 'lodash';
 import qs from 'query-string';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -316,4 +316,4 @@ const Models: React.FC = () => {
   );
 };
 
-export default memo(Models);
+export default Models;

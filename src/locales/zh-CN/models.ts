@@ -97,5 +97,6 @@ export default {
   'models.localpath.safe.tips':
     '指向包含 .safetensors, config.json 文件的模型目录，例如 /usr/local/models/model/',
   'models.localpath.chunks.tips':
-    '指向模型第一个分片文件，例如 /usr/local/models/model-00001-of-00004.gguf'
+    '指向模型第一个分片文件，例如 /usr/local/models/model-00001-of-00004.gguf',
+  'models.form.replicas.tips': '多副本数实现推理请求的负载均衡'
 };

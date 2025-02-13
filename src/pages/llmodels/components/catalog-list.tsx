@@ -15,24 +15,55 @@ interface CatalogListProps {
   onDeploy: (data: any) => void;
 }
 
+const ListSkeleton: React.FC<{
+  span: number;
+  loading: boolean;
+  isFirst: boolean;
+}> = ({ span, loading, isFirst }) => {
+  return (
+    <div>
+      {loading && (
+        <div
+          style={{
+            width: '100%',
+            position: 'absolute',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            top: 0,
+            left: 0,
+            height: 400,
+            right: 0
+          }}
+        >
+          <Spin
+            spinning={loading}
+            style={{
+              width: '100%'
+            }}
+            wrapperClassName="skelton-wrapper"
+          >
+            {isFirst && <CatalogSkelton span={span}></CatalogSkelton>}
+          </Spin>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CatalogList: React.FC<CatalogListProps> = (props) => {
   const { dataList, loading, activeId, isFirst, onDeploy } = props;
   const [span, setSpan] = React.useState(8);
 
+  const getSpanByWidth = (width: number) => {
+    if (width < breakpoints.md) return 24;
+    if (width < breakpoints.lg) return 12;
+    return 8;
+  };
+
   const handleResize = useCallback(
     _.throttle((size: { width: number; height: number }) => {
-      const { width } = size;
-      if (width < breakpoints.xs) {
-        setSpan(24);
-      } else if (width < breakpoints.sm) {
-        setSpan(24);
-      } else if (width < breakpoints.md) {
-        setSpan(12);
-      } else if (width < breakpoints.lg) {
-        setSpan(12);
-      } else {
-        setSpan(8);
-      }
+      setSpan(getSpanByWidth(size.width));
     }, 100),
     []
   );
@@ -54,31 +85,7 @@ const CatalogList: React.FC<CatalogListProps> = (props) => {
               );
             })}
           </Row>
-          {loading && (
-            <div
-              style={{
-                width: '100%',
-                position: 'absolute',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                top: 0,
-                left: 0,
-                height: 400,
-                right: 0
-              }}
-            >
-              <Spin
-                spinning={loading}
-                style={{
-                  width: '100%'
-                }}
-                wrapperClassName="skelton-wrapper"
-              >
-                {isFirst && <CatalogSkelton span={span}></CatalogSkelton>}
-              </Spin>
-            </div>
-          )}
+          <ListSkeleton span={span} loading={loading} isFirst={isFirst} />
         </div>
       </ResizeObserver>
       <FloatButton.BackTop visibilityHeight={1000} />

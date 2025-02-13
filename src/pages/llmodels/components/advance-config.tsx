@@ -6,7 +6,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageActionType } from '@/config/types';
-import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import {
   Checkbox,
@@ -362,7 +362,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                       id: 'resources.form.enablePartialOffload'
                     })}
                   </span>
-                  <InfoCircleOutlined
+                  <QuestionCircleOutlined
                     className="m-l-4"
                     style={{ color: 'var(--ant-color-text-tertiary)' }}
                   />
@@ -390,7 +390,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                       id: 'resources.form.enableDistributedInferenceAcrossWorkers'
                     })}
                   </span>
-                  <InfoCircleOutlined
+                  <QuestionCircleOutlined
                     className="m-l-4"
                     style={{ color: 'var(--ant-color-text-tertiary)' }}
                   />

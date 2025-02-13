@@ -27,7 +27,7 @@ import {
   message
 } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteWorker, queryWorkersList, updateWorker } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
@@ -53,7 +53,7 @@ const ActionList = [
   }
 ];
 
-const Resources: React.FC = () => {
+const Workers: React.FC = () => {
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
@@ -589,4 +589,4 @@ const Resources: React.FC = () => {
   );
 };
 
-export default memo(Resources);
+export default Workers;

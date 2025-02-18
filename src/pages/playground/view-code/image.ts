@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
 export const generateImageCode = ({
@@ -44,7 +45,7 @@ print(response.json()['data'][0]['b64_json'])`.trim();
   const nodeJsCode = `
 const axios = require('axios');
 
-const url = "http://localhost/v1-openai/images/generations";
+const url = "${host}/${OPENAI_COMPATIBLE}/images/generations";
 const headers = {
   "Content-type": "application/json",
   "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
@@ -92,7 +93,7 @@ ${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
   const pythonCode = `
 from openai import OpenAI\n
 client = OpenAI(
-  base_url="${host}/v1-openai", 
+  base_url="${host}/${OPENAI_COMPATIBLE}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -109,7 +110,7 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/v1-openai"
+  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
 });
 
 async function main() {

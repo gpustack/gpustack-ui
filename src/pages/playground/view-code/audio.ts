@@ -1,3 +1,4 @@
+import { OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
 export const speechToTextCode = ({ api, parameters }: Record<string, any>) => {
@@ -18,7 +19,7 @@ ${formatCurlArgs(parameters, true)}`
 from openai import OpenAI\n
 audio_file = open("audio.mp3", "rb")
 client = OpenAI(
-  base_url="${host}/v1-openai", 
+  base_url="${host}/${OPENAI_COMPATIBLE}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -43,7 +44,7 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/v1-openai"
+  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
 });
 
 async function main() {
@@ -77,7 +78,7 @@ from pathlib import Path
 from openai import OpenAI\n
 output_file_path = Path(__file__).parent / "output.mp3"
 client = OpenAI(
-  base_url="${host}/v1-openai", 
+  base_url="${host}/${OPENAI_COMPATIBLE}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -102,7 +103,7 @@ const ouptFile = path.resolve("./output.mp3");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/v1-openai"
+  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
 });
 
 async function main() {

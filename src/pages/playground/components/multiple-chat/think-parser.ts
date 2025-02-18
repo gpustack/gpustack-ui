@@ -18,31 +18,31 @@ class ThinkParser {
 
       if (!this.collecting) {
         if (endIndex !== -1 && (startIndex === -1 || endIndex < startIndex)) {
-          // 1 发现 `</think>`，但之前没有 `<think>`：
-          // 将 `result` + `</think>` 之前的内容作为 `thought`
+          // 1 Found `</think>`, but there was no `<think>` before:
+          // Take `result` + the content before `</think>` as `thought`
           this.thought =
             this.result + chunk.substring(this.lastCheckedIndex, endIndex);
-          this.result = ''; // **清空 result**
-          this.lastCheckedIndex = endIndex + 8; // 跳过 `</think>`
+          this.result = ''; // **clear result**
+          this.lastCheckedIndex = endIndex + 8; // Skip `</think>`
         } else if (startIndex !== -1) {
-          // 2 发现 `<think>`，进入思考模式：
+          // 2 Found `<think>`, start thinking mode:
           this.result += chunk.substring(this.lastCheckedIndex, startIndex);
           this.collecting = true;
-          this.lastCheckedIndex = startIndex + 7; // 跳过 `<think>`
+          this.lastCheckedIndex = startIndex + 7; // Skip `<think>`
         } else {
-          // 3 没有 `<think>` 也没有 `</think>`，直接追加到 `result`
+          // 3 Still in normal mode, append to `result`
           this.result += chunk.substring(this.lastCheckedIndex);
           this.lastCheckedIndex = chunk.length;
         }
       } else {
         if (endIndex !== -1) {
-          // 4 发现 `</think>`，结束思考模式：
+          // 4 Found `</think>`, end thinking mode:
           this.thought += chunk.substring(this.lastCheckedIndex, endIndex);
 
           this.collecting = false;
-          this.lastCheckedIndex = endIndex + 8; // 跳过 `</think>`
+          this.lastCheckedIndex = endIndex + 8; // Skip `</think>`
         } else {
-          // 5 仍在思考模式中，追加到 `thought`
+          // 5 Still in thinking mode, append to `thought`
           this.thought += chunk.substring(this.lastCheckedIndex);
           this.lastCheckedIndex = chunk.length;
         }

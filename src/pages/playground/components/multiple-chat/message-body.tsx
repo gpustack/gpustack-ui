@@ -1,4 +1,4 @@
-import MarkdownViewer from '@/components/markdown-viewer';
+import FullMarkdown from '@/components/markdown-viewer/full-markdown';
 import { Input } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -35,7 +35,9 @@ const MessageBody: React.FC<MessageBodyProps> = ({
       thinkerRef.current = new ThinkParser();
     }
     if (actions?.includes('markdown')) {
-      return thinkerRef.current.parse(data.content);
+      const res = thinkerRef.current.parse(data.content);
+      console.log('markdown parse:', res);
+      return res;
     }
     return {
       thought: '',
@@ -206,12 +208,9 @@ const MessageBody: React.FC<MessageBodyProps> = ({
             {actions?.includes('markdown') ? (
               <>
                 <ThinkContent content={content.thought}></ThinkContent>
-                <div style={{ paddingInline: 4 }}>
-                  <MarkdownViewer
-                    content={content.result || ''}
-                    theme="light"
-                  />
-                </div>
+                <FullMarkdown
+                  content={`${content.result || ''}`}
+                ></FullMarkdown>
               </>
             ) : (
               <Input.TextArea

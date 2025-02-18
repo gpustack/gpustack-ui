@@ -67,9 +67,10 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           </span>
           <WarningOutlined
             style={{ color: 'var(--ant-color-warning)' }}
-            className="font-size-14 m-l-5"
+            className="font-size-14 m-l-5 m-r-5"
           />
           <Button
+            style={{ padding: 0 }}
             type="link"
             size="small"
             href="https://docs.gpustack.ai/latest/installation/installation-requirements/"
@@ -85,7 +86,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         theme="dark"
         lang="bash"
       ></HighlightCode>
-      <h3>
+      <h3 className="m-t-10">
         2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
         <span
           className="font-size-12"
@@ -97,7 +98,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           }}
         ></span>
       </h3>
-      <div className="m-b-20">
+      <div className="m-b-16">
         <Radio.Group
           block
           options={containerInstallOptions}
@@ -117,8 +118,8 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           }}
         ></div>
       )}
-      <HighlightCode theme="dark" code={code} lang="sh"></HighlightCode>
-      <h3 className="m-b-0">
+      <HighlightCode theme="dark" code={code} lang="bash"></HighlightCode>
+      <h3 className="m-b-0 m-t-10">
         3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
       </h3>
     </div>

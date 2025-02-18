@@ -24,7 +24,7 @@ import {
   useRef,
   useState
 } from 'react';
-import { speechToText } from '../apis';
+import { AUDIO_SPEECH_TO_TEXT_API, speechToText } from '../apis';
 import { SpeechToTextFormat } from '../config';
 import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
 import '../style/ground-left.less';
@@ -96,7 +96,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const viewCodeContent = useMemo(() => {
     return speechToTextCode({
-      api: '/v1-openai/audio/transcriptions',
+      api: AUDIO_SPEECH_TO_TEXT_API,
       parameters: {
         ...parameters
       }

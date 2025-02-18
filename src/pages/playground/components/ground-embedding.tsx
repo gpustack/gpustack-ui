@@ -31,7 +31,7 @@ import {
   useState
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { handleEmbedding } from '../apis';
+import { EMBEDDING_API, handleEmbedding } from '../apis';
 import { ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
 import '../style/rerank.less';
@@ -128,7 +128,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const viewCodeContent = useMemo(() => {
     return generateEmbeddingCode({
-      api: '/v1-openai/embeddings',
+      api: EMBEDDING_API,
       parameters: {
         ...parameters,
         input: [

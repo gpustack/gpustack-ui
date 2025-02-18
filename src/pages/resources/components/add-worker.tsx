@@ -41,12 +41,13 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       width={700}
       styles={{
         body: {
-          height: 550
+          height: 620
         }
       }}
       footer={null}
     >
       <Tabs
+        size="small"
         items={items}
         activeKey={activeKey}
         type="card"

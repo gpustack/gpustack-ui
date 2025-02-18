@@ -236,7 +236,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const viewCodeContent = useMemo(() => {
     if (isOpenaiCompatible) {
       return generateOpenaiImageCode({
-        api: '/v1-openai/images/generations',
+        api: CREAT_IMAGE_API,
         parameters: {
           ...finalParameters,
           prompt: currentPrompt
@@ -244,7 +244,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
     }
     return generateImageCode({
-      api: '/v1-openai/images/generations',
+      api: CREAT_IMAGE_API,
       parameters: {
         ...finalParameters,
         prompt: currentPrompt

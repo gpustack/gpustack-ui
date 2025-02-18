@@ -1,19 +1,21 @@
 import { request } from '@umijs/max';
 
-export const CHAT_API = '/v1-openai/chat/completions';
+export const OPENAI_COMPATIBLE = 'v1-openai';
 
-export const CREAT_IMAGE_API = '/v1-openai/images/generations';
-export const EDIT_IMAGE_API = '/v1-openai/images/edits';
+export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
 
-export const EMBEDDING_API = '/v1-openai/embeddings';
+export const CREAT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/generations`;
+export const EDIT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/edits`;
 
-export const OPENAI_MODELS = '/v1-openai/models';
+export const EMBEDDING_API = `/${OPENAI_COMPATIBLE}/embeddings`;
+
+export const OPENAI_MODELS = `/${OPENAI_COMPATIBLE}/models`;
 
 export const RERANKER_API = '/rerank';
 
-export const AUDIO_TEXT_TO_SPEECH_API = '/v1-openai/audio/speech';
+export const AUDIO_TEXT_TO_SPEECH_API = `/${OPENAI_COMPATIBLE}/audio/speech`;
 
-export const AUDIO_SPEECH_TO_TEXT_API = '/v1-openai/audio/transcriptions';
+export const AUDIO_SPEECH_TO_TEXT_API = `/${OPENAI_COMPATIBLE}/audio/transcriptions`;
 
 export async function execChatCompletions(params: any) {
   return request(`${CHAT_API}`, {

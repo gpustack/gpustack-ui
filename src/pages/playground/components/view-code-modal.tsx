@@ -5,6 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useMemo, useState } from 'react';
+import { OPENAI_COMPATIBLE } from '../apis';
 
 type ViewModalProps = {
   systemMessage?: string;
@@ -46,7 +47,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const intl = useIntl();
   const [lang, setLang] = useState(langMap.shell);
 
-  const BaseURL = `${window.location.origin}/v1-openai`;
+  const BaseURL = `${window.location.origin}/${OPENAI_COMPATIBLE}`;
 
   const formatPyParams = (params: any) => {
     return _.keys(params).reduce((acc: string, key: string) => {
@@ -69,7 +70,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     const printLog = logcommand ? `print(response.${logcommand})` : '';
 
     if (lang === langMap.shell) {
-      const code = `curl ${window.location.origin}/v1-openai/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
+      const code = `curl ${window.location.origin}/${OPENAI_COMPATIBLE}/${api} \\\n-H "Content-Type: application/json" \\\n-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\\n-d '${JSON.stringify(
         {
           ...parameters,
           ...payload

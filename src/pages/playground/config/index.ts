@@ -1,4 +1,5 @@
 import { map } from 'lodash';
+import { CREAT_IMAGE_API } from '../apis';
 import { MessageItem } from './types';
 
 export const Roles = {
@@ -121,7 +122,7 @@ export const OpenAIViewCode = {
     logcommand: 'data[0].b64_json'
   },
   imageAdvanced: {
-    api: '/v1-openai/images/generations',
+    api: `${CREAT_IMAGE_API}`,
     clientType: 'images.generate',
     logcommand: {
       python: "json()['data'][0]['b64_json']",

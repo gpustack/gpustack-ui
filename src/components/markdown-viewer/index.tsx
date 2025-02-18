@@ -1,4 +1,5 @@
 import { EyeOutlined } from '@ant-design/icons';
+import { sanitizeUrl } from '@braintree/sanitize-url';
 import { Checkbox, Image, Typography } from 'antd';
 import { unescape } from 'lodash';
 import { TokensList, marked } from 'marked';
@@ -52,7 +53,8 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   }, []);
 
   const generateImgSrc = useCallback(
-    (src: string | null) => {
+    (url: string | null) => {
+      const src = sanitizeUrl(url || '');
       if (!src) {
         return '';
       }
@@ -186,6 +188,11 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       return;
     }
     const imgs = document.querySelectorAll('.markdown-viewer img');
+    const links = document.querySelectorAll('.markdown-viewer a');
+    links.forEach((link) => {
+      // set target blank for all links
+      link.setAttribute('target', '_blank');
+    });
     imgs.forEach((img) => {
       const src = img.getAttribute('src');
       img.setAttribute('src', generateImgSrc(src));

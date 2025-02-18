@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import hljs from 'highlight.js';
 import { memo, useMemo } from 'react';
+import styled from 'styled-components';
 import CopyButton from '../copy-button';
 import { escapeHtml } from './utils';
 
@@ -15,9 +16,64 @@ interface CodeViewerProps {
   theme?: 'light' | 'dark';
   style?: React.CSSProperties;
 }
+
+interface CodeHeaderProps {
+  copyValue: string;
+  copyable: boolean;
+  lang: string;
+  theme: 'light' | 'dark';
+}
+
+const CodeHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+  color: var(--ant-color-text-tertiary);
+  background-color: #fafafa;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  &.dark {
+    background-color: #383838;
+    color: rgba(255, 255, 255, 0.65);
+  }
+`;
+
+const Wrapper = styled.div`
+  border-radius: var(--border-radius-mini);
+`;
+
+const CodeHeader: React.FC<CodeHeaderProps> = ({
+  copyValue,
+  lang,
+  theme,
+  copyable
+}) => {
+  if (!copyable) {
+    return null;
+  }
+  return (
+    <CodeHeaderWrapper
+      className={classNames({
+        dark: theme === 'dark',
+        light: theme === 'light'
+      })}
+    >
+      <span>{lang}</span>
+      <CopyButton
+        text={copyValue}
+        size="small"
+        style={{ color: '#abb2bf' }}
+      ></CopyButton>
+    </CodeHeaderWrapper>
+  );
+};
+
 const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   const {
-    code,
+    code = '',
     copyValue,
     lang,
     autodetect = true,
@@ -63,38 +119,39 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   }, [code, lang, autodetect, ignoreIllegals]);
 
   return (
-    <pre
-      className={classNames(
-        'code-pre custome-scrollbar custom-scrollbar-horizontal ',
-        {
-          dark: props.theme === 'dark',
-          light: props.theme === 'light',
-          copyable: copyable
-        }
-      )}
-      style={{
-        height: height,
-        ...style
-      }}
-    >
-      <code
-        style={{ minHeight: height }}
-        className={classNames(highlightedCode.className, {
-          dark: props.theme === 'dark',
-          light: props.theme === 'light'
-        })}
-        dangerouslySetInnerHTML={{
-          __html: highlightedCode.value
+    <Wrapper>
+      <CodeHeader
+        copyValue={copyValue || code}
+        lang={lang}
+        copyable={copyable}
+        theme={props.theme || 'light'}
+      ></CodeHeader>
+      <pre
+        className={classNames(
+          'code-pre custome-scrollbar custom-scrollbar-horizontal ',
+          {
+            dark: props.theme === 'dark',
+            light: props.theme === 'light'
+          }
+        )}
+        style={{
+          marginBottom: 0,
+          height: height,
+          ...style
         }}
-      ></code>
-      {copyable && (
-        <CopyButton
-          text={copyValue || code}
-          size="small"
-          style={{ color: '#abb2bf' }}
-        ></CopyButton>
-      )}
-    </pre>
+      >
+        <code
+          style={{ minHeight: height }}
+          className={classNames(highlightedCode.className, {
+            dark: props.theme === 'dark',
+            light: props.theme === 'light'
+          })}
+          dangerouslySetInnerHTML={{
+            __html: highlightedCode.value
+          }}
+        ></code>
+      </pre>
+    </Wrapper>
   );
 };
 

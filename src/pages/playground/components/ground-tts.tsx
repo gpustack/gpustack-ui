@@ -21,7 +21,7 @@ import {
   useRef,
   useState
 } from 'react';
-import { CHAT_API, textToSpeech } from '../apis';
+import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
@@ -97,7 +97,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const viewCodeContent = useMemo(() => {
     return TextToSpeechCode({
-      api: '/v1-openai/audio/speech',
+      api: AUDIO_TEXT_TO_SPEECH_API,
       parameters: {
         ...parameters,
         input: currentPrompt

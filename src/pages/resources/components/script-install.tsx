@@ -18,12 +18,12 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         code={addWorkerGuide.mac.getToken}
         theme="dark"
       ></HighlightCode>
-      <h4>Windows </h4>
+      <h4 className="m-t-6">Windows </h4>
       <HighlightCode
         code={addWorkerGuide.win.getToken}
         theme="dark"
       ></HighlightCode>
-      <h3>
+      <h3 className="m-t-10">
         2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
         <span
           className="font-size-12"
@@ -43,7 +43,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         })}
         theme="dark"
       ></HighlightCode>
-      <h4>Windows </h4>
+      <h4 className="m-t-6">Windows </h4>
       <HighlightCode
         theme="dark"
         code={addWorkerGuide.win.registerWorker({
@@ -51,7 +51,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           token: '${mytoken}'
         })}
       ></HighlightCode>
-      <h3 className="m-b-0">
+      <h3 className="m-b-0 m-t-10">
         3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
       </h3>
     </div>

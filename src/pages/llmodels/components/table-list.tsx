@@ -516,15 +516,19 @@ const Models: React.FC<ModelsProps> = ({
   );
 
   const getModelInstances = async (row: any, options?: any) => {
-    const params = {
-      id: row.id,
-      page: 1,
-      perPage: 100
-    };
-    const data = await queryModelInstancesList(params, {
-      token: options?.token
-    });
-    return data.items || [];
+    try {
+      const params = {
+        id: row.id,
+        page: 1,
+        perPage: 100
+      };
+      const data = await queryModelInstancesList(params, {
+        token: options?.token
+      });
+      return data.items || [];
+    } catch (error) {
+      return [];
+    }
   };
 
   const generateChildrenRequestAPI = (params: any) => {

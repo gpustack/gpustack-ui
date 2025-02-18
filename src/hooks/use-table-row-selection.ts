@@ -19,22 +19,28 @@ export default function useTableRowSelection() {
 
   const removeSelectedKey = (rowKey: React.Key | React.Key[]) => {
     if (Array.isArray(rowKey)) {
-      setSelectedRowKeys((keys) => keys.filter((key) => !rowKey.includes(key)));
+      const keys = selectedRowKeys.filter((key) => !rowKey.includes(key));
+      setSelectedRowKeys(keys);
       setSelectedRows((rows) => rows.filter((row) => !rowKey.includes(row.id)));
-      return;
+      return keys;
     }
-    setSelectedRowKeys((keys) => keys.filter((key) => key !== rowKey));
+    const keys = selectedRowKeys.filter((key) => key !== rowKey);
+    setSelectedRowKeys(keys);
     setSelectedRows((rows) => rows.filter((row) => row.id !== rowKey));
+    return keys;
   };
 
   const removeSelectedKeys = (rowKeys: React.Key[]) => {
-    setSelectedRowKeys((keys) => keys.filter((key) => !rowKeys.includes(key)));
+    const keys = selectedRowKeys.filter((key) => !rowKeys.includes(key));
+    setSelectedRowKeys(keys);
     setSelectedRows((rows) => rows.filter((row) => !rowKeys.includes(row.id)));
+    return keys;
   };
 
   const rowSelection = {
     selectedRowKeys,
     selectedRows,
+    enableSelection: true,
     clearSelections,
     onChange: onSelectChange,
     removeSelectedKeys,

@@ -321,7 +321,6 @@ const Models: React.FC<ModelsProps> = ({
           replicas: 1
         }
       });
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
       updateExpandedRowKeys([row.id, ...expandedRowKeys]);
     } catch (error) {
       // ingore
@@ -531,7 +530,7 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleSelect = useCallback(
-    (val: any, row: ListItem) => {
+    async (val: any, row: ListItem) => {
       if (val === 'edit') {
         handleEdit(row);
       }
@@ -542,7 +541,8 @@ const Models: React.FC<ModelsProps> = ({
         handleDelete(row);
       }
       if (val === 'start') {
-        handleStartModel(row);
+        await handleStartModel(row);
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
       }
 
       if (val === 'stop') {

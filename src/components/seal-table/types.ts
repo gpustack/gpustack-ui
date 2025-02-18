@@ -14,7 +14,7 @@ export interface SealColumnProps {
     | boolean
     | {
         valueType?: 'text' | 'number' | 'date' | 'datetime' | 'time';
-        title?: string;
+        title?: React.ReactNode;
       };
   valueType?: 'text' | 'number' | 'date' | 'datetime' | 'time';
   sortOrder?: 'ascend' | 'descend' | null;
@@ -27,7 +27,7 @@ export interface TableHeaderProps {
   dataIndex: string;
   onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
   children?: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   style?: React.CSSProperties;
   firstCell?: boolean;
   lastCell?: boolean;
@@ -37,6 +37,8 @@ export interface TableHeaderProps {
 export interface RowSelectionProps {
   selectedRowKeys: React.Key[];
   selectedRows: any[];
+  enableSelection: boolean;
+  removeSelectedKeys: (rowKeys: React.Key[]) => void;
   onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => void;
 }
 export interface SealTableProps {

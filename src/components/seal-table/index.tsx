@@ -1,16 +1,9 @@
-import { RightOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Checkbox,
-  Empty,
-  Pagination,
-  Spin,
-  type PaginationProps
-} from 'antd';
+import { Pagination, Spin, type PaginationProps } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './components/header';
-import TableRow from './components/table-row';
+import HeaderPrefix from './components/header-prefix';
+import TableBody from './components/table-body';
 import './styles/index.less';
 import { SealTableProps } from './types';
 
@@ -36,42 +29,58 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     loadChildren,
     loadChildrenAPI
   } = props;
-  console.log('sealtable====');
-  const [selectAll, setSelectAll] = useState(false);
-  const [indeterminate, setIndeterminate] = useState(false);
-  const tableContent = useRef(null);
+  const [selectState, setSelectState] = useState({
+    selectAll: false,
+    indeterminate: false
+  });
 
   useEffect(() => {
     if (rowSelection) {
       const { selectedRowKeys } = rowSelection;
-      if (selectedRowKeys?.length === 0) {
-        setSelectAll(false);
-        setIndeterminate(false);
-      } else if (
-        selectedRowKeys?.length === props.dataSource.length &&
-        selectedRowKeys.length > 0
-      ) {
-        setSelectAll(true);
-        setIndeterminate(false);
+      const selectedKeys = new Set(rowSelection.selectedRowKeys);
+      const allRowKeys = props.dataSource.map((record) => record[rowKey]);
+      if (!selectedRowKeys?.length) {
+        setSelectState({
+          selectAll: false,
+          indeterminate: false
+        });
+      } else if (allRowKeys.every((key) => selectedKeys.has(key))) {
+        setSelectState({
+          selectAll: true,
+          indeterminate: false
+        });
       } else {
-        setSelectAll(false);
-        setIndeterminate(true);
+        setSelectState({
+          selectAll: false,
+          indeterminate: true
+        });
       }
     }
-  }, [rowSelection, props.dataSource]);
+  }, [rowSelection?.selectedRowKeys, props.dataSource, rowKey]);
+
+  const selectAllRows = () => {
+    const allKeys = new Set([
+      ...props.dataSource.map((record) => record[rowKey]),
+      ...(rowSelection?.selectedRowKeys || [])
+    ]);
+    const allDatas = _.uniqBy(
+      [...props.dataSource, ...(rowSelection?.selectedRows || [])],
+      (record: any) => record[rowKey]
+    );
+
+    rowSelection?.onChange([...allKeys], allDatas);
+  };
+
+  const deselectAllRows = () => {
+    const currentKeys = props.dataSource.map((record) => record[rowKey]);
+    rowSelection?.removeSelectedKeys?.(currentKeys);
+  };
 
   const handleSelectAllChange = (e: any) => {
     if (e.target.checked) {
-      rowSelection?.onChange(
-        props.dataSource.map((record) => record[rowKey]),
-        props.dataSource
-      );
-      setSelectAll(true);
-      setIndeterminate(false);
+      selectAllRows();
     } else {
-      rowSelection?.onChange([], []);
-      setSelectAll(false);
-      setIndeterminate(false);
+      deselectAllRows();
     }
   };
 
@@ -83,89 +92,37 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     pagination?.onShowSizeChange?.(current, size);
   };
 
-  const renderHeaderPrefix = useMemo(() => {
-    if (expandable && rowSelection) {
-      return (
-        <div className="header-row-prefix-wrapper">
-          <span style={{ marginRight: 5, padding: '0 14px' }}></span>
-          <Checkbox
-            onChange={handleSelectAllChange}
-            indeterminate={indeterminate}
-            checked={selectAll}
-          ></Checkbox>
-        </div>
-      );
-    }
-    if (expandable) {
-      return (
-        <div className="header-row-prefix-wrapper">
-          {_.isBoolean(expandable) ? (
-            <Button type="text" size="small">
-              <RightOutlined />
-            </Button>
-          ) : (
-            expandable
-          )}
-        </div>
-      );
-    }
-    if (rowSelection) {
-      return (
-        <div className="header-row-prefix-wrapper">{<Checkbox></Checkbox>}</div>
-      );
-    }
-    return null;
-  }, [expandable, rowSelection, selectAll, indeterminate]);
-
-  const renderContent = useMemo(() => {
-    if (!props.dataSource.length) {
-      return (
-        <div className="empty-wrapper">
-          <Empty
-            image={loadend ? Empty.PRESENTED_IMAGE_SIMPLE : null}
-            description={loadend ? undefined : null}
-          ></Empty>
-        </div>
-      );
-    }
-    return (
-      <div className="seal-table-content" ref={tableContent}>
-        {props.dataSource.map((item, index) => {
-          return (
-            <TableRow
-              record={item}
-              rowIndex={index}
-              columns={children}
-              key={item[rowKey]}
-              rowSelection={rowSelection}
-              expandable={expandable}
-              rowKey={rowKey}
-              childParentKey={childParentKey}
-              pollingChildren={pollingChildren}
-              watchChildren={watchChildren}
-              renderChildren={renderChildren}
-              loadChildren={loadChildren}
-              loadChildrenAPI={loadChildrenAPI}
-              onCell={onCell}
-              onExpand={onExpand}
-              expandedRowKeys={expandedRowKeys}
-            ></TableRow>
-          );
-        })}
-      </div>
-    );
-  }, [props.dataSource, expandedRowKeys, rowSelection, children]);
   return (
     <>
       <div className="seal-table-container">
-        {
-          <div className="header-row-wrapper">
-            {renderHeaderPrefix}
-            <Header onSort={onSort}>{children}</Header>
-          </div>
-        }
-
-        <Spin spinning={loading}>{renderContent}</Spin>
+        <div className="header-row-wrapper">
+          <HeaderPrefix
+            selectAll={selectState.selectAll}
+            indeterminate={selectState.indeterminate}
+            onSelectAll={handleSelectAllChange}
+            expandable={expandable}
+            enableSelection={rowSelection?.enableSelection}
+          ></HeaderPrefix>
+          <Header onSort={onSort}>{children}</Header>
+        </div>
+        <Spin spinning={loading}>
+          <TableBody
+            dataSource={props.dataSource}
+            columns={children}
+            rowSelection={rowSelection}
+            expandable={expandable}
+            rowKey={rowKey}
+            childParentKey={childParentKey}
+            pollingChildren={pollingChildren}
+            watchChildren={watchChildren}
+            renderChildren={renderChildren}
+            loadChildren={loadChildren}
+            loadChildrenAPI={loadChildrenAPI}
+            onCell={onCell}
+            onExpand={onExpand}
+            expandedRowKeys={expandedRowKeys}
+          />
+        </Spin>
       </div>
       {pagination && (
         <div className="pagination-wrapper">
@@ -180,4 +137,4 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   );
 };
 
-export default React.memo(SealTable);
+export default SealTable;

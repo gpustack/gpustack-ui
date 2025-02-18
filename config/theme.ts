@@ -32,6 +32,9 @@ export default {
       colorBgSpotlight: '#3e3e3e'
       // sizePopupArrow: 0
     },
+    Cascader: {
+      dropdownHeight: 240
+    },
     Slider: {
       handleSize: 8,
       handleSizeHover: 8,

@@ -321,7 +321,6 @@ const Models: React.FC<ModelsProps> = ({
           replicas: 1
         }
       });
-      updateExpandedRowKeys([row.id, ...expandedRowKeys]);
     } catch (error) {
       // ingore
     }
@@ -543,6 +542,7 @@ const Models: React.FC<ModelsProps> = ({
       if (val === 'start') {
         await handleStartModel(row);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
+        updateExpandedRowKeys([row.id, ...expandedRowKeys]);
       }
 
       if (val === 'stop') {

@@ -16,7 +16,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { Roles } from '../config';
 import { MessageItem } from '../config/types';
 import '../style/message-input.less';
-import PromptModal from './prompt-modal';
 import ThumbImg from './thumb-img';
 import UploadImg from './upload-img';
 
@@ -83,7 +82,6 @@ interface MessageInputProps {
   ) => void;
   onCheck?: (e: any) => void;
   submitIcon?: React.ReactNode;
-  presetPrompt?: (list: CurrentMessage[]) => void;
   addMessage?: (message: CurrentMessage) => void;
   onInputChange?: (e: any) => void;
   title?: React.ReactNode;
@@ -105,7 +103,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     {
       handleSubmit,
       handleAbortFetch,
-      presetPrompt,
       clearAll,
       updateLayout,
       addMessage,
@@ -129,7 +126,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
   ) => {
     const { TextArea } = Input;
     const intl = useIntl();
-    const [open, setOpen] = useState(false);
     const [focused, setFocused] = useState(false);
     const [message, setMessage] = useState<CurrentMessage>({
       role: Roles.User,
@@ -203,6 +199,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
 
     const getPasteContent = useCallback(
       async (event: any) => {
+        // @ts-ignore
         const clipboardData = event.clipboardData || window.clipboardData;
         const items = clipboardData.items;
         const imgPromises: Promise<string>[] = [];
@@ -292,26 +289,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       }
     }, [message.imgs, handleDeleteImg]);
 
-    const handleKeyDown = useCallback(
-      (event: any) => {
-        if (
-          event.key === 'Backspace' &&
-          message.content === '' &&
-          message.imgs &&
-          message.imgs?.length > 0
-        ) {
-          // inputref blur
-          event.preventDefault();
-          handleDeleteLastImage();
-        }
-      },
-      [message, handleDeleteLastImage]
-    );
-
-    const handleSelectPrompt = (list: CurrentMessage[]) => {
-      presetPrompt?.(list);
-    };
-
     useImperativeHandle(ref, () => ({
       handleInputChange: handleInputChange
     }));
@@ -363,6 +340,8 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 <Button
                   type="text"
                   size="middle"
+                  variant="filled"
+                  color="default"
                   onClick={handleToggleRole}
                   icon={<SwapOutlined rotate={90} />}
                 >
@@ -515,11 +494,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             ></span>
           )}
         </div>
-        <PromptModal
-          open={open}
-          onCancel={() => setOpen(false)}
-          onSelect={handleSelectPrompt}
-        ></PromptModal>
       </div>
     );
   }

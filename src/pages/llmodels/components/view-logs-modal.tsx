@@ -27,6 +27,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const [enableScorllLoad, setEnableScorllLoad] = useState(true);
   const logsViewerRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>(null);
+  const contentRef = React.useRef<any>(null);
 
   const handleCancel = useCallback(() => {
     logsViewerRef.current?.abort();
@@ -44,6 +45,29 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   };
 
   useEffect(() => {
+    const handleKeyDown = (e: any) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault();
+        if (contentRef.current) {
+          const range = document.createRange();
+          range.selectNodeContents(contentRef.current);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+      }
+    };
+
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (!props.id) return;
     if (open) {
       requestRef.current?.current?.cancel?.();
@@ -51,10 +75,10 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
-    } else {
-      logsViewerRef.current?.abort();
     }
+
     return () => {
+      logsViewerRef.current?.abort();
       requestRef.current?.current?.cancel?.();
     };
   }, [props.id, open]);
@@ -85,7 +109,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
       width={modalSize.width}
       footer={null}
     >
-      <div className="viewer-wrapper">
+      <div className="viewer-wrapper" ref={contentRef}>
         <LogsViewer
           ref={logsViewerRef}
           height={modalSize.height}

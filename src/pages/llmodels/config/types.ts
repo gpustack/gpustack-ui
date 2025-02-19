@@ -60,6 +60,8 @@ export interface FormData {
 }
 
 export interface ModelInstanceListItem {
+  backend?: string;
+  backend_version?: string;
   source: string;
   huggingface_repo_id: string;
   huggingface_filename: string;

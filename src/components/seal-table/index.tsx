@@ -1,16 +1,17 @@
 import { Pagination, Spin, type PaginationProps } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import Header from './components/header';
 import HeaderPrefix from './components/header-prefix';
 import TableBody from './components/table-body';
 import './styles/index.less';
-import { SealTableProps } from './types';
+import { SealColumnProps, SealTableProps } from './types';
 
 const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   props
 ) => {
   const {
+    columns,
     children,
     rowKey,
     childParentKey,
@@ -29,33 +30,46 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     loadChildren,
     loadChildrenAPI
   } = props;
-  const [selectState, setSelectState] = useState({
-    selectAll: false,
-    indeterminate: false
-  });
 
-  useEffect(() => {
-    if (rowSelection) {
-      const { selectedRowKeys } = rowSelection;
-      const selectedKeys = new Set(rowSelection.selectedRowKeys);
-      const allRowKeys = props.dataSource.map((record) => record[rowKey]);
-      if (!selectedRowKeys?.length) {
-        setSelectState({
-          selectAll: false,
-          indeterminate: false
-        });
-      } else if (allRowKeys.every((key) => selectedKeys.has(key))) {
-        setSelectState({
-          selectAll: true,
-          indeterminate: false
-        });
-      } else {
-        setSelectState({
-          selectAll: false,
-          indeterminate: true
-        });
-      }
+  const parsedColumns = useMemo(() => {
+    if (columns) return columns;
+
+    return React.Children.toArray(children)
+      .filter(React.isValidElement)
+      .map((child) => {
+        const column = child as React.ReactElement<SealColumnProps>;
+        const { title, dataIndex, key, render, ...restProps } = column.props;
+
+        return {
+          title,
+          dataIndex,
+          key: key || dataIndex,
+          render,
+          ...restProps
+        };
+      });
+  }, [columns, children]);
+
+  const selectState = useMemo(() => {
+    const selectedRowKeys = rowSelection?.selectedRowKeys || [];
+    const selectedKeys = new Set(selectedRowKeys);
+    const allRowKeys = props.dataSource.map((record) => record[rowKey]);
+    if (!selectedRowKeys?.length) {
+      return {
+        selectAll: false,
+        indeterminate: false
+      };
     }
+    if (allRowKeys.every((key) => selectedKeys.has(key))) {
+      return {
+        selectAll: true,
+        indeterminate: false
+      };
+    }
+    return {
+      selectAll: false,
+      indeterminate: true
+    };
   }, [rowSelection?.selectedRowKeys, props.dataSource, rowKey]);
 
   const selectAllRows = () => {
@@ -103,12 +117,12 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
             expandable={expandable}
             enableSelection={rowSelection?.enableSelection}
           ></HeaderPrefix>
-          <Header onSort={onSort}>{children}</Header>
+          <Header onSort={onSort} columns={parsedColumns}></Header>
         </div>
         <Spin spinning={loading}>
           <TableBody
             dataSource={props.dataSource}
-            columns={children}
+            columns={parsedColumns}
             rowSelection={rowSelection}
             expandable={expandable}
             rowKey={rowKey}

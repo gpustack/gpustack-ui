@@ -4,6 +4,7 @@ export interface SealColumnProps {
   title: React.ReactNode;
   render?: (text: any, record: any) => React.ReactNode;
   dataIndex: string;
+  key?: string;
   width?: number;
   span: number;
   align?: 'left' | 'center' | 'right';
@@ -18,6 +19,7 @@ export interface SealColumnProps {
       };
   valueType?: 'text' | 'number' | 'date' | 'datetime' | 'time';
   sortOrder?: 'ascend' | 'descend' | null;
+  [key: string]: any;
 }
 
 export interface TableHeaderProps {
@@ -26,7 +28,7 @@ export interface TableHeaderProps {
   sortOrder?: 'ascend' | 'descend' | null;
   dataIndex: string;
   onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
-  children?: React.ReactNode;
+  children?: React.ReactElement<SealColumnProps>;
   title: React.ReactNode;
   style?: React.CSSProperties;
   firstCell?: boolean;
@@ -42,10 +44,11 @@ export interface RowSelectionProps {
   onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => void;
 }
 export interface SealTableProps {
+  columns?: SealColumnProps[];
   childParentKey?: string;
   expandedRowKeys?: React.Key[];
   rowSelection?: RowSelectionProps;
-  children: React.ReactNode[];
+  children?: React.ReactElement<SealColumnProps>[];
   empty?: React.ReactNode;
   expandable?: React.ReactNode;
   dataSource: any[];
@@ -65,7 +68,6 @@ export interface SealTableProps {
 
 export interface RowContextProps {
   record: Record<string, any>;
-  columns: React.ReactNode[];
   pollingChildren?: boolean;
   rowIndex: number;
 }

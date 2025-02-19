@@ -18,7 +18,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Col, Divider, Row, Space, Tag, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
 import '../style/instance-item.less';
@@ -35,6 +35,38 @@ interface InstanceItemProps {
   ) => void;
 }
 
+const childActionList = [
+  {
+    label: 'common.button.viewlog',
+    key: 'viewlog',
+    status: [
+      InstanceStatusMap.Initializing,
+      InstanceStatusMap.Running,
+      InstanceStatusMap.Error,
+      InstanceStatusMap.Starting,
+      InstanceStatusMap.Downloading
+    ],
+    icon: <IconFont type="icon-logs" />
+  },
+  {
+    label: 'common.button.delrecreate',
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    icon: <DeleteOutlined />
+  }
+];
+
+const setChildActionList = (item: ModelInstanceListItem) => {
+  return _.filter(childActionList, (action: any) => {
+    if (action.key === 'viewlog') {
+      return action.status.includes(item.state);
+    }
+    return true;
+  });
+};
+
 const InstanceItem: React.FC<InstanceItemProps> = ({
   list,
   workerList,
@@ -42,56 +74,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   handleChildSelect
 }) => {
   const intl = useIntl();
-
-  const distributeCols = [
-    {
-      title: 'Worker',
-      key: 'worker_name'
-    },
-    {
-      title: 'IP',
-      key: 'worker_ip',
-      render: ({ row }: { row: ModelInstanceListItem }) => {
-        return row.port ? `${row.worker_ip}:${row.port}` : row.worker_ip;
-      }
-    },
-    {
-      title: intl.formatMessage({ id: 'models.table.gpuindex' }),
-      key: 'gpu_index'
-    }
-  ];
-
-  const childActionList = [
-    {
-      label: 'common.button.viewlog',
-      key: 'viewlog',
-      status: [
-        InstanceStatusMap.Initializing,
-        InstanceStatusMap.Running,
-        InstanceStatusMap.Error,
-        InstanceStatusMap.Starting,
-        InstanceStatusMap.Downloading
-      ],
-      icon: <IconFont type="icon-logs" />
-    },
-    {
-      label: 'common.button.delrecreate',
-      key: 'delete',
-      props: {
-        danger: true
-      },
-      icon: <DeleteOutlined />
-    }
-  ];
-
-  const setChildActionList = useCallback((item: ModelInstanceListItem) => {
-    return _.filter(childActionList, (action: any) => {
-      if (action.key === 'viewlog') {
-        return action.status.includes(item.state);
-      }
-      return true;
-    });
-  }, []);
 
   const renderWorkerInfo = (item: ModelInstanceListItem) => {
     let workerIp = '-';

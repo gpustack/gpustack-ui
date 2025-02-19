@@ -2,14 +2,21 @@ import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Col, Empty, Row, Spin } from 'antd';
+import { Col, Empty, Row, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import RowContext from '../row-context';
 import TableContext from '../table-context';
 import { RowContextProps, SealTableProps } from '../types';
+import RowPrefix from './row-prefix';
+import TableColumn from './seal-column';
 
 const TableRow: React.FC<
   RowContextProps &
@@ -38,7 +45,7 @@ const TableRow: React.FC<
   }>(TableContext);
   const { setChunkRequest } = useSetChunkRequest();
   const [expanded, setExpanded] = useState(false);
-  const [checked, setChecked] = useState(false);
+  // const [checked, setChecked] = useState(false);
   const [childrenData, setChildrenData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -57,17 +64,6 @@ const TableRow: React.FC<
   });
 
   useEffect(() => {
-    if (rowSelection) {
-      const { selectedRowKeys } = rowSelection;
-      if (selectedRowKeys.includes(record[rowKey])) {
-        setChecked(true);
-      } else {
-        setChecked(false);
-      }
-    }
-  }, [rowSelection]);
-
-  useEffect(() => {
     return () => {
       if (pollTimer.current) {
         clearInterval(pollTimer.current);
@@ -77,7 +73,23 @@ const TableRow: React.FC<
     };
   }, []);
 
+  const checked = useMemo(() => {
+    return rowSelection?.selectedRowKeys?.includes(record[rowKey]);
+  }, [rowSelection?.selectedRowKeys, record, rowKey]);
+
   const renderChildrenData = () => {
+    if (childrenData.length === 0) {
+      return (
+        <Empty
+          image={loading ? null : Empty.PRESENTED_IMAGE_SIMPLE}
+          description={loading ? null : undefined}
+          style={{
+            marginBlock: 0,
+            height: 54
+          }}
+        ></Empty>
+      );
+    }
     return renderChildren?.(childrenData, record);
   };
 
@@ -92,7 +104,7 @@ const TableRow: React.FC<
     }
   };
 
-  const handleLoadChildren = async () => {
+  const handleLoadChildren = useCallback(async () => {
     try {
       axiosToken.current?.cancel?.();
       axiosToken.current = createAxiosToken();
@@ -109,7 +121,7 @@ const TableRow: React.FC<
     } finally {
       setFirstLoad(false);
     }
-  };
+  }, [record, loadChildren]);
 
   const filterUpdateChildrenHandler = () => {
     if (!expandedRowKeys?.includes(record[rowKey])) {
@@ -224,51 +236,6 @@ const TableRow: React.FC<
     };
   }, [updateChild, tableContext.allChildren]);
 
-  const renderRowPrefix = () => {
-    if (expandable && rowSelection) {
-      return (
-        <div className="row-prefix-wrapper">
-          <span style={{ marginRight: 5 }}>
-            {_.isBoolean(expandable) ? (
-              <Button type="text" size="small" onClick={handleRowExpand}>
-                {expanded ? <DownOutlined /> : <RightOutlined />}
-              </Button>
-            ) : (
-              expandable
-            )}
-          </span>
-          <Checkbox onChange={handleSelectChange} checked={checked}></Checkbox>
-        </div>
-      );
-    }
-    if (expandable) {
-      return (
-        <div className="row-prefix-wrapper">
-          {_.isBoolean(expandable) ? (
-            <Button type="text" size="small" onClick={handleRowExpand}>
-              {expanded ? <DownOutlined /> : <RightOutlined />}
-            </Button>
-          ) : (
-            expandable
-          )}
-        </div>
-      );
-    }
-    if (rowSelection) {
-      return (
-        <div className="row-prefix-wrapper">
-          {
-            <Checkbox
-              onChange={handleSelectChange}
-              checked={checked}
-            ></Checkbox>
-          }
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <RowContext.Provider value={{ row: { ...record, rowIndex }, onCell }}>
       <div className="row-box">
@@ -277,40 +244,30 @@ const TableRow: React.FC<
             'row-wrapper-selected': checked
           })}
         >
-          {renderRowPrefix()}
+          <RowPrefix
+            expandable={expandable}
+            enableSelection={rowSelection?.enableSelection}
+            expanded={expanded}
+            checked={checked}
+            handleRowExpand={handleRowExpand}
+            handleSelectChange={handleSelectChange}
+          ></RowPrefix>
           <Row className="seal-table-row">
-            {React.Children.map(columns, (child) => {
-              const { props: columnProps } = child as any;
-              if (React.isValidElement(child)) {
-                return (
-                  <Col
-                    key={`${columnProps.dataIndex}-${rowIndex}`}
-                    span={columnProps.span}
-                  >
-                    {child}
-                  </Col>
-                );
-              }
-              return <Col span={columnProps.span}></Col>;
+            {columns?.map((columnProps) => {
+              return (
+                <Col
+                  key={`${columnProps.dataIndex}-${rowIndex}`}
+                  span={columnProps.span}
+                >
+                  <TableColumn {...columnProps}></TableColumn>
+                </Col>
+              );
             })}
           </Row>
         </div>
         {expanded && (
           <div className="expanded-row">
-            <Spin spinning={loading}>
-              {childrenData.length ? (
-                renderChildrenData()
-              ) : (
-                <Empty
-                  image={loading ? null : Empty.PRESENTED_IMAGE_SIMPLE}
-                  description={loading ? null : undefined}
-                  style={{
-                    marginBlock: 0,
-                    height: 54
-                  }}
-                ></Empty>
-              )}
-            </Spin>
+            <Spin spinning={loading}>{renderChildrenData()}</Spin>
           </div>
         )}
       </div>

@@ -4,16 +4,16 @@ import { SealColumnProps } from '../types';
 import TableHeader from './table-header';
 
 interface HeaderProps {
-  children: React.ReactNode[];
+  columns: SealColumnProps[];
   onSort?: (dataIndex: string, order: any) => void;
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
   const { onSort } = props;
+
   return (
     <Row className="row">
-      {React.Children.map(props.children, (child, i) => {
-        const { props: columnProps } = child as any;
+      {props.columns?.map((columnProps, i) => {
         const {
           title,
           dataIndex,
@@ -24,25 +24,22 @@ const Header: React.FC<HeaderProps> = (props) => {
           sorter,
           defaultSortOrder
         } = columnProps as SealColumnProps;
-        if (React.isValidElement(child)) {
-          return (
-            <Col span={span} key={i}>
-              <TableHeader
-                onSort={onSort}
-                sorter={sorter}
-                dataIndex={dataIndex}
-                sortOrder={sortOrder}
-                defaultSortOrder={defaultSortOrder}
-                title={title}
-                style={headerStyle}
-                firstCell={i === 0}
-                align={align}
-                lastCell={i === props.children.length - 1}
-              ></TableHeader>
-            </Col>
-          );
-        }
-        return null;
+        return (
+          <Col span={span} key={dataIndex || i}>
+            <TableHeader
+              onSort={onSort}
+              sorter={sorter}
+              dataIndex={dataIndex}
+              sortOrder={sortOrder}
+              defaultSortOrder={defaultSortOrder}
+              title={title}
+              style={headerStyle}
+              firstCell={i === 0}
+              align={align}
+              lastCell={i === props.columns.length - 1}
+            ></TableHeader>
+          </Col>
+        );
       })}
     </Row>
   );

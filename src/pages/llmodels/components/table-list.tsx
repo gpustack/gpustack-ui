@@ -6,7 +6,7 @@ import IconFont from '@/components/icon-font';
 import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
-import SealColumn from '@/components/seal-table/components/seal-column';
+import { SealColumnProps } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import useBodyScroll from '@/hooks/use-body-scroll';
@@ -32,7 +32,7 @@ import { Button, Dropdown, Input, Select, Space, Tooltip, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import {
   MODELS_API,
@@ -112,6 +112,39 @@ const ActionList = [
     icon: <DeleteOutlined />
   }
 ];
+
+const generateSource = (record: ListItem) => {
+  if (record.source === modelSourceMap.modelscope_value) {
+    return `${modelSourceMap.modelScope}/${record.model_scope_model_id}`;
+  }
+  if (record.source === modelSourceMap.huggingface_value) {
+    return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
+  }
+  if (record.source === modelSourceMap.local_path_value) {
+    return `${record.local_path}`;
+  }
+  if (record.source === modelSourceMap.ollama_library_value) {
+    return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
+  }
+  return '';
+};
+
+const setActionList = (record: ListItem) => {
+  return _.filter(ActionList, (action: any) => {
+    if (action.key === 'chat') {
+      return record.ready_replicas > 0;
+    }
+    if (action.key === 'start') {
+      return record.replicas === 0;
+    }
+
+    if (action.key === 'stop') {
+      return record.replicas > 0;
+    }
+
+    return true;
+  });
+};
 
 const Models: React.FC<ModelsProps> = ({
   handleNameChange,
@@ -270,28 +303,11 @@ const Models: React.FC<ModelsProps> = ({
     }
   ];
 
-  const setActionList = useCallback((record: ListItem) => {
-    return _.filter(ActionList, (action: any) => {
-      if (action.key === 'chat') {
-        return record.ready_replicas > 0;
-      }
-      if (action.key === 'start') {
-        return record.replicas === 0;
-      }
-
-      if (action.key === 'stop') {
-        return record.replicas > 0;
-      }
-
-      return true;
-    });
-  }, []);
-
   const handleOnSort = (dataIndex: string, order: any) => {
     setSortOrder(order);
   };
 
-  const handleOnCell = async (record: any, dataIndex: string) => {
+  const handleOnCell = useCallback(async (record: any, dataIndex: string) => {
     const params = {
       id: record.id,
       data: _.omit(record, [
@@ -304,7 +320,7 @@ const Models: React.FC<ModelsProps> = ({
     };
     await updateModel(params);
     message.success(intl.formatMessage({ id: 'common.message.success' }));
-  };
+  }, []);
 
   const handleStartModel = async (row: ListItem) => {
     try {
@@ -502,7 +518,7 @@ const Models: React.FC<ModelsProps> = ({
     [deleteModelInstance]
   );
 
-  const getModelInstances = async (row: any, options?: any) => {
+  const getModelInstances = useCallback(async (row: any, options?: any) => {
     try {
       const params = {
         id: row.id,
@@ -516,11 +532,11 @@ const Models: React.FC<ModelsProps> = ({
     } catch (error) {
       return [];
     }
-  };
+  }, []);
 
-  const generateChildrenRequestAPI = (params: any) => {
+  const generateChildrenRequestAPI = useCallback((params: any) => {
     return `${MODELS_API}/${params.id}/instances`;
-  };
+  }, []);
 
   const handleEdit = (row: ListItem) => {
     setCurrentData(row);
@@ -588,22 +604,6 @@ const Models: React.FC<ModelsProps> = ({
     [workerList]
   );
 
-  const generateSource = useCallback((record: ListItem) => {
-    if (record.source === modelSourceMap.modelscope_value) {
-      return `${modelSourceMap.modelScope}/${record.model_scope_model_id}`;
-    }
-    if (record.source === modelSourceMap.huggingface_value) {
-      return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
-    }
-    if (record.source === modelSourceMap.local_path_value) {
-      return `${record.local_path}`;
-    }
-    if (record.source === modelSourceMap.ollama_library_value) {
-      return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
-    }
-    return '';
-  }, []);
-
   const handleClickDropdown = (item: any) => {
     if (item.key === 'huggingface') {
       setOpenDeployModal({
@@ -666,6 +666,87 @@ const Models: React.FC<ModelsProps> = ({
       }
     });
   };
+
+  const columns: SealColumnProps[] = useMemo(
+    () => [
+      {
+        title: intl.formatMessage({ id: 'common.table.name' }),
+        dataIndex: 'name',
+        key: 'name',
+        width: 400,
+        span: 5,
+        render: (text: string, record: ListItem) => (
+          <span className="flex-center" style={{ maxWidth: '100%' }}>
+            <AutoTooltip ghost>
+              <span className="m-r-5">{text}</span>
+            </AutoTooltip>
+            <ModelTag categoryKey={record.categories?.[0] || ''} />
+          </span>
+        )
+      },
+      {
+        title: intl.formatMessage({ id: 'models.form.source' }),
+        dataIndex: 'source',
+        key: 'source',
+        span: 6,
+        render: (text: string, record: ListItem) => (
+          <span className="flex flex-column" style={{ width: '100%' }}>
+            <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
+          </span>
+        )
+      },
+      {
+        title: (
+          <Tooltip
+            title={intl.formatMessage({ id: 'models.form.replicas.tips' })}
+          >
+            {intl.formatMessage({ id: 'models.form.replicas' })}
+            <QuestionCircleOutlined className="m-l-5" />
+          </Tooltip>
+        ),
+        dataIndex: 'replicas',
+        key: 'replicas',
+        align: 'center',
+        span: 4,
+        editable: {
+          valueType: 'number',
+          title: intl.formatMessage({ id: 'models.table.replicas.edit' })
+        },
+        render: (text: number, record: ListItem) => (
+          <span style={{ paddingLeft: 10, minWidth: '33px' }}>
+            {record.ready_replicas} / {record.replicas}
+          </span>
+        )
+      },
+      {
+        title: intl.formatMessage({ id: 'common.table.createTime' }),
+        dataIndex: 'created_at',
+        key: 'created_at',
+        defaultSortOrder: 'descend',
+        sortOrder,
+        sorter: false,
+        span: 5,
+        render: (text: number) => (
+          <AutoTooltip ghost>
+            {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+          </AutoTooltip>
+        )
+      },
+      {
+        title: intl.formatMessage({ id: 'common.table.operation' }),
+        key: 'operation',
+        dataIndex: 'operation',
+        span: 4,
+        render: (text, record) => (
+          <DropdownButtons
+            items={setActionList(record)}
+            onSelect={(val) => handleSelect(val, record)}
+          />
+        )
+      }
+    ],
+    [sortOrder, intl]
+  );
 
   return (
     <>
@@ -776,6 +857,7 @@ const Models: React.FC<ModelsProps> = ({
           }
         ></PageTools>
         <SealTable
+          columns={columns}
           dataSource={dataSource}
           rowSelection={rowSelection}
           expandedRowKeys={expandedRowKeys}
@@ -800,100 +882,7 @@ const Models: React.FC<ModelsProps> = ({
             hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}
-        >
-          <SealColumn
-            title={intl.formatMessage({ id: 'common.table.name' })}
-            dataIndex="name"
-            key="name"
-            width={400}
-            span={5}
-            render={(text, record: ListItem) => {
-              return (
-                <span
-                  className="flex-center"
-                  style={{
-                    maxWidth: '100%'
-                  }}
-                >
-                  <AutoTooltip ghost>
-                    <span className="m-r-5">{text}</span>
-                  </AutoTooltip>
-                  <ModelTag
-                    categoryKey={record.categories?.[0] || ''}
-                  ></ModelTag>
-                </span>
-              );
-            }}
-          />
-          <SealColumn
-            title={intl.formatMessage({ id: 'models.form.source' })}
-            dataIndex="source"
-            key="source"
-            span={6}
-            render={(text, record: ListItem) => {
-              return (
-                <span className="flex flex-column" style={{ width: '100%' }}>
-                  <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
-                </span>
-              );
-            }}
-          />
-          <SealColumn
-            title={
-              <Tooltip
-                title={intl.formatMessage({ id: 'models.form.replicas.tips' })}
-              >
-                {intl.formatMessage({ id: 'models.form.replicas' })}
-                <QuestionCircleOutlined className="m-l-5" />
-              </Tooltip>
-            }
-            dataIndex="replicas"
-            key="replicas"
-            align="center"
-            span={4}
-            editable={{
-              valueType: 'number',
-              title: intl.formatMessage({ id: 'models.table.replicas.edit' })
-            }}
-            render={(text, record: ListItem) => {
-              return (
-                <span style={{ paddingLeft: 10, minWidth: '33px' }}>
-                  {record.ready_replicas} / {record.replicas}
-                </span>
-              );
-            }}
-          />
-          <SealColumn
-            span={5}
-            title={intl.formatMessage({ id: 'common.table.createTime' })}
-            dataIndex="created_at"
-            key="created_at"
-            defaultSortOrder="descend"
-            sortOrder={sortOrder}
-            sorter={false}
-            render={(text, row) => {
-              return (
-                <AutoTooltip ghost>
-                  {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-                </AutoTooltip>
-              );
-            }}
-          />
-          <SealColumn
-            span={4}
-            title={intl.formatMessage({ id: 'common.table.operation' })}
-            key="operation"
-            dataIndex="operation"
-            render={(text, record) => {
-              return (
-                <DropdownButtons
-                  items={setActionList(record)}
-                  onSelect={(val) => handleSelect(val, record)}
-                ></DropdownButtons>
-              );
-            }}
-          />
-        </SealTable>
+        ></SealTable>
       </PageContainer>
       <UpdateModel
         open={openAddModal}

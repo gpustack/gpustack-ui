@@ -1,10 +1,11 @@
 import { Empty } from 'antd';
 import React from 'react';
+import { SealColumnProps } from '../types';
 import TableRow from './table-row';
 
 interface TableBodyProps {
   dataSource: any[];
-  columns: React.ReactNode[];
+  columns: SealColumnProps[];
   rowKey: string;
   rowSelection?: any;
   expandable?: any;

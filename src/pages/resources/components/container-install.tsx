@@ -41,7 +41,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       token: '${mytoken}',
       workerip: '${myworkerip}'
     });
-  }, [versionInfo, activeKey, props.token, origin]);
+  }, [versionInfo, activeKey, props.token]);
 
   return (
     <div className="container-install">

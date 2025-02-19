@@ -1,7 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import {
   ClearOutlined,
   DeleteOutlined,
@@ -23,10 +21,10 @@ import React, {
   useState
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { CHAT_API } from '../../apis';
 import { OpenAIViewCode, Roles, generateMessages } from '../../config';
 import CompareContext from '../../config/compare-context';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
+import useChatCompletion from '../../hooks/use-chat-completion';
 import '../../style/model-item.less';
 import ParamsSettings from '../params-settings';
 import ReferenceParams from '../reference-params';
@@ -50,7 +48,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       handleDeleteModel,
       handleApplySystemChangeToAll,
       modelFullList,
-      loadingStatus,
       actions
     } = useContext(CompareContext);
     const intl = useIntl();
@@ -59,19 +56,19 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     const [params, setParams] = useState<Record<string, any>>({
       model: model
     });
-    const [loading, setLoading] = useState(false);
-    const messageId = useRef<number>(0);
-    const [messageList, setMessageList] = useState<MessageItem[]>([]);
-    const [tokenResult, setTokenResult] = useState<any>(null);
     const [show, setShow] = useState(false);
-    const contentRef = useRef<any>('');
-    const controllerRef = useRef<any>(null);
-    const currentMessageRef = useRef<MessageItem[]>([]);
-    const modelScrollRef = useRef<any>(null);
-    const messageListLengthCache = useRef<number>(0);
-    const reasonContentRef = useRef<any>('');
+    const scroller = useRef<any>(null);
 
-    const { initialize, updateScrollerPosition } = useOverlayScroller();
+    const {
+      submitMessage,
+      handleAddNewMessage,
+      handleClear,
+      setMessageList,
+      handleStopConversation,
+      tokenResult,
+      messageList,
+      loading
+    } = useChatCompletion(scroller);
 
     const viewCodeMessage = useMemo(() => {
       return generateMessages([
@@ -80,132 +77,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       ]);
     }, [messageList, systemMessage]);
 
-    const setMessageId = () => {
-      messageId.current = messageId.current + 1;
-    };
-
     const abortFetch = () => {
-      controllerRef.current?.abort?.();
+      handleStopConversation();
       setLoadingStatus(instanceId, false);
-    };
-
-    const formatContent = (data: {
-      content: string;
-      reasoningContent: string;
-    }) => {
-      if (data.reasoningContent && !data.content) {
-        return `<think>${data.reasoningContent}`;
-      }
-      if (data.reasoningContent && data.content) {
-        return `<think>${data.reasoningContent}</think>${data.content}`;
-      }
-      return data.content;
-    };
-
-    const joinMessage = (chunk: any) => {
-      setTokenResult({
-        ...(chunk?.usage ?? {})
-      });
-
-      if (!chunk || !_.get(chunk, 'choices', [].length)) {
-        return;
-      }
-
-      reasonContentRef.current =
-        reasonContentRef.current +
-        _.get(chunk, 'choices.0.delta.reasoning_content', '');
-
-      contentRef.current =
-        contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
-
-      const content = formatContent({
-        content: contentRef.current,
-        reasoningContent: reasonContentRef.current
-      });
-      setMessageList([
-        ...messageList,
-        ...currentMessageRef.current,
-        {
-          role: Roles.Assistant,
-          content,
-          uid: messageId.current
-        }
-      ]);
-    };
-
-    const submitMessage = async (currentMessage?: Omit<MessageItem, 'uid'>) => {
-      if (!params.model) return;
-      try {
-        setLoadingStatus(instanceId, true);
-        setMessageId();
-
-        controllerRef.current?.abort?.();
-        controllerRef.current = new AbortController();
-        const signal = controllerRef.current.signal;
-        currentMessageRef.current = currentMessage
-          ? [
-              {
-                ...currentMessage,
-                uid: messageId.current
-              }
-            ]
-          : [];
-        setMessageList((preList) => {
-          return [...preList, ...currentMessageRef.current];
-        });
-
-        contentRef.current = '';
-        reasonContentRef.current = '';
-        // ====== payload =================
-
-        const messageParams = [
-          { role: Roles.System, content: systemMessage },
-          ...messageList,
-          ...currentMessageRef.current
-        ];
-
-        const messages = generateMessages(messageParams);
-
-        const chatParams = {
-          messages: messages,
-          ...params,
-          stream: true,
-          stream_options: {
-            include_usage: true
-          }
-        };
-        // ============== payload end ================
-        const result: any = await fetchChunkedData({
-          data: chatParams,
-          url: CHAT_API,
-          signal
-        });
-
-        if (result?.error) {
-          setTokenResult({
-            error: true,
-            errorMessage:
-              result?.data?.error?.message || result?.data?.message || ''
-          });
-          return;
-        }
-        setMessageId();
-        const { reader, decoder } = result;
-        await readStreamData(reader, decoder, (chunk: any) => {
-          if (chunk?.error) {
-            setTokenResult({
-              error: true,
-              errorMessage: chunk?.error?.message || chunk?.message || ''
-            });
-            return;
-          }
-          joinMessage(chunk);
-        });
-      } catch (error) {
-        // console.log('error:', error);
-      } finally {
-        setLoadingStatus(instanceId, false);
-      }
     };
 
     const handleDelete = () => {
@@ -217,7 +91,14 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         currentMessage.content || currentMessage.imgs?.length
           ? currentMessage
           : undefined;
-      submitMessage(currentMsg);
+
+      submitMessage({
+        system: systemMessage
+          ? { role: Roles.System, content: systemMessage }
+          : undefined,
+        current: currentMsg,
+        parameters: params
+      });
     };
 
     const handleApplyToAllModels = (e: any) => {
@@ -249,25 +130,6 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
       [params, isApplyToAllModels.current]
     );
 
-    const handleClearMessage = () => {
-      setMessageList([]);
-      setTokenResult(null);
-      currentMessageRef.current = [];
-    };
-
-    const addNewMessage = (message: Omit<MessageItem, 'uid'>) => {
-      setMessageId();
-      setMessageList((preList) => {
-        return [
-          ...preList,
-          {
-            ...message,
-            uid: messageId.current
-          }
-        ];
-      });
-    };
-
     const handleCloseViewCode = () => {
       setShow(false);
     };
@@ -277,28 +139,8 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
         ...params,
         model: value
       });
-      handleClearMessage();
+      handleClear();
     };
-
-    const handlePresetMessageList = (list: MessageItem[]) => {
-      currentMessageRef.current = [];
-      const messages = _.map(list, (item: Omit<MessageItem, 'uid'>) => {
-        setMessageId();
-        return {
-          role: item.role,
-          content: item.content,
-          uid: messageId.current
-        };
-      });
-      setTokenResult(null);
-      setMessageList(messages);
-    };
-
-    const modelOptions = useMemo(() => {
-      return modelFullList.filter((item) => {
-        return item.type !== 'empty';
-      });
-    }, [modelFullList]);
 
     const actionItems = useMemo(() => {
       const list = [
@@ -344,37 +186,18 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
     }, [globalParams]);
 
     useEffect(() => {
+      setLoadingStatus(instanceId, loading);
       return () => {
-        abortFetch();
+        setLoadingStatus(instanceId, false);
       };
-    }, []);
-
-    useEffect(() => {
-      if (modelScrollRef.current) {
-        initialize(modelScrollRef.current);
-      }
-    }, [modelScrollRef.current, initialize]);
-
-    useEffect(() => {
-      if (loadingStatus[instanceId]) {
-        updateScrollerPosition();
-      }
-    }, [messageList]);
-
-    useEffect(() => {
-      if (messageList.length > messageListLengthCache.current) {
-        updateScrollerPosition();
-      }
-      messageListLengthCache.current = messageList.length;
-    }, [messageList.length]);
+    }, [loading]);
 
     useImperativeHandle(ref, () => {
       return {
         submit: handleSubmit,
         abortFetch,
-        addNewMessage,
-        clear: handleClearMessage,
-        presetPrompt: handlePresetMessageList,
+        addNewMessage: handleAddNewMessage,
+        clear: handleClear,
         setSystemMessage,
         loading
       };
@@ -473,7 +296,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
           applyToAll={handleApplySystemChangeToAll}
           setSystemMessage={setSystemMessage}
         ></SystemMessage>
-        <div className="content" ref={modelScrollRef}>
+        <div className="content" ref={scroller}>
           <div>
             <MessageContent
               messageList={messageList}
@@ -481,11 +304,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef(
               actions={actions}
               editable={true}
             />
-            <Spin
-              spinning={!!loadingStatus[instanceId]}
-              size="small"
-              style={{ width: '100%' }}
-            />
+            <Spin spinning={loading} size="small" style={{ width: '100%' }} />
           </div>
         </div>
         <ViewCodeModal

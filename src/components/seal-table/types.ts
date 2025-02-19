@@ -28,7 +28,6 @@ export interface TableHeaderProps {
   sortOrder?: 'ascend' | 'descend' | null;
   dataIndex: string;
   onSort?: (dataIndex: string, order: 'ascend' | 'descend') => void;
-  children?: React.ReactElement<SealColumnProps>;
   title: React.ReactNode;
   style?: React.CSSProperties;
   firstCell?: boolean;

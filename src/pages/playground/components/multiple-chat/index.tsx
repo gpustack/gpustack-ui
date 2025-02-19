@@ -57,15 +57,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
     return modelRefList.some((instanceId: symbol) => loadingStatus[instanceId]);
   }, [loadingStatus]);
 
-  const modelFullList = useMemo(() => {
-    return modelList.map((item) => {
-      return {
-        ...item,
-        disabled: modelSelections.some((model) => model.value === item.value)
-      };
-    });
-  }, [modelList, modelSelections]);
-
   const setModelCounter = (model: string) => {
     modelsCounterMap.current[model] = _.add(modelsCounterMap.current[model], 1);
     return modelsCounterMap.current[model];
@@ -320,7 +311,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
           clearAll={handleClearAll}
           updateLayout={updateLayout}
           setModelSelections={handleUpdateModelSelections}
-          presetPrompt={handlePresetPrompt}
           actions={[
             'clear',
             'layout',

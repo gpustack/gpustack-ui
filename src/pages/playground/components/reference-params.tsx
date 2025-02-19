@@ -44,6 +44,8 @@ const ReferenceParams = (props: ReferenceParamsProps) => {
           textAlign: 'center',
           paddingBlock: 0,
           margin: 0,
+          paddingInline: 4,
+          borderRadius: 2,
           backgroundColor: 'var(--ant-color-error-bg)'
         }}
       >

@@ -1,11 +1,12 @@
 import CopyButton from '@/components/copy-button';
 import ModalFooter from '@/components/modal-footer';
+import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Modal, Tag } from 'antd';
+import { Button, Form, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { createApisKey } from '../apis';
@@ -92,7 +93,7 @@ const AddModal: React.FC<AddModalProps> = ({
   };
 
   return (
-    <Modal
+    <ScrollerModal
       title={
         !showKey ? title : intl.formatMessage({ id: 'apikeys.title.save' })
       }
@@ -200,7 +201,7 @@ const AddModal: React.FC<AddModalProps> = ({
           </Form.Item>
         )}
       </Form>
-    </Modal>
+    </ScrollerModal>
   );
 };
 

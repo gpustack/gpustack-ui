@@ -1,11 +1,12 @@
 import ModalFooter from '@/components/modal-footer';
+import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
 import { UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form, Modal, Select } from 'antd';
+import { Form, Select } from 'antd';
 import { useEffect } from 'react';
 import { UserRoles, UserRolesOptions } from '../config';
 import { FormData, ListItem } from '../config/types';
@@ -51,7 +52,7 @@ const AddModal: React.FC<AddModalProps> = ({
   }, [open]);
 
   return (
-    <Modal
+    <ScrollerModal
       title={title}
       open={open}
       centered={true}
@@ -128,7 +129,7 @@ const AddModal: React.FC<AddModalProps> = ({
           ></SealInput.Password>
         </Form.Item>
       </Form>
-    </Modal>
+    </ScrollerModal>
   );
 };
 

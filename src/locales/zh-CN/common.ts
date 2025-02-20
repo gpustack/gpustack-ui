@@ -209,6 +209,8 @@ export default {
   'common.button.addLabel': '添加标签',
   'common.button.addSelector': '添加选择器',
   'common.button.addParams': '添加参数',
+  'common.button.vars': '添加变量',
+  'common.text.variable': '变量',
   'common.text.here': '这里',
   'common.text.latest': '最新',
   'common.text.new': '新',

@@ -43,6 +43,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
 
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
+  const EnviromentVars = Form.useWatch('env', form);
   const scheduleType = Form.useWatch('scheduleType', form);
   const backend = Form.useWatch('backend', form);
   const backend_parameters = Form.useWatch('backend_parameters', form);
@@ -115,6 +116,12 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const handleWorkerLabelsChange = useCallback(
     (labels: Record<string, any>) => {
       form.setFieldValue('worker_selector', labels);
+    },
+    []
+  );
+  const handleEnviromentVarsChange = useCallback(
+    (labels: Record<string, any>) => {
+      form.setFieldValue('env', labels);
     },
     []
   );
@@ -200,6 +207,41 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                   <TooltipList list={placementStrategyTips}></TooltipList>
                 }
               ></SealSelect>
+            </Form.Item>
+            <Form.Item<FormData>
+              name="env"
+              rules={[
+                () => ({
+                  validator(rule, value) {
+                    if (_.keys(value).length > 0) {
+                      if (_.some(_.keys(value), (k: string) => !value[k])) {
+                        return Promise.reject(
+                          intl.formatMessage(
+                            {
+                              id: 'common.validate.value'
+                            },
+                            {
+                              name: intl.formatMessage({
+                                id: 'common.text.variable'
+                              })
+                            }
+                          )
+                        );
+                      }
+                    }
+                    return Promise.resolve();
+                  }
+                })
+              ]}
+            >
+              <LabelSelector
+                label={intl.formatMessage({
+                  id: 'models.form.env'
+                })}
+                labels={EnviromentVars}
+                btnText="common.button.vars"
+                onChange={handleEnviromentVarsChange}
+              ></LabelSelector>
             </Form.Item>
             <Form.Item<FormData>
               name="worker_selector"

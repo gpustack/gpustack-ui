@@ -33,7 +33,6 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
       });
       setLabelList(list);
     }
-    console.log('labelsData=========', labelsData);
   }, [labels]);
 
   const handleLabelListChange = useCallback(

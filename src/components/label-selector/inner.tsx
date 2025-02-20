@@ -26,6 +26,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
 }) => {
   const intl = useIntl();
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
 
   const updateLabels = (list: { key: string; value: string }[]) => {
     const newLabels = _.reduce(
@@ -57,11 +58,6 @@ const Inner: React.FC<LabelSelectorProps> = ({
     ];
     onLabelListChange(newLabelList);
     updateLabels(newLabelList);
-
-    setTimeout(() => {
-      // button scroll to view
-      buttonRef.current?.scrollIntoView?.({ behavior: 'smooth' });
-    }, 100);
   };
 
   const handleOnDelete = (index: string) => {

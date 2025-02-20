@@ -31,6 +31,7 @@ export interface ListItem {
 
 export interface FormData {
   backend: string;
+  env?: Record<string, any>;
   size?: number;
   quantization?: number;
   categories?: string[];

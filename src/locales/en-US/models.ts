@@ -10,6 +10,7 @@ export default {
   'models.form.filename': 'File Name',
   'models.form.replicas': 'Replicas',
   'models.form.selector': 'Selector',
+  'models.form.env': 'Environment Variables',
   'models.form.configurations': 'Configurations',
   'models.form.s3address': 'S3 Address',
   'models.form.partialoffload.tips':

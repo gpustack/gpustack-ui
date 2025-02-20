@@ -51,9 +51,9 @@ const ListInput: React.FC<ListInputProps> = (props) => {
       uid: countRef.current
     });
     setList(values);
-    setTimeout(() => {
-      buttonRef.current?.scrollIntoView?.({ behavior: 'smooth' });
-    }, 100);
+    // setTimeout(() => {
+    //   buttonRef.current?.scrollIntoView?.({ behavior: 'smooth' });
+    // }, 100);
   };
 
   React.useEffect(() => {

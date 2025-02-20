@@ -1,8 +1,9 @@
 import LabelSelector from '@/components/label-selector';
 import ModalFooter from '@/components/modal-footer';
+import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
-import { Form, Modal } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import SimpleBar from 'simplebar-react';
@@ -37,7 +38,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
   };
 
   return (
-    <Modal
+    <ScrollerModal
       title={intl.formatMessage({ id: 'resources.button.edit' })}
       open={open}
       centered={true}
@@ -131,7 +132,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
           </Form.Item>
         </Form>
       </SimpleBar>
-    </Modal>
+    </ScrollerModal>
   );
 };
 

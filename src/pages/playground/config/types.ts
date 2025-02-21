@@ -33,6 +33,7 @@ export interface ParamsSchema {
     text: string;
     isLocalized?: boolean;
   };
+  dependencies?: string[];
   style?: React.CSSProperties;
   options?: Global.BaseOption<string | number | null>[];
   value?: string | number | boolean | string[];
@@ -53,6 +54,7 @@ export interface ParamsSchema {
   }[];
   placeholder?: React.ReactNode;
   attrs?: Record<string, any>;
+  formItemAttrs?: Record<string, any>;
   description?: {
     text: string;
     html?: boolean;

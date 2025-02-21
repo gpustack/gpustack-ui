@@ -57,7 +57,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const selectModel = searchParams.get('model')
     ? modelType === 'stt' && searchParams.get('model')
     : '';
-  const [parameters, setParams] = useState<any>({});
+  const [parameters, setParams] = useState<any>({
+    model: selectModel,
+    language: 'auto'
+  });
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
@@ -275,6 +278,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     );
   };
 
+  const handleOnValuesChange = (changedValues: any, allValues: any) => {
+    setParams(allValues);
+  };
+
   useEffect(() => {
     if (scroller.current) {
       initialize(scroller.current);
@@ -355,39 +362,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
                     }
                   ></AudioPlayer>
                 </div>
-                {/* <div
-                  style={{
-                    padding: '16px',
-                    textAlign: 'right',
-                    position: 'absolute',
-                    right: 0,
-                    top: '50%',
-                    transform: 'translateY(-50%)'
-                  }}
-                >
-                  <Tooltip
-                    title={
-                      loading
-                        ? intl.formatMessage({
-                            id: 'playground.audio.generating'
-                          })
-                        : intl.formatMessage({
-                            id: 'playground.audio.button.generate'
-                          })
-                    }
-                  >
-                    {
-                      <Button
-                        disabled={!audioData}
-                        loading={loading}
-                        type="primary"
-                        shape="circle"
-                        onClick={handleOnGenerate}
-                        icon={<SendOutlined></SendOutlined>}
-                      ></Button>
-                    }
-                  </Tooltip>
-                </div> */}
               </div>
             ) : (
               renderAniamtion()
@@ -477,11 +451,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
-            setParams={setParams}
+            onValuesChange={handleOnValuesChange}
             paramsConfig={paramsConfig}
-            initialValues={initialValues}
-            params={parameters}
-            selectedModel={selectModel as string}
+            initialValues={parameters}
             modelList={modelList}
           />
         </div>

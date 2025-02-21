@@ -379,12 +379,18 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       return {};
     }
 
-    const result = _.map(gpu_ids, (item: string[][] | string[]) => {
-      if (Array.isArray(item)) {
-        return item[1];
-      }
-      return item;
-    });
+    const result = _.reduce(
+      gpu_ids,
+      (acc: string[], item: string | string[], index: number) => {
+        if (Array.isArray(item)) {
+          acc.push(item[1]);
+        } else if (index === 1) {
+          acc.push(item);
+        }
+        return acc;
+      },
+      []
+    );
 
     if (result.length) {
       return {

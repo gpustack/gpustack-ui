@@ -20,6 +20,7 @@ type ParamsSettingsProps = {
   showModelSelector?: boolean;
   modelList: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
+  onModelChange?: (model: string) => void;
   paramsConfig?: ParamsSchema[];
   initialValues?: Record<string, any>;
   extra?: React.ReactNode;
@@ -29,6 +30,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
   (
     {
       onValuesChange,
+      onModelChange,
       parametersTitle,
       initialValues,
       paramsConfig,
@@ -41,10 +43,13 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     const intl = useIntl();
     const [form] = Form.useForm();
     const formId = useId();
+    console.log('dynamic----params');
 
-    const dependFieldsValue = Form.useWatch(
-      paramsConfig?.flatMap((item) => item.dependencies || []),
-      form
+    const dependFieldsValue = Form.useWatch([], form);
+    console.log(
+      'dependFieldsValue===',
+      dependFieldsValue,
+      paramsConfig?.flatMap((item) => item.dependencies || [])
     );
 
     useImperativeHandle(ref, () => ({
@@ -63,6 +68,10 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
 
     const handleOnFinishFailed = (errorInfo: any) => {
       console.log('handleOnFinishFailed', errorInfo);
+    };
+
+    const handleOnModelChange = (model: string) => {
+      onModelChange?.(model);
     };
 
     const handleValuesChange = useCallback(
@@ -155,6 +164,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                 ]}
               >
                 <SealSelect
+                  onChange={handleOnModelChange}
                   showSearch={true}
                   options={modelList}
                   label={intl.formatMessage({ id: 'playground.model' })}

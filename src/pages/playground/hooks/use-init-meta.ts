@@ -1,3 +1,4 @@
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import {
   ImageAdvancedParamsConfig,
   ImageCountConfig,
@@ -9,74 +10,71 @@ import {
 } from '@/pages/playground/config/params-config';
 import { useSearchParams } from '@umijs/max';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { ParamsSchema } from '../config/types';
+import {
+  IMG_METAKEYS,
+  advancedFieldsDefaultValus,
+  imgInitialValues,
+  openaiCompatibleFieldsDefaultValus
+} from './config';
 
-const LLM_METAKEYS: Record<string, any> = {
-  seed: 'seed',
-  stop: 'stop',
-  temperature: 'temperature',
-  top_p: 'top_p',
-  n_ctx: 'n_ctx',
-  n_slot: 'n_slot',
-  max_model_len: 'max_model_len'
-};
+interface MessageProps {
+  modelList: Global.BaseOption<string>[];
+  loaded?: boolean;
+  ref?: any;
+}
 
-const IMG_METAKEYS = [
-  'sample_method',
-  'sampling_steps',
-  'schedule_method',
-  'cfg_scale',
-  'guidance',
-  'negative_prompt'
-];
+interface InitMetaOptions {
+  metaKeys?: Record<string, any> | string[];
+  defaultValues?: Record<string, any>;
+  defaultParamsConfig?: ParamsSchema[];
+}
 
-const llmInitialValues = {
-  seed: null,
-  stop: null,
-  temperature: 1,
-  top_p: 1,
-  max_tokens: 1024
-};
+// init not image meta, for params form
+export const useInitLLmMeta = (
+  props: MessageProps,
+  options: InitMetaOptions
+) => {
+  const { modelList } = props;
+  const {
+    metaKeys = {},
+    defaultValues = {},
+    defaultParamsConfig = []
+  } = options;
+  const formRef = useRef<any>(null);
+  const [searchParams] = useSearchParams();
+  const selectModel = searchParams.get('model') || '';
+  const [modelMeta, setModelMeta] = useState<any>({});
+  const [initialValues, setInitialValues] = useState<any>({
+    ...defaultValues,
+    model: selectModel
+  });
+  const [parameters, setParams] = useState<any>({
+    model: selectModel
+  });
+  const [paramsConfig, setParamsConfig] =
+    useState<ParamsSchema[]>(defaultParamsConfig);
+  const paramsRef = useRef<any>(null);
 
-const advancedFieldsDefaultValus = {
-  seed: null,
-  sample_method: 'euler_a',
-  cfg_scale: 4.5,
-  guidance: 3.5,
-  sampling_steps: 10,
-  negative_prompt: null,
-  schedule_method: 'discrete',
-  preview: 'preview_faster'
-};
+  const { initialize: innitializeParams } = useOverlayScroller();
 
-const openaiCompatibleFieldsDefaultValus = {
-  quality: 'standard',
-  style: null
-};
-
-const imgInitialValues = {
-  n: 1,
-  size: '512x512',
-  width: 512,
-  height: 512
-};
-
-// init not image meta
-export const useInitLLmMeta = () => {
   const extractLLMMeta = (meta: any) => {
     const modelMeta = meta || {};
-    const modelMetaValue = _.pick(modelMeta, _.keys(LLM_METAKEYS));
-    const obj = Object.entries(LLM_METAKEYS).reduce(
-      (acc: any, [key, value]) => {
-        const val = modelMetaValue[key];
-        if (val && _.hasIn(modelMetaValue, key)) {
-          acc[value] = val;
-        }
-        return acc;
-      },
-      {}
-    );
+    const modelMetaValue = _.pick(modelMeta, _.keys(metaKeys));
+    const obj = Object.entries(metaKeys).reduce((acc: any, [key, value]) => {
+      const val = modelMetaValue[key];
+      if (val && _.hasIn(modelMetaValue, key)) {
+        acc[value] = val;
+      }
+      return acc;
+    }, {});
 
     let defaultMaxTokens = 1024;
 
@@ -87,7 +85,7 @@ export const useInitLLmMeta = () => {
     }
 
     return {
-      form: _.merge({}, llmInitialValues, {
+      form: _.merge({}, defaultValues, {
         ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
         max_tokens: defaultMaxTokens
       }),
@@ -98,14 +96,62 @@ export const useInitLLmMeta = () => {
     };
   };
 
-  return { extractLLMMeta };
-};
+  const formFields = useMemo(() => {
+    const fields = paramsConfig?.map((item) => item.name);
+    return fields?.join(',');
+  }, [paramsConfig]);
 
-interface MessageProps {
-  modelList: Global.BaseOption<string>[];
-  loaded?: boolean;
-  ref?: any;
-}
+  const handleOnValuesChange = useCallback(
+    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
+      setParams(allValues);
+    },
+    []
+  );
+
+  const handleOnModelChange = useCallback(
+    (val: string) => {
+      if (!val) return;
+      const model = modelList.find((item) => item.value === val);
+      const { form: initialData, meta } = extractLLMMeta(model?.meta);
+      setModelMeta(meta || {});
+      setInitialValues({
+        ...initialData,
+        model: val
+      });
+      setParams({
+        ...initialData,
+        model: val
+      });
+    },
+    [modelList]
+  );
+
+  useEffect(() => {
+    if (!parameters.model && modelList.length) {
+      const model = modelList[0]?.value;
+      handleOnModelChange(model);
+    }
+  }, [modelList, parameters.model, handleOnModelChange]);
+
+  useEffect(() => {
+    if (paramsRef.current) {
+      innitializeParams(paramsRef.current);
+    }
+  }, [paramsRef.current, innitializeParams]);
+
+  return {
+    extractLLMMeta,
+    handleOnModelChange,
+    handleOnValuesChange,
+    formRef,
+    paramsConfig,
+    initialValues,
+    parameters,
+    modelMeta,
+    paramsRef,
+    formFields
+  };
+};
 
 export const useInitImageMeta = (props: MessageProps) => {
   const { modelList } = props;

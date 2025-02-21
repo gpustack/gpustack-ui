@@ -37,11 +37,6 @@ interface MessageProps {
   ref?: any;
 }
 
-const initialValues = {
-  voice: '',
-  response_format: 'mp3'
-};
-
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
@@ -63,16 +58,18 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const selectModel = searchParams.get('model')
     ? modelType === 'tts' && searchParams.get('model')
     : '';
-  const [parameters, setParams] = useState<any>({});
+  const [parameters, setParams] = useState<any>({
+    model: selectModel,
+    voice: '',
+    response_format: 'mp3'
+  });
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [voiceError, setVoiceError] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const controllerRef = useRef<any>(null);
   const scroller = useRef<any>(null);
   const paramsRef = useRef<any>(null);
-  const messageListLengthCache = useRef<number>(0);
   const checkvalueRef = useRef<any>(true);
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
   const [voiceDataList, setVoiceList] = useState<Global.BaseOption<string>[]>(
@@ -80,7 +77,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
   const formRef = useRef<any>(null);
 
-  const { initialize, updateScrollerPosition } = useOverlayScroller();
+  const { initialize } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
 
   useImperativeHandle(ref, () => {
@@ -270,6 +267,23 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     [modelList]
   );
 
+  const handleOnValuesChange = useCallback(
+    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
+      if (changeValues.model) {
+        handleSelectModel(changeValues.model);
+      } else {
+        setParams(allValues);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (paramsRef.current) {
+      innitializeParams(paramsRef.current);
+    }
+  }, [paramsRef.current, innitializeParams]);
+
   const handleOnCheckChange = (e: any) => {
     checkvalueRef.current = e.target.checked;
   };
@@ -292,29 +306,12 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     });
   }, [paramsConfig, intl, voiceList]);
 
-  const renderVoiceError = useMemo(() => {
-    if (!voiceError) return null;
-    return (
-      <>
-        {voiceError && (
-          <div style={{ height: 40 }}>
-            <AlertInfo
-              type="danger"
-              ellipsis={false}
-              style={{ textAlign: 'left' }}
-              message={intl.formatMessage({
-                id: 'playgorund.audio.voice.error'
-              })}
-            ></AlertInfo>
-          </div>
-        )}
-      </>
-    );
-  }, [voiceError]);
-
   useEffect(() => {
-    handleSelectModel(parameters.model);
-  }, [parameters.model, handleSelectModel]);
+    if (!parameters.model && modelList.length) {
+      const model = modelList[0]?.value;
+      handleSelectModel(model);
+    }
+  }, [modelList, parameters.model, handleSelectModel]);
 
   useEffect(() => {
     if (scroller.current) {
@@ -327,19 +324,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       innitializeParams(paramsRef.current);
     }
   }, [paramsRef.current, innitializeParams]);
-
-  useEffect(() => {
-    if (loading) {
-      updateScrollerPosition();
-    }
-  }, [messageList, loading]);
-
-  useEffect(() => {
-    if (messageList.length > messageListLengthCache.current) {
-      updateScrollerPosition();
-    }
-    messageListLengthCache.current = messageList.length;
-  }, [messageList.length]);
 
   return (
     <div className="ground-left-wrapper">
@@ -427,12 +411,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
-            setParams={setParams}
-            initialValues={initialValues}
-            params={parameters}
-            selectedModel={selectModel as string}
+            onValuesChange={handleOnValuesChange}
+            initialValues={parameters}
             modelList={modelList}
-            extra={[renderExtra, renderVoiceError]}
+            extra={[renderExtra]}
           />
         </div>
       </div>

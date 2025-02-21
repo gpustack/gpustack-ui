@@ -9,7 +9,7 @@ import {
   PlusOutlined,
   SendOutlined
 } from '@ant-design/icons';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Form, Input, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -26,7 +26,9 @@ import {
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { rerankerQuery } from '../apis';
-import { MessageItem, ParamsSchema } from '../config/types';
+import { ParamsSchema } from '../config/types';
+import { LLM_METAKEYS } from '../hooks/config';
+import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
@@ -41,7 +43,7 @@ interface MessageProps {
   ref?: any;
 }
 
-const paramsConfig: ParamsSchema[] = [
+const fieldConfig: ParamsSchema[] = [
   {
     type: 'InputNumber',
     name: 'top_n',
@@ -61,32 +63,20 @@ const paramsConfig: ParamsSchema[] = [
   }
 ];
 
-const initialValues = {
-  top_n: 3
-};
-
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
-  const acceptType =
-    '.txt, .doc, .docx, .xls, .xlsx, .csv, .md, .pdf, .eml, .msg, .ppt, .pptx, .xml, .epub, .html';
-  const messageId = useRef<number>(0);
-  const [messageList, setMessageList] = useState<MessageItem[]>([]);
 
+  const messageId = useRef<number>(0);
   const intl = useIntl();
   const requestSource = useRequestToken();
-  const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
-  const [parameters, setParams] = useState<any>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
   const inputListRef = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
-  const formRef = useRef<any>(null);
   const multiplePasteEnable = useRef<boolean>(true);
   const [isEmptyText, setIsEmptyText] = useState<boolean>(false);
   const [fileList, setFileList] = useState<
@@ -130,8 +120,21 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
-  const { initialize: innitializeParams, updateScrollerPosition } =
-    useOverlayScroller();
+
+  const {
+    handleOnValuesChange,
+    formRef,
+    paramsConfig,
+    initialValues,
+    parameters,
+    paramsRef,
+    modelMeta,
+    formFields
+  } = useInitLLmMeta(props, {
+    defaultValues: { top_n: 3 },
+    defaultParamsConfig: fieldConfig,
+    metaKeys: LLM_METAKEYS
+  });
 
   useImperativeHandle(ref, () => {
     return {
@@ -148,14 +151,14 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     return generateRerankCode({
       api: '/v1/rerank',
       parameters: {
-        ...parameters,
+        ..._.pick(parameters, ['model', ..._.split(formFields, ',')]),
         query: queryValue,
         documents: [...textList, ...fileList]
           .map((item) => item.text)
           .filter((text) => text)
       }
     });
-  }, [parameters, queryValue, textList, fileList]);
+  }, [parameters, formFields, queryValue, textList, fileList]);
 
   // [0.1, 1.0]
   const normalizValue = (data: { min: number; max: number; value: number }) => {
@@ -290,30 +293,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       newTextList = _.sortBy(newTextList, 'rank');
       setSortIndexMap(sortMap);
       setTextList(newTextList);
-
-      setMessageList([
-        {
-          title: 'Results',
-          role: '',
-          content: result.results?.map((item: any) => {
-            const percent: number = normalizValue({
-              min: minValue,
-              max: maxValue,
-              value: item.relevance_score
-            });
-            return {
-              uid: setMessageId(),
-              text: `${item.document?.text?.slice(0, 500) || ''}`,
-              docIndex: item.index,
-              title: documentList[item.index]?.name || '',
-              score: item.relevance_score,
-              extra: renderPercent(percent),
-              normalizValue: percent
-            };
-          }),
-          uid: setMessageId()
-        }
-      ]);
     } catch (error: any) {
       setTokenResult({
         error: true,
@@ -336,20 +315,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
-  const handleUpdateFileList = (
-    files: { text: string; name: string; uid: number | string }[]
-  ) => {
-    console.log('files:', files);
-    setFileList((preList) => {
-      return [...preList, ...files];
-    });
-  };
-
-  const handleDeleteFile = (uid: number | string) => {
-    setFileList((preList) => {
-      return preList.filter((item) => item.uid !== uid);
-    });
-  };
   const handleAddText = () => {
     inputListRef.current?.handleAdd();
   };
@@ -428,12 +393,20 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     []
   );
 
-  const handleModelChange = (value: string) => {
-    const model = modelList.find((item) => item.value === value);
-    if (model) {
-      setMetaData(model.meta || {});
+  const renderExtra = useMemo(() => {
+    if (modelMeta?.n_ctx && modelMeta?.n_slot) {
+      return (
+        <Form.Item>
+          <SealInputNumber
+            disabled
+            label="Max Tokens"
+            value={_.divide(modelMeta?.n_ctx, modelMeta?.n_slot)}
+          ></SealInputNumber>
+        </Form.Item>
+      );
     }
-  };
+    return null;
+  }, modelMeta);
 
   const handleClearDocuments = () => {
     setTextList([
@@ -467,7 +440,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     setMessageId();
-    setMessageList([]);
     setTokenResult(null);
   }, [parameters.model]);
 
@@ -476,16 +448,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       initialize(scroller.current);
     }
   }, [scroller.current, initialize]);
-
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [paramsRef.current, innitializeParams]);
-
-  useEffect(() => {
-    updateScrollerPosition();
-  }, [messageList]);
 
   useEffect(() => {
     if (textList.length + fileList.length > messageListLengthCache.current) {
@@ -630,25 +592,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
-            setParams={setParams}
-            params={parameters}
-            onModelChange={handleModelChange}
+            onValuesChange={handleOnValuesChange}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
-            selectedModel={selectModel}
             modelList={modelList}
-            extra={
-              metaData?.n_ctx &&
-              metaData?.n_slot && (
-                <Form.Item>
-                  <SealInputNumber
-                    disabled
-                    label="Max Tokens"
-                    value={_.divide(metaData?.n_ctx, metaData?.n_slot)}
-                  ></SealInputNumber>
-                </Form.Item>
-              )
-            }
+            extra={renderExtra}
           />
         </div>
       </div>

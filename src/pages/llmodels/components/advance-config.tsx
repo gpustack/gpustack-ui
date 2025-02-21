@@ -124,7 +124,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   }, []);
 
   const handleGPUSelectorChange = (gpuIds: any[]) => {
-    console.log('GPU Selector Change:', gpuIds);
+    // only handle for vllm, pick the last selected group
     if (
       backend === backendOptionsMap.llamaBox ||
       backend === backendOptionsMap.voxBox ||
@@ -135,9 +135,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     const lastGroupName = gpuIds[gpuIds.length - 1][0];
 
     const lastGroupItems = gpuIds.filter((item) => item[0] === lastGroupName);
-
-    console.log('Last Group Items:', lastGroupItems);
-
     form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
   };
 

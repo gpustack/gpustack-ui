@@ -5,5 +5,6 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/class-name-casing': 'off'
-  }
+  },
+  ignorePatterns: ['public/static/']
 };

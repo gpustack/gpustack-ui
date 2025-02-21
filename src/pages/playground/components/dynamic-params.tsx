@@ -1,10 +1,7 @@
-import FieldWrapper from '@/components/seal-form/field-wrapper';
-import SealInput from '@/components/seal-form/seal-input';
+import FieldComponent from '@/components/seal-form/field-component';
 import SealSelect from '@/components/seal-form/seal-select';
-import { INPUT_WIDTH } from '@/constants';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form, InputNumber, Slider, Tooltip } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import {
   forwardRef,
@@ -16,25 +13,13 @@ import {
   useMemo
 } from 'react';
 import { ParamsSchema } from '../config/types';
-import CustomLabelStyles from '../style/custom-label.less';
-
-type ParamsSettingsFormProps = {
-  top_n?: number;
-  model?: string;
-};
 
 type ParamsSettingsProps = {
   ref?: any;
   parametersTitle?: React.ReactNode;
-  selectedModel?: string;
   showModelSelector?: boolean;
-  params?: Record<string, any>;
-  model?: string;
   modelList: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
-  setParams: (params: any) => void;
-  onModelChange?: (model: string) => void;
-  globalParams?: Record<string, any>;
   paramsConfig?: ParamsSchema[];
   initialValues?: Record<string, any>;
   extra?: React.ReactNode;
@@ -43,16 +28,11 @@ type ParamsSettingsProps = {
 const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
   (
     {
-      setParams,
       onValuesChange,
-      onModelChange,
       parametersTitle,
-      selectedModel,
-      globalParams,
       initialValues,
       paramsConfig,
       modelList,
-      params,
       showModelSelector = true,
       extra
     },
@@ -62,34 +42,20 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     const [form] = Form.useForm();
     const formId = useId();
 
+    const dependFieldsValue = Form.useWatch(
+      paramsConfig?.flatMap((item) => item.dependencies || []),
+      form
+    );
+
     useImperativeHandle(ref, () => ({
       form
     }));
 
     useEffect(() => {
-      let model = selectedModel || '';
-
-      if (showModelSelector) {
-        model = model || _.get(modelList, '[0].value');
-      }
-
       form.setFieldsValue({
-        model: model,
         ...initialValues
       });
-      setParams({
-        model: model,
-        ...initialValues
-      });
-      onModelChange?.(model);
-    }, [modelList, showModelSelector, selectedModel, initialValues]);
-
-    const handleModelChange = useCallback(
-      (value: string) => {
-        onModelChange?.(value);
-      },
-      [onModelChange]
-    );
+    }, [initialValues]);
 
     const handleOnFinish = (values: any) => {
       console.log('handleOnFinish', values);
@@ -101,172 +67,60 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
 
     const handleValuesChange = useCallback(
       (changedValues: any, allValues: any) => {
-        setParams?.(allValues);
-        onValuesChange?.(changedValues, allValues);
-      },
-      [onValuesChange, setParams]
-    );
-    const handleFieldValueChange = useCallback(
-      (val: any, field: string) => {
-        const values = form.getFieldsValue();
-        form.setFieldsValue({
-          ...values,
-          [field]: val
-        });
-        setParams({
-          ...values,
-          [field]: val
-        });
-        onValuesChange?.(
-          { [field]: val },
-          {
-            ...values,
-            [field]: val
-          }
+        const normalizedValues = Object.fromEntries(
+          Object.entries(changedValues).map(([key, value]: [string, any]) => [
+            key,
+            value?.target?.checked ?? value?.target?.value ?? value
+          ])
         );
+        form.setFieldsValue(normalizedValues);
+        onValuesChange?.(normalizedValues, {
+          ...allValues,
+          ...normalizedValues
+        });
       },
-      [form, setParams, onValuesChange]
+      [onValuesChange]
     );
 
-    useEffect(() => {
-      form.setFieldsValue(globalParams);
-    }, [globalParams]);
-
-    const renderLabel = useCallback(
-      (args: { field: string; label: string; description: string }) => {
-        return (
-          <span
-            className={CustomLabelStyles.label}
-            style={{ width: INPUT_WIDTH.mini }}
-          >
-            <span className="text">
-              {args.description ? (
-                <Tooltip title={args.description}>
-                  <span> {args.label}</span>
-                  <span className="m-l-5">
-                    <InfoCircleOutlined />
-                  </span>
-                </Tooltip>
-              ) : (
-                <span>{args.label}</span>
-              )}
-            </span>
-
-            <InputNumber
-              className="label-val"
-              variant="outlined"
-              size="small"
-              value={form.getFieldValue(args.field)}
-              controls={false}
-              onChange={(val) => handleFieldValueChange(val, args.field)}
-            ></InputNumber>
-          </span>
-        );
-      },
-      [form, handleFieldValueChange]
-    );
-
-    const renderDescription = useCallback(
-      (item: ParamsSchema) => {
-        if (!item.description) {
-          return null;
-        }
-        if (item.description.html) {
-          return (
-            <div
-              className="m-t-5"
-              dangerouslySetInnerHTML={{
-                __html: intl.formatMessage({ id: item.description.text })
-              }}
-            ></div>
-          );
-        }
-        return intl.formatMessage({ id: item.description.text });
-      },
-      [intl]
-    );
     const renderFields = useMemo(() => {
-      console.log('paramsConfig++++++++++++');
-      if (!paramsConfig?.length) {
+      if (!paramsConfig) {
         return null;
       }
-      return paramsConfig.map((item: ParamsSchema) => {
-        if (item.type === 'InputNumber') {
-          return (
-            <Form.Item name={item.name} rules={item.rules} key={item.name}>
-              <SealInput.Number
-                {...item.attrs}
-                style={{ width: '100%' }}
-                label={
-                  item.label.isLocalized
-                    ? intl.formatMessage({ id: item.label.text })
-                    : item.label.text
-                }
-              ></SealInput.Number>
-            </Form.Item>
-          );
-        }
-        if (item.type === 'TextArea') {
-          return (
-            <Form.Item name={item.name} rules={item.rules} key={item.name}>
-              <SealInput.TextArea
-                {...item.attrs}
-                style={{ width: '100%' }}
-                label={
-                  item.label.isLocalized
-                    ? intl.formatMessage({ id: item.label.text })
-                    : item.label.text
-                }
-              ></SealInput.TextArea>
-            </Form.Item>
-          );
-        }
-        if (item.type === 'Select') {
-          return (
-            <Form.Item name={item.name} rules={item.rules} key={item.name}>
-              <SealSelect
-                {...item.attrs}
-                description={renderDescription(item)}
-                options={item.options}
-                label={
-                  item.label.isLocalized
-                    ? intl.formatMessage({ id: item.label.text })
-                    : item.label.text
-                }
-              ></SealSelect>
-            </Form.Item>
-          );
-        }
-        if (item.type === 'Slider') {
-          return (
-            <Form.Item name={item.name} rules={item.rules} key={item.name}>
-              <FieldWrapper
-                label={renderLabel({
-                  field: item.name,
-                  label: item.label.isLocalized
-                    ? intl.formatMessage({ id: item.label.text })
-                    : item.label.text,
-                  description: item.description?.isLocalized
-                    ? intl.formatMessage({ id: item.description?.text })
-                    : item.description?.text || ''
-                })}
-                style={{ padding: '20px 2px 0' }}
-                variant="borderless"
-              >
-                <Slider
-                  {...item.attrs}
-                  style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
-                  tooltip={{ open: false }}
-                  value={form.getFieldValue(item.name) || undefined}
-                  onChange={(val) => handleFieldValueChange(val, item.name)}
-                ></Slider>
-              </FieldWrapper>
-            </Form.Item>
-          );
-        }
-        return null;
+      console.log('renderFields---------');
+      const formValues = form?.getFieldsValue();
+      return paramsConfig?.map((item: ParamsSchema) => {
+        return (
+          <Form.Item
+            name={item.name}
+            rules={item.rules}
+            key={item.name}
+            {...item.formItemAttrs}
+          >
+            <FieldComponent
+              disabled={
+                item.disabledConfig
+                  ? item.disabledConfig?.when?.(formValues)
+                  : item.disabled
+              }
+              description={
+                item.description?.isLocalized
+                  ? intl.formatMessage({ id: item.description.text })
+                  : item.description?.text
+              }
+              onChange={null}
+              {..._.omit(item, [
+                'name',
+                'rules',
+                'formItemAttrs',
+                'dependencies',
+                'disabledConfig',
+                'description'
+              ])}
+            ></FieldComponent>
+          </Form.Item>
+        );
       });
-    }, [paramsConfig, params, renderDescription, intl]);
+    }, [paramsConfig, intl, dependFieldsValue]);
 
     return (
       <Form
@@ -286,7 +140,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                   </span>
                 )}
               </h3>
-              <Form.Item<ParamsSettingsFormProps>
+              <Form.Item
                 name="model"
                 rules={[
                   {
@@ -301,7 +155,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                 ]}
               >
                 <SealSelect
-                  onChange={handleModelChange}
                   showSearch={true}
                   options={modelList}
                   label={intl.formatMessage({ id: 'playground.model' })}

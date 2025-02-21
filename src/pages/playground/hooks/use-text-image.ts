@@ -1,3 +1,4 @@
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { CREAT_IMAGE_API } from '@/pages/playground/apis';
 import { extractErrorMessage, promptList } from '@/pages/playground/config';
 import { generateRandomNumber } from '@/utils';
@@ -6,23 +7,36 @@ import {
   readLargeStreamData as readStreamData
 } from '@/utils/fetch-chunk-data';
 import _ from 'lodash';
-import { useCallback, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const ODD_STRING = 'AAAABJRU5ErkJgg===';
 
-export default function useTextImage() {
+export default function useTextImage({ scroller, paramsRef }: any) {
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
   const [imageList, setImageList] = useState<any[]>([]);
   const [currentPrompt, setCurrentPrompt] = useState('');
   const messageId = useRef<number>(0);
   const requestToken = useRef<any>(null);
+  const { initialize } = useOverlayScroller();
+  const { initialize: innitializeParams } = useOverlayScroller();
+
+  useEffect(() => {
+    if (scroller.current) {
+      initialize(scroller.current);
+    }
+  }, [scroller.current, initialize]);
+  useEffect(() => {
+    if (paramsRef.current) {
+      innitializeParams(paramsRef.current);
+    }
+  }, [paramsRef.current, innitializeParams]);
 
   const removeBase64Suffix = (str: string, suffix: string) => {
     return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
   };
 
-  const setImageSize = useCallback((parameters: any) => {
+  const setImageSize = (parameters: any) => {
     let size: Record<string, string | number> = {
       span: 12
     };
@@ -39,7 +53,7 @@ export default function useTextImage() {
       size.span = 12;
     }
     return size;
-  }, []);
+  };
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -50,21 +64,17 @@ export default function useTextImage() {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
-  const submitMessage = async (params: {
-    current?: { content: string };
-    system?: { role: string; content: string };
-    parameters: any;
-  }) => {
-    const { current, parameters } = params;
+  const submitMessage = async (parameters: any) => {
     try {
       if (!parameters.model) return;
       const size: any = setImageSize(parameters);
       setLoading(true);
       setMessageId();
       setTokenResult(null);
-      setCurrentPrompt(current?.content || '');
 
-      const imgSize = [parameters.width, parameters.height];
+      const imgSize = _.split(parameters.size, 'x').map((item: string) =>
+        _.toNumber(item)
+      );
 
       // preview
       let stream_options: Record<string, any> = {
@@ -115,7 +125,7 @@ export default function useTextImage() {
         stream_options: {
           ...stream_options
         },
-        prompt: current?.content
+        prompt: currentPrompt
       };
 
       const result: any = await fetchChunkedData({
@@ -176,9 +186,9 @@ export default function useTextImage() {
   };
 
   const handleClear = () => {
-    setMessageId();
     setImageList([]);
     setTokenResult(null);
+    setCurrentPrompt('');
   };
 
   const handleStopConversation = () => {
@@ -186,11 +196,20 @@ export default function useTextImage() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    return () => {
+      requestToken.current?.abort?.();
+    };
+  }, []);
+
   return {
     loading,
     tokenResult,
     imageList,
     promptList,
+    currentPrompt,
+    setTokenResult,
+    setCurrentPrompt,
     handleStopConversation,
     generateNumber,
     handleClear,

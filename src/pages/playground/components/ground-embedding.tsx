@@ -13,7 +13,7 @@ import {
   PlusOutlined,
   SendOutlined
 } from '@ant-design/icons';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -32,7 +32,8 @@ import {
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
-import { ParamsSchema } from '../config/types';
+import { LLM_METAKEYS } from '../hooks/config';
+import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-left.less';
 import '../style/rerank.less';
 import { generateEmbeddingCode } from '../view-code/embedding';
@@ -47,10 +48,6 @@ interface MessageProps {
   ref?: any;
 }
 
-const paramsConfig: ParamsSchema[] = [];
-
-const initialValues = {};
-
 const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const acceptType =
@@ -59,9 +56,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const intl = useIntl();
   const requestSource = useRequestToken();
-  const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
-  const [parameters, setParams] = useState<any>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
@@ -69,7 +63,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const contentRef = useRef<any>('');
   const scroller = useRef<any>(null);
   const inputListRef = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const requestToken = useRef<any>(null);
   const [fileList, setFileList] = useState<
@@ -87,7 +80,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [lessTwoInput, setLessTwoInput] = useState<boolean>(false);
   const multiplePasteEnable = useRef<boolean>(true);
   const selectionTextRef = useRef<any>(null);
-  const [metaData, setMetaData] = useState<Record<string, any>>({});
 
   const [textList, setTextList] = useState<
     { text: string; uid: number | string; name: string }[]
@@ -111,9 +103,20 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
 
-  const { initialize: innitializeParams, updateScrollerPosition } =
-    useOverlayScroller();
-  const formRef = useRef<any>(null);
+  const {
+    handleOnValuesChange,
+    formRef,
+    paramsConfig,
+    initialValues,
+    parameters,
+    paramsRef,
+    modelMeta,
+    formFields
+  } = useInitLLmMeta(props, {
+    defaultValues: {},
+    defaultParamsConfig: [],
+    metaKeys: LLM_METAKEYS
+  });
 
   useImperativeHandle(ref, () => {
     return {
@@ -127,17 +130,18 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
 
   const viewCodeContent = useMemo(() => {
+    console.log('viewCodeContent:', embeddingData.copyValue);
     return generateEmbeddingCode({
       api: EMBEDDING_API,
       parameters: {
-        ...parameters,
+        ..._.pick(parameters, ['model', ..._.split(formFields, ',')]),
         input: [
           ...textList.map((item) => item.text).filter((item) => item),
           ...fileList.map((item) => item.text).filter((item) => item)
         ]
       }
     });
-  }, [parameters, textList, fileList]);
+  }, [parameters, formFields, textList, fileList]);
 
   const inputEmpty = useMemo(() => {
     const list = [...textList, ...fileList];
@@ -378,13 +382,20 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     setOutputType(value);
   };
 
-  const handleModelChange = (value: string) => {
-    const model = modelList.find((item) => item.value === value);
-    if (model) {
-      console.log('model:', model);
-      setMetaData(model.meta || {});
+  const renderExtra = useMemo(() => {
+    if (modelMeta?.n_ctx && modelMeta?.n_slot) {
+      return (
+        <Form.Item>
+          <SealInputNumber
+            disabled
+            label="Max Tokens"
+            value={_.divide(modelMeta?.n_ctx, modelMeta?.n_slot)}
+          ></SealInputNumber>
+        </Form.Item>
+      );
     }
-  };
+    return null;
+  }, modelMeta);
 
   const outputItems = useMemo(() => {
     return [
@@ -443,12 +454,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       initialize(scroller.current);
     }
   }, [scroller.current, initialize]);
-
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [paramsRef.current, innitializeParams]);
 
   useEffect(() => {
     if (textList.length + fileList.length > messageListLengthCache.current) {
@@ -706,25 +711,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
-            onModelChange={handleModelChange}
-            setParams={setParams}
+            onValuesChange={handleOnValuesChange}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
-            params={parameters}
-            selectedModel={selectModel}
             modelList={modelList}
-            extra={
-              metaData?.n_ctx &&
-              metaData?.n_slot && (
-                <Form.Item>
-                  <SealInputNumber
-                    disabled
-                    label="Max Tokens"
-                    value={_.divide(metaData?.n_ctx, metaData?.n_slot)}
-                  ></SealInputNumber>
-                </Form.Item>
-              )
-            }
+            extra={renderExtra}
           />
         </div>
       </div>

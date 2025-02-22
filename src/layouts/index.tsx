@@ -242,12 +242,11 @@ export default (props: any) => {
       return (
         <>
           {logo}
-          <div className="collapse-wrap">
+          <div className="collapse-wrap" onClick={handleToggleCollapse}>
             <Button
               style={{ marginRight: collapsed ? 0 : -14 }}
               size="small"
               type={collapsed ? 'default' : 'text'}
-              onClick={handleToggleCollapse}
             >
               <>
                 <MenuUnfoldOutlined
@@ -304,7 +303,7 @@ export default (props: any) => {
         onMenuHeaderClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
-          navigate('/');
+          navigate('/dashboard');
         }}
         menuHeaderRender={renderMenuHeader}
         collapsed={collapsed}

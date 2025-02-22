@@ -25,7 +25,7 @@ export default {
   'users.password.confirm': 'Confirm New Password',
   'users.password.confirm.empty': 'Please confirm the new password.',
   'users.password.confirm.error': 'The two passwords entered do not match.',
-  'users.login.title': 'Log in to {name}',
+  'users.login.title': 'Log in to',
   'users.version.islatest': 'GPUStack {version} is the latest version',
   'users.version.update': 'GPUStack {version} is available'
 };

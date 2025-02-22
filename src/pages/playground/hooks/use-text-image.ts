@@ -1,20 +1,34 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { CREAT_IMAGE_API } from '@/pages/playground/apis';
 import { extractErrorMessage, promptList } from '@/pages/playground/config';
-import { generateRandomNumber } from '@/utils';
 import {
   fetchChunkedData,
+  fetchChunkedDataPostFormData,
   readLargeStreamData as readStreamData
 } from '@/utils/fetch-chunk-data';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
+import { CREAT_IMAGE_API, EDIT_IMAGE_API } from '../apis';
 
 const ODD_STRING = 'AAAABJRU5ErkJgg===';
 
-export default function useTextImage({ scroller, paramsRef }: any) {
+export default function useTextImage(props: any) {
+  const { scroller, paramsRef, chunkFields, API } = props;
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
-  const [imageList, setImageList] = useState<any[]>([]);
+  const [imageList, setImageList] = useState<
+    {
+      dataUrl: string;
+      height: number | string;
+      width: string | number;
+      maxHeight: string | number;
+      maxWidth: string | number;
+      uid: number;
+      span?: number;
+      loading?: boolean;
+      progress?: number;
+      preview?: boolean;
+    }[]
+  >([]);
   const [currentPrompt, setCurrentPrompt] = useState('');
   const messageId = useRef<number>(0);
   const requestToken = useRef<any>(null);
@@ -76,23 +90,6 @@ export default function useTextImage({ scroller, paramsRef }: any) {
         _.toNumber(item)
       );
 
-      // preview
-      let stream_options: Record<string, any> = {
-        chunk_size: 16 * 1024,
-        chunk_results: true
-      };
-      if (parameters.preview === 'preview') {
-        stream_options = {
-          preview: true
-        };
-      }
-
-      if (parameters.preview === 'preview_faster') {
-        stream_options = {
-          preview_faster: true
-        };
-      }
-
       let newImageList = Array(parameters.n)
         .fill({})
         .map((item, index: number) => {
@@ -113,26 +110,23 @@ export default function useTextImage({ scroller, paramsRef }: any) {
       requestToken.current?.abort?.();
       requestToken.current = new AbortController();
 
-      const params = {
-        ..._.omitBy(
-          parameters,
-          (value: string, key: string) =>
-            !value || ['width', 'height', 'seed'].includes(key)
-        ),
-        size: `${imgSize[0]}x${imgSize[1]}`,
-        seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
-        stream: true,
-        stream_options: {
-          ...stream_options
-        },
-        prompt: currentPrompt
-      };
+      let result: any = {};
+      if (API === CREAT_IMAGE_API) {
+        result = await fetchChunkedData({
+          data: parameters,
+          url: `${API}?t=${Date.now()}`,
+          signal: requestToken.current.signal
+        });
+      }
 
-      const result: any = await fetchChunkedData({
-        data: params,
-        url: `${CREAT_IMAGE_API}?t=${Date.now()}`,
-        signal: requestToken.current.signal
-      });
+      if (API === EDIT_IMAGE_API) {
+        result = await fetchChunkedDataPostFormData({
+          data: parameters,
+          url: `${API}?t=${Date.now()}`,
+          signal: requestToken.current.signal
+        });
+      }
+
       if (result.error) {
         setTokenResult({
           error: true,
@@ -154,7 +148,7 @@ export default function useTextImage({ scroller, paramsRef }: any) {
         }
         chunk?.data?.forEach((item: any) => {
           const imgItem = newImageList[item.index];
-          if (item.b64_json && stream_options.chunk_results) {
+          if (item.b64_json && _.get(parameters, chunkFields)) {
             imgItem.dataUrl += removeBase64Suffix(item.b64_json, ODD_STRING);
           } else if (item.b64_json) {
             imgItem.dataUrl = `data:image/png;base64,${removeBase64Suffix(item.b64_json, ODD_STRING)}`;
@@ -169,8 +163,8 @@ export default function useTextImage({ scroller, paramsRef }: any) {
             maxWidth: `${imgSize[0]}px`,
             uid: imgItem.uid,
             span: imgItem.span,
-            loading: stream_options.chunk_results ? progress < 100 : false,
-            preview: progress >= 100,
+            loading: _.get(parameters, chunkFields) ? progress < 100 : false,
+            preview: API === CREAT_IMAGE_API ? progress >= 100 : false,
             progress: progress
           };
         });
@@ -208,6 +202,7 @@ export default function useTextImage({ scroller, paramsRef }: any) {
     imageList,
     promptList,
     currentPrompt,
+    setImageList,
     setTokenResult,
     setCurrentPrompt,
     handleStopConversation,

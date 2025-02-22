@@ -3,6 +3,7 @@ import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
 import ThumbImg from '@/pages/playground/components/thumb-img';
+import { generateRandomNumber } from '@/utils';
 import { FileImageOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
@@ -19,7 +20,6 @@ import React, {
   useState
 } from 'react';
 import { CREAT_IMAGE_API } from '../apis';
-import { MessageItem } from '../config/types';
 import { useInitImageMeta } from '../hooks/use-init-meta';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-left.less';
@@ -48,6 +48,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const {
     handleOnValuesChange,
     handleToggleParamsStyle,
+    setParams,
     form,
     paramsConfig,
     initialValues,
@@ -66,7 +67,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     submitMessage
   } = useTextImage({
     scroller,
-    paramsRef
+    paramsRef,
+    chunkFields: ['stream_options', 'chunk_results'],
+    API: CREAT_IMAGE_API
   });
 
   useImperativeHandle(ref, () => {
@@ -111,7 +114,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [parameters]);
 
   const viewCodeContent = useMemo(() => {
-    console.log('finalParameters:', finalParameters);
     if (isOpenaiCompatible) {
       return generateOpenaiImageCode({
         api: CREAT_IMAGE_API,
@@ -134,11 +136,53 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setCurrentPrompt(e.target.value);
   };
 
-  const handleSendMessage = async (message: Omit<MessageItem, 'uid'>) => {
+  const generateParams = () => {
+    // preview
+    let stream_options: Record<string, any> = {
+      chunk_size: 16 * 1024,
+      chunk_results: true
+    };
+    if (parameters.preview === 'preview') {
+      stream_options = {
+        preview: true
+      };
+    }
+
+    if (parameters.preview === 'preview_faster') {
+      stream_options = {
+        preview_faster: true
+      };
+    }
+
+    const params = {
+      ..._.omitBy(
+        parameters,
+        (value: string, key: string) =>
+          !value || ['width', 'height', 'seed'].includes(key)
+      ),
+      seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
+      stream: true,
+      stream_options: {
+        ...stream_options
+      },
+      prompt: currentPrompt
+    };
+    return params;
+  };
+
+  const handleSendMessage = async () => {
     try {
       await form.current?.form?.validateFields();
       if (!parameters.model) return;
-      submitMessage(finalParameters);
+      const params = generateParams();
+      setParams({
+        ...params,
+        seed: params.seed
+      });
+
+      form.current?.form?.setFieldValue('seed', params.seed);
+      console.log('params:', params, parameters);
+      submitMessage(params);
       setRouteCache(routeCachekey['/playground/text-to-image'], true);
     } catch (error) {
       // console.log('error:', error);

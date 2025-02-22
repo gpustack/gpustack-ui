@@ -29,7 +29,7 @@ export const addWorkerGuide: Record<string, any> = {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
     registerWorker(params: { server: string; token: string }) {
-      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri "https://get.gpustack.ai" -UseBasicParsing).Content) } --server-url ${params.server} --token ${params.token}"`;
+      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri 'https://get.gpustack.ai' -UseBasicParsing).Content) } --server-url '${params.server}' --token '${params.token}'"`;
     }
   },
   cuda: {

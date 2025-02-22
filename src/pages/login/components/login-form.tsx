@@ -39,9 +39,7 @@ const LoginForm = () => {
         }}
       >
         <div className="flex-center">
-          <span>
-            {intl?.formatMessage({ id: 'users.login.title' }, { name: '' })}
-          </span>
+          <span>{intl?.formatMessage({ id: 'users.login.title' })}</span>
           <img
             src={LogoIcon}
             alt="logo"
@@ -50,7 +48,7 @@ const LoginForm = () => {
         </div>
       </div>
     );
-  }, []);
+  }, [intl]);
 
   const gotoDefaultPage = (userInfo: any) => {
     const pathname =

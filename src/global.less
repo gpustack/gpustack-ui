@@ -343,6 +343,15 @@ body {
         display: none;
         position: absolute;
         top: 12px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          height: 48px;
+          width: 64px;
+          top: -16px;
+          left: -16px;
+        }
       }
 
       &:hover {

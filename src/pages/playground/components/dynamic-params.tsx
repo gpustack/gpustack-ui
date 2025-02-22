@@ -22,7 +22,7 @@ type ParamsSettingsProps = {
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   onModelChange?: (model: string) => void;
   paramsConfig?: ParamsSchema[];
-  initialValues?: Record<string, any>;
+  initialValues?: Record<string, any>; // for initial values when switch model
   extra?: React.ReactNode;
 };
 

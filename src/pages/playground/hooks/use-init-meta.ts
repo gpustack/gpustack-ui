@@ -146,6 +146,7 @@ export const useInitLLmMeta = (
     setModelMeta,
     setInitialValues,
     setParams,
+    setParamsConfig,
     formRef,
     paramsConfig,
     initialValues,
@@ -387,6 +388,9 @@ export const useInitImageMeta = (props: MessageProps) => {
             ? ImageAdvancedParamsConfig
             : ImageconstExtraConfig)
         ]);
+        setParams(allValues);
+        updateCacheFormData(changeValues);
+      } else {
         setParams(allValues);
         updateCacheFormData(changeValues);
       }

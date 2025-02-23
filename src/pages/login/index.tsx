@@ -1,29 +1,29 @@
 import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
-import { history, useModel } from '@umijs/max';
+import { useModel } from '@umijs/max';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import LoginForm from './components/login-form';
 import PasswordForm from './components/password-form';
 import styles from './components/styles.less';
+import { checkDefaultPage } from './utils';
 
 const Login = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
 
-  const gotoDefaultPage = (userInfo: any) => {
+  const gotoDefaultPage = async (userInfo: any) => {
     if (!userInfo || userInfo?.require_password_change) {
       return;
     }
+
+    checkDefaultPage(userInfo, true);
     if (!initialState?.currentUser) {
       setInitialState((s: any) => ({
         ...s,
         currentUser: userInfo
       }));
     }
-    const pathname = userInfo?.is_admin ? '/dashboard' : '/playground';
-
-    history.push(pathname, { replace: true });
   };
   useEffect(() => {
     gotoDefaultPage(userInfo);

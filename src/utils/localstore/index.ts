@@ -1,5 +1,7 @@
 import localStore from './store';
 
+const IS_FIRST_LOGIN = 'is_first_login';
+
 const store = localStore.createInstance({ name: '_xWXJKJ_S1Sna_' });
 
 const rememberMe = (key: string, data: any) => {
@@ -20,6 +22,25 @@ const removeRememberMe = (key: string) => {
   }
 };
 
-export { getRememberMe, rememberMe, removeRememberMe };
+const readState = (key: string) => {
+  if (store) {
+    return store.getItem(key);
+  }
+};
+
+const writeState = (key: string, data: any) => {
+  if (store) {
+    store.setItem(key, data);
+  }
+};
+
+export {
+  IS_FIRST_LOGIN,
+  getRememberMe,
+  readState,
+  rememberMe,
+  removeRememberMe,
+  writeState
+};
 
 export default store;

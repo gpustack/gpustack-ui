@@ -192,3 +192,8 @@ export const base64ToFile = (base64String: string, fileName: string) => {
     return null;
   }
 };
+
+// check onlinestatus
+export const isOnline = () => {
+  return window.navigator.onLine;
+};

@@ -2,11 +2,12 @@ import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
 import { GlobalOutlined, LockOutlined } from '@ant-design/icons';
-import { SelectLang, history, useIntl } from '@umijs/max';
+import { SelectLang, useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
 import { updatePassword } from '../apis';
+import { checkDefaultPage } from '../utils';
 
 const CRYPT_TEXT = 'seal';
 
@@ -16,10 +17,8 @@ const PasswordForm: React.FC = () => {
 
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
-  const gotoDefaultPage = (userInfo: any) => {
-    const pathname =
-      userInfo && userInfo?.is_admin ? '/dashboard' : '/playground';
-    history.push(pathname);
+  const gotoDefaultPage = async (userInfo: any) => {
+    checkDefaultPage(userInfo, false);
   };
 
   const decryptPassword = (password: string) => {

@@ -8,13 +8,14 @@ import {
   removeRememberMe
 } from '@/utils/localstore/index';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { history, useIntl, useModel } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
 import { memo, useEffect, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
+import { checkDefaultPage } from '../utils';
 
 const REMEMBER_ME_KEY = 'r_m';
 const CRYPT_TEXT = 'seal';
@@ -52,11 +53,10 @@ const LoginForm = () => {
     );
   }, []);
 
-  const gotoDefaultPage = (userInfo: any) => {
-    const pathname =
-      userInfo && userInfo?.is_admin ? '/dashboard' : '/playground';
-    history.push(pathname);
+  const gotoDefaultPage = async (userInfo: any) => {
+    checkDefaultPage(userInfo, true);
   };
+
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
 
@@ -110,6 +110,7 @@ const LoginForm = () => {
         username: values.username,
         password: values.password
       });
+
       const userInfo = await fetchUserInfo();
       setUserInfo(userInfo);
       if (values.autoLogin) {

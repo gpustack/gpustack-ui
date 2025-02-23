@@ -26,6 +26,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     watchChildren,
     rowSelection,
     pagination,
+    empty,
     renderChildren,
     loadChildren,
     loadChildrenAPI
@@ -116,11 +117,13 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
             onSelectAll={handleSelectAllChange}
             expandable={expandable}
             enableSelection={rowSelection?.enableSelection}
+            hasColumns={parsedColumns.length > 0}
           ></HeaderPrefix>
           <Header onSort={onSort} columns={parsedColumns}></Header>
         </div>
         <Spin spinning={loading}>
           <TableBody
+            empty={empty}
             dataSource={props.dataSource}
             columns={parsedColumns}
             rowSelection={rowSelection}

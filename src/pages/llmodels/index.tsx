@@ -6,12 +6,15 @@ import {
   GPUDeviceItem,
   ListItem as WokerListItem
 } from '@/pages/resources/config/types';
+import { IS_FIRST_LOGIN, readState } from '@/utils/localstore';
 import _ from 'lodash';
 import qs from 'query-string';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
+  queryCatalogItemSpec,
+  queryCatalogList,
   queryModelsInstances,
   queryModelsList
 } from './apis';
@@ -37,6 +40,7 @@ const Models: React.FC = () => {
     total: 0
   });
 
+  const [catalogList, setCatalogList] = useState<any[]>([]);
   const [gpuDeviceList, setGpuDeviceList] = useState<GPUDeviceItem[]>([]);
   const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
   const chunkRequedtRef = useRef<any>();
@@ -244,6 +248,33 @@ const Models: React.FC = () => {
   }, [queryParams]);
 
   useEffect(() => {
+    const getCataLogList = async () => {
+      const isFirstLogin = readState(IS_FIRST_LOGIN);
+      if (!isFirstLogin) {
+        return;
+      }
+      try {
+        const res: any = await queryCatalogList({
+          search: 'DeepSeek R1',
+          page: 1
+        });
+        const name = _.toLower(res?.items[0]?.name).replace(/\s/g, '-') || '';
+        const catalogSpecs: any = await queryCatalogItemSpec({
+          id: res?.items[0]?.id
+        });
+        const list = catalogSpecs?.items?.map((item: any) => {
+          item.name = name;
+          return item;
+        });
+        setCatalogList(list || []);
+      } catch (error) {
+        // ignore
+      }
+    };
+    getCataLogList();
+  }, []);
+
+  useEffect(() => {
     createModelsChunkRequest();
   }, [createModelsChunkRequest]);
 
@@ -311,6 +342,7 @@ const Models: React.FC = () => {
         deleteIds={dataSource.deletedIds}
         gpuDeviceList={gpuDeviceList}
         workerList={workerList}
+        catalogList={catalogList}
       ></TableList>
     </TableContext.Provider>
   );

@@ -19,6 +19,11 @@ import {
 } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import {
+  IS_FIRST_LOGIN,
+  readState,
+  writeState
+} from '@/utils/localstore/index';
+import {
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
@@ -28,7 +33,17 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
-import { Button, Dropdown, Input, Select, Space, Tooltip, message } from 'antd';
+import {
+  Button,
+  Dropdown,
+  Empty,
+  Input,
+  Select,
+  Space,
+  Tooltip,
+  Typography,
+  message
+} from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -45,6 +60,7 @@ import {
 } from '../apis';
 import {
   InstanceRealtimeLogStatus,
+  backendOptionsMap,
   getSourceRepoConfigValue,
   modelCategories,
   modelCategoriesMap,
@@ -76,6 +92,7 @@ interface ModelsProps {
   deleteIds?: number[];
   gpuDeviceList: GPUDeviceItem[];
   workerList: WorkerListItem[];
+  catalogList?: any[];
   dataSource: ListItem[];
   loading: boolean;
   loadend: boolean;
@@ -158,12 +175,15 @@ const Models: React.FC<ModelsProps> = ({
   dataSource,
   gpuDeviceList,
   workerList,
+  catalogList,
   queryParams,
   loading,
   loadend,
   total
 }) => {
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
   const access = useAccess();
   const intl = useIntl();
@@ -198,6 +218,17 @@ const Models: React.FC<ModelsProps> = ({
     status: ''
   });
   const modalRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!catalogList?.length) {
+      return;
+    }
+    const getFirstLoginState = async () => {
+      const is_first_login = await readState(IS_FIRST_LOGIN);
+      setIsFirstLogin(is_first_login);
+    };
+    getFirstLoginState();
+  }, [catalogList?.length]);
 
   useHotkeys(
     HotKeys.NEW1.join(','),
@@ -667,8 +698,11 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const columns: SealColumnProps[] = useMemo(
-    () => [
+  const columns: SealColumnProps[] = useMemo(() => {
+    if (isFirstLogin) {
+      return [];
+    }
+    return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
@@ -744,13 +778,67 @@ const Models: React.FC<ModelsProps> = ({
           />
         )
       }
-    ],
-    [sortOrder, intl]
-  );
+    ];
+  }, [sortOrder, intl, isFirstLogin]);
+
+  const handleOnClick = async () => {
+    if (isLoading) {
+      return;
+    }
+
+    const data = catalogList?.find(
+      (item) => item.backend === backendOptionsMap.llamaBox && item.size === 1.5
+    );
+    console.log('catalogList=======', data);
+    try {
+      if (data) {
+        setIsLoading(true);
+        const modelData = await createModel({
+          data: data
+        });
+        writeState(IS_FIRST_LOGIN, false);
+        setIsFirstLogin(false);
+        setTimeout(() => {
+          updateExpandedRowKeys([modelData.id]);
+        }, 300);
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        handleSearch?.();
+      }
+    } catch (error) {
+      // ingore
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const renderEmpty = useMemo(() => {
+    if (dataSource.length || !isFirstLogin) {
+      return null;
+    }
+    return (
+      <div
+        className="flex-column justify-center flex-center"
+        style={{ height: 300 }}
+      >
+        <Empty description=""></Empty>
+        <Typography.Title level={4} style={{ marginBottom: 30 }}>
+          No Models yet!
+        </Typography.Title>
+        <div>
+          <Button type="primary" onClick={handleOnClick} loading={isLoading}>
+            <span style={{ fontSize: 13 }}>Get started with</span>
+            <span style={{ fontSize: 14, fontWeight: 700 }}>
+              DeepSeek-R1-Distill-Qwen-1.5B
+            </span>
+          </Button>
+        </div>
+      </div>
+    );
+  }, [dataSource.length, isFirstLogin, isLoading]);
 
   return (
     <>
       <PageContainer
+        className="models-page-container"
         ghost
         header={{
           title: intl.formatMessage({ id: 'models.title' }),
@@ -760,6 +848,7 @@ const Models: React.FC<ModelsProps> = ({
       >
         <PageTools
           marginBottom={22}
+          style={{ display: isFirstLogin ? 'none' : 'flex' }}
           left={
             <Space>
               <Input
@@ -856,7 +945,9 @@ const Models: React.FC<ModelsProps> = ({
             </Space>
           }
         ></PageTools>
+
         <SealTable
+          empty={renderEmpty}
           columns={columns}
           dataSource={dataSource}
           rowSelection={rowSelection}

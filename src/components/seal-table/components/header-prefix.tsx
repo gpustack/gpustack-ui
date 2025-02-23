@@ -9,11 +9,21 @@ interface HeaderPrefixProps {
   onSelectAll?: (e: any) => void;
   indeterminate?: boolean;
   selectAll?: boolean;
+  hasColumns?: boolean;
 }
 
 const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
-  const { expandable, enableSelection, onSelectAll, indeterminate, selectAll } =
-    props;
+  const {
+    hasColumns,
+    expandable,
+    enableSelection,
+    onSelectAll,
+    indeterminate,
+    selectAll
+  } = props;
+  if (!hasColumns) {
+    return null;
+  }
   if (expandable && enableSelection) {
     return (
       <div className="header-row-prefix-wrapper">

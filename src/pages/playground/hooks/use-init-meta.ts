@@ -9,6 +9,7 @@ import {
   imageSizeOptions as imageSizeList
 } from '@/pages/playground/config/params-config';
 import { useSearchParams } from '@umijs/max';
+import { Form } from 'antd';
 import _ from 'lodash';
 import React, {
   useCallback,
@@ -193,6 +194,11 @@ export const useInitImageMeta = (props: MessageProps) => {
     ...openaiCompatibleFieldsDefaultValus,
     ...advancedFieldsDefaultValus
   });
+  const randomSeed = Form.useWatch('random_seed', form.current?.form);
+
+  const watchFields = useMemo(() => {
+    return ['random_seed'];
+  }, [randomSeed]);
 
   const getNewImageSizeOptions = (metaData: any) => {
     const { max_height, max_width } = metaData || {};
@@ -420,6 +426,7 @@ export const useInitImageMeta = (props: MessageProps) => {
     handleToggleParamsStyle,
     setParams,
     form,
+    watchFields,
     paramsConfig,
     initialValues,
     parameters,

@@ -22,8 +22,9 @@ type ParamsSettingsProps = {
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   onModelChange?: (model: string) => void;
   paramsConfig?: ParamsSchema[];
-  initialValues?: Record<string, any>; // for initial values when switch model
+  initialValues?: Record<string, any>; // for initial values when switch model, aviod update values from setParams
   extra?: React.ReactNode;
+  watchFields?: any[];
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
@@ -35,6 +36,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       initialValues,
       paramsConfig,
       modelList,
+      watchFields = [],
       showModelSelector = true,
       extra
     },
@@ -43,14 +45,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     const intl = useIntl();
     const [form] = Form.useForm();
     const formId = useId();
-    console.log('dynamic----params');
-
-    const dependFieldsValue = Form.useWatch([], form);
-    console.log(
-      'dependFieldsValue===',
-      dependFieldsValue,
-      paramsConfig?.flatMap((item) => item.dependencies || [])
-    );
 
     useImperativeHandle(ref, () => ({
       form
@@ -129,7 +123,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           </Form.Item>
         );
       });
-    }, [paramsConfig, intl, dependFieldsValue]);
+    }, [paramsConfig, intl, watchFields]);
 
     return (
       <Form

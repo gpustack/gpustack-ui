@@ -28,7 +28,7 @@ const ListSkeleton: React.FC<{
             width: '100%',
             position: 'absolute',
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             justifyContent: 'center',
             top: 0,
             left: 0,

@@ -19,6 +19,7 @@ import {
   queryModelsList
 } from './apis';
 import TableList from './components/table-list';
+import { backendOptionsMap } from './config';
 import { ListItem } from './config/types';
 
 const Models: React.FC = () => {
@@ -266,7 +267,17 @@ const Models: React.FC = () => {
           item.name = name;
           return item;
         });
-        setCatalogList(list || []);
+        const deepseekr1dstill = _.toLower('DeepSeek-R1-Distill-Qwen-1.5B');
+        const resultList = list?.filter((item: any) => {
+          return (
+            item.backend === backendOptionsMap.llamaBox &&
+            (_.toLower(item?.huggingface_repo_id)?.indexOf(deepseekr1dstill) >
+              -1 ||
+              _.toLower(item?.model_scope_model_id)?.indexOf(deepseekr1dstill) >
+                -1)
+          );
+        });
+        setCatalogList(resultList || []);
       } catch (error) {
         // ignore
       }

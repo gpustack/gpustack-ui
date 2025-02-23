@@ -566,7 +566,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   label: 'vox-box',
                   value: backendOptionsMap.voxBox,
                   disabled:
-                    props.data?.source === modelSourceMap.ollama_library_value
+                    props.data?.source ===
+                      modelSourceMap.ollama_library_value || isGGUF
                 }
               ]}
               disabled={

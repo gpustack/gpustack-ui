@@ -9,8 +9,8 @@ import useRequestToken from '@/hooks/use-request-token';
 import {
   ClearOutlined,
   HolderOutlined,
-  InfoCircleOutlined,
   PlusOutlined,
+  QuestionCircleOutlined,
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -496,7 +496,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
-                    <InfoCircleOutlined className="m-l-4" />
+                    <QuestionCircleOutlined className="m-l-4" />
                   </Checkbox>
                 </Tooltip>
 
@@ -607,7 +607,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                     </span>
                   }
                 >
-                  <InfoCircleOutlined className="m-l-4" />
+                  <QuestionCircleOutlined className="m-l-4" />
                 </Tooltip>
               </span>
               <AlertInfo

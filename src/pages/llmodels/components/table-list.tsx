@@ -60,7 +60,6 @@ import {
 } from '../apis';
 import {
   InstanceRealtimeLogStatus,
-  backendOptionsMap,
   getSourceRepoConfigValue,
   modelCategories,
   modelCategoriesMap,
@@ -699,9 +698,6 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const columns: SealColumnProps[] = useMemo(() => {
-    if (isFirstLogin) {
-      return [];
-    }
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
@@ -779,31 +775,26 @@ const Models: React.FC<ModelsProps> = ({
         )
       }
     ];
-  }, [sortOrder, intl, isFirstLogin]);
+  }, [sortOrder, intl]);
 
   const handleOnClick = async () => {
     if (isLoading) {
       return;
     }
 
-    const data = catalogList?.find(
-      (item) => item.backend === backendOptionsMap.llamaBox && item.size === 1.5
-    );
-    console.log('catalogList=======', data);
+    const data = catalogList?.[0] || {};
     try {
-      if (data) {
-        setIsLoading(true);
-        const modelData = await createModel({
-          data: data
-        });
-        writeState(IS_FIRST_LOGIN, false);
-        setIsFirstLogin(false);
-        setTimeout(() => {
-          updateExpandedRowKeys([modelData.id]);
-        }, 300);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
-        handleSearch?.();
-      }
+      setIsLoading(true);
+      const modelData = await createModel({
+        data: data
+      });
+      writeState(IS_FIRST_LOGIN, false);
+      setIsFirstLogin(false);
+      setTimeout(() => {
+        updateExpandedRowKeys([modelData.id]);
+      }, 300);
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+      handleSearch?.();
     } catch (error) {
       // ingore
     } finally {
@@ -811,7 +802,7 @@ const Models: React.FC<ModelsProps> = ({
     }
   };
   const renderEmpty = useMemo(() => {
-    if (dataSource.length || !isFirstLogin) {
+    if (dataSource.length || !isFirstLogin || !catalogList?.length) {
       return null;
     }
     return (
@@ -821,19 +812,21 @@ const Models: React.FC<ModelsProps> = ({
       >
         <Empty description=""></Empty>
         <Typography.Title level={4} style={{ marginBottom: 30 }}>
-          No Models yet!
+          {intl.formatMessage({ id: 'models.table.list.empty' })}
         </Typography.Title>
         <div>
           <Button type="primary" onClick={handleOnClick} loading={isLoading}>
-            <span style={{ fontSize: 13 }}>Get started with</span>
-            <span style={{ fontSize: 14, fontWeight: 700 }}>
-              DeepSeek-R1-Distill-Qwen-1.5B
-            </span>
+            <span
+              className="flex-center"
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({ id: 'models.table.list.getStart' })
+              }}
+            ></span>
           </Button>
         </div>
       </div>
     );
-  }, [dataSource.length, isFirstLogin, isLoading]);
+  }, [dataSource.length, isFirstLogin, isLoading, intl]);
 
   return (
     <>

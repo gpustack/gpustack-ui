@@ -668,7 +668,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               {
                 label: 'vox-box',
                 value: backendOptionsMap.voxBox,
-                disabled: props.source === modelSourceMap.ollama_library_value
+                disabled:
+                  props.source === modelSourceMap.ollama_library_value || isGGUF
               }
             ]
           }

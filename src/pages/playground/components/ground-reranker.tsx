@@ -5,8 +5,8 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   ClearOutlined,
-  InfoCircleOutlined,
   PlusOutlined,
+  QuestionCircleOutlined,
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -523,7 +523,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                     {intl.formatMessage({
                       id: 'playground.input.multiplePaste'
                     })}
-                    <InfoCircleOutlined className="m-l-4" />
+                    <QuestionCircleOutlined className="m-l-4" />
                   </Checkbox>
                 </Tooltip>
                 <Button size="middle" onClick={handleAddText}>

@@ -208,6 +208,9 @@ const Catalog: React.FC = () => {
       ghost
       header={{
         title: intl.formatMessage({ id: 'menu.modelCatalog' }),
+        style: {
+          paddingInline: 'var(--layout-content-inlinepadding)'
+        },
         breadcrumb: {}
       }}
       extra={[]}

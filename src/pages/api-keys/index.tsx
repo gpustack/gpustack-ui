@@ -182,7 +182,10 @@ const APIKeys: React.FC = () => {
       <PageContainer
         ghost
         header={{
-          title: intl.formatMessage({ id: 'apikeys.title' })
+          title: intl.formatMessage({ id: 'apikeys.title' }),
+          style: {
+            paddingInline: 'var(--layout-content-inlinepadding)'
+          }
         }}
         extra={[]}
       >

@@ -102,6 +102,9 @@ const PlaygroundRerank: React.FC = () => {
       ghost
       header={{
         title: intl.formatMessage({ id: 'menu.playground.rerank' }),
+        style: {
+          paddingInline: 'var(--layout-content-inlinepadding)'
+        },
         breadcrumb: {}
       }}
       extra={renderExtra()}

@@ -8,7 +8,10 @@ const AccessPage: React.FC = () => {
     <PageContainer
       ghost
       header={{
-        title: 'permission example'
+        title: 'permission example',
+        style: {
+          paddingInline: 'var(--layout-content-inlinepadding)'
+        }
       }}
     >
       <Access accessible={access.canSeeAdmin}>

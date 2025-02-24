@@ -168,6 +168,9 @@ const TextToImages: React.FC = () => {
             }
           </div>
         ),
+        style: {
+          paddingInline: 'var(--layout-content-inlinepadding)'
+        },
         breadcrumb: {}
       }}
       extra={renderExtra()}

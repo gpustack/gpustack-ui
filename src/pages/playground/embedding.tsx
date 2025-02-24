@@ -98,6 +98,9 @@ const PlaygroundEmbedding: React.FC = () => {
       ghost
       header={{
         title: intl.formatMessage({ id: 'menu.playground.embedding' }),
+        style: {
+          paddingInline: 'var(--layout-content-inlinepadding)'
+        },
         breadcrumb: {}
       }}
       extra={renderExtra()}

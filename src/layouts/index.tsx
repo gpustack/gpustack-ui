@@ -291,6 +291,10 @@ export default (props: any) => {
         title={userConfig.title}
         navTheme="light"
         layout="side"
+        contentStyle={{
+          paddingBlock: 0,
+          paddingInline: 0
+        }}
         openKeys={false}
         disableMobile={true}
         header={{

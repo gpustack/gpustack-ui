@@ -242,7 +242,10 @@ const Users: React.FC = () => {
       <PageContainer
         ghost
         header={{
-          title: intl.formatMessage({ id: 'users.title' })
+          title: intl.formatMessage({ id: 'users.title' }),
+          style: {
+            paddingInline: 'var(--layout-content-inlinepadding)'
+          }
         }}
         extra={[]}
       >

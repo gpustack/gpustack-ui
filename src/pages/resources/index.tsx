@@ -1,7 +1,6 @@
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
-import { Tabs } from 'antd';
 import { useCallback, useState } from 'react';
 import GPUs from './components/gpus';
 import Workers from './components/workers';
@@ -32,20 +31,22 @@ const Resources = () => {
       <PageContainer
         ghost
         header={{
-          title: intl.formatMessage({ id: 'resources.title' })
+          title: intl.formatMessage({ id: 'resources.title' }),
+          style: {
+            paddingInline: 'var(--layout-content-inlinepadding)'
+          }
+        }}
+        tabList={items}
+        onTabChange={handleChangeTab}
+        tabActiveKey={activeKey}
+        tabProps={{
+          type: 'card',
+          style: {
+            marginTop: 78
+          }
         }}
         extra={[]}
-      >
-        <div style={{ marginTop: 30 }}>
-          <Tabs
-            type="card"
-            defaultActiveKey="workers"
-            items={items}
-            accessKey={activeKey}
-            onChange={handleChangeTab}
-          ></Tabs>
-        </div>
-      </PageContainer>
+      ></PageContainer>
     </>
   );
 };

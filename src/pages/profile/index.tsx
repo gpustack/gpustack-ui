@@ -37,7 +37,10 @@ const Profile: React.FC = () => {
     <PageContainer
       ghost
       header={{
-        title: intl.formatMessage({ id: 'users.form.updatepassword' })
+        title: intl.formatMessage({ id: 'users.form.updatepassword' }),
+        style: {
+          paddingInline: 'var(--layout-content-inlinepadding)'
+        }
       }}
       extra={[]}
     >

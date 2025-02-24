@@ -280,6 +280,7 @@ const Models: React.FC = () => {
         setCatalogList(resultList || []);
       } catch (error) {
         // ignore
+        setCatalogList([]);
       }
     };
     getCataLogList();

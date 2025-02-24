@@ -75,6 +75,24 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
 }) => {
   const intl = useIntl();
 
+  const distributeCols = [
+    {
+      title: 'Worker',
+      key: 'worker_name'
+    },
+    {
+      title: 'IP',
+      key: 'worker_ip',
+      render: ({ row }: { row: ModelInstanceListItem }) => {
+        return row.port ? `${row.worker_ip}:${row.port}` : row.worker_ip;
+      }
+    },
+    {
+      title: intl.formatMessage({ id: 'models.table.gpuindex' }),
+      key: 'gpu_index'
+    }
+  ];
+
   const renderWorkerInfo = (item: ModelInstanceListItem) => {
     let workerIp = '-';
     if (item.worker_ip) {

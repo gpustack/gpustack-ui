@@ -835,6 +835,9 @@ const Models: React.FC<ModelsProps> = ({
         ghost
         header={{
           title: intl.formatMessage({ id: 'models.title' }),
+          style: {
+            paddingInline: 'var(--layout-content-inlinepadding)'
+          },
           breadcrumb: {}
         }}
         extra={[]}

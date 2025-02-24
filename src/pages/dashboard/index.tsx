@@ -8,7 +8,15 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <PageContainer ghost extra={[]}>
+      <PageContainer
+        ghost
+        extra={[]}
+        header={{
+          style: {
+            paddingInline: 'var(--layout-content-inlinepadding)'
+          }
+        }}
+      >
         <Spin spinning={loading}>
           <DashboardInner setLoading={setLoading} />
         </Spin>

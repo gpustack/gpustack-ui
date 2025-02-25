@@ -86,27 +86,26 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
   const Boxer = styled.div``;
 
   return (
-    <>
-      <Wrapper
-        status={status}
-        label={label}
-        isFocus={isFocus}
-        required={required}
-        description={description}
-        disabled={props.disabled}
-        onClick={handleClickWrapper}
-      >
-        <Cascader
-          {...rest}
-          ref={inputRef}
-          options={children ? null : _options}
-          onFocus={handleOnFocus}
-          onBlur={handleOnBlur}
-          onChange={handleChange}
-          notFoundContent={null}
-        ></Cascader>
-      </Wrapper>
-    </>
+    <Wrapper
+      className="seal-select-wrapper"
+      status={status}
+      label={label}
+      isFocus={isFocus}
+      required={required}
+      description={description}
+      disabled={props.disabled}
+      onClick={handleClickWrapper}
+    >
+      <Cascader
+        {...rest}
+        ref={inputRef}
+        options={children ? null : _options}
+        onFocus={handleOnFocus}
+        onBlur={handleOnBlur}
+        onChange={handleChange}
+        notFoundContent={null}
+      ></Cascader>
+    </Wrapper>
   );
 };
 

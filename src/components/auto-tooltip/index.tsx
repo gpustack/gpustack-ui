@@ -37,6 +37,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const resizeObserver = useRef<ResizeObserver | null>(null);
 
   const checkOverflow = useCallback(() => {
     if (contentRef.current) {
@@ -48,17 +49,20 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   useEffect(() => {
     const element = contentRef.current;
     if (!element) return;
-
-    const resizeObserver = new ResizeObserver(() => {
+    resizeObserver.current?.disconnect();
+    resizeObserver.current = new ResizeObserver(() => {
       checkOverflow();
     });
 
-    resizeObserver.observe(element);
+    resizeObserver.current?.observe(element);
 
     // Initial check
     checkOverflow();
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      resizeObserver.current?.disconnect();
+      resizeObserver.current = null;
+    };
   }, [checkOverflow]);
 
   useEffect(() => {

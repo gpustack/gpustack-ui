@@ -209,7 +209,7 @@ const Catalog: React.FC = () => {
       header={{
         title: intl.formatMessage({ id: 'menu.modelCatalog' }),
         style: {
-          paddingInline: 'var(--layout-content-inlinepadding)'
+          paddingInline: 'var(--layout-content-header-inlinepadding)'
         },
         breadcrumb: {}
       }}

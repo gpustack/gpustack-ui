@@ -60,12 +60,14 @@ import {
 } from '../apis';
 import {
   InstanceRealtimeLogStatus,
+  backendOptionsMap,
   getSourceRepoConfigValue,
   modelCategories,
   modelCategoriesMap,
   modelSourceMap
 } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
+import { useGenerateFormEditInitialValues } from '../hooks';
 import DeployDropdown from './deploy-dropdown';
 import DeployModal from './deploy-modal';
 import InstanceItem from './instance-item';
@@ -172,7 +174,6 @@ const Models: React.FC<ModelsProps> = ({
   handleCategoryChange,
   deleteIds,
   dataSource,
-  gpuDeviceList,
   workerList,
   catalogList,
   queryParams,
@@ -180,7 +181,18 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
+  const { getGPUList, generateFormValues, gpuDeviceList } =
+    useGenerateFormEditInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const [updateFormInitials, setUpdateFormInitials] = useState<{
+    gpuOptions: any[];
+    data: any;
+    isGGUF: boolean;
+  }>({
+    gpuOptions: [],
+    data: {},
+    isGGUF: false
+  });
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
@@ -200,12 +212,18 @@ const Models: React.FC<ModelsProps> = ({
 
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [openDeployModal, setOpenDeployModal] = useState<any>({
+  const [openDeployModal, setOpenDeployModal] = useState<{
+    show: boolean;
+    width: number | string;
+    source: string;
+    gpuOptions: any[];
+  }>({
     show: false,
     width: 600,
-    source: modelSourceMap.huggingface_value
+    source: modelSourceMap.huggingface_value,
+    gpuOptions: []
   });
-  const [currentData, setCurrentData] = useState<ListItem>({} as ListItem);
+  const currentData = useRef<ListItem>({} as ListItem);
   const [currentInstance, setCurrentInstance] = useState<{
     url: string;
     status: string;
@@ -235,7 +253,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 'calc(100vw - 220px)',
-        source: modelSourceMap.huggingface_value
+        source: modelSourceMap.huggingface_value,
+        gpuOptions: gpuDeviceList.current
       });
     },
     {
@@ -250,7 +269,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 'calc(100vw - 220px)',
-        source: modelSourceMap.modelscope_value
+        source: modelSourceMap.modelscope_value,
+        gpuOptions: gpuDeviceList.current
       });
     },
     {
@@ -265,7 +285,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 600,
-        source: modelSourceMap.ollama_library_value
+        source: modelSourceMap.ollama_library_value,
+        gpuOptions: gpuDeviceList.current
       });
     },
     {
@@ -279,7 +300,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 600,
-        source: modelSourceMap.local_path_value
+        source: modelSourceMap.local_path_value,
+        gpuOptions: gpuDeviceList.current
       });
     },
     {
@@ -295,6 +317,7 @@ const Models: React.FC<ModelsProps> = ({
   }, [deleteIds]);
 
   useEffect(() => {
+    getGPUList();
     return () => {
       setExpandAtom([]);
     };
@@ -332,6 +355,10 @@ const Models: React.FC<ModelsProps> = ({
       icon: <IconFont type="icon-hard-disk"></IconFont>
     }
   ];
+
+  const setCurrentData = (data: ListItem) => {
+    currentData.current = data;
+  };
 
   const handleOnSort = (dataIndex: string, order: any) => {
     setSortOrder(order);
@@ -396,13 +423,16 @@ const Models: React.FC<ModelsProps> = ({
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
-        const result = getSourceRepoConfigValue(currentData?.source, data);
+        const result = getSourceRepoConfigValue(
+          currentData.current?.source,
+          data
+        );
         await updateModel({
           data: {
             ...result.values,
             ..._.omit(data, result.omits)
           },
-          id: currentData?.id as number
+          id: currentData.current?.id as number
         });
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
@@ -568,7 +598,14 @@ const Models: React.FC<ModelsProps> = ({
     return `${MODELS_API}/${params.id}/instances`;
   }, []);
 
-  const handleEdit = (row: ListItem) => {
+  const handleEdit = async (row: ListItem) => {
+    const initialValues = generateFormValues(row, gpuDeviceList.current);
+    console.log('initialValues:', initialValues, row);
+    setUpdateFormInitials({
+      gpuOptions: gpuDeviceList.current,
+      data: initialValues,
+      isGGUF: row.backend === backendOptionsMap.llamaBox
+    });
     setCurrentData(row);
     setOpenAddModal(true);
     saveScrollHeight();
@@ -639,7 +676,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 'calc(100vw - 220px)',
-        source: modelSourceMap.huggingface_value
+        source: modelSourceMap.huggingface_value,
+        gpuOptions: gpuDeviceList.current
       });
     }
 
@@ -647,7 +685,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 600,
-        source: modelSourceMap.ollama_library_value
+        source: modelSourceMap.ollama_library_value,
+        gpuOptions: gpuDeviceList.current
       });
     }
 
@@ -655,7 +694,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 'calc(100vw - 220px)',
-        source: modelSourceMap.modelscope_value
+        source: modelSourceMap.modelscope_value,
+        gpuOptions: gpuDeviceList.current
       });
     }
 
@@ -663,7 +703,8 @@ const Models: React.FC<ModelsProps> = ({
       setOpenDeployModal({
         show: true,
         width: 600,
-        source: modelSourceMap.local_path_value
+        source: modelSourceMap.local_path_value,
+        gpuOptions: gpuDeviceList.current
       });
     }
     if (item.key === 'catalog') {
@@ -836,7 +877,7 @@ const Models: React.FC<ModelsProps> = ({
         header={{
           title: intl.formatMessage({ id: 'models.title' }),
           style: {
-            paddingInline: 'var(--layout-content-inlinepadding)'
+            paddingInline: 'var(--layout-content-header-inlinepadding)'
           },
           breadcrumb: {}
         }}
@@ -844,7 +885,6 @@ const Models: React.FC<ModelsProps> = ({
       >
         <PageTools
           marginBottom={22}
-          style={{ display: isFirstLogin ? 'none' : 'flex' }}
           left={
             <Space>
               <Input
@@ -975,7 +1015,7 @@ const Models: React.FC<ModelsProps> = ({
         open={openAddModal}
         action={PageAction.EDIT}
         title={intl.formatMessage({ id: 'models.title.edit' })}
-        data={currentData}
+        updateFormInitials={updateFormInitials}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></UpdateModel>
@@ -985,6 +1025,7 @@ const Models: React.FC<ModelsProps> = ({
         title={intl.formatMessage({ id: 'models.button.deploy' })}
         source={openDeployModal.source}
         width={openDeployModal.width}
+        gpuOptions={openDeployModal.gpuOptions}
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>

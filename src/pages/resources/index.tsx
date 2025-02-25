@@ -2,8 +2,15 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
 import { useCallback, useState } from 'react';
+import styled from 'styled-components';
 import GPUs from './components/gpus';
 import Workers from './components/workers';
+
+const Wrapper = styled.div`
+  .ant-page-header-heading {
+    padding-inline: 8px;
+  }
+`;
 
 const items: TabsProps['items'] = [
   {
@@ -27,7 +34,7 @@ const Resources = () => {
   }, []);
 
   return (
-    <>
+    <Wrapper>
       <PageContainer
         ghost
         header={{
@@ -47,7 +54,7 @@ const Resources = () => {
         }}
         extra={[]}
       ></PageContainer>
-    </>
+    </Wrapper>
   );
 };
 

@@ -39,7 +39,7 @@ const Profile: React.FC = () => {
       header={{
         title: intl.formatMessage({ id: 'users.form.updatepassword' }),
         style: {
-          paddingInline: 'var(--layout-content-inlinepadding)'
+          paddingInline: 'var(--layout-content-header-inlinepadding)'
         }
       }}
       extra={[]}

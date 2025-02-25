@@ -39,8 +39,7 @@ interface AdvanceConfigProps {
 }
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, isGGUF, action, gpuOptions, source } = props;
-
+  const { form, isGGUF, gpuOptions, source } = props;
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
   const EnviromentVars = Form.useWatch('env', form);
@@ -50,7 +49,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const categories = Form.useWatch('categories', form);
   const backend_version = Form.useWatch('backend_version', form);
   const placement_strategy = Form.useWatch('placement_strategy', form);
-  const gpuSelectorIds = Form.useWatch('gpu_selector.gpu_ids', form);
+  const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
   const worker_selector = Form.useWatch('worker_selector', form);
 
   const placementStrategyTips = [
@@ -209,41 +208,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               ></SealSelect>
             </Form.Item>
             <Form.Item<FormData>
-              name="env"
-              rules={[
-                () => ({
-                  validator(rule, value) {
-                    if (_.keys(value).length > 0) {
-                      if (_.some(_.keys(value), (k: string) => !value[k])) {
-                        return Promise.reject(
-                          intl.formatMessage(
-                            {
-                              id: 'common.validate.value'
-                            },
-                            {
-                              name: intl.formatMessage({
-                                id: 'common.text.variable'
-                              })
-                            }
-                          )
-                        );
-                      }
-                    }
-                    return Promise.resolve();
-                  }
-                })
-              ]}
-            >
-              <LabelSelector
-                label={intl.formatMessage({
-                  id: 'models.form.env'
-                })}
-                labels={EnviromentVars}
-                btnText="common.button.vars"
-                onChange={handleEnviromentVarsChange}
-              ></LabelSelector>
-            </Form.Item>
-            <Form.Item<FormData>
               name="worker_selector"
               rules={[
                 ({ getFieldValue }) => ({
@@ -381,6 +345,41 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             }
           ></ListInput>
         </Form.Item>
+        <Form.Item<FormData>
+          name="env"
+          rules={[
+            () => ({
+              validator(rule, value) {
+                if (_.keys(value).length > 0) {
+                  if (_.some(_.keys(value), (k: string) => !value[k])) {
+                    return Promise.reject(
+                      intl.formatMessage(
+                        {
+                          id: 'common.validate.value'
+                        },
+                        {
+                          name: intl.formatMessage({
+                            id: 'common.text.variable'
+                          })
+                        }
+                      )
+                    );
+                  }
+                }
+                return Promise.resolve();
+              }
+            })
+          ]}
+        >
+          <LabelSelector
+            label={intl.formatMessage({
+              id: 'models.form.env'
+            })}
+            labels={EnviromentVars}
+            btnText="common.button.vars"
+            onChange={handleEnviromentVarsChange}
+          ></LabelSelector>
+        </Form.Item>
 
         {backend === backendOptionsMap.llamaBox && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
@@ -467,6 +466,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     backend_version,
     placement_strategy,
     gpuSelectorIds,
+    EnviromentVars,
     worker_selector
   ]);
 

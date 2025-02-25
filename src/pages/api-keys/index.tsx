@@ -184,7 +184,7 @@ const APIKeys: React.FC = () => {
         header={{
           title: intl.formatMessage({ id: 'apikeys.title' }),
           style: {
-            paddingInline: 'var(--layout-content-inlinepadding)'
+            paddingInline: 'var(--layout-content-header-inlinepadding)'
           }
         }}
         extra={[]}

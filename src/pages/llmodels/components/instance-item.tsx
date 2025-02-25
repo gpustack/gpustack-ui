@@ -286,7 +286,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                             : undefined
                         }
                         extra={
-                          item.state === InstanceStatusMap.Error ? (
+                          item.state === InstanceStatusMap.Error &&
+                          item.worker_id ? (
                             <Button
                               type="link"
                               size="small"

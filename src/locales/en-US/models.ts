@@ -103,7 +103,7 @@ export default {
     'Specify the model directory that contains .safetensors and config.json files, e.g., /usr/local/models/model/.',
   'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.gguf.`,
   'models.form.replicas.tips':
-    'Multiple replicas enable load balancing for inference requests.',
+    'Multiple replicas enable load balancing for /v1-openai inference requests.',
   'models.table.list.empty': 'No Models yet!',
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">Get started with</span> <span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span>'

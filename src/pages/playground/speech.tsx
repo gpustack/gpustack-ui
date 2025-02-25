@@ -212,7 +212,7 @@ const Playground: React.FC = () => {
           </div>
         ),
         style: {
-          paddingInline: 'var(--layout-content-inlinepadding)'
+          paddingInline: 'var(--layout-content-header-inlinepadding)'
         },
         breadcrumb: {}
       }}

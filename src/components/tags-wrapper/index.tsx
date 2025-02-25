@@ -31,9 +31,9 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
     if (!sizeList.length && childNodes?.length) {
       sizeList = _.map(childNodes, (node: HTMLDivElement, index: number) => {
         if (index === childNodes.length - 1) {
-          return node.offsetWidth;
+          return node?.offsetWidth;
         }
-        return node.offsetWidth + gap;
+        return node?.offsetWidth + gap;
       });
       nodeSizeList.current = sizeList;
     }

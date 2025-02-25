@@ -244,7 +244,7 @@ const Users: React.FC = () => {
         header={{
           title: intl.formatMessage({ id: 'users.title' }),
           style: {
-            paddingInline: 'var(--layout-content-inlinepadding)'
+            paddingInline: 'var(--layout-content-header-inlinepadding)'
           }
         }}
         extra={[]}

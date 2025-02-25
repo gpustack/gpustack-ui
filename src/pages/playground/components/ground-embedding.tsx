@@ -394,8 +394,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         </Form.Item>
       );
     }
-    return null;
-  }, modelMeta);
+    return [];
+  }, [modelMeta]);
 
   const outputItems = useMemo(() => {
     return [

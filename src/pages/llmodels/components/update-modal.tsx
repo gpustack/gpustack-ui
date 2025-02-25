@@ -8,31 +8,26 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Modal, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { queryGPUList } from '../apis';
 import {
   backendOptionsMap,
   modelSourceMap,
-  ollamaModelOptions,
-  setSourceRepoConfigValue
+  ollamaModelOptions
 } from '../config';
-import { FormData, GPUListItem, ListItem } from '../config/types';
+import { FormData, ListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
-  data?: ListItem;
+  updateFormInitials: {
+    data?: ListItem;
+    gpuOptions: any[];
+    isGGUF: boolean;
+  };
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -67,89 +62,17 @@ const sourceOptions = [
 ];
 
 const UpdateModal: React.FC<AddModalProps> = (props) => {
-  const { title, action, open, onOk, onCancel } = props || {};
+  const {
+    title,
+    action,
+    open,
+    onOk,
+    onCancel,
+    updateFormInitials: { gpuOptions, isGGUF, data: formData }
+  } = props || {};
   const [form] = Form.useForm();
   const intl = useIntl();
-  const [gpuOptions, setGpuOptions] = useState<any[]>([]);
-  const [isGGUF, setIsGGUF] = useState<boolean>(false);
-  const [loading, setLoading] = useState(false);
   const localPathCache = useRef<string>('');
-
-  const generateCascaderOptions = (list: GPUListItem[]) => {
-    const workerFields = ['worker_name', 'worker_id', 'worker_ip'];
-
-    const workers = _.groupBy(list, 'worker_name');
-
-    const workerList = _.map(workers, (value: GPUListItem[]) => {
-      return {
-        label: `${value[0].worker_name}`,
-        value: value[0].worker_name,
-        parent: true,
-        ..._.pick(value[0], workerFields),
-        children: _.map(value, (item: GPUListItem) => {
-          return {
-            label: `${item.name}`,
-            value: item.id,
-            ..._.omit(item, workerFields)
-          };
-        })
-      };
-    });
-
-    return workerList;
-  };
-
-  const getGPUList = async () => {
-    const data = await queryGPUList();
-    const gpuList = generateCascaderOptions(data.items);
-    setGpuOptions(gpuList);
-  };
-
-  const generateGPUSelector = (data: any) => {
-    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-    if (gpu_ids.length === 0) {
-      return [];
-    }
-    const gpuids: string[][] = [];
-
-    gpuOptions?.forEach((item) => {
-      item.children?.forEach((child: any) => {
-        if (gpu_ids.includes(child.value)) {
-          gpuids.push([item.value, child.value]);
-        }
-      });
-    });
-
-    return data.backend === backendOptionsMap.voxBox ? gpuids[0] : gpuids;
-  };
-
-  useEffect(() => {
-    if (action === PageAction.EDIT && open) {
-      const result = setSourceRepoConfigValue(
-        props.data?.source || '',
-        props.data
-      );
-
-      const formData = {
-        ...result.values,
-        ..._.omit(props.data, result.omits),
-        categories: props.data?.categories?.length
-          ? props.data.categories[0]
-          : null,
-        scheduleType: props.data?.gpu_selector ? 'manual' : 'auto',
-        gpu_selector: props.data?.gpu_selector?.gpu_ids.length
-          ? {
-              gpu_ids: generateGPUSelector(props.data)
-            }
-          : []
-      };
-      form.setFieldsValue(formData);
-    }
-  }, [open]);
-
-  useEffect(() => {
-    setIsGGUF(props.data?.backend === backendOptionsMap.llamaBox);
-  }, [props.data?.backend]);
 
   const handleSetGPUIds = (backend: string) => {
     if (backend === backendOptionsMap.llamaBox) {
@@ -235,39 +158,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             <SealInput.Input
               label={intl.formatMessage({ id: 'models.form.filename' })}
               required
-              loading={loading}
               disabled={false}
             ></SealInput.Input>
           </Form.Item>
         )}
-      </>
-    );
-  };
-
-  const renderS3Fields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="s3_address"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.s3address' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({
-              id: 'models.form.s3address'
-            })}
-            required
-          ></SealInput.Input>
-        </Form.Item>
       </>
     );
   };
@@ -350,24 +244,20 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const renderFieldsBySource = useMemo(() => {
-    if (SEARCH_SOURCE.includes(props.data?.source || '')) {
+    if (SEARCH_SOURCE.includes(formData?.source || '')) {
       return renderHuggingfaceFields();
     }
 
-    if (props.data?.source === modelSourceMap.ollama_library_value) {
+    if (formData?.source === modelSourceMap.ollama_library_value) {
       return renderOllamaModelFields();
     }
 
-    if (props.data?.source === modelSourceMap.s3_value) {
-      return renderS3Fields();
-    }
-
-    if (props.data?.source === modelSourceMap.local_path_value) {
+    if (formData?.source === modelSourceMap.local_path_value) {
       return renderLocalPathFields();
     }
 
     return null;
-  }, [props.data?.source, isGGUF, intl]);
+  }, [formData?.source, isGGUF, intl]);
 
   const handleSumit = () => {
     form.submit();
@@ -443,8 +333,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   useEffect(() => {
-    getGPUList();
-  }, []);
+    if (open && formData) {
+      form.setFieldsValue(formData);
+    }
+  }, [open, formData]);
 
   return (
     <Modal
@@ -488,6 +380,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           form={form}
           onFinish={handleOk}
           preserve={false}
+          initialValues={formData}
           style={{
             padding: 'var(--ant-modal-content-padding)',
             paddingBlock: 0
@@ -550,7 +443,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   label: `llama-box`,
                   value: backendOptionsMap.llamaBox,
                   disabled:
-                    props.data?.source === modelSourceMap.local_path_value
+                    formData?.source === modelSourceMap.local_path_value
                       ? false
                       : !isGGUF
                 },
@@ -558,7 +451,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   label: 'vLLM',
                   value: backendOptionsMap.vllm,
                   disabled:
-                    props.data?.source === modelSourceMap.local_path_value
+                    formData?.source === modelSourceMap.local_path_value
                       ? false
                       : isGGUF
                 },
@@ -566,13 +459,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   label: 'vox-box',
                   value: backendOptionsMap.voxBox,
                   disabled:
-                    props.data?.source ===
-                      modelSourceMap.ollama_library_value || isGGUF
+                    formData?.source === modelSourceMap.ollama_library_value ||
+                    isGGUF
                 }
               ]}
               disabled={
                 action === PageAction.EDIT &&
-                props.data?.source !== modelSourceMap.local_path_value
+                formData?.source !== modelSourceMap.local_path_value
               }
             ></SealSelect>
           </Form.Item>
@@ -616,8 +509,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             form={form}
             gpuOptions={gpuOptions}
             action={PageAction.EDIT}
-            source={props.data?.source || ''}
-            isGGUF={props.data?.backend === backendOptionsMap.llamaBox}
+            source={formData?.source || ''}
+            isGGUF={formData?.backend === backendOptionsMap.llamaBox}
           ></AdvanceConfig>
         </Form>
       </SimpleBar>
@@ -625,4 +518,4 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   );
 };
 
-export default memo(UpdateModal);
+export default UpdateModal;

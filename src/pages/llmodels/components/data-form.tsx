@@ -17,7 +17,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { queryGPUList } from '../apis';
 import {
   HuggingFaceTaskMap,
   ModelscopeTaskMap,
@@ -28,7 +27,7 @@ import {
   sourceOptions
 } from '../config';
 import { HuggingFaceModels, ModelScopeModels } from '../config/audio-catalog';
-import { FormData, GPUListItem } from '../config/types';
+import { FormData } from '../config/types';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
@@ -43,6 +42,7 @@ interface DataFormProps {
   byBuiltIn?: boolean;
   backendOptions?: Global.BaseOption<string>[];
   sourceList?: Global.BaseOption<string>[];
+  gpuOptions: any[];
   onSizeChange?: (val: number) => void;
   onQuantizationChange?: (val: string) => void;
   onSourceChange?: (value: string) => void;
@@ -71,6 +71,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     backendOptions,
     sourceList,
     byBuiltIn,
+    gpuOptions = [],
     sizeOptions = [],
     quantizationOptions = [],
     fields = ['source'],
@@ -79,7 +80,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   } = props;
   const [form] = Form.useForm();
   const intl = useIntl();
-  const [gpuOptions, setGpuOptions] = useState<Array<GPUOption>>([]);
   const [modelTask, setModelTask] = useState<Record<string, any>>({
     type: '',
     value: '',
@@ -118,42 +118,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       tips: intl.formatMessage({ id: 'models.localpath.safe.tips' })
     }
   ];
-
-  const generateCascaderOptions = (list: GPUListItem[]) => {
-    const workerFields = ['worker_name', 'worker_id', 'worker_ip'];
-
-    const workers = _.groupBy(list, 'worker_name');
-
-    const workerList = _.map(workers, (value: GPUListItem[]) => {
-      return {
-        label: `${value[0].worker_name}`,
-        value: value[0].worker_name,
-        parent: true,
-        disableCheckbox: false,
-        ..._.pick(value[0], workerFields),
-        children: _.map(value, (item: GPUListItem) => {
-          return {
-            label: `${item.name}`,
-            value: item.id,
-            disableCheckbox: false,
-            ..._.omit(item, workerFields)
-          };
-        })
-      };
-    });
-
-    return workerList;
-  };
-
-  const getGPUList = async () => {
-    const data = await queryGPUList();
-    const gpuList = generateCascaderOptions(data.items);
-    setGpuOptions(gpuList);
-  };
-
-  useEffect(() => {
-    getGPUList();
-  }, []);
 
   const handleSumit = () => {
     form.submit();
@@ -335,24 +299,26 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             defaultActiveFirstOption
             disabled={false}
             options={ollamaModelOptions}
-            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
-            placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
-            addAfter={
-              <Typography.Link
-                href="https://www.ollama.com/library"
-                target="_blank"
-              >
-                <Tooltip
-                  title={intl.formatMessage({ id: 'models.form.ollamalink' })}
-                  placement="topRight"
+            label={
+              <>
+                {intl.formatMessage({ id: 'model.form.ollama.model' })}{' '}
+                <Typography.Link
+                  href="https://www.ollama.com/library"
+                  target="_blank"
                 >
-                  <IconFont
-                    type="icon-external-link"
-                    className="font-size-14"
-                  ></IconFont>
-                </Tooltip>
-              </Typography.Link>
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'models.form.ollamalink' })}
+                    placement="topRight"
+                  >
+                    <IconFont
+                      type="icon-external-link"
+                      className="font-size-14"
+                    ></IconFont>
+                  </Tooltip>
+                </Typography.Link>
+              </>
             }
+            placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
             required
           ></SealAutoComplete>
         </Form.Item>

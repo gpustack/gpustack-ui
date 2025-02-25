@@ -4,6 +4,7 @@ import type { CascaderAutoProps } from 'antd';
 import { Cascader, Form } from 'antd';
 import { cloneDeep } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
 import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
@@ -24,6 +25,7 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
   const intl = useIntl();
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
+  const boxRef = useRef<any>(null);
   let status = '';
 
   // the status can be controlled by Form.Item
@@ -81,26 +83,30 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
     props.onBlur?.(e);
   };
 
+  const Boxer = styled.div``;
+
   return (
-    <Wrapper
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      onClick={handleClickWrapper}
-    >
-      <Cascader
-        {...rest}
-        ref={inputRef}
-        options={children ? null : _options}
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onChange={handleChange}
-        notFoundContent={null}
-      ></Cascader>
-    </Wrapper>
+    <>
+      <Wrapper
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        onClick={handleClickWrapper}
+      >
+        <Cascader
+          {...rest}
+          ref={inputRef}
+          options={children ? null : _options}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={handleChange}
+          notFoundContent={null}
+        ></Cascader>
+      </Wrapper>
+    </>
   );
 };
 

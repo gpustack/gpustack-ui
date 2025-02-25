@@ -406,7 +406,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       );
     }
     return null;
-  }, modelMeta);
+  }, [modelMeta]);
 
   const handleClearDocuments = () => {
     setTextList([

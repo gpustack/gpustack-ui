@@ -99,7 +99,7 @@ const PlaygroundEmbedding: React.FC = () => {
       header={{
         title: intl.formatMessage({ id: 'menu.playground.embedding' }),
         style: {
-          paddingInline: 'var(--layout-content-inlinepadding)'
+          paddingInline: 'var(--layout-content-header-inlinepadding)'
         },
         breadcrumb: {}
       }}

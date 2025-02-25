@@ -13,7 +13,7 @@ const Dashboard: React.FC = () => {
         extra={[]}
         header={{
           style: {
-            paddingInline: 'var(--layout-content-inlinepadding)'
+            paddingInline: 'var(--layout-content-header-inlinepadding)'
           }
         }}
       >

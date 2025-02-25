@@ -19,6 +19,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     addAfter,
     checkStatus,
     trim = true,
+    loading,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);

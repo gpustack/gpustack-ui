@@ -4,7 +4,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import { debounce } from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData } from '../config/types';
 import ColumnWrapper from './column-wrapper';
@@ -21,6 +21,7 @@ type AddModalProps = {
   open: boolean;
   source: string;
   width?: string | number;
+  gpuOptions?: any[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -44,14 +45,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
-  const [loadingModel, setLoadingModel] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
-  const [loadfinish, setLoadfinish] = useState<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldValue?.('file_name', item.fakeName);
-    setLoadfinish(true);
   }, []);
 
   const handleOnSelectModel = (item: any) => {
@@ -151,7 +149,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <SearchModel
                   modelSource={props.source}
                   onSelectModel={handleOnSelectModel}
-                  setLoadingModel={setLoadingModel}
                 ></SearchModel>
               </ColumnWrapper>
               <Separator></Separator>
@@ -206,6 +203,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               onOk={onOk}
               ref={form}
               isGGUF={isGGUF}
+              gpuOptions={props.gpuOptions}
               onBackendChange={handleBackendChange}
             ></DataForm>
           </>
@@ -215,4 +213,4 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   );
 };
 
-export default memo(AddModal);
+export default AddModal;

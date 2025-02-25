@@ -259,6 +259,10 @@ const Models: React.FC = () => {
           search: 'DeepSeek R1',
           page: 1
         });
+        if (!res?.items?.length) {
+          setCatalogList([]);
+          return;
+        }
         const name = _.toLower(res?.items[0]?.name).replace(/\s/g, '-') || '';
         const catalogSpecs: any = await queryCatalogItemSpec({
           id: res?.items[0]?.id

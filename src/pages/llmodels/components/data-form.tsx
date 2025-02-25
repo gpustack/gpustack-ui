@@ -668,7 +668,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             id: 'models.form.replicas'
           })}
           required
-          description={intl.formatMessage({ id: 'models.form.replicas.tips' })}
+          description={intl.formatMessage(
+            { id: 'models.form.replicas.tips' },
+            { api: `${window.location.origin}/v1` }
+          )}
           min={0}
         ></SealInput.Number>
       </Form.Item>

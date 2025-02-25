@@ -21,7 +21,7 @@ type AddModalProps = {
   open: boolean;
   source: string;
   width?: string | number;
-  gpuOptions?: any[];
+  gpuOptions: any[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };

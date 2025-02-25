@@ -380,7 +380,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           form={form}
           onFinish={handleOk}
           preserve={false}
-          initialValues={formData}
+          clearOnDestroy={true}
+          initialValues={{
+            ...formData
+          }}
           style={{
             padding: 'var(--ant-modal-content-padding)',
             paddingBlock: 0
@@ -491,9 +494,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                 id: 'models.form.replicas'
               })}
               required
-              description={intl.formatMessage({
-                id: 'models.form.replicas.tips'
-              })}
+              description={intl.formatMessage(
+                {
+                  id: 'models.form.replicas.tips'
+                },
+                { api: `${window.location.origin}/v1` }
+              )}
               min={0}
             ></SealInput.Number>
           </Form.Item>

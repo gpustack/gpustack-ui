@@ -99,7 +99,7 @@ export default {
     '指向包含 .safetensors, config.json 文件的模型目录，例如 /usr/local/models/model/',
   'models.localpath.chunks.tips':
     '指向模型第一个分片文件，例如 /usr/local/models/model-00001-of-00004.gguf',
-  'models.form.replicas.tips': '多副本数实现 /v1-openai 接口推理请求的负载均衡',
+  'models.form.replicas.tips': '多副本数实现 { api } 接口推理请求的负载均衡',
   'models.table.list.empty': '暂无已部署模型',
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">一键部署</span><span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span><span style="margin-left: 5px;font-size: 13px;">立即使用！</span>'

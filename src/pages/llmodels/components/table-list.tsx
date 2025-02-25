@@ -769,7 +769,10 @@ const Models: React.FC<ModelsProps> = ({
       {
         title: (
           <Tooltip
-            title={intl.formatMessage({ id: 'models.form.replicas.tips' })}
+            title={intl.formatMessage(
+              { id: 'models.form.replicas.tips' },
+              { api: `${window.location.origin}/v1` }
+            )}
           >
             {intl.formatMessage({ id: 'models.form.replicas' })}
             <QuestionCircleOutlined className="m-l-5" />

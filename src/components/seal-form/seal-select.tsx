@@ -82,6 +82,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
 
   return (
     <Wrapper
+      className="seal-select-wrapper"
       status={status}
       label={label}
       isFocus={isFocus}

@@ -79,6 +79,7 @@ const SealAutoComplete: React.FC<
 
   return (
     <Wrapper
+      className="seal-select-wrapper"
       status={status}
       extra={extra}
       label={label}

@@ -38,6 +38,7 @@ const Wrapper: React.FC<WrapperProps> = ({
   return (
     <div
       className={classNames(
+        className,
         wrapperStyle['wrapper-box'],
         'field-wrapper',
         wrapperStyle[`validate-status-${status}`],
@@ -73,7 +74,11 @@ const Wrapper: React.FC<WrapperProps> = ({
           ></LabelInfo>
         </label>
         {extra && <div className={wrapperStyle.extra}>{extra}</div>}
-        <div className={wrapperStyle['inner-wrapper']}>{children}</div>
+        <div
+          className={classNames(wrapperStyle['inner-wrapper'], 'wrapper-inner')}
+        >
+          {children}
+        </div>
       </div>
 
       {addAfter && <div className={wrapperStyle['add-after']}>{addAfter}</div>}

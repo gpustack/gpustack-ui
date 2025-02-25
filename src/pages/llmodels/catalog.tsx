@@ -2,6 +2,7 @@ import { modelsExpandKeysAtom } from '@/atoms/models';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -136,6 +137,7 @@ const Catalog: React.FC = () => {
             ..._.omit(data, ['size', 'quantization'])
           }
         });
+        writeState(IS_FIRST_LOGIN, false);
         setOpenDeployModal({
           ...openDeployModal,
           show: false

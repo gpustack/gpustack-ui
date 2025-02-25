@@ -6,9 +6,27 @@ import {
   queryVersionInfo,
   updateCheck
 } from '@/services/profile/apis';
+import { isOnline } from '@/utils';
+import {
+  IS_FIRST_LOGIN,
+  readState,
+  writeState
+} from '@/utils/localstore/index';
 import { RequestConfig, history } from '@umijs/max';
 
 const loginPath = '/login';
+
+// only for the first login and access from http://localhost
+
+const checkDefaultPage = async (userInfo: any) => {
+  const isFirstLogin = await readState(IS_FIRST_LOGIN);
+  if (isFirstLogin === null && isOnline()) {
+    writeState(IS_FIRST_LOGIN, true);
+    if (userInfo && userInfo?.is_admin) {
+      history.push('/models/list');
+    }
+  }
+};
 
 // runtime configuration
 export async function getInitialState(): Promise<{
@@ -62,7 +80,7 @@ export async function getInitialState(): Promise<{
 
   if (![loginPath].includes(location.pathname)) {
     const userInfo = await fetchUserInfo();
-
+    checkDefaultPage(userInfo);
     return {
       fetchUserInfo,
       currentUser: userInfo

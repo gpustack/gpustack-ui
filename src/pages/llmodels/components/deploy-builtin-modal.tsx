@@ -12,6 +12,7 @@ import {
   sourceOptions
 } from '../config';
 import { CatalogSpec, FormData, ListItem } from '../config/types';
+import { useGenerateFormEditInitialValues } from '../hooks';
 import ColumnWrapper from './column-wrapper';
 import DataForm from './data-form';
 
@@ -51,6 +52,7 @@ const quantiCapitMap: Record<string, string> = {
 
 const defaultQuant = ['Q4_K_M'];
 const EmbeddingRerankFirstQuant = ['FP16', 'F16'];
+
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     title,
@@ -62,9 +64,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     current,
     width = 600
   } = props || {};
-
+  const { getGPUList } = useGenerateFormEditInitialValues();
   const form = useRef<any>({});
-
+  const [gpuOptions, setGpuOptions] = useState<any[]>([]);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [sourceList, setSourceList] = useState<any[]>([]);
   const [backendList, setBackendList] = useState<any[]>([]);
@@ -363,6 +365,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     };
   }, [open, current]);
 
+  useEffect(() => {
+    getGPUList().then((data) => {
+      setGpuOptions(data);
+    });
+  }, []);
+
   return (
     <Drawer
       title={
@@ -429,6 +437,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               sourceList={sourceList}
               quantizationOptions={quantizationOptions}
               sizeOptions={sizeOptions}
+              gpuOptions={gpuOptions}
               onBackendChange={handleBackendChange}
               onSourceChange={handleSourceChange}
               onQuantizationChange={handleOnQuantizationChange}

@@ -219,5 +219,6 @@ export default {
   'common.button.delrecreate': '删除（重建）',
   'common.options.all': '全部',
   'common.options.none': '无',
-  'common.options.auto': '自动'
+  'common.options.auto': '自动',
+  'common.search.empty': '未找到匹配结果'
 };

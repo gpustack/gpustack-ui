@@ -226,5 +226,6 @@ export default {
   'common.button.delrecreate': 'Delete (Recreate)',
   'common.options.all': 'All',
   'common.options.none': 'None',
-  'common.options.auto': 'Auto'
+  'common.options.auto': 'Auto',
+  'common.search.empty': 'No matching results found.'
 };

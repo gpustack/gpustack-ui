@@ -11,6 +11,7 @@ import { useIntl } from '@umijs/max';
 import {
   Checkbox,
   Collapse,
+  Empty,
   Form,
   FormInstance,
   Tooltip,
@@ -145,6 +146,23 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   };
 
   const gpuOptionRender = (data: any) => {
+    if (data.value === '__EMPTY__') {
+      return (
+        <Empty
+          image={false}
+          style={{
+            height: 100,
+            alignSelf: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+          description={intl.formatMessage({
+            id: 'common.search.empty'
+          })}
+        ></Empty>
+      );
+    }
     let width: any = {
       maxWidth: 140,
       minWidth: 140
@@ -275,6 +293,8 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             >
               <SealCascader
                 required
+                showSearch
+                expandTrigger="hover"
                 onChange={handleGPUSelectorChange}
                 multiple={backend !== backendOptionsMap.voxBox}
                 popupClassName="cascader-popup-wrapper gpu-selector"

@@ -16,6 +16,7 @@ interface WrapperProps {
   addAfter?: React.ReactNode;
   variant?: string;
   hasPrefix?: boolean;
+  classList?: string;
   onClick?: () => void;
 }
 
@@ -33,18 +34,20 @@ const Wrapper: React.FC<WrapperProps> = ({
   addAfter,
   hasPrefix,
   noWrapperStyle,
+  classList,
   onClick
 }) => {
   return (
     <div
       className={classNames(
-        className,
+        classList,
         wrapperStyle['wrapper-box'],
         'field-wrapper',
         wrapperStyle[`validate-status-${status}`],
         addAfter ? wrapperStyle['seal-input-wrapper-addafter'] : '',
         disabled ? wrapperStyle['seal-input-wrapper-disabled'] : '',
         className ? wrapperStyle[className] : '',
+        classList ? wrapperStyle[classList] : '',
         variant ? wrapperStyle[variant] : ''
       )}
     >

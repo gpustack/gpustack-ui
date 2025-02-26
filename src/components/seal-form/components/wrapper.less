@@ -17,6 +17,47 @@
     border: none;
     box-shadow: none;
 
+    &.dropdown-visible {
+      :local(.wrapper) {
+        :global(.ant-select-selector) {
+          border-bottom: none !important;
+          border-radius: @borderRadius @borderRadius 0 0;
+          transition: all 0.2s ease;
+
+          &::before {
+            content: '';
+            position: absolute;
+            height: 1px;
+            margin-inline: 1px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--ant-color-split);
+          }
+        }
+
+        :global(.ant-select-dropdown) {
+          box-shadow: none;
+          border-width: var(--ant-line-width);
+          border-style: var(--ant-line-type);
+          border-color: var(--ant-input-active-border-color);
+          border-top: none;
+        }
+
+        &:hover {
+          :global(.ant-select-dropdown) {
+            border-color: var(--ant-input-active-border-color);
+          }
+        }
+
+        &:focus-within {
+          border-color: var(--ant-input-active-border-color) !important;
+          outline: 0;
+          background-color: var(--ant-input-active-bg);
+        }
+      }
+    }
+
     &:focus-within {
       border: none;
       box-shadow: none;
@@ -61,6 +102,12 @@
         }
 
         &:focus-within {
+          border-color: var(--ant-color-error) !important;
+        }
+      }
+
+      &.dropdown-visible {
+        :global(.ant-select-dropdown) {
           border-color: var(--ant-color-error) !important;
         }
       }
@@ -208,6 +255,15 @@
     display: flex;
     align-items: center;
     height: 54px;
+
+    :global(.ant-select-selection-search) {
+      top: 20px !important;
+      inset-inline-start: @input-inner-padding;
+    }
+  }
+
+  :global(.ant-select.ant-cascader .ant-select-selection-search) {
+    top: 0 !important;
   }
 
   :global(.ant-input-number-input-wrap) {
@@ -217,10 +273,10 @@
   :global(.ant-select-selector) {
     flex: 1;
     padding-inline: @input-inner-padding !important;
-    border-width: var(--ant-line-width) !important;
-    border-style: var(--ant-line-type) !important;
-    border-color: var(--ant-color-border) !important;
-    border-radius: @borderRadius !important;
+    border-width: var(--ant-line-width);
+    border-style: var(--ant-line-type);
+    border-color: var(--ant-color-border);
+    border-radius: @borderRadius;
     height: 54px !important;
     padding-block: 20px 0 !important;
     box-shadow: none !important;
@@ -235,11 +291,6 @@
       outline: 0;
       background-color: var(--ant-input-active-bg);
     }
-  }
-
-  :global(.ant-select-selection-search) {
-    top: 20px !important;
-    inset-inline-start: @input-inner-padding;
   }
 
   :global(.ant-select-multiple.ant-select-lg) {

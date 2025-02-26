@@ -4,7 +4,6 @@ import type { CascaderAutoProps } from 'antd';
 import { Cascader, Form } from 'antd';
 import { cloneDeep } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
@@ -25,7 +24,7 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
   const intl = useIntl();
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const boxRef = useRef<any>(null);
+  const [visible, setVisible] = useState(false);
   let status = '';
 
   // the status can be controlled by Form.Item
@@ -83,11 +82,14 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
     props.onBlur?.(e);
   };
 
-  const Boxer = styled.div``;
+  const handleDropdownVisibleChange = (open: boolean) => {
+    setVisible(open);
+  };
 
   return (
     <Wrapper
       className="seal-select-wrapper"
+      classList={visible ? 'dropdown-visible' : ''}
       status={status}
       label={label}
       isFocus={isFocus}
@@ -104,6 +106,7 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
         onBlur={handleOnBlur}
         onChange={handleChange}
         notFoundContent={null}
+        onDropdownVisibleChange={handleDropdownVisibleChange}
       ></Cascader>
     </Wrapper>
   );

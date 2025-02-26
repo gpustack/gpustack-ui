@@ -797,8 +797,18 @@ body {
   background-color: var(--ant-select-option-selected-bg) !important;
 }
 
+.ant-cascader-dropdown .ant-cascader-menu {
+  flex-grow: unset;
+}
+
 .cascader-popup-wrapper {
-  // width: 100%;
+  width: 100%;
+  border: 1px solid var(--ant-color-border);
+  inset: 54px auto auto 0 !important;
+  border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
+  border-top: none;
+  max-height: 240px;
+  min-height: 100px;
 
   &.gpu-selector {
     .ant-cascader-menu:last-child {

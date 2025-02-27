@@ -10,6 +10,7 @@ import {
 } from '@/pages/resources/config/types';
 import {
   DeleteOutlined,
+  DownloadOutlined,
   HddFilled,
   InfoCircleOutlined,
   ThunderboltFilled
@@ -49,6 +50,18 @@ const childActionList = [
     icon: <IconFont type="icon-logs" />
   },
   {
+    label: 'common.button.downloadLog',
+    key: 'download',
+    status: [
+      InstanceStatusMap.Initializing,
+      InstanceStatusMap.Running,
+      InstanceStatusMap.Error,
+      InstanceStatusMap.Starting,
+      InstanceStatusMap.Downloading
+    ],
+    icon: <DownloadOutlined />
+  },
+  {
     label: 'common.button.delrecreate',
     key: 'delete',
     props: {
@@ -60,7 +73,7 @@ const childActionList = [
 
 const setChildActionList = (item: ModelInstanceListItem) => {
   return _.filter(childActionList, (action: any) => {
-    if (action.key === 'viewlog') {
+    if (action.key === 'viewlog' || action.key === 'download') {
       return action.status.includes(item.state);
     }
     return true;

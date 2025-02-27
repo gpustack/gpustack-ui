@@ -17,6 +17,8 @@ class AnsiParser {
   private isProcessing: boolean = false;
   private taskQueue: string[] = [];
   private page: number = 1;
+  private isComplete: boolean = false;
+  private chunked: boolean = true; // true: send data in chunks, false: send all data at once
   private pageSize: number = 500;
   private colorMap = {
     '30': 'black',
@@ -44,6 +46,14 @@ class AnsiParser {
 
   public setPage(page: number) {
     this.page = page;
+  }
+
+  public setIsCompelete(isComplete: boolean) {
+    this.isComplete = isComplete;
+  }
+
+  public setChunked(chunked: boolean) {
+    this.chunked = chunked ?? true;
   }
 
   private setId() {
@@ -147,6 +157,13 @@ class AnsiParser {
     };
   }
 
+  private getScreenText() {
+    const result = this.screen
+      .map((row) => removeBracketsFromLine(row.join('')))
+      .join('\n');
+    return result;
+  }
+
   private async processQueue(): Promise<void> {
     if (this.isProcessing) {
       return;
@@ -160,7 +177,9 @@ class AnsiParser {
       if (input) {
         try {
           const result = this.processInput(input);
-          self.postMessage({ result: result.data, lines: result.lines });
+          if (this.chunked) {
+            self.postMessage({ result: result.data, lines: result.lines });
+          }
         } catch (error) {
           console.error('Error processing input:', error);
         }
@@ -174,6 +193,9 @@ class AnsiParser {
     this.isProcessing = false;
     if (this.taskQueue.length > 0) {
       this.processQueue();
+    } else if (this.isComplete && !this.chunked) {
+      self.postMessage({ result: this.getScreenText() });
+      this.reset();
     }
   }
 
@@ -187,8 +209,18 @@ class AnsiParser {
 const parser = new AnsiParser();
 
 self.onmessage = function (event) {
-  const { inputStr, reset, page } = event.data;
+  const {
+    inputStr,
+    reset,
+    page,
+    isComplete = false,
+    chunked = true
+  } = event.data;
+
   parser.setPage(page);
+  parser.setIsCompelete(isComplete);
+  parser.setChunked(chunked);
+
   if (reset) {
     parser.reset();
   }

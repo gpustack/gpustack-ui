@@ -10,7 +10,6 @@ import { SealColumnProps } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import useBodyScroll from '@/hooks/use-body-scroll';
-import useDownloadStream from '@/hooks/use-download-stream';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -71,7 +70,7 @@ import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import { useGenerateFormEditInitialValues } from '../hooks';
 import DeployDropdown from './deploy-dropdown';
 import DeployModal from './deploy-modal';
-import InstanceItem from './instance-item';
+import Instances from './instances';
 import ModelTag from './model-tag';
 import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
@@ -182,7 +181,6 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
-  const { downloadStream } = useDownloadStream();
   const { getGPUList, generateFormValues, gpuDeviceList } =
     useGenerateFormEditInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
@@ -566,7 +564,7 @@ const Models: React.FC<ModelsProps> = ({
     [onViewLogs]
   );
   const handleDeleteInstace = useCallback(
-    (row: any, list: ModelInstanceListItem[]) => {
+    (row: any) => {
       modalRef.current.show({
         content: 'models.instances',
         okText: 'common.button.delrecreate',
@@ -643,22 +641,16 @@ const Models: React.FC<ModelsProps> = ({
         });
       }
     },
-    [handleEdit, handleOpenPlayGround, handleDelete]
+    [handleEdit, handleOpenPlayGround, handleDelete, expandedRowKeys]
   );
 
   const handleChildSelect = useCallback(
-    (val: any, row: ModelInstanceListItem, list: ModelInstanceListItem[]) => {
+    (val: any, row: ModelInstanceListItem) => {
       if (val === 'delete') {
-        handleDeleteInstace(row, list);
+        handleDeleteInstace(row);
       }
       if (val === 'viewlog') {
         handleViewLogs(row);
-      }
-      if (val === 'download') {
-        downloadStream({
-          url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
-          filename: row.name
-        });
       }
     },
     [handleViewLogs, handleDeleteInstace]
@@ -667,13 +659,12 @@ const Models: React.FC<ModelsProps> = ({
   const renderChildren = useCallback(
     (list: any, parent?: any) => {
       return (
-        <InstanceItem
+        <Instances
           list={list}
           modelData={parent}
-          gpuDeviceList={[]}
           workerList={workerList}
           handleChildSelect={handleChildSelect}
-        ></InstanceItem>
+        ></Instances>
       );
     },
     [workerList]

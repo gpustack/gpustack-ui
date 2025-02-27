@@ -3,7 +3,6 @@ import { useIntl } from '@umijs/max';
 import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { memo } from 'react';
 import './index.less';
 
 type Trigger = 'click' | 'hover';
@@ -106,4 +105,4 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   );
 };
 
-export default memo(DropdownButtons);
+export default DropdownButtons;

@@ -6,8 +6,15 @@ import TableHeader from './header';
 import './index.less';
 import TableRow from './row';
 
+interface ColumnProps {
+  title: string;
+  key: string;
+  render?: (data: { dataIndex: string; row: any }) => any;
+  locale?: boolean;
+}
+
 interface SimpleTableProps {
-  columns: any[];
+  columns: ColumnProps[];
   dataSource: any[];
   bordered?: boolean;
   rowKey?: string;

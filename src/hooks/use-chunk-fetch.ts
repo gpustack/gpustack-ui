@@ -13,6 +13,7 @@ type HandlerFunction = (data: any, options?: HandlerOptions) => any;
 interface RequestConfig {
   url: string;
   handler: HandlerFunction;
+  errorHandler?: (error: any) => void;
   beforeReconnect?: () => void;
   params?: object;
   watch?: boolean;
@@ -59,7 +60,7 @@ const useSetChunkFetch = () => {
           currentBuffer.forEach((item, i) => {
             const isComplete = i === currentBuffer.length - 1 && done;
             callback(item, {
-              isComplete,
+              isComplete: isComplete || this.percent === 100,
               percent: this.percent,
               progress: this.progress,
               contentLength: this.contentLength
@@ -110,6 +111,7 @@ const useSetChunkFetch = () => {
   const fetchChunkRequest = async ({
     url,
     handler,
+    errorHandler,
     watch,
     params = {}
   }: RequestConfig) => {
@@ -133,7 +135,11 @@ const useSetChunkFetch = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        handler(error?.message);
+        if (errorHandler) {
+          errorHandler(error);
+        } else {
+          handler(error?.message);
+        }
         return;
       }
 
@@ -141,8 +147,7 @@ const useSetChunkFetch = () => {
 
       console.log('chunkDataRef.current===1', chunkDataRef.current);
     } catch (error) {
-      // handle error
-      console.log('error============', error);
+      // handle error: catched in request interceptor
     }
 
     return axiosToken.current;

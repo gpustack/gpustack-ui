@@ -1,6 +1,8 @@
 import { request } from '@umijs/max';
 
-export const OPENAI_COMPATIBLE = 'v1';
+export const OPENAI_COMPATIBLE = 'v1-openai';
+
+export const GPUSTACK_API = 'v1';
 
 export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
 
@@ -9,7 +11,7 @@ export const EDIT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/edits`;
 
 export const EMBEDDING_API = `/${OPENAI_COMPATIBLE}/embeddings`;
 
-export const OPENAI_MODELS = `/v1-openai/models`;
+export const OPENAI_MODELS = `/${OPENAI_COMPATIBLE}/models`;
 
 export const RERANKER_API = '/rerank';
 

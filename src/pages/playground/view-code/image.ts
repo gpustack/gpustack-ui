@@ -1,14 +1,15 @@
 import _ from 'lodash';
-import { OPENAI_COMPATIBLE } from '../apis';
+import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
 export const generateImageCode = ({
-  api,
+  api: url,
   parameters,
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
   const host = window.location.origin;
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   let curlCode = `
@@ -45,7 +46,7 @@ print(response.json()['data'][0]['b64_json'])`.trim();
   const nodeJsCode = `
 const axios = require('axios');
 
-const url = "${host}/${OPENAI_COMPATIBLE}/images/generations";
+const url = "${host}/${GPUSTACK_API}/images/generations";
 const headers = {
   "Content-type": "application/json",
   "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
@@ -64,12 +65,13 @@ axios.post(url, data, { headers }).then((response) => {
 };
 
 export const generateOpenaiImageCode = ({
-  api,
+  api: url,
   parameters,
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
   const host = window.location.origin;
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   let curlCode = `
@@ -93,7 +95,7 @@ ${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
   const pythonCode = `
 from openai import OpenAI\n
 client = OpenAI(
-  base_url="${host}/${OPENAI_COMPATIBLE}", 
+  base_url="${host}/${GPUSTACK_API}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -110,7 +112,7 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
+  "baseURL": "${host}/${GPUSTACK_API}"
 });
 
 async function main() {

@@ -1,8 +1,13 @@
-import { OPENAI_COMPATIBLE } from '../apis';
+import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
-export const speechToTextCode = ({ api, parameters }: Record<string, any>) => {
+export const speechToTextCode = ({
+  api: url,
+  parameters
+}: Record<string, any>) => {
   const host = window.location.origin;
+  // replace url OPENAI_COMPATIBLE with GPUSTACK
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   const curlCode = `
@@ -19,7 +24,7 @@ ${formatCurlArgs(parameters, true)}`
 from openai import OpenAI\n
 audio_file = open("audio.mp3", "rb")
 client = OpenAI(
-  base_url="${host}/${OPENAI_COMPATIBLE}", 
+  base_url="${host}/${GPUSTACK_API}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -44,7 +49,7 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
+  "baseURL": "${host}/${GPUSTACK_API}"
 });
 
 async function main() {
@@ -62,8 +67,12 @@ main();`.trim();
   };
 };
 
-export const TextToSpeechCode = ({ api, parameters }: Record<string, any>) => {
+export const TextToSpeechCode = ({
+  api: url,
+  parameters
+}: Record<string, any>) => {
   const host = window.location.origin;
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   const curlCode = `
@@ -78,7 +87,7 @@ from pathlib import Path
 from openai import OpenAI\n
 output_file_path = Path(__file__).parent / "output.mp3"
 client = OpenAI(
-  base_url="${host}/${OPENAI_COMPATIBLE}", 
+  base_url="${host}/${GPUSTACK_API}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -103,7 +112,7 @@ const ouptFile = path.resolve("./output.mp3");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
+  "baseURL": "${host}/${GPUSTACK_API}"
 });
 
 async function main() {

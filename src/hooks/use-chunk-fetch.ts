@@ -2,9 +2,17 @@ import { throttle } from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef } from 'react';
 
+export interface HandlerOptions {
+  isComplete?: boolean | null;
+  percent?: number;
+  progress?: number;
+  contentLength?: number | null;
+}
+
+type HandlerFunction = (data: any, options?: HandlerOptions) => any;
 interface RequestConfig {
   url: string;
-  handler: (data: any) => any;
+  handler: HandlerFunction;
   beforeReconnect?: () => void;
   params?: object;
   watch?: boolean;
@@ -16,23 +24,47 @@ const useSetChunkFetch = () => {
   const requestConfig = useRef<any>({});
   const chunkDataRef = useRef<any>([]);
   const readTextEventStreamData = async (
-    reader: ReadableStreamDefaultReader<Uint8Array>,
-    decoder: TextDecoder,
-    callback: (data: any) => void,
+    response: Response,
+    callback: HandlerFunction,
     delay = 200
   ) => {
     class BufferManager {
       private buffer: any[] = [];
+      private contentLength: number | null = null;
+      private progress: number = 0;
+      private percent: number = 0;
+
+      constructor(private options: { contentLength?: string | null }) {
+        this.contentLength = options.contentLength
+          ? parseInt(options.contentLength, 10)
+          : null;
+      }
+
+      private updateProgress(data: any) {
+        if (this.contentLength) {
+          this.progress += new TextEncoder().encode(data).length;
+          this.percent = Math.floor((this.progress / this.contentLength) * 100);
+        }
+      }
 
       public add(data: any) {
         this.buffer.push(data);
+        this.updateProgress(data);
       }
 
-      public flush() {
+      public flush(done?: boolean) {
         if (this.buffer.length > 0) {
           const currentBuffer = [...this.buffer];
           this.buffer = [];
-          currentBuffer.forEach((item) => callback(item));
+          currentBuffer.forEach((item, i) => {
+            const isComplete = i === currentBuffer.length - 1 && done;
+            callback(item, {
+              isComplete,
+              percent: this.percent,
+              progress: this.progress,
+              contentLength: this.contentLength
+            });
+          });
         }
       }
 
@@ -40,7 +72,15 @@ const useSetChunkFetch = () => {
         return this.buffer;
       }
     }
-    const bufferManager = new BufferManager();
+
+    const reader =
+      response?.body?.getReader() as ReadableStreamDefaultReader<Uint8Array>;
+    const decoder = new TextDecoder('utf-8');
+    const contentLength = response.headers.get('content-length');
+
+    const bufferManager = new BufferManager({
+      contentLength: contentLength
+    });
 
     const throttledCallback = throttle(() => {
       bufferManager.flush();
@@ -53,7 +93,7 @@ const useSetChunkFetch = () => {
 
       if (done) {
         isReading = false;
-        bufferManager.flush();
+        bufferManager.flush(done);
         break;
       }
 
@@ -97,11 +137,7 @@ const useSetChunkFetch = () => {
         return;
       }
 
-      const reader =
-        response?.body?.getReader() as ReadableStreamDefaultReader<Uint8Array>;
-      const decoder = new TextDecoder('utf-8');
-
-      await readTextEventStreamData(reader, decoder, handler);
+      await readTextEventStreamData(response, handler);
 
       console.log('chunkDataRef.current===1', chunkDataRef.current);
     } catch (error) {

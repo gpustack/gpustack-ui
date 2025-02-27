@@ -314,19 +314,3 @@ export const readLargeStreamData = async (
     }
   }
 };
-
-export const readTextEventStreamData = async (
-  reader: any,
-  decoder: TextDecoder,
-  callback: (data: any) => void
-) => {
-  const { done, value } = await reader.read();
-
-  if (done) {
-    return;
-  }
-
-  let chunk = decoder.decode(value, { stream: true });
-  callback(chunk);
-  await readTextEventStreamData(reader, decoder, callback);
-};

@@ -51,14 +51,14 @@ export const useInitLLmMeta = (
   } = options;
   const formRef = useRef<any>(null);
   const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
+  const defaultModel = searchParams.get('model') || modelList?.[0]?.value || '';
   const [modelMeta, setModelMeta] = useState<any>({});
   const [initialValues, setInitialValues] = useState<any>({
     ...defaultValues,
-    model: selectModel
+    model: defaultModel
   });
   const [parameters, setParams] = useState<any>({
-    model: selectModel
+    model: defaultModel
   });
   const [paramsConfig, setParamsConfig] =
     useState<ParamsSchema[]>(defaultParamsConfig);
@@ -88,6 +88,7 @@ export const useInitLLmMeta = (
     return {
       form: _.merge({}, defaultValues, {
         ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
+        seed: obj.seed === -1 ? null : obj.seed,
         max_tokens: defaultMaxTokens
       }),
       meta: {
@@ -128,11 +129,10 @@ export const useInitLLmMeta = (
   );
 
   useEffect(() => {
-    if (!parameters.model && modelList.length) {
-      const model = modelList[0]?.value;
-      handleOnModelChange(model);
+    if (defaultModel) {
+      handleOnModelChange(defaultModel);
     }
-  }, [modelList, parameters.model, handleOnModelChange]);
+  }, [defaultModel, handleOnModelChange]);
 
   useEffect(() => {
     if (paramsRef.current) {
@@ -263,6 +263,7 @@ export const useInitImageMeta = (props: MessageProps) => {
         { ...imgInitialValues, ...advancedFieldsDefaultValus },
         {
           ..._.pick(meta, IMG_METAKEYS),
+          seed: meta?.seed === -1 ? null : meta?.seed,
           size: sizeOptions.length
             ? `${meta?.default_width || 512}x${meta?.default_height || 512}`
             : 'custom',

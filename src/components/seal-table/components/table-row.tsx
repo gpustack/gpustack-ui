@@ -44,8 +44,6 @@ const TableRow: React.FC<
     allSubChildren?: any[];
   }>(TableContext);
   const { setChunkRequest } = useSetChunkRequest();
-  const [expanded, setExpanded] = useState(false);
-  // const [checked, setChecked] = useState(false);
   const [childrenData, setChildrenData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -72,6 +70,10 @@ const TableRow: React.FC<
       axiosToken.current?.cancel?.();
     };
   }, []);
+
+  const expanded = useMemo(() => {
+    return expandedRowKeys?.includes(record[rowKey]);
+  }, [expandedRowKeys]);
 
   const checked = useMemo(() => {
     return rowSelection?.selectedRowKeys?.includes(record[rowKey]);
@@ -160,7 +162,6 @@ const TableRow: React.FC<
   };
 
   const handleRowExpand = async () => {
-    setExpanded(!expanded);
     onExpand?.(!expanded, record, record[rowKey]);
 
     if (pollTimer.current) {
@@ -199,14 +200,6 @@ const TableRow: React.FC<
       );
     }
   };
-
-  useEffect(() => {
-    if (expandedRowKeys?.includes(record[rowKey])) {
-      setExpanded(true);
-    } else {
-      setExpanded(false);
-    }
-  }, [expandedRowKeys]);
 
   useEffect(() => {
     const handleVisibilityChange = async () => {

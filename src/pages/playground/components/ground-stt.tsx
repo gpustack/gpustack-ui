@@ -16,7 +16,6 @@ import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -37,11 +36,10 @@ import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
-  loaded?: boolean;
   ref?: any;
 }
 
-const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
+const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const { modelList } = props;
   const messageId = useRef<number>(0);
@@ -474,4 +472,4 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundLeft);
+export default GroundSTT;

@@ -600,7 +600,6 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleEdit = async (row: ListItem) => {
     const initialValues = generateFormValues(row, gpuDeviceList.current);
-    console.log('initialValues:', initialValues, row);
     setUpdateFormInitials({
       gpuOptions: gpuDeviceList.current,
       data: initialValues,
@@ -818,7 +817,7 @@ const Models: React.FC<ModelsProps> = ({
         )
       }
     ];
-  }, [sortOrder, intl]);
+  }, [sortOrder, intl, handleSelect]);
 
   const handleOnClick = async () => {
     if (isLoading) {

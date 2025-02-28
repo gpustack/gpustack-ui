@@ -118,19 +118,19 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = ({
       defaultMaxTokens = obj.max_model_len / 2;
     }
 
-    form.setFieldsValue({
+    const initials = {
       ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
+      seed: obj.seed === -1 ? null : obj.seed,
       max_tokens: defaultMaxTokens
-    });
+    };
+
+    form.setFieldsValue(initials);
 
     setMetaData({
       ...obj,
       max_tokens: obj.max_model_len || _.divide(obj.n_ctx, obj.n_slot)
     });
-    return {
-      ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
-      max_tokens: defaultMaxTokens
-    };
+    return initials;
   };
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundLeft from './components/ground-left';
@@ -24,18 +24,21 @@ const Playground: React.FC = () => {
   const groundRerankerRef = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const optionsList = [
-    {
-      label: intl.formatMessage({ id: 'menu.playground.chat' }),
-      value: 'chat',
-      icon: <MessageOutlined />
-    },
-    {
-      label: intl.formatMessage({ id: 'menu.compare' }),
-      value: 'compare',
-      icon: <OneToOneOutlined />
-    }
-  ];
+
+  const optionsList = useMemo(() => {
+    return [
+      {
+        label: intl.formatMessage({ id: 'menu.playground.chat' }),
+        value: 'chat',
+        icon: <MessageOutlined />
+      },
+      {
+        label: intl.formatMessage({ id: 'menu.compare' }),
+        value: 'compare',
+        icon: <OneToOneOutlined />
+      }
+    ];
+  }, [intl]);
 
   const handleViewCode = useCallback(() => {
     if (activeKey === 'reranker') {
@@ -43,7 +46,7 @@ const Playground: React.FC = () => {
     } else if (activeKey === 'chat') {
       groundLeftRef.current?.viewCode?.();
     }
-  }, [groundLeftRef, groundRerankerRef, activeKey]);
+  }, [activeKey]);
 
   const handleToggleCollapse = useCallback(() => {
     if (activeKey === 'reranker') {
@@ -51,33 +54,33 @@ const Playground: React.FC = () => {
       return;
     }
     groundLeftRef.current?.setCollapse?.();
-  }, [groundLeftRef, groundRerankerRef, activeKey]);
+  }, [activeKey]);
 
-  const items: TabsProps['items'] = [
-    {
-      key: 'chat',
-      label: 'Chat',
-      children: (
-        <GroundLeft ref={groundLeftRef} modelList={modelList}></GroundLeft>
-      )
-    },
-    {
-      key: 'compare',
-      label: 'Compare',
-      children: <MultipleChat modelList={modelList} loaded={loaded} />
-    }
-  ];
+  const items: TabsProps['items'] = useMemo(() => {
+    return [
+      {
+        key: 'chat',
+        label: 'Chat',
+        children: (
+          <GroundLeft ref={groundLeftRef} modelList={modelList}></GroundLeft>
+        )
+      },
+      {
+        key: 'compare',
+        label: 'Compare',
+        children: <MultipleChat modelList={modelList} loaded={loaded} />
+      }
+    ];
+  }, [modelList, loaded]);
 
   useEffect(() => {
-    if (size.width < breakpoints.lg) {
-      if (!groundLeftRef.current?.collapse) {
-        groundLeftRef.current?.setCollapse?.();
-      }
+    if (size.width < breakpoints.lg && !groundLeftRef.current?.collapse) {
+      groundLeftRef.current?.setCollapse?.();
     }
   }, [size.width]);
 
   useEffect(() => {
-    const getModelList = async () => {
+    const fetchData = async () => {
       try {
         const params = {
           categories: modelCategoriesMap.llm,
@@ -91,25 +94,18 @@ const Playground: React.FC = () => {
             meta: item.meta
           };
         }) as Global.BaseOption<string>[];
-        return list;
+        setModelList(list);
       } catch (error) {
         console.error(error);
-        return [];
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        const modelist = await getModelList();
-        setModelList(modelist);
-      } catch (error) {
+      } finally {
         setLoaded(true);
       }
     };
+
     fetchData();
   }, []);
 
-  const renderExtra = () => {
+  const renderExtra = useMemo(() => {
     if (activeKey === 'compare') {
       return false;
     }
@@ -134,12 +130,38 @@ const Playground: React.FC = () => {
         ></Button>
       </Space>
     );
-  };
+  }, [activeKey, intl, handleViewCode, handleToggleCollapse]);
+
+  const header = useMemo(() => {
+    return {
+      title: (
+        <div className="flex items-center">
+          <span className="font-600">
+            {intl.formatMessage({ id: 'menu.playground.chat' })}
+          </span>
+          {
+            <Segmented
+              options={optionsList}
+              size="middle"
+              className="m-l-40"
+              onChange={(key) => setActiveKey(key)}
+            ></Segmented>
+          }
+        </div>
+      ),
+      style: {
+        paddingInline: 'var(--layout-content-header-inlinepadding)'
+      },
+      breadcrumb: {}
+    };
+  }, [optionsList]);
 
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
-      groundLeftRef.current?.setCollapse?.();
+      if (activeKey === 'chat') {
+        groundLeftRef.current?.setCollapse?.();
+      }
     },
     {
       preventDefault: true
@@ -149,28 +171,8 @@ const Playground: React.FC = () => {
   return (
     <PageContainer
       ghost
-      header={{
-        title: (
-          <div className="flex items-center">
-            <span className="font-600">
-              {intl.formatMessage({ id: 'menu.playground.chat' })}
-            </span>
-            {
-              <Segmented
-                options={optionsList}
-                size="middle"
-                className="m-l-40"
-                onChange={(key) => setActiveKey(key)}
-              ></Segmented>
-            }
-          </div>
-        ),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={renderExtra()}
+      header={header}
+      extra={renderExtra}
       className={classNames('playground-container', {
         compare: activeKey === 'compare',
         chat: activeKey !== 'compare'

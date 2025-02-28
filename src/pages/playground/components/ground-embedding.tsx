@@ -22,7 +22,6 @@ import 'overlayscrollbars/overlayscrollbars.css';
 import { Resizable } from 're-resizable';
 import {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -728,4 +727,4 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundEmbedding);
+export default GroundEmbedding;

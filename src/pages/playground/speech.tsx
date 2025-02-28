@@ -9,7 +9,7 @@ import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundSTT from './components/ground-stt';
@@ -37,19 +37,21 @@ const Playground: React.FC = () => {
   const [speechModelList, setSpeechModelList] = useState<
     Global.BaseOption<string>[]
   >([]);
-  const [loaded, setLoaded] = useState(false);
-  const optionsList = [
-    {
-      label: intl.formatMessage({ id: 'playground.audio.texttospeech' }),
-      value: TabsValueMap.Tab1,
-      icon: <IconFont type={'icon-audio'}></IconFont>
-    },
-    {
-      label: intl.formatMessage({ id: 'playground.audio.speechtotext' }),
-      value: TabsValueMap.Tab2,
-      icon: <AudioOutlined />
-    }
-  ];
+
+  const optionsList = useMemo(() => {
+    return [
+      {
+        label: intl.formatMessage({ id: 'playground.audio.texttospeech' }),
+        value: TabsValueMap.Tab1,
+        icon: <IconFont type={'icon-audio'}></IconFont>
+      },
+      {
+        label: intl.formatMessage({ id: 'playground.audio.speechtotext' }),
+        value: TabsValueMap.Tab2,
+        icon: <AudioOutlined />
+      }
+    ];
+  }, [intl]);
 
   const handleViewCode = useCallback(() => {
     if (activeKey === TabsValueMap.Tab1) {
@@ -67,29 +69,25 @@ const Playground: React.FC = () => {
     groundTabRef2.current?.setCollapse?.();
   }, [activeKey]);
 
-  const items: TabsProps['items'] = [
-    {
-      key: 'tts',
-      label: 'TTS',
-      children: (
-        <GroundTTS
-          ref={groundTabRef1}
-          modelList={textToSpeechModels}
-        ></GroundTTS>
-      )
-    },
-    {
-      key: 'stt',
-      label: 'Realtime',
-      children: (
-        <GroundSTT
-          modelList={speechModelList}
-          loaded={loaded}
-          ref={groundTabRef2}
-        />
-      )
-    }
-  ];
+  const items: TabsProps['items'] = useMemo(() => {
+    return [
+      {
+        key: 'tts',
+        label: 'TTS',
+        children: (
+          <GroundTTS
+            ref={groundTabRef1}
+            modelList={textToSpeechModels}
+          ></GroundTTS>
+        )
+      },
+      {
+        key: 'stt',
+        label: 'Realtime',
+        children: <GroundSTT modelList={speechModelList} ref={groundTabRef2} />
+      }
+    ];
+  }, [textToSpeechModels, speechModelList]);
 
   useEffect(() => {
     if (size.width < breakpoints.lg) {
@@ -153,13 +151,13 @@ const Playground: React.FC = () => {
         setTextToSpeechModels(textToSpeechModels);
         setSpeechModelList(speechToTextModels);
       } catch (error) {
-        setLoaded(true);
+        // error
       }
     };
     fetchData();
   }, []);
 
-  const renderExtra = () => {
+  const renderExtra = useMemo(() => {
     return (
       <Space key="buttons">
         <Button
@@ -181,7 +179,32 @@ const Playground: React.FC = () => {
         ></Button>
       </Space>
     );
-  };
+  }, [handleToggleCollapse, handleViewCode, intl]);
+
+  const header = useMemo(() => {
+    return {
+      title: (
+        <div className="flex items-center">
+          <span className="font-600">
+            {intl.formatMessage({ id: 'menu.playground.speech' })}
+          </span>
+          {
+            <Segmented
+              options={optionsList}
+              size="middle"
+              className="m-l-40"
+              value={activeKey}
+              onChange={(key) => setActiveKey(key)}
+            ></Segmented>
+          }
+        </div>
+      ),
+      style: {
+        paddingInline: 'var(--layout-content-header-inlinepadding)'
+      },
+      breadcrumb: {}
+    };
+  }, [activeKey, optionsList]);
 
   useHotkeys(
     HotKeys.RIGHT.join(','),
@@ -196,29 +219,8 @@ const Playground: React.FC = () => {
   return (
     <PageContainer
       ghost
-      header={{
-        title: (
-          <div className="flex items-center">
-            <span className="font-600">
-              {intl.formatMessage({ id: 'menu.playground.speech' })}
-            </span>
-            {
-              <Segmented
-                options={optionsList}
-                size="middle"
-                className="m-l-40"
-                value={activeKey}
-                onChange={(key) => setActiveKey(key)}
-              ></Segmented>
-            }
-          </div>
-        ),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={renderExtra()}
+      header={header}
+      extra={renderExtra}
       className={classNames('playground-container', {
         compare: activeKey === 'compare',
         chat: activeKey !== 'compare'

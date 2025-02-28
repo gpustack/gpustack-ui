@@ -14,7 +14,6 @@ import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -210,8 +209,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       form.current?.form?.setFieldValue('seed', params.seed);
       console.log('params:', params, parameters);
-      submitMessage(params);
       setRouteCache(routeCachekey['/playground/text-to-image'], true);
+      await submitMessage(params);
     } catch (error) {
       // console.log('error:', error);
     } finally {
@@ -566,4 +565,4 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundImages);
+export default GroundImages;

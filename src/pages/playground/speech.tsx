@@ -107,6 +107,7 @@ const Playground: React.FC = () => {
           with_meta: true
         };
         const res = await queryModelsList(params);
+
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,
@@ -127,6 +128,7 @@ const Playground: React.FC = () => {
           with_meta: true
         };
         const res = await queryModelsList(params);
+
         const list = _.map(res.data || [], (item: any) => {
           return {
             value: item.id,

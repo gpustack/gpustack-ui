@@ -8,6 +8,15 @@ const removeBracketsFromLine = (row: string) => {
   return row.startsWith('(…)') ? row.slice(3) : row;
 };
 
+interface MessageProps {
+  inputStr: string;
+  reset?: boolean;
+  page?: number;
+  isComplete?: boolean;
+  chunked?: boolean;
+  progress?: number;
+  percent?: number;
+}
 class AnsiParser {
   private cursorRow: number = 0;
   private cursorCol: number = 0;
@@ -17,6 +26,8 @@ class AnsiParser {
   private isProcessing: boolean = false;
   private taskQueue: string[] = [];
   private page: number = 1;
+  private progress: number = 0;
+  private percent: number = 0;
   private isComplete: boolean = false;
   private chunked: boolean = true; // true: send data in chunks, false: send all data at once
   private pageSize: number = 500;
@@ -44,8 +55,16 @@ class AnsiParser {
     this.page = 1;
   }
 
-  public setPage(page: number) {
-    this.page = page;
+  public setPage(page: number | undefined) {
+    this.page = page ?? 1;
+  }
+
+  public setPercent(percent: number | undefined) {
+    this.percent = percent ?? 0;
+  }
+
+  public setProgress(progress: number | undefined) {
+    this.progress = progress ?? 0;
   }
 
   public setIsCompelete(isComplete: boolean) {
@@ -179,6 +198,12 @@ class AnsiParser {
           const result = this.processInput(input);
           if (this.chunked) {
             self.postMessage({ result: result.data, lines: result.lines });
+          } else if (!this.isComplete) {
+            self.postMessage({
+              result: '',
+              percent: this.percent,
+              isComplete: false
+            });
           }
         } catch (error) {
           console.error('Error processing input:', error);
@@ -194,7 +219,11 @@ class AnsiParser {
     if (this.taskQueue.length > 0) {
       this.processQueue();
     } else if (this.isComplete && !this.chunked) {
-      self.postMessage({ result: this.getScreenText() });
+      self.postMessage({
+        result: this.getScreenText(),
+        percent: this.percent,
+        isComplete: true
+      });
       this.reset();
     }
   }
@@ -208,18 +237,20 @@ class AnsiParser {
 }
 const parser = new AnsiParser();
 
-self.onmessage = function (event) {
+self.onmessage = function (event: MessageEvent<MessageProps>) {
   const {
     inputStr,
     reset,
     page,
     isComplete = false,
-    chunked = true
+    chunked = true,
+    percent = 0
   } = event.data;
 
   parser.setPage(page);
   parser.setIsCompelete(isComplete);
   parser.setChunked(chunked);
+  parser.setPercent(percent);
 
   if (reset) {
     parser.reset();

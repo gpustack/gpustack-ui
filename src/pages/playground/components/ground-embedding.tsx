@@ -198,10 +198,9 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
-    await formRef.current?.form.validateFields();
-    if (!parameters.model) return;
-
     try {
+      await formRef.current?.form.validateFields();
+      if (!parameters.model) return;
       const validTextList = textList.filter((item) => item.text);
       const validFileList = fileList.filter((item) => item.text);
 

@@ -506,7 +506,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                     })}
                   >
                     <Button
-                      size="middle"
+                      size="small"
                       type="text"
                       icon={<SwapOutlined />}
                       onClick={handleToggleParamsStyle}

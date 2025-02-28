@@ -229,7 +229,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                     <FileImageOutlined className="font-size-32 text-secondary" />
                   </span>
                   <span>
-                    {intl.formatMessage({ id: 'playground.params.empty.tips' })}
+                    {intl.formatMessage({
+                      id: 'playground.params.empty.tips'
+                    })}
                   </span>
                 </div>
               )}
@@ -308,7 +310,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                   })}
                 >
                   <Button
-                    size="middle"
+                    size="small"
                     type="text"
                     icon={<SwapOutlined />}
                     onClick={handleToggleParamsStyle}

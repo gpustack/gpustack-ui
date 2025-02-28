@@ -13,7 +13,6 @@ import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -37,7 +36,7 @@ interface MessageProps {
   ref?: any;
 }
 
-const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
+const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const messageId = useRef<number>(0);
   const [messageList, setMessageList] = useState<
@@ -423,4 +422,4 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundLeft);
+export default GroundTTS;

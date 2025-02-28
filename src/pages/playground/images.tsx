@@ -9,7 +9,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundImages from './components/ground-images';
@@ -28,20 +28,21 @@ const TextToImages: React.FC = () => {
   const groundTabRef1 = useRef<any>(null);
   const groundTabRef2 = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
-  const [loaded, setLoaded] = useState(false);
 
-  const optionsList = [
-    {
-      label: intl.formatMessage({ id: 'playground.image.generate' }),
-      value: TabsValueMap.Tab1,
-      icon: <DiffOutlined />
-    },
-    {
-      label: intl.formatMessage({ id: 'playground.image.edit' }),
-      value: TabsValueMap.Tab2,
-      icon: <HighlightOutlined />
-    }
-  ];
+  const optionsList = useMemo(() => {
+    return [
+      {
+        label: intl.formatMessage({ id: 'playground.image.generate' }),
+        value: TabsValueMap.Tab1,
+        icon: <DiffOutlined />
+      },
+      {
+        label: intl.formatMessage({ id: 'playground.image.edit' }),
+        value: TabsValueMap.Tab2,
+        icon: <HighlightOutlined />
+      }
+    ];
+  }, [intl]);
 
   const handleViewCode = useCallback(() => {
     if (activeKey === TabsValueMap.Tab1) {
@@ -59,26 +60,29 @@ const TextToImages: React.FC = () => {
     groundTabRef2.current?.setCollapse?.();
   }, [activeKey]);
 
-  const items: TabsProps['items'] = [
-    {
-      key: TabsValueMap.Tab1,
-      label: 'Generate',
-      children: (
-        <GroundImages ref={groundTabRef1} modelList={modelList}></GroundImages>
-      )
-    },
-    {
-      key: TabsValueMap.Tab2,
-      label: 'Edit',
-      children: <ImageEdit modelList={modelList} ref={groundTabRef2} />
-    }
-  ];
+  const items: TabsProps['items'] = useMemo(() => {
+    return [
+      {
+        key: TabsValueMap.Tab1,
+        label: 'Generate',
+        children: (
+          <GroundImages
+            ref={groundTabRef1}
+            modelList={modelList}
+          ></GroundImages>
+        )
+      },
+      {
+        key: TabsValueMap.Tab2,
+        label: 'Edit',
+        children: <ImageEdit modelList={modelList} ref={groundTabRef2} />
+      }
+    ];
+  }, [modelList]);
 
   useEffect(() => {
-    if (size.width < breakpoints.lg) {
-      if (!groundTabRef1.current?.collapse) {
-        groundTabRef1.current?.setCollapse?.();
-      }
+    if (size.width < breakpoints.lg && !groundTabRef1.current?.collapse) {
+      groundTabRef1.current?.setCollapse?.();
     }
   }, [size.width]);
 
@@ -109,13 +113,13 @@ const TextToImages: React.FC = () => {
         const modelist = await getModelList();
         setModelList(modelist);
       } catch (error) {
-        setLoaded(true);
+        // error
       }
     };
     fetchData();
   }, []);
 
-  const renderExtra = () => {
+  const renderExtra = useMemo(() => {
     return (
       <Space key="buttons">
         <Button
@@ -137,7 +141,31 @@ const TextToImages: React.FC = () => {
         ></Button>
       </Space>
     );
-  };
+  }, [intl, handleViewCode, handleToggleCollapse]);
+
+  const header = useMemo(() => {
+    return {
+      title: (
+        <div className="flex items-center">
+          <span className="font-600">
+            {intl.formatMessage({ id: 'menu.playground.text2images' })}
+          </span>
+          {
+            <Segmented
+              options={optionsList}
+              size="middle"
+              className="m-l-40"
+              onChange={(key) => setActiveKey(key)}
+            ></Segmented>
+          }
+        </div>
+      ),
+      style: {
+        paddingInline: 'var(--layout-content-header-inlinepadding)'
+      },
+      breadcrumb: {}
+    };
+  }, [optionsList]);
 
   useHotkeys(
     HotKeys.RIGHT.join(','),
@@ -152,28 +180,8 @@ const TextToImages: React.FC = () => {
   return (
     <PageContainer
       ghost
-      header={{
-        title: (
-          <div className="flex items-center">
-            <span className="font-600">
-              {intl.formatMessage({ id: 'menu.playground.text2images' })}
-            </span>
-            {
-              <Segmented
-                options={optionsList}
-                size="middle"
-                className="m-l-40"
-                onChange={(key) => setActiveKey(key)}
-              ></Segmented>
-            }
-          </div>
-        ),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={renderExtra()}
+      header={header}
+      extra={renderExtra}
       className={classNames('playground-container chat')}
     >
       <div className="play-ground">

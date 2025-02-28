@@ -14,7 +14,8 @@ export const IMG_METAKEYS = [
   'schedule_method',
   'cfg_scale',
   'guidance',
-  'negative_prompt'
+  'negative_prompt',
+  'seed'
 ];
 
 export const llmInitialValues = {

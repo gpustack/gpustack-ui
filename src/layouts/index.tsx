@@ -206,7 +206,11 @@ export default (props: any) => {
       updateCheck.latest_version?.indexOf('0.0.0') === -1 &&
       updateCheck.latest_version?.indexOf('rc') === -1
     );
-  }, [updateCheck, version, initialState]);
+  }, [
+    updateCheck.latest_version,
+    version.version,
+    initialState?.currentUser?.is_admin
+  ]);
 
   useEffect(() => {
     const body = document.querySelector('body');
@@ -279,8 +283,106 @@ export default (props: any) => {
 
       return dom;
     },
-    [intl, version, updateCheck]
+    [intl, showUpgrade]
   );
+
+  const itemRender = useCallback((route, _, routes) => {
+    const { breadcrumbName, title, path } = route;
+    const label = title || breadcrumbName;
+    const last = routes[routes.length - 1];
+    if (last) {
+      if (last.path === path || last.linkPath === path) {
+        return <span>{label}</span>;
+      }
+    }
+    return <Link to={path}>{label}</Link>;
+  }, []);
+
+  const menuItemRender = useCallback(
+    (menuItemProps, defaultDom) => {
+      if (menuItemProps.isUrl || menuItemProps.children) {
+        return defaultDom;
+      }
+      if (menuItemProps.path && location.pathname !== menuItemProps.path) {
+        return (
+          <Link
+            to={menuItemProps.path.replace('/*', '')}
+            target={menuItemProps.target}
+          >
+            {defaultDom}
+          </Link>
+        );
+      }
+      return <>{defaultDom}</>;
+    },
+    [location.pathname]
+  );
+
+  const onPageChange = useCallback(
+    (route) => {
+      const { location } = history;
+      const { pathname } = location;
+
+      initRouteCacheValue(pathname);
+      dropRouteCache(pathname);
+
+      // if user is not change password, redirect to change password page
+      if (
+        location.pathname !== loginPath &&
+        userInfo?.require_password_change
+      ) {
+        history.push(loginPath);
+        return;
+      }
+
+      // if user is not logged in, redirect to login page
+      if (!initialState?.currentUser && location.pathname !== loginPath) {
+        history.push(loginPath);
+      } else if (location.pathname === '/') {
+        const pathname = initialState?.currentUser?.is_admin
+          ? '/dashboard'
+          : '/playground';
+        history.push(pathname);
+      }
+    },
+    [userInfo?.require_password_change, initialState?.currentUser]
+  );
+
+  useEffect(() => {
+    // 先清除旧的性能标记
+    performance.clearMarks();
+    performance.clearMeasures();
+
+    // 记录开始时间
+    performance.mark('route-start');
+
+    requestAnimationFrame(() => {
+      // 记录结束时间
+      performance.mark('route-end');
+
+      // 确保 `route-start` 存在后再测量
+      if (performance.getEntriesByName('route-start').length > 0) {
+        performance.measure('route-change', 'route-start', 'route-end');
+
+        const measure = performance.getEntriesByName('route-change')[0];
+        console.log(
+          `[Performance] Route change to ${location.pathname} took ${measure.duration.toFixed(2)}ms`
+        );
+
+        // 清理标记
+        performance.clearMarks();
+        performance.clearMeasures();
+      } else {
+        console.warn('Missing performance mark: route-start');
+      }
+    });
+  }, [location.pathname]);
+
+  const onRenderCallback = (id, phase, actualDuration) => {
+    console.log(
+      `[Profiler] Route: ${id} - Phase: ${phase} - Render time: ${actualDuration.toFixed(2)}ms`
+    );
+  };
 
   return (
     <div>
@@ -311,65 +413,14 @@ export default (props: any) => {
         }}
         menuHeaderRender={renderMenuHeader}
         collapsed={collapsed}
-        onPageChange={(route) => {
-          const { location } = history;
-          const { pathname } = location;
-
-          initRouteCacheValue(pathname);
-          dropRouteCache(pathname);
-
-          // if user is not change password, redirect to change password page
-          if (
-            location.pathname !== loginPath &&
-            userInfo?.require_password_change
-          ) {
-            history.push(loginPath);
-
-            return;
-          }
-
-          // if user is not logged in, redirect to login page
-          if (!initialState?.currentUser && location.pathname !== loginPath) {
-            history.push(loginPath);
-          } else if (location.pathname === '/') {
-            const pathname = initialState?.currentUser?.is_admin
-              ? '/dashboard'
-              : '/playground';
-            history.push(pathname);
-          }
-        }}
+        onPageChange={onPageChange}
         formatMessage={formatMessage}
         menu={{
           locale: true
         }}
         logo={collapsed ? SLogoIcon : LogoIcon}
-        menuItemRender={(menuItemProps, defaultDom) => {
-          if (menuItemProps.isUrl || menuItemProps.children) {
-            return defaultDom;
-          }
-          if (menuItemProps.path && location.pathname !== menuItemProps.path) {
-            return (
-              <Link
-                to={menuItemProps.path.replace('/*', '')}
-                target={menuItemProps.target}
-              >
-                {defaultDom}
-              </Link>
-            );
-          }
-          return <>{defaultDom}</>;
-        }}
-        itemRender={(route, _, routes) => {
-          const { breadcrumbName, title, path } = route;
-          const label = title || breadcrumbName;
-          const last = routes[routes.length - 1];
-          if (last) {
-            if (last.path === path || last.linkPath === path) {
-              return <span>{label}</span>;
-            }
-          }
-          return <Link to={path}>{label}</Link>;
-        }}
+        menuItemRender={menuItemRender}
+        itemRender={itemRender}
         disableContentMargin
         fixSiderbar
         fixedHeader

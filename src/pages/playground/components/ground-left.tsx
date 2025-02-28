@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
-  memo,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -211,4 +210,4 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundLeft);
+export default GroundLeft;

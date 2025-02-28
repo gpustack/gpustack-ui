@@ -16,7 +16,6 @@ import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -610,4 +609,4 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(GroundReranker);
+export default GroundReranker;

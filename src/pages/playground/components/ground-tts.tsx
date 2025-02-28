@@ -92,6 +92,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
+  const defaultModel = useMemo(() => {
+    return selectModel || modelList[0]?.value || '';
+  }, [modelList]);
+
   const viewCodeContent = useMemo(() => {
     return TextToSpeechCode({
       api: AUDIO_TEXT_TO_SPEECH_API,
@@ -147,9 +151,9 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async (current?: { role: string; content: string }) => {
-    await formRef.current?.form.validateFields();
-    if (!parameters.model) return;
     try {
+      await formRef.current?.form.validateFields();
+      if (!parameters.model) return;
       setLoading(true);
       setMessageId();
       setTokenResult(null);
@@ -235,14 +239,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleSelectModel = useCallback(
     async (value: string) => {
       if (!value) {
-        setVoiceList([]);
-        setParams((pre: any) => {
-          return {
-            ...pre,
-            voice: ''
-          };
-        });
-        formRef.current?.form.setFieldValue('voice', '');
         return;
       }
       const model = modelList.find((item) => item.value === value);
@@ -259,10 +255,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setParams((pre: any) => {
         return {
           ...pre,
+          model: value,
           voice: newList[0]?.value
         };
       });
-      formRef.current?.form.setFieldValue('voice', newList[0]?.value);
     },
     [modelList]
   );
@@ -307,11 +303,10 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [paramsConfig, intl, voiceList]);
 
   useEffect(() => {
-    if (!parameters.model && modelList.length) {
-      const model = modelList[0]?.value;
-      handleSelectModel(model);
+    if (defaultModel) {
+      handleSelectModel(defaultModel);
     }
-  }, [modelList, parameters.model, handleSelectModel]);
+  }, [defaultModel]);
 
   useEffect(() => {
     if (scroller.current) {

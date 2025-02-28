@@ -218,9 +218,9 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const submitMessage = async () => {
-    await formRef.current?.form.validateFields();
-    if (!parameters.model) return;
     try {
+      await formRef.current?.form.validateFields();
+      if (!parameters.model) return;
       const documentList: any[] = [...textList, ...fileList];
 
       const validDocus = documentList.filter((item) => item.text);

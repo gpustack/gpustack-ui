@@ -89,7 +89,7 @@ const useSetChunkFetch = () => {
 
     let isReading = true;
 
-    while (true) {
+    while (isReading) {
       const { done, value } = await reader.read();
 
       if (done) {

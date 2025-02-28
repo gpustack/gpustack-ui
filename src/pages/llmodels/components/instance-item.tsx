@@ -115,10 +115,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   modelData,
   handleChildSelect
 }) => {
-  const [api, contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification({
+    stack: { threshold: 1 }
+  });
   const { downloadStream } = useDownloadStream();
   const intl = useIntl();
-
   const actionItems = useMemo(() => {
     return _.filter(childActionList, (action: any) => {
       if (action.key === 'viewlog' || action.key === 'download') {
@@ -135,12 +136,25 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   };
 
   const downloadNotification = useCallback(
-    (data: HandlerOptions & { filename: string; duration?: number }) => {
+    (
+      data: HandlerOptions & {
+        filename: string;
+        duration?: number;
+        chunkRequestRef: any;
+      }
+    ) => {
       api.open({
         duration: data.duration,
         message: renderMessage(data.filename),
         key: data.filename,
-        description: <Progress percent={data.percent} size="small"></Progress>
+        closeIcon: (
+          <span>{intl.formatMessage({ id: 'common.button.cancel' })}</span>
+        ),
+        description: <Progress percent={data.percent} size="small"></Progress>,
+        onClose() {
+          data.chunkRequestRef?.current?.abort();
+          notification.destroy?.(data.filename);
+        }
       });
     },
     []

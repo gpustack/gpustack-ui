@@ -162,7 +162,7 @@ export const useInitImageMeta = (props: MessageProps) => {
   const { modelList } = props;
   const form = useRef<any>(null);
   const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
+  const defaultModel = searchParams.get('model') || modelList?.[0]?.value || '';
   const [modelMeta, setModelMeta] = useState<any>({});
   const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(false);
   const [imageSizeOptions, setImageSizeOptions] = React.useState<
@@ -175,7 +175,7 @@ export const useInitImageMeta = (props: MessageProps) => {
   const [initialValues, setInitialValues] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
-    model: selectModel
+    model: defaultModel
   });
   const [paramsConfig, setParamsConfig] = useState<ParamsSchema[]>([
     ...ImageCountConfig,
@@ -186,7 +186,7 @@ export const useInitImageMeta = (props: MessageProps) => {
   const [parameters, setParams] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
-    model: selectModel
+    model: defaultModel
   });
 
   const cacheFormData = React.useRef<Record<string, any>>({
@@ -410,11 +410,10 @@ export const useInitImageMeta = (props: MessageProps) => {
   );
 
   useEffect(() => {
-    if (!parameters.model && modelList.length) {
-      const model = modelList[0]?.value;
-      handleOnModelChange(model);
+    if (defaultModel) {
+      handleOnModelChange(defaultModel);
     }
-  }, [modelList, parameters.model, handleOnModelChange]);
+  }, [defaultModel, handleOnModelChange]);
 
   return {
     extractIMGMeta,

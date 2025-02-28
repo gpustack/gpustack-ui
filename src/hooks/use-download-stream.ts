@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { useEffect, useRef } from 'react';
 
 export default function useDownloadStream() {
-  const chunkRequedtRef = useRef<any>(null);
+  const chunkRequestRef = useRef<any>(null);
   const logParseWorker = useRef<any>(null);
   const clearScreen = useRef(false);
   const filename = useRef('log');
@@ -26,19 +26,13 @@ export default function useDownloadStream() {
   };
 
   const updateContent = (data: string, options?: HandlerOptions) => {
-    const { isComplete } = options || {};
-
-    downloadNotificationRef.current?.({
-      ...options,
-      duration: isComplete ? 1 : null,
-      filename: filename.current
-    });
+    const { isComplete, percent } = options || {};
 
     logParseWorker.current?.postMessage({
       inputStr: data,
-      page: 1,
       reset: clearScreen.current,
       isComplete: isComplete,
+      percent: percent,
       chunked: false
     });
     clearScreen.current = false;
@@ -72,19 +66,20 @@ export default function useDownloadStream() {
       downloadNotificationRef.current = props.downloadNotification;
       const { params, url } = props;
 
-      downloadNotificationRef.current?.({
-        filename: filename.current
-      });
+      chunkRequestRef.current?.current?.abort?.();
 
-      chunkRequedtRef.current?.current?.abort?.();
-
-      chunkRequedtRef.current = setChunkFetch({
+      chunkRequestRef.current = setChunkFetch({
         url,
         params,
         watch: false,
         contentType: 'text',
         errorHandler: handleError,
         handler: updateContent
+      });
+      downloadNotificationRef.current?.({
+        filename: filename.current,
+        duration: null,
+        chunkRequestRef: chunkRequestRef.current
       });
     } catch (error) {
       //
@@ -108,8 +103,24 @@ export default function useDownloadStream() {
     );
 
     logParseWorker.current.onmessage = (event: any) => {
-      const { result } = event.data;
-      downloadFile(result);
+      const { result, isComplete, percent } = event.data;
+
+      const isAborted = chunkRequestRef.current?.current?.signal?.aborted;
+      if (!isComplete && !isAborted) {
+        downloadNotificationRef.current?.({
+          percent: percent,
+          duration: null,
+          filename: filename.current,
+          chunkRequestRef: chunkRequestRef.current
+        });
+      } else if (isComplete && !isAborted) {
+        downloadNotificationRef.current?.({
+          duration: 1,
+          percent: 100,
+          filename: filename.current
+        });
+        downloadFile(result);
+      }
     };
 
     return () => {

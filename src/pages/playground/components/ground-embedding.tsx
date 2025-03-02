@@ -451,7 +451,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (scroller.current) {
       initialize(scroller.current);
     }
-  }, [scroller.current, initialize]);
+  }, [initialize]);
 
   useEffect(() => {
     if (textList.length + fileList.length > messageListLengthCache.current) {

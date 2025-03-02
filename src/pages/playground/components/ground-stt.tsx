@@ -282,13 +282,13 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (scroller.current) {
       initialize(scroller.current);
     }
-  }, [scroller.current, initialize]);
+  }, [initialize]);
 
   useEffect(() => {
     if (paramsRef.current) {
       innitializeParams(paramsRef.current);
     }
-  }, [paramsRef.current, innitializeParams]);
+  }, [innitializeParams]);
 
   useEffect(() => {
     if (loading) {

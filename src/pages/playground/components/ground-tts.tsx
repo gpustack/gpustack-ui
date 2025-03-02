@@ -311,13 +311,13 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (scroller.current) {
       initialize(scroller.current);
     }
-  }, [scroller.current, initialize]);
+  }, [initialize]);
 
   useEffect(() => {
     if (paramsRef.current) {
       innitializeParams(paramsRef.current);
     }
-  }, [paramsRef.current, innitializeParams]);
+  }, [innitializeParams]);
 
   return (
     <div className="ground-left-wrapper">

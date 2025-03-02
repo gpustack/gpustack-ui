@@ -108,7 +108,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (paramsRef.current) {
       innitializeParams(paramsRef.current);
     }
-  }, [paramsRef.current, innitializeParams]);
+  }, [innitializeParams]);
 
   return (
     <div className="ground-left-wrapper">

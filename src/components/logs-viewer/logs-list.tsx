@@ -112,7 +112,7 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
     if (scroller.current) {
       initialize(scroller.current);
     }
-  }, [scroller.current, initialize]);
+  }, [initialize]);
 
   useEffect(() => {
     if (dataList.length && !stopScroll.current && instance) {

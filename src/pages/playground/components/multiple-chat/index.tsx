@@ -28,13 +28,7 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   const [modelSelections, setModelSelections] = useState<ModelSelectionItem[]>(
     []
   );
-  const [globalParams, setGlobalParams] = useState<Record<string, any>>({
-    seed: null,
-    stop: null,
-    temperature: 1,
-    top_p: 1,
-    max_tokens: 1024
-  });
+  const [globalParams, setGlobalParams] = useState<Record<string, any>>({});
   const [spans, setSpans] = useState<{
     span: number;
     count: number;

@@ -28,7 +28,9 @@ import {
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
+  model?: string;
   loaded?: boolean;
+  isChat?: boolean;
   ref?: any;
 }
 
@@ -43,7 +45,7 @@ export const useInitLLmMeta = (
   props: MessageProps,
   options: InitMetaOptions
 ) => {
-  const { modelList } = props;
+  const { modelList, model, isChat } = props;
   const {
     metaKeys = {},
     defaultValues = {},
@@ -51,7 +53,9 @@ export const useInitLLmMeta = (
   } = options;
   const formRef = useRef<any>(null);
   const [searchParams] = useSearchParams();
-  const defaultModel = searchParams.get('model') || modelList?.[0]?.value || '';
+  const defaultModel =
+    searchParams.get('model') ||
+    (isChat ? model ?? modelList?.[0]?.value : model);
   const [modelMeta, setModelMeta] = useState<any>({});
   const [initialValues, setInitialValues] = useState<any>({
     ...defaultValues,
@@ -103,18 +107,12 @@ export const useInitLLmMeta = (
     return fields?.join(',');
   }, [paramsConfig]);
 
-  const handleOnValuesChange = useCallback(
-    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
-      setParams(allValues);
-    },
-    []
-  );
-
   const handleOnModelChange = useCallback(
     (val: string) => {
       if (!val) return;
       const model = modelList.find((item) => item.value === val);
       const { form: initialData, meta } = extractLLMMeta(model?.meta);
+
       setModelMeta(meta || {});
       setInitialValues({
         ...initialData,
@@ -124,8 +122,31 @@ export const useInitLLmMeta = (
         ...initialData,
         model: val
       });
+      const config = defaultParamsConfig.map((item) => {
+        return {
+          ...item,
+          attrs:
+            item.name === 'max_tokens'
+              ? { ...item.attrs, max: meta.max_tokens || 16 * 1024 }
+              : {
+                  ...item.attrs
+                }
+        };
+      });
+      setParamsConfig(config);
     },
-    [modelList]
+    [modelList, defaultParamsConfig]
+  );
+
+  const handleOnValuesChange = useCallback(
+    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
+      if (changeValues.model) {
+        handleOnModelChange(changeValues.model);
+        return;
+      }
+      setParams(allValues);
+    },
+    [handleOnModelChange]
   );
 
   useEffect(() => {
@@ -138,7 +159,7 @@ export const useInitLLmMeta = (
     if (paramsRef.current) {
       innitializeParams(paramsRef.current);
     }
-  }, [paramsRef.current, innitializeParams]);
+  }, [innitializeParams]);
 
   return {
     extractLLMMeta,

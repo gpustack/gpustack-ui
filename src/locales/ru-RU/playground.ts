@@ -81,16 +81,14 @@ export default {
   'playground.audio.texttospeech': 'Текст в речь',
   'playground.audio.speechtotext': 'Речь в текст',
   'playground.audio.texttospeech.tips': 'Здесь появится сгенерированная речь',
-  'playground.audio.speechtotext.tips':
-    'Загрузите аудио или начните запись',
+  'playground.audio.speechtotext.tips': 'Загрузите аудио или начните запись',
   'playground.audio.enablemic':
     'Разрешите доступ к микрофону в настройках браузера.',
   'playground.audio.enablemic.doc': 'Инструкция',
   'playground.audio.startrecord': 'Начать запись',
   'playground.audio.stoprecord': 'Остановить запись',
   'playground.audio.generating.tips': 'Здесь появится распознанный текст',
-  'playground.audio.uploadfile.tips':
-    'Поддерживаемые форматы: {formats}',
+  'playground.audio.uploadfile.tips': 'Поддерживаемые форматы: {formats}',
   'playground.input.multiplePaste': 'Пакетный ввод',
   'playground.input.multiplePaste.tips':
     'Многострочный текст будет автоматически разделён на отдельные записи.',
@@ -127,8 +125,7 @@ export default {
   'playground.documents.verify.rerank': 'Документы не могут быть пустыми.',
   'playground.image.guidance.tip':
     'Уровень контроля: влияет на качество и разнообразие изображений.',
-  'playground.image.cfg_scale.tip':
-    'Уровень соответствия промпту.',
+  'playground.image.cfg_scale.tip': 'Уровень соответствия промпту.',
   'playground.image.strength.tip':
     'Чем выше значение — тем сильнее изменения исходного изображения.',
   'playground.image.edit.tips': 'Перетащите изображение для загрузки',
@@ -141,5 +138,9 @@ export default {
   'playground.image.fitview': 'Подогнать размер',
   'playground.chat.aithought': 'Рассуждение (CoT)',
   'playground.image.mask.uploaded': 'Маска загружена',
-  'playground.image.mask.upload': 'Загрузить маску'
+  'playground.image.mask.upload': 'TODO: Translate me',
+  'playground.params.frequency_penalty.tips': `TODO: Translate me`,
+  'playground.params.presence_penalty.tips': `TODO: Translate me`,
+  'playground.image.origin': 'TODO: Translate me',
+  'playground.image.mask': 'TODO: Translate me'
 };

@@ -80,8 +80,10 @@ export default {
   'common.button.back': 'Назад',
   'common.button.undo': 'Отменить',
   'common.button.discardChange': 'Отменить изменения',
-  'common.tips.save': 'Есть несохранённые изменения. Выход приведёт к их потере.',
-  'common.tips.cancel': 'У вас есть несохранённые изменения. Всё равно продолжить?',
+  'common.tips.save':
+    'Есть несохранённые изменения. Выход приведёт к их потере.',
+  'common.tips.cancel':
+    'У вас есть несохранённые изменения. Всё равно продолжить?',
   'common.tips.discard': 'Отменить изменения?',
   'common.tips.title': 'Подсказка:',
   'common.input.range.start': 'Начальное значение',
@@ -124,7 +126,7 @@ export default {
   'common.permission.404': 'Страница не найдена',
   'common.permission.action.post': 'Создать',
   'common.permission.action.get': 'Поиск',
-  'common.permission.action.delete': 'Удалить'
+  'common.permission.action.delete': 'Удалить',
   'common.permission.action.put': 'Обновить',
   'common.button.settings': 'Настройки',
   'common.button.management': 'Управление',
@@ -179,7 +181,8 @@ export default {
   'common.rule.array': 'должен быть массивом',
   'common.rule.object': 'должен быть объектом',
   'common.rule.syntaxerror': 'синтаксическая ошибка',
-  'common.code.hide.tips': '... Скрыто {rows} строк, нажмите чтобы раскрыть ...',
+  'common.code.hide.tips':
+    '... Скрыто {rows} строк, нажмите чтобы раскрыть ...',
   'common.nodata.created': 'Еще не создано ни одного {type}',
   'common.nodata.added': 'Еще не добавлено ни одного {type}',
   'common.status.edited': 'Изменено',
@@ -223,5 +226,5 @@ export default {
   'common.options.none': 'Нет',
   'common.options.auto': 'Авто',
   'common.search.empty': 'Ничего не найдено',
-  'common.button.downloadLog': 'Скачать логи',
+  'common.button.downloadLog': 'Скачать логи'
 };

@@ -6,26 +6,42 @@ import { GPUListItem, ListItem } from '../config/types';
 
 export const useGenerateFormEditInitialValues = () => {
   const gpuDeviceList = useRef<any[]>([]);
+
   const generateCascaderOptions = (list: GPUListItem[]) => {
-    const workerFields = ['worker_name', 'worker_id', 'worker_ip'];
+    const workerFields = new Set(['worker_name', 'worker_id', 'worker_ip']);
 
-    const workers = _.groupBy(list, 'worker_name');
+    const workersMap = new Map<string, GPUListItem[]>();
+    for (const item of list) {
+      if (!workersMap.has(item.worker_name)) {
+        workersMap.set(item.worker_name, []);
+      }
+      workersMap.get(item.worker_name)!.push(item);
+    }
 
-    const workerList = _.map(workers, (value: GPUListItem[]) => {
-      return {
-        label: `${value[0].worker_name}`,
-        value: value[0].worker_name,
-        parent: true,
-        ..._.pick(value[0], workerFields),
-        children: _.map(value, (item: GPUListItem) => {
-          return {
-            label: `${item.name}`,
-            value: item.id,
-            ..._.omit(item, workerFields)
-          };
-        })
-      };
-    });
+    const workerList = Array.from(workersMap.entries()).map(
+      ([workerName, items]) => {
+        const firstItem = items[0];
+
+        return {
+          label: workerName,
+          value: workerName,
+          parent: true,
+          children: items
+            .map((item) => ({
+              label: item.name,
+              value: item.id,
+              index: item.index,
+              ...Object.fromEntries(
+                Object.entries(item).filter(([key]) => !workerFields.has(key))
+              )
+            }))
+            .sort((a, b) => a.index - b.index),
+          ...Object.fromEntries(
+            Object.entries(firstItem).filter(([key]) => workerFields.has(key))
+          )
+        };
+      }
+    );
 
     return workerList;
   };

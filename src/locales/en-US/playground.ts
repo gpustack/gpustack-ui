@@ -141,7 +141,9 @@ export default {
   'playground.image.fitview': 'Fit View',
   'playground.chat.aithought': 'CoT',
   'playground.image.mask.uploaded': 'Mask Uploaded',
-  'playground.image.mask.upload': 'Upload Mask',
+  'playground.image.mask.upload': 'Upload Mask: takes priority in submission.',
   'playground.params.frequency_penalty.tips': `Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.`,
-  'playground.params.presence_penalty.tips': `Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.`
+  'playground.params.presence_penalty.tips': `Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.`,
+  'playground.image.origin': 'Original',
+  'playground.image.mask': 'Mask'
 };

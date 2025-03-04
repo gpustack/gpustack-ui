@@ -39,12 +39,12 @@ export default function useTextImage(props: any) {
     if (scroller.current) {
       initialize(scroller.current);
     }
-  }, [scroller.current, initialize]);
+  }, [initialize]);
   useEffect(() => {
     if (paramsRef.current) {
       innitializeParams(paramsRef.current);
     }
-  }, [paramsRef.current, innitializeParams]);
+  }, [innitializeParams]);
 
   const removeBase64Suffix = (str: string, suffix: string) => {
     return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;

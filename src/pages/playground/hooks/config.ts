@@ -23,7 +23,7 @@ export const llmInitialValues = {
   stop: null,
   temperature: 1,
   top_p: 1,
-  max_tokens: 1024
+  max_tokens: null
 };
 
 export const advancedFieldsDefaultValus = {

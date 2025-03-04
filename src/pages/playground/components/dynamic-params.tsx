@@ -18,7 +18,7 @@ type ParamsSettingsProps = {
   ref?: any;
   parametersTitle?: React.ReactNode;
   showModelSelector?: boolean;
-  modelList: Global.BaseOption<string>[];
+  modelList?: Global.BaseOption<string>[];
   onValuesChange?: (changeValues: any, value: Record<string, any>) => void;
   onModelChange?: (model: string) => void;
   paramsConfig?: ParamsSchema[];
@@ -143,27 +143,29 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                   </span>
                 )}
               </h3>
-              <Form.Item
-                name="model"
-                rules={[
-                  {
-                    required: true,
-                    message: intl.formatMessage(
-                      {
-                        id: 'common.form.rule.select'
-                      },
-                      { name: intl.formatMessage({ id: 'playground.model' }) }
-                    )
-                  }
-                ]}
-              >
-                <SealSelect
-                  onChange={handleOnModelChange}
-                  showSearch={true}
-                  options={modelList}
-                  label={intl.formatMessage({ id: 'playground.model' })}
-                ></SealSelect>
-              </Form.Item>
+              {showModelSelector && (
+                <Form.Item
+                  name="model"
+                  rules={[
+                    {
+                      required: true,
+                      message: intl.formatMessage(
+                        {
+                          id: 'common.form.rule.select'
+                        },
+                        { name: intl.formatMessage({ id: 'playground.model' }) }
+                      )
+                    }
+                  ]}
+                >
+                  <SealSelect
+                    onChange={handleOnModelChange}
+                    showSearch={true}
+                    options={modelList}
+                    label={intl.formatMessage({ id: 'playground.model' })}
+                  ></SealSelect>
+                </Form.Item>
+              )}
             </>
           }
           {renderFields}

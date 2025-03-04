@@ -1,25 +1,26 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { useIntl, useSearchParams } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState
 } from 'react';
 import { OpenAIViewCode, Roles, generateMessages } from '../config';
+import { ChatParamsConfig } from '../config/params-config';
 import { MessageItem, MessageItemAction } from '../config/types';
+import { LLM_METAKEYS, llmInitialValues } from '../hooks/config';
 import useChatCompletion from '../hooks/use-chat-completion';
+import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-left.less';
 import '../style/system-message-wrap.less';
+import DynamicParams from './dynamic-params';
 import MessageInput from './message-input';
 import MessageContent from './multiple-chat/message-content';
 import SystemMessage from './multiple-chat/system-message';
-import ParamsSettings from './params-settings';
 import ReferenceParams from './reference-params';
 import ViewCodeModal from './view-code-modal';
 
@@ -32,21 +33,16 @@ interface MessageProps {
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
   const intl = useIntl();
-  const [searchParams] = useSearchParams();
-  const selectModel = searchParams.get('model') || '';
-  const [parameters, setParams] = useState<any>({});
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);
   const scroller = useRef<any>(null);
-  const paramsRef = useRef<any>(null);
   const [actions, setActions] = useState<MessageItemAction[]>([
     'upload',
     'delete',
     'copy'
   ]);
 
-  const { initialize: innitializeParams } = useOverlayScroller();
   const {
     submitMessage,
     handleStopConversation,
@@ -57,6 +53,24 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     messageList,
     loading
   } = useChatCompletion(scroller);
+  const {
+    handleOnValuesChange,
+    formRef,
+    paramsRef,
+    paramsConfig,
+    initialValues,
+    parameters
+  } = useInitLLmMeta(
+    { modelList, isChat: true },
+    {
+      defaultValues: {
+        ...llmInitialValues,
+        model: modelList[0]?.value
+      },
+      defaultParamsConfig: ChatParamsConfig,
+      metaKeys: LLM_METAKEYS
+    }
+  );
 
   useImperativeHandle(ref, () => {
     return {
@@ -93,8 +107,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
-  const handleSelectModel = () => {};
-
   const handleOnCheck = (e: any) => {
     const checked = e.target.checked;
     if (checked) {
@@ -103,12 +115,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
       setActions(['upload', 'delete', 'copy']);
     }
   };
-
-  useEffect(() => {
-    if (paramsRef.current) {
-      innitializeParams(paramsRef.current);
-    }
-  }, [paramsRef.current, innitializeParams]);
 
   return (
     <div className="ground-left-wrapper">
@@ -176,7 +182,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             addMessage={handleAddNewMessage}
             handleAbortFetch={handleStopConversation}
             clearAll={handleClear}
-            setModelSelections={handleSelectModel}
           />
         </div>
       </div>
@@ -187,11 +192,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
         ref={paramsRef}
       >
         <div className="box">
-          <ParamsSettings
-            setParams={setParams}
-            params={parameters}
-            selectedModel={selectModel}
+          <DynamicParams
+            ref={formRef}
+            onValuesChange={handleOnValuesChange}
+            paramsConfig={paramsConfig}
+            initialValues={initialValues}
             modelList={modelList}
+            showModelSelector={true}
           />
         </div>
       </div>

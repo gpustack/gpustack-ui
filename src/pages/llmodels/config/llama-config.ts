@@ -584,6 +584,10 @@ const options = [
   {
     label: '--image-free-compute-memory-immediately',
     value: '--image-free-compute-memory-immediately'
+  },
+  {
+    label: '--jinja',
+    value: '--jinja'
   }
 ];
 

@@ -138,9 +138,10 @@ export default {
   'playground.image.fitview': 'Подогнать размер',
   'playground.chat.aithought': 'Рассуждение (CoT)',
   'playground.image.mask.uploaded': 'Маска загружена',
-  'playground.image.mask.upload': 'TODO: Translate me',
-  'playground.params.frequency_penalty.tips': `TODO: Translate me`,
-  'playground.params.presence_penalty.tips': `TODO: Translate me`,
-  'playground.image.origin': 'TODO: Translate me',
-  'playground.image.mask': 'TODO: Translate me'
+  'playground.image.mask.upload':
+    'TODO: Translate key "playground.image.mask.upload"',
+  'playground.params.frequency_penalty.tips': `TODO: Translate key "playground.params.frequency_penalty.tips"`,
+  'playground.params.presence_penalty.tips': `TODO: Translate key "playground.params.presence_penalty.tips"`,
+  'playground.image.origin': 'TODO: Translate key "playground.image.origin"',
+  'playground.image.mask': 'TODO: Translate key "playground.image.mask"'
 };

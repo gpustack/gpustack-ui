@@ -22,6 +22,7 @@ import React, {
   useState
 } from 'react';
 import { EDIT_IMAGE_API } from '../apis';
+import { scaleImageSize } from '../config';
 import { useInitImageMeta } from '../hooks/use-init-meta';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-left.less';
@@ -69,6 +70,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleToggleParamsStyle,
     setParams,
     updateCacheFormData,
+    setInitialValues,
+    updateParamsConfig,
+    setParamsConfig,
     form,
     watchFields,
     paramsConfig,
@@ -219,45 +223,51 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const handleOnScaleImageSize = useCallback(
-    (data: { width: number; height: number }) => {
-      const { width, height } = data;
-      form.current?.form?.setFieldsValue({
+    (data: { rawWidth: number; rawHeight: number }) => {
+      const { width, height } = scaleImageSize({
+        width: data.rawWidth,
+        height: data.rawHeight
+      });
+      const newParamsConfig = updateParamsConfig({
+        size: 'custom',
+        isOpenaiCompatible
+      });
+      setParamsConfig(newParamsConfig);
+      const newParameters = {
+        ...parameters,
         size: 'custom',
         width: width || 512,
         height: height || 512
-      });
-      setParams((pre: object) => {
-        return {
-          ...pre,
-          size: 'custom',
-          width: width || 512,
-          height: height || 512
-        };
-      });
+      };
+      setParams(newParameters);
       updateCacheFormData({
         size: 'custom',
         width: width || 512,
         height: height || 512
       });
+      setInitialValues(newParameters);
     },
-    []
+    [parameters, isOpenaiCompatible]
   );
 
-  const handleUpdateImageList = useCallback((base64List: any) => {
-    const currentImg = _.get(base64List, '[0]', {});
-    const img = _.get(currentImg, 'dataUrl', '');
-    handleOnScaleImageSize(currentImg);
-    setUploadList(base64List);
-    setImage(img);
-    setActiveImgUid(_.get(base64List, '[0].uid', ''));
-    setImageStatus({
-      isOriginal: true,
-      isResetNeeded: true,
-      width: _.get(currentImg, 'width', 512),
-      height: _.get(currentImg, 'height', 512)
-    });
-    setImageList([]);
-  }, []);
+  const handleUpdateImageList = useCallback(
+    (base64List: any) => {
+      const currentImg = _.get(base64List, '[0]', {});
+      const img = _.get(currentImg, 'dataUrl', '');
+      handleOnScaleImageSize(currentImg);
+      setUploadList(base64List);
+      setImage(img);
+      setActiveImgUid(_.get(base64List, '[0].uid', ''));
+      setImageStatus({
+        isOriginal: true,
+        isResetNeeded: true,
+        width: _.get(currentImg, 'width', 512),
+        height: _.get(currentImg, 'height', 512)
+      });
+      setImageList([]);
+    },
+    [handleOnScaleImageSize]
+  );
 
   const handleUpdateMaskList = useCallback((base64List: any) => {
     setMaskUpload(base64List);
@@ -340,6 +350,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       </>
     );
   }, [
+    intl,
     image,
     loading,
     maskUpload,
@@ -388,11 +399,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           editable={false}
           autoBgColor={false}
           onClick={() => handleOnImgClick(uploadList[0], true)}
-          label={<span>Origin</span>}
+          label={
+            <span>{intl.formatMessage({ id: 'playground.image.origin' })}</span>
+          }
         ></SingleImage>
       </>
     );
-  }, [uploadList, handleOnImgClick]);
+  }, [uploadList, intl, handleOnImgClick]);
 
   const renderMaskImage = useMemo(() => {
     if (!maskUpload.length) {
@@ -409,11 +422,13 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           autoSize={false}
           editable={false}
           autoBgColor={false}
-          label={<span>Mask</span>}
+          label={
+            <span>{intl.formatMessage({ id: 'playground.image.mask' })}</span>
+          }
         ></SingleImage>
       </>
     );
-  }, [maskUpload]);
+  }, [maskUpload, intl]);
 
   return (
     <div className="ground-left-wrapper">

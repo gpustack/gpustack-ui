@@ -297,6 +297,28 @@ export const useInitImageMeta = (props: MessageProps) => {
     };
   };
 
+  const updateParamsConfig = (values: {
+    size: string;
+    isOpenaiCompatible: boolean;
+  }) => {
+    // update config
+    if (values.size === 'custom') {
+      return [
+        ...basicParamsConfig,
+        ...ImageCustomSizeConfig,
+        ...(values.isOpenaiCompatible
+          ? ImageconstExtraConfig
+          : ImageAdvancedParamsConfig)
+      ];
+    }
+    return [
+      ...basicParamsConfig,
+      ...(values.isOpenaiCompatible
+        ? ImageconstExtraConfig
+        : ImageAdvancedParamsConfig)
+    ];
+  };
+
   const updateCacheFormData = (values: Record<string, any>) => {
     _.merge(cacheFormData.current, values);
   };
@@ -322,28 +344,15 @@ export const useInitImageMeta = (props: MessageProps) => {
     }
 
     // update config
-    if (values.size === 'custom') {
-      const config = [
-        ...basicParamsConfig,
-        ...ImageCustomSizeConfig,
-        ...(isOpenaiCompatible
-          ? ImageAdvancedParamsConfig
-          : ImageconstExtraConfig)
-      ];
-      setParamsConfig(config);
-    } else {
-      const config = [
-        ...basicParamsConfig,
-        ...(isOpenaiCompatible
-          ? ImageAdvancedParamsConfig
-          : ImageconstExtraConfig)
-      ];
-      setParamsConfig(config);
-    }
+    const newParamsConfig = updateParamsConfig({
+      size: values.size,
+      isOpenaiCompatible: !isOpenaiCompatible
+    });
     form.current?.form?.setFieldsValue({
       ...values,
       model: parameters.model
     });
+    setParamsConfig(newParamsConfig);
     setParams({
       ...values,
       model: parameters.model
@@ -357,7 +366,7 @@ export const useInitImageMeta = (props: MessageProps) => {
 
   const handleOnModelChange = useCallback(
     (val: string) => {
-      if (!val) return;
+      if (!val || val === parameters.model) return;
       const model = modelList.find((item) => item.value === val);
       const { form: initialData, sizeOptions } = extractIMGMeta(model?.meta);
       const newParamsConfig = generateImageParamsConfig(model, sizeOptions);
@@ -380,7 +389,7 @@ export const useInitImageMeta = (props: MessageProps) => {
       });
       updateCacheFormData(initialData);
     },
-    [modelList, isOpenaiCompatible]
+    [modelList, isOpenaiCompatible, parameters.model]
   );
 
   const handleOnValuesChange = useCallback(
@@ -446,6 +455,9 @@ export const useInitImageMeta = (props: MessageProps) => {
     handleOnValuesChange,
     handleToggleParamsStyle,
     setParams,
+    setInitialValues,
+    updateParamsConfig,
+    setParamsConfig,
     form,
     watchFields,
     paramsConfig,

@@ -367,6 +367,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 title={intl.formatMessage({ id: 'common.button.clear' })}
               >
                 <Button
+                  disabled={loading}
                   type="text"
                   icon={<ClearOutlined />}
                   size="middle"

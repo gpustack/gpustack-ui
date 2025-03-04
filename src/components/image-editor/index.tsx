@@ -10,7 +10,13 @@ import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Slider, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import IconFont from '../icon-font';
 import './index.less';
 
@@ -38,7 +44,7 @@ const COLOR = 'rgba(0, 0, 255, 0.3)';
 
 const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   imageSrc,
-  disabled,
+  disabled: isDisabled,
   imageStatus,
   clearUploadMask,
   onSave,
@@ -68,7 +74,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const preImguid = useRef<string | number>('');
   const [activeScale, setActiveScale] = useState<number>(1);
   const negativeMaskRef = useRef<boolean>(false);
+  const [invertMask, setInvertMask] = useState<boolean>(false);
   const mouseDownState = useRef<boolean>(false);
+
+  const disabled = useMemo(() => {
+    return isDisabled || invertMask;
+  }, [isDisabled, invertMask]);
 
   const getTransformedPoint = useCallback(
     (offsetX: number, offsetY: number) => {
@@ -225,11 +236,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     );
     const data = imageData.data;
 
-    if (negativeMaskRef.current) {
-      inpaintBackground(data);
-    } else {
-      inpaintArea(data);
-    }
+    inpaintArea(data);
 
     maskCtx.putImageData(imageData, 0, 0);
 
@@ -605,6 +612,39 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     overlayCtx!.resetTransform();
   }, []);
 
+  const invertPainting = (isChecked: boolean) => {
+    const ctx = overlayCanvasRef.current!.getContext('2d');
+
+    if (!ctx) return;
+
+    if (isChecked) {
+      const canvasWidth = overlayCanvasRef.current!.width;
+      const canvasHeight = overlayCanvasRef.current!.height;
+
+      clearOverlayCanvas();
+
+      ctx.fillStyle = COLOR;
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      setTransform();
+      ctx.globalCompositeOperation = 'destination-out';
+
+      strokesRef.current.forEach((stroke) => {
+        stroke.forEach((point: Point) => {
+          const { x, y } = getTransformedPoint(point.x, point.y);
+          const lineWidth = getTransformLineWidth(point.lineWidth);
+          ctx.fillStyle = 'rgba(0,0,0,1)';
+          ctx.beginPath();
+          ctx.arc(x, y, lineWidth / 2, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      });
+      ctx.globalCompositeOperation = 'source-out';
+    } else {
+      redrawStrokes(strokesRef.current);
+    }
+  };
+
   const updateCursorSize = () => {
     cursorRef.current!.style.width = `${lineWidth * autoScale.current}px`;
     cursorRef.current!.style.height = `${lineWidth * autoScale.current}px`;
@@ -630,11 +670,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       resetCanvas();
     }
     preImguid.current = imguid;
-    console.log(
-      'Image initialized:',
-      strokesRef.current.length,
-      imageStatus.isOriginal
-    );
+
     if (strokesRef.current.length && imageStatus.isOriginal) {
       redrawStrokes(strokesRef.current);
       saveImage();
@@ -710,6 +746,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
 
   const handleOnChangeMask = (e: any) => {
     negativeMaskRef.current = e.target.checked;
+    invertPainting(e.target.checked);
+    setInvertMask(e.target.checked);
     saveImage();
   };
 
@@ -745,14 +783,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (disabled) {
-  //     overlayCanvasRef.current!.style.pointerEvents = 'none';
-  //   } else {
-  //     overlayCanvasRef.current!.style.pointerEvents = 'auto';
-  //   }
-  // }, [disabled]);
 
   return (
     <div className="editor-wrapper">

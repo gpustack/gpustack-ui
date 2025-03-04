@@ -5,7 +5,9 @@ export const LLM_METAKEYS: Record<string, any> = {
   top_p: 'top_p',
   n_ctx: 'n_ctx',
   n_slot: 'n_slot',
-  max_model_len: 'max_model_len'
+  max_model_len: 'max_model_len',
+  frequency_penalty: 'frequency_penalty',
+  presence_penalty: 'presence_penalty'
 };
 
 export const IMG_METAKEYS = [
@@ -23,7 +25,9 @@ export const llmInitialValues = {
   stop: null,
   temperature: 1,
   top_p: 1,
-  max_tokens: null
+  max_tokens: null,
+  frequency_penalty: null,
+  presence_penalty: null
 };
 
 export const advancedFieldsDefaultValus = {

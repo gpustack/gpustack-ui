@@ -136,5 +136,7 @@ export default {
   'playground.image.fitview': '适应视图',
   'playground.chat.aithought': '思考过程',
   'playground.image.mask.uploaded': '遮罩已上传',
-  'playground.image.mask.upload': '上传遮罩'
+  'playground.image.mask.upload': '上传遮罩',
+  'playground.params.frequency_penalty.tips': `数值介于 -2.0 和 2.0 之间。正值会根据新词在文本中已出现的频率对其进行惩罚，从而降低模型逐字重复相同内容的可能性。`,
+  'playground.params.presence_penalty.tips': `数值介于 -2.0 和 2.0 之间。正值会根据新词是否已在文本中出现过对其进行惩罚，从而增加模型谈论新话题的可能性。`
 };

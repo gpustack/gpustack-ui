@@ -14,6 +14,7 @@ interface SingleImageProps {
   maxHeight?: number;
   maxWidth?: number;
   dataUrl: string;
+  label?: React.ReactNode;
   uid: number;
   preview?: boolean;
   autoSize?: boolean;
@@ -42,6 +43,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
     maxHeight,
     maxWidth,
     dataUrl = '',
+    label,
     style,
     autoBgColor,
     preview = true,
@@ -119,6 +121,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
           ref={imgWrapper}
         >
           <>
+            {label && <div className="label">{label}</div>}
             {loading ? (
               <span
                 className="progress-wrap"

@@ -1,6 +1,7 @@
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
+import { CRYPT_TEXT } from '@/utils/localstore/index';
 import { GlobalOutlined, LockOutlined } from '@ant-design/icons';
 import { SelectLang, useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
@@ -8,8 +9,6 @@ import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
 import { updatePassword } from '../apis';
 import { checkDefaultPage } from '../utils';
-
-const CRYPT_TEXT = 'seal';
 
 const PasswordForm: React.FC = () => {
   const intl = useIntl();
@@ -28,7 +27,6 @@ const PasswordForm: React.FC = () => {
   };
 
   const handleSubmit = async (values: any) => {
-    console.log('values', values, form);
     try {
       await updatePassword({
         new_password: values.new_password,

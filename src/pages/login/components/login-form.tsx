@@ -3,6 +3,8 @@ import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
 import SealInput from '@/components/seal-form/seal-input';
 import {
+  CRYPT_TEXT,
+  REMEMBER_ME_KEY,
   getRememberMe,
   rememberMe,
   removeRememberMe
@@ -12,13 +14,10 @@ import { useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
-import { memo, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
 import { checkDefaultPage } from '../utils';
-
-const REMEMBER_ME_KEY = 'r_m';
-const CRYPT_TEXT = 'seal';
 
 const LoginForm = () => {
   const [userInfo, setUserInfo] = useAtom(userAtom);
@@ -27,7 +26,6 @@ const LoginForm = () => {
   const intl = useIntl();
   const [form] = Form.useForm();
 
-  console.log('initialState+++++++=login', userInfo, initialState);
   const renderWelCome = useMemo(() => {
     return (
       <div
@@ -206,4 +204,4 @@ const LoginForm = () => {
   );
 };
 
-export default memo(LoginForm);
+export default LoginForm;

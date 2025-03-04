@@ -132,6 +132,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         onValuesChange={handleValuesChange}
         onFinish={handleOnFinish}
         onFinishFailed={handleOnFinishFailed}
+        initialValues={initialValues}
       >
         <div>
           {

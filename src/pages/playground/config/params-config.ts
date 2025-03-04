@@ -553,7 +553,7 @@ export const ChatParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       max: 2,
-      step: 0.1,
+      step: 0.01,
       inputnumber: true
     },
     rules: [
@@ -599,7 +599,55 @@ export const ChatParamsConfig: ParamsSchema[] = [
     },
     attrs: {
       max: 1,
-      step: 0.1,
+      step: 0.01,
+      inputnumber: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Slider',
+    name: 'frequency_penalty',
+    label: {
+      text: 'Frequency Penalty',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.frequency_penalty.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      max: 2,
+      min: -2,
+      step: 0.01,
+      inputnumber: true
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
+  },
+  {
+    type: 'Slider',
+    name: 'presence_penalty',
+    label: {
+      text: 'Presence Penalty',
+      isLocalized: false
+    },
+    description: {
+      text: 'playground.params.presence_penalty.tips',
+      html: false,
+      isLocalized: true
+    },
+    attrs: {
+      max: 2,
+      min: -2,
+      step: 0.01,
       inputnumber: true
     },
     rules: [

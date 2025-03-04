@@ -157,11 +157,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [finalParameters, currentPrompt, parameters.size]);
 
   const handleClear = () => {
-    // setImageList([]);
-    // setTokenResult(null);
-    // setMask('');
-    // setImage('');
-    // setUploadList([]);
     setCurrentPrompt('');
   };
 
@@ -393,10 +388,32 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           editable={false}
           autoBgColor={false}
           onClick={() => handleOnImgClick(uploadList[0], true)}
+          label={<span>Origin</span>}
         ></SingleImage>
       </>
     );
   }, [uploadList, handleOnImgClick]);
+
+  const renderMaskImage = useMemo(() => {
+    if (!maskUpload.length) {
+      return null;
+    }
+    return (
+      <>
+        <SingleImage
+          {...maskUpload[0]}
+          height={125}
+          maxHeight={125}
+          preview={false}
+          loading={false}
+          autoSize={false}
+          editable={false}
+          autoBgColor={false}
+          label={<span>Mask</span>}
+        ></SingleImage>
+      </>
+    );
+  }, [maskUpload]);
 
   return (
     <div className="ground-left-wrapper">
@@ -428,6 +445,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               alignItems: 'center'
             }}
           >
+            <div className="m-r-10">{renderMaskImage}</div>
             {renderOriginImage}
             {imageList.length > 0 && (
               <>

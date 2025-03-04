@@ -433,7 +433,11 @@ const Workers: React.FC = () => {
                       </span>
                       <span>
                         {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-                        {convertFileSize(record?.status?.memory?.used, 0)}
+                        {convertFileSize(
+                          record?.status?.memory?.used ||
+                            record?.status.memory?.allocated,
+                          0
+                        )}
                       </span>
                     </span>
                   }

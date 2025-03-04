@@ -29,7 +29,3 @@ To add a new language configuration, follow these steps:
 
    - Review and ensure all translations are complete.
    - Your new language configuration is now ready for use!
-
-5. **Check the Dir and File**
-
-   - `npm run check:locales`

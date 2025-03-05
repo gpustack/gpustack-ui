@@ -348,6 +348,16 @@ export default (props: any) => {
     [userInfo?.require_password_change, initialState?.currentUser]
   );
 
+  const onMenuHeaderClick = useCallback((e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    navigate('/dashboard');
+  }, []);
+
+  const onCollapse = (value) => {
+    setCollapsed(value);
+  };
+
   useEffect(() => {
     // 先清除旧的性能标记
     performance.clearMarks();
@@ -403,14 +413,8 @@ export default (props: any) => {
           title: <div style={{ fontSize: 36 }}> gpuStack </div>
         }}
         siderWidth={220}
-        onCollapse={(collapsed) => {
-          setCollapsed(collapsed);
-        }}
-        onMenuHeaderClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          navigate('/dashboard');
-        }}
+        onCollapse={onCollapse}
+        onMenuHeaderClick={onMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
         collapsed={collapsed}
         onPageChange={onPageChange}

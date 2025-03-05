@@ -15,15 +15,10 @@ type ViewModalProps = {
   onCancel: () => void;
 };
 
-const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
-  const viewportHeight = window.innerHeight;
+const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const intl = useIntl();
   const { setChunkRequest } = useSetChunkRequest();
   const { open, url, onCancel, tail } = props || {};
-  const [modalSize] = useState<any>({
-    width: '100%',
-    height: viewportHeight - 86
-  });
   const [enableScorllLoad, setEnableScorllLoad] = useState(true);
   const logsViewerRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>(null);
@@ -106,13 +101,12 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
           borderRadius: 0
         }
       }}
-      width={modalSize.width}
+      width="100%"
       footer={null}
     >
       <div className="viewer-wrapper" ref={contentRef}>
         <LogsViewer
           ref={logsViewerRef}
-          height={modalSize.height}
           diffHeight={93}
           url={url}
           tail={tail}
@@ -126,4 +120,4 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   );
 };
 
-export default React.memo(ViewCodeModal);
+export default ViewLogsModal;

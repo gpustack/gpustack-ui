@@ -34,9 +34,9 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
       theme: 'os-theme-light'
     }
   });
-  const viewportHeight = window.innerHeight;
-  const viewHeight = viewportHeight - diffHeight;
-  const [innerHieght, setInnerHeight] = useState(viewHeight);
+  const [innerHieght, setInnerHeight] = useState(
+    window.innerHeight - diffHeight
+  );
   const scroller = useRef<any>({});
   const stopScroll = useRef(false);
 

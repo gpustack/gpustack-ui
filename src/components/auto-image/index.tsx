@@ -45,7 +45,7 @@ const AutoImage: React.FC<
       return;
     }
     const { ratio } = await getImgRatio(props.src || '');
-    console.log('ratio', ratio);
+
     if (typeof height === 'number') {
       setWidth(height * ratio);
     } else {
@@ -53,7 +53,7 @@ const AutoImage: React.FC<
     }
   }, [getImgRatio, height, props.src]);
 
-  const onDownload = () => {
+  const onDownload = useCallback(() => {
     const url = props.src || '';
     const filename = Date.now() + '';
 
@@ -63,16 +63,16 @@ const AutoImage: React.FC<
     document.body.appendChild(link);
     link.click();
     link.remove();
-  };
+  }, [props.src]);
 
   const handleImgLoad = useCallback(() => {
     props.onLoad?.();
     setIsError(false);
   }, [props.onLoad]);
 
-  const handleOnError = () => {
+  const handleOnError = useCallback(() => {
     setIsError(true);
-  };
+  }, []);
 
   useEffect(() => {
     handleOnLoad();
@@ -127,4 +127,4 @@ const AutoImage: React.FC<
   );
 };
 
-export default AutoImage;
+export default React.memo(AutoImage);

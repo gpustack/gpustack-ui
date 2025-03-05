@@ -16,6 +16,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     rowKey,
     childParentKey,
     onExpand,
+    onExpandAll,
     onSort,
     onCell,
     expandedRowKeys,
@@ -50,6 +51,12 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
         };
       });
   }, [columns, children]);
+
+  const expandAll = useMemo(() => {
+    const allKeys = new Set(expandedRowKeys);
+    const currentDataKeys = props.dataSource.map((record) => record[rowKey]);
+    return currentDataKeys.every((key) => allKeys.has(key));
+  }, [props.dataSource, expandedRowKeys]);
 
   const selectState = useMemo(() => {
     const selectedRowKeys = rowSelection?.selectedRowKeys || [];
@@ -99,6 +106,10 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     }
   };
 
+  const handleExpandAll = (value: boolean) => {
+    onExpandAll?.(value);
+  };
+
   const handlePageChange = (page: number, pageSize: number) => {
     pagination?.onChange?.(page, pageSize);
   };
@@ -115,6 +126,8 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
             selectAll={selectState.selectAll}
             indeterminate={selectState.indeterminate}
             onSelectAll={handleSelectAllChange}
+            onExpandAll={handleExpandAll}
+            expandAll={expandAll}
             expandable={expandable}
             enableSelection={rowSelection?.enableSelection}
             hasColumns={parsedColumns.length > 0}

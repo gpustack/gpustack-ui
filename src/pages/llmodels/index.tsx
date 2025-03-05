@@ -349,6 +349,7 @@ const Models: React.FC = () => {
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}
+        handleOnToggleExpandAll={createModelsInstanceChunkRequest}
         onViewLogs={handleOnViewLogs}
         onCancelViewLogs={handleOnCancelViewLogs}
         queryParams={queryParams}

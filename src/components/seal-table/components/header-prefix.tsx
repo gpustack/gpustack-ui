@@ -1,4 +1,5 @@
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import IconFont from '@/components/icon-font';
+import { RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox } from 'antd';
 import _ from 'lodash';
 import React from 'react';
@@ -39,7 +40,17 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
         <span style={{ marginRight: 5 }}>
           {_.isBoolean(expandable) ? (
             <Button type="text" size="small" onClick={handleToggleExpand}>
-              {expandAll ? <DownOutlined /> : <RightOutlined />}
+              {expandAll ? (
+                <IconFont
+                  type="icon-collapse_all"
+                  className="font-size-16"
+                ></IconFont>
+              ) : (
+                <IconFont
+                  type="icon-uncollapse_all"
+                  className="font-size-16"
+                ></IconFont>
+              )}
             </Button>
           ) : (
             expandable

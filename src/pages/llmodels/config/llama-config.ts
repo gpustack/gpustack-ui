@@ -348,7 +348,7 @@ const options = [
   {
     label: '--rope-scaling',
     value: '--rope-scaling',
-    options: ['none', 'linear', 'yarn']
+    options: ['linear', 'yarn']
   },
   {
     label: '--rope-scale',

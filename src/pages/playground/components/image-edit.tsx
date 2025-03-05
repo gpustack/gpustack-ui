@@ -289,8 +289,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           isResetNeeded: false
         };
       });
-      setMask(data.mask || null);
-      setImage(data.img || maskUpload[0]?.dataUrl || null);
+      setMask(data.mask || maskUpload[0]?.dataUrl || null);
+      setImage(data.img);
     },
     []
   );
@@ -332,7 +332,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     return (
       <>
         <UploadImg
-          accept="image/png"
+          accept="image/*"
           drag={true}
           multiple={false}
           handleUpdateImgList={handleUpdateImageList}

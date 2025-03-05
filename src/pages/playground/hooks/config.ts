@@ -10,6 +10,13 @@ export const LLM_METAKEYS: Record<string, any> = {
   presence_penalty: 'presence_penalty'
 };
 
+export const precisionTwoKeys = [
+  'temperature',
+  'top_p',
+  'frequency_penalty',
+  'presence_penalty'
+];
+
 export const IMG_METAKEYS = [
   'sample_method',
   'sampling_steps',

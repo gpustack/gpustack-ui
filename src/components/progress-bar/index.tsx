@@ -7,8 +7,17 @@ const RenderProgress = memo(
     steps?: number;
     download?: boolean;
     label?: React.ReactNode;
+    successPercent?: number;
+    successColor?: string;
   }) => {
-    const { percent, steps = 5, download, label } = props;
+    const {
+      percent,
+      steps = 5,
+      download,
+      label,
+      successPercent,
+      successColor
+    } = props;
 
     const strokeColor = useMemo(() => {
       if (download) {
@@ -24,47 +33,38 @@ const RenderProgress = memo(
       return 'var(--ant-color-error)';
     }, [percent]);
 
+    const renderProgress = useMemo(() => {
+      return (
+        <Progress
+          percentPosition={{ align: 'center', type: 'inner' }}
+          size={[undefined, 16]}
+          format={() => {
+            return (
+              <span
+                style={{
+                  color: '#fff'
+                }}
+              >
+                {percent}%
+              </span>
+            );
+          }}
+          percent={percent}
+          success={{
+            percent: successPercent,
+            strokeColor: 'var(--ant-geekblue-3)'
+          }}
+          strokeColor={strokeColor}
+        ></Progress>
+      );
+    }, [percent, successPercent, strokeColor]);
+
     return (
       <>
         {label ? (
-          <Tooltip title={label}>
-            <Progress
-              percentPosition={{ align: 'center', type: 'inner' }}
-              size={[undefined, 16]}
-              format={() => {
-                return (
-                  <span
-                    style={{
-                      color: '#fff'
-                    }}
-                  >
-                    {percent}%
-                  </span>
-                );
-              }}
-              percent={percent}
-              strokeColor={strokeColor}
-            ></Progress>
-          </Tooltip>
+          <Tooltip title={label}>{renderProgress}</Tooltip>
         ) : (
-          <Progress
-            type="line"
-            percentPosition={{ align: 'center', type: 'inner' }}
-            size={[undefined, 16]}
-            format={() => {
-              return (
-                <span
-                  style={{
-                    color: '#fff'
-                  }}
-                >
-                  {percent}%
-                </span>
-              );
-            }}
-            percent={percent}
-            strokeColor={strokeColor}
-          ></Progress>
+          renderProgress
         )}
       </>
     );

@@ -53,6 +53,9 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   }, [columns, children]);
 
   const expandAll = useMemo(() => {
+    if (expandedRowKeys?.length === 0) {
+      return false;
+    }
     const allKeys = new Set(expandedRowKeys);
     const currentDataKeys = props.dataSource.map((record) => record[rowKey]);
     return currentDataKeys.every((key) => allKeys.has(key));

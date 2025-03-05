@@ -109,7 +109,7 @@ export const useInitLLmMeta = (
 
   const handleOnModelChange = useCallback(
     (val: string) => {
-      if (!val) return;
+      if (!val || val === parameters.model) return;
       const model = modelList.find((item) => item.value === val);
       const { form: initialData, meta } = extractLLMMeta(model?.meta);
 
@@ -135,7 +135,7 @@ export const useInitLLmMeta = (
       });
       setParamsConfig(config);
     },
-    [modelList, defaultParamsConfig]
+    [modelList, parameters, defaultParamsConfig]
   );
 
   const handleOnValuesChange = useCallback(
@@ -143,8 +143,10 @@ export const useInitLLmMeta = (
       if (changeValues.model) {
         handleOnModelChange(changeValues.model);
         return;
+      } else {
+        setParams(allValues);
+        setInitialValues(allValues);
       }
-      setParams(allValues);
     },
     [handleOnModelChange]
   );

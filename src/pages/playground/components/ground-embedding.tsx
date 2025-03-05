@@ -111,11 +111,17 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     paramsRef,
     modelMeta,
     formFields
-  } = useInitLLmMeta(props, {
-    defaultValues: {},
-    defaultParamsConfig: [],
-    metaKeys: LLM_METAKEYS
-  });
+  } = useInitLLmMeta(
+    {
+      modelList,
+      isChat: true
+    },
+    {
+      defaultValues: {},
+      defaultParamsConfig: [],
+      metaKeys: LLM_METAKEYS
+    }
+  );
 
   useImperativeHandle(ref, () => {
     return {
@@ -429,11 +435,17 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     ];
   }, [outputHeight, scatterData, embeddingData]);
 
-  useEffect(() => {
-    setMessageId();
-    setScatterData([]);
-    setTokenResult(null);
-  }, [parameters.model]);
+  const onValuesChange = useCallback(
+    (changeValues: Record<string, any>, allValues: Record<string, any>) => {
+      if (changeValues.model) {
+        setScatterData([]);
+        setTokenResult(null);
+      } else {
+        handleOnValuesChange(changeValues, allValues);
+      }
+    },
+    [handleOnValuesChange]
+  );
 
   useHotkeys(
     HotKeys.SUBMIT,
@@ -709,7 +721,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
-            onValuesChange={handleOnValuesChange}
+            onValuesChange={onValuesChange}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
             modelList={modelList}

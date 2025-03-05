@@ -588,6 +588,10 @@ const options = [
   {
     label: '--jinja',
     value: '--jinja'
+  },
+  {
+    label: '--context-shift',
+    value: '--context-shift'
   }
 ];
 

@@ -359,18 +359,18 @@ export default (props: any) => {
   };
 
   useEffect(() => {
-    // 先清除旧的性能标记
+    // clear previous marks and measures
     performance.clearMarks();
     performance.clearMeasures();
 
-    // 记录开始时间
+    // record start time
     performance.mark('route-start');
 
     requestAnimationFrame(() => {
-      // 记录结束时间
+      // record end time
       performance.mark('route-end');
 
-      // 确保 `route-start` 存在后再测量
+      // make sure `route-start` exists
       if (performance.getEntriesByName('route-start').length > 0) {
         performance.measure('route-change', 'route-start', 'route-end');
 
@@ -379,7 +379,7 @@ export default (props: any) => {
           `[Performance] Route change to ${location.pathname} took ${measure.duration.toFixed(2)}ms`
         );
 
-        // 清理标记
+        // clear marks and measures
         performance.clearMarks();
         performance.clearMeasures();
       } else {

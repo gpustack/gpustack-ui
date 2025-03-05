@@ -366,6 +366,11 @@ export const useInitImageMeta = (props: MessageProps) => {
     });
   };
 
+  const formFields = useMemo(() => {
+    const fields = paramsConfig?.map((item) => item.name);
+    return fields?.join(',');
+  }, [paramsConfig]);
+
   const handleOnModelChange = useCallback(
     (val: string) => {
       if (!val || val === parameters.model) return;
@@ -461,6 +466,7 @@ export const useInitImageMeta = (props: MessageProps) => {
     updateParamsConfig,
     setParamsConfig,
     form,
+    formFields,
     watchFields,
     paramsConfig,
     initialValues,

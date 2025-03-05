@@ -24,7 +24,8 @@ type ParamsSettingsProps = {
   paramsConfig?: ParamsSchema[];
   initialValues?: Record<string, any>; // for initial values when switch model, aviod update values from setParams
   extra?: React.ReactNode;
-  watchFields?: any[];
+  watchFields?: string[];
+  formFields?: string;
 };
 
 const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
@@ -36,7 +37,8 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       initialValues,
       paramsConfig,
       modelList,
-      watchFields = [],
+      watchFields,
+      formFields,
       showModelSelector = true,
       extra
     },
@@ -86,7 +88,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
     );
 
     const renderFields = useMemo(() => {
-      if (!paramsConfig) {
+      if (!paramsConfig?.length) {
         return null;
       }
       console.log('renderFields---------');
@@ -123,7 +125,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           </Form.Item>
         );
       });
-    }, [paramsConfig, intl, watchFields]);
+    }, [formFields, intl, watchFields]);
 
     return (
       <Form

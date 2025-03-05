@@ -50,6 +50,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     setParams,
     form,
     watchFields,
+    formFields,
     paramsConfig,
     initialValues,
     parameters,
@@ -298,6 +299,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           <DynamicParams
             ref={form}
             watchFields={watchFields}
+            formFields={formFields}
             parametersTitle={
               <div className="flex-between flex-center">
                 <span>

@@ -431,16 +431,13 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setIsEmptyText(false);
   };
 
-  const onValuesChange = useCallback(
-    (changedValues: any, allValues: any) => {
-      if (changedValues.model) {
-        setTokenResult(null);
-      } else {
-        handleOnValuesChange(changedValues, allValues);
-      }
-    },
-    [handleOnValuesChange]
-  );
+  const onValuesChange = useCallback((changedValues: any, allValues: any) => {
+    if (changedValues.model) {
+      setTokenResult(null);
+    } else {
+      handleOnValuesChange(changedValues, allValues);
+    }
+  }, []);
 
   useHotkeys(
     HotKeys.SUBMIT,

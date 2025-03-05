@@ -444,7 +444,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         handleOnValuesChange(changeValues, allValues);
       }
     },
-    [handleOnValuesChange]
+    []
   );
 
   useHotkeys(

@@ -1,4 +1,4 @@
-import { RightOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Checkbox } from 'antd';
 import _ from 'lodash';
 import React from 'react';
@@ -7,6 +7,8 @@ interface HeaderPrefixProps {
   expandable?: boolean | React.ReactNode;
   enableSelection?: boolean;
   onSelectAll?: (e: any) => void;
+  onExpandAll?: (e: any) => void;
+  expandAll?: boolean;
   indeterminate?: boolean;
   selectAll?: boolean;
   hasColumns?: boolean;
@@ -18,16 +20,31 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
     expandable,
     enableSelection,
     onSelectAll,
+    onExpandAll,
     indeterminate,
-    selectAll
+    selectAll,
+    expandAll
   } = props;
+
+  const handleToggleExpand = () => {
+    onExpandAll?.(!expandAll);
+  };
+
   if (!hasColumns) {
     return null;
   }
   if (expandable && enableSelection) {
     return (
-      <div className="header-row-prefix-wrapper">
-        <span style={{ marginRight: 5, padding: '0 14px' }}></span>
+      <div className="header-row-prefix-wrapper flex-center">
+        <span style={{ marginRight: 5 }}>
+          {_.isBoolean(expandable) ? (
+            <Button type="text" size="small" onClick={handleToggleExpand}>
+              {expandAll ? <DownOutlined /> : <RightOutlined />}
+            </Button>
+          ) : (
+            expandable
+          )}
+        </span>
         <Checkbox
           onChange={onSelectAll}
           indeterminate={indeterminate}

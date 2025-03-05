@@ -84,6 +84,7 @@ interface ModelsProps {
   handleCategoryChange: (val: any) => void;
   onViewLogs: () => void;
   onCancelViewLogs: () => void;
+  handleOnToggleExpandAll: () => void;
   queryParams: {
     page: number;
     perPage: number;
@@ -172,6 +173,7 @@ const Models: React.FC<ModelsProps> = ({
   onViewLogs,
   onCancelViewLogs,
   handleCategoryChange,
+  handleOnToggleExpandAll,
   deleteIds,
   dataSource,
   workerList,
@@ -202,6 +204,7 @@ const Models: React.FC<ModelsProps> = ({
   const rowSelection = useTableRowSelection();
   const {
     handleExpandChange,
+    handleExpandAll,
     updateExpandedRowKeys,
     removeExpandedRowKey,
     expandedRowKeys
@@ -843,6 +846,18 @@ const Models: React.FC<ModelsProps> = ({
       setIsLoading(false);
     }
   };
+
+  const handleToggleExpandAll = useCallback(
+    (expanded: boolean) => {
+      const keys = dataSource.map((item) => item.id);
+      handleExpandAll(expanded, keys);
+      if (expanded) {
+        handleOnToggleExpandAll();
+      }
+    },
+    [dataSource]
+  );
+
   const renderEmpty = useMemo(() => {
     if (dataSource.length || !isFirstLogin || !catalogList?.length) {
       return null;
@@ -990,6 +1005,7 @@ const Models: React.FC<ModelsProps> = ({
           rowSelection={rowSelection}
           expandedRowKeys={expandedRowKeys}
           onExpand={handleExpandChange}
+          onExpandAll={handleToggleExpandAll}
           loading={loading}
           loadend={loadend}
           rowKey="id"

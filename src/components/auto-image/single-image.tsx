@@ -197,4 +197,4 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
   );
 };
 
-export default React.memo(SingleImage);
+export default SingleImage;

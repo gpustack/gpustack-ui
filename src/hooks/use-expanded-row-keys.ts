@@ -15,6 +15,18 @@ export default function useExpandedRowKeys(defaultKeys: React.Key[] = []) {
     []
   );
 
+  const handleExpandAll = useCallback(
+    (expanded: boolean, keys: React.Key[] = []) => {
+      if (!expanded) {
+        setExpandedRowKeys([]);
+      }
+      if (expanded) {
+        setExpandedRowKeys((prevKeys) => [...new Set([...prevKeys, ...keys])]);
+      }
+    },
+    []
+  );
+
   const updateExpandedRowKeys = (keys: React.Key[]) => {
     setExpandedRowKeys(keys);
   };
@@ -36,6 +48,7 @@ export default function useExpandedRowKeys(defaultKeys: React.Key[] = []) {
     clearExpandedRowKeys,
     updateExpandedRowKeys,
     removeExpandedRowKey,
-    handleExpandChange
+    handleExpandChange,
+    handleExpandAll
   };
 }

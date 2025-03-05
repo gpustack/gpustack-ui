@@ -17,7 +17,7 @@ import './styles/index.less';
 import useLogsPagination from './use-logs-pagination';
 
 interface LogsViewerProps {
-  height: number;
+  height?: number;
   content?: string;
   url: string;
   params?: object;

@@ -129,11 +129,17 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     paramsRef,
     modelMeta,
     formFields
-  } = useInitLLmMeta(props, {
-    defaultValues: { top_n: 3 },
-    defaultParamsConfig: fieldConfig,
-    metaKeys: LLM_METAKEYS
-  });
+  } = useInitLLmMeta(
+    {
+      modelList,
+      isChat: true
+    },
+    {
+      defaultValues: { top_n: 3 },
+      defaultParamsConfig: fieldConfig,
+      metaKeys: LLM_METAKEYS
+    }
+  );
 
   useImperativeHandle(ref, () => {
     return {
@@ -425,6 +431,17 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setIsEmptyText(false);
   };
 
+  const onValuesChange = useCallback(
+    (changedValues: any, allValues: any) => {
+      if (changedValues.model) {
+        setTokenResult(null);
+      } else {
+        handleOnValuesChange(changedValues, allValues);
+      }
+    },
+    [handleOnValuesChange]
+  );
+
   useHotkeys(
     HotKeys.SUBMIT,
     (e: any) => {
@@ -436,11 +453,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       preventDefault: true
     }
   );
-
-  useEffect(() => {
-    setMessageId();
-    setTokenResult(null);
-  }, [parameters.model]);
 
   useEffect(() => {
     if (scroller.current) {
@@ -591,7 +603,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={formRef}
-            onValuesChange={handleOnValuesChange}
+            onValuesChange={onValuesChange}
             paramsConfig={paramsConfig}
             initialValues={initialValues}
             modelList={modelList}

@@ -138,10 +138,9 @@ export default {
   'playground.image.fitview': 'Подогнать размер',
   'playground.chat.aithought': 'Рассуждение (CoT)',
   'playground.image.mask.uploaded': 'Маска загружена',
-  'playground.image.mask.upload':
-    'TODO: Translate key "playground.image.mask.upload"',
-  'playground.params.frequency_penalty.tips': `TODO: Translate key "playground.params.frequency_penalty.tips"`,
-  'playground.params.presence_penalty.tips': `TODO: Translate key "playground.params.presence_penalty.tips"`,
-  'playground.image.origin': 'TODO: Translate key "playground.image.origin"',
-  'playground.image.mask': 'TODO: Translate key "playground.image.mask"'
+  'playground.image.mask.upload':'Загрузить маску: имеет приоритет при отправке',
+  'playground.params.frequency_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения токенов, уже часто встречающихся в тексте, уменьшая склонность модели дословно повторять одни и те же фразы.`,
+  'playground.params.presence_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения любых токенов, присутствующих в тексте, повышая склонность модели к обсуждению новых тем.`,
+  'playground.image.origin': 'Оригинал',
+  'playground.image.mask': 'Маска'
 };

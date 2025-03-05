@@ -23,7 +23,8 @@ import {
   IMG_METAKEYS,
   advancedFieldsDefaultValus,
   imgInitialValues,
-  openaiCompatibleFieldsDefaultValus
+  openaiCompatibleFieldsDefaultValus,
+  precisionTwoKeys
 } from './config';
 
 interface MessageProps {
@@ -53,16 +54,13 @@ export const useInitLLmMeta = (
   } = options;
   const formRef = useRef<any>(null);
   const [searchParams] = useSearchParams();
-  const defaultModel =
-    searchParams.get('model') ||
-    (isChat ? model ?? modelList?.[0]?.value : model);
   const [modelMeta, setModelMeta] = useState<any>({});
   const [initialValues, setInitialValues] = useState<any>({
     ...defaultValues,
-    model: defaultModel
+    model: ''
   });
   const [parameters, setParams] = useState<any>({
-    model: defaultModel
+    model: ''
   });
   const [paramsConfig, setParamsConfig] =
     useState<ParamsSchema[]>(defaultParamsConfig);
@@ -70,13 +68,20 @@ export const useInitLLmMeta = (
 
   const { initialize: innitializeParams } = useOverlayScroller();
 
+  const defaultModel = useMemo(() => {
+    return (
+      searchParams.get('model') ||
+      (isChat ? model ?? modelList?.[0]?.value : model)
+    );
+  }, [model, modelList, isChat]);
   const extractLLMMeta = (meta: any) => {
+    const towKeys = new Set(precisionTwoKeys);
     const modelMeta = meta || {};
     const modelMetaValue = _.pick(modelMeta, _.keys(metaKeys));
     const obj = Object.entries(metaKeys).reduce((acc: any, [key, value]) => {
       const val = modelMetaValue[key];
-      if (val && _.hasIn(modelMetaValue, key)) {
-        acc[value] = val;
+      if (_.hasIn(modelMetaValue, key)) {
+        acc[value] = towKeys.has(key) ? _.round(val, 2) : val;
       }
       return acc;
     }, {});
@@ -109,10 +114,9 @@ export const useInitLLmMeta = (
 
   const handleOnModelChange = useCallback(
     (val: string) => {
-      if (!val || val === parameters.model) return;
+      if (!val) return;
       const model = modelList.find((item) => item.value === val);
       const { form: initialData, meta } = extractLLMMeta(model?.meta);
-
       setModelMeta(meta || {});
       setInitialValues({
         ...initialData,
@@ -135,7 +139,7 @@ export const useInitLLmMeta = (
       });
       setParamsConfig(config);
     },
-    [modelList, parameters, defaultParamsConfig]
+    [modelList, defaultParamsConfig]
   );
 
   const handleOnValuesChange = useCallback(
@@ -152,10 +156,10 @@ export const useInitLLmMeta = (
   );
 
   useEffect(() => {
-    if (defaultModel) {
+    if (defaultModel && modelList.length) {
       handleOnModelChange(defaultModel);
     }
-  }, [defaultModel, handleOnModelChange]);
+  }, [defaultModel, modelList.length]);
 
   useEffect(() => {
     if (paramsRef.current) {
@@ -185,7 +189,6 @@ export const useInitImageMeta = (props: MessageProps) => {
   const { modelList } = props;
   const form = useRef<any>(null);
   const [searchParams] = useSearchParams();
-  const defaultModel = searchParams.get('model') || modelList?.[0]?.value || '';
   const [modelMeta, setModelMeta] = useState<any>({});
   const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(false);
   const [imageSizeOptions, setImageSizeOptions] = React.useState<
@@ -198,7 +201,7 @@ export const useInitImageMeta = (props: MessageProps) => {
   const [initialValues, setInitialValues] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
-    model: defaultModel
+    model: ''
   });
   const [paramsConfig, setParamsConfig] = useState<ParamsSchema[]>([
     ...ImageCountConfig,
@@ -209,8 +212,12 @@ export const useInitImageMeta = (props: MessageProps) => {
   const [parameters, setParams] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
-    model: defaultModel
+    model: ''
   });
+
+  const defaultModel = useMemo(() => {
+    return searchParams.get('model') || modelList?.[0]?.value || '';
+  }, [modelList]);
 
   const cacheFormData = React.useRef<Record<string, any>>({
     ...imgInitialValues,
@@ -373,7 +380,7 @@ export const useInitImageMeta = (props: MessageProps) => {
 
   const handleOnModelChange = useCallback(
     (val: string) => {
-      if (!val || val === parameters.model) return;
+      if (!val) return;
       const model = modelList.find((item) => item.value === val);
       const { form: initialData, sizeOptions } = extractIMGMeta(model?.meta);
       const newParamsConfig = generateImageParamsConfig(model, sizeOptions);
@@ -396,7 +403,7 @@ export const useInitImageMeta = (props: MessageProps) => {
       });
       updateCacheFormData(initialData);
     },
-    [modelList, isOpenaiCompatible, parameters.model]
+    [modelList, isOpenaiCompatible]
   );
 
   const handleOnValuesChange = useCallback(
@@ -448,10 +455,10 @@ export const useInitImageMeta = (props: MessageProps) => {
   );
 
   useEffect(() => {
-    if (defaultModel) {
+    if (defaultModel && modelList.length) {
       handleOnModelChange(defaultModel);
     }
-  }, [defaultModel, handleOnModelChange]);
+  }, [defaultModel, modelList.length]);
 
   return {
     extractIMGMeta,

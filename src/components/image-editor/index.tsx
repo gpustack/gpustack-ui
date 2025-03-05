@@ -78,8 +78,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   const mouseDownState = useRef<boolean>(false);
 
   const disabled = useMemo(() => {
-    return isDisabled || invertMask;
-  }, [isDisabled, invertMask]);
+    return isDisabled || invertMask || !!maskUpload?.length;
+  }, [isDisabled, invertMask, maskUpload]);
 
   const getTransformedPoint = useCallback(
     (offsetX: number, offsetY: number) => {
@@ -465,6 +465,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     clearOverlayCanvas();
     setStrokes([]);
     currentStroke.current = [];
+    saveImage();
     console.log('Resetting strokes', currentStroke.current);
   }, []);
 
@@ -577,8 +578,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
           1
         );
 
-        canvas!.width = img.width * baseScale.current;
-        canvas!.height = img.height * baseScale.current;
+        // if need to fit the image to the container, show * baseScale.current
+        canvas!.width = img.width;
+        canvas!.height = img.height;
 
         // fit the image to the container
         autoScale.current = autoScale.current || 1;
@@ -721,6 +723,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
   };
 
   const handleOnWheel = (event: any) => {
+    // stop
     handleZoom(event);
     updateCursorSize();
     updateCursorPosOnZoom(event);
@@ -874,7 +877,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
                   <Checkbox
                     onChange={handleOnChangeMask}
                     className="flex-center"
-                    value={negativeMaskRef.current}
+                    value={invertMask}
                   >
                     <span className="font-size-12">
                       {intl.formatMessage({

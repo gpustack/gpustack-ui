@@ -689,11 +689,12 @@ export const ChatParamsConfig: ParamsSchema[] = [
       html: false,
       isLocalized: true
     },
-    attrs: {
+    formItemAttrs: {
       normalize(value: string) {
         return value || null;
       }
     },
+    attrs: {},
     rules: [
       {
         required: false

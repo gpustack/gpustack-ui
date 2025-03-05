@@ -264,6 +264,30 @@ const Workers: React.FC = () => {
     return <div></div>;
   };
 
+  const renderProgressLabels = (data: {
+    total: number;
+    used: number;
+    allocated: number;
+  }) => {
+    const { total, used, allocated } = data;
+    return (
+      <span className="flex-column">
+        <span>
+          {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
+          {convertFileSize(total, 0)}
+        </span>
+        <span>
+          {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
+          {convertFileSize(used, 0)}
+        </span>
+        <span>
+          {intl.formatMessage({ id: 'resources.table.allocated' })}:{' '}
+          {convertFileSize(allocated, 0)}
+        </span>
+      </span>
+    );
+  };
+
   useEffect(() => {
     fetchData();
   }, [queryParams]);
@@ -425,22 +449,11 @@ const Workers: React.FC = () => {
                     record?.status?.memory?.used,
                     record?.status?.memory?.total
                   )}
-                  label={
-                    <span className="flex-column">
-                      <span>
-                        {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
-                        {convertFileSize(record?.status?.memory?.total, 0)}
-                      </span>
-                      <span>
-                        {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-                        {convertFileSize(
-                          record?.status?.memory?.used ||
-                            record?.status.memory?.allocated,
-                          0
-                        )}
-                      </span>
-                    </span>
-                  }
+                  successPercent={formateUtilazation(
+                    record?.status?.memory?.allocated,
+                    record?.status?.memory?.total
+                  )}
+                  label={renderProgressLabels(record?.status?.memory)}
                 ></ProgressBar>
               );
             }}
@@ -511,27 +524,7 @@ const Workers: React.FC = () => {
                                       0
                                     )
                               }
-                              label={
-                                <span className="flex-column">
-                                  <span>
-                                    {intl.formatMessage({
-                                      id: 'resources.table.total'
-                                    })}
-                                    : {convertFileSize(item.memory?.total, 0)}
-                                  </span>
-                                  <span>
-                                    {intl.formatMessage({
-                                      id: 'resources.table.used'
-                                    })}
-                                    :{' '}
-                                    {convertFileSize(
-                                      item.memory?.used ||
-                                        item.memory?.allocated,
-                                      0
-                                    )}
-                                  </span>
-                                </span>
-                              }
+                              label={renderProgressLabels(item.memory)}
                             ></ProgressBar>
                             {item.memory.is_unified_memory && (
                               <Tooltip

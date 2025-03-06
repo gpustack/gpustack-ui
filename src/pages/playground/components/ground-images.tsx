@@ -102,7 +102,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const finalParameters = useMemo(() => {
     if (parameters.size === 'custom') {
       return {
-        ..._.omit(parameters, ['width', 'height', 'preview']),
+        ..._.omit(parameters, ['width', 'height', 'preview', 'random_seed']),
         size:
           parameters.width && parameters.height
             ? `${parameters.width}x${parameters.height}`
@@ -177,7 +177,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (!parameters.model) return;
       const params = generateParams();
       setParams({
-        ...params,
+        ...parameters,
         seed: params.seed
       });
 

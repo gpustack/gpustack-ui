@@ -9,6 +9,7 @@ const KeybindingsMap = {
   SUBMIT: ['Ctrl+Enter', 'Meta+Enter'],
   SAVEAS: ['Alt+Ctrl+S', 'Alt+Meta+S'],
   OPEN: ['Alt+Ctrl+O', 'Alt+Meta+O'],
+  UNDO: ['Ctrl+Z', 'Meta+Z'],
   CANCEL: ['Ctrl+W', 'Meta+W'],
   DELETE: ['delete'],
   COPY: ['Ctrl+C', 'Meta+C'],

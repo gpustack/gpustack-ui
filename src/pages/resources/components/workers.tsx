@@ -449,10 +449,6 @@ const Workers: React.FC = () => {
                     record?.status?.memory?.used,
                     record?.status?.memory?.total
                   )}
-                  successPercent={formateUtilazation(
-                    record?.status?.memory?.allocated,
-                    record?.status?.memory?.total
-                  )}
                   label={renderProgressLabels(record?.status?.memory)}
                 ></ProgressBar>
               );

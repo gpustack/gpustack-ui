@@ -64,6 +64,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
   const doneImage = useRef<boolean>(false);
   const [activeImgUid, setActiveImgUid] = useState<number>(0);
+  const imageEditorRef = useRef<any>(null);
 
   const {
     handleOnValuesChange,
@@ -110,9 +111,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
 
   const imageFile = useMemo(() => {
-    if (!image) return null;
-    return base64ToFile(image, 'image');
-  }, [image]);
+    return base64ToFile(uploadList[0]?.dataUrl, 'image');
+  }, [uploadList]);
 
   const maskFile = useMemo(() => {
     if (!mask) return null;
@@ -123,7 +123,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (parameters.size === 'custom') {
       return {
         ..._.omit(parameters, ['width', 'height', 'preview', 'random_seed']),
-        image: imageFile,
+        image: base64ToFile(image, 'image'),
         mask: maskFile,
         size:
           parameters.width && parameters.height
@@ -279,6 +279,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const handleClearUploadMask = useCallback(() => {
     setMaskUpload([]);
     setMask(null);
+    imageEditorRef.current?.clearMask();
   }, []);
 
   const handleOnSave = useCallback(
@@ -299,6 +300,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     if (image) {
       return (
         <CanvasImageEditor
+          ref={imageEditorRef}
           imguid={activeImgUid}
           imageStatus={imageStatus}
           imageSrc={image}
@@ -361,7 +363,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   ]);
 
   const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
-    if (item.progress < 100) {
+    if (item.progress < 100 && !isOrigin) {
       return;
     }
     setActiveImgUid(item.uid);
@@ -421,8 +423,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           preview={false}
           loading={false}
           autoSize={false}
-          editable={false}
+          editable={true}
           autoBgColor={false}
+          onDelete={() => handleClearUploadMask()}
           label={
             <span>{intl.formatMessage({ id: 'playground.image.mask' })}</span>
           }

@@ -3,11 +3,12 @@ import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
+import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import Hotkeys from '@/config/hotkeys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import { convertFileSize, handleBatchRequest } from '@/utils';
+import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -36,6 +37,21 @@ import AddWorker from './add-worker';
 import UpdateLabels from './update-labels';
 
 const { Column } = Table;
+
+const fieldList = [
+  {
+    label: 'resources.table.total',
+    key: 'total'
+  },
+  {
+    label: 'resources.table.used',
+    key: 'used'
+  },
+  {
+    label: 'resources.table.allocated',
+    key: 'allocated'
+  }
+];
 
 const ActionList = [
   {
@@ -186,27 +202,6 @@ const Workers: React.FC = () => {
     });
   };
 
-  const renderStorageTooltip = (files: Filesystem[]) => {
-    const mountRoot = _.find(
-      files,
-      (item: Filesystem) => item.mount_point === '/'
-    );
-    return mountRoot ? (
-      <span className="flex-column">
-        <span>
-          {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
-          {convertFileSize(mountRoot?.total, 0)}
-        </span>
-        <span>
-          {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-          {convertFileSize(mountRoot?.used, 0)}
-        </span>
-      </span>
-    ) : (
-      0
-    );
-  };
-
   const handleUpdateLabelsOk = useCallback(
     async (values: Record<string, any>) => {
       try {
@@ -264,27 +259,18 @@ const Workers: React.FC = () => {
     return <div></div>;
   };
 
-  const renderProgressLabels = (data: {
-    total: number;
-    used: number;
-    allocated: number;
-  }) => {
-    const { total, used, allocated } = data;
-    return (
-      <span className="flex-column">
-        <span>
-          {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
-          {convertFileSize(total, 0)}
-        </span>
-        <span>
-          {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-          {convertFileSize(used, 0)}
-        </span>
-        <span>
-          {intl.formatMessage({ id: 'resources.table.allocated' })}:{' '}
-          {convertFileSize(allocated, 0)}
-        </span>
-      </span>
+  const renderStorageTooltip = (files: Filesystem[]) => {
+    const mountRoot = _.find(
+      files,
+      (item: Filesystem) => item.mount_point === '/'
+    );
+    return mountRoot ? (
+      <InfoColumn
+        fieldList={fieldList.filter((item) => item.key !== 'allocated')}
+        data={mountRoot}
+      ></InfoColumn>
+    ) : (
+      0
     );
   };
 
@@ -449,7 +435,12 @@ const Workers: React.FC = () => {
                     record?.status?.memory?.used,
                     record?.status?.memory?.total
                   )}
-                  label={renderProgressLabels(record?.status?.memory)}
+                  label={
+                    <InfoColumn
+                      fieldList={fieldList}
+                      data={record.status.memory}
+                    ></InfoColumn>
+                  }
                 ></ProgressBar>
               );
             }}
@@ -520,7 +511,12 @@ const Workers: React.FC = () => {
                                       0
                                     )
                               }
-                              label={renderProgressLabels(item.memory)}
+                              label={
+                                <InfoColumn
+                                  fieldList={fieldList}
+                                  data={item.memory}
+                                ></InfoColumn>
+                              }
                             ></ProgressBar>
                             {item.memory.is_unified_memory && (
                               <Tooltip
@@ -528,7 +524,10 @@ const Workers: React.FC = () => {
                                   id: 'resources.table.unified'
                                 })}
                               >
-                                <InfoCircleOutlined className="m-l-5" />
+                                <InfoCircleOutlined
+                                  className="m-l-5"
+                                  style={{ color: 'var(--ant-blue-5)' }}
+                                />
                               </Tooltip>
                             )}
                           </span>

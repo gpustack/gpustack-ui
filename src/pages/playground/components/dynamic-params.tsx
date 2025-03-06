@@ -125,7 +125,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           </Form.Item>
         );
       });
-    }, [formFields, intl, watchFields]);
+    }, [formFields, paramsConfig, intl, watchFields]);
 
     return (
       <Form

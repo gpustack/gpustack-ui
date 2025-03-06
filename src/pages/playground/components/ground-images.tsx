@@ -55,7 +55,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     initialValues,
     parameters,
     isOpenaiCompatible
-  } = useInitImageMeta(props);
+  } = useInitImageMeta(props, {
+    type: 'create'
+  });
   const {
     loading,
     tokenResult,

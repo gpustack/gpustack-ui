@@ -153,7 +153,7 @@ export const generateRandomNumber = () => {
 
 function base64ToBlob(base64: string, contentType = '', sliceSize = 512) {
   try {
-    const base64Content = base64.replace(/^data:image\/(png|jpg);base64,/, '');
+    const base64Content = base64.replace(/^data:image\/[^;]+;base64,/, '');
     const byteCharacters = atob(base64Content);
     const byteArrays = [];
 

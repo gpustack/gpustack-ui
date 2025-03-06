@@ -75,13 +75,16 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     updateParamsConfig,
     setParamsConfig,
     form,
+    modelMeta,
     watchFields,
     formFields,
     paramsConfig,
     initialValues,
     parameters,
     isOpenaiCompatible
-  } = useInitImageMeta(props);
+  } = useInitImageMeta(props, {
+    type: 'edit'
+  });
   const {
     loading,
     tokenResult,
@@ -225,10 +228,21 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleOnScaleImageSize = useCallback(
     (data: { rawWidth: number; rawHeight: number }) => {
-      const { width, height } = scaleImageSize({
+      let { width, height } = scaleImageSize({
         width: data.rawWidth,
         height: data.rawHeight
       });
+      const { max_width: maxWidth, max_height: maxHeight } = modelMeta;
+
+      // update width, height
+      if (maxWidth) {
+        width = Math.max(Math.min(width, maxWidth), 512);
+      }
+
+      if (maxHeight) {
+        height = Math.max(Math.min(height, maxHeight), 512);
+      }
+
       const newParamsConfig = updateParamsConfig({
         size: 'custom',
         isOpenaiCompatible
@@ -248,7 +262,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
       setInitialValues(newParameters);
     },
-    [parameters, isOpenaiCompatible]
+    [parameters, modelMeta, isOpenaiCompatible]
   );
 
   const handleUpdateImageList = useCallback(

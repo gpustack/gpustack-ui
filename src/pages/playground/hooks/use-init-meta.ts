@@ -1,11 +1,11 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import {
-  ImageAdvancedParamsConfig,
   ImageCountConfig,
   ImageCustomSizeConfig,
   ImageSizeConfig,
   ImageSizeItem,
   ImageconstExtraConfig,
+  ImageAdvancedParamsConfig as ImgAdvancedParamsConfig,
   imageSizeOptions as imageSizeList
 } from '@/pages/playground/config/params-config';
 import { useSearchParams } from '@umijs/max';
@@ -117,7 +117,7 @@ export const useInitLLmMeta = (
       if (!val) return;
       const model = modelList.find((item) => item.value === val);
       const { form: initialData, meta } = extractLLMMeta(model?.meta);
-      setModelMeta(meta || {});
+      setModelMeta(meta);
       setInitialValues({
         ...initialData,
         model: val
@@ -185,8 +185,16 @@ export const useInitLLmMeta = (
   };
 };
 
-export const useInitImageMeta = (props: MessageProps) => {
+export const useInitImageMeta = (
+  props: MessageProps,
+  options: { type: string }
+) => {
   const { modelList } = props;
+  const ImageAdvancedParamsConfig =
+    options.type === 'edit'
+      ? ImgAdvancedParamsConfig
+      : ImgAdvancedParamsConfig.filter((item) => item.name !== 'strength');
+
   const form = useRef<any>(null);
   const [searchParams] = useSearchParams();
   const [modelMeta, setModelMeta] = useState<any>({});
@@ -473,6 +481,7 @@ export const useInitImageMeta = (props: MessageProps) => {
     updateParamsConfig,
     setParamsConfig,
     form,
+    modelMeta,
     formFields,
     watchFields,
     paramsConfig,

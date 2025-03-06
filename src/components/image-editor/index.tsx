@@ -908,7 +908,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
                 onClick={handleFitView}
                 size="middle"
                 type="text"
-                disabled={disabled}
+                disabled={isDisabled}
               >
                 <ExpandOutlined className="font-size-14" />
               </Button>

@@ -295,7 +295,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 required
                 showSearch
                 expandTrigger="hover"
-                onChange={handleGPUSelectorChange}
                 multiple={backend !== backendOptionsMap.voxBox}
                 popupClassName="cascader-popup-wrapper gpu-selector"
                 maxTagCount={1}

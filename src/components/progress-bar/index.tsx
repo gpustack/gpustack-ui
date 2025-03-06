@@ -3,6 +3,7 @@ import { memo, useMemo } from 'react';
 
 const RenderProgress = memo(
   (props: {
+    open?: boolean;
     percent: number;
     steps?: number;
     download?: boolean;
@@ -11,6 +12,7 @@ const RenderProgress = memo(
     successColor?: string;
   }) => {
     const {
+      open,
       percent,
       steps = 5,
       download,
@@ -62,7 +64,9 @@ const RenderProgress = memo(
     return (
       <>
         {label ? (
-          <Tooltip title={label}>{renderProgress}</Tooltip>
+          <Tooltip title={label} open={open}>
+            {renderProgress}
+          </Tooltip>
         ) : (
           renderProgress
         )}

@@ -19,7 +19,10 @@ export const handleBatchRequest = async (
   return Promise.all(list.map((item) => fn(item)));
 };
 
-export const convertFileSize = (sizeInBytes: number, prec?: number) => {
+export const convertFileSize = (
+  sizeInBytes: number | undefined,
+  prec?: number
+) => {
   const precision = prec ?? 1;
   if (!sizeInBytes) {
     return '0';

@@ -187,6 +187,7 @@ export default function useTextImage(props: any) {
 
   const handleStopConversation = () => {
     requestToken.current?.abort?.();
+    setImageList([]);
     setLoading(false);
   };
 

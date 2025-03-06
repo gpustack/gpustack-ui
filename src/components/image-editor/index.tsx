@@ -1,3 +1,4 @@
+import { KeyMap } from '@/config/hotkeys';
 import {
   ClearOutlined,
   CloseOutlined,
@@ -787,6 +788,19 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
     };
   }, []);
 
+  const handleDeleteMask = () => {
+    clearUploadMask?.();
+    setInvertMask(false);
+    redrawStrokes(strokesRef.current);
+  };
+
+  useEffect(() => {
+    if (maskUpload?.length) {
+      // clear the overlay canvas
+      clearOverlayCanvas();
+    }
+  }, [maskUpload]);
+
   return (
     <div className="editor-wrapper">
       <div className="flex-between">
@@ -812,7 +826,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
                   vertical={false}
                   defaultValue={lineWidth}
                   min={10}
-                  max={60}
+                  max={100}
                   onChange={handleBrushSizeChange}
                 />
               </div>
@@ -822,7 +836,16 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
               <FormatPainterOutlined className="font-size-14" />
             </Button>
           </Tooltip>
-          <Tooltip title={intl.formatMessage({ id: 'common.button.undo' })}>
+          <Tooltip
+            title={
+              <span>
+                [{KeyMap.UNDO.textKeybinding}]
+                <span className="m-l-5">
+                  {intl.formatMessage({ id: 'common.button.undo' })}
+                </span>
+              </span>
+            }
+          >
             <Button
               onClick={undo}
               size="middle"
@@ -864,7 +887,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
                 ...
               </span>
               <Button
-                onClick={clearUploadMask}
+                onClick={handleDeleteMask}
                 size="small"
                 type="text"
                 icon={<CloseOutlined className="close-btn"></CloseOutlined>}
@@ -947,7 +970,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = ({
         <div
           ref={cursorRef}
           style={{
-            display: 'none',
+            display: disabled ? 'none' : 'block',
             position: 'fixed',
             width: lineWidth * activeScale,
             height: lineWidth * activeScale,

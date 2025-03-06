@@ -113,21 +113,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
-  const imageFile = useMemo(() => {
-    return base64ToFile(uploadList[0]?.dataUrl, 'image');
-  }, [uploadList]);
-
-  const maskFile = useMemo(() => {
-    if (!mask) return null;
-    return base64ToFile(mask, 'mask');
-  }, [mask]);
-
   const finalParameters = useMemo(() => {
     if (parameters.size === 'custom') {
       return {
         ..._.omit(parameters, ['width', 'height', 'preview', 'random_seed']),
-        image: base64ToFile(image, 'image'),
-        mask: maskFile,
+        image: null,
+        mask: null,
         size:
           parameters.width && parameters.height
             ? `${parameters.width}x${parameters.height}`
@@ -135,11 +126,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       };
     }
     return {
-      image: imageFile,
-      mask: maskFile,
+      image: null,
+      mask: null,
       ..._.omit(parameters, ['width', 'height', 'random_seed', 'preview'])
     };
-  }, [parameters, maskFile, imageFile]);
+  }, [parameters]);
 
   const viewCodeContent = useMemo(() => {
     if (isOpenaiCompatible) {
@@ -211,9 +202,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
 
       form.current?.form?.setFieldValue('seed', params.seed);
-      console.log('params:', params, parameters);
+
       setRouteCache(routeCachekey['/playground/text-to-image'], true);
-      await submitMessage(params);
+
+      await submitMessage({
+        ...params,
+        image: base64ToFile(_.get(uploadList, '0.dataUrl'), 'image'),
+        mask: mask ? base64ToFile(mask, 'mask') : null
+      });
     } catch (error) {
       // console.log('error:', error);
     } finally {

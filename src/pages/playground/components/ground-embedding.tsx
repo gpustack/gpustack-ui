@@ -517,6 +517,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 <Button
                   icon={<ClearOutlined />}
                   size="middle"
+                  disabled={loading}
                   onClick={handleClearDocuments}
                 >
                   {intl.formatMessage({ id: 'common.button.clear' })}

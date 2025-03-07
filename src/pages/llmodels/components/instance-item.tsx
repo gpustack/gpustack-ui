@@ -7,12 +7,12 @@ import StatusTag from '@/components/status-tag';
 import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
   DownloadOutlined,
   HddFilled,
-  InfoCircleOutlined,
-  ThunderboltFilled
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import {
@@ -28,6 +28,7 @@ import {
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
@@ -88,9 +89,19 @@ const distributeCols = [
     }
   },
   {
+    title: 'models.form.backend',
+    locale: true,
+    key: 'backend'
+  },
+  {
     title: 'models.table.gpuindex',
     locale: true,
     key: 'gpu_index'
+  },
+  {
+    title: 'resources.table.memory',
+    locale: true,
+    key: 'ram'
   }
 ];
 
@@ -106,6 +117,40 @@ const renderMessage = (title: string) => {
     >
       {title}
     </div>
+  );
+};
+
+const InfoItem = (props: { label: string; value: any; width?: number }) => {
+  const { label, value, width } = props;
+  const Wrapper = styled.div`
+    .info-item {
+      width: ${width ? `${width}px` : '100%'};
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 4px 8px;
+      background-color: var(--color-gray-fill-3);
+      border-radius: 4px;
+      .value {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        color: var(--color-white-quaternary);
+        .index {
+          color: var(--ant-color-text-light-solid);
+        }
+      }
+    }
+  `;
+  return (
+    <Wrapper>
+      <div className="info-item">
+        <span className="label">{label}</span>
+        <span className="value">{value}</span>
+      </div>
+    </Wrapper>
   );
 };
 
@@ -160,6 +205,23 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     []
   );
 
+  const displayGPUs = (vrams: Record<string, number>) => {
+    return (
+      <span className="flex-column">
+        {Object.keys(vrams)
+          ?.sort?.()
+          .map((index) => {
+            return (
+              <span key={index}>
+                [{index}] {''}
+                {convertFileSize(vrams?.[index], 0)}
+              </span>
+            );
+          })}
+      </span>
+    );
+  };
+
   const renderWorkerInfo = useMemo(() => {
     let workerIp = '-';
     if (instanceData.worker_ip) {
@@ -167,23 +229,50 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         ? `${instanceData.worker_ip}:${instanceData.port}`
         : instanceData.worker_ip;
     }
+    let backend = modelData?.backend || '';
+    if (modelData.backend_version) {
+      backend += ` (${modelData.backend_version})`;
+    }
+    const vrams = instanceData.computed_resource_claim?.vram || {};
     return (
       <div>
-        <div>{instanceData.worker_name}</div>
-        <div className="flex-center">
+        <div style={{ marginBottom: 5 }}>
           <HddFilled className="m-r-5" />
-          {workerIp}
+          {instanceData.worker_name}
         </div>
-        <div className="flex-center">
-          <IconFont type="icon-filled-gpu" className="m-r-5" />
-          {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
-          {_.join(instanceData.gpu_indexes?.sort?.(), ',')}]
+        <div className="flex m-b-6 gap-6">
+          <InfoItem label="IP" value={workerIp} width={180}></InfoItem>
+          <InfoItem
+            width={90}
+            label={intl.formatMessage({ id: 'models.form.backend' })}
+            value={backend}
+          ></InfoItem>
         </div>
-        <div className="flex-center">
-          <ThunderboltFilled className="m-r-5" />
-          {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
-          {modelData?.backend || ''}
-          {modelData.backend_version ? `(${modelData.backend_version})` : ''}
+        <div className="flex gap-6">
+          <InfoItem
+            width={180}
+            label={intl.formatMessage({ id: 'models.table.gpuindex' })}
+            value={Object.keys(vrams)
+              ?.sort?.()
+              .map((index) => {
+                return (
+                  <span className="flex-1" key={index}>
+                    <span className="index">
+                      [{index}] {''}
+                    </span>
+                    {convertFileSize(vrams?.[index], 0)}
+                  </span>
+                );
+              })}
+          ></InfoItem>
+          <InfoItem
+            width={90}
+            label={intl.formatMessage({ id: 'resources.table.memory' })}
+            value={convertFileSize(
+              instanceData.computed_resource_claim?.ram,
+              0
+            )}
+          ></InfoItem>
         </div>
       </div>
     );
@@ -197,24 +286,23 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         worker_name: data?.name,
         worker_ip: data?.ip,
         port: '',
-        gpu_index: item.gpu_index
+        ram: convertFileSize(item.computed_resource_claim?.ram, 0),
+        gpu_index: displayGPUs(item.computed_resource_claim?.vram || {})
       };
     });
 
     const mainWorker = [
       {
-        worker_name: `${instanceData.worker_name}`,
+        worker_name: `${instanceData.worker_name} (main)`,
         worker_ip: `${instanceData.worker_ip}`,
         port: '',
-        gpu_index: `${instanceData.gpu_indexes?.sort?.()} (main)`
+        ram: convertFileSize(instanceData.computed_resource_claim?.ram, 0),
+        gpu_index: displayGPUs(instanceData.computed_resource_claim?.vram || {})
       }
     ];
 
     return (
       <div>
-        <h3 style={{ margin: 0 }}>
-          {intl.formatMessage({ id: 'models.table.backend' })}
-        </h3>
         <SimpleTabel
           columns={distributeCols}
           dataSource={[...mainWorker, ...list]}
@@ -255,7 +343,13 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 <AutoTooltip title={instanceData.name} ghost>
                   <span className="m-r-5">{instanceData.name}</span>
                 </AutoTooltip>
-                <Tooltip title={renderWorkerInfo}>
+                <Tooltip
+                  title={renderWorkerInfo}
+                  overlayInnerStyle={{
+                    width: 'max-content',
+                    maxWidth: '400px'
+                  }}
+                >
                   <span className="server-info">
                     <InfoCircleOutlined />
                   </span>
@@ -327,7 +421,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 {instanceData?.distributed_servers?.rpc_servers?.length && (
                   <Tooltip
                     overlayInnerStyle={{
-                      width: '400px'
+                      width: 'max-content',
+                      maxWidth: '500px',
+                      minWidth: '400px'
                     }}
                     title={renderDistributionInfo}
                   >

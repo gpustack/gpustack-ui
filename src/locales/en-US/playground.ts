@@ -148,5 +148,5 @@ export default {
   'playground.image.origin': 'Original',
   'playground.image.mask': 'Mask',
   'playground.image.negativeMask.tips':
-    'After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.'
+    '1. After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.\n 2. Once a mask image is uploaded, no further masks can be generated.'
 };

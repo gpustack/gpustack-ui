@@ -915,48 +915,42 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             </Tooltip>
           </div>
           <div className="tools">
-            {maskUpload?.length ? (
-              <span className="flex-center upload-mask">
-                <span className="font-size-12">
-                  {intl.formatMessage({ id: 'playground.image.mask.uploaded' })}
-                </span>
-              </span>
-            ) : (
+            {imageStatus.isOriginal && (
               <>
-                {imageStatus.isOriginal && (
-                  <>
-                    <Tooltip
-                      title={intl.formatMessage({
+                <Tooltip
+                  title={
+                    <span style={{ whiteSpace: 'pre-wrap' }}>
+                      {intl.formatMessage({
                         id: 'playground.image.negativeMask.tips'
                       })}
-                    >
-                      <Checkbox
-                        onChange={handleOnChangeMask}
-                        className="flex-center"
-                        checked={invertMask}
-                        disabled={isDisabled || !!maskUpload?.length}
-                      >
-                        <span className="font-size-12">
-                          {intl.formatMessage({
-                            id: 'playground.image.negativeMask'
-                          })}
-                        </span>
-                      </Checkbox>
-                    </Tooltip>
-                    <Tooltip
-                      title={intl.formatMessage({
-                        id: 'playground.image.saveMask'
+                    </span>
+                  }
+                >
+                  <Checkbox
+                    onChange={handleOnChangeMask}
+                    className="flex-center"
+                    checked={invertMask}
+                    disabled={isDisabled || !!maskUpload?.length}
+                  >
+                    <span className="font-size-12">
+                      {intl.formatMessage({
+                        id: 'playground.image.negativeMask'
                       })}
-                    >
-                      <Button onClick={downloadMask} size="middle" type="text">
-                        <IconFont
-                          className="font-size-14"
-                          type="icon-save2"
-                        ></IconFont>
-                      </Button>
-                    </Tooltip>
-                  </>
-                )}
+                    </span>
+                  </Checkbox>
+                </Tooltip>
+                <Tooltip
+                  title={intl.formatMessage({
+                    id: 'playground.image.saveMask'
+                  })}
+                >
+                  <Button onClick={downloadMask} size="middle" type="text">
+                    <IconFont
+                      className="font-size-14"
+                      type="icon-save2"
+                    ></IconFont>
+                  </Button>
+                </Tooltip>
               </>
             )}
             {!imageStatus.isOriginal && (

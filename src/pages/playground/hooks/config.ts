@@ -24,7 +24,8 @@ export const IMG_METAKEYS = [
   'cfg_scale',
   'guidance',
   'negative_prompt',
-  'seed'
+  'seed',
+  'strength'
 ];
 
 export const llmInitialValues = {
@@ -44,12 +45,13 @@ export const advancedFieldsDefaultValus = {
   guidance: 3.5,
   sampling_steps: 10,
   negative_prompt: null,
+  strength: null,
   schedule_method: 'discrete',
   preview: 'preview_faster'
 };
 
 export const openaiCompatibleFieldsDefaultValus = {
-  quality: 'standard',
+  // quality: 'standard',
   style: null
 };
 

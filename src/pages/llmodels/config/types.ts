@@ -60,6 +60,12 @@ export interface FormData {
   description: string;
 }
 
+interface ComputedResourceClaim {
+  offload_layers: number;
+  total_layers: number;
+  ram: number;
+  vram: Record<string, number>;
+}
 export interface ModelInstanceListItem {
   backend?: string;
   backend_version?: string;
@@ -68,12 +74,14 @@ export interface ModelInstanceListItem {
   huggingface_filename: string;
   ollama_library_model_name: string;
   distributed_servers?: {
-    rpc_servers: any[];
+    rpc_servers: {
+      pid: number;
+      port: number;
+      worker_id: string;
+      computed_resource_claim: ComputedResourceClaim;
+    }[];
   };
-  computed_resource_claim?: {
-    offload_layers: number;
-    total_layers: number;
-  };
+  computed_resource_claim?: ComputedResourceClaim;
   s3_address: string;
   worker_id: number;
   gpu_indexes?: number[];

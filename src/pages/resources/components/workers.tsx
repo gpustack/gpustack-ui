@@ -8,7 +8,7 @@ import StatusTag from '@/components/status-tag';
 import Hotkeys from '@/config/hotkeys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import { handleBatchRequest } from '@/utils';
+import { convertFileSize, handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -41,15 +41,27 @@ const { Column } = Table;
 const fieldList = [
   {
     label: 'resources.table.total',
-    key: 'total'
+    key: 'total',
+    locale: true,
+    render: (val: any) => {
+      return convertFileSize(val, 0);
+    }
   },
   {
     label: 'resources.table.used',
-    key: 'used'
+    key: 'used',
+    locale: true,
+    render: (val: any) => {
+      return convertFileSize(val, 0);
+    }
   },
   {
     label: 'resources.table.allocated',
-    key: 'allocated'
+    key: 'allocated',
+    locale: true,
+    render: (val: any) => {
+      return convertFileSize(val, 0);
+    }
   }
 ];
 

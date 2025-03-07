@@ -1,26 +1,39 @@
 import React from 'react';
 
-import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { Divider } from 'antd';
 
 interface InfoColumnProps {
-  fieldList: { label: string; key: string }[];
+  fieldList: {
+    label: string;
+    key: string;
+    locale?: boolean;
+    render?: (val: any, data: any) => any;
+  }[];
+  style?: React.CSSProperties;
   data: Record<string, any>;
 }
 const InfoColumn: React.FC<InfoColumnProps> = (props) => {
-  const { data, fieldList } = props;
+  const { data, fieldList, style } = props;
 
   const intl = useIntl();
 
   return (
-    <span className="flex">
+    <span className="flex" style={style}>
       {fieldList.map((item, index) => {
         return (
           <>
             <span className="flex-column flex-center">
-              <span> {intl.formatMessage({ id: item.label })}</span>
-              <span> {convertFileSize(data[item.key], 0)}</span>
+              <span>
+                {' '}
+                {item.locale
+                  ? intl.formatMessage({ id: item.label })
+                  : item.label}
+              </span>
+              <span style={{ color: 'var(--color-white-quaternary)' }}>
+                {' '}
+                {item.render?.(data[item.key], data) ?? data[item.key]}
+              </span>
             </span>
             {index < fieldList.length - 1 ? (
               <Divider

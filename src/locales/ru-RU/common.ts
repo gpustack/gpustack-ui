@@ -226,5 +226,6 @@ export default {
   'common.options.none': 'Нет',
   'common.options.auto': 'Авто',
   'common.search.empty': 'Ничего не найдено',
-  'common.button.downloadLog': 'Скачать логи'
+  'common.button.downloadLog': 'Скачать логи',
+  'common.button.faq': 'TODO: Translate key "common.button.faq"'
 };

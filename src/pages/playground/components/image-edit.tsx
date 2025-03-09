@@ -314,6 +314,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           imguid={activeImgUid}
           imageStatus={imageStatus}
           imageSrc={image}
+          loading={loading}
           disabled={loading || !imageStatus.isOriginal}
           onSave={handleOnSave}
           clearUploadMask={handleClearUploadMask}

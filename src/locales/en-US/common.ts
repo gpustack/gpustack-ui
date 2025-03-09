@@ -228,5 +228,6 @@ export default {
   'common.options.none': 'None',
   'common.options.auto': 'Auto',
   'common.search.empty': 'No matching results found.',
-  'common.button.downloadLog': 'Download Log'
+  'common.button.downloadLog': 'Download Log',
+  'common.button.faq': 'FAQ'
 };

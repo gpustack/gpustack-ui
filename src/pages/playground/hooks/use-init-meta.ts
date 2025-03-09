@@ -69,10 +69,11 @@ export const useInitLLmMeta = (
   const { initialize: innitializeParams } = useOverlayScroller();
 
   const defaultModel = useMemo(() => {
-    return (
-      searchParams.get('model') ||
-      (isChat ? model ?? modelList?.[0]?.value : model)
-    );
+    if (isChat) {
+      return searchParams.get('model') || model || modelList?.[0]?.value;
+    }
+    // use for multiple chat
+    return model;
   }, [model, modelList, isChat]);
   const extractLLMMeta = (meta: any) => {
     const towKeys = new Set(precisionTwoKeys);

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import avatarImg from '@/assets/images/avatar.png';
+import IconFont from '@/components/icon-font';
 import externalLinks from '@/constants/external-links';
 import langConfigMap from '@/locales/lang-config-map';
 import {
@@ -79,8 +80,14 @@ export const getRightRenderContent = (opts: {
     {
       key: 'github',
       icon: <GithubOutlined />,
-      label: 'GitHub',
-      url: externalLinks.github
+      label: intl.formatMessage({ id: 'common.issue.report' }),
+      url: externalLinks.reportIssue
+    },
+    {
+      key: 'faq',
+      icon: <IconFont type="icon-fankuifaqs"></IconFont>,
+      label: intl.formatMessage({ id: 'common.button.faq' }),
+      url: externalLinks.faq
     },
     {
       key: 'Discord',

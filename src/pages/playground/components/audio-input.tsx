@@ -238,7 +238,7 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
 
   const generateFileNameByTime = (type?: string) => {
     const format = getAudioFormat(type);
-    return `recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${format.suffix}`;
+    return `Recording-${dayjs().format('YYYY-MM-DD-HH_mm_ss')}${format.suffix}`;
   };
   // start recording
   const StartRecording = async () => {

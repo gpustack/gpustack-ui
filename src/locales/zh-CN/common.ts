@@ -221,5 +221,6 @@ export default {
   'common.options.none': '无',
   'common.options.auto': '自动',
   'common.search.empty': '未找到匹配结果',
-  'common.button.downloadLog': '下载日志'
+  'common.button.downloadLog': '下载日志',
+  'common.button.faq': '常见问题'
 };

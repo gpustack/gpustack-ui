@@ -5,7 +5,6 @@ import SealSelect from '@/components/seal-form/seal-select';
 import SpeechContent from '@/components/speech-content';
 import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import { SendOutlined } from '@ant-design/icons';
 import { getLocale, useIntl, useSearchParams } from '@umijs/max';
 import { Form, Spin } from 'antd';
 import classNames from 'classnames';
@@ -392,7 +391,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
             onInputChange={handleInputChange}
             clearAll={handleClear}
             shouldResetMessage={false}
-            submitIcon={<SendOutlined></SendOutlined>}
           />
         </div>
       </div>

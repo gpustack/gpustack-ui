@@ -1,6 +1,5 @@
 import AlertInfo from '@/components/alert-info';
 import SealInputNumber from '@/components/seal-form/input-number';
-import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -23,7 +22,6 @@ import {
   useRef,
   useState
 } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { rerankerQuery } from '../apis';
 import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
@@ -439,17 +437,17 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   }, []);
 
-  useHotkeys(
-    HotKeys.SUBMIT,
-    (e: any) => {
-      e.preventDefault();
-      handleSearch(queryValue);
-    },
-    {
-      enabled: !loading,
-      preventDefault: true
-    }
-  );
+  // useHotkeys(
+  //   HotKeys.SUBMIT,
+  //   (e: any) => {
+  //     e.preventDefault();
+  //     handleSearch(queryValue);
+  //   },
+  //   {
+  //     enabled: !loading,
+  //     preventDefault: true
+  //   }
+  // );
 
   useEffect(() => {
     if (scroller.current) {
@@ -483,7 +481,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 <Tooltip
                   title={
                     <span>
-                      [{KeyMap.SUBMIT.textKeybinding}]{' '}
                       {intl.formatMessage({ id: 'common.button.submit' })}
                     </span>
                   }

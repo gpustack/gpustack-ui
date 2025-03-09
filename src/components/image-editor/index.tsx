@@ -27,6 +27,7 @@ type Stroke = Point[];
 
 type CanvasImageEditorProps = {
   ref?: any;
+  loading: boolean;
   imageSrc: string;
   disabled?: boolean;
   imguid: string | number;
@@ -48,6 +49,7 @@ const COLOR = 'rgba(0, 0, 255, 0.3)';
 const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
   (
     {
+      loading,
       imageSrc,
       disabled: isDisabled,
       imageStatus,
@@ -597,7 +599,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
           canvas!.height = img.height;
 
           // fit the image to the container
-          autoScale.current = autoScale.current || 1;
+          autoScale.current = 1;
 
           updateCanvasSize();
           clearCanvas();
@@ -735,12 +737,10 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
 
-      setCanvasTransformOrigin(event);
-
-      updateZoom(scaleChange, mouseX, mouseY);
-
       overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
       canvasRef.current!.style.transform = `scale(${autoScale.current})`;
+      setCanvasTransformOrigin(event);
+      updateZoom(scaleChange, mouseX, mouseY);
     };
 
     const updateCursorPosOnZoom = (e: any) => {
@@ -757,6 +757,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     };
 
     const handleFitView = () => {
+      resetCanvas();
       autoScale.current = baseScale.current;
       translatePos.current = { x: 0, y: 0 };
       setTransform();
@@ -908,7 +909,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
                 onClick={handleFitView}
                 size="middle"
                 type="text"
-                disabled={isDisabled}
+                disabled={loading}
               >
                 <ExpandOutlined className="font-size-14" />
               </Button>

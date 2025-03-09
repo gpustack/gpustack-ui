@@ -3,7 +3,6 @@ import ScatterChart from '@/components/echarts/scatter';
 import HighlightCode from '@/components/highlight-code';
 import IconFont from '@/components/icon-font';
 import SealInputNumber from '@/components/seal-form/input-number';
-import HotKeys, { KeyMap } from '@/config/hotkeys';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -29,7 +28,6 @@ import {
   useRef,
   useState
 } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
@@ -447,17 +445,17 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     []
   );
 
-  useHotkeys(
-    HotKeys.SUBMIT,
-    (e: any) => {
-      e.preventDefault();
-      handleSendMessage();
-    },
-    {
-      enabled: !loading,
-      preventDefault: true
-    }
-  );
+  // useHotkeys(
+  //   HotKeys.SUBMIT,
+  //   (e: any) => {
+  //     e.preventDefault();
+  //     handleSendMessage();
+  //   },
+  //   {
+  //     enabled: !loading,
+  //     preventDefault: true
+  //   }
+  // );
 
   useEffect(() => {
     if (scroller.current) {
@@ -526,7 +524,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                   <Tooltip
                     title={
                       <span>
-                        [{KeyMap.SUBMIT.textKeybinding}]{' '}
                         {intl.formatMessage({ id: 'common.button.submit' })}
                       </span>
                     }

@@ -115,9 +115,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
         )}
         <span
           className="thumb-img"
-          style={{
-            ...thumImgWrapStyle
-          }}
+          style={{ ...thumImgWrapStyle }}
           ref={imgWrapper}
         >
           <>
@@ -158,10 +156,11 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                 }}
               >
                 <AutoImage
+                  style={{ objectFit: 'cover' }}
                   preview={preview}
                   autoSize={autoSize}
                   src={dataUrl}
-                  width={imgSize.width || 100}
+                  width={imgSize.width || '100%'}
                   height={imgSize.height || 100}
                   onLoad={handleOnLoad}
                 />

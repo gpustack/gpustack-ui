@@ -311,7 +311,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   );
 
   const renderDistributionInfo = useCallback(
-    (severList: any[], label: string) => {
+    (severList: any[]) => {
       if (!severList.length) {
         return null;
       }
@@ -340,7 +340,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           >
             <InfoCircleOutlined className="m-r-5" />
             {intl.formatMessage({
-              id: label
+              id: 'models.table.acrossworker'
             })}
           </Tag>
         </Tooltip>
@@ -468,12 +468,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
               >
                 {renderOffloadInfo}
                 {renderDistributionInfo(
-                  instanceData.distributed_servers?.rpc_servers || [],
-                  'models.table.llamaAcrossworker'
+                  instanceData.distributed_servers?.rpc_servers || []
                 )}
                 {renderDistributionInfo(
-                  instanceData.distributed_servers?.ray_actors || [],
-                  'models.table.vllmAcrossworker'
+                  instanceData.distributed_servers?.ray_actors || []
                 )}
               </span>
             </Col>

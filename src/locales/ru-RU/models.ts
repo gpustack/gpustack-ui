@@ -85,8 +85,7 @@ export default {
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
-  'models.form.backend.vllm':
-    'Для моделей не-GGUF формата. Только x86 Linux.',
+  'models.form.backend.vllm': 'Для моделей не-GGUF формата. Только x86 Linux.',
   'models.form.backend.voxbox': 'Для аудиомоделей не-GGUF формата.',
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
@@ -106,5 +105,9 @@ export default {
     'Несколько реплик обеспечивают балансировку нагрузки для { api } запросов.',
   'models.table.list.empty': 'Модели отсутствуют!',
   'models.table.list.getStart':
-    '<span style="margin-right: 5px;font-size: 13px;">Начните работу с</span> <span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span>'
+    '<span style="margin-right: 5px;font-size: 13px;">Начните работу с</span> <span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span>',
+  'models.table.llamaAcrossworker':
+    'TODO: Translate key "models.table.llamaAcrossworker"',
+  'models.table.vllmAcrossworker':
+    'TODO: Translate key "models.table.vllmAcrossworker"'
 };

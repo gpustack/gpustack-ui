@@ -102,5 +102,7 @@ export default {
   'models.form.replicas.tips': '多副本数实现 { api } 接口推理请求的负载均衡',
   'models.table.list.empty': '暂无已部署模型',
   'models.table.list.getStart':
-    '<span style="margin-right: 5px;font-size: 13px;">一键部署</span><span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span><span style="margin-left: 5px;font-size: 13px;">立即使用！</span>'
+    '<span style="margin-right: 5px;font-size: 13px;">一键部署</span><span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span><span style="margin-left: 5px;font-size: 13px;">立即使用！</span>',
+  'models.table.llamaAcrossworker': 'Llama-box 跨节点',
+  'models.table.vllmAcrossworker': 'vLLM 跨节点'
 };

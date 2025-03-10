@@ -351,7 +351,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                   }}
                 >
                   <span className="server-info">
-                    <InfoCircleOutlined />
+                    <InfoCircleOutlined className="m-r-2" />{' '}
+                    {intl.formatMessage({ id: 'common.button.moreInfo' })}
                   </span>
                 </Tooltip>
               </span>

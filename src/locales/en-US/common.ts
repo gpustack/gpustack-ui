@@ -229,5 +229,6 @@ export default {
   'common.options.auto': 'Auto',
   'common.search.empty': 'No matching results found.',
   'common.button.downloadLog': 'Download Log',
-  'common.button.faq': 'FAQ'
+  'common.button.faq': 'FAQ',
+  'common.button.moreInfo': 'More Info'
 };

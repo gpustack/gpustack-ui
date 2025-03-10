@@ -44,3 +44,12 @@ npm run dev
 ```
 npm run build
 ```
+
+## Bugs & Issues
+
+- Please submit [bugs and issues](https://github.com/gpustack/gpustack/issues) with a label `ui`
+
+## Links
+
+- Official website: https://gpustack.ai/
+- Documents: https://docs.gpustack.ai/latest/overview/

@@ -66,6 +66,13 @@ interface ComputedResourceClaim {
   ram: number;
   vram: Record<string, number>;
 }
+
+interface DistributedServerItem {
+  pid: number;
+  port: number;
+  worker_id: string;
+  computed_resource_claim: ComputedResourceClaim;
+}
 export interface ModelInstanceListItem {
   backend?: string;
   backend_version?: string;
@@ -74,12 +81,8 @@ export interface ModelInstanceListItem {
   huggingface_filename: string;
   ollama_library_model_name: string;
   distributed_servers?: {
-    rpc_servers: {
-      pid: number;
-      port: number;
-      worker_id: string;
-      computed_resource_claim: ComputedResourceClaim;
-    }[];
+    rpc_servers: DistributedServerItem[];
+    ray_actors: DistributedServerItem[];
   };
   computed_resource_claim?: ComputedResourceClaim;
   s3_address: string;

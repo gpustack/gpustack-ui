@@ -89,11 +89,6 @@ const distributeCols = [
     }
   },
   {
-    title: 'models.form.backend',
-    locale: true,
-    key: 'backend'
-  },
-  {
     title: 'models.table.gpuindex',
     locale: true,
     key: 'gpu_index'
@@ -278,38 +273,143 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     );
   }, [modelData, instanceData, intl]);
 
-  const renderDistributionInfo = useMemo(() => {
-    const rpcServerList = instanceData.distributed_servers?.rpc_servers || [];
-    const list = _.map(rpcServerList, (item: any) => {
-      const data = _.find(workerList, { id: item.worker_id });
-      return {
-        worker_name: data?.name,
-        worker_ip: data?.ip,
-        port: '',
-        ram: convertFileSize(item.computed_resource_claim?.ram, 0),
-        gpu_index: displayGPUs(item.computed_resource_claim?.vram || {})
-      };
-    });
+  const renderDistributedServer = useCallback(
+    (severList: any[]) => {
+      const list = _.map(severList, (item: any) => {
+        const data = _.find(workerList, { id: item.worker_id });
+        return {
+          worker_name: data?.name,
+          worker_ip: data?.ip,
+          port: '',
+          ram: convertFileSize(item.computed_resource_claim?.ram, 0),
+          gpu_index: displayGPUs(item.computed_resource_claim?.vram || {})
+        };
+      });
 
-    const mainWorker = [
-      {
-        worker_name: `${instanceData.worker_name} (main)`,
-        worker_ip: `${instanceData.worker_ip}`,
-        port: '',
-        ram: convertFileSize(instanceData.computed_resource_claim?.ram, 0),
-        gpu_index: displayGPUs(instanceData.computed_resource_claim?.vram || {})
+      const mainWorker = [
+        {
+          worker_name: `${instanceData.worker_name} (main)`,
+          worker_ip: `${instanceData.worker_ip}`,
+          port: '',
+          ram: convertFileSize(instanceData.computed_resource_claim?.ram, 0),
+          gpu_index: displayGPUs(
+            instanceData.computed_resource_claim?.vram || {}
+          )
+        }
+      ];
+
+      return (
+        <div>
+          <SimpleTabel
+            columns={distributeCols}
+            dataSource={[...mainWorker, ...list]}
+          ></SimpleTabel>
+        </div>
+      );
+    },
+    [workerList, instanceData, intl]
+  );
+
+  const renderDistributionInfo = useCallback(
+    (severList: any[], label: string) => {
+      if (!severList.length) {
+        return null;
       }
-    ];
+      return (
+        <Tooltip
+          overlayInnerStyle={{
+            width: 'max-content',
+            maxWidth: '500px',
+            minWidth: '400px'
+          }}
+          title={renderDistributedServer(severList)}
+        >
+          <Tag
+            color="processing"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              maxWidth: '100%',
+              minWidth: 50,
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              opacity: 0.75,
+              borderRadius: 12
+            }}
+          >
+            <InfoCircleOutlined className="m-r-5" />
+            {intl.formatMessage({
+              id: label
+            })}
+          </Tag>
+        </Tooltip>
+      );
+    },
+    [renderDistributedServer]
+  );
 
+  const renderOffloadInfo = useMemo(() => {
+    const total_layers = instanceData.computed_resource_claim?.total_layers;
+    const offload_layers = instanceData.computed_resource_claim?.offload_layers;
+    if (total_layers === offload_layers || !offload_layers || !total_layers) {
+      return null;
+    }
     return (
-      <div>
-        <SimpleTabel
-          columns={distributeCols}
-          dataSource={[...mainWorker, ...list]}
-        ></SimpleTabel>
-      </div>
+      <Tooltip
+        title={
+          <span className="flex flex-center">
+            <span>
+              CPU:{' '}
+              {_.subtract(
+                instanceData.computed_resource_claim?.total_layers,
+                instanceData.computed_resource_claim?.offload_layers
+              ) || 0}{' '}
+              {intl.formatMessage({
+                id: 'models.table.layers'
+              })}
+            </span>
+            <Divider
+              type="vertical"
+              style={{
+                borderColor: '#fff',
+                opacity: 0.5
+              }}
+            ></Divider>
+            <span>
+              GPU: {instanceData.computed_resource_claim?.offload_layers}{' '}
+              {intl.formatMessage({
+                id: 'models.table.layers'
+              })}
+            </span>
+          </span>
+        }
+      >
+        <Tag
+          color="cyan"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            maxWidth: '100%',
+            minWidth: 50,
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            opacity: 0.75,
+            borderRadius: 12
+          }}
+        >
+          <InfoCircleOutlined className="m-r-5" />
+          {intl.formatMessage({
+            id: 'models.table.cpuoffload'
+          })}
+        </Tag>
+      </Tooltip>
     );
-  }, [workerList, instanceData, intl]);
+  }, [
+    instanceData.computed_resource_claim?.total_layers,
+    instanceData.computed_resource_claim?.offload_layers
+  ]);
 
   const handleOnSelect = useCallback(
     (val: string) => {
@@ -366,88 +466,14 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 }}
                 className="flex align-center"
               >
-                {instanceData.computed_resource_claim?.total_layers !==
-                  instanceData.computed_resource_claim?.offload_layers && (
-                  <Tooltip
-                    title={
-                      <span className="flex flex-center">
-                        <span>
-                          CPU:{' '}
-                          {_.subtract(
-                            instanceData.computed_resource_claim?.total_layers,
-                            instanceData.computed_resource_claim?.offload_layers
-                          ) || 0}{' '}
-                          {intl.formatMessage({
-                            id: 'models.table.layers'
-                          })}
-                        </span>
-                        <Divider
-                          type="vertical"
-                          style={{
-                            borderColor: '#fff',
-                            opacity: 0.5
-                          }}
-                        ></Divider>
-                        <span>
-                          GPU:{' '}
-                          {instanceData.computed_resource_claim?.offload_layers}{' '}
-                          {intl.formatMessage({
-                            id: 'models.table.layers'
-                          })}
-                        </span>
-                      </span>
-                    }
-                  >
-                    <Tag
-                      color="cyan"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        maxWidth: '100%',
-                        minWidth: 50,
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        opacity: 0.75,
-                        borderRadius: 12
-                      }}
-                    >
-                      <InfoCircleOutlined className="m-r-5" />
-                      {intl.formatMessage({
-                        id: 'models.table.cpuoffload'
-                      })}
-                    </Tag>
-                  </Tooltip>
+                {renderOffloadInfo}
+                {renderDistributionInfo(
+                  instanceData.distributed_servers?.rpc_servers || [],
+                  'models.table.llamaAcrossworker'
                 )}
-                {instanceData?.distributed_servers?.rpc_servers?.length && (
-                  <Tooltip
-                    overlayInnerStyle={{
-                      width: 'max-content',
-                      maxWidth: '500px',
-                      minWidth: '400px'
-                    }}
-                    title={renderDistributionInfo}
-                  >
-                    <Tag
-                      color="processing"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        maxWidth: '100%',
-                        minWidth: 50,
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        opacity: 0.75,
-                        borderRadius: 12
-                      }}
-                    >
-                      <InfoCircleOutlined className="m-r-5" />
-                      {intl.formatMessage({
-                        id: 'models.table.acrossworker'
-                      })}
-                    </Tag>
-                  </Tooltip>
+                {renderDistributionInfo(
+                  instanceData.distributed_servers?.ray_actors || [],
+                  'models.table.vllmAcrossworker'
                 )}
               </span>
             </Col>

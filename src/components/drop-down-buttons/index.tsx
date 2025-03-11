@@ -10,6 +10,11 @@ interface DropdownButtonsProps {
   items: MenuProps['items'];
   size?: 'small' | 'middle' | 'large';
   trigger?: Trigger[];
+  showText?: boolean;
+  disabled?: boolean;
+  variant?: 'filled' | 'outlined';
+  color?: string;
+  extra?: React.ReactNode;
   onSelect: (val: any, item?: any) => void;
 }
 
@@ -17,9 +22,16 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   items,
   size = 'middle',
   trigger = ['hover'],
+  showText,
+  disabled,
+  variant,
+  color,
+  extra,
   onSelect
 }) => {
+  const headItem = _.head(items);
   const intl = useIntl();
+
   const handleMenuClick = (item: any) => {
     const selectItem = _.find(items, { key: item.key });
     onSelect(item.key, selectItem);
@@ -37,19 +49,20 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   return (
     <>
       {items?.length === 1 ? (
-        <Tooltip title={intl.formatMessage({ id: _.head(items)?.label })}>
+        <Tooltip title={intl.formatMessage({ id: headItem?.label })}>
           <Button
             className={classNames('dropdown-button', size)}
-            {..._.head(items)}
-            icon={_.get(items, '0.icon')}
+            icon={headItem?.icon}
             size={size}
-            {..._.get(items, '0.props')}
+            {...headItem?.props}
             onClick={handleButtonClick}
           ></Button>
         </Tooltip>
       ) : (
         <Dropdown.Button
+          disabled={disabled}
           trigger={trigger}
+          type="primary"
           dropdownRender={(menus: any) => {
             return (
               <div
@@ -67,9 +80,10 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
                     <Button
                       {...item.props}
                       type="text"
-                      size="middle"
+                      size={size}
                       icon={item.icon}
                       key={item.key}
+                      disabled={item.disabled}
                       onClick={() => handleMenuClick(item)}
                       style={{ width: '100%', justifyContent: 'flex-start' }}
                     >
@@ -81,21 +95,45 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
             );
           }}
           buttonsRender={([leftButton, rightButton]) => [
-            <Tooltip
-              title={intl.formatMessage({ id: _.head(items)?.label })}
-              key="leftButton"
-            >
-              <Button
-                className={classNames('dropdown-button', size)}
-                onClick={handleButtonClick}
-                size={size}
-                icon={_.head(items)?.icon}
-              ></Button>
-            </Tooltip>,
+            <>
+              {showText ? (
+                <Button
+                  {...headItem?.props}
+                  disabled={headItem?.disabled || disabled}
+                  className={classNames('dropdown-button', size)}
+                  onClick={handleButtonClick}
+                  size={size}
+                  icon={headItem?.icon}
+                  variant={variant}
+                  color={color}
+                >
+                  {intl.formatMessage({
+                    id: headItem?.label
+                  })}
+                  {extra}
+                </Button>
+              ) : (
+                <Tooltip
+                  title={intl.formatMessage({ id: headItem?.label })}
+                  key="leftButton"
+                >
+                  <Button
+                    {...headItem?.props}
+                    className={classNames('dropdown-button', size)}
+                    onClick={handleButtonClick}
+                    size={size}
+                    icon={headItem?.icon}
+                    disabled={headItem?.disabled}
+                  ></Button>
+                </Tooltip>
+              )}
+            </>,
             <Button
               icon={<MoreOutlined />}
               size={size}
               key="menu"
+              variant={variant}
+              color="default"
               className={classNames('dropdown-button', size)}
             ></Button>
           ]}

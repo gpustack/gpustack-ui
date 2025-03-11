@@ -53,12 +53,12 @@ const TableRow: React.FC<
   childrenDataRef.current = childrenData;
   const axiosToken = useRef<any>(null);
   const [updateChild, setUpdateChild] = useState(true);
+  const [currentExpand, setCurrentExpand] = useState(false);
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     dataList: childrenData,
     limit: 100,
     setDataList: setChildrenData
-    // callback: (list) => renderChildren?.(list)
   });
 
   useEffect(() => {
@@ -92,7 +92,10 @@ const TableRow: React.FC<
         ></Empty>
       );
     }
-    return renderChildren?.(childrenData, record);
+    return renderChildren?.(childrenData, {
+      parent: record,
+      currentExpanded: currentExpand
+    });
   };
 
   const handlePolling = async () => {
@@ -163,6 +166,7 @@ const TableRow: React.FC<
 
   const handleRowExpand = async () => {
     onExpand?.(!expanded, record, record[rowKey]);
+    setCurrentExpand(!expanded);
 
     if (pollTimer.current) {
       clearInterval(pollTimer.current);

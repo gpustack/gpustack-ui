@@ -6,11 +6,31 @@ import TableHeader from './header';
 import './index.less';
 import TableRow from './row';
 
-interface ColumnProps {
+export interface ColumnProps {
   title: string;
   key: string;
-  render?: (data: { dataIndex: string; row: any }) => any;
+  render?: (data: {
+    dataIndex: string;
+    dataList?: any[];
+    row: any;
+    rowIndex?: number;
+    colIndex?: number;
+  }) => any;
   locale?: boolean;
+  colSpan?: (params: {
+    row: any;
+    rowIndex: number;
+    colIndex: number;
+    dataIndex: string;
+    dataList: any[];
+  }) => number;
+  rowSpan?: (params: {
+    row: any;
+    rowIndex: number;
+    colIndex: number;
+    dataIndex: string;
+    dataList: any[];
+  }) => number;
 }
 
 interface SimpleTableProps {
@@ -42,7 +62,9 @@ const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
             return (
               <TableRow
                 row={item}
+                rowIndex={index}
                 columns={columns}
+                dataList={dataSource}
                 key={rowKey ? item[rowKey] : index}
               ></TableRow>
             );

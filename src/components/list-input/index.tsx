@@ -8,17 +8,26 @@ import ListItem from './list-item';
 
 interface ListInputProps {
   dataList: string[];
-  label: string;
+  label: React.ReactNode;
   description?: React.ReactNode;
   btnText?: string;
   options?: Global.HintOptions[];
   placeholder?: string;
+  labelExtra?: React.ReactNode;
   onChange: (data: string[]) => void;
 }
 
 const ListInput: React.FC<ListInputProps> = (props) => {
   const intl = useIntl();
-  const { dataList, label, description, onChange, btnText, options } = props;
+  const {
+    dataList,
+    label,
+    description,
+    onChange,
+    btnText,
+    options,
+    labelExtra
+  } = props;
   const [list, setList] = React.useState<{ value: string; uid: number }[]>([]);
   const countRef = React.useRef(0);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -71,7 +80,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
   }, [dataList]);
 
   return (
-    <Wrapper label={label} description={description}>
+    <Wrapper label={label} description={description} labelExtra={labelExtra}>
       <>
         {_.map(list, (item: any, index: number) => {
           return (

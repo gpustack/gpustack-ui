@@ -108,5 +108,7 @@ export default {
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">Get started with</span> <span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span>',
   'models.table.llamaAcrossworker': 'Llama-box Across Workers',
-  'models.table.vllmAcrossworker': 'vLLM Across Workers'
+  'models.table.vllmAcrossworker': 'vLLM Across Workers',
+  'models.form.releases': 'Releases',
+  'models.form.moreparameters': 'More Parameters'
 };

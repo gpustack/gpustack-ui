@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
+import InfoColumn from '@/components/simple-table/info-column';
 import useTableSort from '@/hooks/use-table-sort';
 import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
@@ -11,6 +12,33 @@ import { useEffect, useState } from 'react';
 import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
+
+const fieldList = [
+  {
+    label: 'resources.table.total',
+    key: 'total',
+    locale: true,
+    render: (val: any) => {
+      return convertFileSize(val, 0);
+    }
+  },
+  {
+    label: 'resources.table.used',
+    key: 'used',
+    locale: true,
+    render: (val: any) => {
+      return convertFileSize(val, 0);
+    }
+  },
+  {
+    label: 'resources.table.allocated',
+    key: 'allocated',
+    locale: true,
+    render: (val: any) => {
+      return convertFileSize(val, 0);
+    }
+  }
+];
 
 const GPUList: React.FC = () => {
   console.log('GPUList======');
@@ -228,19 +256,10 @@ const GPUList: React.FC = () => {
                         ) * 100
                   }
                   label={
-                    <span className="flex-column">
-                      <span>
-                        {intl.formatMessage({ id: 'resources.table.total' })}:{' '}
-                        {convertFileSize(record.memory?.total, 0)}
-                      </span>
-                      <span>
-                        {intl.formatMessage({ id: 'resources.table.used' })}:{' '}
-                        {convertFileSize(
-                          record.memory?.used || record.memory?.allocated,
-                          0
-                        )}
-                      </span>
-                    </span>
+                    <InfoColumn
+                      fieldList={fieldList}
+                      data={record.memory}
+                    ></InfoColumn>
                   }
                 ></ProgressBar>
               );

@@ -101,12 +101,14 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     if (backend === backendOptionsMap.llamaBox) {
       return {
         backend: 'llama-box',
+        releases: 'https://github.com/gpustack/llama-box/releases',
         link: 'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage'
       };
     }
     if (backend === backendOptionsMap.vllm) {
       return {
         backend: 'vLLM',
+        releases: 'https://github.com/vllm-project/vllm/releases',
         link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#command-line-arguments-for-the-server'
       };
     }
@@ -327,6 +329,25 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             description={intl.formatMessage({
               id: 'models.form.backendVersion.tips'
             })}
+            labelExtra={
+              backendParamsTips?.releases && (
+                <span
+                  style={{
+                    marginLeft: 5
+                  }}
+                >
+                  (
+                  <Typography.Link
+                    style={{ lineHeight: 1 }}
+                    href={backendParamsTips?.releases}
+                    target="_blank"
+                  >
+                    {intl.formatMessage({ id: 'models.form.releases' })}
+                  </Typography.Link>
+                  )
+                </span>
+              )
+            }
           ></SealInput.Input>
         </Form.Item>
 
@@ -346,19 +367,20 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             dataList={form.getFieldValue('backend_parameters') || []}
             onChange={handleBackendParametersChange}
             options={paramsConfig}
-            description={
-              backendParamsTips && (
-                <span>
-                  {intl.formatMessage(
-                    { id: 'models.form.backend_parameters.vllm.tips' },
-                    { backend: backendParamsTips.backend || '' }
-                  )}{' '}
+            labelExtra={
+              backendParamsTips?.link && (
+                <span style={{ marginLeft: 2 }}>
+                  (
                   <Typography.Link
-                    href={backendParamsTips.link}
+                    style={{ lineHeight: 1 }}
+                    href={backendParamsTips?.link}
                     target="_blank"
                   >
-                    {intl.formatMessage({ id: 'common.text.here' })}
+                    {intl.formatMessage({
+                      id: 'models.form.moreparameters'
+                    })}
                   </Typography.Link>
+                  )
                 </span>
               )
             }

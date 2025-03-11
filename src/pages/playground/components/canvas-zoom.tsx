@@ -5,6 +5,8 @@ const ImageCanvas = ({ imageUrl }) => {
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [image, setImage] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startDragPos, setStartDragPos] = useState({ x: 0, y: 0 });
   const requestRef = useRef();
 
   // 加载图片
@@ -40,7 +42,7 @@ const ImageCanvas = ({ imageUrl }) => {
     return () => cancelAnimationFrame(requestRef.current);
   }, [image, scale, offset]);
 
-  // 处理滚轮事件
+  // 处理滚轮事件（缩放）
   const handleWheel = (event) => {
     event.preventDefault();
     const { deltaY, clientX, clientY } = event;
@@ -60,13 +62,55 @@ const ImageCanvas = ({ imageUrl }) => {
     setOffset({ x: newOffsetX, y: newOffsetY });
   };
 
+  // 处理鼠标按下事件（开始拖拽）
+  const handleMouseDown = (event) => {
+    event.preventDefault();
+    setIsDragging(true);
+    const { clientX, clientY } = event;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    setStartDragPos({
+      x: clientX - rect.left - offset.x,
+      y: clientY - rect.top - offset.y
+    });
+  };
+
+  // 处理鼠标移动事件（拖拽中）
+  const handleMouseMove = (event) => {
+    if (isDragging) {
+      const { clientX, clientY } = event;
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const newOffsetX = clientX - rect.left - startDragPos.x;
+      const newOffsetY = clientY - rect.top - startDragPos.y;
+      setOffset({ x: newOffsetX, y: newOffsetY });
+    }
+  };
+
+  // 处理鼠标松开事件（结束拖拽）
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // 处理鼠标离开 Canvas 事件（结束拖拽）
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
   return (
     <canvas
       ref={canvasRef}
       width={800}
       height={600}
       onWheel={handleWheel}
-      style={{ border: '1px solid black' }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        border: '1px solid black',
+        cursor: isDragging ? 'grabbing' : 'grab'
+      }}
     />
   );
 };

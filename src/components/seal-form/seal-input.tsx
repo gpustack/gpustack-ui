@@ -20,6 +20,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     checkStatus,
     trim = true,
     loading,
+    labelExtra,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -74,6 +75,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     <Wrapper
       status={checkStatus || status}
       label={label}
+      labelExtra={labelExtra}
       isFocus={isFocus}
       required={required}
       description={description}

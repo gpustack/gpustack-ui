@@ -3,15 +3,20 @@ import React from 'react';
 import styles from './styles/wrapper.less';
 
 const Wrapper: React.FC<{
-  label?: string;
+  label?: React.ReactNode;
   description?: React.ReactNode;
+  labelExtra?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ children, label, description, ...rest }) => {
+}> = ({ children, label, description, labelExtra, ...rest }) => {
   return (
     <div className={styles['wrapper']}>
       {label && (
         <span className="label">
-          <LabelInfo label={label} description={description}></LabelInfo>
+          <LabelInfo
+            label={label}
+            description={description}
+            labelExtra={labelExtra}
+          ></LabelInfo>
         </span>
       )}
       {React.isValidElement(children)

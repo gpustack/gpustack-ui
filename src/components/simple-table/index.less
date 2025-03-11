@@ -16,7 +16,7 @@
     }
 
     tr:last-child td {
-      border-bottom: none;
+      // border-bottom: none;
     }
   }
 
@@ -25,9 +25,17 @@
     font-weight: 600;
   }
 
+  td {
+    color: var(--color-white-quaternary);
+  }
+
   .cell-span {
     display: flex;
     padding: 4px 6px;
     min-height: 32px;
+  }
+
+  .cell-header {
+    font-weight: var(--font-weight-bold);
   }
 }

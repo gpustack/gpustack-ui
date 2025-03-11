@@ -7,9 +7,10 @@ interface NoteInfoProps {
   required?: boolean;
   label: React.ReactNode;
   description?: React.ReactNode;
+  labelExtra?: React.ReactNode;
 }
 const NoteInfo: React.FC<NoteInfoProps> = (props) => {
-  const { required, description, label } = props || {};
+  const { required, description, label, labelExtra } = props || {};
   if (!label) return null;
 
   return (
@@ -43,6 +44,7 @@ const NoteInfo: React.FC<NoteInfoProps> = (props) => {
           </span>
         </>
       )}
+      {labelExtra}
     </span>
   );
 };

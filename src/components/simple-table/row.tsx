@@ -1,25 +1,88 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface TableRowProps {
   row: any;
   columns: any;
+  rowIndex: number;
+  dataList: any[];
 }
-const TableRow = ({ row, columns }: TableRowProps) => {
+
+interface TableCellProps {
+  row: any;
+  column: any;
+  rowIndex: number;
+  colIndex: number;
+  dataList: any[];
+}
+const TableCell: React.FC<TableCellProps> = (props: TableCellProps) => {
+  const { row, column, rowIndex, colIndex, dataList } = props;
+
+  const renderContent = useMemo(() => {
+    return column.render
+      ? column.render({
+          dataIndex: column.key,
+          dataList: dataList,
+          row: row,
+          rowIndex,
+          colIndex: colIndex
+        })
+      : row[column.key];
+  }, [column, row, rowIndex, colIndex, dataList]);
+
+  if (renderContent === null && (column.colSpan || column.rowSpan)) {
+    return null;
+  }
+
+  return (
+    <td
+      key={colIndex}
+      rowSpan={column.rowSpan?.({
+        row,
+        rowIndex,
+        colIndex: colIndex,
+        dataIndex: column.key,
+        dataList: dataList
+      })}
+      colSpan={column.colSpan?.({
+        row,
+        rowIndex,
+        colIndex: colIndex,
+        dataIndex: column.key,
+        dataList: dataList
+      })}
+    >
+      <span className="cell-span">
+        {column.render
+          ? column.render({
+              dataIndex: column.key,
+              dataList: dataList,
+              row: row,
+              rowIndex,
+              colIndex: colIndex
+            })
+          : row[column.key]}
+      </span>
+    </td>
+  );
+};
+
+const TableRow = ({ row, columns, rowIndex, dataList }: TableRowProps) => {
   return (
     <tr>
       {columns.map((column: any, index: number) => {
         return (
-          <td key={index}>
-            <span className="cell-span">
-              {column.render
-                ? column.render({ dataIndex: column.key, row: row })
-                : row[column.key]}
-            </span>
-          </td>
+          <TableCell
+            key={index}
+            rowIndex={rowIndex}
+            colIndex={index}
+            dataList={dataList}
+            row={row}
+            column={column}
+          ></TableCell>
         );
       })}
     </tr>
   );
 };
 
-export default React.memo(TableRow);
+export default TableRow;

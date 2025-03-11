@@ -109,5 +109,8 @@ export default {
   'models.table.llamaAcrossworker':
     'TODO: Translate key "models.table.llamaAcrossworker"',
   'models.table.vllmAcrossworker':
-    'TODO: Translate key "models.table.vllmAcrossworker"'
+    'TODO: Translate key "models.table.vllmAcrossworker"',
+  'models.form.releases': 'TODO: Translate key "models.form.releases"',
+  'models.form.moreparameters':
+    'TODO: Translate key "models.form.moreparameters"'
 };

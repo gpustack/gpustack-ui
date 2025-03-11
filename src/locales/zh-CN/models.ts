@@ -104,5 +104,7 @@ export default {
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">一键部署</span><span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span><span style="margin-left: 5px;font-size: 13px;">立即使用！</span>',
   'models.table.llamaAcrossworker': 'Llama-box 跨节点',
-  'models.table.vllmAcrossworker': 'vLLM 跨节点'
+  'models.table.vllmAcrossworker': 'vLLM 跨节点',
+  'models.form.releases': '版本',
+  'models.form.moreparameters': '更多参数'
 };

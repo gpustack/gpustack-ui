@@ -32,7 +32,7 @@ import {
   SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { Access, useAccess, useIntl, useNavigate } from '@umijs/max';
+import { useAccess, useIntl, useNavigate } from '@umijs/max';
 import {
   Button,
   Dropdown,
@@ -68,7 +68,6 @@ import {
 } from '../config';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import { useGenerateFormEditInitialValues } from '../hooks';
-import DeployDropdown from './deploy-dropdown';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
 import ModelTag from './model-tag';
@@ -120,7 +119,7 @@ const ActionList = [
   {
     label: 'common.button.start',
     key: 'start',
-    icon: <IconFont type="icon-playcircle"></IconFont>
+    icon: <IconFont type="icon-outline-play"></IconFont>
   },
   {
     label: 'common.button.delete',
@@ -129,6 +128,27 @@ const ActionList = [
       danger: true
     },
     icon: <DeleteOutlined />
+  }
+];
+
+const ButtonList = [
+  {
+    label: 'common.button.start',
+    key: 'start',
+    icon: <IconFont type="icon-outline-play"></IconFont>
+  },
+  {
+    label: 'common.button.stop',
+    key: 'stop',
+    icon: <IconFont type="icon-stop1"></IconFont>
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
+    icon: <DeleteOutlined />,
+    props: {
+      danger: true
+    }
   }
 ];
 
@@ -328,6 +348,12 @@ const Models: React.FC<ModelsProps> = ({
 
   const sourceOptions = [
     {
+      label: intl.formatMessage({ id: 'menu.models.modelCatalog' }),
+      value: 'catalog',
+      key: 'catalog',
+      icon: <IconFont type="icon-catalog"></IconFont>
+    },
+    {
       label: 'Hugging Face',
       value: modelSourceMap.huggingface_value,
       key: 'huggingface',
@@ -344,12 +370,6 @@ const Models: React.FC<ModelsProps> = ({
       value: modelSourceMap.modelscope_value,
       key: 'modelscope',
       icon: <IconFont type="icon-tu2"></IconFont>
-    },
-    {
-      label: intl.formatMessage({ id: 'menu.models.modelCatalog' }),
-      value: 'catalog',
-      key: 'catalog',
-      icon: <IconFont type="icon-catalog"></IconFont>
     },
     {
       label: intl.formatMessage({ id: 'models.form.localPath' }),
@@ -659,11 +679,12 @@ const Models: React.FC<ModelsProps> = ({
   );
 
   const renderChildren = useCallback(
-    (list: any, parent?: any) => {
+    (list: any, options: { parent?: any; [key: string]: any }) => {
       return (
         <Instances
           list={list}
-          modelData={parent}
+          currentExpanded={options.currentExpanded}
+          modelData={options.parent}
           workerList={workerList}
           handleChildSelect={handleChildSelect}
         ></Instances>
@@ -737,6 +758,18 @@ const Models: React.FC<ModelsProps> = ({
         rowSelection.clearSelections();
       }
     });
+  };
+
+  const handleActionSelect = (val: any) => {
+    if (val === 'delete') {
+      handleDeleteBatch();
+    }
+    if (val === 'start') {
+      handleStartBatch();
+    }
+    if (val === 'stop') {
+      handleStopBatch();
+    }
   };
 
   const columns: SealColumnProps[] = useMemo(() => {
@@ -939,12 +972,6 @@ const Models: React.FC<ModelsProps> = ({
                   onClick: handleClickDropdown
                 }}
                 trigger={['hover']}
-                dropdownRender={() => (
-                  <DeployDropdown
-                    items={sourceOptions}
-                    onSelect={handleClickDropdown}
-                  ></DeployDropdown>
-                )}
                 placement="bottomRight"
               >
                 <Button
@@ -955,7 +982,19 @@ const Models: React.FC<ModelsProps> = ({
                   {intl?.formatMessage?.({ id: 'models.button.deploy' })}
                 </Button>
               </Dropdown>
-              <Button
+              <DropdownButtons
+                items={ButtonList}
+                extra={
+                  rowSelection.selectedRowKeys.length > 0 && (
+                    <span>({rowSelection.selectedRowKeys.length})</span>
+                  )
+                }
+                size="large"
+                showText={true}
+                disabled={!rowSelection.selectedRowKeys.length}
+                onSelect={handleActionSelect}
+              />
+              {/* <Button
                 icon={<IconFont type="icon-outline-play"></IconFont>}
                 onClick={handleStartBatch}
                 disabled={!rowSelection.selectedRows.length}
@@ -993,7 +1032,7 @@ const Models: React.FC<ModelsProps> = ({
                     )}
                   </span>
                 </Button>
-              </Access>
+              </Access> */}
             </Space>
           }
         ></PageTools>

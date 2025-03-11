@@ -14,7 +14,7 @@ const TableHeader = ({ columns }: TableHeaderProps) => {
       {columns.map((column: any, index: number) => {
         return (
           <th key={index}>
-            <span className="cell-span">
+            <span className="cell-span cell-header">
               {column.locale
                 ? intl.formatMessage({ id: column.title })
                 : column.title}

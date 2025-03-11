@@ -2,7 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
-import SimpleTabel from '@/components/simple-table';
+import SimpleTabel, { ColumnProps } from '@/components/simple-table';
 import StatusTag from '@/components/status-tag';
 import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
@@ -12,7 +12,8 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   HddFilled,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  ThunderboltFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import {
@@ -27,17 +28,48 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
 import '../style/instance-item.less';
 
+const WorkerInfo = (props: {
+  title: React.ReactNode;
+  defaultOpen: boolean;
+}) => {
+  const [open, setOpen] = React.useState(props.defaultOpen);
+  useEffect(() => {
+    if (props.defaultOpen) {
+      setTimeout(() => {
+        setOpen(false);
+      }, 1000);
+    }
+  }, [props.defaultOpen]);
+  return (
+    <span className="server-info-wrapper">
+      <Tooltip
+        open={open}
+        onOpenChange={setOpen}
+        title={props.title}
+        overlayInnerStyle={{
+          width: 'max-content',
+          maxWidth: '400px'
+        }}
+      >
+        <span className="server-info">
+          <InfoCircleOutlined />
+        </span>
+      </Tooltip>
+    </span>
+  );
+};
 interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
   workerList: WorkerListItem[];
   modelData?: any;
+  defaultOpenId: string;
   handleChildSelect: (val: string, item: ModelInstanceListItem) => void;
 }
 
@@ -76,7 +108,7 @@ const childActionList = [
   }
 ];
 
-const distributeCols = [
+const distributeCols: ColumnProps[] = [
   {
     title: 'Worker',
     key: 'worker_name'
@@ -84,7 +116,7 @@ const distributeCols = [
   {
     title: 'IP',
     key: 'worker_ip',
-    render: ({ row }: { row: ModelInstanceListItem }) => {
+    render: ({ row }) => {
       return row.port ? `${row.worker_ip}:${row.port}` : row.worker_ip;
     }
   },
@@ -94,9 +126,21 @@ const distributeCols = [
     key: 'gpu_index'
   },
   {
-    title: 'resources.table.memory',
+    title: 'resources.table.vram',
     locale: true,
-    key: 'ram'
+    key: 'vram',
+    rowSpan: ({ row, rowIndex, colIndex, dataIndex, dataList }) => {
+      return rowIndex === 0 ? dataList.length : 0;
+    },
+    render: ({ rowIndex, dataList }) => {
+      if (rowIndex === 0) {
+        return convertFileSize(
+          _.sumBy(dataList, (item: any) => item.vram),
+          2
+        );
+      }
+      return null;
+    }
   }
 ];
 
@@ -153,6 +197,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   instanceData,
   workerList,
   modelData,
+  defaultOpenId,
   handleChildSelect
 }) => {
   const [api, contextHolder] = notification.useNotification({
@@ -224,54 +269,31 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         ? `${instanceData.worker_ip}:${instanceData.port}`
         : instanceData.worker_ip;
     }
-    let backend = modelData?.backend || '';
-    if (modelData.backend_version) {
-      backend += ` (${modelData.backend_version})`;
-    }
-    const vrams = instanceData.computed_resource_claim?.vram || {};
     return (
       <div>
-        <div style={{ marginBottom: 5 }}>
+        <div>{instanceData.worker_name}</div>
+        <div className="flex-center">
           <HddFilled className="m-r-5" />
-          {instanceData.worker_name}
+          {workerIp}
         </div>
-        <div className="flex m-b-6 gap-6">
-          <InfoItem label="IP" value={workerIp} width={180}></InfoItem>
-          <InfoItem
-            width={90}
-            label={intl.formatMessage({ id: 'models.form.backend' })}
-            value={backend}
-          ></InfoItem>
+        <div className="flex-center">
+          <IconFont type="icon-filled-gpu" className="m-r-5" />
+          {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
+          {_.join(instanceData.gpu_indexes?.sort?.(), ',')}]
         </div>
-        <div className="flex gap-6">
-          <InfoItem
-            width={180}
-            label={intl.formatMessage({ id: 'models.table.gpuindex' })}
-            value={Object.keys(vrams)
-              ?.sort?.()
-              .map((index) => {
-                return (
-                  <span className="flex-1" key={index}>
-                    <span className="index">
-                      [{index}] {''}
-                    </span>
-                    {convertFileSize(vrams?.[index], 0)}
-                  </span>
-                );
-              })}
-          ></InfoItem>
-          <InfoItem
-            width={90}
-            label={intl.formatMessage({ id: 'resources.table.memory' })}
-            value={convertFileSize(
-              instanceData.computed_resource_claim?.ram,
-              0
-            )}
-          ></InfoItem>
+        <div className="flex-center">
+          <ThunderboltFilled className="m-r-5" />
+          {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
+          {modelData?.backend || ''}
+          {modelData.backend_version ? `(${modelData.backend_version})` : ''}
         </div>
       </div>
     );
   }, [modelData, instanceData, intl]);
+
+  const calcTotalVram = (vram: Record<string, number>) => {
+    return _.sum(_.values(vram));
+  };
 
   const renderDistributedServer = useCallback(
     (severList: any[]) => {
@@ -281,20 +303,35 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           worker_name: data?.name,
           worker_ip: data?.ip,
           port: '',
-          ram: convertFileSize(item.computed_resource_claim?.ram, 0),
-          gpu_index: displayGPUs(item.computed_resource_claim?.vram || {})
+          vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
+          gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
         };
       });
 
+      // const list = [
+      //   {
+      //     worker_name: 'worker1',
+      //     worker_ip: '192.168.50.23',
+      //     port: '',
+      //     vram: 21555525632,
+      //     gpu_index: '0,1'
+      //   },
+      //   {
+      //     worker_name: 'worker2',
+      //     worker_ip: '192.168.50.25',
+      //     port: '',
+      //     vram: 21555525632,
+      //     gpu_index: '2,3'
+      //   }
+      // ];
+
       const mainWorker = [
         {
-          worker_name: `${instanceData.worker_name} (main)`,
+          worker_name: `${instanceData.worker_name}`,
           worker_ip: `${instanceData.worker_ip}`,
           port: '',
-          ram: convertFileSize(instanceData.computed_resource_claim?.ram, 0),
-          gpu_index: displayGPUs(
-            instanceData.computed_resource_claim?.vram || {}
-          )
+          vram: calcTotalVram(instanceData.computed_resource_claim?.vram || {}),
+          gpu_index: `${instanceData.gpu_indexes?.join?.(',')}(main)`
         }
       ];
 
@@ -443,18 +480,12 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 <AutoTooltip title={instanceData.name} ghost>
                   <span className="m-r-5">{instanceData.name}</span>
                 </AutoTooltip>
-                <Tooltip
-                  title={renderWorkerInfo}
-                  overlayInnerStyle={{
-                    width: 'max-content',
-                    maxWidth: '400px'
-                  }}
-                >
-                  <span className="server-info">
-                    <InfoCircleOutlined className="m-r-2" />{' '}
-                    {intl.formatMessage({ id: 'common.button.moreInfo' })}
-                  </span>
-                </Tooltip>
+                {!!instanceData.worker_id && (
+                  <WorkerInfo
+                    title={renderWorkerInfo}
+                    defaultOpen={defaultOpenId === instanceData.name}
+                  ></WorkerInfo>
+                )}
               </span>
             </Col>
             <Col span={6}>
@@ -468,10 +499,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
               >
                 {renderOffloadInfo}
                 {renderDistributionInfo(
-                  instanceData.distributed_servers?.rpc_servers || []
-                )}
-                {renderDistributionInfo(
-                  instanceData.distributed_servers?.ray_actors || []
+                  instanceData.distributed_servers?.rpc_servers ||
+                    instanceData.distributed_servers?.ray_actors ||
+                    []
                 )}
               </span>
             </Col>

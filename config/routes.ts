@@ -89,7 +89,7 @@ export default [
     name: 'apikeys',
     path: '/api-keys',
     key: 'apikeys',
-    icon: 'LockOutlined',
+    icon: 'KeyOutlined',
     component: './api-keys'
   },
   {

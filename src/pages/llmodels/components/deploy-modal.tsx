@@ -1,3 +1,4 @@
+import AlertBlockInfo from '@/components/alert-info/block';
 import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
@@ -47,6 +48,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
+  const [warningStatus, setWarningStatus] = useState<{
+    show: boolean;
+    message: string;
+  }>({
+    show: false,
+    message: ''
+  });
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldValue?.('file_name', item.fakeName);
@@ -71,6 +79,35 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
+  const updateShowWarning = () => {
+    const backend = form.current?.getFieldValue?.('backend');
+    const localPath = form.current?.getFieldValue?.('local_path');
+
+    if (source !== modelSourceMap.local_path_value || !localPath) {
+      return;
+    }
+
+    if (localPath.endsWith('.gguf') && backend !== backendOptionsMap.llamaBox) {
+      setWarningStatus({
+        show: true,
+        message: 'models.form.backend.warning'
+      });
+    } else if (
+      !localPath.endsWith('.gguf') &&
+      backend === backendOptionsMap.llamaBox
+    ) {
+      setWarningStatus({
+        show: true,
+        message: 'models.form.backend.warning.llamabox'
+      });
+    } else {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+    }
+  };
+
   const handleBackendChange = (backend: string) => {
     if (backend === backendOptionsMap.vllm) {
       setIsGGUF(false);
@@ -79,6 +116,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     if (backend === backendOptionsMap.llamaBox) {
       setIsGGUF(true);
     }
+    updateShowWarning();
   };
 
   const handleCancel = useCallback(() => {
@@ -92,6 +130,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   useEffect(() => {
     if (!open) {
       setIsGGUF(false);
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
       form.current?.setFieldValue?.('backend', backendOptionsMap.vllm);
     } else if (source === modelSourceMap.ollama_library_value) {
       form.current?.setFieldValue?.('backend', backendOptionsMap.llamaBox);
@@ -144,7 +186,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       <div style={{ display: 'flex', height: '100%' }}>
         {SEARCH_SOURCE.includes(props.source) && (
           <>
-            <div style={{ display: 'flex', flex: 1 }}>
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                maxWidth: '33.33%'
+              }}
+            >
               <ColumnWrapper>
                 <SearchModel
                   modelSource={props.source}
@@ -153,7 +201,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               </ColumnWrapper>
               <Separator></Separator>
             </div>
-            <div style={{ display: 'flex', flex: 1 }}>
+            <div
+              style={{
+                display: 'flex',
+                flex: 1,
+                maxWidth: '33.33%'
+              }}
+            >
               <ColumnWrapper>
                 <ModelCard
                   selectedModel={selectedModel}
@@ -176,38 +230,53 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             </div>
           </>
         )}
-        <ColumnWrapper
-          footer={
-            <ModalFooter
-              onCancel={handleCancel}
-              onOk={handleSumit}
-              style={{
-                padding: '16px 24px',
-                display: 'flex',
-                justifyContent: 'flex-end'
-              }}
-            ></ModalFooter>
-          }
-        >
-          <>
-            {SEARCH_SOURCE.includes(source) && (
-              <TitleWrapper>
-                {intl.formatMessage({ id: 'models.form.configurations' })}
-                <span style={{ display: 'flex', height: 24 }}></span>
-              </TitleWrapper>
-            )}
-            <DataForm
-              source={source}
-              action={action}
-              selectedModel={selectedModel}
-              onOk={onOk}
-              ref={form}
-              isGGUF={isGGUF}
-              gpuOptions={props.gpuOptions}
-              onBackendChange={handleBackendChange}
-            ></DataForm>
-          </>
-        </ColumnWrapper>
+        <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
+          <ColumnWrapper
+            paddingBottom={warningStatus.show ? 125 : 50}
+            footer={
+              <>
+                {warningStatus.show && (
+                  <AlertBlockInfo
+                    ellipsis={false}
+                    message={intl.formatMessage({ id: warningStatus.message })}
+                    title={intl.formatMessage({
+                      id: 'common.text.warning'
+                    })}
+                    type="warning"
+                  ></AlertBlockInfo>
+                )}
+                <ModalFooter
+                  onCancel={handleCancel}
+                  onOk={handleSumit}
+                  style={{
+                    padding: '16px 24px',
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }}
+                ></ModalFooter>
+              </>
+            }
+          >
+            <>
+              {SEARCH_SOURCE.includes(source) && (
+                <TitleWrapper>
+                  {intl.formatMessage({ id: 'models.form.configurations' })}
+                  <span style={{ display: 'flex', height: 24 }}></span>
+                </TitleWrapper>
+              )}
+              <DataForm
+                source={source}
+                action={action}
+                selectedModel={selectedModel}
+                onOk={onOk}
+                ref={form}
+                isGGUF={isGGUF}
+                gpuOptions={props.gpuOptions}
+                onBackendChange={handleBackendChange}
+              ></DataForm>
+            </>
+          </ColumnWrapper>
+        </div>
       </div>
     </Drawer>
   );

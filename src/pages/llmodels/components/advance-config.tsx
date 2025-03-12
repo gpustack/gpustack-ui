@@ -109,7 +109,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       return {
         backend: 'vLLM',
         releases: 'https://github.com/vllm-project/vllm/releases',
-        link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#command-line-arguments-for-the-server'
+        link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#cli-reference'
       };
     }
     return null;
@@ -369,7 +369,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={paramsConfig}
             labelExtra={
               backendParamsTips?.link && (
-                <span style={{ marginLeft: 2 }}>
+                <span style={{ marginLeft: 5 }}>
                   (
                   <Typography.Link
                     style={{ lineHeight: 1 }}

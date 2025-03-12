@@ -35,13 +35,13 @@ const NoteInfo: React.FC<NoteInfoProps> = (props) => {
       ) : (
         <>
           <span>{label}</span>
-          <span className="note-info">
-            {required && (
+          {required && (
+            <span className="note-info">
               <span style={{ color: 'red' }} className="star">
                 *
               </span>
-            )}
-          </span>
+            </span>
+          )}
         </>
       )}
       {labelExtra}

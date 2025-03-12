@@ -230,5 +230,7 @@ export default {
   'common.search.empty': 'No matching results found.',
   'common.button.downloadLog': 'Download Log',
   'common.button.faq': 'FAQ',
-  'common.button.moreInfo': 'More Info'
+  'common.button.moreInfo': 'More Info',
+  'common.text.warning': 'Warning',
+  'common.text.error': 'Error'
 };

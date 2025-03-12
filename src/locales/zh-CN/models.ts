@@ -106,5 +106,9 @@ export default {
   'models.table.llamaAcrossworker': 'Llama-box 跨节点',
   'models.table.vllmAcrossworker': 'vLLM 跨节点',
   'models.form.releases': '版本',
-  'models.form.moreparameters': '更多参数'
+  'models.form.moreparameters': '参数说明',
+  'models.table.vram.allocated': '分配显存',
+  'models.form.backend.warning': 'GGUF 格式模型后端用 llama-box。',
+  'models.form.backend.warning.llamabox':
+    'llama-box 仅支持 GGUF 格式模型，如果您的模型是从 Ollama 下载的模型文件，忽略此警告。'
 };

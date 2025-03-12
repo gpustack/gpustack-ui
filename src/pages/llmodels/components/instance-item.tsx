@@ -126,20 +126,14 @@ const distributeCols: ColumnProps[] = [
     key: 'gpu_index'
   },
   {
-    title: 'resources.table.vram',
+    title: 'models.table.vram.allocated',
     locale: true,
     key: 'vram',
-    rowSpan: ({ row, rowIndex, colIndex, dataIndex, dataList }) => {
-      return rowIndex === 0 ? dataList.length : 0;
-    },
-    render: ({ rowIndex, dataList }) => {
-      if (rowIndex === 0) {
-        return convertFileSize(
-          _.sumBy(dataList, (item: any) => item.vram),
-          2
-        );
-      }
-      return null;
+    // rowSpan: ({ row, rowIndex, colIndex, dataIndex, dataList }) => {
+    //   return rowIndex === 0 ? dataList.length : 0;
+    // },
+    render: ({ rowIndex, row, dataList }) => {
+      return convertFileSize(row.vram, 1);
     }
   }
 ];
@@ -297,33 +291,33 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
 
   const renderDistributedServer = useCallback(
     (severList: any[]) => {
-      const list = _.map(severList, (item: any) => {
-        const data = _.find(workerList, { id: item.worker_id });
-        return {
-          worker_name: data?.name,
-          worker_ip: data?.ip,
-          port: '',
-          vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
-          gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
-        };
-      });
+      // const list = _.map(severList, (item: any) => {
+      //   const data = _.find(workerList, { id: item.worker_id });
+      //   return {
+      //     worker_name: data?.name,
+      //     worker_ip: data?.ip,
+      //     port: '',
+      //     vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
+      //     gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
+      //   };
+      // });
 
-      // const list = [
-      //   {
-      //     worker_name: 'worker1',
-      //     worker_ip: '192.168.50.23',
-      //     port: '',
-      //     vram: 21555525632,
-      //     gpu_index: '0,1'
-      //   },
-      //   {
-      //     worker_name: 'worker2',
-      //     worker_ip: '192.168.50.25',
-      //     port: '',
-      //     vram: 21555525632,
-      //     gpu_index: '2,3'
-      //   }
-      // ];
+      const list = [
+        {
+          worker_name: 'worker1',
+          worker_ip: '192.168.50.23',
+          port: '',
+          vram: 21555525632,
+          gpu_index: '0,1'
+        },
+        {
+          worker_name: 'worker2',
+          worker_ip: '192.168.50.25',
+          port: '',
+          vram: 21555525632,
+          gpu_index: '2,3'
+        }
+      ];
 
       const mainWorker = [
         {

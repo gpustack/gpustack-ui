@@ -115,5 +115,5 @@ export default {
   'models.form.backend.warning':
     'The backend for GGUF format models uses llama-box.',
   'models.form.backend.warning.llamabox':
-    'With the llama-box backend, set the model path to a model file, like <span style="font-weight: 700">/usr/local/models/model.gguf</span>. For Ollama models, use <span style="font-weight: 700">/usr/local/models/model</span>.Please ensure the model file format is correct.'
+    'Use the llama-box backend, set the model path to a model file, like <span style="font-weight: 700">/usr/local/models/model.gguf</span>. For Ollama models, use <span style="font-weight: 700">/usr/local/models/model</span>.Ensure the model file format is correct.'
 };

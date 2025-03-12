@@ -113,7 +113,7 @@ export default {
   'models.form.moreparameters': 'Parameter Description',
   'models.table.vram.allocated': 'Allocated VRAM',
   'models.form.backend.warning':
-    'The backend for GGUF format models uses llama-box.',
+    'The backend for .gguf format models uses llama-box.',
   'models.form.backend.warning.llamabox':
-    'Llama-box only supports GGUF format models. If your model files were downloaded from Ollama, you can ignore this warning.'
+    'Llama-box only supports .gguf format models. If your model files were downloaded from Ollama, you can ignore this warning.'
 };

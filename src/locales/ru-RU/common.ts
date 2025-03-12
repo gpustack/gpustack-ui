@@ -227,9 +227,9 @@ export default {
   'common.options.auto': 'Авто',
   'common.search.empty': 'Ничего не найдено',
   'common.button.downloadLog': 'Скачать логи',
-  'common.button.faq': 'TODO: Translate key "common.button.faq"',
-  'common.button.moreInfo': 'TODO: Translate key "common.button.moreInfo"',
-  'common.text.warning': 'TODO: Translate key "common.text.warning"',
-  'common.text.error': 'TODO: Translate key "common.text.error"',
-  'common.text.tips': 'TODO: Translate key "common.text.tips"'
+  'common.button.faq': 'FAQ',
+  'common.button.moreInfo': 'Подробнее',
+  'common.text.warning': 'Предупреждение',
+  'common.text.error': 'Ошибка',
+  'common.text.tips': 'Советы'
 };

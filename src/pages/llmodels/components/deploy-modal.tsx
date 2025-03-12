@@ -232,7 +232,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         )}
         <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
           <ColumnWrapper
-            paddingBottom={warningStatus.show ? 125 : 50}
+            paddingBottom={warningStatus.show ? 140 : 50}
             footer={
               <>
                 {warningStatus.show && (

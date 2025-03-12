@@ -29,7 +29,6 @@ import {
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
@@ -65,6 +64,52 @@ const WorkerInfo = (props: {
     </span>
   );
 };
+
+const InstanceStatusTag = (
+  props: Pick<InstanceItemProps, 'instanceData' | 'handleChildSelect'>
+) => {
+  const intl = useIntl();
+  const { instanceData, handleChildSelect } = props;
+  if (!instanceData.state) {
+    return null;
+  }
+  return (
+    <StatusTag
+      download={
+        instanceData.state === InstanceStatusMap.Downloading
+          ? { percent: instanceData.download_progress }
+          : undefined
+      }
+      extra={
+        instanceData.state === InstanceStatusMap.Error &&
+        instanceData.worker_id ? (
+          <Button
+            type="link"
+            size="small"
+            style={{ paddingLeft: 0 }}
+            onClick={() => handleChildSelect('viewlog', instanceData)}
+          >
+            {intl.formatMessage({ id: 'models.list.more.logs' })}
+          </Button>
+        ) : null
+      }
+      statusValue={{
+        status:
+          instanceData.state === InstanceStatusMap.Downloading &&
+          instanceData.download_progress === 100
+            ? status[InstanceStatusMap.Running]
+            : status[instanceData.state],
+        text: InstanceStatusMapValue[instanceData.state],
+        message:
+          instanceData.state === InstanceStatusMap.Downloading &&
+          instanceData.download_progress === 100
+            ? ''
+            : instanceData.state_message
+      }}
+    />
+  );
+};
+
 interface InstanceItemProps {
   instanceData: ModelInstanceListItem;
   workerList: WorkerListItem[];
@@ -129,9 +174,6 @@ const distributeCols: ColumnProps[] = [
     title: 'models.table.vram.allocated',
     locale: true,
     key: 'vram',
-    // rowSpan: ({ row, rowIndex, colIndex, dataIndex, dataList }) => {
-    //   return rowIndex === 0 ? dataList.length : 0;
-    // },
     render: ({ rowIndex, row, dataList }) => {
       return convertFileSize(row.vram, 1);
     }
@@ -150,40 +192,6 @@ const renderMessage = (title: string) => {
     >
       {title}
     </div>
-  );
-};
-
-const InfoItem = (props: { label: string; value: any; width?: number }) => {
-  const { label, value, width } = props;
-  const Wrapper = styled.div`
-    .info-item {
-      width: ${width ? `${width}px` : '100%'};
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 4px 8px;
-      background-color: var(--color-gray-fill-3);
-      border-radius: 4px;
-      .value {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        flex-wrap: wrap;
-        color: var(--color-white-quaternary);
-        .index {
-          color: var(--ant-color-text-light-solid);
-        }
-      }
-    }
-  `;
-  return (
-    <Wrapper>
-      <div className="info-item">
-        <span className="label">{label}</span>
-        <span className="value">{value}</span>
-      </div>
-    </Wrapper>
   );
 };
 
@@ -206,7 +214,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       }
       return true;
     });
-  }, [instanceData]);
+  }, [instanceData.state]);
 
   const createFileName = (name: string) => {
     const timestamp = dayjs().format('YYYY-MM-DD_HH-mm-ss');
@@ -239,23 +247,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     []
   );
 
-  const displayGPUs = (vrams: Record<string, number>) => {
-    return (
-      <span className="flex-column">
-        {Object.keys(vrams)
-          ?.sort?.()
-          .map((index) => {
-            return (
-              <span key={index}>
-                [{index}] {''}
-                {convertFileSize(vrams?.[index], 0)}
-              </span>
-            );
-          })}
-      </span>
-    );
-  };
-
   const renderWorkerInfo = useMemo(() => {
     let workerIp = '-';
     if (instanceData.worker_ip) {
@@ -283,85 +274,87 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         </div>
       </div>
     );
-  }, [modelData, instanceData, intl]);
+  }, [
+    instanceData.worker_name,
+    instanceData.worker_ip,
+    instanceData.port,
+    instanceData.gpu_indexes,
+    modelData?.backend,
+    modelData?.backend_version,
+    intl
+  ]);
 
   const calcTotalVram = (vram: Record<string, number>) => {
     return _.sum(_.values(vram));
   };
 
-  const renderDistributedServer = useCallback(
-    (severList: any[]) => {
-      const list = _.map(severList, (item: any) => {
-        const data = _.find(workerList, { id: item.worker_id });
-        return {
-          worker_name: data?.name,
-          worker_ip: data?.ip,
-          port: '',
-          vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
-          gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
-        };
-      });
+  const renderDistributedServer = (severList: any[]) => {
+    const list = _.map(severList, (item: any) => {
+      const data = _.find(workerList, { id: item.worker_id });
+      return {
+        worker_name: data?.name,
+        worker_ip: data?.ip,
+        port: '',
+        vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
+        gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
+      };
+    });
 
-      const mainWorker = [
-        {
-          worker_name: `${instanceData.worker_name}`,
-          worker_ip: `${instanceData.worker_ip}`,
-          port: '',
-          vram: calcTotalVram(instanceData.computed_resource_claim?.vram || {}),
-          gpu_index: `${instanceData.gpu_indexes?.join?.(',')}(main)`
-        }
-      ];
-
-      return (
-        <div>
-          <SimpleTabel
-            columns={distributeCols}
-            dataSource={[...mainWorker, ...list]}
-          ></SimpleTabel>
-        </div>
-      );
-    },
-    [workerList, instanceData, intl]
-  );
-
-  const renderDistributionInfo = useCallback(
-    (severList: any[]) => {
-      if (!severList.length) {
-        return null;
+    const mainWorker = [
+      {
+        worker_name: `${instanceData.worker_name}`,
+        worker_ip: `${instanceData.worker_ip}`,
+        port: '',
+        vram: calcTotalVram(instanceData.computed_resource_claim?.vram || {}),
+        gpu_index: `${instanceData.gpu_indexes?.join?.(',')}(main)`
       }
-      return (
-        <Tooltip
-          overlayInnerStyle={{
-            width: 'max-content',
-            maxWidth: '500px',
-            minWidth: '400px'
+    ];
+
+    return (
+      <div>
+        <SimpleTabel
+          columns={distributeCols}
+          dataSource={[...mainWorker, ...list]}
+        ></SimpleTabel>
+      </div>
+    );
+  };
+
+  const renderDistributionInfo = (severList: any[]) => {
+    if (!severList.length) {
+      return null;
+    }
+    return (
+      <Tooltip
+        overlayInnerStyle={{
+          width: 'max-content',
+          maxWidth: '500px',
+          minWidth: '400px'
+        }}
+        title={renderDistributedServer(severList)}
+      >
+        <Tag
+          color="processing"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            maxWidth: '100%',
+            minWidth: 50,
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            opacity: 0.75,
+            borderRadius: 12
           }}
-          title={renderDistributedServer(severList)}
         >
-          <Tag
-            color="processing"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              maxWidth: '100%',
-              minWidth: 50,
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              opacity: 0.75,
-              borderRadius: 12
-            }}
-          >
-            <InfoCircleOutlined className="m-r-5" />
-            {intl.formatMessage({
-              id: 'models.table.acrossworker'
-            })}
-          </Tag>
-        </Tooltip>
-      );
-    },
-    [renderDistributedServer]
-  );
+          <InfoCircleOutlined className="m-r-5" />
+          {intl.formatMessage({
+            id: 'models.table.acrossworker'
+          })}
+        </Tag>
+      </Tooltip>
+    );
+  };
 
   const renderOffloadInfo = useMemo(() => {
     const total_layers = instanceData.computed_resource_claim?.total_layers;
@@ -425,21 +418,17 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     instanceData.computed_resource_claim?.offload_layers
   ]);
 
-  const handleOnSelect = useCallback(
-    (val: string) => {
-      console.log('handleOnSelect', val);
-      if (val === 'download') {
-        downloadStream({
-          url: `${MODEL_INSTANCE_API}/${instanceData.id}/logs`,
-          filename: createFileName(instanceData.name),
-          downloadNotification
-        });
-      } else {
-        handleChildSelect(val, instanceData);
-      }
-    },
-    [handleChildSelect, instanceData]
-  );
+  const handleOnSelect = (val: string) => {
+    if (val === 'download') {
+      downloadStream({
+        url: `${MODEL_INSTANCE_API}/${instanceData.id}/logs`,
+        filename: createFileName(instanceData.name),
+        downloadNotification
+      });
+    } else {
+      handleChildSelect(val, instanceData);
+    }
+  };
 
   return (
     <>
@@ -487,45 +476,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 style={{ paddingLeft: '62px' }}
                 className="flex justify-center"
               >
-                {instanceData.state && (
-                  <StatusTag
-                    download={
-                      instanceData.state === InstanceStatusMap.Downloading
-                        ? { percent: instanceData.download_progress }
-                        : undefined
-                    }
-                    extra={
-                      instanceData.state === InstanceStatusMap.Error &&
-                      instanceData.worker_id ? (
-                        <Button
-                          type="link"
-                          size="small"
-                          style={{ paddingLeft: 0 }}
-                          onClick={() =>
-                            handleChildSelect('viewlog', instanceData)
-                          }
-                        >
-                          {intl.formatMessage({
-                            id: 'models.list.more.logs'
-                          })}
-                        </Button>
-                      ) : null
-                    }
-                    statusValue={{
-                      status:
-                        instanceData.state === InstanceStatusMap.Downloading &&
-                        instanceData.download_progress === 100
-                          ? status[InstanceStatusMap.Running]
-                          : (status[instanceData.state] as any),
-                      text: InstanceStatusMapValue[instanceData.state],
-                      message:
-                        instanceData.state === InstanceStatusMap.Downloading &&
-                        instanceData.download_progress === 100
-                          ? ''
-                          : instanceData.state_message
-                    }}
-                  ></StatusTag>
-                )}
+                <InstanceStatusTag
+                  instanceData={instanceData}
+                  handleChildSelect={handleChildSelect}
+                />
               </span>
             </Col>
             <Col span={5}>

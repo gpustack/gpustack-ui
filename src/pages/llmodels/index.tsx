@@ -176,21 +176,26 @@ const Models: React.FC = () => {
     });
   };
 
-  const createModelsChunkRequest = useCallback(async () => {
-    chunkRequedtRef.current?.current?.cancel?.();
-    try {
-      const query = {
-        search: queryParams.search,
-        categories: queryParams.categories
-      };
-      chunkRequedtRef.current = setChunkRequest({
-        url: `${MODELS_API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
-        handler: updateHandler
-      });
-    } catch (error) {
-      // ignore
-    }
-  }, [queryParams.categories, queryParams.search]);
+  const createModelsChunkRequest = useCallback(
+    async (params?: { search: string; categories: any[] }) => {
+      const search = params?.search || queryParams.search;
+      const categories = params?.categories || queryParams.categories;
+      chunkRequedtRef.current?.current?.cancel?.();
+      try {
+        const query = {
+          search: search,
+          categories: categories
+        };
+        chunkRequedtRef.current = setChunkRequest({
+          url: `${MODELS_API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
+          handler: updateHandler
+        });
+      } catch (error) {
+        // ignore
+      }
+    },
+    [queryParams.categories, queryParams.search]
+  );
 
   const createModelsInstanceChunkRequest = useCallback(async () => {
     chunkInstanceRequedtRef.current?.current?.cancel?.();
@@ -241,6 +246,10 @@ const Models: React.FC = () => {
         search: e.target.value
       }
     });
+    createModelsChunkRequest({
+      search: e.target.value,
+      categories: queryParams.categories
+    });
   }, 350);
 
   const handleNameChange = useCallback(debounceUpdateFilter, [queryParams]);
@@ -258,6 +267,10 @@ const Models: React.FC = () => {
           page: 1,
           categories: value
         }
+      });
+      createModelsChunkRequest({
+        search: queryParams.search,
+        categories: value
       });
     },
     [queryParams]

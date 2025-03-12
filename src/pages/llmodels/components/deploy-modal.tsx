@@ -79,9 +79,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
-  const updateShowWarning = () => {
-    const backend = form.current?.getFieldValue?.('backend');
+  const updateShowWarning = (backend: string) => {
     const localPath = form.current?.getFieldValue?.('local_path');
+
+    console.log('upateShowWarning', backend, localPath);
 
     if (source !== modelSourceMap.local_path_value || !localPath) {
       return;
@@ -116,7 +117,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     if (backend === backendOptionsMap.llamaBox) {
       setIsGGUF(true);
     }
-    updateShowWarning();
+    updateShowWarning(backend);
   };
 
   const handleCancel = useCallback(() => {

@@ -95,8 +95,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
-  const updateShowWarning = () => {
-    const backend = form.getFieldValue?.('backend');
+  const updateShowWarning = (backend: string) => {
     const localPath = form.getFieldValue?.('local_path');
 
     if (formData?.source !== modelSourceMap.local_path_value || !localPath) {
@@ -133,7 +132,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     form.setFieldValue('backend_version', '');
     handleSetGPUIds(val);
-    updateShowWarning();
+    updateShowWarning(backend);
   };
 
   const handleOnFocus = () => {

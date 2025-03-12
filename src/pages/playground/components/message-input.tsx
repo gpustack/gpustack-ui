@@ -1,6 +1,6 @@
 import IconFont from '@/components/icon-font';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
-import { ClearOutlined, EnterOutlined, SwapOutlined } from '@ant-design/icons';
+import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -425,7 +425,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                   disabled={isDisabled}
                 >
                   {submitIcon ?? (
-                    <EnterOutlined rotate={0} className="font-size-14" />
+                    <SendOutlined rotate={0} className="font-size-14" />
                   )}
                 </Button>
               </Tooltip>

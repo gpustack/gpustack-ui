@@ -223,5 +223,7 @@ export default {
   'common.search.empty': '未找到匹配结果',
   'common.button.downloadLog': '下载日志',
   'common.button.faq': '常见问题',
-  'common.button.moreInfo': '更多信息'
+  'common.button.moreInfo': '更多信息',
+  'common.text.warning': '警告',
+  'common.text.error': '错误'
 };

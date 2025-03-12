@@ -1,36 +1,41 @@
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import React from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import '../style/column-wrapper.less';
 
-const ColumnWrapper: React.FC<any> = ({ children, footer, height }) => {
-  const handleOnWheel = (e: React.WheelEvent) => {
-    console.log('handleOnWheel', e);
-    e.preventDefault();
-    e.stopPropagation();
-  };
+const ColumnWrapper: React.FC<any> = ({
+  children,
+  footer,
+  maxHeight,
+  paddingBottom = 50
+}) => {
+  const scroller = React.useRef<any>(null);
+  const { initialize } = useOverlayScroller();
+
+  React.useEffect(() => {
+    if (scroller.current) {
+      initialize(scroller.current);
+    }
+  }, []);
 
   return (
     <>
       {footer ? (
         <div className="column-wrapper-footer">
-          <div className="column-wrapper">
-            <SimpleBar
+          <div className="column-wrapper" ref={scroller} style={{ maxHeight }}>
+            <div
               style={{
-                maxHeight: height || 'calc(100vh - 89px)',
-                paddingBottom: '50px'
+                paddingBottom: paddingBottom
               }}
             >
               {children}
-            </SimpleBar>
+            </div>
           </div>
           {<div className="footer">{footer}</div>}
         </div>
       ) : (
-        <div className="column-wrapper">
-          <SimpleBar style={{ maxHeight: height || 'calc(100vh - 89px)' }}>
-            {children}
-          </SimpleBar>
+        <div className="column-wrapper" ref={scroller} style={{ maxHeight }}>
+          <div>{children}</div>
         </div>
       )}
     </>

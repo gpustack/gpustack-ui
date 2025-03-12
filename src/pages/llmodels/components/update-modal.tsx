@@ -1,3 +1,4 @@
+import AlertBlockInfo from '@/components/alert-info/block';
 import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
@@ -8,9 +9,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Modal, Tooltip, Typography } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import SimpleBar from 'simplebar-react';
-import 'simplebar-react/dist/simplebar.min.css';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   backendOptionsMap,
   modelSourceMap,
@@ -18,6 +17,7 @@ import {
 } from '../config';
 import { FormData, ListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
+import ColumnWrapper from './column-wrapper';
 
 type AddModalProps = {
   title: string;
@@ -73,6 +73,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const localPathCache = useRef<string>('');
+  const [warningStatus, setWarningStatus] = useState<{
+    show: boolean;
+    message: string;
+  }>({
+    show: false,
+    message: ''
+  });
 
   const handleSetGPUIds = (backend: string) => {
     if (backend === backendOptionsMap.llamaBox) {
@@ -88,7 +95,36 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
-  const handleBackendChange = useCallback((val: string) => {
+  const updateShowWarning = () => {
+    const backend = form.getFieldValue?.('backend');
+    const localPath = form.getFieldValue?.('local_path');
+
+    if (formData?.source !== modelSourceMap.local_path_value || !localPath) {
+      return;
+    }
+
+    if (localPath.endsWith('.gguf') && backend !== backendOptionsMap.llamaBox) {
+      setWarningStatus({
+        show: true,
+        message: 'models.form.backend.warning'
+      });
+    } else if (
+      !localPath.endsWith('.gguf') &&
+      backend === backendOptionsMap.llamaBox
+    ) {
+      setWarningStatus({
+        show: true,
+        message: 'models.form.backend.warning.llamabox'
+      });
+    } else {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+    }
+  };
+
+  const handleBackendChange = (val: string) => {
     if (val === backendOptionsMap.llamaBox) {
       form.setFieldsValue({
         distributed_inference_across_workers: true,
@@ -97,7 +133,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     form.setFieldValue('backend_version', '');
     handleSetGPUIds(val);
-  }, []);
+    updateShowWarning();
+  };
 
   const handleOnFocus = () => {
     localPathCache.current = form.getFieldValue('local_path');
@@ -188,23 +225,25 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             defaultActiveFirstOption
             disabled={false}
             options={ollamaModelOptions}
-            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
-            addAfter={
-              <Typography.Link
-                href="https://www.ollama.com/library"
-                target="_blank"
-              >
-                <Tooltip
-                  title={intl.formatMessage({ id: 'models.form.ollamalink' })}
-                  placement="topRight"
+            label={
+              <>
+                {intl.formatMessage({ id: 'model.form.ollama.model' })}{' '}
+                <Typography.Link
+                  href="https://www.ollama.com/library"
+                  target="_blank"
                 >
-                  <IconFont
-                    type="icon-external-link"
-                    className="font-size-14"
-                  ></IconFont>
-                </Tooltip>
-              </Typography.Link>
+                  <Tooltip
+                    title={intl.formatMessage({ id: 'models.form.ollamalink' })}
+                    placement="topRight"
+                  >
+                    <IconFont
+                      type="icon-external-link"
+                      className="font-size-14"
+                    ></IconFont>
+                  </Tooltip>
+                </Typography.Link>
+              </>
             }
             required
           ></SealAutoComplete>
@@ -336,6 +375,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     if (open && formData) {
       form.setFieldsValue(formData);
     }
+    if (!open) {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+    }
   }, [open, formData]);
 
   return (
@@ -353,7 +398,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       width={600}
       styles={{
         content: {
-          padding: '0px'
+          padding: '0 0 16px 0'
         },
         header: {
           padding: 'var(--ant-modal-content-padding)',
@@ -363,17 +408,33 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           padding: '0'
         },
         footer: {
-          padding: '0 var(--ant-modal-content-padding)'
+          padding: '16px 24px',
+          margin: '0'
         }
       }}
       footer={
-        <ModalFooter onCancel={onCancel} onOk={handleSumit}></ModalFooter>
+        <>
+          <ModalFooter onCancel={onCancel} onOk={handleSumit}></ModalFooter>
+        </>
       }
     >
-      <SimpleBar
-        style={{
-          maxHeight: '550px'
-        }}
+      <ColumnWrapper
+        maxHeight={550}
+        paddingBottom={warningStatus.show ? 85 : 0}
+        footer={
+          <>
+            {warningStatus.show && (
+              <AlertBlockInfo
+                ellipsis={false}
+                message={intl.formatMessage({ id: warningStatus.message })}
+                title={intl.formatMessage({
+                  id: 'common.text.warning'
+                })}
+                type="warning"
+              ></AlertBlockInfo>
+            )}
+          </>
+        }
       >
         <Form
           name="addModalForm"
@@ -519,7 +580,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             isGGUF={formData?.backend === backendOptionsMap.llamaBox}
           ></AdvanceConfig>
         </Form>
-      </SimpleBar>
+      </ColumnWrapper>
     </Modal>
   );
 };

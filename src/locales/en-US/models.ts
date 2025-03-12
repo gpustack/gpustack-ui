@@ -110,5 +110,10 @@ export default {
   'models.table.llamaAcrossworker': 'Llama-box Across Workers',
   'models.table.vllmAcrossworker': 'vLLM Across Workers',
   'models.form.releases': 'Releases',
-  'models.form.moreparameters': 'More Parameters'
+  'models.form.moreparameters': 'Parameter Description',
+  'models.table.vram.allocated': 'Allocated VRAM',
+  'models.form.backend.warning':
+    'The backend for GGUF format models uses llama-box.',
+  'models.form.backend.warning.llamabox':
+    'Llama-box only supports GGUF format models. If your model files were downloaded from Ollama, you can ignore this warning.'
 };

@@ -459,7 +459,9 @@ const Models: React.FC<ModelsProps> = ({
         });
         setOpenAddModal(false);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
-        handleSearch();
+        setTimeout(() => {
+          handleSearch();
+        }, 150);
         restoreScrollHeight();
       } catch (error) {}
     },
@@ -499,7 +501,9 @@ const Models: React.FC<ModelsProps> = ({
           updateExpandedRowKeys([modelData.id, ...expandedRowKeys]);
         }, 300);
         message.success(intl.formatMessage({ id: 'common.message.success' }));
-        handleSearch?.();
+        setTimeout(() => {
+          handleSearch?.();
+        }, 150);
       } catch (error) {}
     },
     [openDeployModal]

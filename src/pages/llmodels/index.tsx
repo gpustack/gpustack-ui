@@ -81,16 +81,6 @@ const Models: React.FC = () => {
     setDataList: setModelInstances
   });
 
-  const getWorkerList = async () => {
-    try {
-      const data = await queryWorkersList({ page: 1, perPage: 100 });
-      setWorkerList(data.items || []);
-    } catch (error) {
-      // ingore
-      setWorkerList([]);
-    }
-  };
-
   const getAllModelInstances = useCallback(async () => {
     try {
       instancesToken.current?.cancel?.();
@@ -110,7 +100,16 @@ const Models: React.FC = () => {
   }, []);
 
   const fetchData = useCallback(
-    async (loadingVal?: boolean) => {
+    async (params?: {
+      loadingVal?: boolean;
+      query?: {
+        page: number;
+        perPage: number;
+        search: string;
+        categories: any[];
+      };
+    }) => {
+      const { loadingVal, query } = params || {};
       axiosToken?.cancel?.();
       axiosToken = createAxiosToken();
       setDataSource((pre) => {
@@ -119,7 +118,7 @@ const Models: React.FC = () => {
       });
       try {
         const params = {
-          ..._.pickBy(queryParams, (val: any) => !!val)
+          ..._.pickBy(query || queryParams, (val: any) => !!val)
         };
         const res: any = await queryModelsList(params, {
           cancelToken: axiosToken.token
@@ -152,6 +151,13 @@ const Models: React.FC = () => {
         ...queryParams,
         page: page,
         perPage: pageSize || 10
+      });
+      fetchData({
+        query: {
+          ...queryParams,
+          page: page,
+          perPage: pageSize || 10
+        }
       });
     },
     [queryParams]
@@ -213,7 +219,9 @@ const Models: React.FC = () => {
     await getAllModelInstances();
     await createModelsInstanceChunkRequest();
     await createModelsChunkRequest();
-    fetchData(false);
+    fetchData({
+      loadingVal: false
+    });
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
   const handleSearch = useCallback(async () => {
@@ -226,29 +234,69 @@ const Models: React.FC = () => {
       page: 1,
       search: e.target.value
     });
+    fetchData({
+      query: {
+        ...queryParams,
+        page: 1,
+        search: e.target.value
+      }
+    });
   }, 350);
 
   const handleNameChange = useCallback(debounceUpdateFilter, [queryParams]);
 
   const handleCategoryChange = useCallback(
-    (value: any) => {
+    async (value: any) => {
       setQueryParams({
         ...queryParams,
         page: 1,
         categories: value
+      });
+      fetchData({
+        query: {
+          ...queryParams,
+          page: 1,
+          categories: value
+        }
       });
     },
     [queryParams]
   );
 
   useEffect(() => {
-    fetchData();
-    return () => {
+    // fetch data first time
+    const getTableData = async (loadingVal?: boolean) => {
       axiosToken?.cancel?.();
+      axiosToken = createAxiosToken();
+      setDataSource((pre) => {
+        pre.loading = loadingVal ?? true;
+        return { ...pre };
+      });
+      try {
+        const params = {
+          ..._.pickBy(queryParams, (val: any) => !!val)
+        };
+        const res: any = await queryModelsList(params, {
+          cancelToken: axiosToken.token
+        });
+        return res;
+      } catch (error) {
+        return {};
+      }
     };
-  }, [queryParams]);
 
-  useEffect(() => {
+    // get worker list
+    const getWorkerList = async (): Promise<any> => {
+      try {
+        const data = await queryWorkersList({ page: 1, perPage: 100 });
+        return data;
+      } catch (error) {
+        // ingore
+        return {};
+      }
+    };
+
+    // get catalog list
     const getCataLogList = async () => {
       const isFirstLogin = readState(IS_FIRST_LOGIN);
       if (!isFirstLogin) {
@@ -260,8 +308,7 @@ const Models: React.FC = () => {
           page: 1
         });
         if (!res?.items?.length) {
-          setCatalogList([]);
-          return;
+          return [];
         }
         const name = _.toLower(res?.items[0]?.name).replace(/\s/g, '-') || '';
         const catalogSpecs: any = await queryCatalogItemSpec({
@@ -281,24 +328,36 @@ const Models: React.FC = () => {
                 -1)
           );
         });
-        setCatalogList(resultList || []);
+        return resultList || [];
       } catch (error) {
         // ignore
-        setCatalogList([]);
+        return [];
       }
     };
-    getCataLogList();
-  }, []);
 
-  useEffect(() => {
-    createModelsChunkRequest();
-  }, [createModelsChunkRequest]);
+    const init = async () => {
+      const [modelRes, workerRes, cList] = await Promise.all([
+        getTableData(),
+        getWorkerList(),
+        getCataLogList()
+      ]);
+      setDataSource({
+        dataList: modelRes.items || [],
+        loading: false,
+        loadend: true,
+        total: modelRes.pagination?.total || 0,
+        deletedIds: []
+      });
+      setWorkerList(workerRes.items || []);
+      setCatalogList(cList);
 
-  useEffect(() => {
-    getWorkerList();
-    createModelsInstanceChunkRequest();
-
+      setTimeout(() => {
+        createModelsInstanceChunkRequest();
+      }, 500);
+    };
+    init();
     return () => {
+      axiosToken?.cancel?.();
       chunkRequedtRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];
       cacheInsDataListRef.current = [];
@@ -308,17 +367,15 @@ const Models: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log('modelInstances====', modelInstances);
-  }, [modelInstances]);
-
-  useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
         await getAllModelInstances();
         await createModelsInstanceChunkRequest();
         await createModelsChunkRequest();
-        fetchData(false);
+        fetchData({
+          loadingVal: false
+        });
       } else {
         isPageHidden.current = true;
         chunkRequedtRef.current?.current?.cancel?.();

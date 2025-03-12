@@ -291,33 +291,16 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
 
   const renderDistributedServer = useCallback(
     (severList: any[]) => {
-      // const list = _.map(severList, (item: any) => {
-      //   const data = _.find(workerList, { id: item.worker_id });
-      //   return {
-      //     worker_name: data?.name,
-      //     worker_ip: data?.ip,
-      //     port: '',
-      //     vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
-      //     gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
-      //   };
-      // });
-
-      const list = [
-        {
-          worker_name: 'worker1',
-          worker_ip: '192.168.50.23',
+      const list = _.map(severList, (item: any) => {
+        const data = _.find(workerList, { id: item.worker_id });
+        return {
+          worker_name: data?.name,
+          worker_ip: data?.ip,
           port: '',
-          vram: 21555525632,
-          gpu_index: '0,1'
-        },
-        {
-          worker_name: 'worker2',
-          worker_ip: '192.168.50.25',
-          port: '',
-          vram: 21555525632,
-          gpu_index: '2,3'
-        }
-      ];
+          vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
+          gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
+        };
+      });
 
       const mainWorker = [
         {

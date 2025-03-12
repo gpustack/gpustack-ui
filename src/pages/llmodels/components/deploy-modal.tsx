@@ -239,9 +239,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 {warningStatus.show && (
                   <AlertBlockInfo
                     ellipsis={false}
-                    message={intl.formatMessage({ id: warningStatus.message })}
+                    message={
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: intl.formatMessage({
+                            id: warningStatus.message
+                          })
+                        }}
+                      ></span>
+                    }
                     title={intl.formatMessage({
-                      id: 'common.text.warning'
+                      id: 'common.text.tips'
                     })}
                     type="warning"
                   ></AlertBlockInfo>

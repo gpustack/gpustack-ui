@@ -5,7 +5,7 @@ import React from 'react';
 import './block.less';
 interface AlertInfoProps {
   type: 'danger' | 'warning';
-  message: string;
+  message: React.ReactNode;
   rows?: number;
   icon?: React.ReactNode;
   ellipsis?: boolean;

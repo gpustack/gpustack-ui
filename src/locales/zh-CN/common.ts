@@ -225,5 +225,6 @@ export default {
   'common.button.faq': '常见问题',
   'common.button.moreInfo': '更多信息',
   'common.text.warning': '警告',
-  'common.text.error': '错误'
+  'common.text.error': '错误',
+  'common.text.tips': '提示'
 };

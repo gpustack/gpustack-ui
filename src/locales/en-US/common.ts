@@ -232,5 +232,6 @@ export default {
   'common.button.faq': 'FAQ',
   'common.button.moreInfo': 'More Info',
   'common.text.warning': 'Warning',
-  'common.text.error': 'Error'
+  'common.text.error': 'Error',
+  'common.text.tips': 'Tips'
 };

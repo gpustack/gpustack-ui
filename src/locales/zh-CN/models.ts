@@ -108,7 +108,7 @@ export default {
   'models.form.releases': '版本',
   'models.form.moreparameters': '参数说明',
   'models.table.vram.allocated': '分配显存',
-  'models.form.backend.warning': '.gguf 格式模型后端用 llama-box。',
+  'models.form.backend.warning': 'GGUF 格式模型后端用 llama-box。',
   'models.form.backend.warning.llamabox':
-    'llama-box 仅支持 .gguf 格式模型，如果您的模型是从 Ollama 下载的模型文件，忽略此警告。'
+    '使用 llama-box 后端，模型路径需指向 GGUF 文件，如 <span style="font-weight: 700">/usr/local/models/model.gguf</span>，如果是从 Ollama 下载的模型请用 <span style="font-weight: 700">/usr/local/models/model</span> 请确保格式正确。'
 };

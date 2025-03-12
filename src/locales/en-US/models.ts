@@ -113,7 +113,7 @@ export default {
   'models.form.moreparameters': 'Parameter Description',
   'models.table.vram.allocated': 'Allocated VRAM',
   'models.form.backend.warning':
-    'The backend for .gguf format models uses llama-box.',
+    'The backend for GGUF format models uses llama-box.',
   'models.form.backend.warning.llamabox':
-    'Llama-box only supports .gguf format models. If your model files were downloaded from Ollama, you can ignore this warning.'
+    'With the llama-box backend, set the model path to a model file, like <span style="font-weight: 700">/usr/local/models/model.gguf</span>. For Ollama models, use <span style="font-weight: 700">/usr/local/models/model</span>.Please ensure the model file format is correct.'
 };

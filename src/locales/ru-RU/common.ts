@@ -230,5 +230,6 @@ export default {
   'common.button.faq': 'TODO: Translate key "common.button.faq"',
   'common.button.moreInfo': 'TODO: Translate key "common.button.moreInfo"',
   'common.text.warning': 'TODO: Translate key "common.text.warning"',
-  'common.text.error': 'TODO: Translate key "common.text.error"'
+  'common.text.error': 'TODO: Translate key "common.text.error"',
+  'common.text.tips': 'TODO: Translate key "common.text.tips"'
 };

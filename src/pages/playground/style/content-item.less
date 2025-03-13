@@ -1,5 +1,6 @@
 .content-item {
-  margin-bottom: 12px;
+  margin-bottom: 24px;
+  position: relative;
 
   .markdown-viewer {
     h4 {
@@ -12,10 +13,19 @@
   &-role {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     font-weight: var(--font-weight-bold);
     margin-bottom: 8px;
     height: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .content-item-title {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 
   .role {
@@ -26,6 +36,15 @@
 
   .actions {
     display: none;
+    border: 1px solid var(--ant-color-border);
+    border-radius: var(--border-radius-base);
+    background-color: var(--color-white-1);
+  }
+
+  .actions-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .actions .mrkd-switch {
@@ -43,9 +62,6 @@
   &:hover {
     .actions {
       display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 5px;
     }
   }
 

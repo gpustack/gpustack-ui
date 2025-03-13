@@ -43,7 +43,8 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   const [actions, setActions] = useState<MessageItemAction[]>([
     'upload',
     'delete',
-    'copy'
+    'copy',
+    'edit'
   ]);
 
   const isLoading = useMemo(() => {
@@ -222,15 +223,6 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
     handleUpdateModelList(value);
   };
 
-  const handleOnCheck = (e: any) => {
-    const checked = e.target.checked;
-    if (checked) {
-      setActions(['upload', 'delete', 'copy', 'markdown']);
-    } else {
-      setActions(['upload', 'delete', 'copy']);
-    }
-  };
-
   useEffect(() => {
     modelRefs.current = {};
     let list = _.take(modelList, spans.count);
@@ -305,18 +297,8 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
           clearAll={handleClearAll}
           updateLayout={updateLayout}
           setModelSelections={handleUpdateModelSelections}
-          actions={[
-            'clear',
-            'layout',
-            'role',
-            'upload',
-            'add',
-            'paste',
-            'check'
-          ]}
+          actions={['clear', 'layout', 'role', 'upload', 'add', 'paste']}
           defaultChecked={false}
-          checkLabel="Markdown"
-          onCheck={handleOnCheck}
           defaultSize={{
             minRows: 5,
             maxRows: 5

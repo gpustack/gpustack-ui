@@ -137,6 +137,7 @@ export default {
   'playground.image.edit': 'Редактировать',
   'playground.image.fitview': 'Подогнать размер',
   'playground.chat.aithought': 'Рассуждение (CoT)',
+  'playground.chat.thinking': 'TODO: Translate key "playground.chat.thinking"',
   'playground.image.mask.uploaded': 'Маска загружена',
   'playground.image.mask.upload':
     'TODO: Translate key "playground.image.mask.upload"',

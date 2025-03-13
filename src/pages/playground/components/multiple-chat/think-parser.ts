@@ -49,7 +49,11 @@ class ThinkParser {
       }
     }
 
-    return { thought: this.thought.trim(), result: this.result };
+    return {
+      thought: this.thought.trim(),
+      result: this.result,
+      isThinking: this.collecting
+    };
   }
 
   reset() {

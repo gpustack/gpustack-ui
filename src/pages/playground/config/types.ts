@@ -6,7 +6,12 @@ export interface ModelSelectionItem extends Global.BaseOption<string> {
   type?: string;
 }
 
-export type MessageItemAction = 'upload' | 'delete' | 'copy' | 'markdown';
+export type MessageItemAction =
+  | 'upload'
+  | 'delete'
+  | 'copy'
+  | 'markdown'
+  | 'edit';
 
 export interface MessageItem {
   content: string;

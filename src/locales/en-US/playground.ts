@@ -140,6 +140,7 @@ export default {
   'playground.image.edit': 'Edit',
   'playground.image.fitview': 'Fit View',
   'playground.chat.aithought': 'CoT',
+  'playground.chat.thinking': 'Thinking...',
   'playground.image.mask.uploaded': 'Mask Uploaded',
   'playground.image.mask.upload':
     'Upload Mask: No additional drawing allowed after upload.',

@@ -17,6 +17,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
   messageList,
   editable,
   showTitle = true,
+  loading,
   actions = ['upload', 'delete', 'copy']
 }) => {
   const updateMessage = (index: number, message: MessageItem) => {
@@ -37,6 +38,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
         <div className="message-content-list">
           {messageList.map((item, index) => (
             <ContentItem
+              loading={loading}
               key={item.uid}
               data={item}
               editable={editable}

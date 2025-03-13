@@ -40,7 +40,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [actions, setActions] = useState<MessageItemAction[]>([
     'upload',
     'delete',
-    'copy'
+    'copy',
+    'edit'
   ]);
 
   const {
@@ -107,15 +108,6 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
-  const handleOnCheck = (e: any) => {
-    const checked = e.target.checked;
-    if (checked) {
-      setActions(['upload', 'delete', 'copy', 'markdown']);
-    } else {
-      setActions(['upload', 'delete', 'copy']);
-    }
-  };
-
   return (
     <div className="ground-left-wrapper">
       <div className="ground-left">
@@ -163,18 +155,8 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
               minRows: 5,
               maxRows: 5
             }}
-            actions={[
-              'clear',
-              'layout',
-              'role',
-              'upload',
-              'add',
-              'paste',
-              'check'
-            ]}
+            actions={['clear', 'layout', 'role', 'upload', 'add', 'paste']}
             defaultChecked={false}
-            checkLabel="Markdown"
-            onCheck={handleOnCheck}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!messageList.length}

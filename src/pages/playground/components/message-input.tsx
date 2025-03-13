@@ -285,7 +285,9 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
           return;
         }
         e.preventDefault();
-        handleSendMessage();
+        if (!loading) {
+          handleSendMessage();
+        }
       }
     };
 

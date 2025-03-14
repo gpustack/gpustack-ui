@@ -81,7 +81,7 @@ export default {
   'models.form.filePath': 'Путь к модели',
   'models.form.backendVersion': 'Версия бэкенда',
   'models.form.backendVersion.tips':
-    'Фиксация версии обеспечивает стабильность бэкенда при обновлениях GPUStack.',
+    'TODO: Translate key "models.form.backendVersion.tips"',
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
@@ -97,10 +97,10 @@ export default {
   'models.localpat.safe.tips.title': 'Модель формата Safetensors',
   'models.localpath.shared.tips.title': 'Шардированная GGUF-модель',
   'models.localpath.gguf.tips':
-    'Укажите файл модели, например: /usr/local/models/model.gguf.',
+    'Укажите файл модели, например: /data/models/model.gguf.',
   'models.localpath.safe.tips':
     'Укажите директорию модели с файлами .safetensors и config.json.',
-  'models.localpath.chunks.tips': `Укажите первый шард модели, например: /usr/local/models/model-00001-of-00004.gguf.`,
+  'models.localpath.chunks.tips': `Укажите первый шард модели, например: /data/models/model-00001-of-00004.gguf.`,
   'models.form.replicas.tips':
     'Несколько реплик обеспечивают балансировку нагрузки для { api } запросов.',
   'models.table.list.empty': 'Модели отсутствуют!',

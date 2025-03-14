@@ -7,7 +7,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Form, Modal, Tooltip, Typography } from 'antd';
+import { Form, Modal, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -236,25 +236,24 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             disabled={false}
             options={ollamaModelOptions}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
-            label={
-              <>
-                {intl.formatMessage({ id: 'model.form.ollama.model' })}{' '}
+            description={
+              <span>
+                <span>
+                  {intl.formatMessage({ id: 'models.form.ollamalink' })}
+                </span>
                 <Typography.Link
+                  className="flex-center"
                   href="https://www.ollama.com/library"
                   target="_blank"
                 >
-                  <Tooltip
-                    title={intl.formatMessage({ id: 'models.form.ollamalink' })}
-                    placement="topRight"
-                  >
-                    <IconFont
-                      type="icon-external-link"
-                      className="font-size-14"
-                    ></IconFont>
-                  </Tooltip>
+                  <IconFont
+                    type="icon-external-link"
+                    className="font-size-14"
+                  ></IconFont>
                 </Typography.Link>
-              </>
+              </span>
             }
+            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
             required
           ></SealAutoComplete>
         </Form.Item>

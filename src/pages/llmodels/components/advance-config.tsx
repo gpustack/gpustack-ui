@@ -1,4 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import SealCascader from '@/components/seal-form/seal-cascader';
@@ -326,28 +327,35 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         <Form.Item name="backend_version">
           <SealInput.Input
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
-            description={intl.formatMessage({
-              id: 'models.form.backendVersion.tips'
-            })}
-            labelExtra={
-              backendParamsTips?.releases && (
-                <span
-                  style={{
-                    marginLeft: 5
-                  }}
-                >
-                  (
-                  <Typography.Link
-                    style={{ lineHeight: 1 }}
-                    href={backendParamsTips?.releases}
-                    target="_blank"
+            description={intl.formatMessage(
+              {
+                id: 'models.form.backendVersion.tips'
+              },
+              {
+                link: backendParamsTips?.releases && (
+                  <span
+                    style={{
+                      marginLeft: 5
+                    }}
                   >
-                    {intl.formatMessage({ id: 'models.form.releases' })}
-                  </Typography.Link>
-                  )
-                </span>
-              )
-            }
+                    <Typography.Link
+                      className="flex-center"
+                      style={{ lineHeight: 1 }}
+                      href={backendParamsTips?.releases}
+                      target="_blank"
+                    >
+                      <span>
+                        {intl.formatMessage({ id: 'models.form.releases' })}
+                      </span>
+                      <IconFont
+                        type="icon-external-link"
+                        className="font-size-14 m-l-4"
+                      ></IconFont>
+                    </Typography.Link>
+                  </span>
+                )
+              }
+            )}
           ></SealInput.Input>
         </Form.Item>
 
@@ -367,20 +375,26 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             dataList={form.getFieldValue('backend_parameters') || []}
             onChange={handleBackendParametersChange}
             options={paramsConfig}
-            labelExtra={
-              backendParamsTips?.link && (
-                <span style={{ marginLeft: 5 }}>
-                  (
+            description={
+              backendParamsTips && (
+                <span>
+                  {intl.formatMessage(
+                    { id: 'models.form.backend_parameters.vllm.tips' },
+                    { backend: backendParamsTips.backend || '' }
+                  )}{' '}
                   <Typography.Link
-                    style={{ lineHeight: 1 }}
-                    href={backendParamsTips?.link}
+                    className="flex-center"
+                    href={backendParamsTips.link}
                     target="_blank"
                   >
-                    {intl.formatMessage({
-                      id: 'models.form.moreparameters'
-                    })}
+                    <span>
+                      {intl.formatMessage({ id: 'common.text.here' })}
+                    </span>
+                    <IconFont
+                      type="icon-external-link"
+                      className="font-size-14 m-l-4"
+                    ></IconFont>
                   </Typography.Link>
-                  )
                 </span>
               )
             }

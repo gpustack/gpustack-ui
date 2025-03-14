@@ -81,7 +81,7 @@ export default {
   'models.form.filePath': 'Model Path',
   'models.form.backendVersion': 'Backend Version',
   'models.form.backendVersion.tips':
-    'Pin a specific version to keep the backend stable across GPUStack upgrades.',
+    'To use the desired version of vLLM/llama-box/vox-box, the system will automatically create a virtual environment in the online environment to install the corresponding version. After a GPUStack upgrade, the backend version will remain fixed. {link}',
   'models.form.gpuselector': 'GPU Selector',
   'models.form.backend.llamabox':
     'For GGUF format models, supports Linux, macOS, and Windows.',
@@ -98,10 +98,10 @@ export default {
   'models.localpat.safe.tips.title': 'Safetensors format model',
   'models.localpath.shared.tips.title': 'Sharded GGUF Format Model',
   'models.localpath.gguf.tips':
-    ' Specify the model file, e.g., /usr/local/models/model.gguf.',
+    ' Specify the model file, e.g., /data/models/model.gguf.',
   'models.localpath.safe.tips':
-    'Specify the model directory that contains .safetensors and config.json files, e.g., /usr/local/models/model/.',
-  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /usr/local/models/model-00001-of-00004.gguf.`,
+    'Specify the model directory that contains .safetensors and config.json files, e.g., /data/models/model/.',
+  'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /data/models/model-00001-of-00004.gguf.`,
   'models.form.replicas.tips':
     'Multiple replicas enable load balancing for { api } inference requests.',
   'models.table.list.empty': 'No Models yet!',
@@ -115,5 +115,5 @@ export default {
   'models.form.backend.warning':
     'The backend for GGUF format models uses llama-box.',
   'models.form.backend.warning.llamabox':
-    'Use the llama-box backend, set the absolute model path to the model file, such as <span style="font-weight: 700">/usr/local/models/model.gguf</span>. For sharded models, set the first shard file of the model, such as <span style="font-weight: 700">/usr/local/models/model-00001-of-00004.gguf</span>.'
+    'To use the llama-box backend, specify the full path to the model file (e.g.,<span style="font-weight: 700">/data/models/model.gguf</span>). For sharded models, provide the path to the first shard (e.g.,<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>).'
 };

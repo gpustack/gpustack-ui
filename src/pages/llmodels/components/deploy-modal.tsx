@@ -81,8 +81,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const updateShowWarning = (backend: string) => {
     const localPath = form.current?.getFieldValue?.('local_path');
+    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
 
-    console.log('upateShowWarning', backend, localPath);
+    if (isBlobFile) {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+      return;
+    }
 
     if (source !== modelSourceMap.local_path_value || !localPath) {
       return;
@@ -233,7 +240,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         )}
         <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
           <ColumnWrapper
-            paddingBottom={warningStatus.show ? 140 : 50}
+            paddingBottom={warningStatus.show ? 155 : 50}
             footer={
               <>
                 {warningStatus.show && (

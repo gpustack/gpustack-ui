@@ -217,8 +217,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return;
     }
     const isEndwithGGUF = _.endsWith(value, '.gguf');
+    const isBlobFile = value.split('/').pop().includes('sha256');
     let backend = backendOptionsMap.llamaBox;
-    if (!isEndwithGGUF) {
+    if (!isEndwithGGUF && !isBlobFile) {
       backend = backendOptionsMap.vllm;
     }
     props.onBackendChange?.(backend);

@@ -17,6 +17,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.7.19",
+    "@antv/g6": "^5.0.44",
     "@braintree/sanitize-url": "^7.1.1",
     "@huggingface/gguf": "^0.1.7",
     "@huggingface/hub": "^0.15.1",

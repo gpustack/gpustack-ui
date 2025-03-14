@@ -1,9 +1,12 @@
+import { DeploymentUnitOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
+import { Button } from 'antd';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import GPUs from './components/gpus';
+import ResourceOverview from './components/resource-overview';
 import Workers from './components/workers';
 
 const Wrapper = styled.div`
@@ -22,6 +25,11 @@ const items: TabsProps['items'] = [
     key: 'gpus',
     label: 'GPUs',
     children: <GPUs />
+  },
+  {
+    key: 'overview',
+    label: 'Resource Overview',
+    children: <ResourceOverview />
   }
 ];
 const Resources = () => {
@@ -52,7 +60,15 @@ const Resources = () => {
             marginTop: 78
           }
         }}
-        extra={[]}
+        tabBarExtraContent={
+          <Button
+            size="middle"
+            type="primary"
+            icon={<DeploymentUnitOutlined />}
+          >
+            Resource Overview
+          </Button>
+        }
       ></PageContainer>
     </Wrapper>
   );

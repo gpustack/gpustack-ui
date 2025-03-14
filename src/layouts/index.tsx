@@ -7,6 +7,7 @@ import ShortCuts, {
 } from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import routeCachekey from '@/config/route-cachekey';
+import useBodyScroll from '@/hooks/use-body-scroll';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
@@ -97,6 +98,7 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
   const [routeCache] = useAtom(routeCacheAtom);
@@ -127,10 +129,12 @@ export default (props: any) => {
   };
 
   const showVersion = () => {
+    saveScrollHeight();
     Modal.info({
       ...modalConfig,
       width: 460,
-      content: <VersionInfo intl={intl} />
+      content: <VersionInfo intl={intl} />,
+      onCancel: restoreScrollHeight
     });
   };
 

@@ -1,13 +1,7 @@
 import { INPUT_WIDTH } from '@/constants';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import {
-  Form,
-  InputNumber,
-  Slider,
-  Tooltip,
-  type SliderSingleProps
-} from 'antd';
+import { Form, InputNumber, Slider, type SliderSingleProps } from 'antd';
 import React from 'react';
+import LabelInfo from './components/label-info';
 import FieldWrapper from './field-wrapper';
 import SliderStyles from './styles/slider.less';
 
@@ -61,16 +55,7 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
         style={{ width: labelWidth || INPUT_WIDTH.mini }}
       >
         <span className="text">
-          {description ? (
-            <Tooltip title={description}>
-              <span> {label}</span>
-              <span className="m-l-5">
-                <InfoCircleOutlined />
-              </span>
-            </Tooltip>
-          ) : (
-            <span>{label}</span>
-          )}
+          <LabelInfo label={label} description={description}></LabelInfo>
         </span>
 
         {inputnumber ? (

@@ -110,5 +110,5 @@ export default {
   'models.table.vram.allocated': '分配显存',
   'models.form.backend.warning': 'GGUF 格式模型后端用 llama-box。',
   'models.form.backend.warning.llamabox':
-    '使用 llama-box 后端，模型路径需指向 GGUF 文件，如 <span style="font-weight: 700">/usr/local/models/model.gguf</span>，如果是从 Ollama 下载的模型请用 <span style="font-weight: 700">/usr/local/models/model</span> 请确保格式正确。'
+    '使用 llama-box 后端时，设置模型文件的绝对路径，如 <span style="font-weight: 700">/usr/local/models/model.gguf</span>。对于分片模型，设置模型的第一个分片文件，如 <span style="font-weight: 700">/usr/local/models/model-00001-of-00004.gguf</span>。'
 };

@@ -364,7 +364,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     }
     return (
       <Tooltip
-        open
         title={
           <span className="flex flex-center">
             <span>

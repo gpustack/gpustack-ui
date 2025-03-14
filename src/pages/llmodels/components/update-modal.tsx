@@ -98,6 +98,16 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const updateShowWarning = (backend: string) => {
     const localPath = form.getFieldValue?.('local_path');
 
+    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
+
+    if (isBlobFile) {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+      return;
+    }
+
     if (formData?.source !== modelSourceMap.local_path_value || !localPath) {
       return;
     }
@@ -132,7 +142,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     form.setFieldValue('backend_version', '');
     handleSetGPUIds(val);
-    updateShowWarning(backend);
+    updateShowWarning(val);
   };
 
   const handleOnFocus = () => {
@@ -145,8 +155,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       return;
     }
     const isEndwithGGUF = _.endsWith(value, '.gguf');
+    const isBlobFile = value.split('/').pop().includes('sha256');
     let backend = backendOptionsMap.llamaBox;
-    if (!isEndwithGGUF) {
+    if (!isEndwithGGUF || !isBlobFile) {
       backend = backendOptionsMap.vllm;
     }
     handleBackendChange?.(backend);
@@ -419,7 +430,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     >
       <ColumnWrapper
         maxHeight={550}
-        paddingBottom={warningStatus.show ? 85 : 0}
+        paddingBottom={warningStatus.show ? 100 : 0}
         footer={
           <>
             {warningStatus.show && (

@@ -359,35 +359,42 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const renderOffloadInfo = useMemo(() => {
     const total_layers = instanceData.computed_resource_claim?.total_layers;
     const offload_layers = instanceData.computed_resource_claim?.offload_layers;
-    if (total_layers === offload_layers || !offload_layers || !total_layers) {
+    if (total_layers === offload_layers || !total_layers) {
       return null;
     }
     return (
       <Tooltip
+        open
         title={
           <span className="flex flex-center">
             <span>
               CPU:{' '}
-              {_.subtract(
-                instanceData.computed_resource_claim?.total_layers,
-                instanceData.computed_resource_claim?.offload_layers
-              ) || 0}{' '}
-              {intl.formatMessage({
-                id: 'models.table.layers'
-              })}
+              <span className="color-white-light-4">
+                {_.subtract(
+                  instanceData.computed_resource_claim?.total_layers,
+                  instanceData.computed_resource_claim?.offload_layers
+                ) || 0}{' '}
+                {intl.formatMessage({
+                  id: 'models.table.layers'
+                })}
+              </span>
             </span>
             <Divider
               type="vertical"
               style={{
                 borderColor: '#fff',
-                opacity: 0.5
+                opacity: 0.45,
+                height: 14
               }}
             ></Divider>
             <span>
-              GPU: {instanceData.computed_resource_claim?.offload_layers}{' '}
-              {intl.formatMessage({
-                id: 'models.table.layers'
-              })}
+              GPU:{' '}
+              <span className="color-white-light-4">
+                {instanceData.computed_resource_claim?.offload_layers}{' '}
+                {intl.formatMessage({
+                  id: 'models.table.layers'
+                })}
+              </span>
             </span>
           </span>
         }

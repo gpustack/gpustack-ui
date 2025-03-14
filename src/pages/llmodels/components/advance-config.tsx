@@ -297,6 +297,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               <SealCascader
                 required
                 showSearch
+                onChange={handleGPUSelectorChange}
                 expandTrigger="hover"
                 multiple={backend !== backendOptionsMap.voxBox}
                 popupClassName="cascader-popup-wrapper gpu-selector"
@@ -400,42 +401,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             }
           ></ListInput>
         </Form.Item>
-        <Form.Item<FormData>
-          name="env"
-          rules={[
-            () => ({
-              validator(rule, value) {
-                if (_.keys(value).length > 0) {
-                  if (_.some(_.keys(value), (k: string) => !value[k])) {
-                    return Promise.reject(
-                      intl.formatMessage(
-                        {
-                          id: 'common.validate.value'
-                        },
-                        {
-                          name: intl.formatMessage({
-                            id: 'common.text.variable'
-                          })
-                        }
-                      )
-                    );
-                  }
-                }
-                return Promise.resolve();
-              }
-            })
-          ]}
-        >
-          <LabelSelector
-            label={intl.formatMessage({
-              id: 'models.form.env'
-            })}
-            labels={EnviromentVars}
-            btnText="common.button.vars"
-            onChange={handleEnviromentVarsChange}
-          ></LabelSelector>
-        </Form.Item>
-
         {backend === backendOptionsMap.llamaBox && (
           <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
             <Form.Item<FormData>

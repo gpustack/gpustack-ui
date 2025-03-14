@@ -277,6 +277,7 @@ const Models: React.FC = () => {
   );
 
   useEffect(() => {
+    let timer: any = null;
     // fetch data first time
     const getTableData = async (loadingVal?: boolean) => {
       axiosToken?.cancel?.();
@@ -364,12 +365,15 @@ const Models: React.FC = () => {
       setWorkerList(workerRes.items || []);
       setCatalogList(cList);
 
-      setTimeout(() => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
         createModelsInstanceChunkRequest();
-      }, 500);
+        createModelsChunkRequest();
+      }, 1000);
     };
     init();
     return () => {
+      clearTimeout(timer);
       axiosToken?.cancel?.();
       chunkRequedtRef.current?.current?.cancel?.();
       cacheDataListRef.current = [];

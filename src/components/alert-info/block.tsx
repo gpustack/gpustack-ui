@@ -37,7 +37,7 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
               <WarningFilled className={classNames('info-icon', type)} />
               <span className="text">{title}</span>
             </div>
-            {message}
+            <span className="content">{message}</span>
           </Typography.Paragraph>
         </div>
       ) : null}

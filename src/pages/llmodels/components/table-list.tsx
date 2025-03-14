@@ -403,44 +403,36 @@ const Models: React.FC<ModelsProps> = ({
   }, []);
 
   const handleStartModel = async (row: ListItem) => {
-    try {
-      await updateModel({
-        id: row.id,
-        data: {
-          ..._.omit(row, [
-            'id',
-            'ready_replicas',
-            'created_at',
-            'updated_at',
-            'rowIndex'
-          ]),
-          replicas: 1
-        }
-      });
-    } catch (error) {
-      // ingore
-    }
+    await updateModel({
+      id: row.id,
+      data: {
+        ..._.omit(row, [
+          'id',
+          'ready_replicas',
+          'created_at',
+          'updated_at',
+          'rowIndex'
+        ]),
+        replicas: 1
+      }
+    });
   };
 
   const handleStopModel = async (row: ListItem) => {
-    try {
-      await updateModel({
-        id: row.id,
-        data: {
-          ..._.omit(row, [
-            'id',
-            'ready_replicas',
-            'created_at',
-            'updated_at',
-            'rowIndex'
-          ]),
-          replicas: 0
-        }
-      });
-      removeExpandedRowKey([row.id]);
-    } catch (error) {
-      // ingore
-    }
+    await updateModel({
+      id: row.id,
+      data: {
+        ..._.omit(row, [
+          'id',
+          'ready_replicas',
+          'created_at',
+          'updated_at',
+          'rowIndex'
+        ]),
+        replicas: 0
+      }
+    });
+    removeExpandedRowKey([row.id]);
   };
 
   const handleModalOk = useCallback(
@@ -639,32 +631,36 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleSelect = useCallback(
     async (val: any, row: ListItem) => {
-      if (val === 'edit') {
-        handleEdit(row);
-      }
-      if (val === 'chat') {
-        handleOpenPlayGround(row);
-      }
-      if (val === 'delete') {
-        handleDelete(row);
-      }
-      if (val === 'start') {
-        await handleStartModel(row);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
-        updateExpandedRowKeys([row.id, ...expandedRowKeys]);
-      }
+      try {
+        if (val === 'edit') {
+          handleEdit(row);
+        }
+        if (val === 'chat') {
+          handleOpenPlayGround(row);
+        }
+        if (val === 'delete') {
+          handleDelete(row);
+        }
+        if (val === 'start') {
+          await handleStartModel(row);
+          message.success(intl.formatMessage({ id: 'common.message.success' }));
+          updateExpandedRowKeys([row.id, ...expandedRowKeys]);
+        }
 
-      if (val === 'stop') {
-        modalRef.current.show({
-          content: 'models.instances',
-          title: 'common.title.stop.confirm',
-          okText: 'common.button.stop',
-          operation: 'common.stop.single.confirm',
-          name: row.name,
-          async onOk() {
-            await handleStopModel(row);
-          }
-        });
+        if (val === 'stop') {
+          modalRef.current.show({
+            content: 'models.instances',
+            title: 'common.title.stop.confirm',
+            okText: 'common.button.stop',
+            operation: 'common.stop.single.confirm',
+            name: row.name,
+            async onOk() {
+              await handleStopModel(row);
+            }
+          });
+        }
+      } catch (error) {
+        // ignore
       }
     },
     [handleEdit, handleOpenPlayGround, handleDelete, expandedRowKeys]
@@ -998,45 +994,6 @@ const Models: React.FC<ModelsProps> = ({
                 disabled={!rowSelection.selectedRowKeys.length}
                 onSelect={handleActionSelect}
               />
-              {/* <Button
-                icon={<IconFont type="icon-outline-play"></IconFont>}
-                onClick={handleStartBatch}
-                disabled={!rowSelection.selectedRows.length}
-              >
-                <span>
-                  {intl?.formatMessage?.({ id: 'common.button.start' })}
-                  {rowSelection.selectedRows.length > 0 && (
-                    <span>({rowSelection.selectedRows?.length})</span>
-                  )}
-                </span>
-              </Button>
-              <Button
-                icon={<IconFont type="icon-stop1"></IconFont>}
-                onClick={handleStopBatch}
-                disabled={!rowSelection.selectedRows.length}
-              >
-                <span>
-                  {intl?.formatMessage?.({ id: 'common.button.stop' })}
-                  {rowSelection.selectedRows.length > 0 && (
-                    <span>({rowSelection.selectedRows?.length})</span>
-                  )}
-                </span>
-              </Button>
-              <Access accessible={access.canDelete}>
-                <Button
-                  icon={<DeleteOutlined />}
-                  danger
-                  onClick={handleDeleteBatch}
-                  disabled={!rowSelection.selectedRowKeys.length}
-                >
-                  <span>
-                    {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                    {rowSelection.selectedRowKeys.length > 0 && (
-                      <span>({rowSelection.selectedRowKeys?.length})</span>
-                    )}
-                  </span>
-                </Button>
-              </Access> */}
             </Space>
           }
         ></PageTools>

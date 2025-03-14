@@ -19,7 +19,7 @@ const DeleteModal = forwardRef((props, ref) => {
       title?: string;
       operation: string;
     }
-  >({});
+  >({} as any);
 
   useImperativeHandle(ref, () => ({
     show: (

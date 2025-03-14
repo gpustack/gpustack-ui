@@ -248,6 +248,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                     ellipsis={false}
                     message={
                       <span
+                        style={{}}
                         dangerouslySetInnerHTML={{
                           __html: intl.formatMessage({
                             id: warningStatus.message

@@ -280,9 +280,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     [handleOnScaleImageSize]
   );
 
-  const handleUpdateMaskList = useCallback((base64List: any) => {
+  const handleUpdateMaskList = useCallback(async (base64List: any) => {
     setMaskUpload(base64List);
     const mask = _.get(base64List, '[0].dataUrl', '');
+    // const maskColors = await extractImageColors(mask);
+    // console.log('maskColors:', maskColors);
     setMask(mask);
   }, []);
 

@@ -81,7 +81,7 @@ export default {
   'models.form.filePath': 'Путь к модели',
   'models.form.backendVersion': 'Версия бэкенда',
   'models.form.backendVersion.tips':
-    'TODO: Translate key "models.form.backendVersion.tips"',
+    'To use the desired version of vLLM/llama-box/vox-box, the system will automatically create a virtual environment in the online environment to install the corresponding version. After a GPUStack upgrade, the backend version will remain fixed. {link}',
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
@@ -110,10 +110,17 @@ export default {
   'models.table.vllmAcrossworker': 'vLLM между воркерами',
   'models.form.releases': 'Релизы',
   'models.form.moreparameters': 'Описание параметров',
-  'models.table.vram.allocated':
-    'TODO: Translate key "models.table.vram.allocated"',
+  'models.table.vram.allocated': 'Allocated VRAM',
   'models.form.backend.warning':
-    'TODO: Translate key "models.form.backend.warning"',
-  'models.form.backend.warning.llamabox':
-    "TODO: Translate key 'models.form.backend.warning.llamabox'"
+    'The backend for GGUF format models uses llama-box.',
+  'models.form.backend.warning.llamabox': `To use the llama-box backend, specify the full path to the model file (e.g.,<span style="font-weight: 700">/data/models/model.gguf</span>). For sharded models, provide the path to the first shard (e.g.,<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>).`
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+
+// 1. models.form.backendVersion.tips
+// 2. models.form.backend.warning
+// 3. models.form.backend.warning.llamabox
+// 4. models.table.vram.allocated
+
+// ========== End of To-Do List ==========

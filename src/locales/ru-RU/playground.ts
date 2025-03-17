@@ -9,8 +9,7 @@ export default {
   'playground.viewcode': 'Посмотреть код',
   'playground.model': 'Модель',
   'playground.parameters': 'Параметры',
-  'playground.viewcode.info':
-    'Используйте этот код для интеграции текущих настроек в ваше приложение.',
+  'playground.viewcode.info': 'Используйте этот код для интеграции текущих настроек в ваше приложение.',
   'playground.completion': 'Завершение',
   'playground.prompt': 'Промпт',
   'playground.timeToFirstToken': 'Время до первого токена',
@@ -18,18 +17,12 @@ export default {
   'playground.tokenusage': 'Использование токенов',
   'models.openinplayground': 'Открыть в Песочнице',
   'playground.tokenoutput': 'Вывод',
-  'playground.params.temperature.tips':
-    'Контроль случайности: меньше значение — более предсказуемые результаты. При нуле модель становится детерминированной.',
-  'playground.params.maxtokens.tips':
-    'Максимальное количество генерируемых токенов. Ограничено длиной контекста модели.',
-  'playground.params.topp.tips':
-    'Контроль разнообразия через ядерную выборку: 0.5 означает рассмотрение половины вариантов.',
-  'playground.params.seed.tips':
-    'При указании seed система будет стараться генерировать детерминированные результаты.',
-  'playground.params.stop.tips':
-    'Стоп-последовательность останавливает генерацию при её появлении в выводе.',
-  'playground.viewcode.tips':
-    'Ваш API-ключ можно найти {here}. Используйте переменные окружения для его защиты.',
+  'playground.params.temperature.tips': 'Контроль случайности: меньше значение — более предсказуемые результаты. При нуле модель становится детерминированной.',
+  'playground.params.maxtokens.tips': 'Максимальное количество генерируемых токенов. Ограничено длиной контекста модели.',
+  'playground.params.topp.tips': 'Контроль разнообразия через ядерную выборку: 0.5 означает рассмотрение половины вариантов.',
+  'playground.params.seed.tips':  'При указании seed система будет стараться генерировать детерминированные результаты.',
+  'playground.params.stop.tips': 'Стоп-последовательность останавливает генерацию при её появлении в выводе.',
+  'playground.viewcode.tips':  'Ваш API-ключ можно найти {here}. Используйте переменные окружения для его защиты.',
   'playground.viewcode.here': 'здесь',
   'playground.delete.img': 'Удалить изображение',
   'playground.img.upload': 'Загрузить изображение',
@@ -49,8 +42,7 @@ export default {
   'playground.compare.apply': 'Применить',
   'playground.compare.applytoall': 'Применить ко всем моделям',
   'playground.model.noavailable': 'Нет доступных моделей',
-  'playground.model.noavailable.tips':
-    'Сначала разверните модель (не embedding-типа).',
+  'playground.model.noavailable.tips':  'Сначала разверните модель (не embedding-типа).',
   'playground.params.counts': 'Количество',
   'playground.params.quality': 'Качество',
   'playground.params.style': 'Стиль',
@@ -82,16 +74,14 @@ export default {
   'playground.audio.speechtotext': 'Речь в текст',
   'playground.audio.texttospeech.tips': 'Здесь появится сгенерированная речь',
   'playground.audio.speechtotext.tips': 'Загрузите аудио или начните запись',
-  'playground.audio.enablemic':
-    'Разрешите доступ к микрофону в настройках браузера.',
+  'playground.audio.enablemic': 'Разрешите доступ к микрофону в настройках браузера.',
   'playground.audio.enablemic.doc': 'Инструкция',
   'playground.audio.startrecord': 'Начать запись',
   'playground.audio.stoprecord': 'Остановить запись',
   'playground.audio.generating.tips': 'Здесь появится распознанный текст',
   'playground.audio.uploadfile.tips': 'Поддерживаемые форматы: {formats}',
   'playground.input.multiplePaste': 'Пакетный ввод',
-  'playground.input.multiplePaste.tips':
-    'Многострочный текст будет автоматически разделён на отдельные записи.',
+  'playground.input.multiplePaste.tips': 'Многострочный текст будет автоматически разделён на отдельные записи.',
   'playground.audio.button.generate': 'Сгенерировать текст',
   'playground.multiple.on': 'Включить',
   'playground.multiple.off': 'Выключить',
@@ -106,10 +96,8 @@ export default {
   'playground.image.params.custom.tips': 'Стиль API',
   'playground.image.params.openai': 'Совместимость с OpenAI',
   'playground.embedding.handler.tips': 'Изменить высоту',
-  'playground.embedding.pcatips1':
-    'PCA используется для визуализации эмбеддингов путём снижения размерности.',
-  'playground.embedding.pcatips2':
-    'Близкие точки означают схожесть документов.',
+  'playground.embedding.pcatips1': 'PCA используется для визуализации эмбеддингов путём снижения размерности.',
+  'playground.embedding.pcatips2': 'Близкие точки означают схожесть документов.',
   'playground.audio.button.play': 'Воспроизвести',
   'playground.audio.button.download': 'Скачать',
   'playground.audio.button.stop': 'Остановить',
@@ -117,17 +105,13 @@ export default {
   'playground.audio.button.fast': 'Ускорить',
   'playground.audio.button.slow': 'Замедлить',
   'playground.audio.generating': 'Генерация',
-  'playgorund.audio.voice.error':
-    'Голоса недоступны. Модель инициализируется. Обновите через некоторое время.',
-  'playground.params.size.description':
-    'Максимальный размер изображения зависит от параметров модели. <a href="https://github.com/gpustack/llama-box" target="_blank">Подробнее</a>',
+  'playgorund.audio.voice.error': 'Голоса недоступны. Модель инициализируется. Обновите через некоторое время.',
+  'playground.params.size.description': 'Максимальный размер изображения зависит от параметров модели. <a href="https://github.com/gpustack/llama-box" target="_blank">Подробнее</a>',
   'playground.documents.verify.embedding': 'Добавьте минимум два текста.',
   'playground.documents.verify.rerank': 'Документы не могут быть пустыми.',
-  'playground.image.guidance.tip':
-    'Уровень контроля: влияет на качество и разнообразие изображений.',
+  'playground.image.guidance.tip': 'Уровень контроля: влияет на качество и разнообразие изображений.',
   'playground.image.cfg_scale.tip': 'Уровень соответствия промпту.',
-  'playground.image.strength.tip':
-    'Чем выше значение — тем сильнее изменения исходного изображения.',
+  'playground.image.strength.tip': 'Чем выше значение — тем сильнее изменения исходного изображения.',
   'playground.image.edit.tips': 'Перетащите изображение для загрузки',
   'playground.image.saveMask': 'Сохранить маску',
   'playground.image.negativeMask': 'Негативная маска',
@@ -139,14 +123,12 @@ export default {
   'playground.chat.aithought': 'Рассуждение (CoT)',
   'playground.chat.thinking': 'Thinking...',
   'playground.image.mask.uploaded': 'Маска загружена',
-  'playground.image.mask.upload':
-    'Upload Mask: No additional drawing allowed after upload.',
+  'playground.image.mask.upload': 'Маска загрузки: Дополнительное редактирование запрещено после загрузки.',
   'playground.params.frequency_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения токенов, уже часто встречающихся в тексте, уменьшая склонность модели дословно повторять одни и те же фразы.`,
   'playground.params.presence_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения любых токенов, присутствующих в тексте, повышая склонность модели к обсуждению новых тем.`,
   'playground.image.origin': 'Оригинал',
   'playground.image.mask': 'Маска',
-  'playground.image.negativeMask.tips':
-    '1. After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.\n 2. Once a mask image is uploaded, no further masks can be generated.'
+  'playground.image.negativeMask.tips': '1. После выделения области создание маски станет недоступным; поэтому сначала нарисуйте маску, а затем активируйте опцию. \n 2. После загрузки изображения маски создание новых масок невозможно.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

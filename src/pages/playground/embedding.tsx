@@ -22,7 +22,6 @@ const PlaygroundEmbedding: React.FC = () => {
   const handleViewCode = useCallback(() => {
     ref.current?.viewCode?.();
   }, [ref.current]);
-
   const handleToggleCollapse = useCallback(() => {
     ref.current?.setCollapse?.();
   }, [ref.current]);

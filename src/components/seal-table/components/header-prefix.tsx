@@ -36,10 +36,18 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
   }
   if (expandable && enableSelection) {
     return (
-      <div className="header-row-prefix-wrapper flex-center">
+      <div
+        className="header-row-prefix-wrapper flex-center"
+        style={{ paddingLeft: 15 }}
+      >
         <span style={{ marginRight: 5 }}>
           {_.isBoolean(expandable) ? (
-            <Button type="text" size="small" onClick={handleToggleExpand}>
+            <Button
+              type="text"
+              size="small"
+              onClick={handleToggleExpand}
+              style={{ paddingInline: 6 }}
+            >
               {expandAll ? (
                 <IconFont
                   type="icon-collapse_all"

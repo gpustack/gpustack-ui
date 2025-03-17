@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React, {
   forwardRef,
@@ -56,6 +57,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     const translatePos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
     const negativeMaskRef = useRef<boolean>(false);
     const [invertMask, setInvertMask] = useState<boolean>(false);
+    const timer = useRef<any>(null);
 
     const {
       canvasRef,
@@ -66,6 +68,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       mouseDownState,
       autoScale,
       baseScale,
+      maskStorkeRef,
+      setMaskStrokes,
       draw,
       drawStroke,
       startDrawing,
@@ -131,20 +135,25 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         options: {
           lineWidth?: number;
           color: string;
-          compositeOperation: 'source-over' | 'destination-out';
         }
       ) => {
-        const { color, compositeOperation } = options;
-
-        ctx.globalCompositeOperation = compositeOperation;
+        const { color } = options;
 
         stroke.forEach((point) => {
           const { x, y } = getTransformedPoint(point.x, point.y);
-          ctx.save();
           const width = getTransformLineWidth(point.lineWidth);
-          ctx.fillStyle = color;
 
+          ctx.save();
+
+          //  erase the previous stroke
+          ctx.globalCompositeOperation = 'destination-out';
           ctx.fillRect(x - width / 2, y - width / 2, width, width);
+
+          // draw the new stroke
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.fillStyle = color;
+          ctx.fillRect(x - width / 2, y - width / 2, width, width);
+
           ctx.restore();
         });
       },
@@ -159,76 +168,81 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       console.log('Resetting strokes', currentStroke.current);
     }, []);
 
-    const redrawStrokes = useCallback(
-      (strokes: Stroke[], type?: string) => {
-        console.log('Redrawing strokes:', strokes, type);
-        clearOverlayCanvas();
-        if (!strokes.length) {
-          return;
-        }
+    const loadMaskPixs = (strokes: Stroke[]) => {
+      clearOverlayCanvas();
+      if (!strokes.length) {
+        return;
+      }
+      console.log('loadin mask pixs:');
+      const overlayCanvas = overlayCanvasRef.current!;
+      const overlayCtx = overlayCanvas!.getContext('2d')!;
 
-        const overlayCanvas = overlayCanvasRef.current!;
+      setTransform();
 
-        const overlayCtx = overlayCanvas!.getContext('2d')!;
-
-        // clear offscreen canvas
-
-        setTransform();
-
-        strokes?.forEach((stroke: Point[], index) => {
-          overlayCtx.save();
-          drawStroke(overlayCtx, stroke, {
-            color: COLOR,
-            compositeOperation: 'destination-out'
-          });
-
-          drawStroke(overlayCtx, stroke, {
-            color: COLOR,
-            compositeOperation: 'source-over'
-          });
-          overlayCtx.restore();
+      strokes?.forEach((stroke: Point[], index) => {
+        drawFillRect(overlayCtx, stroke, {
+          color: COLOR
         });
-      },
-      [drawStroke]
-    );
+      });
+    };
+    const redrawStrokes = (strokes: Stroke[], type?: string) => {
+      console.log('Redrawing strokes:', strokes, type);
+      clearOverlayCanvas();
+      if (!strokes.length) {
+        return;
+      }
 
-    const loadMaskPixs = useCallback(
-      (strokes: Stroke[], type?: string) => {
-        clearOverlayCanvas();
-        if (!strokes.length) {
-          return;
-        }
-        console.log('loadin mask pixs:');
-        const overlayCanvas = overlayCanvasRef.current!;
-        const overlayCtx = overlayCanvas!.getContext('2d')!;
+      const overlayCanvas = overlayCanvasRef.current!;
 
-        setTransform();
+      const overlayCtx = overlayCanvas!.getContext('2d')!;
 
-        strokes?.forEach((stroke: Point[], index) => {
-          overlayCtx.save();
-          drawFillRect(overlayCtx, stroke, {
-            color: COLOR,
-            compositeOperation: 'destination-out'
-          });
+      // clear offscreen canvas
 
-          drawFillRect(overlayCtx, stroke, {
-            color: COLOR,
-            compositeOperation: 'source-over'
-          });
-          overlayCtx.restore();
+      setTransform();
+      overlayCtx.save();
+      loadMaskPixs(maskStorkeRef.current);
+
+      strokes?.forEach((stroke: Point[], index) => {
+        drawStroke(overlayCtx, stroke, {
+          color: COLOR,
+          compositeOperation: 'destination-out'
         });
-      },
-      [drawFillRect]
-    );
+
+        drawStroke(overlayCtx, stroke, {
+          color: COLOR,
+          compositeOperation: 'source-over'
+        });
+      });
+      overlayCtx.restore();
+    };
 
     const undo = () => {
-      if (strokesRef.current.length === 0) return;
+      if (
+        strokesRef.current.length === 0 &&
+        maskStorkeRef.current.length === 0
+      ) {
+        clearOverlayCanvas();
+        return;
+      }
 
       const newStrokes = strokesRef.current.slice(0, -1);
-      console.log('New strokes:', newStrokes, strokesRef.current);
       setStrokes(newStrokes);
 
-      redrawStrokes(newStrokes);
+      console.log(
+        'newstrokes=======',
+        newStrokes.length,
+        maskStorkeRef.current.length
+      );
+
+      if (strokesRef.current.length) {
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+          redrawStrokes(strokesRef.current);
+        }, 100);
+      } else if (maskStorkeRef.current.length) {
+        loadMaskPixs(maskStorkeRef.current);
+        setMaskStrokes([]);
+      }
     };
 
     const downloadOriginImage = () => {
@@ -424,6 +438,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       // mouse up
       window.addEventListener('mouseup', handleMouseUp);
       return () => {
+        clearTimeout(timer.current);
         window.removeEventListener('keydown', handleUndoShortcut);
         window.removeEventListener('mousedown', handleMouseDown);
         window.removeEventListener('mouseup', handleMouseUp);
@@ -439,7 +454,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     useImperativeHandle(ref, () => ({
       clearMask: handleDeleteMask,
       loadMaskPixs(strokes: Stroke[]) {
-        setStrokes(strokes);
+        setMaskStrokes(strokes);
+        setStrokes([]);
         loadMaskPixs(strokes);
       }
     }));
@@ -494,7 +510,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
           <canvas ref={canvasRef} style={{ position: 'absolute', zIndex: 1 }} />
           <canvas
             ref={overlayCanvasRef}
-            className="overlay-canvas"
+            className={classNames('overlay-canvas', {
+              'overlay-canvas--disabled': disabled
+            })}
             style={{ position: 'absolute', zIndex: 10, cursor: 'none' }}
             onMouseDown={(event) => {
               mouseDownState.current = true;

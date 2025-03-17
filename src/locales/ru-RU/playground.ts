@@ -137,14 +137,22 @@ export default {
   'playground.image.edit': 'Редактировать',
   'playground.image.fitview': 'Подогнать размер',
   'playground.chat.aithought': 'Рассуждение (CoT)',
-  'playground.chat.thinking': 'TODO: Translate key "playground.chat.thinking"',
+  'playground.chat.thinking': 'Thinking...',
   'playground.image.mask.uploaded': 'Маска загружена',
   'playground.image.mask.upload':
-    'TODO: Translate key "playground.image.mask.upload"',
+    'Upload Mask: No additional drawing allowed after upload.',
   'playground.params.frequency_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения токенов, уже часто встречающихся в тексте, уменьшая склонность модели дословно повторять одни и те же фразы.`,
   'playground.params.presence_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения любых токенов, присутствующих в тексте, повышая склонность модели к обсуждению новых тем.`,
   'playground.image.origin': 'Оригинал',
   'playground.image.mask': 'Маска',
   'playground.image.negativeMask.tips':
-    'TODO: Translate key "playground.image.negativeMask.tips"'
+    '1. After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.\n 2. Once a mask image is uploaded, no further masks can be generated.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+
+// 1. playground.chat.thinking
+// 2. playground.image.mask.upload
+// 3. playground.image.negativeMask.tips
+
+// ========== End of To-Do List ==========

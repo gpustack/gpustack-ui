@@ -24,24 +24,14 @@ To add a new language configuration, follow these steps:
 
 - Open the `.ts` file in the **new directory**.
 - For each key-value pair:
+
   - If a translation is available, replace the value with the translated text.
-  - If no translation is available yet, **replace the value with** `TODO: Translate key "<original-key>"`.
-  - This ensures that the key is visible for contributors to know exactly what needs to be translated.
+  - If no translation is available, keep the `English` value as default.
 
-**Example:**
-
-```ts
-export default {
-  'playground.image.mask.upload':
-    'TODO: Translate key "playground.image.mask.upload"',
-  'welcome.message': 'TODO: Translate key "welcome.message"'
-};
-```
-
-- **Important**: The `TODO` message should include the original key in quotes so that contributors can easily identify which key needs translation without needing to look at the code itself.
+- **Note**: Keeping the English text as the default ensures the application remains functional even if some translations are missing.
 
 ## 4. **Finalize the Configuration**
 
 - Review and ensure all translations are complete.
-- If any translations are missing, contributors can later replace `"TODO: Translate key '...'` with the correct translation.
+- If any translations are missing, they will default to `English`.
 - Your new language configuration is now ready for use!

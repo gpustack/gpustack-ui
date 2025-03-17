@@ -31,6 +31,7 @@ export default function useDrawing(props: {
   const autoScale = useRef<number>(1);
   const baseScale = useRef<number>(1);
   const contentPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const maskStorkeRef = useRef<Stroke[]>([]);
 
   const disabled = useMemo(() => {
     return isDisabled || invertMask || !!maskUpload?.length;
@@ -38,6 +39,10 @@ export default function useDrawing(props: {
 
   const setStrokes = (strokes: Stroke[]) => {
     strokesRef.current = strokes;
+  };
+
+  const setMaskStrokes = (strokes: Stroke[]) => {
+    maskStorkeRef.current = strokes;
   };
 
   const inpaintArea = useCallback(
@@ -61,7 +66,7 @@ export default function useDrawing(props: {
   }, []);
 
   const generateMask = useCallback(() => {
-    if (strokesRef.current.length === 0) {
+    if (strokesRef.current.length === 0 && maskStorkeRef.current.length === 0) {
       return null;
     }
     const overlayCanvas = overlayCanvasRef.current!;
@@ -180,7 +185,6 @@ export default function useDrawing(props: {
 
       stroke.forEach((point, i) => {
         const { x, y } = getTransformedPoint(point.x, point.y);
-        console.log('Drawing point:');
         ctx.lineWidth = getTransformLineWidth(point.lineWidth);
         if (i === 0) {
           ctx.moveTo(x, y);
@@ -374,6 +378,8 @@ export default function useDrawing(props: {
     mouseDownState,
     autoScale,
     baseScale,
+    maskStorkeRef,
+    setMaskStrokes,
     fitView,
     setStrokes,
     resetCanvas,

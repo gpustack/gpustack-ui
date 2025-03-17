@@ -183,6 +183,14 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     return <GPUCard data={data}></GPUCard>;
   };
 
+  const tagRender = (props: any) => {
+    if (props.isMaxTag) {
+      return props.label;
+    }
+    const parent = _.split(props.value, '__RC_CASCADER_SPLIT__')?.[0];
+    return `${parent} / ${props?.label}`;
+  };
+
   const collapseItems = useMemo(() => {
     const children = (
       <>
@@ -313,7 +321,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                       onClose={props.onClose}
                       maxWidth={240}
                     >
-                      {props.label}
+                      {tagRender(props)}
                     </AutoTooltip>
                   );
                 }}

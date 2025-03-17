@@ -3,6 +3,7 @@ import AlertInfo from '@/components/alert-info';
 import SingleImage from '@/components/auto-image/single-image';
 import IconFont from '@/components/icon-font';
 import CanvasImageEditor from '@/components/image-editor';
+import { processImage } from '@/components/image-editor/extract-image-colors';
 import routeCachekey from '@/config/route-cachekey';
 import UploadImg from '@/pages/playground/components/upload-img';
 import { base64ToFile, generateRandomNumber } from '@/utils';
@@ -281,11 +282,12 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 
   const handleUpdateMaskList = useCallback(async (base64List: any) => {
-    setMaskUpload(base64List);
+    // setMaskUpload(base64List);
     const mask = _.get(base64List, '[0].dataUrl', '');
-    // const maskColors = await extractImageColors(mask);
-    // console.log('maskColors:', maskColors);
-    setMask(mask);
+    const maskColors = await processImage(mask);
+    console.log('maskColors:', maskColors);
+    imageEditorRef.current?.loadMaskPixs(maskColors || []);
+    // setMask(mask);
   }, []);
 
   const handleClearUploadMask = useCallback(() => {

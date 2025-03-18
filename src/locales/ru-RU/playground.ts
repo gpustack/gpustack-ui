@@ -121,7 +121,7 @@ export default {
   'playground.image.edit': 'Редактировать',
   'playground.image.fitview': 'Подогнать размер',
   'playground.chat.aithought': 'Рассуждение (CoT)',
-  'playground.chat.thinking': 'Thinking...',
+  'playground.chat.thinking': 'Рассуждение...',
   'playground.image.mask.uploaded': 'Маска загружена',
   'playground.image.mask.upload': 'Маска загрузки: Дополнительное редактирование запрещено после загрузки.',
   'playground.params.frequency_penalty.tips': `Число от -2.0 до 2.0. Положительные значения снижают вероятность повторения токенов, уже часто встречающихся в тексте, уменьшая склонность модели дословно повторять одни и те же фразы.`,
@@ -133,8 +133,6 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 
-// 1. playground.chat.thinking
-// 2. playground.image.mask.upload
-// 3. playground.image.negativeMask.tips
+
 
 // ========== End of To-Do List ==========

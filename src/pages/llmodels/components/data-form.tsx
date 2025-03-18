@@ -21,6 +21,7 @@ import {
   HuggingFaceTaskMap,
   ModelscopeTaskMap,
   backendOptionsMap,
+  backendTipsList,
   modelSourceMap,
   modelTaskMap,
   ollamaModelOptions,
@@ -88,36 +89,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   });
 
   const localPathCache = useRef<string>('');
-
-  const backendTipsList = [
-    {
-      title: 'llama-box',
-      tips: intl.formatMessage({ id: 'models.form.backend.llamabox' })
-    },
-    {
-      title: 'vLLM',
-      tips: intl.formatMessage({ id: 'models.form.backend.vllm' })
-    },
-    {
-      title: 'vox-box',
-      tips: intl.formatMessage({ id: 'models.form.backend.voxbox' })
-    }
-  ];
-
-  const localPathTipsList = [
-    {
-      title: intl.formatMessage({ id: 'models.localpath.gguf.tips.title' }),
-      tips: intl.formatMessage({ id: 'models.localpath.gguf.tips' })
-    },
-    {
-      title: intl.formatMessage({ id: 'models.localpath.shared.tips.title' }),
-      tips: intl.formatMessage({ id: 'models.localpath.chunks.tips' })
-    },
-    {
-      title: intl.formatMessage({ id: 'models.localpat.safe.tips.title' }),
-      tips: intl.formatMessage({ id: 'models.localpath.safe.tips' })
-    }
-  ];
 
   const handleSumit = () => {
     form.submit();

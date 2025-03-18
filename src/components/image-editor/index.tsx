@@ -62,6 +62,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     const {
       canvasRef,
       overlayCanvasRef,
+      offscreenCanvasRef,
       cursorRef,
       strokesRef,
       currentStroke,
@@ -79,6 +80,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       handleMouseEnter,
       saveImage,
       resetCanvas,
+      creatOffscreenCanvas,
       generateMask,
       getTransformLineWidth,
       getTransformedPoint,
@@ -99,6 +101,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     const { handleOnWheel, setActiveScale, activeScale } = useZoom({
       overlayCanvasRef,
       canvasRef,
+      offscreenCanvasRef,
       cursorRef,
       lineWidth,
       translatePos,
@@ -114,9 +117,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     const updateCanvasSize = useCallback(() => {
       const canvas = canvasRef.current!;
       const overlayCanvas = overlayCanvasRef.current!;
+      const offscreenCanvas = offscreenCanvasRef.current!;
 
       overlayCanvas.width = canvas.width;
       overlayCanvas.height = canvas.height;
+      offscreenCanvas.width = canvas.width;
+      offscreenCanvas.height = canvas.height;
     }, []);
 
     const downloadMask = useCallback(() => {
@@ -135,26 +141,26 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         options: {
           lineWidth?: number;
           color: string;
+          isInitial?: boolean;
         }
       ) => {
-        const { color } = options;
+        const { color, isInitial } = options;
 
         stroke.forEach((point) => {
           const { x, y } = getTransformedPoint(point.x, point.y);
           const width = getTransformLineWidth(point.lineWidth);
-
-          ctx.save();
-
-          //  erase the previous stroke
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.fillRect(x - width / 2, y - width / 2, width, width);
+          if (isInitial) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(0,0,0,1)';
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillRect(x - width / 2, y - width / 2, width, width);
+            ctx.restore();
+          }
 
           // draw the new stroke
           ctx.globalCompositeOperation = 'source-over';
           ctx.fillStyle = color;
           ctx.fillRect(x - width / 2, y - width / 2, width, width);
-
-          ctx.restore();
         });
       },
       [getTransformLineWidth, getTransformedPoint]
@@ -168,27 +174,31 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       console.log('Resetting strokes', currentStroke.current);
     }, []);
 
-    const loadMaskPixs = (strokes: Stroke[]) => {
-      clearOverlayCanvas();
+    const loadMaskPixs = (strokes: Stroke[], isInitial?: boolean) => {
       if (!strokes.length) {
         return;
       }
-      console.log('loadin mask pixs:');
+
       const overlayCanvas = overlayCanvasRef.current!;
-      const overlayCtx = overlayCanvas!.getContext('2d')!;
+      const overlayCtx = overlayCanvas.getContext('2d')!;
 
-      setTransform();
-
-      strokes?.forEach((stroke: Point[], index) => {
+      strokes.forEach((stroke: Point[]) => {
         drawFillRect(overlayCtx, stroke, {
-          color: COLOR
+          color: COLOR,
+          isInitial: isInitial
         });
       });
     };
-    const redrawStrokes = (strokes: Stroke[], type?: string) => {
-      console.log('Redrawing strokes:', strokes, type);
+
+    const redrawStrokes = (strokes: Stroke[]) => {
       clearOverlayCanvas();
-      if (!strokes.length) {
+      setTransform();
+      console.log(
+        'Redrawing strokes:',
+        strokes.length,
+        maskStorkeRef.current.length
+      );
+      if (!strokes.length && !maskStorkeRef.current.length) {
         return;
       }
 
@@ -198,8 +208,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
 
       // clear offscreen canvas
 
-      setTransform();
-      overlayCtx.save();
       loadMaskPixs(maskStorkeRef.current);
 
       strokes?.forEach((stroke: Point[], index) => {
@@ -213,10 +221,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
           compositeOperation: 'source-over'
         });
       });
-      overlayCtx.restore();
     };
 
-    const undo = () => {
+    const undo = useCallback(() => {
       if (
         strokesRef.current.length === 0 &&
         maskStorkeRef.current.length === 0
@@ -225,25 +232,23 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         return;
       }
 
+      const lastlength = strokesRef.current.length;
+
       const newStrokes = strokesRef.current.slice(0, -1);
       setStrokes(newStrokes);
 
-      console.log(
-        'newstrokes=======',
-        newStrokes.length,
+      if (
+        !newStrokes.length &&
+        lastlength === 0 &&
         maskStorkeRef.current.length
-      );
-
-      if (strokesRef.current.length) {
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => {
-          redrawStrokes(strokesRef.current);
-        }, 100);
-      } else if (maskStorkeRef.current.length) {
-        loadMaskPixs(maskStorkeRef.current);
+      ) {
         setMaskStrokes([]);
       }
-    };
+      clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        redrawStrokes(newStrokes);
+      }, 100);
+    }, []);
 
     const downloadOriginImage = () => {
       const canvas = canvasRef.current!;
@@ -308,7 +313,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
 
           // fit the image to the container
           autoScale.current = 1;
-
+          creatOffscreenCanvas();
           updateCanvasSize();
           clearCanvas();
 
@@ -335,7 +340,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         setTransform();
         ctx.globalCompositeOperation = 'destination-out';
 
-        strokesRef.current.forEach((stroke) => {
+        [...strokesRef.current, ...maskStorkeRef.current].forEach((stroke) => {
           stroke.forEach((point: Point) => {
             const { x, y } = getTransformedPoint(point.x, point.y);
             const lineWidth = getTransformLineWidth(point.lineWidth);
@@ -369,14 +374,14 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         onReset();
         resetCanvas();
       } else if (
-        strokesRef.current.length &&
+        (strokesRef.current.length || maskStorkeRef.current.length) &&
         imageStatus.isOriginal &&
         !invertMask
       ) {
         redrawStrokes(strokesRef.current);
         saveImage();
       } else if (
-        strokesRef.current.length &&
+        (strokesRef.current.length || maskStorkeRef.current.length) &&
         imageStatus.isOriginal &&
         invertMask
       ) {
@@ -456,7 +461,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       loadMaskPixs(strokes: Stroke[]) {
         setMaskStrokes(strokes);
         setStrokes([]);
-        loadMaskPixs(strokes);
+        setTransform();
+        clearOverlayCanvas();
+        loadMaskPixs(strokes, true);
       }
     }));
 

@@ -78,7 +78,7 @@ export default {
   'models.form.filePath': '模型路径',
   'models.form.backendVersion': '后端版本',
   'models.form.backendVersion.tips':
-    '固定以使用期望的 vLLM/llama-box/vox-box 版本，在线环境会自动创建虚拟环境安装对应版本的vLLM/llama-box/vox-box。在 GPUStack 升级后也将保持固定的后端版本。{link}',
+    '固定以使用期望的 {backend} 版本，在线环境会自动创建虚拟环境安装对应版本的 {backend}。在 GPUStack 升级后也将保持固定的后端版本。{link}',
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows',
@@ -108,6 +108,7 @@ export default {
   'models.form.moreparameters': '参数说明',
   'models.table.vram.allocated': '分配显存',
   'models.form.backend.warning': 'GGUF 格式模型后端用 llama-box。',
+  'models.form.ollama.warning': '部署 Ollama 模型后端使用 llama-box。',
   'models.form.backend.warning.llamabox':
     '要使用 llama-box 后端，请指定模型文件的完整路径（例如：<span style="font-weight: 700">/data/models/model.gguf</span>）。对于分片模型，请提供第一个分片的路径（例如：<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>）。'
 };

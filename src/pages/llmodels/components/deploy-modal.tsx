@@ -81,39 +81,34 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const updateShowWarning = (backend: string) => {
     const localPath = form.current?.getFieldValue?.('local_path');
-    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
-
-    if (isBlobFile) {
-      setWarningStatus({
-        show: false,
-        message: ''
-      });
-      return;
-    }
 
     if (source !== modelSourceMap.local_path_value || !localPath) {
       return;
     }
 
-    if (localPath.endsWith('.gguf') && backend !== backendOptionsMap.llamaBox) {
-      setWarningStatus({
-        show: true,
-        message: 'models.form.backend.warning'
-      });
+    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
+    const isOllamaModel = localPath?.includes('ollama');
+    const isGGUFFile = localPath.endsWith('.gguf');
+
+    let warningMessage = '';
+    if (isBlobFile && isOllamaModel && backend === backendOptionsMap.llamaBox) {
+      warningMessage = '';
     } else if (
-      !localPath.endsWith('.gguf') &&
-      backend === backendOptionsMap.llamaBox
+      isBlobFile &&
+      isOllamaModel &&
+      backend !== backendOptionsMap.llamaBox
     ) {
-      setWarningStatus({
-        show: true,
-        message: 'models.form.backend.warning.llamabox'
-      });
-    } else {
-      setWarningStatus({
-        show: false,
-        message: ''
-      });
+      warningMessage = 'models.form.ollama.warning';
+    } else if (isGGUFFile && backend !== backendOptionsMap.llamaBox) {
+      warningMessage = 'models.form.backend.warning';
+    } else if (!isGGUFFile && backend === backendOptionsMap.llamaBox) {
+      warningMessage = 'models.form.backend.warning.llamabox';
     }
+
+    setWarningStatus({
+      show: !!warningMessage,
+      message: warningMessage
+    });
   };
 
   const handleBackendChange = (backend: string) => {

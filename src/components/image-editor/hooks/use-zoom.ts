@@ -4,6 +4,7 @@ import { MutableRefObject, useState } from 'react';
 export default function useZoom(props: {
   overlayCanvasRef: any;
   canvasRef: any;
+  offscreenCanvasRef: any;
   cursorRef: any;
   lineWidth: number;
   autoScale: MutableRefObject<number>;
@@ -16,6 +17,7 @@ export default function useZoom(props: {
   const {
     overlayCanvasRef,
     canvasRef,
+    offscreenCanvasRef,
     cursorRef,
     lineWidth,
     translatePos,
@@ -34,7 +36,6 @@ export default function useZoom(props: {
       return;
     }
 
-    console.log('Setting transform origin:', autoScale.current);
     const rect = overlayCanvasRef.current!.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -44,6 +45,7 @@ export default function useZoom(props: {
 
     overlayCanvasRef.current!.style.transformOrigin = `${originX * 100}% ${originY * 100}%`;
     canvasRef.current!.style.transformOrigin = `${originX * 100}% ${originY * 100}%`;
+    offscreenCanvasRef.current!.style.transformOrigin = `${originX * 100}% ${originY * 100}%`;
   };
 
   const updateZoom = (scaleChange: number, mouseX: number, mouseY: number) => {
@@ -77,6 +79,8 @@ export default function useZoom(props: {
 
     overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
     canvasRef.current!.style.transform = `scale(${autoScale.current})`;
+    offscreenCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
+
     setCanvasTransformOrigin(event);
     updateZoom(scaleChange, mouseX, mouseY);
   };

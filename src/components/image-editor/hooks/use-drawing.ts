@@ -24,6 +24,7 @@ export default function useDrawing(props: {
   const mouseDownState = useRef<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
+  const offscreenCanvasRef = useRef<any>(null);
   const currentStroke = useRef<Point[]>([]);
   const strokesRef = useRef<Stroke[]>([]);
   const isDrawing = useRef<boolean>(false);
@@ -101,20 +102,29 @@ export default function useDrawing(props: {
     onSave({ mask, img });
   };
 
+  const creatOffscreenCanvas = useCallback(() => {
+    if (!offscreenCanvasRef.current) {
+      offscreenCanvasRef.current = document.createElement('canvas');
+    }
+  }, []);
+
   const setTransform = useCallback(() => {
+    creatOffscreenCanvas();
     const ctx = canvasRef.current?.getContext('2d');
     const overlayCtx = overlayCanvasRef.current?.getContext('2d');
+    const offCtx = offscreenCanvasRef.current?.getContext('2d');
 
     if (!ctx || !overlayCtx) return;
 
     ctx!.resetTransform();
     overlayCtx!.resetTransform();
+    offCtx!.resetTransform();
 
     const { current: scale } = autoScale;
     const { x: translateX, y: translateY } = translatePos.current;
     ctx!.setTransform(scale, 0, 0, scale, translateX, translateY);
-
     overlayCtx!.setTransform(scale, 0, 0, scale, translateX, translateY);
+    offCtx!.setTransform(scale, 0, 0, scale, translateX, translateY);
   }, []);
 
   const getTransformedPoint = useCallback(
@@ -134,9 +144,13 @@ export default function useDrawing(props: {
     []
   );
 
-  const getTransformLineWidth = useCallback((lineWidth = 1) => {
-    return lineWidth / autoScale.current;
-  }, []);
+  const getTransformLineWidth = useCallback(
+    (w = 1) => {
+      const width = w || lineWidth;
+      return width / autoScale.current;
+    },
+    [lineWidth]
+  );
 
   const drawLine = useCallback(
     (
@@ -180,6 +194,7 @@ export default function useDrawing(props: {
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.globalCompositeOperation = compositeOperation;
+      ctx.save();
 
       ctx.beginPath();
 
@@ -196,6 +211,7 @@ export default function useDrawing(props: {
         ctx.strokeStyle = color;
       }
       ctx.stroke();
+      ctx.restore();
     },
     [getTransformLineWidth, getTransformedPoint]
   );
@@ -323,8 +339,17 @@ export default function useDrawing(props: {
 
   const clearOverlayCanvas = useCallback(() => {
     const ctx = overlayCanvasRef.current!.getContext('2d');
+    const offCtx = offscreenCanvasRef.current?.getContext('2d');
+
+    offCtx!.resetTransform();
     ctx!.resetTransform();
     ctx!.clearRect(
+      0,
+      0,
+      overlayCanvasRef.current!.width,
+      overlayCanvasRef.current!.height
+    );
+    offCtx!.clearRect(
       0,
       0,
       overlayCanvasRef.current!.width,
@@ -335,28 +360,37 @@ export default function useDrawing(props: {
   const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current!;
     const ctx = canvasRef.current!.getContext('2d');
+    const offCtx = offscreenCanvasRef.current?.getContext('2d');
     ctx!.resetTransform();
     ctx!.clearRect(0, 0, canvas.width, canvas.height);
+
+    offCtx!.resetTransform();
+    offCtx!.clearRect(0, 0, canvas.width, canvas.height);
   }, []);
 
   const resetCanvas = useCallback(() => {
     const canvas = canvasRef.current!;
     const overlayCanvas = overlayCanvasRef.current!;
+    const offscreenCanvas = offscreenCanvasRef.current!;
     const ctx = canvas.getContext('2d');
     const overlayCtx = overlayCanvas.getContext('2d');
+    const offCtx = offscreenCanvasRef.current?.getContext('2d');
 
     autoScale.current = 1;
     baseScale.current = 1;
     translatePos.current = { x: 0, y: 0 };
     contentPos.current = { x: 0, y: 0 };
+
     canvas.style.transform = 'scale(1)';
     overlayCanvas.style.transform = 'scale(1)';
+    offscreenCanvas.style.transform = 'scale(1)';
 
     cursorRef.current!.style.width = `${lineWidth}px`;
     cursorRef.current!.style.height = `${lineWidth}px`;
 
     ctx!.resetTransform();
     overlayCtx!.resetTransform();
+    offCtx!.resetTransform();
   }, []);
 
   const fitView = () => {
@@ -366,11 +400,13 @@ export default function useDrawing(props: {
     setTransform();
     overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
     canvasRef.current!.style.transform = `scale(${autoScale.current})`;
+    offscreenCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
   };
 
   return {
     canvasRef,
     overlayCanvasRef,
+    offscreenCanvasRef,
     cursorRef,
     strokesRef,
     currentStroke,
@@ -379,6 +415,7 @@ export default function useDrawing(props: {
     autoScale,
     baseScale,
     maskStorkeRef,
+    creatOffscreenCanvas,
     setMaskStrokes,
     fitView,
     setStrokes,

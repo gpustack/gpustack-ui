@@ -88,6 +88,45 @@ export const ollamaModelOptions = [
   }
 ];
 
+export const backendTipsList = [
+  {
+    title: 'llama-box',
+    tips: 'models.form.backend.llamabox'
+  },
+  {
+    title: 'vLLM',
+    tips: 'models.form.backend.vllm'
+  },
+  {
+    title: 'vox-box',
+    tips: 'models.form.backend.voxbox'
+  }
+];
+
+export const localPathTipsList = [
+  {
+    title: {
+      text: 'models.localpath.gguf.tips.title',
+      locale: true
+    },
+    tips: 'models.localpath.gguf.tips'
+  },
+  {
+    title: {
+      text: 'models.localpath.shared.tips.title',
+      locale: true
+    },
+    tips: 'models.localpath.chunks.tips'
+  },
+  {
+    title: {
+      text: 'models.localpat.safe.tips.title',
+      locale: true
+    },
+    tips: 'models.localpath.safe.tips'
+  }
+];
+
 export const backendOptionsMap = {
   llamaBox: 'llama-box',
   vllm: 'vllm',

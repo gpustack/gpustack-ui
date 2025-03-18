@@ -4,6 +4,7 @@ import ModalFooter from '@/components/modal-footer';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
@@ -12,6 +13,8 @@ import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   backendOptionsMap,
+  backendTipsList,
+  localPathTipsList,
   modelSourceMap,
   ollamaModelOptions
 } from '../config';
@@ -98,39 +101,34 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const updateShowWarning = (backend: string) => {
     const localPath = form.getFieldValue?.('local_path');
 
-    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
-
-    if (isBlobFile) {
-      setWarningStatus({
-        show: false,
-        message: ''
-      });
-      return;
-    }
-
     if (formData?.source !== modelSourceMap.local_path_value || !localPath) {
       return;
     }
 
-    if (localPath.endsWith('.gguf') && backend !== backendOptionsMap.llamaBox) {
-      setWarningStatus({
-        show: true,
-        message: 'models.form.backend.warning'
-      });
+    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
+    const isOllamaModel = localPath?.includes('ollama');
+    const isGGUFFile = localPath.endsWith('.gguf');
+
+    let warningMessage = '';
+
+    if (isBlobFile && isOllamaModel && backend === backendOptionsMap.llamaBox) {
+      warningMessage = '';
     } else if (
-      !localPath.endsWith('.gguf') &&
-      backend === backendOptionsMap.llamaBox
+      isBlobFile &&
+      isOllamaModel &&
+      backend !== backendOptionsMap.llamaBox
     ) {
-      setWarningStatus({
-        show: true,
-        message: 'models.form.backend.warning.llamabox'
-      });
-    } else {
-      setWarningStatus({
-        show: false,
-        message: ''
-      });
+      warningMessage = 'models.form.ollama.warning';
+    } else if (isGGUFFile && backend !== backendOptionsMap.llamaBox) {
+      warningMessage = 'models.form.backend.warning';
+    } else if (!isGGUFFile && backend === backendOptionsMap.llamaBox) {
+      warningMessage = 'models.form.backend.warning.llamabox';
     }
+
+    setWarningStatus({
+      show: !!warningMessage,
+      message: warningMessage
+    });
   };
 
   const handleBackendChange = (val: string) => {
@@ -284,6 +282,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             onFocus={handleOnFocus}
             disabled={false}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
+            description={<TooltipList list={localPathTipsList}></TooltipList>}
             required
           ></SealInput.Input>
         </Form.Item>
@@ -519,6 +518,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               required
               onChange={handleBackendChange}
               label={intl.formatMessage({ id: 'models.form.backend' })}
+              description={<TooltipList list={backendTipsList}></TooltipList>}
               options={[
                 {
                   label: `llama-box`,

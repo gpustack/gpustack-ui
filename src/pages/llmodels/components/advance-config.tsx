@@ -340,6 +340,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 id: 'models.form.backendVersion.tips'
               },
               {
+                backend: backend,
                 link: backendParamsTips?.releases && (
                   <span
                     style={{

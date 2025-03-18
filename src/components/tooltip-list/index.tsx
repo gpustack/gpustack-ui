@@ -1,11 +1,13 @@
+import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import React from 'react';
 
 interface TooltipListProps {
-  list: { title: React.ReactNode; tips: React.ReactNode }[];
+  list: { title: any; tips: string }[];
 }
 
 const TooltipList: React.FC<TooltipListProps> = (props) => {
+  const intl = useIntl();
   const { list } = props;
   return (
     <ul className="tips-desc-list">
@@ -20,7 +22,10 @@ const TooltipList: React.FC<TooltipListProps> = (props) => {
                 marginBottom: 0
               }}
             >
-              {item.title}:
+              {item.title?.locale
+                ? intl.formatMessage({ id: item.title?.text || '' })
+                : item.title}
+              :
             </Typography.Title>
             <Typography.Text
               style={{
@@ -29,7 +34,7 @@ const TooltipList: React.FC<TooltipListProps> = (props) => {
                 lineHeight: 1.5
               }}
             >
-              {item.tips}
+              {intl.formatMessage({ id: item.tips })}
             </Typography.Text>
           </li>
         );

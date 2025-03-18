@@ -40,7 +40,7 @@ const InfoColumn: React.FC<InfoColumnProps> = (props) => {
                 type="vertical"
                 style={{
                   height: 30,
-                  marginInline: 16,
+                  marginInline: 12,
                   borderColor: 'var(--color-white-light-2)',
                   alignSelf: 'center'
                 }}

@@ -11,15 +11,7 @@ const RenderProgress = memo(
     successPercent?: number;
     successColor?: string;
   }) => {
-    const {
-      open,
-      percent,
-      steps = 5,
-      download,
-      label,
-      successPercent,
-      successColor
-    } = props;
+    const { open, percent, download, label, successPercent } = props;
 
     const strokeColor = useMemo(() => {
       if (download) {
@@ -39,7 +31,7 @@ const RenderProgress = memo(
       return (
         <Progress
           percentPosition={{ align: 'center', type: 'inner' }}
-          size={[undefined, 16]}
+          size={['', 16]}
           format={() => {
             return (
               <span
@@ -64,7 +56,11 @@ const RenderProgress = memo(
     return (
       <>
         {label ? (
-          <Tooltip title={label} open={open}>
+          <Tooltip
+            title={label}
+            open={open}
+            overlayInnerStyle={{ paddingInline: 12 }}
+          >
             {renderProgress}
           </Tooltip>
         ) : (

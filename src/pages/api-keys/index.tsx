@@ -4,8 +4,7 @@ import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
-import useTableRowSelection from '@/hooks/use-table-row-selection';
-import useTableSort from '@/hooks/use-table-sort';
+import useTableFetch from '@/hooks/use-table-fetch';
 import { handleBatchRequest } from '@/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
@@ -20,8 +19,7 @@ import {
   Tooltip
 } from 'antd';
 import dayjs from 'dayjs';
-import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
@@ -30,81 +28,25 @@ import { ListItem } from './config/types';
 const { Column } = Table;
 
 const APIKeys: React.FC = () => {
-  const rowSelection = useTableRowSelection();
-  const { sortOrder, setSortOrder } = useTableSort({
-    defaultSortOrder: 'descend'
+  const {
+    dataSource,
+    rowSelection,
+    queryParams,
+    sortOrder,
+    fetchData,
+    handlePageChange,
+    handleTableChange,
+    handleSearch,
+    handleNameChange
+  } = useTableFetch<ListItem>({
+    fetchAPI: queryApisKeysList
   });
+
   const intl = useIntl();
   const modalRef = useRef<any>(null);
-  const [dataSource, setDataSource] = useState<{
-    dataList: ListItem[];
-    loading: boolean;
-    loadend: boolean;
-    total: number;
-  }>({
-    dataList: [],
-    loading: false,
-    loadend: false,
-    total: 0
-  });
+
   const [openAddModal, setOpenAddModal] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
-  const [queryParams, setQueryParams] = useState({
-    page: 1,
-    perPage: 10,
-    search: ''
-  });
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setQueryParams({
-      ...queryParams,
-      page: page,
-      perPage: pageSize || 10
-    });
-  };
-
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setSortOrder(sorter.order);
-  };
-
-  const fetchData = async () => {
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
-    try {
-      const params = {
-        ..._.pickBy(queryParams, (val: any) => !!val)
-      };
-      const res = await queryApisKeysList(params);
-
-      setDataSource({
-        dataList: res.items || [],
-        loading: false,
-        loadend: true,
-        total: res.pagination.total
-      });
-    } catch (error) {
-      console.log('error', error);
-      setDataSource({
-        dataList: [],
-        loading: false,
-        loadend: true,
-        total: dataSource.total
-      });
-    }
-  };
-  const handleSearch = (e: any) => {
-    fetchData();
-  };
-
-  const handleNameChange = (e: any) => {
-    setQueryParams({
-      ...queryParams,
-      page: 1,
-      search: e.target.value
-    });
-  };
 
   const handleAddUser = () => {
     setOpenAddModal(true);
@@ -162,10 +104,6 @@ const APIKeys: React.FC = () => {
     }
     return <div></div>;
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [queryParams]);
 
   useHotkeys(
     HotKeys.CREATE,

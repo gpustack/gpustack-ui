@@ -5,8 +5,7 @@ import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
-import useTableRowSelection from '@/hooks/use-table-row-selection';
-import useTableSort from '@/hooks/use-table-sort';
+import useTableFetch from '@/hooks/use-table-fetch';
 import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
@@ -28,112 +27,53 @@ import {
   message
 } from 'antd';
 import dayjs from 'dayjs';
-import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 const { Column } = Table;
 
+const ActionList = [
+  {
+    key: 'edit',
+    label: 'common.button.edit',
+    icon: <EditOutlined></EditOutlined>
+  },
+  {
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    label: 'common.button.delete',
+    icon: <DeleteOutlined></DeleteOutlined>
+  }
+];
+
 const Users: React.FC = () => {
-  console.log('users======');
-  const rowSelection = useTableRowSelection();
-  const { sortOrder, setSortOrder } = useTableSort({
-    defaultSortOrder: 'descend'
+  const {
+    dataSource,
+    rowSelection,
+    queryParams,
+    sortOrder,
+    fetchData,
+    handlePageChange,
+    handleTableChange,
+    handleSearch,
+    handleNameChange
+  } = useTableFetch<ListItem>({
+    fetchAPI: queryUsersList
   });
+
   const intl = useIntl();
   const modalRef = useRef<any>(null);
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [dataSource, setDataSource] = useState<{
-    dataList: ListItem[];
-    loading: boolean;
-    loadend: boolean;
-    total: number;
-  }>({
-    dataList: [],
-    loading: false,
-    loadend: false,
-    total: 0
-  });
+
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
   const [currentData, setCurrentData] = useState<ListItem | undefined>(
     undefined
   );
-  const [queryParams, setQueryParams] = useState({
-    page: 1,
-    perPage: 10,
-    search: ''
-  });
-
-  const ActionList = [
-    {
-      key: 'edit',
-      label: 'common.button.edit',
-      icon: <EditOutlined></EditOutlined>
-    },
-    {
-      key: 'delete',
-      props: {
-        danger: true
-      },
-      label: 'common.button.delete',
-      icon: <DeleteOutlined></DeleteOutlined>
-    }
-  ];
-  const fetchData = async () => {
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
-    try {
-      const params = {
-        ..._.pickBy(queryParams, (val: any) => !!val)
-      };
-      const res = await queryUsersList(params);
-      setDataSource({
-        dataList: res.items || [],
-        loading: false,
-        loadend: true,
-        total: res.pagination.total
-      });
-    } catch (error) {
-      setDataSource({
-        dataList: [],
-        loading: false,
-        loadend: true,
-        total: dataSource.total
-      });
-      console.log('error', error);
-    }
-  };
-
-  const handlePageChange = (page: number, pageSize: number | undefined) => {
-    console.log(page, pageSize);
-    setQueryParams({
-      ...queryParams,
-      perPage: pageSize || 10,
-      page: page
-    });
-  };
-
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    console.log('handleTableChange=======', pagination, filters, sorter);
-    setSortOrder(sorter.order);
-  };
-
-  const handleSearch = (e: any) => {
-    fetchData();
-  };
-
-  const handleNameChange = (e: any) => {
-    setQueryParams({
-      ...queryParams,
-      page: 1,
-      search: e.target.value
-    });
-  };
 
   const handleAddUser = () => {
     setOpenAddModal(true);
@@ -222,10 +162,6 @@ const Users: React.FC = () => {
     }
     return <div></div>;
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [queryParams]);
 
   useHotkeys(
     HotKeys.CREATE,

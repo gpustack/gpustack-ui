@@ -2,13 +2,12 @@ import AutoTooltip from '@/components/auto-tooltip';
 import PageTools from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
-import useTableSort from '@/hooks/use-table-sort';
+import useTableFetch from '@/hooks/use-table-fetch';
 import { convertFileSize } from '@/utils';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
 import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
@@ -41,79 +40,18 @@ const fieldList = [
 ];
 
 const GPUList: React.FC = () => {
-  console.log('GPUList======');
+  const {
+    dataSource,
+    queryParams,
+    handlePageChange,
+    handleTableChange,
+    handleSearch,
+    handleNameChange
+  } = useTableFetch<GPUDeviceItem>({
+    fetchAPI: queryGpuDevicesList
+  });
+
   const intl = useIntl();
-  const { sortOrder, setSortOrder } = useTableSort({
-    defaultSortOrder: 'descend'
-  });
-  const [dataSource, setDataSource] = useState<{
-    dataList: GPUDeviceItem[];
-    loading: boolean;
-    loadend: boolean;
-    total: number;
-  }>({
-    dataList: [],
-    loading: false,
-    loadend: false,
-    total: 0
-  });
-  const [queryParams, setQueryParams] = useState({
-    page: 1,
-    perPage: 10,
-    search: ''
-  });
-
-  const handlePageChange = (page: number, perPage: number | undefined) => {
-    console.log(page, perPage);
-    setQueryParams({
-      ...queryParams,
-      page: page,
-      perPage: perPage || 10
-    });
-  };
-
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setSortOrder(sorter.order);
-  };
-
-  const fetchData = async () => {
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
-    try {
-      const params = {
-        ..._.pickBy(queryParams, (val: any) => !!val)
-      };
-      const res = await queryGpuDevicesList(params);
-
-      setDataSource({
-        dataList: res.items || [],
-        loading: false,
-        loadend: true,
-        total: res.pagination.total
-      });
-    } catch (error) {
-      setDataSource({
-        dataList: [],
-        loading: false,
-        loadend: true,
-        total: dataSource.total
-      });
-      console.log('error', error);
-    }
-  };
-  const handleSearch = (e: any) => {
-    fetchData();
-  };
-
-  const handleNameChange = (e: any) => {
-    setQueryParams({
-      ...queryParams,
-      page: 1,
-      search: e.target.value
-    });
-  };
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
@@ -126,10 +64,6 @@ const GPUList: React.FC = () => {
     }
     return <div></div>;
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [queryParams]);
 
   return (
     <>

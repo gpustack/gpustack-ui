@@ -6,8 +6,7 @@ import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import Hotkeys from '@/config/hotkeys';
-import useTableRowSelection from '@/hooks/use-table-row-selection';
-import useTableSort from '@/hooks/use-table-sort';
+import useTableFetch from '@/hooks/use-table-fetch';
 import { convertFileSize, handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
@@ -28,7 +27,7 @@ import {
   message
 } from 'antd';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteWorker, queryWorkersList, updateWorker } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
@@ -82,29 +81,24 @@ const ActionList = [
 ];
 
 const Workers: React.FC = () => {
-  const { sortOrder, setSortOrder } = useTableSort({
-    defaultSortOrder: 'descend'
+  const {
+    dataSource,
+    rowSelection,
+    queryParams,
+    sortOrder,
+    fetchData,
+    handlePageChange,
+    handleTableChange,
+    handleSearch,
+    handleNameChange
+  } = useTableFetch<ListItem>({
+    fetchAPI: queryWorkersList
   });
+
   const modalRef = useRef<any>(null);
-  const rowSelection = useTableRowSelection();
   const intl = useIntl();
   const [open, setOpen] = useState(false);
-  const [dataSource, setDataSource] = useState<{
-    dataList: ListItem[];
-    loading: boolean;
-    loadend: boolean;
-    total: number;
-  }>({
-    dataList: [],
-    loading: false,
-    loadend: false,
-    total: 0
-  });
-  const [queryParams, setQueryParams] = useState({
-    page: 1,
-    perPage: 10,
-    search: ''
-  });
+
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
     data: ListItem;
@@ -112,62 +106,6 @@ const Workers: React.FC = () => {
     open: false,
     data: {} as ListItem
   });
-
-  const fetchData = useCallback(async () => {
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
-    try {
-      const params = {
-        ..._.pickBy(queryParams, (val: any) => !!val)
-      };
-      const res = await queryWorkersList(params);
-
-      setDataSource({
-        dataList: res.items,
-        loading: false,
-        loadend: true,
-        total: res.pagination.total
-      });
-    } catch (error) {
-      setDataSource({
-        dataList: [],
-        loading: false,
-        loadend: true,
-        total: dataSource.total
-      });
-      console.log('error', error);
-    }
-  }, [queryParams]);
-
-  const handlePageChange = (page: number, perPage: number | undefined) => {
-    console.log(page, perPage);
-    setQueryParams({
-      ...queryParams,
-      page: page,
-      perPage: perPage || 10
-    });
-  };
-
-  const handleTableChange = useCallback(
-    (pagination: any, filters: any, sorter: any) => {
-      setSortOrder(sorter.order);
-    },
-    []
-  );
-
-  const handleSearch = (e: any) => {
-    fetchData();
-  };
-
-  const handleNameChange = (e: any) => {
-    setQueryParams({
-      ...queryParams,
-      page: 1,
-      search: e.target.value
-    });
-  };
 
   const formateUtilazation = (val1: number, val2: number): number => {
     if (!val2 || !val1) {
@@ -285,10 +223,6 @@ const Workers: React.FC = () => {
       0
     );
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [queryParams]);
 
   useHotkeys(Hotkeys.CREATE.join(','), handleAddWorker, {
     enabled: !open

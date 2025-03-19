@@ -6,7 +6,6 @@ import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { handleBatchRequest } from '@/utils';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -27,7 +26,7 @@ import {
   message
 } from 'antd';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
@@ -56,17 +55,21 @@ const Users: React.FC = () => {
     rowSelection,
     queryParams,
     sortOrder,
+    modalRef,
+    handleDelete,
+    handleDeleteBatch,
     fetchData,
     handlePageChange,
     handleTableChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    fetchAPI: queryUsersList
+    fetchAPI: queryUsersList,
+    deleteAPI: deleteUser,
+    contentForDelete: 'users.table.user'
   });
 
   const intl = useIntl();
-  const modalRef = useRef<any>(null);
   const [openAddModal, setOpenAddModal] = useState(false);
 
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
@@ -110,32 +113,6 @@ const Users: React.FC = () => {
     setOpenAddModal(false);
   };
 
-  const handleDelete = (row: ListItem) => {
-    modalRef.current.show({
-      content: 'users.table.user',
-      operation: 'common.delete.single.confirm',
-      name: row.name,
-      async onOk() {
-        console.log('OK');
-        await deleteUser(row.id);
-        fetchData();
-      }
-    });
-  };
-
-  const handleDeleteBatch = () => {
-    modalRef.current.show({
-      content: 'users.table.user',
-      operation: 'common.delete.confirm',
-      selection: true,
-      async onOk() {
-        await handleBatchRequest(rowSelection.selectedRowKeys, deleteUser);
-        rowSelection.clearSelections();
-        fetchData();
-      }
-    });
-  };
-
   const handleEditUser = (row: ListItem) => {
     setCurrentData(row);
     setOpenAddModal(true);
@@ -147,7 +124,7 @@ const Users: React.FC = () => {
     if (val === 'edit') {
       handleEditUser(row);
     } else if (val === 'delete') {
-      handleDelete(row);
+      handleDelete({ ...row, name: row.username });
     }
   };
 

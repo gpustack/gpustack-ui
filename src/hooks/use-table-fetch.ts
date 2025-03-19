@@ -1,12 +1,16 @@
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import { handleBatchRequest } from '@/utils';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function useTableFetch<ListItem>(options: {
   fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
+  deleteAPI?: (id: number) => Promise<any>;
+  contentForDelete?: string;
 }) {
-  const { fetchAPI } = options;
+  const { fetchAPI, deleteAPI, contentForDelete } = options;
+  const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
@@ -91,6 +95,33 @@ export default function useTableFetch<ListItem>(options: {
     });
   };
 
+  const handleDelete = (row: ListItem & { name: string; id: number }) => {
+    modalRef.current.show({
+      content: contentForDelete,
+      operation: 'common.delete.single.confirm',
+      name: row.name,
+      async onOk() {
+        console.log('OK');
+        await deleteAPI?.(row.id);
+        fetchData();
+      }
+    });
+  };
+
+  const handleDeleteBatch = () => {
+    modalRef.current.show({
+      content: contentForDelete,
+      operation: 'common.delete.confirm',
+      selection: true,
+      async onOk() {
+        if (!deleteAPI) return;
+        await handleBatchRequest(rowSelection.selectedRowKeys, deleteAPI);
+        rowSelection.clearSelections();
+        fetchData();
+      }
+    });
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -100,6 +131,9 @@ export default function useTableFetch<ListItem>(options: {
     rowSelection,
     sortOrder,
     queryParams,
+    modalRef,
+    handleDelete,
+    handleDeleteBatch,
     fetchData,
     handlePageChange,
     handleTableChange,

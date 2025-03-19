@@ -5,7 +5,6 @@ import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { handleBatchRequest } from '@/utils';
 import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
@@ -19,7 +18,7 @@ import {
   Tooltip
 } from 'antd';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey';
@@ -33,17 +32,21 @@ const APIKeys: React.FC = () => {
     rowSelection,
     queryParams,
     sortOrder,
+    modalRef,
+    handleDelete,
+    handleDeleteBatch,
     fetchData,
     handlePageChange,
     handleTableChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    fetchAPI: queryApisKeysList
+    fetchAPI: queryApisKeysList,
+    deleteAPI: deleteApisKey,
+    contentForDelete: 'apikeys.table.apikeys'
   });
 
   const intl = useIntl();
-  const modalRef = useRef<any>(null);
 
   const [openAddModal, setOpenAddModal] = useState(false);
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
@@ -65,32 +68,6 @@ const APIKeys: React.FC = () => {
   const handleModalCancel = () => {
     console.log('handleModalCancel');
     setOpenAddModal(false);
-  };
-
-  const handleDelete = (row: ListItem) => {
-    modalRef.current.show({
-      content: 'apikeys.table.apikeys',
-      operation: 'common.delete.single.confirm',
-      name: row.name,
-      async onOk() {
-        console.log('OK');
-        await deleteApisKey(row.id);
-        fetchData();
-      }
-    });
-  };
-
-  const handleDeleteBatch = () => {
-    modalRef.current.show({
-      content: 'apikeys.table.apikeys',
-      operation: 'common.delete.confirm',
-      selection: true,
-      async onOk() {
-        await handleBatchRequest(rowSelection.selectedRowKeys, deleteApisKey);
-        rowSelection.clearSelections();
-        fetchData();
-      }
-    });
   };
 
   const renderEmpty = (type?: string) => {

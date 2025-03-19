@@ -7,7 +7,7 @@ import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import Hotkeys from '@/config/hotkeys';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { convertFileSize, handleBatchRequest } from '@/utils';
+import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -27,7 +27,7 @@ import {
   message
 } from 'antd';
 import _ from 'lodash';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteWorker, queryWorkersList, updateWorker } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
@@ -80,25 +80,42 @@ const ActionList = [
   }
 ];
 
+const formateUtilazation = (val1: number, val2: number): number => {
+  if (!val2 || !val1) {
+    return 0;
+  }
+  return _.round((val1 / val2) * 100, 0);
+};
+
+const calcStorage = (files: Filesystem[]) => {
+  const mountRoot = _.find(
+    files,
+    (item: Filesystem) => item.mount_point === '/'
+  );
+  return mountRoot ? formateUtilazation(mountRoot.used, mountRoot.total) : 0;
+};
+
 const Workers: React.FC = () => {
   const {
     dataSource,
     rowSelection,
     queryParams,
-    sortOrder,
+    modalRef,
+    handleDelete,
+    handleDeleteBatch,
     fetchData,
     handlePageChange,
     handleTableChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    fetchAPI: queryWorkersList
+    fetchAPI: queryWorkersList,
+    deleteAPI: deleteWorker,
+    contentForDelete: 'worker'
   });
 
-  const modalRef = useRef<any>(null);
   const intl = useIntl();
   const [open, setOpen] = useState(false);
-
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
     data: ListItem;
@@ -107,49 +124,8 @@ const Workers: React.FC = () => {
     data: {} as ListItem
   });
 
-  const formateUtilazation = (val1: number, val2: number): number => {
-    if (!val2 || !val1) {
-      return 0;
-    }
-    return _.round((val1 / val2) * 100, 0);
-  };
-
-  const calcStorage = (files: Filesystem[]) => {
-    const mountRoot = _.find(
-      files,
-      (item: Filesystem) => item.mount_point === '/'
-    );
-    return mountRoot ? formateUtilazation(mountRoot.used, mountRoot.total) : 0;
-  };
-
   const handleAddWorker = () => {
     setOpen(true);
-  };
-
-  const handleDelete = (row: ListItem) => {
-    modalRef.current.show({
-      content: 'worker',
-      operation: 'common.delete.single.confirm',
-      name: row.name,
-      async onOk() {
-        console.log('OK');
-        await deleteWorker(row.id);
-        fetchData();
-      }
-    });
-  };
-
-  const handleDeleteBatch = () => {
-    modalRef.current.show({
-      content: 'wokers',
-      operation: 'common.delete.confirm',
-      selection: true,
-      async onOk() {
-        await handleBatchRequest(rowSelection.selectedRowKeys, deleteWorker);
-        rowSelection.clearSelections();
-        fetchData();
-      }
-    });
   };
 
   const handleUpdateLabelsOk = useCallback(

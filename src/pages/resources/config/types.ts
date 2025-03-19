@@ -96,3 +96,20 @@ export interface ListItem {
   created_at: string;
   updated_at: string;
 }
+
+export interface ModelFile {
+  source: string;
+  size: number;
+  id: number;
+  created_at: string;
+  worker_name: string;
+  huggingface_repo_id: string;
+  huggingface_filename: string;
+  ollama_library_model_name: string;
+  model_scope_model_id: string;
+  model_scope_file_path: string;
+  local_path: string;
+  download_progress: number;
+  state: string;
+  state_message: string;
+}

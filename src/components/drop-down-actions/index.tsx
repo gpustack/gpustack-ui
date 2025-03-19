@@ -1,34 +1,35 @@
-import * as icons from '@ant-design/icons';
-import { Button, Dropdown, Space } from 'antd';
-import type { MenuProps } from 'antd/es/menu';
-import react from 'react';
+import { useIntl } from '@umijs/max';
+import { Dropdown, DropDownProps } from 'antd';
+import React, { useMemo } from 'react';
 
-type DropdownProps = {
-  trigger?: Array<'click' | 'hover' | 'contextMenu'>;
-  items: MenuProps['items'];
-  onClick: (e: any) => void;
-};
-const renderIcon = (icon: string) => {
-  if (!icon) {
-    return null;
-  }
-  // @ts-ignore
-  const Icon = icons[icon] as React.FC;
-  return react.createElement(Icon);
-};
-const DropDownActions: React.FC<DropdownProps> = (props) => {
-  const { trigger, items, onClick } = props;
+const DropDownActions: React.FC<DropDownProps> = (props) => {
+  const {
+    menu,
+    trigger = ['hover'],
+    placement = 'bottomRight',
+    children,
+    ...rest
+  } = props;
+  const intl = useIntl();
+
+  const items = useMemo(() => {
+    return menu?.items?.map((item: any) => ({
+      ...item,
+      label: item.locale ? intl.formatMessage({ id: item.label }) : item.label
+    }));
+  }, [menu?.items, intl]);
   return (
-    <Space>
-      <Dropdown menu={{ items, onClick }} trigger={trigger}>
-        <Button
-          onClick={(e) => e.preventDefault()}
-          style={{ fontSize: '14px' }}
-          type="text"
-          icon={renderIcon('MoreOutlined')}
-        ></Button>
-      </Dropdown>
-    </Space>
+    <Dropdown
+      menu={{
+        items: items,
+        onClick: menu?.onClick
+      }}
+      trigger={trigger}
+      placement={placement}
+      {...rest}
+    >
+      {children}
+    </Dropdown>
   );
 };
 

@@ -1,14 +1,13 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
+import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
 import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import { SealColumnProps } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
-import HotKeys from '@/config/hotkeys';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
@@ -24,18 +23,14 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import {
-  DeleteOutlined,
   DownOutlined,
-  EditOutlined,
-  ExperimentOutlined,
   QuestionCircleOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useAccess, useIntl, useNavigate } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import {
   Button,
-  Dropdown,
   Empty,
   Input,
   Select,
@@ -47,8 +42,14 @@ import {
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -63,9 +64,16 @@ import {
   backendOptionsMap,
   getSourceRepoConfigValue,
   modelCategories,
-  modelCategoriesMap,
   modelSourceMap
 } from '../config';
+import {
+  ButtonList,
+  categoryToPathMap,
+  generateSource,
+  modalConfig,
+  setModelActionList,
+  sourceOptions
+} from '../config/button-actions';
 import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
 import { useGenerateFormEditInitialValues } from '../hooks';
 import DeployModal from './deploy-modal';
@@ -100,90 +108,19 @@ interface ModelsProps {
   total: number;
 }
 
-const ActionList = [
-  {
-    label: 'common.button.edit',
-    key: 'edit',
-    icon: <EditOutlined />
-  },
-  {
-    label: 'models.openinplayground',
-    key: 'chat',
-    icon: <ExperimentOutlined />
-  },
-  {
-    label: 'common.button.stop',
-    key: 'stop',
-    icon: <IconFont type="icon-stop1"></IconFont>
-  },
-  {
-    label: 'common.button.start',
-    key: 'start',
-    icon: <IconFont type="icon-outline-play"></IconFont>
-  },
-  {
-    label: 'common.button.delete',
-    key: 'delete',
-    props: {
-      danger: true
-    },
-    icon: <DeleteOutlined />
+const getFormattedData = (record: any, extraData = {}) => ({
+  id: record.id,
+  data: {
+    ..._.omit(record, [
+      'id',
+      'ready_replicas',
+      'created_at',
+      'updated_at',
+      'rowIndex'
+    ]),
+    ...extraData
   }
-];
-
-const ButtonList = [
-  {
-    label: 'common.button.start',
-    key: 'start',
-    icon: <IconFont type="icon-outline-play"></IconFont>
-  },
-  {
-    label: 'common.button.stop',
-    key: 'stop',
-    icon: <IconFont type="icon-stop1"></IconFont>
-  },
-  {
-    label: 'common.button.delete',
-    key: 'delete',
-    icon: <DeleteOutlined />,
-    props: {
-      danger: true
-    }
-  }
-];
-
-const generateSource = (record: ListItem) => {
-  if (record.source === modelSourceMap.modelscope_value) {
-    return `${modelSourceMap.modelScope}/${record.model_scope_model_id}`;
-  }
-  if (record.source === modelSourceMap.huggingface_value) {
-    return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
-  }
-  if (record.source === modelSourceMap.local_path_value) {
-    return `${record.local_path}`;
-  }
-  if (record.source === modelSourceMap.ollama_library_value) {
-    return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
-  }
-  return '';
-};
-
-const setActionList = (record: ListItem) => {
-  return _.filter(ActionList, (action: any) => {
-    if (action.key === 'chat') {
-      return record.ready_replicas > 0;
-    }
-    if (action.key === 'start') {
-      return record.replicas === 0;
-    }
-
-    if (action.key === 'stop') {
-      return record.replicas > 0;
-    }
-
-    return true;
-  });
-};
+});
 
 const Models: React.FC<ModelsProps> = ({
   handleNameChange,
@@ -218,7 +155,6 @@ const Models: React.FC<ModelsProps> = ({
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
-  const access = useAccess();
   const intl = useIntl();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
@@ -270,69 +206,6 @@ const Models: React.FC<ModelsProps> = ({
     getFirstLoginState();
   }, [catalogList?.length]);
 
-  useHotkeys(
-    HotKeys.NEW1.join(','),
-    () => {
-      setOpenDeployModal({
-        show: true,
-        width: 'calc(100vw - 220px)',
-        source: modelSourceMap.huggingface_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    },
-    {
-      preventDefault: true,
-      enabled: !openAddModal && !openDeployModal.show && !openLogModal
-    }
-  );
-
-  useHotkeys(
-    HotKeys.NEW3.join(','),
-    () => {
-      setOpenDeployModal({
-        show: true,
-        width: 'calc(100vw - 220px)',
-        source: modelSourceMap.modelscope_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    },
-    {
-      preventDefault: true,
-      enabled: !openAddModal && !openDeployModal.show && !openLogModal
-    }
-  );
-
-  useHotkeys(
-    HotKeys.NEW2.join(','),
-    () => {
-      setOpenDeployModal({
-        show: true,
-        width: 600,
-        source: modelSourceMap.ollama_library_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    },
-    {
-      preventDefault: true,
-      enabled: !openAddModal && !openDeployModal.show && !openLogModal
-    }
-  );
-  useHotkeys(
-    HotKeys.NEW4.join(','),
-    () => {
-      setOpenDeployModal({
-        show: true,
-        width: 600,
-        source: modelSourceMap.local_path_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    },
-    {
-      preventDefault: true,
-      enabled: !openAddModal && !openDeployModal.show && !openLogModal
-    }
-  );
-
   useEffect(() => {
     if (deleteIds?.length) {
       rowSelection.removeSelectedKey(deleteIds);
@@ -346,39 +219,6 @@ const Models: React.FC<ModelsProps> = ({
     };
   }, []);
 
-  const sourceOptions = [
-    {
-      label: intl.formatMessage({ id: 'menu.models.modelCatalog' }),
-      value: 'catalog',
-      key: 'catalog',
-      icon: <IconFont type="icon-catalog"></IconFont>
-    },
-    {
-      label: 'Hugging Face',
-      value: modelSourceMap.huggingface_value,
-      key: 'huggingface',
-      icon: <IconFont type="icon-huggingface"></IconFont>
-    },
-    {
-      label: 'Ollama Library',
-      value: modelSourceMap.ollama_library_value,
-      key: 'ollama_library',
-      icon: <IconFont type="icon-ollama"></IconFont>
-    },
-    {
-      label: 'ModelScope',
-      value: modelSourceMap.modelscope_value,
-      key: 'modelscope',
-      icon: <IconFont type="icon-tu2"></IconFont>
-    },
-    {
-      label: intl.formatMessage({ id: 'models.form.localPath' }),
-      value: modelSourceMap.local_path_value,
-      key: 'local_path',
-      icon: <IconFont type="icon-hard-disk"></IconFont>
-    }
-  ];
-
   const setCurrentData = (data: ListItem) => {
     currentData.current = data;
   };
@@ -387,51 +227,21 @@ const Models: React.FC<ModelsProps> = ({
     setSortOrder(order);
   };
 
-  const handleOnCell = useCallback(async (record: any, dataIndex: string) => {
-    const params = {
-      id: record.id,
-      data: _.omit(record, [
-        'id',
-        'ready_replicas',
-        'created_at',
-        'updated_at',
-        'rowIndex'
-      ])
-    };
-    await updateModel(params);
-    message.success(intl.formatMessage({ id: 'common.message.success' }));
+  const handleOnCell = useCallback(async (record: any) => {
+    try {
+      await updateModel(getFormattedData(record));
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {
+      // ignore
+    }
   }, []);
 
   const handleStartModel = async (row: ListItem) => {
-    await updateModel({
-      id: row.id,
-      data: {
-        ..._.omit(row, [
-          'id',
-          'ready_replicas',
-          'created_at',
-          'updated_at',
-          'rowIndex'
-        ]),
-        replicas: 1
-      }
-    });
+    await updateModel(getFormattedData(row, { replicas: 1 }));
   };
 
   const handleStopModel = async (row: ListItem) => {
-    await updateModel({
-      id: row.id,
-      data: {
-        ..._.omit(row, [
-          'id',
-          'ready_replicas',
-          'created_at',
-          'updated_at',
-          'rowIndex'
-        ]),
-        replicas: 0
-      }
-    });
+    await updateModel(getFormattedData(row, { replicas: 0 }));
     removeExpandedRowKey([row.id]);
   };
 
@@ -538,25 +348,12 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleOpenPlayGround = (row: any) => {
-    if (row.categories?.includes(modelCategoriesMap.image)) {
-      navigate(`/playground/text-to-image?model=${row.name}`);
-      return;
-    }
-    if (row.categories?.includes(modelCategoriesMap.text_to_speech)) {
-      navigate(`/playground/speech?model=${row.name}&type=tts`);
-      return;
-    }
-    if (row.categories?.includes(modelCategoriesMap.speech_to_text)) {
-      navigate(`/playground/speech?model=${row.name}&type=stt`);
-      return;
-    }
-    if (row.categories?.includes(modelCategoriesMap.reranker)) {
-      navigate(`/playground/rerank?model=${row.name}`);
-      return;
-    }
-    if (row.categories?.includes(modelCategoriesMap.embedding)) {
-      navigate(`/playground/embedding?model=${row.name}`);
-      return;
+    for (const [category, path] of Object.entries(categoryToPathMap)) {
+      console.log('category:', category, path);
+      if (row.categories?.includes(category)) {
+        navigate(`${path}?model=${row.name}`);
+        return;
+      }
     }
     navigate(`/playground/chat?model=${row.name}`);
   };
@@ -694,43 +491,14 @@ const Models: React.FC<ModelsProps> = ({
   );
 
   const handleClickDropdown = (item: any) => {
-    if (item.key === 'huggingface') {
-      setOpenDeployModal({
-        show: true,
-        width: 'calc(100vw - 220px)',
-        source: modelSourceMap.huggingface_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    }
-
-    if (item.key === 'ollama_library') {
-      setOpenDeployModal({
-        show: true,
-        width: 600,
-        source: modelSourceMap.ollama_library_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    }
-
-    if (item.key === 'modelscope') {
-      setOpenDeployModal({
-        show: true,
-        width: 'calc(100vw - 220px)',
-        source: modelSourceMap.modelscope_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    }
-
-    if (item.key === 'local_path') {
-      setOpenDeployModal({
-        show: true,
-        width: 600,
-        source: modelSourceMap.local_path_value,
-        gpuOptions: gpuDeviceList.current
-      });
-    }
     if (item.key === 'catalog') {
       navigate('/models/catalog');
+      return;
+    }
+
+    const config = modalConfig[item.key];
+    if (config) {
+      setOpenDeployModal({ ...config, gpuOptions: gpuDeviceList.current });
     }
   };
 
@@ -847,7 +615,7 @@ const Models: React.FC<ModelsProps> = ({
         span: 4,
         render: (text, record) => (
           <DropdownButtons
-            items={setActionList(record)}
+            items={setModelActionList(record)}
             onSelect={(val) => handleSelect(val, record)}
           />
         )
@@ -966,7 +734,7 @@ const Models: React.FC<ModelsProps> = ({
           }
           right={
             <Space size={20}>
-              <Dropdown
+              <DropDownActions
                 menu={{
                   items: sourceOptions,
                   onClick: handleClickDropdown
@@ -981,7 +749,7 @@ const Models: React.FC<ModelsProps> = ({
                 >
                   {intl?.formatMessage?.({ id: 'models.button.deploy' })}
                 </Button>
-              </Dropdown>
+              </DropDownActions>
               <DropdownButtons
                 items={ButtonList}
                 extra={

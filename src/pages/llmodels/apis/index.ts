@@ -146,7 +146,7 @@ export async function queryHuggingfaceModelDetail(
   params: { repo: string },
   options?: any
 ) {
-  const url = `https://huggingface.co/api/models/${params.repo}`;
+  const url = `${process.env.HUGGINGFACE_MIRROR}/api/models/${params.repo}`;
   return request(setProxyUrl(url), {
     method: 'GET',
     cancelToken: options?.token

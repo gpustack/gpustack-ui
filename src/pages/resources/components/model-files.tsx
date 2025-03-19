@@ -7,64 +7,22 @@ import StatusTag from '@/components/status-tag';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { modelSourceMap } from '@/pages/llmodels/config';
 import {
+  generateSource,
   modalConfig,
+  modelFileActions,
   onLineSourceOptions
 } from '@/pages/llmodels/config/button-actions';
 import DownloadModal from '@/pages/llmodels/download';
-import {
-  DeleteOutlined,
-  DownOutlined,
-  SyncOutlined,
-  ThunderboltOutlined
-} from '@ant-design/icons';
+import { DeleteOutlined, DownOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import React, {
-  Button,
-  ConfigProvider,
-  Empty,
-  Input,
-  Space,
-  Table
-} from 'antd';
+import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { deleteWorker, queryWorkersList } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { ModelFile as ListItem } from '../config/types';
 
-const ActionList = [
-  {
-    label: 'common.button.deploy',
-    key: 'deploy',
-    icon: <ThunderboltOutlined />
-  },
-  {
-    label: 'common.button.delete',
-    key: 'delete',
-    props: {
-      danger: true
-    },
-    icon: <DeleteOutlined />
-  }
-];
-
-const generateSource = (record: ListItem) => {
-  if (record.source === modelSourceMap.modelscope_value) {
-    return `${modelSourceMap.modelScope}/${record.model_scope_model_id}`;
-  }
-  if (record.source === modelSourceMap.huggingface_value) {
-    return `${modelSourceMap.huggingface}/${record.huggingface_repo_id}`;
-  }
-  if (record.source === modelSourceMap.local_path_value) {
-    return `${record.local_path}`;
-  }
-  if (record.source === modelSourceMap.ollama_library_value) {
-    return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
-  }
-  return '';
-};
-
-const ModelFiles: React.FC = () => {
+const ModelFiles = () => {
   const {
     dataSource,
     rowSelection,
@@ -208,7 +166,7 @@ const ModelFiles: React.FC = () => {
       dataIndex: 'operation',
       render: (text: string, record: ListItem) => (
         <DropdownButtons
-          items={ActionList}
+          items={modelFileActions}
           onSelect={(val) => handleSelect(val, record)}
         ></DropdownButtons>
       )

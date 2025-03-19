@@ -3,8 +3,12 @@ module.exports = {
   rules: {
     'react/no-unstable-nested-components': 1,
     'no-unused-vars': 'off',
+    'no-undef': 'error',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/class-name-casing': 'off'
+  },
+  globals: {
+    Global: 'readonly'
   },
   ignorePatterns: ['public/static/']
 };

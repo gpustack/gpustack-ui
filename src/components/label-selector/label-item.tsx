@@ -18,6 +18,7 @@ interface LabelItemProps {
   onDelete?: () => void;
   labelList: { key: string; value: string }[];
   onChange?: (params: { key: string; value: string }) => void;
+  onPaste?: (e: any) => void;
 }
 const LabelItem: React.FC<LabelItemProps> = ({
   label,
@@ -26,7 +27,8 @@ const LabelItem: React.FC<LabelItemProps> = ({
   keyAddon,
   valueAddon,
   onChange,
-  onDelete
+  onDelete,
+  onPaste
 }) => {
   const intl = useIntl();
   const [open, setOpen] = useState(false);
@@ -82,6 +84,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
               value={label.key}
               onChange={handleOnKeyChange}
               onBlur={handleKeyOnBlur}
+              onPaste={onPaste}
             ></SealInput.Input>
           </Tooltip>
         )}

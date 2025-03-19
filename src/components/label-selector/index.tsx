@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import Inner from './inner';
@@ -17,6 +18,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   btnText,
   description
 }) => {
+  const intl = useIntl();
   const [labelsData, setLabelsData] = useState({});
   const [labelList, setLabelList] = useState<{ key: string; value: string }[]>(
     []
@@ -46,15 +48,45 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     onChange?.(data);
   };
 
+  const handleOnPaste = (
+    e: React.ClipboardEvent<HTMLTextAreaElement>,
+    index: number
+  ) => {
+    e.preventDefault();
+
+    const clipboardText = e.clipboardData.getData('text');
+    if (!clipboardText) return;
+
+    const lines = clipboardText
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && line.includes('='));
+
+    const parsedData = lines.map((line) => {
+      const [key, value] = line.split('=').map((part) => part.trim());
+      return { key, value };
+    });
+    console.log(lines, parsedData);
+
+    setLabelList((prevPairs) => {
+      const newPairs = [...prevPairs];
+      newPairs.splice(index, 1, ...parsedData);
+      return newPairs;
+    });
+  };
+
   return (
     <Inner
       label={label}
       btnText={btnText}
-      description={description}
+      description={
+        description ?? intl.formatMessage({ id: 'models.form.keyvalue.paste' })
+      }
       labels={labelsData}
       labelList={labelList}
       onChange={handleLabelsChange}
       onLabelListChange={handleLabelListChange}
+      onPaste={handleOnPaste}
     />
   );
 };

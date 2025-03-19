@@ -1,3 +1,4 @@
+import { Spin } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import React, {
@@ -9,10 +10,31 @@ import React, {
   useRef,
   useState
 } from 'react';
+import styled from 'styled-components';
 import useDrawing from './hooks/use-drawing';
 import useZoom from './hooks/use-zoom';
 import './index.less';
 import { ImageActionsBar, ToolsBar } from './tools-bar';
+
+const LoadWrapper = styled.div<{ width?: number; height?: number }>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: ${(props) => `${props.width}px` || '100%'};
+  z-index: 100;
+`;
+const Loading = (props: { width: number; height: number }) => {
+  const { width, height } = props;
+  return (
+    <LoadWrapper width={width} height={height}>
+      <Spin spinning></Spin>
+    </LoadWrapper>
+  );
+};
 
 type Point = { x: number; y: number; lineWidth: number };
 type Stroke = Point[];
@@ -58,6 +80,11 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     const negativeMaskRef = useRef<boolean>(false);
     const [invertMask, setInvertMask] = useState<boolean>(false);
     const timer = useRef<any>(null);
+    const [loadingSize, setLoadingSize] = useState({
+      width: 0,
+      height: 0,
+      loading: false
+    });
 
     const {
       canvasRef,
@@ -174,7 +201,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       console.log('Resetting strokes', currentStroke.current);
     }, []);
 
-    const loadMaskPixs = (strokes: Stroke[], isInitial?: boolean) => {
+    const loadMaskPixs = async (strokes: Stroke[], isInitial?: boolean) => {
       if (!strokes.length) {
         return;
       }
@@ -458,7 +485,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
 
     useImperativeHandle(ref, () => ({
       clearMask: handleDeleteMask,
-      loadMaskPixs(strokes: Stroke[]) {
+      loadMaskPixs: async function (strokes: Stroke[]) {
         setMaskStrokes(strokes);
         setStrokes([]);
         setTransform();
@@ -514,6 +541,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             flex: 1
           }}
         >
+          {loadingSize.loading && (
+            <Loading
+              width={loadingSize.width}
+              height={loadingSize.height}
+            ></Loading>
+          )}
           <canvas ref={canvasRef} style={{ position: 'absolute', zIndex: 1 }} />
           <canvas
             ref={overlayCanvasRef}

@@ -12,6 +12,7 @@ interface LabelSelectorProps {
   labelList: Array<{ key: string; value: string }>;
   onLabelListChange: (list: { key: string; value: string }[]) => void;
   onChange?: (labels: Record<string, any>) => void;
+  onPaste?: (e: any, index: number) => void;
   description?: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
   labelList,
   onChange,
   onLabelListChange,
+  onPaste,
   label,
   btnText,
   description
@@ -41,7 +43,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
     );
     onChange?.(newLabels);
   };
-  const handleOnChange = (index: string, label: any) => {
+  const handleOnChange = (index: number, label: any) => {
     const list = _.cloneDeep(labelList);
     list[index] = label;
     onLabelListChange(list);
@@ -60,9 +62,9 @@ const Inner: React.FC<LabelSelectorProps> = ({
     updateLabels(newLabelList);
   };
 
-  const handleOnDelete = (index: string) => {
+  const handleOnDelete = (index: number) => {
     const list = _.cloneDeep(labelList);
-    list.splice(parseInt(index), 1);
+    list.splice(index, 1);
     onLabelListChange(list);
     updateLabels(list);
   };
@@ -70,7 +72,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
   return (
     <Wrapper label={label} description={description}>
       <>
-        {_.map(labelList, (item: any, index: string) => {
+        {labelList?.map((item: any, index: number) => {
           return (
             <LabelItem
               key={index}
@@ -79,6 +81,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
               labelList={labelList}
               onDelete={() => handleOnDelete(index)}
               onChange={(obj) => handleOnChange(index, obj)}
+              onPaste={(e) => onPaste?.(e, index)}
             />
           );
         })}

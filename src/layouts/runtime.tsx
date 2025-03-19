@@ -26,7 +26,6 @@ export function patchRoutes({ routes, initialState }) {
 
 export function renderMenuIcon(icon: string) {
   const upperIcon = formatIcon(icon);
-  console.log('upperIcon', icon, upperIcon);
   if (icons[upperIcon] || icons[upperIcon + 'Outlined']) {
     return React.createElement(
       icons[upperIcon] || icons[upperIcon + 'Outlined']

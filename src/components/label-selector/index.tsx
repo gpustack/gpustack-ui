@@ -44,6 +44,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     [setLabelList]
   );
   const handleLabelsChange = (data: Record<string, any>) => {
+    console.log('handleLabelsChange', data);
     setLabelsData(data);
     onChange?.(data);
   };
@@ -52,10 +53,9 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     e: React.ClipboardEvent<HTMLTextAreaElement>,
     index: number
   ) => {
-    e.preventDefault();
-
     const clipboardText = e.clipboardData.getData('text');
-    if (!clipboardText) return;
+    if (!clipboardText || clipboardText.indexOf('=') === -1) return;
+    e.preventDefault();
 
     const lines = clipboardText
       .split(/\r?\n/)

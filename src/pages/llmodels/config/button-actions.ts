@@ -3,7 +3,8 @@ import HotKeys from '@/config/hotkeys';
 import {
   DeleteOutlined,
   EditOutlined,
-  ExperimentOutlined
+  ExperimentOutlined,
+  ThunderboltOutlined
 } from '@ant-design/icons';
 import _ from 'lodash';
 import React from 'react';
@@ -13,6 +14,7 @@ const icons = {
   EditOutlined: React.createElement(EditOutlined),
   ExperimentOutlined: React.createElement(ExperimentOutlined),
   DeleteOutlined: React.createElement(DeleteOutlined),
+  ThunderboltOutlined: React.createElement(ThunderboltOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),
   Catalog: React.createElement(IconFont, { type: 'icon-catalog' }),
@@ -183,6 +185,22 @@ export const setModelActionList = (record: any) => {
     return true;
   });
 };
+
+export const modelFileActions = [
+  {
+    label: 'common.button.deploy',
+    key: 'deploy',
+    icon: icons.ThunderboltOutlined
+  },
+  {
+    label: 'common.button.delete',
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    icon: icons.DeleteOutlined
+  }
+];
 
 export const categoryToPathMap: Record<string, string> = {
   [modelCategoriesMap.llm]: '/playground/chat',

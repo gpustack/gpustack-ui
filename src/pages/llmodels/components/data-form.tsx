@@ -22,6 +22,7 @@ import {
   ModelscopeTaskMap,
   backendOptionsMap,
   backendTipsList,
+  localPathTipsList,
   modelSourceMap,
   modelTaskMap,
   ollamaModelOptions,
@@ -79,6 +80,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onSourceChange,
     onOk
   } = props;
+  console.log('DataForm -> props');
   const [form] = Form.useForm();
   const intl = useIntl();
   const [modelTask, setModelTask] = useState<Record<string, any>>({

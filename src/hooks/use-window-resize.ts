@@ -7,6 +7,7 @@ export default function useWindowResize() {
     width: window.innerWidth,
     height: window.innerHeight
   });
+  console.log('size:', window.innerWidth, window.innerHeight);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isTablet, setIsTablet] = useState<boolean>(false);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);

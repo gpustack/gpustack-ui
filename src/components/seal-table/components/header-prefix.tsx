@@ -38,7 +38,7 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
     return (
       <div
         className="header-row-prefix-wrapper flex-center"
-        style={{ paddingLeft: 15 }}
+        style={{ paddingLeft: 14 }}
       >
         <span style={{ marginRight: 5 }}>
           {_.isBoolean(expandable) ? (

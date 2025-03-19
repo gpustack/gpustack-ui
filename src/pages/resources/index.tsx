@@ -23,6 +23,11 @@ const items: TabsProps['items'] = [
     label: 'GPUs',
     children: <GPUs />
   }
+  // {
+  //   key: 'model-files',
+  //   label: 'Model Files',
+  //   children: <ModelFiles />
+  // }
 ];
 const Resources = () => {
   const [activeKey, setActiveKey] = useState('workers');

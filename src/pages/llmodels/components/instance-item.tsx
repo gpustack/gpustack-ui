@@ -3,6 +3,7 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import SimpleTabel, { ColumnProps } from '@/components/simple-table';
+import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
@@ -16,16 +17,7 @@ import {
   ThunderboltFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  Col,
-  Divider,
-  Progress,
-  Row,
-  Tag,
-  Tooltip,
-  notification
-} from 'antd';
+import { Button, Col, Progress, Row, Tag, Tooltip, notification } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
@@ -33,6 +25,19 @@ import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
 import '../style/instance-item.less';
+
+const fieldList = [
+  {
+    label: 'CPU',
+    key: 'cpuoffload',
+    locale: false
+  },
+  {
+    label: 'GPU',
+    key: 'gpuoffload',
+    locale: false
+  }
+];
 
 const WorkerInfo = (props: {
   title: React.ReactNode;
@@ -362,40 +367,27 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     if (total_layers === offload_layers || !total_layers) {
       return null;
     }
+
+    const offloadData = {
+      cpuoffload: `${
+        _.subtract(
+          instanceData.computed_resource_claim?.total_layers,
+          instanceData.computed_resource_claim?.offload_layers
+        ) || 0
+      } ${intl.formatMessage({
+        id: 'models.table.layers'
+      })}`,
+      gpuoffload: `${instanceData.computed_resource_claim?.offload_layers} ${intl.formatMessage(
+        {
+          id: 'models.table.layers'
+        }
+      )}`
+    };
     return (
       <Tooltip
+        overlayInnerStyle={{ paddingInline: 12 }}
         title={
-          <span className="flex flex-center">
-            <span>
-              CPU:{' '}
-              <span className="color-white-light-4">
-                {_.subtract(
-                  instanceData.computed_resource_claim?.total_layers,
-                  instanceData.computed_resource_claim?.offload_layers
-                ) || 0}{' '}
-                {intl.formatMessage({
-                  id: 'models.table.layers'
-                })}
-              </span>
-            </span>
-            <Divider
-              type="vertical"
-              style={{
-                borderColor: '#fff',
-                opacity: 0.45,
-                height: 14
-              }}
-            ></Divider>
-            <span>
-              GPU:{' '}
-              <span className="color-white-light-4">
-                {instanceData.computed_resource_claim?.offload_layers}{' '}
-                {intl.formatMessage({
-                  id: 'models.table.layers'
-                })}
-              </span>
-            </span>
-          </span>
+          <InfoColumn fieldList={fieldList} data={offloadData}></InfoColumn>
         }
       >
         <Tag

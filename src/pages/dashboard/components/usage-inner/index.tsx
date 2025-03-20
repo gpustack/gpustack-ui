@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { memo, useCallback, useContext, useEffect, useState } from 'react';
+import { FC, memo, useCallback, useContext, useEffect, useState } from 'react';
 import { DashboardContext } from '../../config/dashboard-context';
 import RequestTokenInner from './request-token-inner';
 import TopUser from './top-user';
@@ -31,7 +31,7 @@ const getCurrentMonthDays = () => {
   return dates;
 };
 
-const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
+const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
   const intl = useIntl();
 
   const [topUserData, setTopUserData] = useState<{
@@ -191,7 +191,11 @@ const UsageInner: React.FC<{ paddingRight: string }> = ({ paddingRight }) => {
     <>
       <PageTools
         style={{ margin: '26px 0px' }}
-        left={<span>{intl.formatMessage({ id: 'dashboard.usage' })}</span>}
+        left={
+          <span className="font-700">
+            {intl.formatMessage({ id: 'dashboard.usage' })}
+          </span>
+        }
       />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
         <Col

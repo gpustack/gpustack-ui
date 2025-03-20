@@ -576,7 +576,9 @@ const Models: React.FC<ModelsProps> = ({
               { api: `${window.location.origin}/v1` }
             )}
           >
-            {intl.formatMessage({ id: 'models.form.replicas' })}
+            <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
+              {intl.formatMessage({ id: 'models.form.replicas' })}
+            </span>
             <QuestionCircleOutlined className="m-l-5" />
           </Tooltip>
         ),

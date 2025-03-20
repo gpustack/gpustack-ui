@@ -2,7 +2,6 @@ import { defineConfig } from '@umijs/max';
 import keepAlive from './keep-alive';
 import proxy from './proxy';
 import routes from './routes';
-import theme from './theme';
 import { getBranchInfo } from './utils';
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
@@ -80,11 +79,11 @@ export default defineConfig({
   presets: ['umi-presets-pro'],
   clickToComponent: {},
   antd: {
-    style: 'less',
-    configProvider: {
-      componentSize: 'large',
-      theme
-    }
+    style: 'less'
+    // configProvider: {
+    //   componentSize: 'large',
+    //   theme
+    // }
   },
   hash: true,
   access: {},

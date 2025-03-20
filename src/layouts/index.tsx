@@ -7,6 +7,7 @@ import ShortCuts, {
 } from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import routeCachekey from '@/config/route-cachekey';
+import theme from '@/config/theme';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { logout } from '@/pages/login/apis';
@@ -26,7 +27,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
-import { Button, Modal } from 'antd';
+import { Button, ConfigProvider, Modal } from 'antd';
 import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -399,7 +400,7 @@ export default (props: any) => {
   };
 
   return (
-    <div>
+    <ConfigProvider componentSize="large" theme={theme}>
       <div className="background"></div>
       <ProLayout
         route={route}
@@ -449,6 +450,6 @@ export default (props: any) => {
           )}
         </Exception>
       </ProLayout>
-    </div>
+    </ConfigProvider>
   );
 };

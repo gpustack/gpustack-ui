@@ -3,7 +3,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import {
+import React, {
   forwardRef,
   memo,
   useCallback,
@@ -139,7 +139,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         <div>
           {
             <>
-              <h3 className="m-b-20 m-l-10 font-size-14 line-24">
+              <h3 className="m-b-20 m-l-10 font-size-14 line-24 font-600">
                 {parametersTitle || (
                   <span>
                     {intl.formatMessage({ id: 'playground.parameters' })}

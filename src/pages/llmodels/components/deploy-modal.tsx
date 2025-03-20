@@ -167,15 +167,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     <Drawer
       title={
         <div className="flex-between flex-center">
-          <span
-            style={{
-              color: 'var(--ant-color-text)',
-              fontWeight: 'var(--font-weight-medium)',
-              fontSize: 'var(--font-size-middle)'
-            }}
-          >
-            {title}
-          </span>
+          <span>{title}</span>
           <Button type="text" size="small" onClick={handleCancel}>
             <CloseOutlined></CloseOutlined>
           </Button>

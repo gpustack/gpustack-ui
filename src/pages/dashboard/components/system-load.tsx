@@ -65,7 +65,9 @@ const SystemLoad = () => {
         <PageTools
           style={{ margin: '26px 0px' }}
           left={
-            <span>{intl.formatMessage({ id: 'dashboard.systemload' })}</span>
+            <span className="font-700">
+              {intl.formatMessage({ id: 'dashboard.systemload' })}
+            </span>
           }
         />
         <Row style={{ width: '100%' }} gutter={[0, 20]}>

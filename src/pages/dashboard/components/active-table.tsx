@@ -73,7 +73,12 @@ const ActiveTable = () => {
         <PageTools
           style={{ margin: '26px 0px' }}
           left={
-            <span style={{ padding: '9px 0' }}>
+            <span
+              style={{
+                padding: '9px 0',
+                fontWeight: 'var(--font-weight-bold)'
+              }}
+            >
               {intl.formatMessage({ id: 'dashboard.activeModels' })}
             </span>
           }

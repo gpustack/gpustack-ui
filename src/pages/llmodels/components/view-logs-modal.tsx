@@ -107,7 +107,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
       <div className="viewer-wrapper" ref={contentRef}>
         <LogsViewer
           ref={logsViewerRef}
-          diffHeight={93}
+          diffHeight={78}
           url={url}
           tail={tail}
           enableScorllLoad={enableScorllLoad}

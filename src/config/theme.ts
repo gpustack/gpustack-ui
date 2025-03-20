@@ -4,38 +4,44 @@ export default {
   hashed: false,
   components: {
     Input: {
-      inputFontSize: 14
+      inputFontSize: 14,
+      inputFontSizeLG: 14
     },
     Table: {
       cellFontSize: 14,
-      rowSelectedHoverBg: 'rgb(249 249 249)',
-      rowHoverBg: 'rgb(249 249 249)',
-      rowSelectedBg: 'transparent'
+      rowSelectedHoverBg: 'rgba(230, 230, 230, 0.88)',
+      rowSelectedBg: 'rgb(244, 245, 244)'
+    },
+    Button: {
+      contentFontSizeLG: 14
+    },
+    Tabs: {
+      titleFontSizeLG: 14
     },
     Menu: {
       iconSize: 16,
       iconMarginInlineEnd: 12,
+      itemBorderRadius: 4,
+      itemSelectedColor: '#007BFF',
       itemHeight: 44,
+      groupTitleColor: 'rgba(0,0,0,1)',
+      itemHoverColor: 'rgba(0,0,0,1)',
       itemColor: 'rgba(0,0,0,1)',
       itemHoverBg: 'rgba(0,0,0,0.04)',
       itemActiveBg: 'rgba(0,0,0,0.04)'
     },
     Progress: {
-      lineBorderRadius: 4
+      lineBorderRadius: 2
     },
     Select: {
-      itemSelectedBg: 'rgba(0,0,0,0.06)'
+      optionSelectedBg: 'rgba(230, 230, 230, 88%)',
+      fontSizeLG: 14
     },
     Message: {
       contentPadding: '12px 16px'
     },
     Tooltip: {
       colorBgSpotlight: '#3e3e3e'
-    },
-    Button: {
-      primaryShadow: 'none',
-      defaultShadow: 'none',
-      dangerShadow: 'none'
     },
     Cascader: {
       dropdownHeight: 240
@@ -53,6 +59,7 @@ export default {
     }
   },
   token: {
+    colorText: 'rgba(0,0,0,1)',
     colorPrimary: '#007BFF',
     colorSuccess: '#54cc98',
     borderRadius: 4,

@@ -7,6 +7,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form, Modal, Typography } from 'antd';
 import _ from 'lodash';
@@ -16,7 +17,8 @@ import {
   backendTipsList,
   localPathTipsList,
   modelSourceMap,
-  ollamaModelOptions
+  ollamaModelOptions,
+  sourceOptions
 } from '../config';
 import { FormData, ListItem } from '../config/types';
 import AdvanceConfig from './advance-config';
@@ -40,30 +42,6 @@ const SEARCH_SOURCE = [
   modelSourceMap.modelscope_value
 ];
 
-const sourceOptions = [
-  {
-    label: 'Hugging Face',
-    value: modelSourceMap.huggingface_value,
-    key: 'huggingface'
-  },
-  {
-    label: 'Ollama Library',
-    value: modelSourceMap.ollama_library_value,
-    key: 'ollama_library'
-  },
-  {
-    label: 'ModelScope',
-    value: modelSourceMap.modelscope_value,
-    key: 'model_scope'
-  },
-  {
-    label: 'models.form.localPath',
-    value: modelSourceMap.local_path_value,
-    locale: true,
-    key: 'local_path'
-  }
-];
-
 const UpdateModal: React.FC<AddModalProps> = (props) => {
   const {
     title,
@@ -73,6 +51,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     onCancel,
     updateFormInitials: { gpuOptions, isGGUF, data: formData }
   } = props || {};
+  const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
   const localPathCache = useRef<string>('');
@@ -428,9 +407,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     >
       <ColumnWrapper
         maxHeight={550}
-        paddingBottom={warningStatus.show ? 100 : 0}
+        paddingBottom={warningStatus.show ? 70 : 0}
         footer={
-          <>
+          <div style={{ paddingInline: 12 }}>
             {warningStatus.show && (
               <AlertBlockInfo
                 ellipsis={false}
@@ -449,7 +428,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                 type="warning"
               ></AlertBlockInfo>
             )}
-          </>
+          </div>
         }
       >
         <Form
@@ -471,12 +450,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             rules={[
               {
                 required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  { name: intl.formatMessage({ id: 'common.table.name' }) }
-                )
+                message: getRuleMessage('input', 'common.table.name')
               }
             ]}
           >
@@ -492,12 +466,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             rules={[
               {
                 required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.select'
-                  },
-                  { name: intl.formatMessage({ id: 'models.form.source' }) }
-                )
+                message: getRuleMessage('select', 'models.form.source')
               }
             ]}
           >
@@ -555,14 +524,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             rules={[
               {
                 required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  {
-                    name: intl.formatMessage({ id: 'models.form.replicas' })
-                  }
-                )
+                message: getRuleMessage('input', 'models.form.replicas')
               }
             ]}
           >

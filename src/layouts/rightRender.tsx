@@ -17,6 +17,7 @@ import {
 import { getAllLocales, history, setLocale } from '@umijs/max';
 import { Avatar, Menu, Spin } from 'antd';
 import _ from 'lodash';
+import React from 'react';
 
 export const getRightRenderContent = (opts: {
   runtimeConfig: any;
@@ -282,27 +283,23 @@ export const getRightRenderContent = (opts: {
     ]
   };
 
+  const getMenuStyle = (
+    collapsed: boolean,
+    siderWidth: number,
+    extraStyle: React.CSSProperties = {}
+  ) => ({
+    width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`,
+    ...extraStyle
+  });
+
   return (
     <div>
-      <Menu
-        {...helpMenu}
-        style={{
-          width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`
-        }}
-      ></Menu>
-      <Menu
-        {...langMenu}
-        style={{
-          width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`
-        }}
-      ></Menu>
+      <Menu {...helpMenu} style={getMenuStyle(collapsed, siderWidth)} />
+      <Menu {...langMenu} style={getMenuStyle(collapsed, siderWidth)} />
       <Menu
         {...userMenu}
-        style={{
-          width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`,
-          marginTop: 20
-        }}
-      ></Menu>
+        style={getMenuStyle(collapsed, siderWidth, { marginTop: 20 })}
+      />
     </div>
   );
 };

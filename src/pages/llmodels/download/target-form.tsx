@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import useAppUtils from '@/hooks/use-app-utils';
 import { ModelFile as FormData } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
@@ -15,6 +16,7 @@ interface TargetFormProps {
 
 const TargetForm: React.FC<TargetFormProps> = (props) => {
   const { onOk, source } = props;
+  const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const [form] = Form.useForm();
 
@@ -31,12 +33,7 @@ const TargetForm: React.FC<TargetFormProps> = (props) => {
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.table.name' }) }
-              )
+              message: getRuleMessage('input', 'models.table.name')
             }
           ]}
         >
@@ -88,12 +85,7 @@ const TargetForm: React.FC<TargetFormProps> = (props) => {
         rules={[
           {
             required: true,
-            message: intl.formatMessage(
-              {
-                id: 'common.form.rule.select'
-              },
-              { name: intl.formatMessage({ id: 'models.form.source' }) }
-            )
+            message: getRuleMessage('select', 'models.form.source')
           }
         ]}
       >
@@ -104,12 +96,7 @@ const TargetForm: React.FC<TargetFormProps> = (props) => {
         rules={[
           {
             required: true,
-            message: intl.formatMessage(
-              {
-                id: 'common.form.rule.input'
-              },
-              { name: intl.formatMessage({ id: 'common.table.name' }) }
-            )
+            message: getRuleMessage('input', 'common.table.name')
           }
         ]}
       >

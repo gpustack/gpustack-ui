@@ -5,7 +5,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import { debounce } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData } from '../config/types';
 import ColumnWrapper from './column-wrapper';
@@ -27,7 +27,7 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
-const AddModal: React.FC<AddModalProps> = (props) => {
+const AddModal: FC<AddModalProps> = (props) => {
   const {
     title,
     open,
@@ -235,28 +235,30 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         )}
         <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
           <ColumnWrapper
-            paddingBottom={warningStatus.show ? 155 : 50}
+            paddingBottom={warningStatus.show ? 125 : 50}
             footer={
               <>
-                {warningStatus.show && (
-                  <AlertBlockInfo
-                    ellipsis={false}
-                    message={
-                      <span
-                        style={{}}
-                        dangerouslySetInnerHTML={{
-                          __html: intl.formatMessage({
-                            id: warningStatus.message
-                          })
-                        }}
-                      ></span>
-                    }
-                    title={intl.formatMessage({
-                      id: 'common.text.tips'
-                    })}
-                    type="warning"
-                  ></AlertBlockInfo>
-                )}
+                <div style={{ paddingInline: 12 }}>
+                  {warningStatus.show && (
+                    <AlertBlockInfo
+                      ellipsis={false}
+                      message={
+                        <span
+                          style={{}}
+                          dangerouslySetInnerHTML={{
+                            __html: intl.formatMessage({
+                              id: warningStatus.message
+                            })
+                          }}
+                        ></span>
+                      }
+                      title={intl.formatMessage({
+                        id: 'common.text.tips'
+                      })}
+                      type="warning"
+                    ></AlertBlockInfo>
+                  )}
+                </div>
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}

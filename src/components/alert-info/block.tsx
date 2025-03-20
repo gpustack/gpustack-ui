@@ -14,7 +14,7 @@ interface AlertInfoProps {
 }
 
 const AlertInfo: React.FC<AlertInfoProps> = (props) => {
-  const { message, type, rows = 1, ellipsis, style, title } = props;
+  const { message, type, rows = 1, ellipsis, style } = props;
 
   return (
     <>
@@ -25,17 +25,14 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
         >
           <Typography.Paragraph
             ellipsis={
-              ellipsis !== undefined
-                ? ellipsis
-                : {
-                    rows: rows,
-                    tooltip: message
-                  }
+              ellipsis ?? {
+                rows: rows,
+                tooltip: message
+              }
             }
           >
             <div className={classNames('title', type)}>
               <WarningFilled className={classNames('info-icon', type)} />
-              <span className="text">{title}</span>
             </div>
             <span className="content">{message}</span>
           </Typography.Paragraph>

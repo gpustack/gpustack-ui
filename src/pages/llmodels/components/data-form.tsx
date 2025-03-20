@@ -5,6 +5,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import _ from 'lodash';
@@ -53,13 +54,6 @@ interface DataFormProps {
   fields?: string[];
 }
 
-interface GPUOption {
-  label: string;
-  value: string;
-  disableCheckbox?: boolean;
-  children: GPUOption[];
-}
-
 const SEARCH_SOURCE = [
   modelSourceMap.huggingface_value,
   modelSourceMap.modelscope_value
@@ -80,7 +74,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onSourceChange,
     onOk
   } = props;
-  console.log('DataForm -> props');
+  const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
   const [modelTask, setModelTask] = useState<Record<string, any>>({
@@ -208,12 +202,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.repoid' }) }
-              )
+              message: getRuleMessage('input', 'models.form.repoid')
             }
           ]}
         >
@@ -230,12 +219,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             rules={[
               {
                 required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  { name: intl.formatMessage({ id: 'models.form.filename' }) }
-                )
+                message: getRuleMessage('input', 'models.form.filename')
               }
             ]}
           >
@@ -259,12 +243,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.table.name' }) }
-              )
+              message: getRuleMessage('input', 'models.table.name')
             }
           ]}
         >
@@ -308,12 +287,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.filePath' }) }
-              )
+              message: getRuleMessage('input', 'models.form.filePath')
             }
           ]}
         >
@@ -351,12 +325,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             rules={[
               {
                 required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.select'
-                  },
-                  { name: 'size' }
-                )
+                message: getRuleMessage('input', 'size', false)
               }
             ]}
           >
@@ -378,12 +347,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             rules={[
               {
                 required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.select'
-                  },
-                  { name: 'quantization' }
-                )
+                message: getRuleMessage('select', 'quantization', false)
               }
             ]}
           >
@@ -534,12 +498,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         rules={[
           {
             required: true,
-            message: intl.formatMessage(
-              {
-                id: 'common.form.rule.input'
-              },
-              { name: intl.formatMessage({ id: 'common.table.name' }) }
-            )
+            message: getRuleMessage('input', 'common.table.name')
           }
         ]}
       >
@@ -556,12 +515,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.select'
-                },
-                { name: intl.formatMessage({ id: 'models.form.source' }) }
-              )
+              message: getRuleMessage('select', 'models.form.source')
             }
           ]}
         >
@@ -627,14 +581,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         rules={[
           {
             required: true,
-            message: intl.formatMessage(
-              {
-                id: 'common.form.rule.input'
-              },
-              {
-                name: intl.formatMessage({ id: 'models.form.replicas' })
-              }
-            )
+            message: getRuleMessage('input', 'models.form.replicas')
           }
         ]}
       >

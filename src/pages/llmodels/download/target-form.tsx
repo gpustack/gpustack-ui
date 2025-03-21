@@ -3,25 +3,53 @@ import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
-import { ModelFile as FormData } from '@/pages/resources/config/types';
+import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
-import React from 'react';
-import { modelSourceMap, ollamaModelOptions } from '../config';
+import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
+import { modelSourceMap, ollamaModelOptions, sourceOptions } from '../config';
 
 interface TargetFormProps {
+  ref?: any;
+  workersList: Global.BaseOption<number>[];
   source: string;
   onOk: (values: any) => void;
 }
 
-const TargetForm: React.FC<TargetFormProps> = (props) => {
-  const { onOk, source } = props;
+const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
+  const { onOk, source, workersList } = props;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const [form] = Form.useForm();
 
+  useImperativeHandle(ref, () => ({
+    form
+  }));
+
   const handleOk = (values: any) => {
     onOk(values);
+  };
+
+  const renderLocalPathFields = () => {
+    return (
+      <>
+        <Form.Item<FormData>
+          name="local_path"
+          key="local_path"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('input', 'models.form.filePath')
+            }
+          ]}
+        >
+          <SealInput.Input
+            required
+            label={intl.formatMessage({ id: 'models.form.filePath' })}
+          ></SealInput.Input>
+        </Form.Item>
+      </>
+    );
   };
 
   const renderOllamaModelFields = () => {
@@ -68,20 +96,31 @@ const TargetForm: React.FC<TargetFormProps> = (props) => {
     );
   };
 
+  const renderFieldsBySource = useMemo(() => {
+    if (props.source === modelSourceMap.ollama_library_value) {
+      return renderOllamaModelFields();
+    }
+
+    if (props.source === modelSourceMap.local_path_value) {
+      return renderLocalPathFields();
+    }
+
+    return null;
+  }, [props.source, intl]);
+
   return (
     <Form
-      name="deployModel"
       form={form}
       onFinish={handleOk}
       preserve={false}
       style={{ padding: '16px 24px' }}
       clearOnDestroy={true}
-      initialValues={{}}
+      initialValues={{
+        source: source
+      }}
     >
-      {source === modelSourceMap.ollama_library_value &&
-        renderOllamaModelFields()}
-      <Form.Item
-        name="worker"
+      <Form.Item<FormData>
+        name="source"
         rules={[
           {
             required: true,
@@ -89,21 +128,53 @@ const TargetForm: React.FC<TargetFormProps> = (props) => {
           }
         ]}
       >
-        {<SealSelect label="Worker" options={[]} required></SealSelect>}
+        {
+          <SealSelect
+            disabled
+            label={intl.formatMessage({
+              id: 'models.form.source'
+            })}
+            options={sourceOptions}
+            required
+          ></SealSelect>
+        }
       </Form.Item>
+      {renderFieldsBySource}
       <Form.Item
-        name="local_path"
+        name="worker_id"
         rules={[
           {
             required: true,
-            message: getRuleMessage('input', 'common.table.name')
+            message: getRuleMessage('select', 'worker', false)
           }
         ]}
       >
-        <SealInput.Input label={'Path'} required></SealInput.Input>
+        {
+          <SealSelect
+            label="Worker"
+            options={workersList}
+            required
+          ></SealSelect>
+        }
       </Form.Item>
+      {source !== modelSourceMap.local_path_value && (
+        <Form.Item<FormData>
+          name="local_dir"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('input', 'resources.modelfiles.form.path')
+            }
+          ]}
+        >
+          <SealInput.Input
+            label={intl.formatMessage({ id: 'resources.modelfiles.form.path' })}
+            required
+          ></SealInput.Input>
+        </Form.Item>
+      )}
     </Form>
   );
-};
+});
 
 export default TargetForm;

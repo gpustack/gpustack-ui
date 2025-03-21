@@ -114,3 +114,21 @@ export const containerInstallOptions = [
   { label: 'Hygon DCU', value: 'dcu' },
   { label: 'CPU', value: 'cpu' }
 ];
+
+export const ModelfileStateMap = {
+  Error: 'error',
+  Downloading: 'downloading',
+  Ready: 'ready'
+};
+
+export const ModelfileStateMapValue = {
+  [ModelfileStateMap.Error]: 'Error',
+  [ModelfileStateMap.Downloading]: 'Downloading',
+  [ModelfileStateMap.Ready]: 'Ready'
+};
+
+export const ModelfileState: any = {
+  [ModelfileStateMap.Ready]: StatusMaps.success,
+  [ModelfileStateMap.Error]: StatusMaps.error,
+  [ModelfileStateMap.Downloading]: StatusMaps.transitioning
+};

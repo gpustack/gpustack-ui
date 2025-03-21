@@ -4,6 +4,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   ExperimentOutlined,
+  RetweetOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
 import _ from 'lodash';
@@ -15,6 +16,7 @@ const icons = {
   ExperimentOutlined: React.createElement(ExperimentOutlined),
   DeleteOutlined: React.createElement(DeleteOutlined),
   ThunderboltOutlined: React.createElement(ThunderboltOutlined),
+  RetweetOutlined: React.createElement(RetweetOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),
   Catalog: React.createElement(IconFont, { type: 'icon-catalog' }),
@@ -132,6 +134,13 @@ export const onLineSourceOptions = [
     value: modelSourceMap.modelscope_value,
     key: 'modelscope',
     icon: icons.ModelScope
+  },
+  {
+    label: 'models.form.localPath',
+    locale: true,
+    value: modelSourceMap.local_path_value,
+    key: 'local_path',
+    icon: icons.LocalPath
   }
 ];
 
@@ -143,14 +152,7 @@ export const sourceOptions = [
     key: 'catalog',
     icon: icons.Catalog
   },
-  ...onLineSourceOptions,
-  {
-    label: 'models.form.localPath',
-    locale: true,
-    value: modelSourceMap.local_path_value,
-    key: 'local_path',
-    icon: icons.LocalPath
-  }
+  ...onLineSourceOptions
 ];
 
 export const generateSource = (record: any) => {
@@ -187,10 +189,15 @@ export const setModelActionList = (record: any) => {
 };
 
 export const modelFileActions = [
+  // {
+  //   label: 'common.button.deploy',
+  //   key: 'deploy',
+  //   icon: icons.ThunderboltOutlined
+  // },
   {
-    label: 'common.button.deploy',
-    key: 'deploy',
-    icon: icons.ThunderboltOutlined
+    label: 'common.button.retry',
+    key: 'retry',
+    icon: icons.RetweetOutlined
   },
   {
     label: 'common.button.delete',

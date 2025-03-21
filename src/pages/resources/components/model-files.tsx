@@ -1,9 +1,11 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import CopyButton from '@/components/copy-button';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import StatusTag from '@/components/status-tag';
+import useAppUtils from '@/hooks/use-app-utils';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { modelSourceMap } from '@/pages/llmodels/config';
 import {
@@ -13,14 +15,66 @@ import {
   onLineSourceOptions
 } from '@/pages/llmodels/config/button-actions';
 import DownloadModal from '@/pages/llmodels/download';
+import { convertFileSize } from '@/utils';
 import { DeleteOutlined, DownOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
 import dayjs from 'dayjs';
-import { useState } from 'react';
-import { deleteWorker, queryWorkersList } from '../apis';
-import { WorkerStatusMapValue, status } from '../config';
-import { ModelFile as ListItem } from '../config/types';
+import { useEffect, useState } from 'react';
+import {
+  MODEL_FILES_API,
+  deleteModelFile,
+  downloadModelFile,
+  queryModelFilesList,
+  queryWorkersList,
+  retryDownloadModelFile
+} from '../apis';
+import {
+  ModelfileState,
+  ModelfileStateMap,
+  ModelfileStateMapValue,
+  WorkerStatusMap
+} from '../config';
+import {
+  ModelFile as ListItem,
+  ListItem as WorkerListItem
+} from '../config/types';
+
+const getWorkerName = (
+  id: number,
+  workersList: Global.BaseOption<number>[]
+) => {
+  const worker = workersList.find((item) => item.value === id);
+  return worker?.label || '';
+};
+const InstanceStatusTag = (props: { data: ListItem }) => {
+  const { data } = props;
+  if (!data.state) {
+    return null;
+  }
+  return (
+    <StatusTag
+      download={
+        data.state === ModelfileStateMap.Downloading
+          ? { percent: data.download_progress }
+          : undefined
+      }
+      statusValue={{
+        status:
+          data.state === ModelfileStateMap.Downloading &&
+          data.download_progress === 100
+            ? ModelfileState[ModelfileStateMap.Ready]
+            : ModelfileState[data.state],
+        text: ModelfileStateMapValue[data.state],
+        message:
+          data.state === ModelfileStateMap.Downloading &&
+          data.download_progress === 100
+            ? ''
+            : data.state_message
+      }}
+    />
+  );
+};
 
 const ModelFiles = () => {
   const {
@@ -35,12 +89,18 @@ const ModelFiles = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    fetchAPI: queryWorkersList,
-    deleteAPI: deleteWorker,
-    contentForDelete: 'worker'
+    fetchAPI: queryModelFilesList,
+    deleteAPI: deleteModelFile,
+    API: MODEL_FILES_API,
+    watch: true,
+    contentForDelete: 'resources.modelfiles.modelfile'
   });
 
   const intl = useIntl();
+  const { showSuccess } = useAppUtils();
+  const [workersList, setWorkersList] = useState<Global.BaseOption<number>[]>(
+    []
+  );
   const [downloadModalStatus, setDownlaodMoalStatus] = useState<{
     show: boolean;
     width: number | string;
@@ -53,12 +113,46 @@ const ModelFiles = () => {
     gpuOptions: []
   });
 
-  const handleSelect = (val: any, record: ListItem) => {
-    if (val === 'delete') {
-      handleDelete({
-        ...record,
-        name: record.local_path
-      });
+  useEffect(() => {
+    const fetchWorkerList = async () => {
+      try {
+        const res = await queryWorkersList({
+          page: 1,
+          perPage: 100
+        });
+
+        const list = res.items
+          ?.map((item: WorkerListItem) => {
+            return {
+              ...item,
+              value: item.id,
+              label: item.name
+            };
+          })
+          .filter(
+            (item: WorkerListItem) => item.state === WorkerStatusMap.ready
+          );
+        setWorkersList(list);
+      } catch (error) {
+        // console.log('error', error);
+      }
+    };
+    fetchWorkerList();
+  }, []);
+
+  const handleSelect = async (val: any, record: ListItem) => {
+    try {
+      if (val === 'delete') {
+        handleDelete({
+          ...record,
+          name: record.local_path
+        });
+      } else if (val === 'retry') {
+        await retryDownloadModelFile(record.id);
+        showSuccess();
+      }
+    } catch (error) {
+      // console.log('error', error);
     }
   };
 
@@ -88,30 +182,47 @@ const ModelFiles = () => {
     });
   };
 
-  const handleDownload = (data: any) => {
-    console.log('download:', data);
+  const handleDownload = async (data: any) => {
+    try {
+      await downloadModelFile(data);
+      setDownlaodMoalStatus({
+        ...downloadModalStatus,
+        show: false
+      });
+      showSuccess();
+    } catch (error) {
+      // console.log('error', error);
+    }
   };
 
   const columns = [
     {
-      title: 'Path',
-      dataIndex: 'local_path',
+      title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
+      dataIndex: 'resolved_paths',
       width: 240,
       render: (text: string, record: ListItem) => {
         return (
-          <AutoTooltip ghost maxWidth={240}>
-            <span>{record.local_path}</span>
-          </AutoTooltip>
+          record.resolved_paths?.length > 0 && (
+            <span className="flex-center">
+              <AutoTooltip ghost maxWidth={240}>
+                <span>{record.resolved_paths?.[0]}</span>
+              </AutoTooltip>
+              <CopyButton
+                text={record.resolved_paths?.[0]}
+                type="link"
+              ></CopyButton>
+            </span>
+          )
         );
       }
     },
     {
-      title: 'Size',
+      title: intl.formatMessage({ id: 'resources.modelfiles.size' }),
       dataIndex: 'size',
       render: (text: string, record: ListItem) => {
         return (
           <AutoTooltip ghost maxWidth={100}>
-            <span>{record.size}</span>
+            <span>{convertFileSize(record.size, 1)}</span>
           </AutoTooltip>
         );
       }
@@ -122,7 +233,7 @@ const ModelFiles = () => {
       render: (text: string, record: ListItem) => {
         return (
           <AutoTooltip ghost maxWidth={240}>
-            <span>{record.worker_name}</span>
+            <span>{getWorkerName(record.worker_id, workersList)}</span>
           </AutoTooltip>
         );
       }
@@ -140,15 +251,7 @@ const ModelFiles = () => {
       title: intl.formatMessage({ id: 'common.table.status' }),
       dataIndex: 'state',
       render: (text: string, record: ListItem) => {
-        return (
-          <StatusTag
-            statusValue={{
-              status: status[record.state] as any,
-              text: WorkerStatusMapValue[record.state],
-              message: record.state_message
-            }}
-          ></StatusTag>
-        );
+        return <InstanceStatusTag data={record} />;
       }
     },
     {
@@ -209,7 +312,7 @@ const ModelFiles = () => {
                 type="primary"
                 iconPosition="end"
               >
-                Download Model
+                {intl.formatMessage({ id: 'resources.modelfiles.download' })}
               </Button>
             </DropDownActions>
             <Button
@@ -250,11 +353,12 @@ const ModelFiles = () => {
       <DeleteModal ref={modalRef}></DeleteModal>
       <DownloadModal
         open={downloadModalStatus.show}
-        title={intl.formatMessage({ id: 'models.button.deploy' })}
+        title={intl.formatMessage({ id: 'resources.modelfiles.download' })}
         source={downloadModalStatus.source}
         width={downloadModalStatus.width}
         onCancel={handleDownloadCancel}
         onOk={handleDownload}
+        workersList={workersList}
       ></DownloadModal>
     </>
   );

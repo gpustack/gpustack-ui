@@ -4,6 +4,7 @@ import type { TabsProps } from 'antd';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import GPUs from './components/gpus';
+import ModelFiles from './components/model-files';
 import Workers from './components/workers';
 
 const Wrapper = styled.div`
@@ -12,27 +13,28 @@ const Wrapper = styled.div`
   }
 `;
 
-const items: TabsProps['items'] = [
-  {
-    key: 'workers',
-    label: 'Workers',
-    children: <Workers />
-  },
-  {
-    key: 'gpus',
-    label: 'GPUs',
-    children: <GPUs />
-  }
-  // {
-  //   key: 'model-files',
-  //   label: 'Model Files',
-  //   children: <ModelFiles />
-  // }
-];
 const Resources = () => {
   const [activeKey, setActiveKey] = useState('workers');
 
   const intl = useIntl();
+
+  const items: TabsProps['items'] = [
+    {
+      key: 'workers',
+      label: 'Workers',
+      children: <Workers />
+    },
+    {
+      key: 'gpus',
+      label: 'GPUs',
+      children: <GPUs />
+    },
+    {
+      key: 'model-files',
+      label: intl.formatMessage({ id: 'resources.modelfiles.modelfile' }),
+      children: <ModelFiles />
+    }
+  ];
 
   const handleChangeTab = useCallback((key: string) => {
     setActiveKey(key);

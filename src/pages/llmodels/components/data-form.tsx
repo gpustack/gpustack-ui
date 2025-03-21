@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
+import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -7,7 +8,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form, Typography } from 'antd';
+import { Form, Input, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -46,6 +47,7 @@ interface DataFormProps {
   backendOptions?: Global.BaseOption<string>[];
   sourceList?: Global.BaseOption<string>[];
   gpuOptions: any[];
+  modelFileOptions?: any[];
   onSizeChange?: (val: number) => void;
   onQuantizationChange?: (val: string) => void;
   onSourceChange?: (value: string) => void;
@@ -68,12 +70,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sourceList,
     byBuiltIn,
     gpuOptions = [],
+    modelFileOptions = [],
     sizeOptions = [],
     quantizationOptions = [],
     fields = ['source'],
     onSourceChange,
     onOk
   } = props;
+  console.log('modelFileOptions--------', modelFileOptions);
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
@@ -278,6 +282,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     );
   };
 
+  const handleOnSearch = (value: string) => {
+    console.log('local_path', value);
+    form.setFieldValue('local_path', value);
+  };
+
   const renderLocalPathFields = () => {
     return (
       <>
@@ -291,13 +300,37 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             }
           ]}
         >
-          <SealInput.Input
+          {/* <SealInput.Input
             required
             onBlur={handleLocalPathBlur}
             onFocus={handleOnFocus}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             description={<TooltipList list={localPathTipsList}></TooltipList>}
-          ></SealInput.Input>
+          ></SealInput.Input> */}
+          <SealCascader
+            required
+            showSearch
+            description={<TooltipList list={localPathTipsList}></TooltipList>}
+            expandTrigger="hover"
+            multiple={false}
+            onSearch={handleOnSearch}
+            popupClassName="cascader-popup-wrapper gpu-selector"
+            maxTagCount={1}
+            label={intl.formatMessage({ id: 'models.form.gpuselector' })}
+            options={modelFileOptions}
+            showCheckedStrategy="SHOW_CHILD"
+            value={form.getFieldValue('local_path')}
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+            displayRender={() => (
+              <Input
+                style={{
+                  border: 'none',
+                  outline: 'none',
+                  width: '100%'
+                }}
+              />
+            )}
+          ></SealCascader>
         </Form.Item>
       </>
     );

@@ -23,6 +23,7 @@ type AddModalProps = {
   source: string;
   width?: string | number;
   gpuOptions: any[];
+  modelFileOptions: any[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -286,6 +287,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 ref={form}
                 isGGUF={isGGUF}
                 gpuOptions={props.gpuOptions}
+                modelFileOptions={props.modelFileOptions}
                 onBackendChange={handleBackendChange}
               ></DataForm>
             </>

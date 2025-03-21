@@ -2,14 +2,11 @@ import TableContext from '@/components/seal-table/table-context';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { queryWorkersList } from '@/pages/resources/apis';
-import {
-  GPUDeviceItem,
-  ListItem as WokerListItem
-} from '@/pages/resources/config/types';
+import { ListItem as WokerListItem } from '@/pages/resources/config/types';
 import { IS_FIRST_LOGIN, readState } from '@/utils/localstore';
 import _ from 'lodash';
 import qs from 'query-string';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -21,8 +18,11 @@ import {
 import TableList from './components/table-list';
 import { backendOptionsMap } from './config';
 import { ListItem } from './config/types';
+import { useGenerateModelFileOptions } from './hooks';
 
 const Models: React.FC = () => {
+  const { getModelFileList, generateModelFileOptions } =
+    useGenerateModelFileOptions();
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
@@ -42,8 +42,8 @@ const Models: React.FC = () => {
   });
 
   const [catalogList, setCatalogList] = useState<any[]>([]);
-  const [gpuDeviceList, setGpuDeviceList] = useState<GPUDeviceItem[]>([]);
   const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
+  const [modelFileOptions, setModelFileOptions] = useState<any[]>([]);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
   const isPageHidden = useRef(false);
@@ -350,11 +350,16 @@ const Models: React.FC = () => {
     };
 
     const init = async () => {
-      const [modelRes, workerRes, cList] = await Promise.all([
+      const [modelRes, workerRes, cList, modelFileList] = await Promise.all([
         getTableData(),
         getWorkerList(),
-        getCataLogList()
+        getCataLogList(),
+        getModelFileList()
       ]);
+      const dataList = generateModelFileOptions(
+        modelFileList,
+        workerRes.items || []
+      );
       setDataSource({
         dataList: modelRes.items || [],
         loading: false,
@@ -364,6 +369,7 @@ const Models: React.FC = () => {
       });
       setWorkerList(workerRes.items || []);
       setCatalogList(cList);
+      setModelFileOptions(dataList);
 
       clearTimeout(timer);
       timer = setTimeout(() => {
@@ -431,8 +437,8 @@ const Models: React.FC = () => {
         loadend={dataSource.loadend}
         total={dataSource.total}
         deleteIds={dataSource.deletedIds}
-        gpuDeviceList={gpuDeviceList}
         workerList={workerList}
+        modelFileOptions={modelFileOptions}
         catalogList={catalogList}
       ></TableList>
     </TableContext.Provider>

@@ -55,6 +55,18 @@ export default {
     'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
   'resources.worker.container.install': 'Установка контейнером (только Linux)',
-  'resources.worker.cann.tips': 
-    `Укажите индексы GPU через <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> или <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`
+  'resources.worker.cann.tips': `Укажите индексы GPU через <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> или <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`,
+  'resources.modelfiles.form.path': 'Storage path',
+  'resources.modelfiles.modelfile': 'Model File',
+  'resources.modelfiles.download': 'Add Model',
+  'resources.modelfiles.size': 'Size',
+  'resources.modelfiles.selecttarget': 'Select Target'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+//1. 'resources.modelfiles.form.path',
+//2. 'resources.modelfiles.modelfile',
+//3. 'resources.modelfiles.download',
+//4. 'resources.modelfiles.size',
+//5. 'resources.modelfiles.selecttarget',
+// ========== End of To-Do List ==========

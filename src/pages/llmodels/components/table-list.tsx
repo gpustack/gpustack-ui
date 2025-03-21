@@ -12,10 +12,7 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
-import {
-  GPUDeviceItem,
-  ListItem as WorkerListItem
-} from '@/pages/resources/config/types';
+import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import {
   IS_FIRST_LOGIN,
@@ -99,8 +96,8 @@ interface ModelsProps {
     categories?: string[];
   };
   deleteIds?: number[];
-  gpuDeviceList: GPUDeviceItem[];
   workerList: WorkerListItem[];
+  modelFileOptions: any[];
   catalogList?: any[];
   dataSource: ListItem[];
   loading: boolean;
@@ -131,6 +128,7 @@ const Models: React.FC<ModelsProps> = ({
   onCancelViewLogs,
   handleCategoryChange,
   handleOnToggleExpandAll,
+  modelFileOptions,
   deleteIds,
   dataSource,
   workerList,
@@ -145,10 +143,12 @@ const Models: React.FC<ModelsProps> = ({
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [updateFormInitials, setUpdateFormInitials] = useState<{
     gpuOptions: any[];
+    modelFileOptions?: any[];
     data: any;
     isGGUF: boolean;
   }>({
     gpuOptions: [],
+    modelFileOptions: [],
     data: {},
     isGGUF: false
   });
@@ -176,11 +176,13 @@ const Models: React.FC<ModelsProps> = ({
     width: number | string;
     source: string;
     gpuOptions: any[];
+    modelFileOptions?: any[];
   }>({
     show: false,
     width: 600,
     source: modelSourceMap.huggingface_value,
-    gpuOptions: []
+    gpuOptions: [],
+    modelFileOptions: []
   });
   const currentData = useRef<ListItem>({} as ListItem);
   const [currentInstance, setCurrentInstance] = useState<{
@@ -213,7 +215,10 @@ const Models: React.FC<ModelsProps> = ({
   }, [deleteIds]);
 
   useEffect(() => {
-    getGPUList();
+    const getData = async () => {
+      await getGPUList();
+    };
+    getData();
     return () => {
       setExpandAtom([]);
     };
@@ -418,6 +423,7 @@ const Models: React.FC<ModelsProps> = ({
     const initialValues = generateFormValues(row, gpuDeviceList.current);
     setUpdateFormInitials({
       gpuOptions: gpuDeviceList.current,
+      modelFileOptions: modelFileOptions,
       data: initialValues,
       isGGUF: row.backend === backendOptionsMap.llamaBox
     });
@@ -497,8 +503,13 @@ const Models: React.FC<ModelsProps> = ({
     }
 
     const config = modalConfig[item.key];
+    console.log('modelFileOptions:', modelFileOptions);
     if (config) {
-      setOpenDeployModal({ ...config, gpuOptions: gpuDeviceList.current });
+      setOpenDeployModal({
+        ...config,
+        gpuOptions: gpuDeviceList.current,
+        modelFileOptions: modelFileOptions
+      });
     }
   };
 
@@ -811,6 +822,7 @@ const Models: React.FC<ModelsProps> = ({
         source={openDeployModal.source}
         width={openDeployModal.width}
         gpuOptions={openDeployModal.gpuOptions}
+        modelFileOptions={openDeployModal.modelFileOptions || []}
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>

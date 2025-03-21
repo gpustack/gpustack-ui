@@ -1,15 +1,21 @@
+import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { handleBatchRequest } from '@/utils';
 import _ from 'lodash';
+import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
 
 export default function useTableFetch<ListItem>(options: {
+  API?: string;
+  watch?: boolean;
   fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
   deleteAPI?: (id: number) => Promise<any>;
   contentForDelete?: string;
 }) {
-  const { fetchAPI, deleteAPI, contentForDelete } = options;
+  const { fetchAPI, deleteAPI, contentForDelete, API, watch } = options;
+  const chunkRequedtRef = useRef<any>(null);
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, setSortOrder } = useTableSort({
@@ -32,6 +38,44 @@ export default function useTableFetch<ListItem>(options: {
     perPage: 10,
     search: ''
   });
+
+  const { setChunkRequest } = useSetChunkRequest();
+  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
+    events: ['UPDATE'],
+    dataList: dataSource.dataList,
+    setDataList(list, opts?: any) {
+      setDataSource((pre) => {
+        return {
+          total: pre.total,
+          loading: false,
+          loadend: true,
+          dataList: list,
+          deletedIds: opts?.deletedIds || []
+        };
+      });
+    }
+  });
+
+  const updateHandler = (list: any) => {
+    _.each(list, (data: any) => {
+      updateChunkedList(data);
+    });
+  };
+
+  const createModelsChunkRequest = async (params?: any) => {
+    if (!API || !watch) return;
+    chunkRequedtRef.current?.current?.cancel?.();
+    try {
+      const query = _.omit(params || queryParams, ['page', 'perPage']);
+
+      chunkRequedtRef.current = setChunkRequest({
+        url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
+        handler: updateHandler
+      });
+    } catch (error) {
+      // ignore
+    }
+  };
 
   const fetchData = async (params?: { query: any }) => {
     const { query } = params || {};
@@ -79,13 +123,12 @@ export default function useTableFetch<ListItem>(options: {
     fetchData();
   };
 
-  const handleNameChange = (e: any) => {
+  const debounceUpdateFilter = _.debounce((e: any) => {
     setQueryParams({
       ...queryParams,
       page: 1,
       search: e.target.value
     });
-
     fetchData({
       query: {
         ...queryParams,
@@ -93,7 +136,13 @@ export default function useTableFetch<ListItem>(options: {
         search: e.target.value
       }
     });
-  };
+    createModelsChunkRequest({
+      ...queryParams,
+      search: e.target.value
+    });
+  }, 350);
+
+  const handleNameChange = debounceUpdateFilter;
 
   const handleDelete = (row: ListItem & { name: string; id: number }) => {
     modalRef.current.show({
@@ -123,7 +172,17 @@ export default function useTableFetch<ListItem>(options: {
   };
 
   useEffect(() => {
-    fetchData();
+    const init = async () => {
+      await fetchData();
+      setTimeout(() => {
+        createModelsChunkRequest();
+      }, 200);
+    };
+    init();
+    return () => {
+      chunkRequedtRef.current?.cancel?.();
+      cacheDataListRef.current = [];
+    };
   }, []);
 
   return {

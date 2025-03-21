@@ -1,3 +1,5 @@
+import { queryModelFilesList } from '@/pages/resources/apis';
+import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import _ from 'lodash';
 import { useRef } from 'react';
 import { queryGPUList } from '../apis';
@@ -92,5 +94,60 @@ export const useGenerateFormEditInitialValues = () => {
     getGPUList,
     generateFormValues,
     gpuDeviceList
+  };
+};
+
+export const useGenerateModelFileOptions = () => {
+  const getModelFileList = async () => {
+    try {
+      const res = await queryModelFilesList({ page: 1, perPage: 100 });
+      const list = res.items || [];
+      return list;
+    } catch (error) {
+      console.error('Error fetching model file list:', error);
+      return [];
+    }
+  };
+
+  const generateModelFileOptions = (list: any[], workerList: any[]) => {
+    const workerFields = new Set(['name', 'id', 'ip', 'status']);
+    const workersMap = new Map<number, WorkerListItem>();
+
+    for (const item of workerList) {
+      if (!workersMap.has(item.id)) {
+        workersMap.set(item.id, item);
+      }
+    }
+
+    const result = Array.from(workersMap.values()).map((worker) => ({
+      label: worker.name,
+      value: worker.name,
+      parent: true,
+      children: list
+        .filter((item) => item.worker_id === worker.id)
+        .map((item) => {
+          const resolved_paths =
+            Array.isArray(item.resolved_paths) && item.resolved_paths.length
+              ? item.resolved_paths[0].split('/')
+              : [];
+          const label =
+            resolved_paths.length > 0 ? resolved_paths.pop() : 'Unknown File';
+          return {
+            label: item.resolved_paths[0] || '',
+            value: item.resolved_paths[0] || '',
+            parent: false,
+            ...item
+          };
+        }),
+      ...Object.fromEntries(
+        Object.entries(worker).filter(([key]) => workerFields.has(key))
+      )
+    }));
+    return result;
+  };
+
+  return {
+    getModelFileList,
+    generateModelFileOptions
   };
 };

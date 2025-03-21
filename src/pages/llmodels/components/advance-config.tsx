@@ -1,4 +1,3 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
@@ -13,7 +12,6 @@ import { useIntl } from '@umijs/max';
 import {
   Checkbox,
   Collapse,
-  Empty,
   Form,
   FormInstance,
   Tooltip,
@@ -150,49 +148,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
   };
 
-  const gpuOptionRender = (data: any) => {
-    if (data.value === '__EMPTY__') {
-      return (
-        <Empty
-          image={false}
-          style={{
-            height: 100,
-            alignSelf: 'center',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          description={intl.formatMessage({
-            id: 'common.search.empty'
-          })}
-        ></Empty>
-      );
-    }
-    let width: any = {
-      maxWidth: 140,
-      minWidth: 140
-    };
-    if (!data.parent) {
-      width = undefined;
-    }
-    if (data.parent) {
-      return (
-        <AutoTooltip ghost {...width}>
-          {data.label}
-        </AutoTooltip>
-      );
-    }
-    return <GPUCard data={data}></GPUCard>;
-  };
-
-  const tagRender = (props: any) => {
-    if (props.isMaxTag) {
-      return props.label;
-    }
-    const parent = _.split(props.value, '__RC_CASCADER_SPLIT__')?.[0];
-    return `${parent} / ${props?.label}`;
-  };
-
   const collapseItems = useMemo(() => {
     const children = (
       <>
@@ -306,19 +261,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 options={gpuOptions}
                 showCheckedStrategy="SHOW_CHILD"
                 value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
-                tagRender={(props) => {
-                  return (
-                    <AutoTooltip
-                      className="m-r-4"
-                      closable={props.closable}
-                      onClose={props.onClose}
-                      maxWidth={240}
-                    >
-                      {tagRender(props)}
-                    </AutoTooltip>
-                  );
-                }}
-                optionRender={gpuOptionRender}
+                optionNode={GPUCard}
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
               ></SealCascader>
             </Form.Item>

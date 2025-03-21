@@ -1,15 +1,78 @@
 import { isNotEmptyValue } from '@/utils/index';
 import { useIntl } from '@umijs/max';
 import type { CascaderAutoProps } from 'antd';
-import { Cascader, Form } from 'antd';
-import { cloneDeep } from 'lodash';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Cascader, Empty, Form } from 'antd';
+import _, { cloneDeep } from 'lodash';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import AutoTooltip from '../auto-tooltip';
 import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
-const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
-  props
-) => {
+const tag = (props: any) => {
+  if (props.isMaxTag) {
+    return props.label;
+  }
+  const parent = _.split(props.value, '__RC_CASCADER_SPLIT__')?.[0];
+  return `${parent} / ${props?.label}`;
+};
+
+const renderTag = (props: any) => {
+  return (
+    <AutoTooltip
+      className="m-r-4"
+      closable={props.closable}
+      onClose={props.onClose}
+      maxWidth={240}
+    >
+      {tag(props)}
+    </AutoTooltip>
+  );
+};
+
+const OptionNodes = (props: {
+  data: any;
+  optionNode: React.FC<{ data: any }>;
+}) => {
+  const intl = useIntl();
+  const { data, optionNode: OptionNode } = props;
+  if (data.value === '__EMPTY__') {
+    return (
+      <Empty
+        image={false}
+        style={{
+          height: 100,
+          alignSelf: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+        description={intl.formatMessage({
+          id: 'common.search.empty'
+        })}
+      ></Empty>
+    );
+  }
+  let width: any = {
+    maxWidth: 140,
+    minWidth: 140
+  };
+  if (!data.parent) {
+    width = undefined;
+  }
+  if (data.parent) {
+    return (
+      <AutoTooltip ghost {...width}>
+        {data.label}
+      </AutoTooltip>
+    );
+  }
+  return OptionNode ? <OptionNode data={data}></OptionNode> : data.label;
+};
+
+const SealCascader: React.FC<
+  CascaderAutoProps &
+    SealFormItemProps & { optionNode?: React.FC<{ data: any }> }
+> = (props) => {
   const {
     label,
     placeholder,
@@ -19,6 +82,8 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
     options,
     allowNull,
     isInFormItems = true,
+    optionNode,
+    tagRender,
     ...rest
   } = props;
   const intl = useIntl();
@@ -100,6 +165,14 @@ const SealCascader: React.FC<CascaderAutoProps & SealFormItemProps> = (
     >
       <Cascader
         {...rest}
+        optionRender={
+          optionNode
+            ? (data) => (
+                <OptionNodes data={data} optionNode={optionNode}></OptionNodes>
+              )
+            : undefined
+        }
+        tagRender={tagRender ?? renderTag}
         ref={inputRef}
         options={children ? null : _options}
         onFocus={handleOnFocus}

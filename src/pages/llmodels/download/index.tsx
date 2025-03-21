@@ -19,12 +19,21 @@ type AddModalProps = {
   open: boolean;
   source: string;
   width?: string | number;
+  workersList: Global.BaseOption<number>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
 
 const DownloadModel: React.FC<AddModalProps> = (props) => {
-  const { title, open, onOk, onCancel, source, width = 600 } = props || {};
+  const {
+    title,
+    workersList,
+    open,
+    onOk,
+    onCancel,
+    source,
+    width = 600
+  } = props || {};
   const SEARCH_SOURCE = [
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
@@ -35,18 +44,45 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>('');
   const modelFileRef = useRef<any>(null);
 
+  const generateModelInfo = () => {
+    if (source === modelSourceMap.huggingface_value) {
+      const huggingFaceModel = {
+        huggingface_repo_id: selectedModel.name,
+        huggingface_filename: fileName
+      };
+      return huggingFaceModel;
+    }
+
+    if (source === modelSourceMap.modelscope_value) {
+      const modelScopeModel = {
+        model_scope_model_id: selectedModel.name,
+        model_scope_file_path: fileName
+      };
+      return modelScopeModel;
+    }
+    return {};
+  };
   const handleSelectModelFile = useCallback((item: any) => {
-    form.current?.setFieldValue?.('file_name', item.fakeName);
+    setFileName(item.fakeName);
   }, []);
 
   const handleOnSelectModel = (item: any) => {
     setSelectedModel(item);
   };
 
+  const handleOk = (values: any) => {
+    onOk({
+      ...values,
+      source: source,
+      ...generateModelInfo()
+    });
+  };
+
   const handleSumit = () => {
-    form.current?.submit?.();
+    form.current?.form?.submit?.();
   };
 
   const debounceFetchModelFiles = debounce(() => {
@@ -91,7 +127,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
               fontSize: 'var(--font-size-middle)'
             }}
           >
-            Download Model
+            {title}
           </span>
           <Button type="text" size="small" onClick={handleCancel}>
             <CloseOutlined></CloseOutlined>
@@ -173,7 +209,6 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
-                  okText={intl.formatMessage({ id: 'common.button.download' })}
                   style={{
                     padding: '16px 24px',
                     display: 'flex',
@@ -186,11 +221,18 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
             <>
               {SEARCH_SOURCE.includes(source) && (
                 <TitleWrapper>
-                  Select Target
+                  {intl.formatMessage({
+                    id: 'resources.modelfiles.selecttarget'
+                  })}
                   <span style={{ display: 'flex', height: 24 }}></span>
                 </TitleWrapper>
               )}
-              <TargetForm onOk={onOk} source={source}></TargetForm>
+              <TargetForm
+                ref={form}
+                onOk={handleOk}
+                source={source}
+                workersList={workersList}
+              ></TargetForm>
             </>
           </ColumnWrapper>
         </div>

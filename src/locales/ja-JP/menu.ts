@@ -1,0 +1,21 @@
+export default {
+  'menu.dashboard': 'ダッシュボード',
+  'menu.playground': 'プレイグラウンド',
+  'menu.playground.rerank': 'リランク',
+  'menu.playground.embedding': '埋め込み',
+  'menu.playground.chat': 'チャット',
+  'menu.playground.speech': '音声',
+  'menu.playground.text2images': '画像生成',
+  'menu.compare': '比較',
+  'menu.models': 'モデル',
+  'menu.models.modelList': 'デプロイと管理',
+  'menu.models.modelCatalog': 'カタログ',
+  'menu.models.catalog': 'モデルカタログ',
+  'menu.modelCatalog': 'カタログ',
+  'menu.resources': 'リソース',
+  'menu.apikeys': 'APIキー',
+  'menu.users': 'ユーザー',
+  'menu.profile': 'プロフィール',
+  'menu.login': 'ログイン',
+  'menu.usage': '使用状況'
+};

@@ -109,7 +109,7 @@ const InputWrapper = styled.div`
   .ant-input-search-button {
     position: absolute;
     top: -20px;
-    right: 0;
+    right: 1px;
     border-radius: 0 ${BORDERRADIUS}px ${BORDERRADIUS}px 0 !important;
     overflow: hidden;
     border: none;

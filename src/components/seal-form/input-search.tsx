@@ -1,8 +1,9 @@
 import { Form, Input } from 'antd';
 import type { SearchProps } from 'antd/es/input/Search';
-import { useEffect, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
+import React, { useEffect, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import InputWrapper from './wrapper/input';
 
 type OnSearch = (
   value: string,
@@ -66,25 +67,27 @@ const SealInputSearch: React.FC<SearchProps & SealFormItemProps> = (props) => {
   };
 
   return (
-    <Wrapper
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      onClick={handleClickWrapper}
-    >
-      <Input.Search
-        {...rest}
-        ref={inputRef}
-        autoComplete="off"
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onSearch={handleSearch}
-        onChange={handleChange}
-      ></Input.Search>
-    </Wrapper>
+    <InputWrapper>
+      <Wrapper
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        onClick={handleClickWrapper}
+      >
+        <Input.Search
+          {...rest}
+          ref={inputRef}
+          autoComplete="off"
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onSearch={handleSearch}
+          onChange={handleChange}
+        ></Input.Search>
+      </Wrapper>
+    </InputWrapper>
   );
 };
 

@@ -2,6 +2,10 @@ import styled from 'styled-components';
 import { INPUTHEIGHT, INPUT_INNER_PADDING } from '../config';
 
 const SliderWrapper = styled.div`
+  .__wrapper__ {
+    height: 100%;
+    justify-content: center;
+  }
   padding-block: 0;
   padding-inline: 2px;
   input.ant-input-number-input {
@@ -24,7 +28,7 @@ const SliderWrapper = styled.div`
     .label-val {
       position: absolute !important;
       top: -14px;
-      right: -14px;
+      right: -10px;
       width: 80px;
       border-radius: var(--border-radius-base);
       text-align: center;

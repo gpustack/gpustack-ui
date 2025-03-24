@@ -730,7 +730,6 @@ const Models: React.FC<ModelsProps> = ({
                 })}
                 style={{ width: 230 }}
                 size="large"
-                mode="multiple"
                 maxTagCount={1}
                 onChange={handleCategoryChange}
                 options={modelCategories.filter((item) => item.value)}

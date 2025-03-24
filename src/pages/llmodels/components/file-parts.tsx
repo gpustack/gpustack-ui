@@ -4,8 +4,9 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
 const FileParts: React.FC<{
+  showSize?: boolean;
   fileList: any[];
-}> = ({ fileList }) => {
+}> = ({ fileList, showSize = true }) => {
   return (
     <SimpleBar
       style={{ maxHeight: 200 }}
@@ -19,7 +20,7 @@ const FileParts: React.FC<{
                 {' '}
                 Part {file.part} of {file.total}
               </span>
-              <span>{convertFileSize(file.size)}</span>
+              {showSize && <span>{convertFileSize(file.size)}</span>}
             </div>
           );
         })}

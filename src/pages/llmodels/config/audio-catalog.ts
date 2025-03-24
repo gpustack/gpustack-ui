@@ -1,3 +1,5 @@
+import { modelSourceMap, modelTaskMap } from './index';
+
 export const HuggingFaceModels = [
   {
     type: 'stt',
@@ -178,3 +180,25 @@ export const ModelScopeModels = [
     name: 'faster-whisper-large-v1'
   }
 ];
+
+export const identifyModelTask = (source: string, modelName: string) => {
+  let data = null;
+  if (source === modelSourceMap.huggingface_value) {
+    data = HuggingFaceModels.find(
+      (item) =>
+        `${item.org}/${item.name}`.indexOf(modelName) > -1 ||
+        modelName?.indexOf(`${item.org}/${item.name}`) > -1
+    );
+  }
+  if (source === modelSourceMap.modelscope_value) {
+    data = ModelScopeModels.find(
+      (item) =>
+        `${item.org}/${item.name}`.indexOf(modelName) > -1 ||
+        modelName?.indexOf(`${item.org}/${item.name}`) > -1
+    );
+  }
+  if (data) {
+    return modelTaskMap.audio;
+  }
+  return '';
+};

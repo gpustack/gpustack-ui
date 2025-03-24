@@ -1,6 +1,5 @@
 import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
-import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -8,7 +7,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form, Input, Typography } from 'antd';
+import { Form, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -30,11 +29,12 @@ import {
   ollamaModelOptions,
   sourceOptions
 } from '../config';
-import { HuggingFaceModels, ModelScopeModels } from '../config/audio-catalog';
+import { identifyModelTask } from '../config/audio-catalog';
 import { FormData } from '../config/types';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
+  initialValues?: any;
   ref?: any;
   source: string;
   action: PageActionType;
@@ -65,6 +65,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const {
     action,
     isGGUF,
+    initialValues,
     sourceDisable = true,
     backendOptions,
     sourceList,
@@ -116,33 +117,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     []
   );
 
-  const identifyModelTask = () => {
-    let data = null;
-    if (props.source === modelSourceMap.huggingface_value) {
-      data = HuggingFaceModels.find(
-        (item) =>
-          `${item.org}/${item.name}`.indexOf(props.selectedModel.name) > -1 ||
-          props.selectedModel.name?.indexOf(`${item.org}/${item.name}`) > -1
-      );
-    }
-    if (props.source === modelSourceMap.modelscope_value) {
-      data = ModelScopeModels.find(
-        (item) =>
-          `${item.org}/${item.name}`.indexOf(props.selectedModel.name) > -1 ||
-          props.selectedModel.name?.indexOf(`${item.org}/${item.name}`) > -1
-      );
-    }
-    if (data) {
-      return modelTaskMap.audio;
-    }
-    return '';
-  };
   const handleOnSelectModel = () => {
     let name = _.split(props.selectedModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
 
-    const modelTaskType = identifyModelTask();
+    const modelTaskType = identifyModelTask(
+      props.source,
+      props.selectedModel.name
+    );
 
     const modelTask =
       HuggingFaceTaskMap.audio.includes(props.selectedModel.task) ||
@@ -282,11 +265,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     );
   };
 
-  const handleOnSearch = (value: string) => {
-    console.log('local_path', value);
-    form.setFieldValue('local_path', value);
-  };
-
   const renderLocalPathFields = () => {
     return (
       <>
@@ -300,14 +278,17 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             }
           ]}
         >
-          {/* <SealInput.Input
+          <SealAutoComplete
             required
+            filterOption
+            defaultActiveFirstOption
+            options={modelFileOptions}
             onBlur={handleLocalPathBlur}
             onFocus={handleOnFocus}
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             description={<TooltipList list={localPathTipsList}></TooltipList>}
-          ></SealInput.Input> */}
-          <SealCascader
+          ></SealAutoComplete>
+          {/* <SealCascader
             required
             showSearch
             description={<TooltipList list={localPathTipsList}></TooltipList>}
@@ -330,7 +311,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                 }}
               />
             )}
-          ></SealCascader>
+          ></SealCascader> */}
         </Form.Item>
       </>
     );
@@ -523,7 +504,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         cpu_offloading: true,
         scheduleType: 'auto',
         categories: null,
-        distributed_inference_across_workers: true
+        distributed_inference_across_workers: true,
+        ...initialValues
       }}
     >
       <Form.Item<FormData>

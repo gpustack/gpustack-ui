@@ -143,7 +143,29 @@ export const useGenerateModelFileOptions = () => {
         Object.entries(worker).filter(([key]) => workerFields.has(key))
       )
     }));
-    return result;
+    // extract a list from the result, and the structure is like:
+    // [
+    //   {
+    //     label: 'worker_name/child_label',
+    //     value: 'child_value',
+    //     ...other child properties
+    //   }
+    // ]
+    const childrenList = result.reduce((acc: any[], cur) => {
+      if (cur.children) {
+        const list = cur.children.map((child: any) => ({
+          ...child,
+          label: `${cur.label}${child.label}`,
+          value: child.value
+        }));
+        acc.push(...list);
+      }
+      return acc;
+    }, []);
+
+    return childrenList;
+
+    // return result;
   };
 
   return {

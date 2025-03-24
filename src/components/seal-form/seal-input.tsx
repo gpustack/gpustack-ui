@@ -1,12 +1,13 @@
 import type { InputProps } from 'antd';
 import { Form, Input } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
+import React, { useEffect, useRef, useState } from 'react';
 import SealInputNumber from './input-number';
 import SealInputSearch from './input-search';
 import SealPassword from './password';
 import SealTextArea from './seal-textarea';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import InputWrapper from './wrapper/input';
 
 const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
   const {
@@ -72,29 +73,31 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
   };
 
   return (
-    <Wrapper
-      status={checkStatus || status}
-      label={label}
-      labelExtra={labelExtra}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      addAfter={addAfter}
-      hasPrefix={!!props.prefix}
-      onClick={handleClickWrapper}
-    >
-      <Input
-        {...rest}
-        placeholder={isFocus || !label ? placeholder : ''}
-        ref={inputRef}
-        autoComplete="off"
-        onInput={handleInput}
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onChange={handleChange}
-      ></Input>
-    </Wrapper>
+    <InputWrapper>
+      <Wrapper
+        status={checkStatus || status}
+        label={label}
+        labelExtra={labelExtra}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        addAfter={addAfter}
+        hasPrefix={!!props.prefix}
+        onClick={handleClickWrapper}
+      >
+        <Input
+          {...rest}
+          placeholder={isFocus || !label ? placeholder : ''}
+          ref={inputRef}
+          autoComplete="off"
+          onInput={handleInput}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={handleChange}
+        ></Input>
+      </Wrapper>
+    </InputWrapper>
   );
 };
 

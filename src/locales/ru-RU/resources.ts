@@ -57,10 +57,16 @@ export default {
   'resources.worker.container.install': 'Установка контейнером (только Linux)',
   'resources.worker.cann.tips': `Укажите индексы GPU через <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> или <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`,
   'resources.modelfiles.form.path': 'Storage path',
-  'resources.modelfiles.modelfile': 'Model File',
-  'resources.modelfiles.download': 'Add Model',
+  'resources.modelfiles.modelfile': 'Model Files',
+  'resources.modelfiles.download': 'Add Model File',
   'resources.modelfiles.size': 'Size',
-  'resources.modelfiles.selecttarget': 'Select Target'
+  'resources.modelfiles.selecttarget': 'Select Target',
+  'resources.modelfiles.form.localdir': 'Local Directory',
+  'resources.modelfiles.form.localdir.tips':
+    'The default storage directory is /var/lib/gpustack/cache.',
+  'resources.modelfiles.retry.download': 'Retry Download',
+  'resources.modelfiles.storagePath.holder':
+    'Waiting for download to complete...'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -69,4 +75,8 @@ export default {
 //3. 'resources.modelfiles.download',
 //4. 'resources.modelfiles.size',
 //5. 'resources.modelfiles.selecttarget',
+//6. 'resources.modelfiles.form.localdir',
+//7. 'resources.modelfiles.retry.download',
+//8. 'resources.modelfiles.form.localdir.tips',
+//9. 'resources.modelfiles.storagePath.holder',
 // ========== End of To-Do List ==========

@@ -1,3 +1,4 @@
+import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
 import CopyButton from '@/components/copy-button';
 import DeleteModal from '@/components/delete-modal';
@@ -5,9 +6,19 @@ import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import StatusTag from '@/components/status-tag';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { modelSourceMap } from '@/pages/llmodels/config';
+import { createModel } from '@/pages/llmodels/apis';
+import DeployModal from '@/pages/llmodels/components/deploy-modal';
+import FileParts from '@/pages/llmodels/components/file-parts';
+import {
+  backendOptionsMap,
+  getSourceRepoConfigValue,
+  modelSourceMap
+} from '@/pages/llmodels/config';
+import { identifyModelTask } from '@/pages/llmodels/config/audio-catalog';
 import {
   generateSource,
   modalConfig,
@@ -16,11 +27,32 @@ import {
 } from '@/pages/llmodels/config/button-actions';
 import DownloadModal from '@/pages/llmodels/download';
 import { convertFileSize } from '@/utils';
-import { DeleteOutlined, DownOutlined, SyncOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
-import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
+import {
+  DeleteOutlined,
+  DownOutlined,
+  InfoCircleOutlined,
+  SyncOutlined
+} from '@ant-design/icons';
+import { useIntl, useNavigate } from '@umijs/max';
+import {
+  Button,
+  ConfigProvider,
+  Empty,
+  Input,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  message
+} from 'antd';
 import dayjs from 'dayjs';
+import { useAtom } from 'jotai';
+import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import {
+  useGenerateFormEditInitialValues,
+  useGenerateModelFileOptions
+} from '../../llmodels/hooks';
 import {
   MODEL_FILES_API,
   deleteModelFile,
@@ -39,6 +71,9 @@ import {
   ModelFile as ListItem,
   ListItem as WorkerListItem
 } from '../config/types';
+
+const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
+const filterPattern = /^(.*)-\d+-of-\d+(\.gguf)?$/;
 
 const getWorkerName = (
   id: number,
@@ -77,11 +112,16 @@ const InstanceStatusTag = (props: { data: ListItem }) => {
 };
 
 const ModelFiles = () => {
+  const { getGPUList, generateFormValues } = useGenerateFormEditInitialValues();
+  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
+  const navigate = useNavigate();
   const {
     dataSource,
     rowSelection,
     queryParams,
     modalRef,
+    fetchData,
     handleDelete,
     handleDeleteBatch,
     handlePageChange,
@@ -95,7 +135,8 @@ const ModelFiles = () => {
     watch: true,
     contentForDelete: 'resources.modelfiles.modelfile'
   });
-
+  const { getModelFileList, generateModelFileOptions } =
+    useGenerateModelFileOptions();
   const intl = useIntl();
   const { showSuccess } = useAppUtils();
   const [workersList, setWorkersList] = useState<Global.BaseOption<number>[]>(
@@ -111,6 +152,23 @@ const ModelFiles = () => {
     width: 600,
     source: modelSourceMap.huggingface_value,
     gpuOptions: []
+  });
+  const [openDeployModal, setOpenDeployModal] = useState<{
+    show: boolean;
+    width: number | string;
+    source: string;
+    gpuOptions: any[];
+    modelFileOptions?: any[];
+    initialValues: any;
+    isGGUF?: boolean;
+  }>({
+    show: false,
+    width: 600,
+    source: modelSourceMap.local_path_value,
+    gpuOptions: [],
+    modelFileOptions: [],
+    initialValues: {},
+    isGGUF: false
   });
 
   useEffect(() => {
@@ -140,6 +198,84 @@ const ModelFiles = () => {
     fetchWorkerList();
   }, []);
 
+  const extractFileName = (name: string) => {
+    return name.replace(filterPattern, '$1');
+  };
+
+  const generateInitialValues = (record: ListItem) => {
+    const isGGUF = _.includes(record.resolved_paths?.[0], 'gguf');
+    const isOllama = !!record.ollama_library_model_name;
+    const audioModelTag = identifyModelTask(
+      record.source,
+      record.resolved_paths?.[0]
+    );
+
+    let name = _.toLower(
+      _.split(
+        record.huggingface_repo_id ||
+          record.ollama_library_model_name ||
+          record.model_scope_model_id ||
+          record.local_path,
+        '/'
+      ).pop()
+    );
+
+    return {
+      source: modelSourceMap.local_path_value,
+      local_path: record.resolved_paths?.[0],
+      name: extractFileName(name),
+      backend:
+        isGGUF || isOllama
+          ? backendOptionsMap.llamaBox
+          : audioModelTag
+            ? backendOptionsMap.voxBox
+            : backendOptionsMap.vllm,
+      isGGUF: !audioModelTag && (isGGUF || isOllama)
+    };
+  };
+
+  const renderParts = (record: ListItem) => {
+    const parts = _.tail(record.resolved_paths);
+    if (!parts.length) {
+      return null;
+    }
+    const partsList = parts.map((item: string) => {
+      const match = item.match(pattern);
+      if (!match) {
+        return null;
+      }
+      return {
+        part: parseInt(match[2], 10),
+        total: parseInt(match[3], 10),
+        name: _.split(match[1], '/').pop()
+      };
+    });
+    return (
+      <Tooltip
+        overlayInnerStyle={{
+          width: 120,
+          padding: 0
+        }}
+        title={<FileParts fileList={partsList} showSize={false}></FileParts>}
+      >
+        <Tag
+          className="tag-item"
+          color="purple"
+          style={{
+            marginRight: 0,
+            height: 22,
+            borderRadius: 'var(--border-radius-base)'
+          }}
+        >
+          <span style={{ opacity: 1 }}>
+            <InfoCircleOutlined className="m-r-5" />
+            {partsList.length} parts
+          </span>
+        </Tag>
+      </Tooltip>
+    );
+  };
+
   const handleSelect = async (val: any, record: ListItem) => {
     try {
       if (val === 'delete') {
@@ -150,6 +286,22 @@ const ModelFiles = () => {
       } else if (val === 'retry') {
         await retryDownloadModelFile(record.id);
         showSuccess();
+      } else if (val === 'deploy') {
+        saveScrollHeight();
+        const [modelFileList, gpuList] = await Promise.all([
+          getModelFileList(),
+          getGPUList()
+        ]);
+        const dataList = generateModelFileOptions(modelFileList, workersList);
+        const initialValues = generateInitialValues(record);
+        setOpenDeployModal({
+          ...openDeployModal,
+          modelFileOptions: dataList,
+          gpuOptions: gpuList,
+          initialValues: initialValues,
+          isGGUF: initialValues.isGGUF,
+          show: true
+        });
       }
     } catch (error) {
       // console.log('error', error);
@@ -189,7 +341,46 @@ const ModelFiles = () => {
         ...downloadModalStatus,
         show: false
       });
+      fetchData();
       showSuccess();
+    } catch (error) {
+      // console.log('error', error);
+    }
+  };
+
+  const setActionList = (record: ListItem) => {
+    return _.filter(modelFileActions, (item: { key: string }) => {
+      if (item.key === 'deploy') {
+        return record.state === ModelfileStateMap.Ready;
+      }
+      return true;
+    });
+  };
+  const handleDeployModalCancel = () => {
+    setOpenDeployModal({
+      ...openDeployModal,
+      show: false
+    });
+    restoreScrollHeight();
+  };
+
+  const handleCreateModel = async (data: any) => {
+    try {
+      const result = getSourceRepoConfigValue(openDeployModal.source, data);
+
+      const modelData = await createModel({
+        data: {
+          ...result.values,
+          ..._.omit(data, result.omits)
+        }
+      });
+      setOpenDeployModal({
+        ...openDeployModal,
+        show: false
+      });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+      setModelsExpandKeys([modelData.id]);
+      navigate('/models/list');
     } catch (error) {
       // console.log('error', error);
     }
@@ -197,35 +388,13 @@ const ModelFiles = () => {
 
   const columns = [
     {
-      title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
-      dataIndex: 'resolved_paths',
-      width: 240,
-      render: (text: string, record: ListItem) => {
-        return (
-          record.resolved_paths?.length > 0 && (
-            <span className="flex-center">
-              <AutoTooltip ghost maxWidth={240}>
-                <span>{record.resolved_paths?.[0]}</span>
-              </AutoTooltip>
-              <CopyButton
-                text={record.resolved_paths?.[0]}
-                type="link"
-              ></CopyButton>
-            </span>
-          )
-        );
-      }
-    },
-    {
-      title: intl.formatMessage({ id: 'resources.modelfiles.size' }),
-      dataIndex: 'size',
-      render: (text: string, record: ListItem) => {
-        return (
-          <AutoTooltip ghost maxWidth={100}>
-            <span>{convertFileSize(record.size, 1)}</span>
-          </AutoTooltip>
-        );
-      }
+      title: intl.formatMessage({ id: 'models.form.source' }),
+      dataIndex: 'source',
+      render: (text: string, record: ListItem) => (
+        <span className="flex flex-column" style={{ width: '100%' }}>
+          <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
+        </span>
+      )
     },
     {
       title: 'Worker',
@@ -239,25 +408,62 @@ const ModelFiles = () => {
       }
     },
     {
-      title: intl.formatMessage({ id: 'models.form.source' }),
-      dataIndex: 'source',
-      render: (text: string, record: ListItem) => (
-        <span className="flex flex-column" style={{ width: '100%' }}>
-          <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
-        </span>
-      )
-    },
-    {
       title: intl.formatMessage({ id: 'common.table.status' }),
       dataIndex: 'state',
+      width: 120,
       render: (text: string, record: ListItem) => {
         return <InstanceStatusTag data={record} />;
+      }
+    },
+    {
+      title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
+      dataIndex: 'resolved_paths',
+      render: (text: string, record: ListItem) => {
+        if (
+          !record.resolved_paths.length &&
+          record.state === ModelfileStateMap.Downloading
+        ) {
+          return (
+            <span>
+              {intl.formatMessage({
+                id: 'resources.modelfiles.storagePath.holder'
+              })}
+            </span>
+          );
+        }
+        return (
+          record.resolved_paths?.length > 0 && (
+            <span className="flex-center">
+              <AutoTooltip ghost maxWidth={'100%'}>
+                <span>{record.resolved_paths?.[0]}</span>
+              </AutoTooltip>
+              <CopyButton
+                text={record.resolved_paths?.[0]}
+                type="link"
+              ></CopyButton>
+              {renderParts(record)}
+            </span>
+          )
+        );
+      }
+    },
+    {
+      title: intl.formatMessage({ id: 'resources.modelfiles.size' }),
+      dataIndex: 'size',
+      width: 100,
+      render: (text: string, record: ListItem) => {
+        return (
+          <AutoTooltip ghost maxWidth={100}>
+            <span>{convertFileSize(record.size, 1)}</span>
+          </AutoTooltip>
+        );
       }
     },
     {
       title: intl.formatMessage({ id: 'common.table.createTime' }),
       dataIndex: 'created_at',
       sorter: false,
+      width: 180,
       render: (text: number) => (
         <AutoTooltip ghost>
           {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
@@ -267,9 +473,10 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'common.table.operation' }),
       dataIndex: 'operation',
+      width: 120,
       render: (text: string, record: ListItem) => (
         <DropdownButtons
-          items={modelFileActions}
+          items={setActionList(record)}
           onSelect={(val) => handleSelect(val, record)}
         ></DropdownButtons>
       )
@@ -334,6 +541,7 @@ const ModelFiles = () => {
       <ConfigProvider renderEmpty={renderEmpty}>
         <Table
           columns={columns}
+          tableLayout="fixed"
           style={{ width: '100%' }}
           dataSource={dataSource.dataList}
           loading={dataSource.loading}
@@ -360,6 +568,19 @@ const ModelFiles = () => {
         onOk={handleDownload}
         workersList={workersList}
       ></DownloadModal>
+      <DeployModal
+        open={openDeployModal.show}
+        action={PageAction.CREATE}
+        title={intl.formatMessage({ id: 'models.button.deploy' })}
+        source={openDeployModal.source}
+        width={openDeployModal.width}
+        gpuOptions={openDeployModal.gpuOptions}
+        modelFileOptions={openDeployModal.modelFileOptions || []}
+        initialValues={openDeployModal.initialValues}
+        isGGUF={openDeployModal.isGGUF}
+        onCancel={handleDeployModalCancel}
+        onOk={handleCreateModel}
+      ></DeployModal>
     </>
   );
 };

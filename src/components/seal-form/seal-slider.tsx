@@ -54,9 +54,7 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
         className="slider-label"
         style={{ width: labelWidth || INPUT_WIDTH.mini }}
       >
-        <span className="text">
-          <LabelInfo label={label} description={description}></LabelInfo>
-        </span>
+        <LabelInfo label={label} description={description}></LabelInfo>
 
         {inputnumber ? (
           <InputNumber

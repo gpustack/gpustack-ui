@@ -3,9 +3,10 @@ import { useIntl } from '@umijs/max';
 import type { SelectProps } from 'antd';
 import { Form, Select } from 'antd';
 import { cloneDeep } from 'lodash';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import SelectWrapper from './wrapper/select';
 
 const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   const {
@@ -81,28 +82,30 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   };
 
   return (
-    <Wrapper
-      className="seal-select-wrapper"
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      onClick={handleClickWrapper}
-    >
-      <Select
-        {...rest}
-        ref={inputRef}
-        options={children ? null : _options}
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onChange={handleChange}
-        notFoundContent={null}
+    <SelectWrapper>
+      <Wrapper
+        className="seal-select-wrapper"
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        onClick={handleClickWrapper}
       >
-        {children}
-      </Select>
-    </Wrapper>
+        <Select
+          {...rest}
+          ref={inputRef}
+          options={children ? null : _options}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={handleChange}
+          notFoundContent={null}
+        >
+          {children}
+        </Select>
+      </Wrapper>
+    </SelectWrapper>
   );
 };
 

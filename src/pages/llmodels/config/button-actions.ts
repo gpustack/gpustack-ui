@@ -189,13 +189,13 @@ export const setModelActionList = (record: any) => {
 };
 
 export const modelFileActions = [
-  // {
-  //   label: 'common.button.deploy',
-  //   key: 'deploy',
-  //   icon: icons.ThunderboltOutlined
-  // },
   {
-    label: 'common.button.retry',
+    label: 'common.button.deploy',
+    key: 'deploy',
+    icon: icons.ThunderboltOutlined
+  },
+  {
+    label: 'resources.modelfiles.retry.download',
     key: 'retry',
     icon: icons.RetweetOutlined
   },

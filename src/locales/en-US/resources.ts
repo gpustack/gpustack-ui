@@ -57,8 +57,14 @@ export default {
   'resources.worker.container.install': 'Container Installation(Linux Only)',
   'resources.worker.cann.tips': `Set <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> to the required GPU indices. For GPU0 to GPU3, use <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> or <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`,
   'resources.modelfiles.form.path': 'Storage path',
-  'resources.modelfiles.modelfile': 'Model File',
-  'resources.modelfiles.download': 'Download Model',
+  'resources.modelfiles.modelfile': 'Model Files',
+  'resources.modelfiles.download': 'Add Model File',
   'resources.modelfiles.size': 'Size',
-  'resources.modelfiles.selecttarget': 'Select Target'
+  'resources.modelfiles.selecttarget': 'Select Target',
+  'resources.modelfiles.form.localdir': 'Local Directory',
+  'resources.modelfiles.form.localdir.tips':
+    'The default storage directory is /var/lib/gpustack/cache.',
+  'resources.modelfiles.retry.download': 'Retry Download',
+  'resources.modelfiles.storagePath.holder':
+    'Waiting for download to complete...'
 };

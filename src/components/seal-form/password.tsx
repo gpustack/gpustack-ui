@@ -1,8 +1,9 @@
 import type { InputProps } from 'antd';
 import { Form, Input } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
+import React, { useEffect, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import InputWrapper from './wrapper/input';
 
 const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
   const {
@@ -55,26 +56,28 @@ const SealPassword: React.FC<InputProps & SealFormItemProps> = (props) => {
   };
 
   return (
-    <Wrapper
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      hasPrefix={!!props.prefix}
-      onClick={handleClickWrapper}
-    >
-      <Input.Password
-        {...rest}
-        ref={inputRef}
-        autoComplete="off"
-        className="seal-input-password"
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onChange={handleChange}
-      ></Input.Password>
-    </Wrapper>
+    <InputWrapper>
+      <Wrapper
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        hasPrefix={!!props.prefix}
+        onClick={handleClickWrapper}
+      >
+        <Input.Password
+          {...rest}
+          ref={inputRef}
+          autoComplete="off"
+          className="seal-input-password"
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={handleChange}
+        ></Input.Password>
+      </Wrapper>
+    </InputWrapper>
   );
 };
 

@@ -110,6 +110,12 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     } else if (source === modelSourceMap.ollama_library_value) {
       setIsGGUF(true);
     }
+    if (open) {
+      form.current?.form?.setFieldValue(
+        'worker_id',
+        workersList[0]?.value || ''
+      );
+    }
 
     return () => {
       setSelectedModel({});

@@ -35,7 +35,7 @@ const Catalog: React.FC = () => {
     page: 1,
     perPage: 100,
     search: '',
-    categories: []
+    categories: ''
   });
   const [openDeployModal, setOpenDeployModal] = useState<any>({
     show: false,
@@ -49,22 +49,20 @@ const Catalog: React.FC = () => {
   const categoryOptions = [...modelCategories.filter((item) => item.value)];
 
   const filterData = useCallback(
-    (data: { search: string; categories: string[] }) => {
+    (data: { search: string; categories: string }) => {
       const { search, categories } = data;
       const dataList = cacheData.current.filter((item) => {
-        if (search && categories.length > 0) {
+        if (search && categories) {
           return (
             _.toLower(item.name).includes(search) &&
-            categories.some((category) => item.categories.includes(category))
+            item.categories.includes(categories)
           );
         }
         if (search) {
           return _.toLower(item.name).includes(_.toLower(search));
         }
-        if (categories.length > 0) {
-          return categories.some((category) =>
-            item.categories.includes(category)
-          );
+        if (categories) {
+          return item.categories.includes(categories);
         }
         return true;
       });
@@ -241,7 +239,6 @@ const Catalog: React.FC = () => {
               placeholder={intl.formatMessage({ id: 'models.filter.category' })}
               style={{ width: 230 }}
               size="large"
-              mode="multiple"
               maxTagCount={1}
               onChange={handleCategoryChange}
               options={categoryOptions}

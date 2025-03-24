@@ -162,14 +162,21 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
           name="local_dir"
           rules={[
             {
-              required: true,
-              message: getRuleMessage('input', 'resources.modelfiles.form.path')
+              required: false,
+              message: getRuleMessage(
+                'input',
+                'resources.modelfiles.form.localdir'
+              )
             }
           ]}
         >
           <SealInput.Input
-            label={intl.formatMessage({ id: 'resources.modelfiles.form.path' })}
-            required
+            description={intl.formatMessage({
+              id: 'resources.modelfiles.form.localdir.tips'
+            })}
+            label={intl.formatMessage({
+              id: 'resources.modelfiles.form.localdir'
+            })}
           ></SealInput.Input>
         </Form.Item>
       )}

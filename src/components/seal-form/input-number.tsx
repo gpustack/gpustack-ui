@@ -1,9 +1,10 @@
 import { isNotEmptyValue } from '@/utils/index';
 import type { InputNumberProps } from 'antd';
 import { Form, InputNumber } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
+import React, { useEffect, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import InputWrapper from './wrapper/input';
 
 const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   props
@@ -60,26 +61,28 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   };
 
   return (
-    <Wrapper
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      onClick={handleClickWrapper}
-      className="seal-input-number"
-    >
-      <InputNumber
-        {...rest}
-        ref={inputRef}
-        autoComplete="off"
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onInput={handleInput}
-        onChange={handleChange}
-      ></InputNumber>
-    </Wrapper>
+    <InputWrapper>
+      <Wrapper
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        onClick={handleClickWrapper}
+        className="seal-input-number"
+      >
+        <InputNumber
+          {...rest}
+          ref={inputRef}
+          autoComplete="off"
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onInput={handleInput}
+          onChange={handleChange}
+        ></InputNumber>
+      </Wrapper>
+    </InputWrapper>
   );
 };
 

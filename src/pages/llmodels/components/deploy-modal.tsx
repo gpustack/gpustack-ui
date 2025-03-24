@@ -4,7 +4,7 @@ import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData } from '../config/types';
@@ -21,9 +21,11 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   source: string;
+  isGGUF?: boolean;
   width?: string | number;
   gpuOptions: any[];
   modelFileOptions: any[];
+  initialValues?: any;
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -36,7 +38,8 @@ const AddModal: FC<AddModalProps> = (props) => {
     onCancel,
     source,
     action,
-    width = 600
+    width = 600,
+    initialValues
   } = props || {};
   const SEARCH_SOURCE = [
     modelSourceMap.huggingface_value,
@@ -47,7 +50,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
-  const [isGGUF, setIsGGUF] = useState<boolean>(false);
+  const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
   const [warningStatus, setWarningStatus] = useState<{
     show: boolean;
@@ -128,7 +131,9 @@ const AddModal: FC<AddModalProps> = (props) => {
   }, [onCancel]);
 
   useEffect(() => {
-    handleSelectModelFile({ fakeName: '' });
+    if (!_.isEmpty(selectedModel)) {
+      handleSelectModelFile({ fakeName: '' });
+    }
   }, [selectedModel]);
 
   useEffect(() => {
@@ -142,12 +147,17 @@ const AddModal: FC<AddModalProps> = (props) => {
     } else if (source === modelSourceMap.ollama_library_value) {
       form.current?.setFieldValue?.('backend', backendOptionsMap.llamaBox);
       setIsGGUF(true);
+    } else {
+      form.current?.setFieldsValue({
+        ...props.initialValues
+      });
+      setIsGGUF(props.isGGUF || false);
     }
 
     return () => {
       setSelectedModel({});
     };
-  }, [open, source]);
+  }, [open, source, props.isGGUF, props.initialValues]);
 
   return (
     <Drawer
@@ -280,6 +290,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 </TitleWrapper>
               )}
               <DataForm
+                initialValues={initialValues}
                 source={source}
                 action={action}
                 selectedModel={selectedModel}

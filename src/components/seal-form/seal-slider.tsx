@@ -2,8 +2,8 @@ import { INPUT_WIDTH } from '@/constants';
 import { Form, InputNumber, Slider, type SliderSingleProps } from 'antd';
 import React from 'react';
 import LabelInfo from './components/label-info';
-import FieldWrapper from './field-wrapper';
-import SliderStyles from './styles/slider.less';
+import Wrapper from './wrapper';
+import SliderWrapper from './wrapper/slider';
 
 interface SealSliderProps extends SliderSingleProps {
   required?: boolean;
@@ -51,7 +51,7 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
   const renderLabel = React.useMemo(() => {
     return (
       <span
-        className={SliderStyles['slider-label']}
+        className="slider-label"
         style={{ width: labelWidth || INPUT_WIDTH.mini }}
       >
         <span className="text">
@@ -74,25 +74,27 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
     );
   }, [label, labelWidth, description, value, max, min, step, defaultValue]);
   return (
-    <FieldWrapper
-      required={required}
-      status={checkStatus || status}
-      label={renderLabel}
-      style={{ padding: '20px 2px 0' }}
-      variant="borderless"
-    >
-      <Slider
-        {...rest}
-        defaultValue={defaultValue}
-        max={max}
-        min={min}
-        step={step}
-        style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
-        tooltip={tooltip}
-        value={value}
-        onChange={handleChange}
-      ></Slider>
-    </FieldWrapper>
+    <SliderWrapper>
+      <Wrapper
+        required={required}
+        status={checkStatus || status}
+        label={renderLabel}
+        isFocus={true}
+        variant="borderless"
+      >
+        <Slider
+          {...rest}
+          defaultValue={defaultValue}
+          max={max}
+          min={min}
+          step={step}
+          style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
+          tooltip={tooltip}
+          value={value}
+          onChange={handleChange}
+        ></Slider>
+      </Wrapper>
+    </SliderWrapper>
   );
 };
 

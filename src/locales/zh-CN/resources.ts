@@ -57,7 +57,12 @@ export default {
     '按需要挂载的 GPU index 设置 <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES</span>，如需挂载 GPU0 - GPU3，则设为 <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES=0,1,2,3</span> 或 <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES=0-3</span>',
   'resources.modelfiles.form.path': '存储路径',
   'resources.modelfiles.modelfile': '模型文件',
-  'resources.modelfiles.download': '添加模型',
+  'resources.modelfiles.download': '添加模型文件',
   'resources.modelfiles.size': '文件大小',
-  'resources.modelfiles.selecttarget': '选择目标位置'
+  'resources.modelfiles.selecttarget': '选择目标位置',
+  'resources.modelfiles.form.localdir': '本地目录',
+  'resources.modelfiles.form.localdir.tips':
+    '默认存储目录为 /var/lib/gpustack/cache',
+  'resources.modelfiles.retry.download': '重新下载',
+  'resources.modelfiles.storagePath.holder': '等待下载完成...'
 };

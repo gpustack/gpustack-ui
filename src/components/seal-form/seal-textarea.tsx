@@ -1,8 +1,9 @@
 import { Form, Input } from 'antd';
 import type { TextAreaProps } from 'antd/es/input/TextArea';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import InputWrapper from './wrapper/input';
 
 const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
   const {
@@ -78,30 +79,32 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
   );
 
   return (
-    <Wrapper
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      className="seal-textarea-wrapper"
-      extra={extra}
-      disabled={props.disabled}
-      addAfter={addAfter}
-      onClick={handleClickWrapper}
-    >
-      <Input.TextArea
-        {...rest}
-        autoSize={rest.autoSize || { minRows: 2, maxRows: 5 }}
-        ref={inputRef}
-        style={{ minHeight: '80px', ...style }}
-        className="seal-textarea"
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onInput={handleInput}
-        onChange={(e) => handleChange(e)}
-      ></Input.TextArea>
-    </Wrapper>
+    <InputWrapper>
+      <Wrapper
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        className="seal-textarea-wrapper"
+        extra={extra}
+        disabled={props.disabled}
+        addAfter={addAfter}
+        onClick={handleClickWrapper}
+      >
+        <Input.TextArea
+          {...rest}
+          autoSize={rest.autoSize || { minRows: 2, maxRows: 5 }}
+          ref={inputRef}
+          style={{ minHeight: '80px', ...style }}
+          className="seal-textarea"
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onInput={handleInput}
+          onChange={(e) => handleChange(e)}
+        ></Input.TextArea>
+      </Wrapper>
+    </InputWrapper>
   );
 };
 

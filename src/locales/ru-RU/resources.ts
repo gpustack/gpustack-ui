@@ -13,14 +13,10 @@ export default {
   'resources.form.enablePartialOffload': 'Разрешить оффлоуд на CPU',
   'resources.form.placementStrategy': 'Стратегия размещения',
   'resources.form.workerSelector': 'Селектор воркеров',
-  'resources.form.enableDistributedInferenceAcrossWorkers':
-    'Разрешить распределённый инференс между воркерами',
-  'resources.form.spread.tips':
-    'Равномерно распределяет ресурсы между воркерами. Может увеличить фрагментацию ресурсов на отдельных воркерах.',
-  'resources.form.binpack.tips':
-    'Максимизирует утилизацию ресурсов, уменьшая фрагментацию на воркерах/GPU.',
-  'resources.form.workerSelector.description':
-    'Система выбирает подходящие GPU/воркеры для развертывания моделей на основе меток.',
+  'resources.form.enableDistributedInferenceAcrossWorkers': 'Разрешить распределённый инференс между воркерами',
+  'resources.form.spread.tips': 'Равномерно распределяет ресурсы между воркерами. Может увеличить фрагментацию ресурсов на отдельных воркерах.',
+  'resources.form.binpack.tips': 'Максимизирует утилизацию ресурсов, уменьшая фрагментацию на воркерах/GPU.',
+  'resources.form.workerSelector.description': 'Система выбирает подходящие GPU/воркеры для развертывания моделей на основе меток.',
   'resources.table.ip': 'IP-адрес',
   'resources.table.cpu': 'CPU',
   'resources.table.memory': 'ОЗУ',
@@ -43,44 +39,28 @@ export default {
   'resources.table.unified': 'Объединённая память',
   'resources.worker.add.step1': 'Получить токен',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
-  'resources.worker.add.step2.tips':
-    'Примечание: <span style="color: #000;font-weight: 600">mytoken</span> — токен из первого шага.',
-  'resources.worker.add.step3':
-    'После успешной регистрации обновите список воркеров.',
+  'resources.worker.add.step2.tips': 'Примечание: <span style="color: #000;font-weight: 600">mytoken</span> — токен из первого шага.',
+  'resources.worker.add.step3': 'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',
   'resources.worker.current.version': 'Текущая версия: {version}',
-  'resources.worker.driver.install':
-    'Установите необходимые драйверы и библиотеки перед установкой GPUStack.',
-  'resources.worker.select.command':
-    'Выберите метку для генерации команды и скопируйте её.',
+  'resources.worker.driver.install': 'Установите необходимые драйверы и библиотеки перед установкой GPUStack.',
+  'resources.worker.select.command': 'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
   'resources.worker.container.install': 'Установка контейнером (только Linux)',
   'resources.worker.cann.tips': `Укажите индексы GPU через <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> или <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`,
-  'resources.modelfiles.form.path': 'Storage path',
-  'resources.modelfiles.modelfile': 'Model Files',
-  'resources.modelfiles.download': 'Add Model File',
-  'resources.modelfiles.size': 'Size',
-  'resources.modelfiles.selecttarget': 'Select Target',
-  'resources.modelfiles.form.localdir': 'Local Directory',
-  'resources.modelfiles.form.localdir.tips':
-    'The default storage directory is <span class="desc-block>/var/lib/gpustack/cache</span> or the directory specified with <span class="desc-block">--data-dir</span>.',
-  'resources.modelfiles.retry.download': 'Retry Download',
-  'resources.modelfiles.storagePath.holder':
-    'Waiting for download to complete...',
-  'resources.filter.worker': 'Filter by Worker',
-  'resources.filter.source': 'Filter by Source'
+  'resources.modelfiles.form.path': 'Путь хранения',
+  'resources.modelfiles.modelfile': 'Файлы моделей',
+  'resources.modelfiles.download': 'Добавить файл модели',
+  'resources.modelfiles.size': 'Размер',
+  'resources.modelfiles.selecttarget': 'Выбрать назначение',
+  'resources.modelfiles.form.localdir': 'Локальный каталог',
+  'resources.modelfiles.form.localdir.tips': 'Каталог по умолчанию <span class="desc-block>/var/lib/gpustack/cache</span> или каталог, указанный через <span class="desc-block">--data-dir</span>.',
+  'resources.modelfiles.retry.download': 'Повторить загрузку',
+  'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
+  'resources.filter.worker': 'Фильтровать по узлу',
+  'resources.filter.source': 'Фильтровать по источнику'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-//1. 'resources.modelfiles.form.path',
-//2. 'resources.modelfiles.modelfile',
-//3. 'resources.modelfiles.download',
-//4. 'resources.modelfiles.size',
-//5. 'resources.modelfiles.selecttarget',
-//6. 'resources.modelfiles.form.localdir',
-//7. 'resources.modelfiles.retry.download',
-//8. 'resources.modelfiles.form.localdir.tips',
-//9. 'resources.modelfiles.storagePath.holder',
-//10. 'resources.filter.worker',
-//11. 'resources.filter.source',
+
 // ========== End of To-Do List ==========

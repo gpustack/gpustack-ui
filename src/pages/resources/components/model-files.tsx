@@ -15,7 +15,8 @@ import DeployModal from '@/pages/llmodels/components/deploy-modal';
 import {
   backendOptionsMap,
   getSourceRepoConfigValue,
-  modelSourceMap
+  modelSourceMap,
+  setSourceRepoConfigValue
 } from '@/pages/llmodels/config';
 import { identifyModelTask } from '@/pages/llmodels/config/audio-catalog';
 import {
@@ -66,8 +67,7 @@ import {
   ListItem as WorkerListItem
 } from '../config/types';
 
-const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
-const filterPattern = /^(.*)-\d+-of-\d+(\.gguf)?$/;
+const filterPattern = /^(.*?)(?:-\d+-of-\d+)?(\.gguf)?$/;
 
 const getWorkerName = (
   id: number,
@@ -122,7 +122,7 @@ const ModelFiles = () => {
     handleTableChange,
     handleSearch,
     handleNameChange,
-    setQueryParams
+    handleQueryChange
   } = useTableFetch<ListItem>({
     fetchAPI: queryModelFilesList,
     deleteAPI: deleteModelFile,
@@ -198,17 +198,9 @@ const ModelFiles = () => {
   };
 
   const handleWorkerChange = (value: number) => {
-    setQueryParams({
-      ...queryParams,
+    handleQueryChange({
       page: 1,
       worker_id: value
-    });
-    fetchData({
-      query: {
-        ...queryParams,
-        page: 1,
-        worker_id: value
-      }
     });
   };
   const generateInitialValues = (record: ListItem) => {
@@ -229,9 +221,12 @@ const ModelFiles = () => {
       ).pop()
     );
 
+    const result = setSourceRepoConfigValue(record.source, record);
+
     return {
-      source: modelSourceMap.local_path_value,
-      local_path: record.resolved_paths?.[0],
+      ...result.values,
+      source: record.source,
+      local_path: record.local_path,
       name: extractFileName(name),
       backend:
         isGGUF || isOllama
@@ -248,17 +243,7 @@ const ModelFiles = () => {
     if (!parts.length) {
       return null;
     }
-    const partsList = parts.map((item: string) => {
-      const match = item.match(pattern);
-      if (!match) {
-        return null;
-      }
-      return {
-        part: parseInt(match[2], 10),
-        total: parseInt(match[3], 10),
-        name: _.split(match[1], '/').pop()
-      };
-    });
+
     return (
       <Tag
         className="flex-center"
@@ -295,8 +280,11 @@ const ModelFiles = () => {
         ]);
         const dataList = generateModelFileOptions(modelFileList, workersList);
         const initialValues = generateInitialValues(record);
+        console.log('initialValues:', initialValues);
         setOpenDeployModal({
           ...openDeployModal,
+          source: record.source,
+          width: 600,
           modelFileOptions: dataList,
           gpuOptions: gpuList,
           initialValues: initialValues,
@@ -393,7 +381,11 @@ const ModelFiles = () => {
       dataIndex: 'source',
       render: (text: string, record: ListItem) => (
         <span className="flex flex-column" style={{ width: '100%' }}>
-          <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
+          {record.source === modelSourceMap.local_path_value ? (
+            intl.formatMessage({ id: 'models.form.localPath' })
+          ) : (
+            <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
+          )}
         </span>
       )
     },
@@ -581,6 +573,7 @@ const ModelFiles = () => {
         workersList={workersList}
       ></DownloadModal>
       <DeployModal
+        deploymentType="modelFiles"
         open={openDeployModal.show}
         action={PageAction.CREATE}
         title={intl.formatMessage({ id: 'models.button.deploy' })}

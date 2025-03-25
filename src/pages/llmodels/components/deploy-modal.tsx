@@ -26,6 +26,7 @@ type AddModalProps = {
   gpuOptions: any[];
   modelFileOptions: any[];
   initialValues?: any;
+  deploymentType?: 'modelList' | 'modelFiles';
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -39,6 +40,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     source,
     action,
     width = 600,
+    deploymentType = 'modelList',
     initialValues
   } = props || {};
   const SEARCH_SOURCE = [
@@ -147,8 +149,10 @@ const AddModal: FC<AddModalProps> = (props) => {
     } else if (source === modelSourceMap.ollama_library_value) {
       form.current?.setFieldValue?.('backend', backendOptionsMap.llamaBox);
       setIsGGUF(true);
-    } else {
-      form.current?.setFieldsValue({
+    }
+
+    if (props.deploymentType === 'modelFiles' && open) {
+      form.current?.form?.setFieldsValue({
         ...props.initialValues
       });
       setIsGGUF(props.isGGUF || false);
@@ -157,7 +161,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     return () => {
       setSelectedModel({});
     };
-  }, [open, source, props.isGGUF, props.initialValues]);
+  }, [open, source, props.isGGUF, props.initialValues, props.deploymentType]);
 
   return (
     <Drawer
@@ -198,52 +202,53 @@ const AddModal: FC<AddModalProps> = (props) => {
       footer={false}
     >
       <div style={{ display: 'flex', height: '100%' }}>
-        {SEARCH_SOURCE.includes(props.source) && (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                flex: 1,
-                maxWidth: '33.33%'
-              }}
-            >
-              <ColumnWrapper>
-                <SearchModel
-                  modelSource={props.source}
-                  onSelectModel={handleOnSelectModel}
-                ></SearchModel>
-              </ColumnWrapper>
-              <Separator></Separator>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flex: 1,
-                maxWidth: '33.33%'
-              }}
-            >
-              <ColumnWrapper>
-                <ModelCard
-                  selectedModel={selectedModel}
-                  onCollapse={setCollapsed}
-                  collapsed={collapsed}
-                  modelSource={props.source}
-                  setIsGGUF={handleSetIsGGUF}
-                ></ModelCard>
-                {isGGUF && (
-                  <HFModelFile
-                    ref={modelFileRef}
-                    selectedModel={selectedModel}
+        {SEARCH_SOURCE.includes(props.source) &&
+          deploymentType === 'modelList' && (
+            <>
+              <div
+                style={{
+                  display: 'flex',
+                  flex: 1,
+                  maxWidth: '33.33%'
+                }}
+              >
+                <ColumnWrapper>
+                  <SearchModel
                     modelSource={props.source}
-                    onSelectFile={handleSelectModelFile}
+                    onSelectModel={handleOnSelectModel}
+                  ></SearchModel>
+                </ColumnWrapper>
+                <Separator></Separator>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flex: 1,
+                  maxWidth: '33.33%'
+                }}
+              >
+                <ColumnWrapper>
+                  <ModelCard
+                    selectedModel={selectedModel}
+                    onCollapse={setCollapsed}
                     collapsed={collapsed}
-                  ></HFModelFile>
-                )}
-              </ColumnWrapper>
-              <Separator></Separator>
-            </div>
-          </>
-        )}
+                    modelSource={props.source}
+                    setIsGGUF={handleSetIsGGUF}
+                  ></ModelCard>
+                  {isGGUF && (
+                    <HFModelFile
+                      ref={modelFileRef}
+                      selectedModel={selectedModel}
+                      modelSource={props.source}
+                      onSelectFile={handleSelectModelFile}
+                      collapsed={collapsed}
+                    ></HFModelFile>
+                  )}
+                </ColumnWrapper>
+                <Separator></Separator>
+              </div>
+            </>
+          )}
         <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
           <ColumnWrapper
             paddingBottom={warningStatus.show ? 125 : 50}
@@ -283,12 +288,13 @@ const AddModal: FC<AddModalProps> = (props) => {
             }
           >
             <>
-              {SEARCH_SOURCE.includes(source) && (
-                <TitleWrapper>
-                  {intl.formatMessage({ id: 'models.form.configurations' })}
-                  <span style={{ display: 'flex', height: 24 }}></span>
-                </TitleWrapper>
-              )}
+              {SEARCH_SOURCE.includes(source) &&
+                deploymentType === 'modelList' && (
+                  <TitleWrapper>
+                    {intl.formatMessage({ id: 'models.form.configurations' })}
+                    <span style={{ display: 'flex', height: 24 }}></span>
+                  </TitleWrapper>
+                )}
               <DataForm
                 initialValues={initialValues}
                 source={source}

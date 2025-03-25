@@ -2,7 +2,7 @@ import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip, message } from 'antd';
 import ClipboardJS from 'clipboard';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 type CopyButtonProps = {
   text: string;
@@ -20,6 +20,7 @@ type CopyButtonProps = {
     | 'topRight'
     | 'bottomLeft'
     | 'bottomRight';
+  btnStyle?: React.CSSProperties;
   style?: React.CSSProperties;
 };
 
@@ -30,6 +31,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   shape = 'default',
   fontSize = '14px',
   style,
+  btnStyle,
   placement,
   size = 'middle'
 }) => {
@@ -77,6 +79,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
         size={size}
         disabled={!!disabled}
         data-clipboard-text={text}
+        style={{ ...btnStyle }}
         icon={
           copied ? (
             <CheckCircleFilled

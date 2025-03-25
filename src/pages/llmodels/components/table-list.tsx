@@ -259,8 +259,7 @@ const Models: React.FC<ModelsProps> = ({
         );
         await updateModel({
           data: {
-            ...result.values,
-            ..._.omit(data, result.omits)
+            ...result.values
           },
           id: currentData.current?.id as number
         });
@@ -296,8 +295,7 @@ const Models: React.FC<ModelsProps> = ({
 
         const modelData = await createModel({
           data: {
-            ...result.values,
-            ..._.omit(data, result.omits)
+            ...result.values
           }
         });
         setOpenDeployModal({

@@ -1,5 +1,6 @@
 import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
 export const ollamaModelOptions = [
   {
@@ -345,8 +346,7 @@ export const getSourceRepoConfigValue = (
   source: string,
   data: any
 ): {
-  values: Record<string, any>;
-  omits: string[];
+  values: typeof data;
 } => {
   const config: Record<string, any> = sourceRepoConfig[source] || {};
   const result: Record<string, any> = {};
@@ -359,8 +359,7 @@ export const getSourceRepoConfigValue = (
   });
 
   return {
-    values: result,
-    omits: omits
+    values: { ...result, ..._.omit(data, omits) }
   };
 };
 
@@ -369,7 +368,6 @@ export const setSourceRepoConfigValue = (
   data: any
 ): {
   values: Record<string, any>;
-  omits: string[];
 } => {
   const config: Record<string, any> = sourceRepoConfig[source] || {};
   const result: Record<string, any> = {};
@@ -382,8 +380,7 @@ export const setSourceRepoConfigValue = (
   });
 
   return {
-    values: result,
-    omits: omits
+    values: { ...result, ..._.omit(data, omits) }
   };
 };
 

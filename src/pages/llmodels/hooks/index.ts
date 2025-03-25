@@ -78,7 +78,6 @@ export const useGenerateFormEditInitialValues = () => {
 
     const formData = {
       ...result.values,
-      ..._.omit(data, result.omits),
       categories: data?.categories?.length ? data.categories[0] : null,
       scheduleType: data?.gpu_selector ? 'manual' : 'auto',
       gpu_selector: data?.gpu_selector?.gpu_ids?.length

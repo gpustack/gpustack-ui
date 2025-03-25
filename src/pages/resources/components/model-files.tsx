@@ -221,10 +221,18 @@ const ModelFiles = () => {
       ).pop()
     );
 
+    const targetWorker = _.find(workersList, { value: record.worker_id })
+      ?.labels?.['worker-name'];
+
     const result = setSourceRepoConfigValue(record.source, record);
 
     return {
       ...result.values,
+      worker_selector: targetWorker
+        ? {
+            'worker-name': targetWorker
+          }
+        : {},
       source: record.source,
       local_path: record.local_path,
       name: extractFileName(name),
@@ -280,7 +288,6 @@ const ModelFiles = () => {
         ]);
         const dataList = generateModelFileOptions(modelFileList, workersList);
         const initialValues = generateInitialValues(record);
-        console.log('initialValues:', initialValues);
         setOpenDeployModal({
           ...openDeployModal,
           source: record.source,
@@ -359,8 +366,7 @@ const ModelFiles = () => {
 
       const modelData = await createModel({
         data: {
-          ...result.values,
-          ..._.omit(data, result.omits)
+          ...result.values
         }
       });
       setOpenDeployModal({
@@ -433,6 +439,7 @@ const ModelFiles = () => {
               <CopyButton
                 text={record.resolved_paths?.[0]}
                 type="link"
+                btnStyle={{ width: 18, paddingInline: 2 }}
               ></CopyButton>
               {renderParts(record)}
             </span>

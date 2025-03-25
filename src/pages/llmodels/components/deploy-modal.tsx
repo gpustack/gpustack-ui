@@ -292,7 +292,6 @@ const AddModal: FC<AddModalProps> = (props) => {
                 deploymentType === 'modelList' && (
                   <TitleWrapper>
                     {intl.formatMessage({ id: 'models.form.configurations' })}
-                    <span style={{ display: 'flex', height: 24 }}></span>
                   </TitleWrapper>
                 )}
               <DataForm

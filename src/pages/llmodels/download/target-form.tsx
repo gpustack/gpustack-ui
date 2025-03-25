@@ -171,9 +171,15 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
           ]}
         >
           <SealInput.Input
-            description={intl.formatMessage({
-              id: 'resources.modelfiles.form.localdir.tips'
-            })}
+            description={
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: intl.formatMessage({
+                    id: 'resources.modelfiles.form.localdir.tips'
+                  })
+                }}
+              ></span>
+            }
             label={intl.formatMessage({
               id: 'resources.modelfiles.form.localdir'
             })}

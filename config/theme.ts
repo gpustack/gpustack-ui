@@ -32,6 +32,11 @@ export default {
       colorBgSpotlight: '#3e3e3e'
       // sizePopupArrow: 0
     },
+    Button: {
+      primaryShadow: 'none',
+      defaultShadow: 'none',
+      dangerShadow: 'none'
+    },
     Cascader: {
       dropdownHeight: 240
     },

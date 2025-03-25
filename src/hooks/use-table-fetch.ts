@@ -106,13 +106,16 @@ export default function useTableFetch<ListItem>(options: {
     }
   };
 
-  const handlePageChange = (page: number, pageSize: number) => {
+  const handleQueryChange = (params: any) => {
     setQueryParams({
       ...queryParams,
-      page: page,
-      perPage: pageSize || 10
+      ...params
     });
-    fetchData({ query: { ...queryParams, page, perPage: pageSize || 10 } });
+    fetchData({ query: { ...queryParams, ...params } });
+  };
+
+  const handlePageChange = (page: number, pageSize: number) => {
+    handleQueryChange({ page, perPage: pageSize || 10 });
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
@@ -124,17 +127,9 @@ export default function useTableFetch<ListItem>(options: {
   };
 
   const debounceUpdateFilter = _.debounce((e: any) => {
-    setQueryParams({
-      ...queryParams,
+    handleQueryChange({
       page: 1,
       search: e.target.value
-    });
-    fetchData({
-      query: {
-        ...queryParams,
-        page: 1,
-        search: e.target.value
-      }
     });
     createModelsChunkRequest({
       ...queryParams,
@@ -198,6 +193,7 @@ export default function useTableFetch<ListItem>(options: {
     handlePageChange,
     handleTableChange,
     handleSearch,
+    handleQueryChange,
     handleNameChange
   };
 }

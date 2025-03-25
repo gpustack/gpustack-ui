@@ -99,6 +99,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     ref,
     () => {
       return {
+        form: form,
         submit: handleSumit,
         setFieldsValue: (values: FormData) => {
           form.setFieldsValue(values);
@@ -288,30 +289,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             label={intl.formatMessage({ id: 'models.form.filePath' })}
             description={<TooltipList list={localPathTipsList}></TooltipList>}
           ></SealAutoComplete>
-          {/* <SealCascader
-            required
-            showSearch
-            description={<TooltipList list={localPathTipsList}></TooltipList>}
-            expandTrigger="hover"
-            multiple={false}
-            onSearch={handleOnSearch}
-            popupClassName="cascader-popup-wrapper gpu-selector"
-            maxTagCount={1}
-            label={intl.formatMessage({ id: 'models.form.gpuselector' })}
-            options={modelFileOptions}
-            showCheckedStrategy="SHOW_CHILD"
-            value={form.getFieldValue('local_path')}
-            getPopupContainer={(triggerNode) => triggerNode.parentNode}
-            displayRender={() => (
-              <Input
-                style={{
-                  border: 'none',
-                  outline: 'none',
-                  width: '100%'
-                }}
-              />
-            )}
-          ></SealCascader> */}
         </Form.Item>
       </>
     );
@@ -488,7 +465,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   useEffect(() => {
     handleOnSelectModel();
   }, [props.selectedModel.name]);
-
   return (
     <Form
       name="deployModel"

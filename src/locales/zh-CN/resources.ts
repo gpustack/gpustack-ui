@@ -66,5 +66,5 @@ export default {
   'resources.modelfiles.retry.download': '重新下载',
   'resources.modelfiles.storagePath.holder': '等待下载完成...',
   'resources.filter.worker': '按 worker 筛选',
-  'resources.filter.file': '按文件筛选'
+  'resources.filter.source': '按来源筛选'
 };

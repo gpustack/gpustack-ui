@@ -2,12 +2,19 @@ import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
+import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
-import { modelSourceMap, ollamaModelOptions, sourceOptions } from '../config';
+import {
+  localPathTipsList,
+  modelSourceMap,
+  ollamaModelOptions,
+  sourceOptions
+} from '../config';
 
 interface TargetFormProps {
   ref?: any;
@@ -27,7 +34,8 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
   }));
 
   const handleOk = (values: any) => {
-    onOk(values);
+    const data = _.pickBy(values, (val: string) => val);
+    onOk(data);
   };
 
   const renderLocalPathFields = () => {
@@ -46,6 +54,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
           <SealInput.Input
             required
             label={intl.formatMessage({ id: 'models.form.filePath' })}
+            description={<TooltipList list={localPathTipsList}></TooltipList>}
           ></SealInput.Input>
         </Form.Item>
       </>
@@ -66,6 +75,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
           ]}
         >
           <SealAutoComplete
+            allowClear
             filterOption
             defaultActiveFirstOption
             disabled={false}

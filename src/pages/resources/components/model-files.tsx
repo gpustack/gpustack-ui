@@ -227,14 +227,13 @@ const ModelFiles = () => {
     const result = setSourceRepoConfigValue(record.source, record);
 
     return {
-      ...result.values,
+      source: modelSourceMap.local_path_value,
+      local_path: record.resolved_paths?.[0],
       worker_selector: targetWorker
         ? {
             'worker-name': targetWorker
           }
         : {},
-      source: record.source,
-      local_path: record.local_path,
       name: extractFileName(name),
       backend:
         isGGUF || isOllama
@@ -290,8 +289,6 @@ const ModelFiles = () => {
         const initialValues = generateInitialValues(record);
         setOpenDeployModal({
           ...openDeployModal,
-          source: record.source,
-          width: 600,
           modelFileOptions: dataList,
           gpuOptions: gpuList,
           initialValues: initialValues,
@@ -400,7 +397,7 @@ const ModelFiles = () => {
       dataIndex: 'worker_name',
       render: (text: string, record: ListItem) => {
         return (
-          <AutoTooltip ghost maxWidth={240}>
+          <AutoTooltip ghost>
             <span>{getWorkerName(record.worker_id, workersList)}</span>
           </AutoTooltip>
         );
@@ -417,6 +414,7 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
       dataIndex: 'resolved_paths',
+      width: '35%',
       render: (text: string, record: ListItem) => {
         if (
           !record.resolved_paths.length &&
@@ -433,7 +431,7 @@ const ModelFiles = () => {
         return (
           record.resolved_paths?.length > 0 && (
             <span className="flex-center">
-              <AutoTooltip ghost maxWidth={'100%'}>
+              <AutoTooltip ghost>
                 <span>{record.resolved_paths?.[0]}</span>
               </AutoTooltip>
               <CopyButton
@@ -492,7 +490,7 @@ const ModelFiles = () => {
           <Space>
             <Input
               placeholder={intl.formatMessage({
-                id: 'resources.filter.file'
+                id: 'resources.filter.source'
               })}
               style={{ width: 230 }}
               allowClear

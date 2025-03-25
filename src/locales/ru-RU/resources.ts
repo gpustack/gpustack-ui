@@ -66,7 +66,9 @@ export default {
     'The default storage directory is /var/lib/gpustack/cache.',
   'resources.modelfiles.retry.download': 'Retry Download',
   'resources.modelfiles.storagePath.holder':
-    'Waiting for download to complete...'
+    'Waiting for download to complete...',
+  'resources.filter.worker': 'Filter by Worker',
+  'resources.filter.file': 'Filter by File'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -79,4 +81,6 @@ export default {
 //7. 'resources.modelfiles.retry.download',
 //8. 'resources.modelfiles.form.localdir.tips',
 //9. 'resources.modelfiles.storagePath.holder',
+//10. 'resources.filter.worker',
+//11. 'resources.filter.file',
 // ========== End of To-Do List ==========

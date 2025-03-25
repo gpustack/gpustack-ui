@@ -9,6 +9,7 @@ import TableRow from './row';
 export interface ColumnProps {
   title: string;
   key: string;
+  width?: string | number;
   render?: (data: {
     dataIndex: string;
     dataList?: any[];
@@ -34,13 +35,20 @@ export interface ColumnProps {
 }
 
 interface SimpleTableProps {
+  theme?: 'dark' | 'light';
   columns: ColumnProps[];
   dataSource: any[];
   bordered?: boolean;
   rowKey?: string;
 }
 const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
-  const { columns, dataSource, rowKey, bordered = true } = props;
+  const {
+    columns,
+    dataSource,
+    rowKey,
+    bordered = true,
+    theme = 'dark'
+  } = props;
   const scroller = React.useRef<any>(null);
   const { initialize } = useOverlayScroller();
 
@@ -50,7 +58,7 @@ const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
   return (
     <div style={{ maxHeight: 200 }} ref={scroller}>
       <table
-        className={classNames('simple-table', {
+        className={classNames('simple-table', theme, {
           'simple-table-bordered': bordered
         })}
       >

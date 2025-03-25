@@ -39,6 +39,34 @@ const fieldList = [
   }
 ];
 
+const downloadList: ColumnProps[] = [
+  {
+    title: 'Worker',
+    key: 'worker_name',
+    width: 200
+  },
+  {
+    title: 'Status',
+    key: 'download_progress',
+    render: ({ row }) => {
+      return (
+        <StatusTag
+          download={{
+            percent: row.download_progress
+          }}
+          statusValue={{
+            status: row.download_progress
+              ? status[InstanceStatusMap.Running]
+              : status[InstanceStatusMap.Initializing],
+            text: row.download_progress,
+            message: ''
+          }}
+        />
+      );
+    }
+  }
+];
+
 const WorkerInfo = (props: {
   title: React.ReactNode;
   defaultOpen: boolean;
@@ -70,6 +98,82 @@ const WorkerInfo = (props: {
   );
 };
 
+const RenderRayactorDownloading = (props: {
+  severList: any[];
+  instanceData: any;
+  workerList: WorkerListItem[];
+}) => {
+  const { severList, instanceData, workerList } = props;
+  if (!severList.length) {
+    return null;
+  }
+  const list = _.map(severList, (item: any) => {
+    const data = _.find(workerList, { id: item.worker_id });
+    return {
+      worker_name: data?.name,
+      worker_ip: data?.ip,
+      download_progress: _.round(item.download_progress, 2)
+    };
+  });
+
+  const mainWorker = [
+    {
+      worker_name: `${instanceData.worker_name}`,
+      worker_ip: `${instanceData.worker_ip}`,
+      download_progress: _.round(instanceData.download_progress, 2)
+    }
+  ];
+
+  return (
+    <div>
+      <SimpleTabel
+        columns={downloadList}
+        dataSource={[...mainWorker, ...list]}
+        theme="light"
+      ></SimpleTabel>
+    </div>
+  );
+};
+
+const RenderWorkerDownloading = (props: {
+  rayActors: any[];
+  workerList: WorkerListItem[];
+  instanceData: ModelInstanceListItem;
+}) => {
+  const { rayActors, workerList, instanceData } = props;
+  if (instanceData.state === InstanceStatusMap.Error || !rayActors.length) {
+    return null;
+  }
+  return (
+    <Tooltip
+      arrow={true}
+      overlayInnerStyle={{
+        width: 300,
+        backgroundColor: 'var(--color-white-1)'
+      }}
+      overlayClassName="light-downloading-tooltip"
+      title={
+        <RenderRayactorDownloading
+          severList={rayActors}
+          workerList={workerList}
+          instanceData={instanceData}
+        ></RenderRayactorDownloading>
+      }
+    >
+      <Progress
+        showInfo={false}
+        type="circle"
+        size={20}
+        strokeColor="var(--color-progress-green)"
+        percent={
+          _.find(rayActors, (item: any) => item.download_progress < 100)
+            ?.download_progress || 100
+        }
+      />
+    </Tooltip>
+  );
+};
+
 const InstanceStatusTag = (
   props: Pick<InstanceItemProps, 'instanceData' | 'handleChildSelect'>
 ) => {
@@ -79,39 +183,41 @@ const InstanceStatusTag = (
     return null;
   }
   return (
-    <StatusTag
-      download={
-        instanceData.state === InstanceStatusMap.Downloading
-          ? { percent: instanceData.download_progress }
-          : undefined
-      }
-      extra={
-        instanceData.state === InstanceStatusMap.Error &&
-        instanceData.worker_id ? (
-          <Button
-            type="link"
-            size="small"
-            style={{ paddingLeft: 0 }}
-            onClick={() => handleChildSelect('viewlog', instanceData)}
-          >
-            {intl.formatMessage({ id: 'models.list.more.logs' })}
-          </Button>
-        ) : null
-      }
-      statusValue={{
-        status:
-          instanceData.state === InstanceStatusMap.Downloading &&
-          instanceData.download_progress === 100
-            ? status[InstanceStatusMap.Running]
-            : status[instanceData.state],
-        text: InstanceStatusMapValue[instanceData.state],
-        message:
-          instanceData.state === InstanceStatusMap.Downloading &&
-          instanceData.download_progress === 100
-            ? ''
-            : instanceData.state_message
-      }}
-    />
+    <>
+      <StatusTag
+        download={
+          instanceData.state === InstanceStatusMap.Downloading
+            ? { percent: instanceData.download_progress }
+            : undefined
+        }
+        extra={
+          instanceData.state === InstanceStatusMap.Error &&
+          instanceData.worker_id ? (
+            <Button
+              type="link"
+              size="small"
+              style={{ paddingLeft: 0 }}
+              onClick={() => handleChildSelect('viewlog', instanceData)}
+            >
+              {intl.formatMessage({ id: 'models.list.more.logs' })}
+            </Button>
+          ) : null
+        }
+        statusValue={{
+          status:
+            instanceData.state === InstanceStatusMap.Downloading &&
+            instanceData.download_progress === 100
+              ? status[InstanceStatusMap.Running]
+              : status[instanceData.state],
+          text: InstanceStatusMapValue[instanceData.state],
+          message:
+            instanceData.state === InstanceStatusMap.Downloading &&
+            instanceData.download_progress === 100
+              ? ''
+              : instanceData.state_message
+        }}
+      />
+    </>
   );
 };
 
@@ -341,6 +447,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <Tag
           color="processing"
           style={{
+            marginRight: 0,
             display: 'flex',
             alignItems: 'center',
             maxWidth: '100%',
@@ -471,13 +578,18 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
             </Col>
             <Col span={4}>
               <span
-                style={{ paddingLeft: '62px' }}
-                className="flex justify-center"
+                style={{ paddingLeft: '62px', gap: 4 }}
+                className="flex-center justify-center"
               >
                 <InstanceStatusTag
                   instanceData={instanceData}
                   handleChildSelect={handleChildSelect}
                 />
+                <RenderWorkerDownloading
+                  rayActors={instanceData.distributed_servers?.ray_actors || []}
+                  workerList={workerList}
+                  instanceData={instanceData}
+                ></RenderWorkerDownloading>
               </span>
             </Col>
             <Col span={5}>

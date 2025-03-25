@@ -35,6 +35,7 @@ const TableCell: React.FC<TableCellProps> = (props: TableCellProps) => {
 
   return (
     <td
+      width={column.width}
       key={colIndex}
       rowSpan={column.rowSpan?.({
         row,

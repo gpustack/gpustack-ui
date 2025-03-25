@@ -23,7 +23,8 @@ const icons = {
   HF: React.createElement(IconFont, { type: 'icon-huggingface' }),
   Ollama: React.createElement(IconFont, { type: 'icon-ollama' }),
   ModelScope: React.createElement(IconFont, { type: 'icon-tu2' }),
-  LocalPath: React.createElement(IconFont, { type: 'icon-hard-disk' })
+  LocalPath: React.createElement(IconFont, { type: 'icon-hard-disk' }),
+  Launch: React.createElement(IconFont, { type: 'icon-rocket-launch' })
 };
 
 export const modalConfig: Record<
@@ -192,7 +193,7 @@ export const modelFileActions = [
   {
     label: 'common.button.deploy',
     key: 'deploy',
-    icon: icons.ThunderboltOutlined
+    icon: icons.Launch
   },
   {
     label: 'resources.modelfiles.retry.download',

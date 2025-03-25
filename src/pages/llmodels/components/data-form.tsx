@@ -236,6 +236,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           ]}
         >
           <SealAutoComplete
+            allowClear
             filterOption
             defaultActiveFirstOption
             disabled={false}
@@ -280,6 +281,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           ]}
         >
           <SealAutoComplete
+            allowClear
             required
             filterOption
             defaultActiveFirstOption

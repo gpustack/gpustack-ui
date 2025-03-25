@@ -68,7 +68,7 @@ export default {
   'resources.modelfiles.storagePath.holder':
     'Waiting for download to complete...',
   'resources.filter.worker': 'Filter by Worker',
-  'resources.filter.file': 'Filter by File'
+  'resources.filter.source': 'Filter by Source'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -82,5 +82,5 @@ export default {
 //8. 'resources.modelfiles.form.localdir.tips',
 //9. 'resources.modelfiles.storagePath.holder',
 //10. 'resources.filter.worker',
-//11. 'resources.filter.file',
+//11. 'resources.filter.source',
 // ========== End of To-Do List ==========

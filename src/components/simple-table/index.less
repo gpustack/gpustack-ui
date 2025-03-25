@@ -31,11 +31,23 @@
 
   .cell-span {
     display: flex;
-    padding: 4px 6px;
+    padding: 6px;
     min-height: 32px;
   }
 
   .cell-header {
     font-weight: var(--font-weight-bold);
+  }
+
+  &.light {
+    th {
+      color: var(--ant-color-text);
+      border-bottom: 1px solid var(--ant-color-split);
+    }
+
+    td {
+      color: var(--ant-color-text);
+      border-bottom: 1px solid var(--ant-color-split);
+    }
   }
 }

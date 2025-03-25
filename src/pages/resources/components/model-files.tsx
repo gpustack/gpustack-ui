@@ -12,7 +12,6 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
-import FileParts from '@/pages/llmodels/components/file-parts';
 import {
   backendOptionsMap,
   getSourceRepoConfigValue,
@@ -27,22 +26,17 @@ import {
 } from '@/pages/llmodels/config/button-actions';
 import DownloadModal from '@/pages/llmodels/download';
 import { convertFileSize } from '@/utils';
-import {
-  DeleteOutlined,
-  DownOutlined,
-  InfoCircleOutlined,
-  SyncOutlined
-} from '@ant-design/icons';
+import { DeleteOutlined, DownOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import {
   Button,
   ConfigProvider,
   Empty,
   Input,
+  Select,
   Space,
   Table,
   Tag,
-  Tooltip,
   message
 } from 'antd';
 import dayjs from 'dayjs';
@@ -112,7 +106,7 @@ const InstanceStatusTag = (props: { data: ListItem }) => {
 };
 
 const ModelFiles = () => {
-  const { getGPUList, generateFormValues } = useGenerateFormEditInitialValues();
+  const { getGPUList } = useGenerateFormEditInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const navigate = useNavigate();
@@ -127,7 +121,8 @@ const ModelFiles = () => {
     handlePageChange,
     handleTableChange,
     handleSearch,
-    handleNameChange
+    handleNameChange,
+    setQueryParams
   } = useTableFetch<ListItem>({
     fetchAPI: queryModelFilesList,
     deleteAPI: deleteModelFile,
@@ -202,6 +197,20 @@ const ModelFiles = () => {
     return name.replace(filterPattern, '$1');
   };
 
+  const handleWorkerChange = (value: number) => {
+    setQueryParams({
+      ...queryParams,
+      page: 1,
+      worker_id: value
+    });
+    fetchData({
+      query: {
+        ...queryParams,
+        page: 1,
+        worker_id: value
+      }
+    });
+  };
   const generateInitialValues = (record: ListItem) => {
     const isGGUF = _.includes(record.resolved_paths?.[0], 'gguf');
     const isOllama = !!record.ollama_library_model_name;
@@ -251,28 +260,20 @@ const ModelFiles = () => {
       };
     });
     return (
-      <Tooltip
-        overlayInnerStyle={{
-          width: 120,
-          padding: 0
+      <Tag
+        className="flex-center"
+        color="purple"
+        style={{
+          marginRight: 0,
+          height: 22,
+          borderRadius: 'var(--border-radius-base)'
         }}
-        title={<FileParts fileList={partsList} showSize={false}></FileParts>}
       >
-        <Tag
-          className="tag-item"
-          color="purple"
-          style={{
-            marginRight: 0,
-            height: 22,
-            borderRadius: 'var(--border-radius-base)'
-          }}
-        >
-          <span style={{ opacity: 1 }}>
-            <InfoCircleOutlined className="m-r-5" />
-            {partsList.length} parts
-          </span>
-        </Tag>
-      </Tooltip>
+        <span style={{ opacity: 1 }}>
+          {record.resolved_paths?.length}{' '}
+          {intl.formatMessage({ id: 'models.form.files' })}
+        </span>
+      </Tag>
     );
   };
 
@@ -492,12 +493,23 @@ const ModelFiles = () => {
           <Space>
             <Input
               placeholder={intl.formatMessage({
-                id: 'common.filter.name'
+                id: 'resources.filter.file'
               })}
-              style={{ width: 300 }}
+              style={{ width: 230 }}
               allowClear
               onChange={handleNameChange}
             ></Input>
+            <Select
+              allowClear
+              showSearch={false}
+              placeholder={intl.formatMessage({
+                id: 'resources.filter.worker'
+              })}
+              style={{ width: 230 }}
+              size="large"
+              onChange={handleWorkerChange}
+              options={workersList}
+            ></Select>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}

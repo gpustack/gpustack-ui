@@ -33,7 +33,7 @@ export default function useTableFetch<ListItem>(options: {
     loadend: false,
     total: 0
   });
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<any>({
     page: 1,
     perPage: 10,
     search: ''
@@ -191,6 +191,7 @@ export default function useTableFetch<ListItem>(options: {
     sortOrder,
     queryParams,
     modalRef,
+    setQueryParams,
     handleDelete,
     handleDeleteBatch,
     fetchData,

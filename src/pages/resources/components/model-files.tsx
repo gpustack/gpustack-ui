@@ -205,17 +205,13 @@ const ModelFiles = () => {
           perPage: 100
         });
 
-        const list = res.items
-          ?.map((item: WorkerListItem) => {
-            return {
-              ...item,
-              value: item.id,
-              label: item.name
-            };
-          })
-          .filter(
-            (item: WorkerListItem) => item.state === WorkerStatusMap.ready
-          );
+        const list = res.items?.map((item: WorkerListItem) => {
+          return {
+            ...item,
+            value: item.id,
+            label: item.name
+          };
+        });
         setWorkersList(list);
       } catch (error) {
         // console.log('error', error);
@@ -288,6 +284,7 @@ const ModelFiles = () => {
         color="purple"
         style={{
           marginRight: 0,
+          marginLeft: 4,
           height: 22,
           borderRadius: 'var(--border-radius-base)'
         }}
@@ -625,7 +622,9 @@ const ModelFiles = () => {
         width={downloadModalStatus.width}
         onCancel={handleDownloadCancel}
         onOk={handleDownload}
-        workersList={workersList}
+        workersList={workersList.filter(
+          (item: any) => item.state === WorkerStatusMap.ready
+        )}
       ></DownloadModal>
       <DeployModal
         deploymentType="modelFiles"

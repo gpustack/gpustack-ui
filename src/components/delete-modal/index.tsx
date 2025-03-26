@@ -21,6 +21,7 @@ const CheckboxWrapper = styled.div`
   align-items: center;
   .check-text {
     font-weight: 700;
+    color: var(--ant-color-warning);
   }
 `;
 

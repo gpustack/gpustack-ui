@@ -306,7 +306,7 @@ const ModelFiles = () => {
         handleDelete(
           {
             ...record,
-            name: record.local_path
+            name: record.resolved_paths?.[0]
           },
           {
             checkConfig: {
@@ -488,8 +488,8 @@ const ModelFiles = () => {
                   type="link"
                   btnStyle={{ width: 18, paddingInline: 2 }}
                 ></CopyButton>
-                {renderParts(record)}
               </span>
+              {renderParts(record)}
             </PathWrapper>
           )
         );

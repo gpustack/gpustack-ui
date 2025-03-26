@@ -44,6 +44,7 @@ import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import {
   useGenerateFormEditInitialValues,
   useGenerateModelFileOptions
@@ -69,6 +70,26 @@ import {
 
 const filterPattern = /^(.*?)(?:-\d+-of-\d+)?(\.gguf)?$/;
 
+const PathWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  .btn-wrapper {
+    position: absolute;
+    background: var(--color-bg-1);
+    right: 0;
+    display: none;
+    align-items: center;
+  }
+  &:hover {
+    .btn-wrapper {
+      display: flex;
+      background: var(--ant-table-row-hover-bg);
+    }
+  }
+`;
+
 const getWorkerName = (
   id: number,
   workersList: Global.BaseOption<number>[]
@@ -76,6 +97,7 @@ const getWorkerName = (
   const worker = workersList.find((item) => item.value === id);
   return worker?.label || '';
 };
+
 const InstanceStatusTag = (props: { data: ListItem }) => {
   const { data } = props;
   if (!data.state) {
@@ -272,10 +294,18 @@ const ModelFiles = () => {
   const handleSelect = async (val: any, record: ListItem) => {
     try {
       if (val === 'delete') {
-        handleDelete({
-          ...record,
-          name: record.local_path
-        });
+        handleDelete(
+          {
+            ...record,
+            name: record.local_path
+          },
+          {
+            checkConfig: {
+              checkText: 'resources.modelfiles.delete.tips',
+              defautlChecked: record.source !== modelSourceMap.local_path_value
+            }
+          }
+        );
       } else if (val === 'retry') {
         await retryDownloadModelFile(record.id);
         showSuccess();
@@ -357,6 +387,15 @@ const ModelFiles = () => {
     restoreScrollHeight();
   };
 
+  const handleDeleteByBatch = () => {
+    handleDeleteBatch({
+      checkConfig: {
+        checkText: 'resources.modelfiles.delete.tips',
+        defautlChecked: false
+      }
+    });
+  };
+
   const handleCreateModel = async (data: any) => {
     try {
       const result = getSourceRepoConfigValue(openDeployModal.source, data);
@@ -430,17 +469,19 @@ const ModelFiles = () => {
         }
         return (
           record.resolved_paths?.length > 0 && (
-            <span className="flex-center">
+            <PathWrapper>
               <AutoTooltip ghost>
                 <span>{record.resolved_paths?.[0]}</span>
               </AutoTooltip>
-              <CopyButton
-                text={record.resolved_paths?.[0]}
-                type="link"
-                btnStyle={{ width: 18, paddingInline: 2 }}
-              ></CopyButton>
-              {renderParts(record)}
-            </span>
+              <span className="btn-wrapper">
+                <CopyButton
+                  text={record.resolved_paths?.[0]}
+                  type="link"
+                  btnStyle={{ width: 18, paddingInline: 2 }}
+                ></CopyButton>
+                {renderParts(record)}
+              </span>
+            </PathWrapper>
           )
         );
       }
@@ -534,7 +575,7 @@ const ModelFiles = () => {
             <Button
               icon={<DeleteOutlined />}
               danger
-              onClick={handleDeleteBatch}
+              onClick={handleDeleteByBatch}
               disabled={!rowSelection.selectedRowKeys.length}
             >
               <span>

@@ -11,7 +11,7 @@ export default function useTableFetch<ListItem>(options: {
   API?: string;
   watch?: boolean;
   fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
-  deleteAPI?: (id: number) => Promise<any>;
+  deleteAPI?: (id: number, params?: any) => Promise<any>;
   contentForDelete?: string;
 }) {
   const { fetchAPI, deleteAPI, contentForDelete, API, watch } = options;
@@ -139,27 +139,38 @@ export default function useTableFetch<ListItem>(options: {
 
   const handleNameChange = debounceUpdateFilter;
 
-  const handleDelete = (row: ListItem & { name: string; id: number }) => {
+  const handleDelete = (
+    row: ListItem & { name: string; id: number },
+    options?: any
+  ) => {
     modalRef.current.show({
       content: contentForDelete,
       operation: 'common.delete.single.confirm',
       name: row.name,
+      ...options,
       async onOk() {
         console.log('OK');
-        await deleteAPI?.(row.id);
+        await deleteAPI?.(row.id, {
+          ...modalRef.current?.configuration
+        });
         fetchData();
       }
     });
   };
 
-  const handleDeleteBatch = () => {
+  const handleDeleteBatch = (options = {}) => {
     modalRef.current.show({
       content: contentForDelete,
       operation: 'common.delete.confirm',
       selection: true,
+      ...options,
       async onOk() {
         if (!deleteAPI) return;
-        await handleBatchRequest(rowSelection.selectedRowKeys, deleteAPI);
+        await handleBatchRequest(rowSelection.selectedRowKeys, (id) =>
+          deleteAPI(id, {
+            ...modalRef.current?.configuration
+          })
+        );
         rowSelection.clearSelections();
         fetchData();
       }

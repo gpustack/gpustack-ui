@@ -1,3 +1,4 @@
+import useTabActive from '@/hooks/use-tab-active';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import type { TabsProps } from 'antd';
@@ -14,7 +15,10 @@ const Wrapper = styled.div`
 `;
 
 const Resources = () => {
-  const [activeKey, setActiveKey] = useState('workers');
+  const { setTabActive, getTabActive, tabsMap } = useTabActive();
+  const [activeKey, setActiveKey] = useState(
+    getTabActive(tabsMap.resources) || 'workers'
+  );
 
   const intl = useIntl();
 
@@ -38,6 +42,7 @@ const Resources = () => {
 
   const handleChangeTab = useCallback((key: string) => {
     setActiveKey(key);
+    setTabActive(tabsMap.resources, key);
   }, []);
 
   return (

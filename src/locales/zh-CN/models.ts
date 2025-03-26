@@ -113,5 +113,6 @@ export default {
     '要使用 llama-box 后端，请指定模型文件的完整路径（例如：<span style="font-weight: 700">/data/models/model.gguf</span>）。对于分片模型，请提供第一个分片的路径（例如：<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>）。',
   'models.form.keyvalue.paste':
     '粘贴多行文本，每行包含一个键值对，键和值之间用 = 号分隔，不同的键值对之间用换行符分隔。',
-  'models.form.files': '文件'
+  'models.form.files': '文件',
+  'models.table.status': '状态'
 };

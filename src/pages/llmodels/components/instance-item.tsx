@@ -46,7 +46,8 @@ const downloadList: ColumnProps[] = [
     width: 200
   },
   {
-    title: 'Status',
+    title: 'models.table.status',
+    locale: true,
     key: 'download_progress',
     render: ({ row }) => {
       return (
@@ -141,7 +142,10 @@ const RenderWorkerDownloading = (props: {
   instanceData: ModelInstanceListItem;
 }) => {
   const { rayActors, workerList, instanceData } = props;
-  if (instanceData.state === InstanceStatusMap.Error || !rayActors.length) {
+  if (
+    instanceData.state !== InstanceStatusMap.Downloading ||
+    !rayActors.length
+  ) {
     return null;
   }
   return (
@@ -163,7 +167,7 @@ const RenderWorkerDownloading = (props: {
       <Progress
         showInfo={false}
         type="circle"
-        size={20}
+        size={16}
         strokeColor="var(--color-progress-green)"
         percent={
           _.find(rayActors, (item: any) => item.download_progress < 100)

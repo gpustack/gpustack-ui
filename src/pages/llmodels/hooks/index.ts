@@ -121,6 +121,7 @@ export const useGenerateModelFileOptions = () => {
     const result = Array.from(workersMap.values()).map((worker) => ({
       label: worker.name,
       value: worker.name,
+      labels: worker.labels,
       parent: true,
       children: list
         .filter((item) => item.worker_id === worker.id)
@@ -134,6 +135,8 @@ export const useGenerateModelFileOptions = () => {
           return {
             label: item.resolved_paths[0] || '',
             value: item.resolved_paths[0] || '',
+            worker_labels: worker.labels,
+            worker_name: worker.name,
             parent: false,
             ...item
           };
@@ -161,6 +164,7 @@ export const useGenerateModelFileOptions = () => {
       }
       return acc;
     }, []);
+    console.log('childrenList', childrenList);
 
     return childrenList;
 

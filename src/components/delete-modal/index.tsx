@@ -1,45 +1,68 @@
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Modal, Space, message, type ModalFuncProps } from 'antd';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import {
+  Button,
+  Checkbox,
+  Modal,
+  Space,
+  message,
+  type ModalFuncProps
+} from 'antd';
+import { FC, forwardRef, useImperativeHandle, useState } from 'react';
+import styled from 'styled-components';
 import Styles from './index.less';
 
-const DeleteModal = forwardRef((props, ref) => {
+const CheckboxWrapper = styled.div`
+  margin-top: 20px;
+  margin-left: 30px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  .check-text {
+    font-weight: 700;
+    color: var(--ant-color-warning);
+  }
+`;
+
+interface DeleteModalProps {
+  ref: any;
+}
+
+interface DataOptions {
+  content: string;
+  selection?: boolean;
+  name?: string;
+  okText?: string;
+  cancelText?: string;
+  title?: string;
+  operation: string;
+  checkConfig?: {
+    checkText: string;
+    defautlChecked: boolean;
+  };
+}
+
+const DeleteModal: FC<DeleteModalProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [visible, setVisible] = useState(false);
-  const [config, setConfig] = useState<
-    ModalFuncProps & {
-      content: string;
-      selection?: boolean;
-      name?: string;
-      okText?: string;
-      cancelText?: string;
-      title?: string;
-      operation: string;
-    }
-  >({} as any);
+  const [checked, setChecked] = useState(false);
+  const [config, setConfig] = useState<ModalFuncProps & DataOptions>({} as any);
 
   useImperativeHandle(ref, () => ({
-    show: (
-      data: ModalFuncProps & {
-        content: string;
-        selection?: boolean;
-        name?: string;
-        title?: string;
-        cancelText?: string;
-        okText?: string;
-        operation: string;
-      }
-    ) => {
+    show: (data: ModalFuncProps & DataOptions) => {
       saveScrollHeight();
       setConfig(data);
+      setChecked(data.checkConfig?.defautlChecked || false);
       setVisible(true);
     },
     hide: () => {
       setVisible(false);
       restoreScrollHeight();
+    },
+    configuration: {
+      checked: checked
     }
   }));
 
@@ -111,6 +134,18 @@ const DeleteModal = forwardRef((props, ref) => {
             )
         }}
       ></div>
+      {config.checkConfig && (
+        <CheckboxWrapper>
+          <Checkbox
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          >
+            <span className="check-text">
+              {intl.formatMessage({ id: config.checkConfig?.checkText })}
+            </span>
+          </Checkbox>
+        </CheckboxWrapper>
+      )}
     </Modal>
   );
 });

@@ -45,10 +45,16 @@ export async function queryModelFilesList(params: Global.SearchParams) {
   });
 }
 
-export async function deleteModelFile(id: string | number) {
-  return request<Global.PageResponse<ModelFile>>(`${MODEL_FILES_API}/${id}`, {
-    method: 'DELETE'
-  });
+export async function deleteModelFile(
+  id: string | number,
+  params: { checked: boolean }
+) {
+  return request<Global.PageResponse<ModelFile>>(
+    `${MODEL_FILES_API}/${id}?cleanup=${params.checked}`,
+    {
+      method: 'DELETE'
+    }
+  );
 }
 
 export async function updateModelFile(id: string | number, data: any) {

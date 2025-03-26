@@ -71,21 +71,30 @@ import {
 const filterPattern = /^(.*?)(?:-\d+-of-\d+)?(\.gguf)?$/;
 
 const PathWrapper = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   height: 100%;
-  .btn-wrapper {
+  &::after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 100%;
     position: absolute;
-    background: var(--color-bg-1);
+    top: 0;
     right: 0;
-    display: none;
+    z-index: 1;
+  }
+  .btn-wrapper {
+    display: flex;
+    opacity: 0;
+    width: 0;
     align-items: center;
   }
   &:hover {
     .btn-wrapper {
-      display: flex;
-      background: var(--ant-table-row-hover-bg);
+      width: auto;
+      opacity: 1;
     }
   }
 `;

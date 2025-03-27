@@ -546,7 +546,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <RowChildren>
           <Row style={{ width: '100%' }} align="middle">
             <Col
-              span={5}
+              span={6}
               style={{
                 paddingInline: 'var(--ant-table-cell-padding-inline)'
               }}
@@ -563,7 +563,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 )}
               </span>
             </Col>
-            <Col span={6}>
+            <Col span={7}>
               <span
                 style={{
                   paddingLeft: '58px',
@@ -596,13 +596,15 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 ></RenderWorkerDownloading>
               </span>
             </Col>
-            <Col span={5}>
+            <Col span={4}>
               <span style={{ paddingLeft: 45 }} className="flex">
-                {dayjs(instanceData.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                <AutoTooltip ghost>
+                  {dayjs(instanceData.created_at).format('YYYY-MM-DD HH:mm:ss')}
+                </AutoTooltip>
               </span>
             </Col>
-            <Col span={4}>
-              <div style={{ paddingLeft: 39 }}>
+            <Col span={3}>
+              <div style={{ paddingLeft: 36 }}>
                 <DropdownButtons
                   items={actionItems}
                   onSelect={handleOnSelect}

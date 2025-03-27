@@ -8,8 +8,9 @@ export default {
     },
     Table: {
       cellFontSize: 12,
-      rowSelectedHoverBg: 'rgba(230, 230, 230, 0.88)',
-      rowSelectedBg: 'rgb(244, 245, 244)'
+      rowSelectedHoverBg: 'rgb(249 249 249)',
+      rowHoverBg: 'rgb(249 249 249)',
+      rowSelectedBg: 'transparent'
     },
     Menu: {
       iconSize: 16,
@@ -30,7 +31,6 @@ export default {
     },
     Tooltip: {
       colorBgSpotlight: '#3e3e3e'
-      // sizePopupArrow: 0
     },
     Button: {
       primaryShadow: 'none',

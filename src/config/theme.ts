@@ -9,11 +9,15 @@ export default {
     },
     Table: {
       cellFontSize: 14,
-      rowSelectedHoverBg: 'rgba(230, 230, 230, 0.88)',
-      rowSelectedBg: 'rgb(244, 245, 244)'
+      rowSelectedHoverBg: 'rgb(249 249 249)',
+      rowHoverBg: 'rgb(249 249 249)',
+      rowSelectedBg: 'transparent'
     },
     Button: {
-      contentFontSizeLG: 14
+      contentFontSizeLG: 14,
+      primaryShadow: 'none',
+      defaultShadow: 'none',
+      dangerShadow: 'none'
     },
     Tabs: {
       titleFontSizeLG: 14
@@ -59,6 +63,8 @@ export default {
     }
   },
   token: {
+    fontFamily:
+      "'Segoe UI', Roboto, Helvetica, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
     colorText: 'rgba(0,0,0,1)',
     colorPrimary: '#007BFF',
     colorSuccess: '#54cc98',

@@ -1,4 +1,4 @@
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import IconFont from '@/components/icon-font';
 import { Button, Checkbox } from 'antd';
 import _ from 'lodash';
 import React from 'react';
@@ -28,7 +28,11 @@ const RowPrefix: React.FC<RowPrefixProps> = (props) => {
         <span style={{ marginRight: 5 }}>
           {_.isBoolean(expandable) ? (
             <Button type="text" size="small" onClick={handleRowExpand}>
-              {expanded ? <DownOutlined /> : <RightOutlined />}
+              <IconFont
+                type="icon-down"
+                rotate={expanded ? 0 : -90}
+                className="size-14"
+              ></IconFont>
             </Button>
           ) : (
             expandable
@@ -43,7 +47,11 @@ const RowPrefix: React.FC<RowPrefixProps> = (props) => {
       <div className="row-prefix-wrapper">
         {_.isBoolean(expandable) ? (
           <Button type="text" size="small" onClick={handleRowExpand}>
-            {expanded ? <DownOutlined /> : <RightOutlined />}
+            <IconFont
+              type="icon-down"
+              rotate={expanded ? 0 : -90}
+              className="size-14"
+            ></IconFont>
           </Button>
         ) : (
           expandable

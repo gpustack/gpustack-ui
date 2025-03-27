@@ -7,7 +7,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
-import { QuestionCircleOutlined, RightOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import {
   Checkbox,
@@ -478,10 +478,11 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       destroyInactivePanel={false}
       className={dataformStyles['advanced-collapse']}
       expandIcon={({ isActive }) => (
-        <RightOutlined
-          rotate={isActive ? 90 : 0}
-          style={{ fontSize: '12px' }}
-        />
+        <IconFont
+          type="icon-down"
+          rotate={isActive ? 0 : -90}
+          style={{ fontSize: '14px' }}
+        ></IconFont>
       )}
       items={collapseItems}
     ></Collapse>

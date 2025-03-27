@@ -27,7 +27,7 @@ import {
   message
 } from 'antd';
 import _ from 'lodash';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteWorker, queryWorkersList, updateWorker } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
@@ -308,7 +308,7 @@ const Workers: React.FC = () => {
                           borderRadius: 12
                         }}
                       >
-                        <span className="font-700">{key}</span>
+                        <span className="font-600">{key}</span>
                         <span className="text-tertiary">:{value}</span>
                       </AutoTooltip>
                     );

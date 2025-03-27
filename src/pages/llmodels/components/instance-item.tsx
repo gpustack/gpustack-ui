@@ -171,7 +171,7 @@ const RenderWorkerDownloading = (props: {
         strokeColor="var(--color-progress-green)"
         percent={
           _.find(rayActors, (item: any) => item.download_progress < 100)
-            ?.download_progress || 100
+            ?.download_progress || 0
         }
       />
     </Tooltip>

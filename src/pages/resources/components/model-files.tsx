@@ -2,9 +2,8 @@ import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
 import CopyButton from '@/components/copy-button';
 import DeleteModal from '@/components/delete-modal';
-import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
-import PageTools from '@/components/page-tools';
+import { FilterBar } from '@/components/page-tools';
 import StatusTag from '@/components/status-tag';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -27,19 +26,8 @@ import {
 } from '@/pages/llmodels/config/button-actions';
 import DownloadModal from '@/pages/llmodels/download';
 import { convertFileSize } from '@/utils';
-import { DeleteOutlined, DownOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
-import {
-  Button,
-  ConfigProvider,
-  Empty,
-  Input,
-  Select,
-  Space,
-  Table,
-  Tag,
-  message
-} from 'antd';
+import { ConfigProvider, Empty, Table, Tag, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -244,7 +232,7 @@ const ModelFiles = () => {
           record.ollama_library_model_name ||
           record.model_scope_model_id ||
           record.local_path,
-        '/'
+        /[\\/]/
       ).pop()
     );
 
@@ -405,7 +393,6 @@ const ModelFiles = () => {
   const handleCreateModel = async (data: any) => {
     try {
       const result = getSourceRepoConfigValue(openDeployModal.source, data);
-
       const modelData = await createModel({
         data: {
           ...result.values
@@ -530,80 +517,31 @@ const ModelFiles = () => {
 
   return (
     <>
-      <PageTools
-        marginBottom={10}
-        marginTop={10}
-        left={
-          <Space>
-            <Input
-              placeholder={intl.formatMessage({
-                id: 'resources.filter.source'
-              })}
-              style={{ width: 230 }}
-              allowClear
-              onChange={handleNameChange}
-            ></Input>
-            <Select
-              allowClear
-              showSearch={false}
-              placeholder={intl.formatMessage({
-                id: 'resources.filter.worker'
-              })}
-              style={{ width: 230 }}
-              size="large"
-              onChange={handleWorkerChange}
-              options={workersList}
-            ></Select>
-            <Button
-              type="text"
-              style={{ color: 'var(--ant-color-text-tertiary)' }}
-              onClick={handleSearch}
-              icon={<SyncOutlined></SyncOutlined>}
-            ></Button>
-          </Space>
-        }
-        right={
-          <Space size={20}>
-            <DropDownActions
-              menu={{
-                items: onLineSourceOptions,
-                onClick: handleClickDropdown
-              }}
-            >
-              <Button
-                icon={<DownOutlined></DownOutlined>}
-                type="primary"
-                iconPosition="end"
-              >
-                {intl.formatMessage({ id: 'resources.modelfiles.download' })}
-              </Button>
-            </DropDownActions>
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={handleDeleteByBatch}
-              disabled={!rowSelection.selectedRowKeys.length}
-            >
-              <span>
-                {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                {rowSelection.selectedRowKeys.length > 0 && (
-                  <span>({rowSelection.selectedRowKeys?.length})</span>
-                )}
-              </span>
-            </Button>
-          </Space>
-        }
-      ></PageTools>
+      <FilterBar
+        actionType="dropdown"
+        selectHolder="resources.filter.worker"
+        inputHolder="resources.filter.source"
+        buttonText={intl.formatMessage({ id: 'resources.modelfiles.download' })}
+        handleSelectChange={handleWorkerChange}
+        handleDeleteByBatch={handleDeleteByBatch}
+        handleClickPrimary={handleClickDropdown}
+        handleSearch={handleSearch}
+        selectOptions={onLineSourceOptions}
+        handleInputChange={handleNameChange}
+        rowSelection={rowSelection}
+        actionItems={onLineSourceOptions}
+        showSelect={true}
+      ></FilterBar>
       <ConfigProvider renderEmpty={renderEmpty}>
         <Table
-          columns={columns}
+          rowKey="id"
           tableLayout="fixed"
           style={{ width: '100%' }}
+          onChange={handleTableChange}
           dataSource={dataSource.dataList}
           loading={dataSource.loading}
-          rowKey="id"
-          onChange={handleTableChange}
           rowSelection={rowSelection}
+          columns={columns}
           pagination={{
             showSizeChanger: true,
             pageSize: queryParams.perPage,
@@ -616,29 +554,29 @@ const ModelFiles = () => {
       </ConfigProvider>
       <DeleteModal ref={modalRef}></DeleteModal>
       <DownloadModal
-        open={downloadModalStatus.show}
-        title={intl.formatMessage({ id: 'resources.modelfiles.download' })}
-        source={downloadModalStatus.source}
-        width={downloadModalStatus.width}
         onCancel={handleDownloadCancel}
         onOk={handleDownload}
+        title={intl.formatMessage({ id: 'resources.modelfiles.download' })}
+        open={downloadModalStatus.show}
+        source={downloadModalStatus.source}
+        width={downloadModalStatus.width}
         workersList={workersList.filter(
           (item: any) => item.state === WorkerStatusMap.ready
         )}
       ></DownloadModal>
       <DeployModal
         deploymentType="modelFiles"
+        title={intl.formatMessage({ id: 'models.button.deploy' })}
+        onCancel={handleDeployModalCancel}
+        onOk={handleCreateModel}
         open={openDeployModal.show}
         action={PageAction.CREATE}
-        title={intl.formatMessage({ id: 'models.button.deploy' })}
         source={openDeployModal.source}
         width={openDeployModal.width}
         gpuOptions={openDeployModal.gpuOptions}
         modelFileOptions={openDeployModal.modelFileOptions || []}
         initialValues={openDeployModal.initialValues}
         isGGUF={openDeployModal.isGGUF}
-        onCancel={handleDeployModalCancel}
-        onOk={handleCreateModel}
       ></DeployModal>
     </>
   );

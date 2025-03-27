@@ -2,7 +2,7 @@ import useSetChunkRequest, {
   createAxiosToken
 } from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
-import { Col, Empty, Row, Spin } from 'antd';
+import { Col, Row, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, {
@@ -81,16 +81,17 @@ const TableRow: React.FC<
 
   const renderChildrenData = () => {
     if (childrenData.length === 0) {
-      return (
-        <Empty
-          image={loading ? null : Empty.PRESENTED_IMAGE_SIMPLE}
-          description={loading ? null : undefined}
-          style={{
-            marginBlock: 0,
-            height: 54
-          }}
-        ></Empty>
-      );
+      // return (
+      //   <Empty
+      //     image={loading ? null : Empty.PRESENTED_IMAGE_SIMPLE}
+      //     description={loading ? null : undefined}
+      //     style={{
+      //       marginBlock: 0,
+      //       height: 54
+      //     }}
+      //   ></Empty>
+      // );
+      return null;
     }
     return renderChildren?.(childrenData, {
       parent: record,
@@ -262,7 +263,7 @@ const TableRow: React.FC<
             })}
           </Row>
         </div>
-        {expanded && (
+        {expanded && childrenData.length > 0 && (
           <div className="expanded-row">
             <Spin spinning={loading}>{renderChildrenData()}</Spin>
           </div>

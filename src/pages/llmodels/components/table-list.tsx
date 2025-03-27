@@ -556,7 +556,7 @@ const Models: React.FC<ModelsProps> = ({
         dataIndex: 'name',
         key: 'name',
         width: 400,
-        span: 5,
+        span: 6,
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost>
@@ -570,7 +570,7 @@ const Models: React.FC<ModelsProps> = ({
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
         key: 'source',
-        span: 6,
+        span: 7,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
             <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
@@ -610,7 +610,7 @@ const Models: React.FC<ModelsProps> = ({
         defaultSortOrder: 'descend',
         sortOrder,
         sorter: false,
-        span: 5,
+        span: 4,
         render: (text: number) => (
           <AutoTooltip ghost>
             {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
@@ -621,7 +621,7 @@ const Models: React.FC<ModelsProps> = ({
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operation',
         dataIndex: 'operation',
-        span: 4,
+        span: 3,
         render: (text, record) => (
           <DropdownButtons
             items={setModelActionList(record)}

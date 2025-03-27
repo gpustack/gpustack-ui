@@ -122,7 +122,7 @@ export default function useTableFetch<ListItem>(options: {
     setSortOrder(sorter.order);
   };
 
-  const handleSearch = (e: any) => {
+  const handleSearch = () => {
     fetchData();
   };
 

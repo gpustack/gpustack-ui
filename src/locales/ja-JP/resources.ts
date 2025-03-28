@@ -56,5 +56,34 @@ export default {
     'ラベルを選択してコマンドを生成し、コピーを使用してコマンドをコピーします。',
   'resources.worker.script.install': 'スクリプトインストール',
   'resources.worker.container.install': 'コンテナインストール（Linuxのみ）',
-  'resources.worker.cann.tips': `<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> を必要なGPUインデックスに設定します。GPU0からGPU3の場合、<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> または <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span> を使用します。`
+  'resources.worker.cann.tips': `<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> を必要なGPUインデックスに設定します。GPU0からGPU3の場合、<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> または <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span> を使用します。`,
+  'resources.modelfiles.form.path': 'Storage path',
+  'resources.modelfiles.modelfile': 'Model Files',
+  'resources.modelfiles.download': 'Add Model File',
+  'resources.modelfiles.size': 'Size',
+  'resources.modelfiles.selecttarget': 'Select Target',
+  'resources.modelfiles.form.localdir': 'Local Directory',
+  'resources.modelfiles.form.localdir.tips':
+    'The default storage directory is <span class="desc-block">/var/lib/gpustack/cache</span> or the directory specified with <span class="desc-block">--data-dir</span>.',
+  'resources.modelfiles.retry.download': 'Retry Download',
+  'resources.modelfiles.storagePath.holder':
+    'Waiting for download to complete...',
+  'resources.filter.worker': 'Filter by Worker',
+  'resources.filter.source': 'Filter by Source',
+  'resources.modelfiles.delete.tips': 'Also delete the file from disk!'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'resources.modelfiles.form.path',
+// 2. 'resources.modelfiles.modelfile',
+// 3. 'resources.modelfiles.download',
+// 4. 'resources.modelfiles.size',
+// 5. 'resources.modelfiles.selecttarget',
+// 6. 'resources.modelfiles.form.localdir',
+// 7. 'resources.modelfiles.form.localdir.tips',
+// 8. 'resources.modelfiles.retry.download',
+// 9. 'resources.modelfiles.storagePath.holder',
+// 10. 'resources.filter.worker',
+// 11. 'resources.filter.source',
+// 12. 'resources.modelfiles.delete.tips'
+// ========== End of To-Do List ==========

@@ -116,5 +116,12 @@ export default {
   'models.form.backend.warning.llamabox':
     'llama-boxバックエンドを使用するには、モデルファイルのフルパスを指定してください（例:<span style="font-weight: 700">/data/models/model.gguf</span>）。分割モデルの場合、最初のシャードのパスを指定してください（例:<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>）。',
   'models.form.keyvalue.paste':
-    '複数行のテキストを貼り付けます。各行にはキーと値のペアが含まれ、キーと値は=記号で区切られ、異なるキーと値のペアは改行文字で区切られます。'
+    '複数行のテキストを貼り付けます。各行にはキーと値のペアが含まれ、キーと値は=記号で区切られ、異なるキーと値のペアは改行文字で区切られます。',
+  'models.form.files': 'files',
+  'models.table.status': 'Status'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+//  1. 'models.form.files',
+//  2. 'models.table.status'
+// ========== End of To-Do List ==========

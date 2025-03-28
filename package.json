@@ -3,6 +3,7 @@
   "author": "jialin",
   "scripts": {
     "build": "max build",
+    "check:locales": "npx tsx ./src/locales/check.ts",
     "dev": "max dev",
     "format": "prettier --cache --write .",
     "postinstall": "max setup",

@@ -226,5 +226,7 @@ export default {
   'common.button.moreInfo': '更多信息',
   'common.text.warning': '警告',
   'common.text.error': '错误',
-  'common.text.tips': '提示'
+  'common.text.tips': '提示',
+  'settings.system': '系统设置',
+  'common.filter.byId': '按 ID 查询'
 };

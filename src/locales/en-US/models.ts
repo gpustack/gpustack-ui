@@ -123,3 +123,8 @@ export default {
   'models.form.files': 'files',
   'models.table.status': 'Status'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'models.form.files',
+// 2. 'models.table.status',
+// ========== End of To-Do List ==========

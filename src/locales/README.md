@@ -35,3 +35,9 @@ To add a new language configuration, follow these steps:
 - Review and ensure all translations are complete.
 - If any translations are missing, they will default to `English`.
 - Your new language configuration is now ready for use!
+
+## 5. **Verify that all language keys are consistent.**
+
+```bash
+npm run check:locales
+```

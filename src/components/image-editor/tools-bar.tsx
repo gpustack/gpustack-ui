@@ -19,7 +19,7 @@ interface ToolsBarProps {
   uploadButton: React.ReactNode;
   handleBrushSizeChange: (value: number) => void;
   undo: () => void;
-  onReset: () => void;
+  onClear: () => void;
   handleFitView: () => void;
 }
 
@@ -30,7 +30,7 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
     lineWidth,
     handleBrushSizeChange,
     undo,
-    onReset,
+    onClear,
     uploadButton,
     handleFitView
   } = props;
@@ -83,7 +83,7 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
         </Button>
       </Tooltip>
       <Tooltip title={intl.formatMessage({ id: 'common.button.clear' })}>
-        <Button onClick={onReset} size="middle" type="text" disabled={disabled}>
+        <Button onClick={onClear} size="middle" type="text" disabled={disabled}>
           <ClearOutlined className="font-size-14" />
         </Button>
       </Tooltip>

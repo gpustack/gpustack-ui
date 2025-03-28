@@ -80,13 +80,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           </Button>
         </li>
       </ul>
-      <h3>1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}</h3>
+      <h3 className="font-size-14 font-600">
+        1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}
+      </h3>
       <HighlightCode
         code={addWorkerGuide.container.getToken}
         theme="dark"
         lang="bash"
       ></HighlightCode>
-      <h3 className="m-t-10">
+      <h3 className="m-t-10 font-size-14 font-600">
         2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
         <span
           className="font-size-12"
@@ -119,7 +121,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         ></div>
       )}
       <HighlightCode theme="dark" code={code} lang="bash"></HighlightCode>
-      <h3 className="m-b-0 m-t-10">
+      <h3 className="m-b-0 m-t-10 font-size-14 font-600">
         3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
       </h3>
     </div>

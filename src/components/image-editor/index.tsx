@@ -196,6 +196,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
     const onReset = useCallback(() => {
       clearOverlayCanvas();
       setStrokes([]);
+      setMaskStrokes([]);
       saveImage();
       currentStroke.current = [];
       console.log('Resetting strokes', currentStroke.current);
@@ -513,9 +514,9 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
           <ToolsBar
             handleBrushSizeChange={handleBrushSizeChange}
             undo={undo}
-            onReset={onReset}
-            uploadButton={uploadButton}
+            onClear={onReset}
             handleFitView={handleFitView}
+            uploadButton={uploadButton}
             disabled={disabled}
             lineWidth={lineWidth}
             loading={loading}

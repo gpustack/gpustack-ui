@@ -443,7 +443,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       {
         key: '1',
         label: (
-          <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
+          <span
+            style={{ fontWeight: 'var(--font-weight-medium)' }}
+            className="font-size-14"
+          >
             {intl.formatMessage({ id: 'resources.form.advanced' })}
           </span>
         ),

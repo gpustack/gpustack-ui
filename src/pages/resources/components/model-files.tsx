@@ -417,7 +417,9 @@ const ModelFiles = () => {
       render: (text: string, record: ListItem) => (
         <span className="flex flex-column" style={{ width: '100%' }}>
           {record.source === modelSourceMap.local_path_value ? (
-            intl.formatMessage({ id: 'models.form.localPath' })
+            <AutoTooltip ghost>
+              {intl.formatMessage({ id: 'models.form.localPath' })}
+            </AutoTooltip>
           ) : (
             <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
           )}

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 type Point = { x: number; y: number; lineWidth: number };
 type Stroke = Point[];
@@ -130,6 +130,7 @@ export default function useDrawing(props: {
   const getTransformedPoint = useCallback(
     (offsetX: number, offsetY: number) => {
       const { current: scale } = autoScale;
+      console.log('lineWidth:----------', lineWidth, autoScale.current);
 
       const { x: translateX, y: translateY } = translatePos.current;
 
@@ -146,6 +147,7 @@ export default function useDrawing(props: {
 
   const getTransformLineWidth = useCallback(
     (w = 1) => {
+      console.log('lineWidth:', lineWidth, autoScale.current);
       const width = w || lineWidth;
       return width / autoScale.current;
     },

@@ -88,6 +88,12 @@ const ModelCard: React.FC<{
     }
   }, []);
 
+  const handleOnCollapse = (readmeText: any) => {
+    if (!readmeText) {
+      onCollapse(false);
+    }
+  };
+
   const loadConfig = useCallback(async (repo: string, sha: string) => {
     try {
       loadConfigTokenRef.current?.abort?.();
@@ -145,13 +151,14 @@ const ModelCard: React.FC<{
       const newReadme = removeMetadata(readme);
 
       setReadmeText(newReadme);
+      handleOnCollapse(newReadme);
       const isGGUF = modelcard.tags?.includes('gguf');
-      console.log('modelData++++++++++++', isGGUF);
       setIsGGUF(isGGUF);
       setIsGGUFModel(isGGUF);
     } catch (error) {
       setModelData(null);
       setReadmeText(null);
+      handleOnCollapse(null);
       setIsGGUF(false);
       setIsGGUFModel(false);
     }
@@ -189,6 +196,7 @@ const ModelCard: React.FC<{
         name: `${data.Data?.Path}/${data.Data?.Name}`
       });
       setReadmeText(data?.Data?.ReadMeContent);
+      handleOnCollapse(data?.Data?.ReadMeContent);
       const isGGUF = some(
         data?.Data?.Tags,
         (tag: string) => tag?.indexOf('gguf') > -1
@@ -198,6 +206,7 @@ const ModelCard: React.FC<{
     } catch (error) {
       setModelData(null);
       setReadmeText(null);
+      handleOnCollapse(null);
       setIsGGUF(false);
       setIsGGUFModel(false);
     }
@@ -207,6 +216,7 @@ const ModelCard: React.FC<{
     if (!props.selectedModel.name) {
       setModelData(null);
       setReadmeText(null);
+      handleOnCollapse(null);
       return;
     }
     requestToken.current?.cancel?.();
@@ -267,31 +277,22 @@ const ModelCard: React.FC<{
     return null;
   };
 
-  const generateModeScopeImgLink = useCallback(
-    (imgSrc: string) => {
-      if (!imgSrc) {
-        return '';
-      }
-      if (modelSource === modelSourceMap.modelscope_value) {
-        return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
-      }
-      if (modelSource === modelSourceMap.huggingface_value) {
-        return `https://huggingface.co/${modelData?.id}/resolve/main/${imgSrc}`;
-      }
+  const generateModeScopeImgLink = (imgSrc: string) => {
+    if (!imgSrc) {
       return '';
-    },
-    [modelData, modelSource]
-  );
+    }
+    if (modelSource === modelSourceMap.modelscope_value) {
+      return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
+    }
+    if (modelSource === modelSourceMap.huggingface_value) {
+      return `https://huggingface.co/${modelData?.id}/resolve/main/${imgSrc}`;
+    }
+    return '';
+  };
 
   useEffect(() => {
     getModelCardData();
   }, [props.selectedModel.name]);
-
-  useEffect(() => {
-    if (!readmeText) {
-      onCollapse(false);
-    }
-  }, [readmeText]);
 
   useEffect(() => {
     return () => {

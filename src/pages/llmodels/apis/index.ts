@@ -5,6 +5,8 @@ import qs from 'query-string';
 import {
   CatalogItem,
   CatalogSpec,
+  EvaluateResult,
+  EvaluateSpec,
   FormData,
   GPUListItem,
   ListItem,
@@ -15,6 +17,8 @@ import {
 export const MODELS_API = '/models';
 
 export const MODEL_INSTANCE_API = '/model-instances';
+
+export const MODEL_EVALUATIONS = '/model-evaluations';
 
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
@@ -189,7 +193,7 @@ export async function queryModelScopeModels(
       ...params,
       ...Criterion,
       Name: `${params.Name}`,
-      PageSize: 100,
+      PageSize: 10,
       PageNumber: 1
     })
   });
@@ -251,7 +255,7 @@ export async function queryHuggingfaceModels(
   for await (const model of listModels({
     ...params,
     ...options,
-    limit: 100,
+    limit: 10,
     additionalFields: ['sha', 'tags'],
     fetch(_url: string, config: any) {
       const url = params.search.sort
@@ -289,7 +293,6 @@ export async function queryHuggingfaceModelFiles(
           signal: options?.signal
         });
       } catch (error) {
-        console.log('queryHuggingfaceModels error===', error);
         // ignore
         return [];
       }
@@ -362,4 +365,17 @@ export async function queryCatalogItemSpec(
       params
     }
   );
+}
+
+export async function evaluationsModelSpec(
+  data: {
+    model_specs: EvaluateSpec[];
+  },
+  options: { token: any }
+) {
+  return request<{ results: EvaluateResult[] }>(`${MODEL_EVALUATIONS}`, {
+    method: 'POST',
+    data,
+    cancelToken: options?.token
+  });
 }

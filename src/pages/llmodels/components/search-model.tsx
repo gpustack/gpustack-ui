@@ -1,9 +1,20 @@
-import { BulbOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { createAxiosToken } from '@/hooks/use-chunk-request';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Checkbox, Select, Tooltip } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { queryHuggingfaceModels, queryModelScopeModels } from '../apis';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
+import {
+  evaluationsModelSpec,
+  queryHuggingfaceModels,
+  queryModelScopeModels
+} from '../apis';
 import {
   HuggingFaceTaskMap,
   ModelScopeSortType,
@@ -44,6 +55,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const [current, setCurrent] = useState<string>('');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
+  const checkTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
   const filterGGUFRef = useRef<boolean | undefined>();
   const filterTaskRef = useRef<string>('');
@@ -134,6 +146,24 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   }, []);
 
+  const getEvaluateResults = useCallback(async (repoList: any[]) => {
+    try {
+      checkTokenRef.current?.cancel?.();
+      checkTokenRef.current = createAxiosToken();
+      const evaluations = await evaluationsModelSpec(
+        {
+          model_specs: repoList
+        },
+        {
+          token: checkTokenRef.current?.token
+        }
+      );
+      return evaluations.results || [];
+    } catch (error) {
+      return [];
+    }
+  }, []);
+
   const handleOnSearchRepo = useCallback(
     async (sortType?: string) => {
       if (!SUPPORTEDSOURCE.includes(modelSource)) {
@@ -156,6 +186,26 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           list = await getModelsFromModelscope(sort);
         }
         cacheRepoOptions.current = list;
+        const repoList = list.map((item) => {
+          return {
+            source: modelSource,
+            ...(modelSource === modelSourceMap.huggingface_value
+              ? {
+                  huggingface_repo_id: item.name
+                }
+              : {
+                  model_scope_model_id: item.name
+                })
+          };
+        });
+        const evaluations = await getEvaluateResults(repoList);
+        list = list.map((item, index) => {
+          return {
+            ...item,
+            evaluateResult: evaluations[index]
+          };
+        });
+        console.log('list:', evaluations);
         setDataSource({
           repoOptions: list,
           loading: false,
@@ -176,20 +226,14 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         cacheRepoOptions.current = [];
       }
     },
-    [dataSource]
+    [dataSource.sortType, modelSource]
   );
   const handleSearchInputChange = useCallback((e: any) => {
     searchInputRef.current = e.target.value;
     console.log('change:', searchInputRef.current);
   }, []);
-  const handlerSearchModels = useCallback(
-    async (e: any) => {
-      setTimeout(() => {
-        handleOnSearchRepo();
-      }, 100);
-    },
-    [handleOnSearchRepo]
-  );
+
+  const handlerSearchModels = _.debounce(() => handleOnSearchRepo(), 100);
 
   const handleOnOpen = () => {
     if (
@@ -225,6 +269,28 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     handleOnSearchRepo();
   }, []);
 
+  const renderGGUFTips = useMemo(() => {
+    return (
+      <Tooltip
+        overlayInnerStyle={{ width: 'max-content' }}
+        title={
+          <ul className="tips-desc-list">
+            <li>{intl.formatMessage({ id: 'models.search.gguf.tips' })}</li>
+            <li>{intl.formatMessage({ id: 'models.search.vllm.tips' })}</li>
+            <li>
+              {intl.formatMessage({
+                id: 'models.search.voxbox.tips'
+              })}
+            </li>
+          </ul>
+        }
+      >
+        GGUF
+        <QuestionCircleOutlined className="m-l-4" />
+      </Tooltip>
+    );
+  }, [intl]);
+
   const renderHFSearch = () => {
     return (
       <>
@@ -254,27 +320,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                 className="m-r-5"
                 checked={filterGGUFRef.current}
               >
-                <Tooltip
-                  overlayInnerStyle={{ width: 'max-content' }}
-                  title={
-                    <ul className="tips-desc-list">
-                      <li>
-                        {intl.formatMessage({ id: 'models.search.gguf.tips' })}
-                      </li>
-                      <li>
-                        {intl.formatMessage({ id: 'models.search.vllm.tips' })}
-                      </li>
-                      <li>
-                        {intl.formatMessage({
-                          id: 'models.search.voxbox.tips'
-                        })}
-                      </li>
-                    </ul>
-                  }
-                >
-                  GGUF
-                  <QuestionCircleOutlined className="m-l-4" />
-                </Tooltip>
+                {renderGGUFTips}
               </Checkbox>
             </span>
             <Select
@@ -305,37 +351,23 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   useEffect(() => {
     return () => {
       axiosTokenRef.current?.abort?.();
+      checkTokenRef.current?.cancel?.();
     };
   }, []);
 
   return (
     <div style={{ flex: 1 }}>
-      <div className={SearchStyle['search-bar']}>
-        {SUPPORTEDSOURCE.includes(modelSource) ? (
-          renderHFSearch()
-        ) : (
-          <div style={{ lineHeight: '18px' }}>
-            <BulbOutlined className="font-size-14 m-r-5" />
-            {intl.formatMessage(
-              { id: 'model.form.ollamatips' },
-              { name: intl.formatMessage({ id: 'model.form.ollama.model' }) }
-            )}
-          </div>
-        )}
-      </div>
-
-      {
-        <SearchResult
-          loading={dataSource.loading}
-          resultList={dataSource.repoOptions}
-          networkError={dataSource.networkError}
-          current={current}
-          source={modelSource}
-          onSelect={handleOnSelectModel}
-        ></SearchResult>
-      }
+      <div className={SearchStyle['search-bar']}>{renderHFSearch()}</div>
+      <SearchResult
+        loading={dataSource.loading}
+        resultList={dataSource.repoOptions}
+        networkError={dataSource.networkError}
+        current={current}
+        source={modelSource}
+        onSelect={handleOnSelectModel}
+      ></SearchResult>
     </div>
   );
 };
 
-export default React.memo(SearchModel);
+export default SearchModel;

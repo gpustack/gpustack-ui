@@ -80,10 +80,6 @@ export default defineConfig({
   clickToComponent: {},
   antd: {
     style: 'less'
-    // configProvider: {
-    //   componentSize: 'large',
-    //   theme
-    // }
   },
   hash: true,
   access: {},

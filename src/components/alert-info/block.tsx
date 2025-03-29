@@ -2,6 +2,8 @@ import { WarningFilled } from '@ant-design/icons';
 import { Typography } from 'antd';
 import classNames from 'classnames';
 import React from 'react';
+import styled from 'styled-components';
+import OverlayScroller from '../overlay-scroller';
 import './block.less';
 interface AlertInfoProps {
   type: 'danger' | 'warning';
@@ -13,8 +15,22 @@ interface AlertInfoProps {
   title: React.ReactNode;
 }
 
+const TitleWrapper = styled.div`
+  font-weight: 700;
+  color: var(--ant-color-text);
+`;
+
+const ContentWrapper = styled.div<{ $hasTitle: boolean }>`
+  word-break: break-word;
+  color: ${(props) =>
+    props.$hasTitle
+      ? 'var(--ant-color-text-secondary)'
+      : 'var(--ant-color-text)'};
+  font-weight: var(--font-weight-500);
+`;
+
 const AlertInfo: React.FC<AlertInfoProps> = (props) => {
-  const { message, type, rows = 1, ellipsis, style } = props;
+  const { message, type, rows = 1, ellipsis, style, title } = props;
 
   return (
     <>
@@ -34,7 +50,10 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
             <div className={classNames('title', type)}>
               <WarningFilled className={classNames('info-icon', type)} />
             </div>
-            <span className="content">{message}</span>
+            {title && <TitleWrapper>{title}</TitleWrapper>}
+            <OverlayScroller maxHeight={80}>
+              <ContentWrapper $hasTitle={!!title}>{message}</ContentWrapper>
+            </OverlayScroller>
           </Typography.Paragraph>
         </div>
       ) : null}

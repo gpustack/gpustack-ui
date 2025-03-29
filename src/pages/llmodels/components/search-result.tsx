@@ -2,7 +2,7 @@ import IconFont from '@/components/icon-font';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Col, Empty, Row, Spin } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { modelSourceMap } from '../config';
@@ -34,7 +34,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     }
   };
 
-  const renderEmpty = () => {
+  const renderEmpty = useMemo(() => {
     if (networkError) {
       return (
         <Empty
@@ -85,7 +85,8 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
         description={intl.formatMessage({ id: 'models.search.noresult' })}
       />
     );
-  };
+  }, [networkError, source, intl]);
+
   return (
     <SimpleBar style={{ height: 'calc(100vh - 224px)' }}>
       <div style={{ ...props.style }} className="search-result-wrap">
@@ -108,6 +109,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                         likes={item.likes}
                         task={item.task}
                         updatedAt={item.updatedAt}
+                        evaluateResult={item.evaluateResult}
                         active={item.id === props.current}
                       />
                     </div>
@@ -115,7 +117,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                 ))}
               </Row>
             ) : (
-              !props.loading && renderEmpty()
+              !props.loading && renderEmpty
             )}
           </div>
         </Spin>

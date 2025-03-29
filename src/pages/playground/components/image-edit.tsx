@@ -362,7 +362,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               type="icon-upload_image"
               className="font-size-24"
             ></IconFont>
-            <h3>{intl.formatMessage({ id: 'playground.image.edit.tips' })}</h3>
+            <span>
+              {intl.formatMessage({ id: 'playground.image.edit.tips' })}
+            </span>
           </div>
         </UploadImg>
       </>

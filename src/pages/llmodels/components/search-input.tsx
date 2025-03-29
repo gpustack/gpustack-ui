@@ -33,19 +33,17 @@ const SearchInput: React.FC<{
         { source: modelSourceValueMap[modelSource] }
       )}
       prefix={
-        <>
-          <IconFont
-            className="font-size-16"
-            type={
-              modelSource === modelSourceMap.huggingface_value
-                ? 'icon-huggingface'
-                : 'icon-tu2'
-            }
-          ></IconFont>
-        </>
+        <IconFont
+          className="font-size-16"
+          type={
+            modelSource === modelSourceMap.huggingface_value
+              ? 'icon-huggingface'
+              : 'icon-tu2'
+          }
+        ></IconFont>
       }
     ></Input>
   );
 };
 
-export default React.memo(SearchInput);
+export default SearchInput;

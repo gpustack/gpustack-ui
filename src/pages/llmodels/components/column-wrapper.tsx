@@ -1,6 +1,5 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import React from 'react';
-import 'simplebar-react/dist/simplebar.min.css';
 import '../style/column-wrapper.less';
 
 const ColumnWrapper: React.FC<any> = ({

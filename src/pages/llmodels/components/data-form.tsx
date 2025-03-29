@@ -6,23 +6,25 @@ import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
+import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
-  useCallback,
-  useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState
 } from 'react';
+import { evaluationsModelSpec } from '../apis';
 import {
   HuggingFaceTaskMap,
   ModelscopeTaskMap,
   backendOptionsMap,
   backendTipsList,
+  excludeFields,
+  getSourceRepoConfigValue,
   localPathTipsList,
   modelSourceMap,
   modelTaskMap,
@@ -30,7 +32,7 @@ import {
   sourceOptions
 } from '../config';
 import { identifyModelTask } from '../config/audio-catalog';
-import { FormData } from '../config/types';
+import { EvaluateResult, FormData } from '../config/types';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
@@ -48,12 +50,19 @@ interface DataFormProps {
   sourceList?: Global.BaseOption<string>[];
   gpuOptions: any[];
   modelFileOptions?: any[];
+  fields?: string[];
+  handleUpdateWarning?: (params: {
+    backend: string;
+    localPath: string;
+    source: string;
+  }) => any;
+  handleShowCompatibleAlert?: (data: EvaluateResult | null) => void;
+  onValuesChange?: (changedValues: any, allValues: any) => void;
   onSizeChange?: (val: number) => void;
   onQuantizationChange?: (val: string) => void;
   onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
-  fields?: string[];
 }
 
 const SEARCH_SOURCE = [
@@ -75,6 +84,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sizeOptions = [],
     quantizationOptions = [],
     fields = ['source'],
+    handleUpdateWarning,
+    handleShowCompatibleAlert,
     onSourceChange,
     onOk
   } = props;
@@ -88,75 +99,55 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     text2speech: false,
     speech2text: false
   });
-
+  const checkTokenRef = useRef<any>(null);
   const localPathCache = useRef<string>('');
 
   const handleSumit = () => {
     form.submit();
   };
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        form: form,
-        submit: handleSumit,
-        setFieldsValue: (values: FormData) => {
-          form.setFieldsValue(values);
-        },
-        setFieldValue: (name: string, value: any) => {
-          form.setFieldValue(name, value);
-        },
-        getFieldValue: (name: string) => {
-          return form.getFieldValue(name);
-        },
-        resetFields() {
-          form.resetFields();
-        }
-      };
-    },
-    []
-  );
-
-  const handleOnSelectModel = () => {
-    let name = _.split(props.selectedModel.name, '/').slice(-1)[0];
-    const reg = /(-gguf)$/i;
-    name = _.toLower(name).replace(reg, '');
-
-    const modelTaskType = identifyModelTask(
-      props.source,
-      props.selectedModel.name
-    );
+  const handleRecognizeAudioModel = (selectModel: any) => {
+    const modelTaskType = identifyModelTask(props.source, selectModel.name);
 
     const modelTask =
-      HuggingFaceTaskMap.audio.includes(props.selectedModel.task) ||
-      ModelscopeTaskMap.audio.includes(props.selectedModel.task)
+      HuggingFaceTaskMap.audio.includes(selectModel.task) ||
+      ModelscopeTaskMap.audio.includes(selectModel.task)
         ? modelTaskMap.audio
         : '';
 
-    setModelTask({
-      value: props.selectedModel.task,
+    const modelTaskData = {
+      value: selectModel.task,
       type: modelTaskType || modelTask,
       text2speech:
-        HuggingFaceTaskMap[modelTaskMap.textToSpeech] ===
-          props.selectedModel.task ||
-        ModelscopeTaskMap[modelTaskMap.textToSpeech] ===
-          props.selectedModel.task,
+        HuggingFaceTaskMap[modelTaskMap.textToSpeech] === selectModel.task ||
+        ModelscopeTaskMap[modelTaskMap.textToSpeech] === selectModel.task,
       speech2text:
-        HuggingFaceTaskMap[modelTaskMap.speechToText] ===
-          props.selectedModel.task ||
-        ModelscopeTaskMap[modelTaskMap.speechToText] ===
-          props.selectedModel.task
-    });
+        HuggingFaceTaskMap[modelTaskMap.speechToText] === selectModel.task ||
+        ModelscopeTaskMap[modelTaskMap.speechToText] === selectModel.task
+    };
+    return modelTaskData;
+  };
+
+  const handleOnSelectModel = (selectModel: any) => {
+    let name = _.split(selectModel.name, '/').slice(-1)[0];
+    const reg = /(-gguf)$/i;
+    name = _.toLower(name).replace(reg, '');
+
+    const modelTaskData = handleRecognizeAudioModel(selectModel);
+    setModelTask(modelTaskData);
 
     if (SEARCH_SOURCE.includes(props.source)) {
       form.setFieldsValue({
-        repo_id: props.selectedModel.name,
-        name: name
+        repo_id: selectModel.name,
+        name: name,
+        backend:
+          modelTaskData.type === modelTaskMap.audio
+            ? backendOptionsMap.voxBox
+            : form.getFieldValue('backend')
       });
     } else {
       form.setFieldsValue({
-        ollama_library_model_name: props.selectedModel.name,
+        ollama_library_model_name: selectModel.name,
         name: name
       });
     }
@@ -166,8 +157,52 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     localPathCache.current = form.getFieldValue('local_path');
   };
 
+  const handleEvaluate = async (data: any) => {
+    try {
+      checkTokenRef.current?.cancel();
+      checkTokenRef.current = createAxiosToken();
+      const evalution = await evaluationsModelSpec(
+        {
+          model_specs: [
+            {
+              ..._.omit(data, ['scheduleType']),
+              categories: data.categories ? [data.categories] : []
+            }
+          ]
+        },
+        {
+          token: checkTokenRef.current.token
+        }
+      );
+      return evalution.results?.[0];
+    } catch (error) {
+      console.log('error=====', error);
+      return null;
+    }
+  };
+
+  // trigger from local_path change or backend change
+  const handleBackendChangeHook = async () => {
+    const localPath = form.getFieldValue?.('local_path');
+    const backend = form.getFieldValue?.('backend');
+
+    const res = handleUpdateWarning?.({
+      backend,
+      localPath: localPath,
+      source: props.source
+    });
+
+    if (!res.show) {
+      const values = form.getFieldsValue?.();
+      const data = getSourceRepoConfigValue(props.source, values);
+      const evalutionData = await handleEvaluate(data.values);
+      handleShowCompatibleAlert?.(evalutionData);
+    }
+  };
+
   const handleLocalPathBlur = (e: any) => {
     const value = e.target.value;
+    console.log('handleLocalPathBlur:', e, localPathCache.current);
     if (value === localPathCache.current && value) {
       return;
     }
@@ -177,8 +212,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     if (!isEndwithGGUF && !isBlobFile) {
       backend = backendOptionsMap.vllm;
     }
-    props.onBackendChange?.(backend);
     form.setFieldValue('backend', backend);
+    handleBackendChangeHook();
+    props.onBackendChange?.(backend);
   };
 
   const renderHuggingfaceFields = () => {
@@ -393,17 +429,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
-  const handleBackendChange = useCallback((val: string) => {
+  const handleBackendChange = async (val: string) => {
+    const updates = {
+      backend_version: ''
+    };
     if (val === backendOptionsMap.llamaBox) {
-      form.setFieldsValue({
+      Object.assign(updates, {
         distributed_inference_across_workers: true,
         cpu_offloading: true
       });
     }
-    form.setFieldValue('backend_version', '');
+    form.setFieldsValue(updates);
     handleSetGPUIds(val);
+    handleBackendChangeHook();
     props.onBackendChange?.(val);
-  }, []);
+  };
 
   const generateGPUIds = (data: FormData) => {
     const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
@@ -452,21 +492,49 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onSourceChange?.(val);
   };
 
-  useEffect(() => {
-    if (action === PageAction.EDIT) return;
-    if (modelTask.type === modelTaskMap.audio) {
-      form.setFieldValue('backend', backendOptionsMap.voxBox);
-    } else {
-      form.setFieldValue(
-        'backend',
-        isGGUF ? backendOptionsMap.llamaBox : backendOptionsMap.vllm
-      );
-    }
-  }, [isGGUF, modelTask]);
+  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    const keys = Object.keys(changedValues);
+    const isExcludeField = keys.some((key) => excludeFields.includes(key));
+    if (
+      !isExcludeField &&
+      !_.has(changedValues, 'backend') &&
+      !_.has(changedValues, 'local_path')
+    ) {
+      const values = form.getFieldsValue?.();
+      const data = getSourceRepoConfigValue(props.source, values);
 
-  useEffect(() => {
-    handleOnSelectModel();
-  }, [props.selectedModel.name]);
+      const evalutionData = await handleEvaluate(data.values);
+      handleShowCompatibleAlert?.(evalutionData);
+    }
+  };
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        form: form,
+        handleOnSelectModel: handleOnSelectModel,
+        submit: handleSumit,
+        setFieldsValue: (values: FormData) => {
+          form.setFieldsValue(values);
+        },
+        setFieldValue: (name: string, value: any) => {
+          form.setFieldValue(name, value);
+        },
+        getFieldValue: (name: string) => {
+          return form.getFieldValue(name);
+        },
+        getFieldsValue: () => {
+          return form.getFieldsValue();
+        },
+        resetFields() {
+          form.resetFields();
+        }
+      };
+    },
+    []
+  );
+
   return (
     <Form
       name="deployModel"
@@ -475,6 +543,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       preserve={false}
       style={{ padding: '16px 24px' }}
       clearOnDestroy={true}
+      onValuesChange={handleOnValuesChange}
       initialValues={{
         replicas: 1,
         source: props.source,

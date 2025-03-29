@@ -1,20 +1,34 @@
-import AlertBlockInfo from '@/components/alert-info/block';
 import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
-import _, { debounce } from 'lodash';
+import { debounce } from 'lodash';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import { FormData } from '../config/types';
+import { useCheckCompatibility } from '../hooks';
 import ColumnWrapper from './column-wrapper';
+import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 import HFModelFile from './hf-model-file';
 import ModelCard from './model-card';
 import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
+
+const ColWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  maxwidth: 33.33%;
+`;
+
+const FormWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  maxwidth: 100%;
+`;
 
 type AddModalProps = {
   title: string;
@@ -48,26 +62,28 @@ const AddModal: FC<AddModalProps> = (props) => {
     modelSourceMap.modelscope_value
   ];
 
+  const { handleShowCompatibleAlert, handleUpdateWarning, warningStatus } =
+    useCheckCompatibility();
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
-  const [warningStatus, setWarningStatus] = useState<{
-    show: boolean;
-    message: string;
-  }>({
-    show: false,
-    message: ''
-  });
 
   const handleSelectModelFile = useCallback((item: any) => {
-    form.current?.setFieldValue?.('file_name', item.fakeName);
+    form.current?.setFieldsValue?.({
+      file_name: item.fakeName,
+      backend: backendOptionsMap.llamaBox
+    });
+    if (item.fakeName) {
+      handleShowCompatibleAlert(item.evaluateResult);
+    }
   }, []);
 
   const handleOnSelectModel = (item: any) => {
     setSelectedModel(item);
+    form.current?.handleOnSelectModel?.(item);
   };
 
   const handleSumit = () => {
@@ -76,48 +92,18 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const debounceFetchModelFiles = debounce(() => {
     modelFileRef.current?.fetchModelFiles?.();
-  }, 300);
+  }, 100);
 
   const handleSetIsGGUF = (flag: boolean) => {
     setIsGGUF(flag);
     if (flag) {
       debounceFetchModelFiles();
+    } else {
+      handleShowCompatibleAlert(selectedModel.evaluateResult);
     }
   };
 
-  const updateShowWarning = (backend: string) => {
-    const localPath = form.current?.getFieldValue?.('local_path');
-
-    if (source !== modelSourceMap.local_path_value || !localPath) {
-      return;
-    }
-
-    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
-    const isOllamaModel = localPath?.includes('ollama');
-    const isGGUFFile = localPath.endsWith('.gguf');
-
-    let warningMessage = '';
-    if (isBlobFile && isOllamaModel && backend === backendOptionsMap.llamaBox) {
-      warningMessage = '';
-    } else if (
-      isBlobFile &&
-      isOllamaModel &&
-      backend !== backendOptionsMap.llamaBox
-    ) {
-      warningMessage = 'models.form.ollama.warning';
-    } else if (isGGUFFile && backend !== backendOptionsMap.llamaBox) {
-      warningMessage = 'models.form.backend.warning';
-    } else if (!isGGUFFile && backend === backendOptionsMap.llamaBox) {
-      warningMessage = 'models.form.backend.warning.llamabox';
-    }
-
-    setWarningStatus({
-      show: !!warningMessage,
-      message: warningMessage
-    });
-  };
-
-  const handleBackendChange = (backend: string) => {
+  const handleBackendChange = async (backend: string) => {
     if (backend === backendOptionsMap.vllm) {
       setIsGGUF(false);
     }
@@ -125,7 +111,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (backend === backendOptionsMap.llamaBox) {
       setIsGGUF(true);
     }
-    updateShowWarning(backend);
   };
 
   const handleCancel = useCallback(() => {
@@ -133,35 +118,23 @@ const AddModal: FC<AddModalProps> = (props) => {
   }, [onCancel]);
 
   useEffect(() => {
-    if (!_.isEmpty(selectedModel)) {
-      handleSelectModelFile({ fakeName: '' });
-    }
-  }, [selectedModel]);
-
-  useEffect(() => {
     if (!open) {
-      setIsGGUF(false);
-      setWarningStatus({
-        show: false,
-        message: ''
-      });
-      form.current?.setFieldValue?.('backend', backendOptionsMap.vllm);
-    } else if (source === modelSourceMap.ollama_library_value) {
-      form.current?.setFieldValue?.('backend', backendOptionsMap.llamaBox);
-      setIsGGUF(true);
+      return;
     }
-
-    if (props.deploymentType === 'modelFiles' && open) {
+    if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
       });
       setIsGGUF(props.isGGUF || false);
+    } else {
+      form.current?.setFieldValue?.('backend', backendOptionsMap.vllm);
+      setIsGGUF(false);
     }
 
     return () => {
       setSelectedModel({});
     };
-  }, [open, source, props.isGGUF, props.initialValues, props.deploymentType]);
+  }, [open, props.isGGUF, props.initialValues, props.deploymentType]);
 
   return (
     <Drawer
@@ -197,13 +170,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         {SEARCH_SOURCE.includes(props.source) &&
           deploymentType === 'modelList' && (
             <>
-              <div
-                style={{
-                  display: 'flex',
-                  flex: 1,
-                  maxWidth: '33.33%'
-                }}
-              >
+              <ColWrapper>
                 <ColumnWrapper>
                   <SearchModel
                     modelSource={props.source}
@@ -211,14 +178,8 @@ const AddModal: FC<AddModalProps> = (props) => {
                   ></SearchModel>
                 </ColumnWrapper>
                 <Separator></Separator>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  flex: 1,
-                  maxWidth: '33.33%'
-                }}
-              >
+              </ColWrapper>
+              <ColWrapper>
                 <ColumnWrapper>
                   <ModelCard
                     selectedModel={selectedModel}
@@ -238,35 +199,17 @@ const AddModal: FC<AddModalProps> = (props) => {
                   )}
                 </ColumnWrapper>
                 <Separator></Separator>
-              </div>
+              </ColWrapper>
             </>
           )}
-        <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
+        <FormWrapper>
           <ColumnWrapper
             paddingBottom={warningStatus.show ? 125 : 50}
             footer={
               <>
-                <div style={{ paddingInline: 12 }}>
-                  {warningStatus.show && (
-                    <AlertBlockInfo
-                      ellipsis={false}
-                      message={
-                        <span
-                          style={{}}
-                          dangerouslySetInnerHTML={{
-                            __html: intl.formatMessage({
-                              id: warningStatus.message
-                            })
-                          }}
-                        ></span>
-                      }
-                      title={intl.formatMessage({
-                        id: 'common.text.tips'
-                      })}
-                      type="warning"
-                    ></AlertBlockInfo>
-                  )}
-                </div>
+                <CompatibilityAlert
+                  warningStatus={warningStatus}
+                ></CompatibilityAlert>
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
@@ -296,11 +239,13 @@ const AddModal: FC<AddModalProps> = (props) => {
                 isGGUF={isGGUF}
                 gpuOptions={props.gpuOptions}
                 modelFileOptions={props.modelFileOptions}
+                handleShowCompatibleAlert={handleShowCompatibleAlert}
+                handleUpdateWarning={handleUpdateWarning}
                 onBackendChange={handleBackendChange}
               ></DataForm>
             </>
           </ColumnWrapper>
-        </div>
+        </FormWrapper>
       </div>
     </Drawer>
   );

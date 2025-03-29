@@ -6,12 +6,15 @@ import {
   WarningOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tag, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import _ from 'lodash';
+import React, { useMemo } from 'react';
 import { modelSourceMap } from '../config';
+import { EvaluateResult } from '../config/types';
 import '../style/hf-model-item.less';
+import IncompatiableInfo from './incompatiable-info';
 
 interface HFModelItemProps {
   title: string;
@@ -22,6 +25,7 @@ interface HFModelItemProps {
   active: boolean;
   source?: string;
   tags?: string[];
+  evaluateResult?: EvaluateResult;
 }
 const warningTask = ['video'];
 
@@ -31,15 +35,18 @@ const SUPPORTEDSOURCE = [
 ];
 
 const HFModelItem: React.FC<HFModelItemProps> = (props) => {
+  const { evaluateResult } = props;
+  console.log('evaluateResult', evaluateResult);
   const intl = useIntl();
-  const isExcludeTask = () => {
+  const isExcludeTask = useMemo(() => {
     if (!props.task) {
       return false;
     }
     return _.some(warningTask, (item: string) => {
       return props.task?.toLowerCase().includes(item);
     });
-  };
+  }, [props.task]);
+
   return (
     <div
       tabIndex={0}
@@ -53,7 +60,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
           style={{ color: 'var(--ant-color-text-tertiary)' }}
         />
         {props.title}
-        {isExcludeTask() && (
+        {isExcludeTask && (
           <Tooltip
             title={intl.formatMessage({ id: 'models.search.unsupport' })}
           >
@@ -62,43 +69,18 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
         )}
       </div>
       <div className="info">
-        {SUPPORTEDSOURCE.includes(props.source || '') ? (
-          <div className="info-item">
-            <span>
-              {dayjs().to(
-                dayjs(dayjs(props.updatedAt).format('YYYY-MM-DD HH:mm:ss'))
-              )}
-            </span>
-            <span className="flex-center">
-              <HeartOutlined className="m-r-5" />
-              {props.likes}
-            </span>
-            <span className="flex-center">
-              <DownloadOutlined className="m-r-5" />
-              {formatNumber(props.downloads)}
-            </span>
-          </div>
-        ) : (
-          <div className="flex-between">
-            <div className="tags">
-              {_.map(props.tags, (tag: string, index: string) => {
-                return (
-                  <Tag
-                    key={index}
-                    style={{
-                      backgroundColor: 'var(--color-white-1)',
-                      marginRight: 0
-                    }}
-                  >
-                    <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                      {tag}
-                    </span>
-                  </Tag>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <div className="info-item">
+          <span>{dayjs().to(dayjs(props.updatedAt))}</span>
+          <span className="flex-center">
+            <HeartOutlined className="m-r-5" />
+            {props.likes}
+          </span>
+          <span className="flex-center">
+            <DownloadOutlined className="m-r-5" />
+            {formatNumber(props.downloads)}
+          </span>
+        </div>
+        {<IncompatiableInfo data={evaluateResult}></IncompatiableInfo>}
       </div>
     </div>
   );

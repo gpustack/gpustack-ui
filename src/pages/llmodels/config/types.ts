@@ -175,3 +175,40 @@ export interface CatalogSpec {
   quantization: string;
   size: number;
 }
+
+export interface EvaluateSpec {
+  source?: string;
+  huggingface_repo_id?: string;
+  huggingface_filename?: string;
+  ollama_library_model_name?: string;
+  model_scope_model_id?: string;
+  model_scope_file_path?: string;
+  local_path?: string;
+  name?: string;
+  description?: string;
+  meta?: Record<string, any>;
+  replicas?: number;
+  ready_replicas?: number;
+  categories?: any[];
+  placement_strategy?: string;
+  cpu_offloading?: boolean;
+  distributed_inference_across_workers?: boolean;
+  worker_selector?: Record<string, any>;
+  gpu_selector?: {
+    gpu_ids: string[];
+  };
+  backend?: string;
+  backend_version?: string;
+  backend_parameters?: any[];
+  env?: Record<string, any>;
+  distributable?: boolean;
+  quantization?: string;
+  size?: number;
+}
+
+export interface EvaluateResult {
+  compatible: boolean;
+  compatibility_messages: string[];
+  scheduling_messages: string[];
+  default_backend_parameters: any[];
+}

@@ -1,10 +1,15 @@
 import { queryModelFilesList } from '@/pages/resources/apis';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import { useIntl } from '@umijs/max';
 import _ from 'lodash';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { queryGPUList } from '../apis';
-import { backendOptionsMap, setSourceRepoConfigValue } from '../config';
-import { GPUListItem, ListItem } from '../config/types';
+import {
+  backendOptionsMap,
+  modelSourceMap,
+  setSourceRepoConfigValue
+} from '../config';
+import { EvaluateResult, GPUListItem, ListItem } from '../config/types';
 
 export const useGenerateFormEditInitialValues = () => {
   const gpuDeviceList = useRef<any[]>([]);
@@ -174,5 +179,111 @@ export const useGenerateModelFileOptions = () => {
   return {
     getModelFileList,
     generateModelFileOptions
+  };
+};
+
+export const useCheckCompatibility = () => {
+  const intl = useIntl();
+
+  const [warningStatus, setWarningStatus] = useState<{
+    show: boolean;
+    title?: string;
+    message: string | string[];
+  }>({
+    show: false,
+    title: '',
+    message: []
+  });
+
+  const handleCheckCompatibility = (evaluateResult: EvaluateResult | null) => {
+    if (!evaluateResult) {
+      return {
+        show: false,
+        message: ''
+      };
+    }
+    const {
+      compatible,
+      compatibility_messages = [],
+      scheduling_messages = []
+    } = evaluateResult || {};
+
+    return {
+      show: !compatible,
+      title:
+        scheduling_messages?.length > 0
+          ? compatibility_messages?.join(' ')
+          : '',
+      message:
+        scheduling_messages?.length > 0
+          ? scheduling_messages
+          : compatibility_messages?.join(' ')
+    };
+  };
+
+  const handleShowCompatibleAlert = (evaluateResult: EvaluateResult | null) => {
+    const result = handleCheckCompatibility(evaluateResult);
+    setWarningStatus(result);
+  };
+
+  const updateShowWarning = (params: {
+    backend: string;
+    localPath: string;
+    source: string;
+  }) => {
+    const { backend, localPath, source } = params;
+    if (source !== modelSourceMap.local_path_value || !localPath) {
+      return {
+        show: false,
+        message: ''
+      };
+    }
+
+    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
+    const isOllamaModel = localPath?.includes('ollama');
+    const isGGUFFile = localPath.endsWith('.gguf');
+
+    let warningMessage = '';
+    if (isBlobFile && isOllamaModel && backend === backendOptionsMap.llamaBox) {
+      warningMessage = '';
+    } else if (
+      isBlobFile &&
+      isOllamaModel &&
+      backend !== backendOptionsMap.llamaBox
+    ) {
+      warningMessage = intl.formatMessage({
+        id: 'models.form.ollama.warning'
+      });
+    } else if (isGGUFFile && backend !== backendOptionsMap.llamaBox) {
+      warningMessage = intl.formatMessage({
+        id: 'models.form.backend.warning'
+      });
+    } else if (!isGGUFFile && backend === backendOptionsMap.llamaBox) {
+      warningMessage = intl.formatMessage({
+        id: 'models.form.backend.warning.llamabox'
+      });
+    }
+
+    return {
+      show: !!warningMessage,
+      isHtml: true,
+      message: warningMessage
+    };
+  };
+
+  const handleUpdateWarning = (params: {
+    backend: string;
+    localPath: string;
+    source: string;
+  }) => {
+    const warningMessage = updateShowWarning(params);
+    setWarningStatus(warningMessage);
+    return warningMessage;
+  };
+
+  return {
+    handleShowCompatibleAlert,
+    handleUpdateWarning,
+    warningStatus
   };
 };

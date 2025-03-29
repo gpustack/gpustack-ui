@@ -4,7 +4,7 @@ import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, Drawer } from 'antd';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { queryCatalogItemSpec } from '../apis';
 import {
   backendOptionsMap,
@@ -308,6 +308,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       if (defaultSpec.backend === backendOptionsMap.llamaBox) {
         setIsGGUF(true);
       }
+      console.log('values====', form.current.form.getFieldsValue());
     } catch (error) {
       // ignore
     }

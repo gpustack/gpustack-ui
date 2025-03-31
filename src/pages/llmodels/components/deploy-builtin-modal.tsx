@@ -2,18 +2,26 @@ import ModalFooter from '@/components/modal-footer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { CloseOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import _ from 'lodash';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
   backendOptionsMap,
+  excludeFields,
   modelCategoriesMap,
   sourceOptions
 } from '../config';
-import { CatalogSpec, FormData, ListItem } from '../config/types';
-import { useGenerateFormEditInitialValues } from '../hooks';
+import { FormContext } from '../config/form-context';
+import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
+import {
+  useCheckCompatibility,
+  useGenerateFormEditInitialValues
+} from '../hooks';
 import ColumnWrapper from './column-wrapper';
+import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 
 type AddModalProps = {
@@ -21,12 +29,19 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   data?: ListItem;
-  source: string;
+  source: SourceType;
   width?: string | number;
   current?: any;
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
+
+const FormWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  height: 100%;
+  maxwidth: 100%;
+`;
 
 const backendOptions = [
   {
@@ -64,6 +79,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     current,
     width = 600
   } = props || {};
+  const {
+    handleShowCompatibleAlert,
+    setWarningStatus,
+    handleEvaluate,
+    warningStatus
+  } = useCheckCompatibility();
+  const intl = useIntl();
   const { getGPUList } = useGenerateFormEditInitialValues();
   const form = useRef<any>({});
   const [gpuOptions, setGpuOptions] = useState<any[]>([]);
@@ -76,9 +98,24 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
+  const submitAnyway = useRef<any>(null);
 
   const handleSumit = () => {
     form.current?.submit?.();
+  };
+
+  const handleSubmitAnyway = async () => {
+    submitAnyway.current = true;
+    form.current?.submit?.();
+  };
+
+  const generateSubmitData = (formData: FormData) => {
+    const data = {
+      ..._.omit(selectSpecRef.current, ['name']),
+      ...formData
+    };
+
+    return data;
   };
 
   const getDefaultQuant = (data: { category: string; quantOption: string }) => {
@@ -181,6 +218,20 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     return backendList;
   };
 
+  const handleCheckCompatibility = async (formData: FormData) => {
+    const evalutionData = await handleEvaluate(formData);
+
+    if (evalutionData?.compatible) {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+    } else {
+      handleShowCompatibleAlert?.(evalutionData);
+    }
+    return evalutionData;
+  };
+
   const handleSourceChange = (source: string) => {
     const defaultSpec = _.get(sourceGroupMap.current, `${source}.0`, {});
     initFormDataBySource(defaultSpec);
@@ -193,6 +244,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
     // set form value
     initFormDataBySource(defaultSpec);
+    const data = generateSubmitData(form.current.getFieldsValue());
+    handleCheckCompatibility(data);
   };
 
   const checkSize = (list: any[]) => {
@@ -220,6 +273,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       )?.value ||
       _.get(list, '0.value', '')
     );
+  };
+
+  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    const keys = Object.keys(changedValues);
+    const isExcludeField = keys.some((key) => excludeFields.includes(key));
+    if (!isExcludeField) {
+      const values = form.current?.form.getFieldsValue?.();
+      const data = generateSubmitData(values);
+      handleCheckCompatibility(data);
+    }
   };
 
   const handleBackendChange = (backend: string) => {
@@ -252,6 +315,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current.setFieldsValue({
       ...data
     });
+    handleCheckCompatibility(data);
   };
 
   const fetchSpecData = async () => {
@@ -323,6 +387,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current.setFieldsValue({
       ...data
     });
+    const allValues = generateSubmitData(data);
+    handleCheckCompatibility(allValues);
   };
 
   const handleOnSizeChange = (val: number) => {
@@ -343,13 +409,21 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current.setFieldsValue({
       ...data
     });
+    const allValues = generateSubmitData(data);
+    handleCheckCompatibility(allValues);
   };
 
-  const handleOk = (values: FormData) => {
-    onOk({
-      ..._.omit(selectSpecRef.current, ['name']),
-      ...values
-    });
+  const handleOk = async (values: FormData) => {
+    const data = generateSubmitData(values);
+
+    if (submitAnyway.current) {
+      onOk(data);
+      return;
+    }
+    const evaluateResult = await handleCheckCompatibility(data);
+    if (evaluateResult?.compatible) {
+      onOk(data);
+    }
   };
 
   const handleCancel = useCallback(() => {
@@ -363,6 +437,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
     return () => {
       axiosToken.current?.cancel?.();
+      setWarningStatus({
+        show: false,
+        title: '',
+        message: []
+      });
     };
   }, [open, current]);
 
@@ -409,44 +488,85 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       width={width}
       footer={false}
     >
-      <div style={{ display: 'flex', height: '100%' }}>
-        <ColumnWrapper
-          footer={
-            <ModalFooter
-              onCancel={handleCancel}
-              onOk={handleSumit}
-              style={{
-                padding: '16px 24px',
-                display: 'flex',
-                justifyContent: 'flex-end'
-              }}
-            ></ModalFooter>
-          }
-        >
-          <>
-            <DataForm
-              fields={[]}
-              source={source}
-              action={action}
-              selectedModel={{}}
-              onOk={handleOk}
-              ref={form}
-              isGGUF={isGGUF}
-              byBuiltIn={true}
-              sourceDisable={false}
-              backendOptions={backendList}
-              sourceList={sourceList}
-              quantizationOptions={quantizationOptions}
-              sizeOptions={sizeOptions}
-              gpuOptions={gpuOptions}
-              onBackendChange={handleBackendChange}
-              onSourceChange={handleSourceChange}
-              onQuantizationChange={handleOnQuantizationChange}
-              onSizeChange={handleOnSizeChange}
-            ></DataForm>
-          </>
-        </ColumnWrapper>
-      </div>
+      <FormContext.Provider
+        value={{
+          isGGUF: isGGUF,
+          byBuiltIn: true,
+          sizeOptions: sizeOptions,
+          quantizationOptions: quantizationOptions,
+          onSizeChange: handleOnSizeChange,
+          onQuantizationChange: handleOnQuantizationChange
+        }}
+      >
+        <FormWrapper>
+          <ColumnWrapper
+            paddingBottom={
+              warningStatus.show
+                ? Array.isArray(warningStatus.message)
+                  ? 150
+                  : 125
+                : 50
+            }
+            footer={
+              <>
+                <CompatibilityAlert
+                  showClose={true}
+                  onClose={() => {
+                    setWarningStatus({
+                      show: false,
+                      message: ''
+                    });
+                  }}
+                  warningStatus={warningStatus}
+                  contentStyle={{ paddingInline: 0 }}
+                ></CompatibilityAlert>
+                <ModalFooter
+                  onCancel={handleCancel}
+                  onOk={handleSumit}
+                  showOkBtn={!warningStatus.show}
+                  extra={
+                    warningStatus.show && (
+                      <Button
+                        type="primary"
+                        onClick={handleSubmitAnyway}
+                        style={{ width: '130px' }}
+                      >
+                        {intl.formatMessage({
+                          id: 'models.form.submit.anyway'
+                        })}
+                      </Button>
+                    )
+                  }
+                  style={{
+                    padding: '16px 24px',
+                    display: 'flex',
+                    justifyContent: 'flex-end'
+                  }}
+                ></ModalFooter>
+              </>
+            }
+          >
+            <>
+              <DataForm
+                fields={[]}
+                source={source}
+                action={action}
+                selectedModel={{}}
+                onOk={handleOk}
+                ref={form}
+                isGGUF={isGGUF}
+                sourceDisable={false}
+                backendOptions={backendList}
+                sourceList={sourceList}
+                gpuOptions={gpuOptions}
+                onBackendChange={handleBackendChange}
+                onSourceChange={handleSourceChange}
+                onValuesChange={handleOnValuesChange}
+              ></DataForm>
+            </>
+          </ColumnWrapper>
+        </FormWrapper>
+      </FormContext.Provider>
     </Drawer>
   );
 };

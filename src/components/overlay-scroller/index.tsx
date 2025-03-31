@@ -10,7 +10,12 @@ const Wrapper = styled.div<{ $maxHeight?: number }>`
   padding-inline: 10px;
 `;
 
-const OverlayScroller: React.FC<any> = ({ children, maxHeight, theme }) => {
+const OverlayScroller: React.FC<any> = ({
+  children,
+  maxHeight,
+  theme,
+  style
+}) => {
   const scroller = React.useRef<any>(null);
   const { initialize } = useOverlayScroller({
     options: {
@@ -25,7 +30,15 @@ const OverlayScroller: React.FC<any> = ({ children, maxHeight, theme }) => {
   }, []);
 
   return (
-    <Wrapper ref={scroller} $maxHeight={maxHeight || '100%'} hidden={false}>
+    <Wrapper
+      ref={scroller}
+      $maxHeight={maxHeight || '100%'}
+      hidden={false}
+      as="div"
+      style={{
+        ...style
+      }}
+    >
       {children}
     </Wrapper>
   );

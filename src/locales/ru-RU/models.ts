@@ -121,9 +121,15 @@ export default {
   'models.form.keyvalue.paste':
     'Вставьте несколько строк текста, где каждая строка содержит пару ключ-значение. Ключ и значение разделяются знаком равенства (=), а разные пары — символами новой строки.',
   'models.form.files': 'файлы',
-  'models.table.status': 'Status'
+  'models.table.status': 'Status',
+  'models.form.submit.anyway': 'Submit Anyway',
+  'models.form.evaluating': 'Evaluating...',
+  'models.form.incompatible': 'Incompatible'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. models.table.status
+// 1. models.table.status,
+// 2. 'models.form.submit.anyway',
+// 3. 'models.form.evaluating',
+// 4. 'models.form.incompatible',
 // ========== End of To-Do List ==========

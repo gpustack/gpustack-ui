@@ -1,5 +1,6 @@
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
+import React from 'react';
 
 type ModalFooterProps = {
   onOk?: () => void;
@@ -9,10 +10,12 @@ type ModalFooterProps = {
   htmlType?: 'button' | 'submit';
   okBtnProps?: any;
   cancelBtnProps?: any;
-  align?: 'start' | 'end' | 'center' | 'baseline';
-  form?: any;
   loading?: boolean;
   style?: React.CSSProperties;
+  showOkBtn?: boolean;
+  showCancelBtn?: boolean;
+  extra?: React.ReactNode;
+  form?: any;
 };
 const ModalFooter: React.FC<ModalFooterProps> = ({
   onOk,
@@ -23,8 +26,9 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   cancelBtnProps,
   loading,
   htmlType = 'button',
-  align = 'end',
   style,
+  showOkBtn = true,
+  extra,
   form
 }) => {
   const intl = useIntl();
@@ -33,16 +37,19 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
       <Button onClick={onCancel} style={{ width: '88px' }} {...cancelBtnProps}>
         {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
       </Button>
-      <Button
-        type="primary"
-        onClick={onOk}
-        style={{ width: '88px' }}
-        loading={loading}
-        htmlType={htmlType}
-        {...okBtnProps}
-      >
-        {okText || intl.formatMessage({ id: 'common.button.save' })}
-      </Button>
+      {extra}
+      {showOkBtn && (
+        <Button
+          type="primary"
+          onClick={onOk}
+          style={{ width: '88px' }}
+          loading={loading}
+          htmlType={htmlType}
+          {...okBtnProps}
+        >
+          {okText || intl.formatMessage({ id: 'common.button.save' })}
+        </Button>
+      )}
     </Space>
   );
 };

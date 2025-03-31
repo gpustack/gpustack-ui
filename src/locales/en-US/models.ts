@@ -121,10 +121,8 @@ export default {
   'models.form.keyvalue.paste':
     'Paste multiple lines of text, with each line containing a key-value pair. The key and value are separated by an = sign, and different key-value pairs are separated by newline characters.',
   'models.form.files': 'files',
-  'models.table.status': 'Status'
+  'models.table.status': 'Status',
+  'models.form.submit.anyway': 'Submit Anyway',
+  'models.form.evaluating': 'Evaluating...',
+  'models.form.incompatible': 'Incompatible'
 };
-
-// ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.files',
-// 2. 'models.table.status',
-// ========== End of To-Do List ==========

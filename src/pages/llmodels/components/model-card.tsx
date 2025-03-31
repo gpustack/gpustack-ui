@@ -213,7 +213,7 @@ const ModelCard: React.FC<{
   };
 
   const getModelCardData = async () => {
-    if (!props.selectedModel.name) {
+    if (!props.selectedModel?.name) {
       setModelData(null);
       setReadmeText(null);
       handleOnCollapse(null);
@@ -292,7 +292,7 @@ const ModelCard: React.FC<{
 
   useEffect(() => {
     getModelCardData();
-  }, [props.selectedModel.name]);
+  }, [props.selectedModel?.name]);
 
   useEffect(() => {
     return () => {

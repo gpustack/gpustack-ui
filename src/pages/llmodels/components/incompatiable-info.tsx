@@ -1,5 +1,6 @@
 import OverlayScroller from '@/components/overlay-scroller';
 import { WarningOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Tag, Tooltip } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
@@ -7,6 +8,7 @@ import { EvaluateResult } from '../config/types';
 
 interface IncompatiableInfoProps {
   data?: EvaluateResult;
+  isEvaluating?: boolean;
 }
 
 const CompatibleTag = styled(Tag)`
@@ -46,8 +48,17 @@ const SMTitle = styled.div<{ $isTitle?: boolean }>`
   font-size: var(--font-size-small);
 `;
 const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
-  const { data } = props;
-  if (data?.compatible) {
+  const { data, isEvaluating } = props;
+  const intl = useIntl();
+  console.log('IncompatiableInfo', data, isEvaluating);
+  if (isEvaluating) {
+    return (
+      <CompatibleTag color="warning">
+        {intl.formatMessage({ id: 'models.form.evaluating' })}
+      </CompatibleTag>
+    );
+  }
+  if (!data || data?.compatible) {
     return null;
   }
   return (
@@ -71,7 +82,7 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
       }
     >
       <CompatibleTag icon={<WarningOutlined />} color="warning">
-        Incompatible
+        {intl.formatMessage({ id: 'models.form.incompatible' })}
       </CompatibleTag>
     </Tooltip>
   );

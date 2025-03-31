@@ -29,6 +29,12 @@ export interface ListItem {
   worker_selector?: object;
 }
 
+export type SourceType =
+  | 'huggingface'
+  | 'model_scope'
+  | 'local_path'
+  | 'ollama_library';
+
 export interface FormData {
   backend: string;
   env?: Record<string, any>;

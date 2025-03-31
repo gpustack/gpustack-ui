@@ -71,7 +71,12 @@ import {
   setModelActionList,
   sourceOptions
 } from '../config/button-actions';
-import { FormData, ListItem, ModelInstanceListItem } from '../config/types';
+import {
+  FormData,
+  ListItem,
+  ModelInstanceListItem,
+  SourceType
+} from '../config/types';
 import { useGenerateFormEditInitialValues } from '../hooks';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
@@ -174,13 +179,13 @@ const Models: React.FC<ModelsProps> = ({
   const [openDeployModal, setOpenDeployModal] = useState<{
     show: boolean;
     width: number | string;
-    source: string;
+    source: SourceType;
     gpuOptions: any[];
     modelFileOptions?: any[];
   }>({
     show: false,
     width: 600,
-    source: modelSourceMap.huggingface_value,
+    source: modelSourceMap.huggingface_value as SourceType,
     gpuOptions: [],
     modelFileOptions: []
   });

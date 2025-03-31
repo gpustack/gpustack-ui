@@ -29,6 +29,7 @@ import IncompatiableInfo from './incompatiable-info';
 import TitleWrapper from './title-wrapper';
 
 interface HFModelFileProps {
+  isDownload?: boolean;
   selectedModel: any;
   collapsed?: boolean;
   loadingModel?: boolean;
@@ -73,8 +74,9 @@ const FilePartsTag = (props: { parts: any[] }) => {
 };
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const { collapsed, modelSource } = props;
+  const { collapsed, modelSource, isDownload } = props;
   const intl = useIntl();
+  const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
     fileList: [],
     loading: false
@@ -93,6 +95,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   ]);
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
+  const timer = useRef<any>(null);
 
   const handleSelectModelFile = (item: any) => {
     props.onSelectFile?.(item);
@@ -241,12 +244,51 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     }
   }, []);
 
+  const handleEvaluate = async (list: any[]) => {
+    if (isDownload) {
+      return;
+    }
+    try {
+      const evaluateFileList = list.map((item: any) => {
+        return {
+          source: modelSource,
+          ...(modelSource === modelSourceMap.huggingface_value
+            ? {
+                huggingface_repo_id: props.selectedModel.name,
+                huggingface_filename: item.fakeName
+              }
+            : {
+                model_scope_model_id: props.selectedModel.name,
+                model_scope_file_path: item.fakeName
+              })
+        };
+      });
+
+      setIsEvaluating(true);
+
+      const evaluationList = await getEvaluateResults(evaluateFileList);
+
+      const resultList = _.map(list, (item: any, index: number) => {
+        return {
+          ...item,
+          evaluateResult: evaluationList[index]
+        };
+      });
+      handleSelectModelFile(resultList[0]);
+      setDataSource({ fileList: resultList, loading: false });
+      setIsEvaluating(false);
+    } catch (error) {
+      setIsEvaluating(false);
+    }
+  };
+
   const handleFetchModelFiles = async () => {
     if (!props.selectedModel.name) {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
       return;
     }
+    checkTokenRef.current?.cancel?.();
     axiosTokenRef.current?.abort?.();
     axiosTokenRef.current = new AbortController();
     setDataSource({ ...dataSource, loading: true });
@@ -264,32 +306,16 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         return sortType === 'size' ? item.size : item.path;
       });
 
-      const evaluateFileList = sortList.map((item: any) => {
-        return {
-          source: modelSource,
-          ...(modelSource === modelSourceMap.huggingface_value
-            ? {
-                huggingface_repo_id: props.selectedModel.name,
-                huggingface_filename: item.fakeName
-              }
-            : {
-                model_scope_model_id: props.selectedModel.name,
-                model_scope_file_path: item.fakeName
-              })
-        };
-      });
+      handleSelectModelFile(sortList[0]);
+      setDataSource({ fileList: sortList, loading: false });
 
-      const evaluationList = await getEvaluateResults(evaluateFileList);
-
-      const resultList = _.map(sortList, (item: any, index: number) => {
-        return {
-          ...item,
-          evaluateResult: evaluationList[index]
-        };
-      });
-
-      handleSelectModelFile(resultList[0]);
-      setDataSource({ fileList: resultList, loading: false });
+      // if (timer.current) {
+      //   clearTimeout(timer.current);
+      // }
+      // timer.current = setTimeout(() => {
+      //   handleEvaluate(sortList);
+      // }, 200);
+      handleEvaluate(sortList);
     } catch (error) {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
@@ -341,12 +367,15 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
     }
-  }, [props.selectedModel.name]);
+  }, [props.selectedModel?.name]);
 
   useEffect(() => {
     return () => {
       axiosTokenRef.current?.abort?.();
       checkTokenRef.current?.cancel?.();
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
     };
   }, []);
 
@@ -415,6 +444,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
                           <FilePartsTag parts={item.parts}></FilePartsTag>
                         </span>
                         <IncompatiableInfo
+                          isEvaluating={isEvaluating}
                           data={item.evaluateResult}
                         ></IncompatiableInfo>
                       </div>

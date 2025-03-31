@@ -17,10 +17,11 @@ interface SearchResultProps {
   style?: React.CSSProperties;
   loading?: boolean;
   networkError?: boolean;
+  isEvaluating?: boolean;
 }
 
 const SearchResult: React.FC<SearchResultProps> = (props) => {
-  const { resultList, onSelect, source, networkError } = props;
+  const { resultList, onSelect, isEvaluating, source, networkError } = props;
   const intl = useIntl();
 
   const handleSelect = (e: any, item: any) => {
@@ -111,6 +112,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
                         updatedAt={item.updatedAt}
                         evaluateResult={item.evaluateResult}
                         active={item.id === props.current}
+                        isEvaluating={isEvaluating}
                       />
                     </div>
                   </Col>

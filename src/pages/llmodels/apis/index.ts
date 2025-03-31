@@ -379,3 +379,17 @@ export async function evaluationsModelSpec(
     cancelToken: options?.token
   });
 }
+
+// export const evaluationsModelSpec = async (
+//   data: {
+//     model_specs: EvaluateSpec[];
+//   },
+//   options: { token: any }
+// ) => {
+//   const response = await fetch(`v1/${MODEL_EVALUATIONS}`, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify(data)
+//   });
+//   return response.json();
+// };

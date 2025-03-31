@@ -20,8 +20,7 @@ import {
   ModelScopeSortType,
   ModelSortType,
   ModelscopeTaskMap,
-  modelSourceMap,
-  ollamaModelOptions
+  modelSourceMap
 } from '../config';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
@@ -29,14 +28,15 @@ import SearchResult from './search-result';
 
 interface SearchInputProps {
   modelSource: string;
+  isDownload?: boolean;
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
-  onSelectModel: (model: any) => void;
+  onSelectModel: (model: any, isGGUF?: boolean) => void;
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   const intl = useIntl();
-  const { modelSource, setLoadingModel, onSelectModel } = props;
+  const { modelSource, isDownload, setLoadingModel, onSelectModel } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
     loading: boolean;
@@ -52,13 +52,17 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
+  const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
   const [current, setCurrent] = useState<string>('');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
+  const evaluateTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
   const filterGGUFRef = useRef<boolean | undefined>();
   const filterTaskRef = useRef<string>('');
+  const timer = useRef<any>(null);
+  const workerRef = useRef<any>(null);
   const modelFilesSortOptions = useRef<any[]>([
     {
       label: intl.formatMessage({ id: 'models.sort.trending' }),
@@ -78,10 +82,20 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   ]);
 
-  const handleOnSelectModel = useCallback((item: any) => {
-    onSelectModel(item);
+  const checkIsGGUF = (item: any) => {
+    const isGGUF = _.some(item.tags, (tag: string) => {
+      return tag.toLowerCase() === 'gguf';
+    });
+    const isGGUFFromMs = _.some(item.libraries, (tag: string) => {
+      return tag.toLowerCase() === 'gguf';
+    });
+    return isGGUF || isGGUFFromMs;
+  };
+
+  const handleOnSelectModel = (item: any) => {
+    onSelectModel(item, checkIsGGUF(item));
     setCurrent(item.id);
-  }, []);
+  };
 
   // huggeface
   const getModelsFromHuggingface = useCallback(async (sort: string) => {
@@ -136,7 +150,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           value: item.Name,
           label: item.Name,
           revision: item.Revision,
-          task: item.Tasks?.map((sItem: any) => sItem.Name).join(',')
+          task: item.Tasks?.map((sItem: any) => sItem.Name).join(','),
+          tags: item.Tags,
+          libraries: item.Libraries
         };
       });
 
@@ -164,70 +180,131 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   }, []);
 
-  const handleOnSearchRepo = useCallback(
-    async (sortType?: string) => {
-      if (!SUPPORTEDSOURCE.includes(modelSource)) {
-        return;
-      }
-      axiosTokenRef.current?.abort?.();
-      axiosTokenRef.current = new AbortController();
-      const sort = sortType ?? dataSource.sortType;
-      try {
+  const handleEvaluate = async (list: any[]) => {
+    if (isDownload) {
+      return;
+    }
+    try {
+      const repoList = list.map((item) => {
+        return {
+          source: modelSource,
+          ...(modelSource === modelSourceMap.huggingface_value
+            ? {
+                huggingface_repo_id: item.name
+              }
+            : {
+                model_scope_model_id: item.name
+              })
+        };
+      });
+      setIsEvaluating(true);
+      const evaluations = await getEvaluateResults(repoList);
+      const resultList = list.map((item, index) => {
+        return {
+          ...item,
+          evaluateResult: evaluations[index] || null
+        };
+      });
+      setIsEvaluating(false);
+      setDataSource((pre) => {
+        return {
+          ...pre,
+          loading: false,
+          repoOptions: resultList
+        };
+      });
+      handleOnSelectModel(resultList[0]);
+    } catch (error) {
+      setIsEvaluating(false);
+    }
+  };
+
+  const handleEvaluateWorker = (params: {
+    list: any[];
+    modelSource: string;
+    modelSourceMap: any;
+  }) => {
+    console.log('handleEvaluateWorker=======');
+    const { list, modelSource, modelSourceMap } = params;
+    workerRef.current?.terminate();
+    setIsEvaluating(true);
+    workerRef.current = new Worker(
+      // @ts-ignore
+      new URL('../apis/evaluateWorker.ts', import.meta.url)
+    );
+    workerRef.current.postMessage({
+      list,
+      modelSource,
+      modelSourceMap
+    });
+    workerRef.current.onmessage = function (event: any) {
+      const { success, resultList } = event.data;
+      if (success) {
         setDataSource((pre) => {
-          pre.loading = true;
-          return { ...pre };
-        });
-        setLoadingModel?.(true);
-        cacheRepoOptions.current = [];
-        let list: any[] = [];
-        if (modelSource === modelSourceMap.huggingface_value) {
-          list = await getModelsFromHuggingface(sort);
-        } else if (modelSource === modelSourceMap.modelscope_value) {
-          list = await getModelsFromModelscope(sort);
-        }
-        cacheRepoOptions.current = list;
-        const repoList = list.map((item) => {
           return {
-            source: modelSource,
-            ...(modelSource === modelSourceMap.huggingface_value
-              ? {
-                  huggingface_repo_id: item.name
-                }
-              : {
-                  model_scope_model_id: item.name
-                })
+            ...pre,
+            repoOptions: resultList
           };
         });
-        const evaluations = await getEvaluateResults(repoList);
-        list = list.map((item, index) => {
-          return {
-            ...item,
-            evaluateResult: evaluations[index]
-          };
-        });
-        console.log('list:', evaluations);
-        setDataSource({
-          repoOptions: list,
-          loading: false,
-          networkError: false,
-          sortType: sort
-        });
-        setLoadingModel?.(false);
-        handleOnSelectModel(list[0]);
-      } catch (error: any) {
-        setDataSource({
-          repoOptions: [],
-          loading: false,
-          sortType: sort,
-          networkError: error?.message === 'Failed to fetch'
-        });
-        setLoadingModel?.(false);
-        handleOnSelectModel({});
-        cacheRepoOptions.current = [];
       }
-    },
-    [dataSource.sortType, modelSource]
-  );
+      setIsEvaluating(false);
+      handleOnSelectModel(resultList[0]);
+      workerRef.current.terminate();
+      workerRef.current = null;
+    };
+  };
+
+  const handleOnSearchRepo = async (sortType?: string) => {
+    if (!SUPPORTEDSOURCE.includes(modelSource)) {
+      return;
+    }
+    axiosTokenRef.current?.abort?.();
+    axiosTokenRef.current = new AbortController();
+    checkTokenRef.current?.cancel?.();
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    const sort = sortType ?? dataSource.sortType;
+    try {
+      setDataSource((pre) => {
+        pre.loading = true;
+        return { ...pre };
+      });
+      setLoadingModel?.(true);
+      cacheRepoOptions.current = [];
+      let list: any[] = [];
+      if (modelSource === modelSourceMap.huggingface_value) {
+        list = await getModelsFromHuggingface(sort);
+      } else if (modelSource === modelSourceMap.modelscope_value) {
+        list = await getModelsFromModelscope(sort);
+      }
+      cacheRepoOptions.current = list;
+      console.log('list=========', list);
+
+      setDataSource({
+        repoOptions: list,
+        loading: false,
+        networkError: false,
+        sortType: sort
+      });
+      handleOnSelectModel(list[0]);
+      setLoadingModel?.(false);
+
+      timer.current = setTimeout(() => {
+        handleEvaluate(list);
+      }, 200);
+    } catch (error: any) {
+      setDataSource({
+        repoOptions: [],
+        loading: false,
+        sortType: sort,
+        networkError: error?.message === 'Failed to fetch'
+      });
+      setLoadingModel?.(false);
+      handleOnSelectModel({});
+      cacheRepoOptions.current = [];
+    }
+  };
   const handleSearchInputChange = useCallback((e: any) => {
     searchInputRef.current = e.target.value;
     console.log('change:', searchInputRef.current);
@@ -243,16 +320,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     ) {
       handleOnSearchRepo();
     }
-    if (modelSourceMap.ollama_library_value === modelSource) {
-      setDataSource({
-        repoOptions: ollamaModelOptions,
-        loading: false,
-        networkError: false,
-        sortType: dataSource.sortType
-      });
-      cacheRepoOptions.current = ollamaModelOptions;
-      handleOnSelectModel(ollamaModelOptions[0]);
-    }
   };
 
   const handleSortChange = (value: string) => {
@@ -263,11 +330,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     filterGGUFRef.current = e.target.checked;
     handleOnSearchRepo();
   };
-
-  const handleFilterTaskChange = useCallback((value: string) => {
-    filterTaskRef.current = value;
-    handleOnSearchRepo();
-  }, []);
 
   const renderGGUFTips = useMemo(() => {
     return (
@@ -345,13 +407,16 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   useEffect(() => {
     handleOnOpen();
-    console.log('SearchModel useEffect', modelSource);
   }, [modelSource]);
 
   useEffect(() => {
     return () => {
       axiosTokenRef.current?.abort?.();
       checkTokenRef.current?.cancel?.();
+      // workerRef.current?.terminate();
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
     };
   }, []);
 
@@ -364,6 +429,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         networkError={dataSource.networkError}
         current={current}
         source={modelSource}
+        isEvaluating={isEvaluating}
         onSelect={handleOnSelectModel}
       ></SearchResult>
     </div>

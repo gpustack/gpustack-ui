@@ -177,14 +177,22 @@ export const AudioModeTypeMap = {
   Whisper: ['Whisper', 'whisper'],
   CosyVoice: ['CosyVoice', 'cosyvoice', 'cosy-voice', 'cosy_voice']
 };
+interface ModelSource {
+  huggingface: string;
+  huggingface_value: string;
+  ollama_library: string;
+  ollama_library_value: string;
+  modelScope: string;
+  modelscope_value: string;
+  local_path: string;
+  local_path_value: string;
+}
 
-export const modelSourceMap: Record<string, string> = {
+export const modelSourceMap: ModelSource = {
   huggingface: 'Hugging Face',
-  ollama_library: 'Ollama Library',
-  s3: 'S3',
   huggingface_value: 'huggingface',
+  ollama_library: 'Ollama Library',
   ollama_library_value: 'ollama_library',
-  s3_value: 's3',
   modelScope: 'ModelScope',
   modelscope_value: 'model_scope',
   local_path: 'Local Path',
@@ -194,7 +202,6 @@ export const modelSourceMap: Record<string, string> = {
 export const modelSourceValueMap = {
   [modelSourceMap.huggingface_value]: modelSourceMap.huggingface,
   [modelSourceMap.ollama_library_value]: modelSourceMap.ollama_library,
-  [modelSourceMap.s3_value]: modelSourceMap.s3,
   [modelSourceMap.modelscope_value]: modelSourceMap.modelScope,
   [modelSourceMap.local_path_value]: modelSourceMap.local_path
 };
@@ -459,5 +466,7 @@ export const excludeFields = [
   'name',
   'description',
   'env',
-  'source'
+  'source',
+  'quantization',
+  'size'
 ];

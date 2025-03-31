@@ -3,11 +3,17 @@ import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { backendOptionsMap, modelSourceMap } from '../config';
-import { FormData } from '../config/types';
+import {
+  backendOptionsMap,
+  excludeFields,
+  getSourceRepoConfigValue,
+  modelSourceMap
+} from '../config';
+import { FormContext } from '../config/form-context';
+import { FormData, SourceType } from '../config/types';
 import { useCheckCompatibility } from '../hooks';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
@@ -17,6 +23,12 @@ import ModelCard from './model-card';
 import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
+
+const ModalFooterStyle = {
+  padding: '16px 24px',
+  display: 'flex',
+  justifyContent: 'flex-end'
+};
 
 const ColWrapper = styled.div`
   display: flex;
@@ -34,7 +46,7 @@ type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
-  source: string;
+  source: SourceType;
   isGGUF?: boolean;
   width?: string | number;
   gpuOptions: any[];
@@ -62,14 +74,21 @@ const AddModal: FC<AddModalProps> = (props) => {
     modelSourceMap.modelscope_value
   ];
 
-  const { handleShowCompatibleAlert, handleUpdateWarning, warningStatus } =
-    useCheckCompatibility();
+  const {
+    handleShowCompatibleAlert,
+    handleUpdateWarning,
+    setWarningStatus,
+    handleEvaluate,
+    checkTokenRef,
+    warningStatus
+  } = useCheckCompatibility();
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
+  const submitAnyway = useRef<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldsValue?.({
@@ -81,9 +100,31 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   }, []);
 
-  const handleOnSelectModel = (item: any) => {
+  const handleOnSelectModel = (item: any, isgguf?: boolean) => {
     setSelectedModel(item);
     form.current?.handleOnSelectModel?.(item);
+    console.log('isgguf+++++++', isgguf, item);
+    if (!isgguf) {
+      handleShowCompatibleAlert(item.evaluateResult);
+    }
+  };
+
+  const handleOnOk = async (allValues: FormData) => {
+    if (submitAnyway.current) {
+      onOk(allValues);
+      return;
+    }
+    const result = getSourceRepoConfigValue(props.source, allValues);
+    const evalutionData = await handleEvaluate(result.values);
+    handleShowCompatibleAlert?.(evalutionData);
+    if (evalutionData?.compatible) {
+      onOk(allValues);
+    }
+  };
+
+  const handleSubmitAnyway = async () => {
+    submitAnyway.current = true;
+    form.current?.submit?.();
   };
 
   const handleSumit = () => {
@@ -98,18 +139,77 @@ const AddModal: FC<AddModalProps> = (props) => {
     setIsGGUF(flag);
     if (flag) {
       debounceFetchModelFiles();
+    }
+  };
+
+  // trigger from local_path change or backend change
+  const handleBackendChangeHook = async () => {
+    const localPath = form.current.form.getFieldValue?.('local_path');
+    const backend = form.current.form.getFieldValue?.('backend');
+
+    const res = handleUpdateWarning?.({
+      backend,
+      localPath: localPath,
+      source: props.source
+    });
+
+    if (!res.show) {
+      const values = form.current.form.getFieldsValue?.();
+      const data = getSourceRepoConfigValue(props.source, values);
+      const evalutionData = await handleEvaluate(
+        _.omit(data.values, [
+          'cpu_offloading',
+          'distributed_inference_across_workers'
+        ])
+      );
+      handleShowCompatibleAlert?.(evalutionData);
     } else {
-      handleShowCompatibleAlert(selectedModel.evaluateResult);
+      setWarningStatus?.(res);
     }
   };
 
   const handleBackendChange = async (backend: string) => {
+    handleBackendChangeHook();
     if (backend === backendOptionsMap.vllm) {
       setIsGGUF(false);
     }
 
     if (backend === backendOptionsMap.llamaBox) {
       setIsGGUF(true);
+    }
+  };
+
+  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    const keys = Object.keys(changedValues);
+    const isExcludeField = keys.some((key) => excludeFields.includes(key));
+    const hasValue = keys.every((key) => {
+      return !!changedValues[key];
+    });
+
+    // let hasExcludeField = false;
+    // let allFieldsHaveValue = true;
+
+    // for (const key of keys) {
+    //   if (excludeFields.includes(key)) {
+    //     hasExcludeField = true;
+    //     break;
+    //   }
+    //   if (!changedValues[key]) {
+    //     allFieldsHaveValue = false;
+    //   }
+    // }
+
+    if (
+      !isExcludeField &&
+      hasValue &&
+      !_.has(changedValues, 'backend') &&
+      !_.has(changedValues, 'local_path')
+    ) {
+      const values = form.current?.form.getFieldsValue?.();
+      const data = getSourceRepoConfigValue(props.source, values);
+
+      const evalutionData = await handleEvaluate(data.values);
+      handleShowCompatibleAlert?.(evalutionData);
     }
   };
 
@@ -127,14 +227,24 @@ const AddModal: FC<AddModalProps> = (props) => {
       });
       setIsGGUF(props.isGGUF || false);
     } else {
-      form.current?.setFieldValue?.('backend', backendOptionsMap.vllm);
-      setIsGGUF(false);
+      const backend =
+        source === modelSourceMap.ollama_library_value
+          ? backendOptionsMap.llamaBox
+          : backendOptionsMap.vllm;
+      form.current?.setFieldValue?.('backend', backend);
+      setIsGGUF(backend === backendOptionsMap.llamaBox);
     }
 
     return () => {
       setSelectedModel({});
+      setWarningStatus({
+        show: false,
+        title: '',
+        message: []
+      });
+      checkTokenRef.current?.cancel();
     };
-  }, [open, props.isGGUF, props.initialValues, props.deploymentType]);
+  }, [open, props.isGGUF, source, props.initialValues, props.deploymentType]);
 
   return (
     <Drawer
@@ -202,50 +312,80 @@ const AddModal: FC<AddModalProps> = (props) => {
               </ColWrapper>
             </>
           )}
-        <FormWrapper>
-          <ColumnWrapper
-            paddingBottom={warningStatus.show ? 125 : 50}
-            footer={
+        <FormContext.Provider
+          value={{
+            isGGUF: isGGUF,
+            modelFileOptions: props.modelFileOptions
+          }}
+        >
+          <FormWrapper>
+            <ColumnWrapper
+              paddingBottom={
+                warningStatus.show
+                  ? Array.isArray(warningStatus.message)
+                    ? 150
+                    : 125
+                  : 50
+              }
+              footer={
+                <>
+                  <CompatibilityAlert
+                    showClose={true}
+                    onClose={() => {
+                      setWarningStatus({
+                        show: false,
+                        message: ''
+                      });
+                    }}
+                    warningStatus={warningStatus}
+                    contentStyle={{ paddingInline: 0 }}
+                  ></CompatibilityAlert>
+                  <ModalFooter
+                    onCancel={handleCancel}
+                    onOk={handleSumit}
+                    showOkBtn={!warningStatus.show}
+                    extra={
+                      warningStatus.show && (
+                        <Button
+                          type="primary"
+                          onClick={handleSubmitAnyway}
+                          style={{ width: '130px' }}
+                        >
+                          {intl.formatMessage({
+                            id: 'models.form.submit.anyway'
+                          })}
+                        </Button>
+                      )
+                    }
+                    style={ModalFooterStyle}
+                  ></ModalFooter>
+                </>
+              }
+            >
               <>
-                <CompatibilityAlert
-                  warningStatus={warningStatus}
-                ></CompatibilityAlert>
-                <ModalFooter
-                  onCancel={handleCancel}
-                  onOk={handleSumit}
-                  style={{
-                    padding: '16px 24px',
-                    display: 'flex',
-                    justifyContent: 'flex-end'
-                  }}
-                ></ModalFooter>
+                {SEARCH_SOURCE.includes(source) &&
+                  deploymentType === 'modelList' && (
+                    <TitleWrapper>
+                      {intl.formatMessage({ id: 'models.form.configurations' })}
+                    </TitleWrapper>
+                  )}
+                <DataForm
+                  initialValues={initialValues}
+                  source={source}
+                  action={action}
+                  selectedModel={selectedModel}
+                  onOk={handleOnOk}
+                  ref={form}
+                  isGGUF={isGGUF}
+                  gpuOptions={props.gpuOptions}
+                  modelFileOptions={props.modelFileOptions}
+                  onBackendChange={handleBackendChange}
+                  onValuesChange={handleOnValuesChange}
+                ></DataForm>
               </>
-            }
-          >
-            <>
-              {SEARCH_SOURCE.includes(source) &&
-                deploymentType === 'modelList' && (
-                  <TitleWrapper>
-                    {intl.formatMessage({ id: 'models.form.configurations' })}
-                  </TitleWrapper>
-                )}
-              <DataForm
-                initialValues={initialValues}
-                source={source}
-                action={action}
-                selectedModel={selectedModel}
-                onOk={onOk}
-                ref={form}
-                isGGUF={isGGUF}
-                gpuOptions={props.gpuOptions}
-                modelFileOptions={props.modelFileOptions}
-                handleShowCompatibleAlert={handleShowCompatibleAlert}
-                handleUpdateWarning={handleUpdateWarning}
-                onBackendChange={handleBackendChange}
-              ></DataForm>
-            </>
-          </ColumnWrapper>
-        </FormWrapper>
+            </ColumnWrapper>
+          </FormWrapper>
+        </FormContext.Provider>
       </div>
     </Drawer>
   );

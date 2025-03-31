@@ -174,6 +174,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 <SearchModel
                   modelSource={props.source}
                   onSelectModel={handleOnSelectModel}
+                  isDownload={true}
                 ></SearchModel>
               </ColumnWrapper>
               <Separator></Separator>
@@ -200,6 +201,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                     modelSource={props.source}
                     onSelectFile={handleSelectModelFile}
                     collapsed={collapsed}
+                    isDownload={true}
                   ></HFModelFile>
                 )}
               </ColumnWrapper>

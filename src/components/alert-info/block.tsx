@@ -12,6 +12,7 @@ interface AlertInfoProps {
   icon?: React.ReactNode;
   ellipsis?: boolean;
   style?: React.CSSProperties;
+  contentStyle?: React.CSSProperties;
   title: React.ReactNode;
 }
 
@@ -30,7 +31,15 @@ const ContentWrapper = styled.div<{ $hasTitle: boolean }>`
 `;
 
 const AlertInfo: React.FC<AlertInfoProps> = (props) => {
-  const { message, type, rows = 1, ellipsis, style, title } = props;
+  const {
+    message,
+    type,
+    rows = 1,
+    ellipsis,
+    style,
+    title,
+    contentStyle
+  } = props;
 
   return (
     <>
@@ -51,7 +60,7 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
               <WarningFilled className={classNames('info-icon', type)} />
             </div>
             {title && <TitleWrapper>{title}</TitleWrapper>}
-            <OverlayScroller maxHeight={80}>
+            <OverlayScroller maxHeight={80} style={{ ...contentStyle }}>
               <ContentWrapper $hasTitle={!!title}>{message}</ContentWrapper>
             </OverlayScroller>
           </Typography.Paragraph>

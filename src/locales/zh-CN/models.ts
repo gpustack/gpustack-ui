@@ -114,5 +114,8 @@ export default {
   'models.form.keyvalue.paste':
     '粘贴多行文本，每行包含一个键值对，键和值之间用 = 号分隔，不同的键值对之间用换行符分隔。',
   'models.form.files': '文件',
-  'models.table.status': '状态'
+  'models.table.status': '状态',
+  'models.form.submit.anyway': '仍然提交',
+  'models.form.evaluating': '评估中...',
+  'models.form.incompatible': '不兼容'
 };

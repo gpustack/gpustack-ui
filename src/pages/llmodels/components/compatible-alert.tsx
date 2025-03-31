@@ -1,4 +1,5 @@
 import AlertBlockInfo from '@/components/alert-info/block';
+import { CloseOutlined } from '@ant-design/icons';
 import { isArray } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -10,10 +11,21 @@ interface CompatibilityAlertProps {
     isHtml?: boolean;
     message: string | string[];
   };
+  contentStyle?: React.CSSProperties;
+  showClose?: boolean;
+  onClose?: () => void;
 }
 
 const DivWrapper = styled.div`
+  position: relative;
   padding-inline: 12px;
+`;
+
+const CloseWrapper = styled.div`
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  cursor: pointer;
 `;
 
 const MessageWrapper = styled.div`
@@ -24,7 +36,7 @@ const MessageWrapper = styled.div`
 `;
 
 const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
-  const { warningStatus } = props;
+  const { warningStatus, contentStyle, showClose, onClose } = props;
   const { title, show, message, isHtml } = warningStatus;
 
   const renderMessage = useMemo(() => {
@@ -62,8 +74,14 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           ellipsis={false}
           message={renderMessage}
           title={title}
+          contentStyle={contentStyle}
           type="warning"
         ></AlertBlockInfo>
+        {showClose && (
+          <CloseWrapper onClick={onClose}>
+            <CloseOutlined />
+          </CloseWrapper>
+        )}
       </DivWrapper>
     )
   );

@@ -118,10 +118,16 @@ export default {
   'models.form.keyvalue.paste':
     '複数行のテキストを貼り付けます。各行にはキーと値のペアが含まれ、キーと値は=記号で区切られ、異なるキーと値のペアは改行文字で区切られます。',
   'models.form.files': 'files',
-  'models.table.status': 'Status'
+  'models.table.status': 'Status',
+  'models.form.submit.anyway': 'Submit Anyway',
+  'models.form.evaluating': 'Evaluating...',
+  'models.form.incompatible': 'Incompatible'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-//  1. 'models.form.files',
-//  2. 'models.table.status'
+// 1. 'models.form.files',
+// 2. 'models.table.status',
+// 3. 'models.form.submit.anyway',
+// 4. 'models.form.evaluating',
+// 5. 'models.form.incompatible',
 // ========== End of To-Do List ==========

@@ -11,7 +11,6 @@ import classNames from 'classnames';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
-import { modelSourceMap } from '../config';
 import { EvaluateResult } from '../config/types';
 import '../style/hf-model-item.less';
 import IncompatiableInfo from './incompatiable-info';
@@ -26,16 +25,12 @@ interface HFModelItemProps {
   source?: string;
   tags?: string[];
   evaluateResult?: EvaluateResult;
+  isEvaluating?: boolean;
 }
 const warningTask = ['video'];
 
-const SUPPORTEDSOURCE = [
-  modelSourceMap.huggingface_value,
-  modelSourceMap.modelscope_value
-];
-
 const HFModelItem: React.FC<HFModelItemProps> = (props) => {
-  const { evaluateResult } = props;
+  const { evaluateResult, isEvaluating } = props;
   console.log('evaluateResult', evaluateResult);
   const intl = useIntl();
   const isExcludeTask = useMemo(() => {
@@ -80,7 +75,12 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
             {formatNumber(props.downloads)}
           </span>
         </div>
-        {<IncompatiableInfo data={evaluateResult}></IncompatiableInfo>}
+        {
+          <IncompatiableInfo
+            data={evaluateResult}
+            isEvaluating={isEvaluating}
+          ></IncompatiableInfo>
+        }
       </div>
     </div>
   );

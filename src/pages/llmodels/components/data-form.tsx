@@ -1,65 +1,45 @@
-import IconFont from '@/components/icon-font';
-import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
-import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
-import { Form, Typography } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
-import { evaluationsModelSpec } from '../apis';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import {
   HuggingFaceTaskMap,
   ModelscopeTaskMap,
   backendOptionsMap,
   backendTipsList,
-  excludeFields,
-  getSourceRepoConfigValue,
-  localPathTipsList,
   modelSourceMap,
   modelTaskMap,
-  ollamaModelOptions,
   sourceOptions
 } from '../config';
 import { identifyModelTask } from '../config/audio-catalog';
-import { EvaluateResult, FormData } from '../config/types';
+import { FormInnerContext } from '../config/form-context';
+import { FormData, SourceType } from '../config/types';
+import CatalogFrom from '../forms/catalog';
+import HuggingFaceForm from '../forms/hugging-face';
+import LocalPathForm from '../forms/local-path';
+import OllamaForm from '../forms/ollama-library';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
   initialValues?: any;
   ref?: any;
-  source: string;
+  source: SourceType;
   action: PageActionType;
   selectedModel: any;
   isGGUF: boolean;
-  sizeOptions?: Global.BaseOption<number>[];
-  quantizationOptions?: Global.BaseOption<string>[];
   sourceDisable?: boolean;
-  byBuiltIn?: boolean;
   backendOptions?: Global.BaseOption<string>[];
   sourceList?: Global.BaseOption<string>[];
   gpuOptions: any[];
   modelFileOptions?: any[];
   fields?: string[];
-  handleUpdateWarning?: (params: {
-    backend: string;
-    localPath: string;
-    source: string;
-  }) => any;
-  handleShowCompatibleAlert?: (data: EvaluateResult | null) => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
-  onSizeChange?: (val: number) => void;
-  onQuantizationChange?: (val: string) => void;
   onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
@@ -78,15 +58,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sourceDisable = true,
     backendOptions,
     sourceList,
-    byBuiltIn,
     gpuOptions = [],
     modelFileOptions = [],
-    sizeOptions = [],
-    quantizationOptions = [],
     fields = ['source'],
-    handleUpdateWarning,
-    handleShowCompatibleAlert,
     onSourceChange,
+    onValuesChange,
     onOk
   } = props;
   console.log('modelFileOptions--------', modelFileOptions);
@@ -99,8 +75,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     text2speech: false,
     speech2text: false
   });
-  const checkTokenRef = useRef<any>(null);
-  const localPathCache = useRef<string>('');
 
   const handleSumit = () => {
     form.submit();
@@ -153,268 +127,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
-  const handleOnFocus = () => {
-    localPathCache.current = form.getFieldValue('local_path');
-  };
-
-  const handleEvaluate = async (data: any) => {
-    try {
-      checkTokenRef.current?.cancel();
-      checkTokenRef.current = createAxiosToken();
-      const evalution = await evaluationsModelSpec(
-        {
-          model_specs: [
-            {
-              ..._.omit(data, ['scheduleType']),
-              categories: data.categories ? [data.categories] : []
-            }
-          ]
-        },
-        {
-          token: checkTokenRef.current.token
-        }
-      );
-      return evalution.results?.[0];
-    } catch (error) {
-      console.log('error=====', error);
-      return null;
-    }
-  };
-
-  // trigger from local_path change or backend change
-  const handleBackendChangeHook = async () => {
-    const localPath = form.getFieldValue?.('local_path');
-    const backend = form.getFieldValue?.('backend');
-
-    const res = handleUpdateWarning?.({
-      backend,
-      localPath: localPath,
-      source: props.source
-    });
-
-    if (!res.show) {
-      const values = form.getFieldsValue?.();
-      const data = getSourceRepoConfigValue(props.source, values);
-      const evalutionData = await handleEvaluate(data.values);
-      handleShowCompatibleAlert?.(evalutionData);
-    }
-  };
-
-  const handleLocalPathBlur = (e: any) => {
-    const value = e.target.value;
-    console.log('handleLocalPathBlur:', e, localPathCache.current);
-    if (value === localPathCache.current && value) {
-      return;
-    }
-    const isEndwithGGUF = _.endsWith(value, '.gguf');
-    const isBlobFile = value.split('/').pop().includes('sha256');
-    let backend = backendOptionsMap.llamaBox;
-    if (!isEndwithGGUF && !isBlobFile) {
-      backend = backendOptionsMap.vllm;
-    }
-    form.setFieldValue('backend', backend);
-    handleBackendChangeHook();
-    props.onBackendChange?.(backend);
-  };
-
-  const renderHuggingfaceFields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="repo_id"
-          key="repo_id"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'models.form.repoid')
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({ id: 'models.form.repoid' })}
-            required
-            disabled={true}
-          ></SealInput.Input>
-        </Form.Item>
-        {isGGUF && (
-          <Form.Item<FormData>
-            name="file_name"
-            key="file_name"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'models.form.filename')
-              }
-            ]}
-          >
-            <SealInput.Input
-              label={intl.formatMessage({ id: 'models.form.filename' })}
-              required
-              disabled={true}
-            ></SealInput.Input>
-          </Form.Item>
-        )}
-      </>
-    );
-  };
-
-  const renderOllamaModelFields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="ollama_library_model_name"
-          key="ollama_library_model_name"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'models.table.name')
-            }
-          ]}
-        >
-          <SealAutoComplete
-            allowClear
-            filterOption
-            defaultActiveFirstOption
-            disabled={false}
-            options={ollamaModelOptions}
-            description={
-              <span>
-                <span>
-                  {intl.formatMessage({ id: 'models.form.ollamalink' })}
-                </span>
-                <Typography.Link
-                  className="flex-center"
-                  href="https://www.ollama.com/library"
-                  target="_blank"
-                >
-                  <IconFont
-                    type="icon-external-link"
-                    className="font-size-14"
-                  ></IconFont>
-                </Typography.Link>
-              </span>
-            }
-            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
-            placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
-            required
-          ></SealAutoComplete>
-        </Form.Item>
-      </>
-    );
-  };
-
-  const renderLocalPathFields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="local_path"
-          key="local_path"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'models.form.filePath')
-            }
-          ]}
-        >
-          <SealAutoComplete
-            allowClear
-            required
-            filterOption
-            defaultActiveFirstOption
-            options={modelFileOptions}
-            onBlur={handleLocalPathBlur}
-            onFocus={handleOnFocus}
-            label={intl.formatMessage({ id: 'models.form.filePath' })}
-            description={<TooltipList list={localPathTipsList}></TooltipList>}
-          ></SealAutoComplete>
-        </Form.Item>
-      </>
-    );
-  };
-
-  const handleSizeChange = (val: any) => {
-    props.onSizeChange?.(val);
-  };
-
-  const handleOnQuantizationChange = (val: any) => {
-    props.onQuantizationChange?.(val);
-  };
-
-  // from catalog
-  const renderFieldsFromCatalog = useMemo(() => {
-    if (!byBuiltIn && !sizeOptions?.length && !quantizationOptions?.length) {
-      return null;
-    }
-    return (
-      <>
-        {sizeOptions?.length > 0 && (
-          <Form.Item<FormData>
-            name="size"
-            key="size"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'size', false)
-              }
-            ]}
-          >
-            <SealSelect
-              filterOption
-              onChange={handleSizeChange}
-              defaultActiveFirstOption
-              disabled={false}
-              options={sizeOptions}
-              label="Size"
-              required
-            ></SealSelect>
-          </Form.Item>
-        )}
-        {quantizationOptions?.length > 0 && (
-          <Form.Item<FormData>
-            name="quantization"
-            key="quantization"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('select', 'quantization', false)
-              }
-            ]}
-          >
-            <SealSelect
-              filterOption
-              defaultActiveFirstOption
-              disabled={false}
-              options={quantizationOptions}
-              onChange={handleOnQuantizationChange}
-              label="Quantization"
-              required
-            ></SealSelect>
-          </Form.Item>
-        )}
-      </>
-    );
-  }, [sizeOptions, quantizationOptions, byBuiltIn]);
-
-  const renderFieldsBySource = useMemo(() => {
-    // from catalog
-    if (byBuiltIn) {
-      return null;
-    }
-    if (SEARCH_SOURCE.includes(props.source)) {
-      return renderHuggingfaceFields();
-    }
-
-    if (props.source === modelSourceMap.ollama_library_value) {
-      return renderOllamaModelFields();
-    }
-
-    if (props.source === modelSourceMap.local_path_value) {
-      return renderLocalPathFields();
-    }
-
-    return null;
-  }, [props.source, isGGUF, byBuiltIn, intl]);
-
   const handleSetGPUIds = (backend: string) => {
     if (backend === backendOptionsMap.llamaBox) {
       return;
@@ -441,7 +153,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
     form.setFieldsValue(updates);
     handleSetGPUIds(val);
-    handleBackendChangeHook();
     props.onBackendChange?.(val);
   };
 
@@ -474,7 +185,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return {};
   };
 
-  const handleOk = (formdata: FormData) => {
+  const handleOk = async (formdata: FormData) => {
     let data = _.cloneDeep(formdata);
     if (data.categories) {
       data.categories = [data.categories];
@@ -482,10 +193,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       data.categories = [];
     }
     const gpuSelector = generateGPUIds(data);
-    onOk({
+    const allValues = {
       ..._.omit(data, ['scheduleType']),
       ...gpuSelector
-    });
+    };
+
+    onOk(allValues);
   };
 
   const handleOnSourceChange = (val: string) => {
@@ -493,19 +206,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    const keys = Object.keys(changedValues);
-    const isExcludeField = keys.some((key) => excludeFields.includes(key));
-    if (
-      !isExcludeField &&
-      !_.has(changedValues, 'backend') &&
-      !_.has(changedValues, 'local_path')
-    ) {
-      const values = form.getFieldsValue?.();
-      const data = getSourceRepoConfigValue(props.source, values);
-
-      const evalutionData = await handleEvaluate(data.values);
-      handleShowCompatibleAlert?.(evalutionData);
-    }
+    onValuesChange?.(changedValues, allValues);
   };
 
   useImperativeHandle(
@@ -595,7 +296,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         </Form.Item>
       )}
 
-      {renderFieldsBySource}
+      <FormInnerContext.Provider
+        value={{
+          onBackendChange: handleBackendChange
+        }}
+      >
+        <HuggingFaceForm></HuggingFaceForm>
+        <OllamaForm></OllamaForm>
+        <LocalPathForm></LocalPathForm>
+      </FormInnerContext.Provider>
       <Form.Item name="backend" rules={[{ required: true }]}>
         <SealSelect
           required
@@ -637,7 +346,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           }
         ></SealSelect>
       </Form.Item>
-      {renderFieldsFromCatalog}
+      <CatalogFrom></CatalogFrom>
       <Form.Item<FormData>
         name="replicas"
         rules={[

@@ -1,9 +1,10 @@
+import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { queryModelFilesList } from '@/pages/resources/apis';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
-import { useRef, useState } from 'react';
-import { queryGPUList } from '../apis';
+import { useEffect, useRef, useState } from 'react';
+import { evaluationsModelSpec, queryGPUList } from '../apis';
 import {
   backendOptionsMap,
   modelSourceMap,
@@ -185,6 +186,7 @@ export const useGenerateModelFileOptions = () => {
 export const useCheckCompatibility = () => {
   const intl = useIntl();
 
+  const checkTokenRef = useRef<any>(null);
   const [warningStatus, setWarningStatus] = useState<{
     show: boolean;
     title?: string;
@@ -194,6 +196,38 @@ export const useCheckCompatibility = () => {
     title: '',
     message: []
   });
+
+  const handleEvaluate = async (data: any) => {
+    try {
+      checkTokenRef.current?.cancel();
+      checkTokenRef.current = createAxiosToken();
+      setWarningStatus({
+        show: true,
+        title: '',
+        message: 'Evaluating compatibility...'
+      });
+      const evalution = await evaluationsModelSpec(
+        {
+          model_specs: [
+            {
+              ..._.omit(data, ['scheduleType']),
+              categories: Array.isArray(data.categories)
+                ? data.categories
+                : data.categories
+                  ? [data.categories]
+                  : []
+            }
+          ]
+        },
+        {
+          token: checkTokenRef.current.token
+        }
+      );
+      return evalution.results?.[0];
+    } catch (error) {
+      return null;
+    }
+  };
 
   const handleCheckCompatibility = (evaluateResult: EvaluateResult | null) => {
     if (!evaluateResult) {
@@ -277,13 +311,22 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const warningMessage = updateShowWarning(params);
-    setWarningStatus(warningMessage);
     return warningMessage;
   };
+
+  useEffect(() => {
+    return () => {
+      checkTokenRef.current?.cancel();
+      checkTokenRef.current = null;
+    };
+  }, []);
 
   return {
     handleShowCompatibleAlert,
     handleUpdateWarning,
-    warningStatus
+    warningStatus,
+    checkTokenRef,
+    handleEvaluate,
+    setWarningStatus
   };
 };

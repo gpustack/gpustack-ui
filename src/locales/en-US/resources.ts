@@ -41,10 +41,11 @@ export default {
   'resources.table.wokers': 'workers',
   'resources.worker.linuxormaxos': 'Linux or MacOS',
   'resources.table.unified': 'Unified Memory',
-  'resources.worker.add.step1': 'Get Token',
+  'resources.worker.add.step1':
+    'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'Register Worker',
   'resources.worker.add.step2.tips':
-    'Note: <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
+    'Note: run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
     'After success, refresh the workers list to see the new worker.',
   'resources.worker.container.supported': 'Do not support MacOS or Windows.',

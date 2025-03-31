@@ -17,6 +17,7 @@ import {
   Tooltip,
   Typography
 } from 'antd';
+import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -38,6 +39,25 @@ interface AdvanceConfigProps {
   action: PageActionType;
   source: string;
 }
+
+const CheckboxField: React.FC<{
+  title: string;
+  label: string;
+  checked?: boolean;
+  onChange?: (e: CheckboxChangeEvent) => void;
+}> = ({ title, label, checked, onChange }) => {
+  return (
+    <Checkbox className="p-l-6" checked={checked} onChange={onChange}>
+      <Tooltip title={title}>
+        <span style={{ color: 'var(--ant-color-text-tertiary)' }}>{label}</span>
+        <QuestionCircleOutlined
+          className="m-l-4"
+          style={{ color: 'var(--ant-color-text-tertiary)' }}
+        />
+      </Tooltip>
+    </Checkbox>
+  );
+};
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const { form, isGGUF, gpuOptions, source } = props;
@@ -132,21 +152,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const handleBackendParametersChange = useCallback((list: string[]) => {
     form.setFieldValue('backend_parameters', list);
   }, []);
-
-  const handleGPUSelectorChange = (gpuIds: any[]) => {
-    // only handle for vllm, pick the last selected group
-    if (
-      backend === backendOptionsMap.llamaBox ||
-      backend === backendOptionsMap.voxBox ||
-      !gpuIds?.length
-    ) {
-      return;
-    }
-    const lastGroupName = gpuIds[gpuIds.length - 1][0];
-
-    const lastGroupItems = gpuIds.filter((item) => item[0] === lastGroupName);
-    form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
-  };
 
   const collapseItems = useMemo(() => {
     const children = (
@@ -389,23 +394,14 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               style={{ padding: '0 10px', marginBottom: 0 }}
               noStyle
             >
-              <Checkbox className="p-l-6">
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'models.form.partialoffload.tips'
-                  })}
-                >
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.enablePartialOffload'
-                    })}
-                  </span>
-                  <QuestionCircleOutlined
-                    className="m-l-4"
-                    style={{ color: 'var(--ant-color-text-tertiary)' }}
-                  />
-                </Tooltip>
-              </Checkbox>
+              <CheckboxField
+                title={intl.formatMessage({
+                  id: 'models.form.partialoffload.tips'
+                })}
+                label={intl.formatMessage({
+                  id: 'resources.form.enablePartialOffload'
+                })}
+              ></CheckboxField>
             </Form.Item>
           </div>
         )}
@@ -417,26 +413,34 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               style={{ padding: '0 10px', marginBottom: 0 }}
               noStyle
             >
-              <Checkbox className="p-l-6">
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'models.form.distribution.tips'
-                  })}
-                >
-                  <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-                    {intl.formatMessage({
-                      id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                    })}
-                  </span>
-                  <QuestionCircleOutlined
-                    className="m-l-4"
-                    style={{ color: 'var(--ant-color-text-tertiary)' }}
-                  />
-                </Tooltip>
-              </Checkbox>
+              <CheckboxField
+                title={intl.formatMessage({
+                  id: 'models.form.distribution.tips'
+                })}
+                label={intl.formatMessage({
+                  id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                })}
+              ></CheckboxField>
             </Form.Item>
           </div>
         )}
+        <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
+          <Form.Item<FormData>
+            name="restart_on_error"
+            valuePropName="checked"
+            style={{ padding: '0 10px', marginBottom: 0 }}
+            noStyle
+          >
+            <CheckboxField
+              title={intl.formatMessage({
+                id: 'models.form.restart.onerror.tips'
+              })}
+              label={intl.formatMessage({
+                id: 'models.form.restart.onerror'
+              })}
+            ></CheckboxField>
+          </Form.Item>
+        </div>
       </>
     );
     return [

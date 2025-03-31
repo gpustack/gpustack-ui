@@ -1,5 +1,6 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import { queryModelFilesList } from '@/pages/resources/apis';
+import { queryModelFilesList, queryWorkersList } from '@/pages/resources/apis';
+import { WorkerStatusMap } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
@@ -15,25 +16,38 @@ import { EvaluateResult, GPUListItem, ListItem } from '../config/types';
 export const useGenerateFormEditInitialValues = () => {
   const gpuDeviceList = useRef<any[]>([]);
 
-  const generateCascaderOptions = (list: GPUListItem[]) => {
+  const generateCascaderOptions = (
+    list: GPUListItem[],
+    workerList: WorkerListItem[]
+  ) => {
     const workerFields = new Set(['worker_name', 'worker_id', 'worker_ip']);
 
-    const workersMap = new Map<string, GPUListItem[]>();
-    for (const item of list) {
-      if (!workersMap.has(item.worker_name)) {
-        workersMap.set(item.worker_name, []);
-      }
-      workersMap.get(item.worker_name)!.push(item);
+    // generate a map for workerList by name to data
+    const workerDataMap = new Map<string, WorkerListItem>();
+    for (const worker of workerList) {
+      workerDataMap.set(worker.name, worker);
     }
 
-    const workerList = Array.from(workersMap.entries()).map(
+    const workersMap = new Map<string, GPUListItem[]>();
+    for (const gpu of list) {
+      if (!workersMap.has(gpu.worker_name)) {
+        workersMap.set(gpu.worker_name, []);
+      }
+      workersMap.get(gpu.worker_name)!.push(gpu);
+    }
+
+    const gpuSelectorList = Array.from(workersMap.entries()).map(
       ([workerName, items]) => {
         const firstItem = items[0];
-
+        const disDisabled =
+          WorkerStatusMap.ready !== workerDataMap.get(workerName)?.state;
         return {
-          label: workerName,
+          label: disDisabled
+            ? `${workerName} [${workerDataMap.get(workerName)?.state}]`
+            : workerName,
           value: workerName,
           parent: true,
+          disabled: disDisabled,
           children: items
             .map((item) => ({
               label: item.name,
@@ -51,12 +65,15 @@ export const useGenerateFormEditInitialValues = () => {
       }
     );
 
-    return workerList;
+    return gpuSelectorList;
   };
 
   const getGPUList = async () => {
-    const data = await queryGPUList();
-    const gpuList = generateCascaderOptions(data.items);
+    const [gpuData, workerData] = await Promise.all([
+      queryGPUList({ page: 1, perPage: 100 }),
+      queryWorkersList({ page: 1, perPage: 100 })
+    ]);
+    const gpuList = generateCascaderOptions(gpuData.items, workerData.items);
     gpuDeviceList.current = gpuList;
     return gpuList;
   };

@@ -23,7 +23,9 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
 
   return (
     <div className="script-install">
-      <h3 className="font-size-14 font-600">1. {labels.step1}</h3>
+      <h3 className="font-size-14 font-600">
+        1. <span dangerouslySetInnerHTML={{ __html: labels.step1 }}></span>
+      </h3>
       <h4 className="font-size-13">{labels.linuxOrMac}</h4>
       <HighlightCode
         code={addWorkerGuide.mac.getToken}
@@ -52,7 +54,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         })}
         theme="dark"
       ></HighlightCode>
-      <h4 className="m-t-6 font-size-13">Windows </h4>
+      <h4 className="m-t-6 font-size-13">Windows</h4>
       <HighlightCode
         theme="dark"
         code={addWorkerGuide.win.registerWorker({

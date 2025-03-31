@@ -37,6 +37,7 @@ export type SourceType =
 
 export interface FormData {
   backend: string;
+  restart_on_error?: boolean;
   env?: Record<string, any>;
   size?: number;
   quantization?: number;

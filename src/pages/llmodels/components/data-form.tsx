@@ -206,6 +206,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    console.log('changeValues--------', changedValues);
     onValuesChange?.(changedValues, allValues);
   };
 

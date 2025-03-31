@@ -41,10 +41,11 @@ export default {
   'resources.table.wokers': 'workers',
   'resources.table.unified': '统一内存',
   'resources.worker.linuxormaxos': 'Linux 或 MacOS',
-  'resources.worker.add.step1': '获取 Token',
+  'resources.worker.add.step1':
+    '获取 Token <span class="note-text">(在 server 上运行)</span>',
   'resources.worker.add.step2': '注册 Worker',
   'resources.worker.add.step2.tips':
-    '注意：<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 Token',
+    '注意：在需要添加的 worker 上运行，<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 Token',
   'resources.worker.add.step3': '成功后，刷新 worker 列表即可看到新的 worker',
   'resources.worker.container.supported': '不支持 MacOS 和 Windows',
   'resources.worker.current.version': '当前版本为 {version}',

@@ -121,7 +121,10 @@ export default {
   'models.table.status': 'Status',
   'models.form.submit.anyway': 'Submit Anyway',
   'models.form.evaluating': 'Evaluating...',
-  'models.form.incompatible': 'Incompatible'
+  'models.form.incompatible': 'Incompatible',
+  'models.form.restart.onerror': 'Auto-Restart On Error',
+  'models.form.restart.onerror.tips':
+    'When an error occurs, it will automatically attempt to restart.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -130,4 +133,6 @@ export default {
 // 3. 'models.form.submit.anyway',
 // 4. 'models.form.evaluating',
 // 5. 'models.form.incompatible',
+// 6. 'models.form.restart.onerror',
+// 7. 'models.form.restart.onerror.tips'
 // ========== End of To-Do List ==========

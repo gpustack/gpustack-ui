@@ -41,10 +41,11 @@ export default {
   'resources.table.wokers': 'воркеры',
   'resources.worker.linuxormaxos': 'Linux или macOS',
   'resources.table.unified': 'Объединённая память',
-  'resources.worker.add.step1': 'Получить токен',
+  'resources.worker.add.step1':
+    'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
   'resources.worker.add.step2.tips':
-    'Примечание: <span style="color: #000;font-weight: 600">mytoken</span> — токен из первого шага.',
+    'Note: run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
     'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',
@@ -72,5 +73,7 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.modelfiles.delete.tips'
+// 1. 'resources.modelfiles.delete.tips',
+// 2. 'resources.worker.add.step1',
+// 3. 'resources.worker.add.step2.tips
 // ========== End of To-Do List ==========

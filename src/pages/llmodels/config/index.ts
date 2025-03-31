@@ -447,19 +447,6 @@ export const modelLabels = [
   { label: 'Embedding', value: 'embedding_only' }
 ];
 
-export const CHECK_FIELDS = new Set([
-  'backend',
-  'local_path',
-  'scheduleType',
-  'placement_strategy',
-  'worker_selector',
-  'gpu_selector',
-  'backend_parameters',
-  'backend_version',
-  'quantization',
-  'size'
-]);
-
 export const excludeFields = [
   'replicas',
   'categories',
@@ -468,5 +455,6 @@ export const excludeFields = [
   'env',
   'source',
   'quantization',
-  'size'
+  'size',
+  'restart_on_error'
 ];

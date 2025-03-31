@@ -41,10 +41,11 @@ export default {
   'resources.table.wokers': 'ワーカー',
   'resources.worker.linuxormaxos': 'LinuxまたはMacOS',
   'resources.table.unified': '統合メモリ',
-  'resources.worker.add.step1': 'トークンを取得',
+  'resources.worker.add.step1':
+    'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'ワーカーを登録',
   'resources.worker.add.step2.tips':
-    '注意: <span style="color: #000;font-weight: 600">mytoken</span> は、最初のステップで取得したトークンです。',
+    'Note: run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
   'resources.worker.add.step3':
     '成功後、ワーカーリストを更新して新しいワーカーを確認してください。',
   'resources.worker.container.supported':
@@ -85,5 +86,7 @@ export default {
 // 9. 'resources.modelfiles.storagePath.holder',
 // 10. 'resources.filter.worker',
 // 11. 'resources.filter.source',
-// 12. 'resources.modelfiles.delete.tips'
+// 12. 'resources.modelfiles.delete.tips',
+// 13. 'resources.worker.add.step1',
+// 14. 'resources.worker.add.step2.tips',
 // ========== End of To-Do List ==========

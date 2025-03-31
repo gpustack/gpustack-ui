@@ -124,5 +124,8 @@ export default {
   'models.table.status': 'Status',
   'models.form.submit.anyway': 'Submit Anyway',
   'models.form.evaluating': 'Evaluating...',
-  'models.form.incompatible': 'Incompatible'
+  'models.form.incompatible': 'Incompatible',
+  'models.form.restart.onerror': 'Auto-Restart On Error',
+  'models.form.restart.onerror.tips':
+    'When an error occurs, it will automatically attempt to restart.'
 };

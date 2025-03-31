@@ -24,6 +24,7 @@ import {
   modelFileActions,
   onLineSourceOptions
 } from '@/pages/llmodels/config/button-actions';
+import { SourceType } from '@/pages/llmodels/config/types';
 import DownloadModal from '@/pages/llmodels/download';
 import { convertFileSize } from '@/utils';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -170,7 +171,7 @@ const ModelFiles = () => {
   const [openDeployModal, setOpenDeployModal] = useState<{
     show: boolean;
     width: number | string;
-    source: string;
+    source: SourceType;
     gpuOptions: any[];
     modelFileOptions?: any[];
     initialValues: any;
@@ -178,7 +179,7 @@ const ModelFiles = () => {
   }>({
     show: false,
     width: 600,
-    source: modelSourceMap.local_path_value,
+    source: modelSourceMap.local_path_value as SourceType,
     gpuOptions: [],
     modelFileOptions: [],
     initialValues: {},

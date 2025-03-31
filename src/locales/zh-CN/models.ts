@@ -117,5 +117,7 @@ export default {
   'models.table.status': '状态',
   'models.form.submit.anyway': '仍然提交',
   'models.form.evaluating': '评估中...',
-  'models.form.incompatible': '不兼容'
+  'models.form.incompatible': '不兼容',
+  'models.form.restart.onerror': '错误时重启',
+  'models.form.restart.onerror.tips': '当发生错误时，将自动尝试恢复'
 };

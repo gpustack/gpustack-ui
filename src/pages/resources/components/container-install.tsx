@@ -81,7 +81,12 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         </li>
       </ul>
       <h3 className="font-size-14 font-600">
-        1. {intl.formatMessage({ id: 'resources.worker.add.step1' })}
+        1.{' '}
+        <span
+          dangerouslySetInnerHTML={{
+            __html: intl.formatMessage({ id: 'resources.worker.add.step1' })
+          }}
+        ></span>
       </h3>
       <HighlightCode
         code={addWorkerGuide.container.getToken}

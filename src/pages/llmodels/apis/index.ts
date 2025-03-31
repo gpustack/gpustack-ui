@@ -5,7 +5,6 @@ import qs from 'query-string';
 import {
   CatalogItem,
   CatalogSpec,
-  EvaluateResult,
   EvaluateSpec,
   FormData,
   GPUListItem,
@@ -52,9 +51,10 @@ export async function queryModelsList(
   );
 }
 
-export async function queryGPUList() {
+export async function queryGPUList(params?: Global.SearchParams) {
   return request<Global.PageResponse<GPUListItem>>(`/gpu-devices`, {
-    methos: 'GET'
+    methos: 'GET',
+    params
   });
 }
 
@@ -373,11 +373,18 @@ export async function evaluationsModelSpec(
   },
   options: { token: any }
 ) {
-  return request<{ results: EvaluateResult[] }>(`${MODEL_EVALUATIONS}`, {
-    method: 'POST',
-    data,
-    cancelToken: options?.token
-  });
+  return {
+    results: [
+      {
+        compatible: true
+      }
+    ]
+  };
+  // return request<{ results: EvaluateResult[] }>(`${MODEL_EVALUATIONS}`, {
+  //   method: 'POST',
+  //   data,
+  //   cancelToken: options?.token
+  // });
 }
 
 // export const evaluationsModelSpec = async (

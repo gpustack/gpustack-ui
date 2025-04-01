@@ -115,16 +115,16 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnOk = async (allValues: FormData) => {
+    const result = getSourceRepoConfigValue(props.source, allValues).values;
     if (submitAnyway.current) {
-      onOk(allValues);
+      onOk(result);
       return;
     }
 
-    const result = getSourceRepoConfigValue(props.source, allValues);
-    const evalutionData = await handleEvaluate(result.values);
+    const evalutionData = await handleEvaluate(result);
     handleShowCompatibleAlert?.(evalutionData);
     if (evalutionData?.compatible) {
-      onOk(allValues);
+      onOk(result);
     }
   };
 

@@ -10,7 +10,6 @@ import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
   backendOptionsMap,
-  excludeFields,
   modelCategoriesMap,
   sourceOptions
 } from '../config';
@@ -83,6 +82,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleShowCompatibleAlert,
     setWarningStatus,
     handleEvaluate,
+    generateGPUIds,
+    handleOnValuesChange,
     warningStatus
   } = useCheckCompatibility();
   const intl = useIntl();
@@ -275,14 +276,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     );
   };
 
-  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    const keys = Object.keys(changedValues);
-    const isExcludeField = keys.some((key) => excludeFields.includes(key));
-    if (!isExcludeField) {
-      const values = form.current?.form.getFieldsValue?.();
-      const data = generateSubmitData(values);
-      handleCheckCompatibility(data);
-    }
+  const onValuesChange = async (changedValues: any, allValues: any) => {
+    handleOnValuesChange?.({
+      changedValues,
+      allValues: generateSubmitData(allValues),
+      source: props.source
+    });
   };
 
   const handleBackendChange = (backend: string) => {
@@ -561,7 +560,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 gpuOptions={gpuOptions}
                 onBackendChange={handleBackendChange}
                 onSourceChange={handleSourceChange}
-                onValuesChange={handleOnValuesChange}
+                onValuesChange={onValuesChange}
               ></DataForm>
             </>
           </ColumnWrapper>

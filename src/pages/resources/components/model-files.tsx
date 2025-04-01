@@ -13,7 +13,6 @@ import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
 import {
   backendOptionsMap,
-  getSourceRepoConfigValue,
   modelSourceMap,
   setSourceRepoConfigValue
 } from '@/pages/llmodels/config';
@@ -393,11 +392,8 @@ const ModelFiles = () => {
 
   const handleCreateModel = async (data: any) => {
     try {
-      const result = getSourceRepoConfigValue(openDeployModal.source, data);
       const modelData = await createModel({
-        data: {
-          ...result.values
-        }
+        data
       });
       setOpenDeployModal({
         ...openDeployModal,

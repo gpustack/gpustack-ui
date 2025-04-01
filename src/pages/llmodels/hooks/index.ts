@@ -217,7 +217,7 @@ export const useCheckCompatibility = () => {
   const [warningStatus, setWarningStatus] = useState<{
     show: boolean;
     title?: string;
-    type?: 'transition' | 'warning' | 'error';
+    type?: 'transition' | 'warning' | 'danger';
     message: string | string[];
   }>({
     show: false,

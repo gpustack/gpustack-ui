@@ -61,7 +61,7 @@ export interface ListItem {
   name: string;
   hostname: string;
   address: string;
-  labels: object;
+  labels: Record<string, string>;
   state: string;
   ip: string;
   state_message: string;

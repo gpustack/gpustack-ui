@@ -27,6 +27,7 @@ import SearchInput from './search-input';
 import SearchResult from './search-result';
 
 interface SearchInputProps {
+  hasLinuxWorker?: boolean;
   modelSource: string;
   isDownload?: boolean;
   setLoadingModel?: (flag: boolean) => void;
@@ -36,7 +37,13 @@ interface SearchInputProps {
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
   const intl = useIntl();
-  const { modelSource, isDownload, setLoadingModel, onSelectModel } = props;
+  const {
+    modelSource,
+    isDownload,
+    hasLinuxWorker,
+    setLoadingModel,
+    onSelectModel
+  } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
     loading: boolean;
@@ -57,12 +64,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
-  const evaluateTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
-  const filterGGUFRef = useRef<boolean | undefined>();
+  const filterGGUFRef = useRef<boolean | undefined>(!hasLinuxWorker);
   const filterTaskRef = useRef<string>('');
   const timer = useRef<any>(null);
-  const workerRef = useRef<any>(null);
   const modelFilesSortOptions = useRef<any[]>([
     {
       label: intl.formatMessage({ id: 'models.sort.trending' }),
@@ -217,41 +222,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     } catch (error) {
       setIsEvaluating(false);
     }
-  };
-
-  const handleEvaluateWorker = (params: {
-    list: any[];
-    modelSource: string;
-    modelSourceMap: any;
-  }) => {
-    console.log('handleEvaluateWorker=======');
-    const { list, modelSource, modelSourceMap } = params;
-    workerRef.current?.terminate();
-    setIsEvaluating(true);
-    workerRef.current = new Worker(
-      // @ts-ignore
-      new URL('../apis/evaluateWorker.ts', import.meta.url)
-    );
-    workerRef.current.postMessage({
-      list,
-      modelSource,
-      modelSourceMap
-    });
-    workerRef.current.onmessage = function (event: any) {
-      const { success, resultList } = event.data;
-      if (success) {
-        setDataSource((pre) => {
-          return {
-            ...pre,
-            repoOptions: resultList
-          };
-        });
-      }
-      setIsEvaluating(false);
-      handleOnSelectModel(resultList[0]);
-      workerRef.current.terminate();
-      workerRef.current = null;
-    };
   };
 
   const handleOnSearchRepo = async (sortType?: string) => {

@@ -180,11 +180,13 @@ const Models: React.FC<ModelsProps> = ({
   const [openDeployModal, setOpenDeployModal] = useState<{
     show: boolean;
     width: number | string;
+    hasLinuxWorker?: boolean;
     source: SourceType;
     gpuOptions: any[];
     modelFileOptions?: any[];
   }>({
     show: false,
+    hasLinuxWorker: false,
     width: 600,
     source: modelSourceMap.huggingface_value as SourceType,
     gpuOptions: [],
@@ -516,10 +518,14 @@ const Models: React.FC<ModelsProps> = ({
     }
 
     const config = modalConfig[item.key];
-    console.log('modelFileOptions:', modelFileOptions);
+    const hasLinuxWorker = workerList.some(
+      (worker) => worker.labels?.os === 'linux'
+    );
+
     if (config) {
       setOpenDeployModal({
         ...config,
+        hasLinuxWorker: hasLinuxWorker,
         gpuOptions: gpuDeviceList.current,
         modelFileOptions: modelFileOptions
       });
@@ -835,6 +841,7 @@ const Models: React.FC<ModelsProps> = ({
         title={intl.formatMessage({ id: 'models.button.deploy' })}
         source={openDeployModal.source}
         width={openDeployModal.width}
+        hasLinuxWorker={openDeployModal.hasLinuxWorker}
         gpuOptions={openDeployModal.gpuOptions}
         modelFileOptions={openDeployModal.modelFileOptions || []}
         onCancel={handleDeployModalCancel}

@@ -8,7 +8,6 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   backendOptionsMap,
-  excludeFields,
   getSourceRepoConfigValue,
   modelSourceMap
 } from '../config';
@@ -44,6 +43,7 @@ const FormWrapper = styled.div`
 
 type AddModalProps = {
   title: string;
+  hasLinuxWorker?: boolean;
   action: PageActionType;
   open: boolean;
   source: SourceType;
@@ -63,6 +63,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     open,
     onOk,
     onCancel,
+    hasLinuxWorker,
     source,
     action,
     width = 600,
@@ -79,6 +80,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     handleUpdateWarning,
     setWarningStatus,
     handleEvaluate,
+    handleOnValuesChange,
     checkTokenRef,
     warningStatus
   } = useCheckCompatibility();
@@ -103,14 +105,12 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleOnSelectModel = (item: any, isgguf?: boolean) => {
     setSelectedModel(item);
     form.current?.handleOnSelectModel?.(item);
-    console.log('isgguf+++++++', isgguf, item);
     if (!isgguf) {
       handleShowCompatibleAlert(item.evaluateResult);
     }
   };
 
   const handleOnOk = async (allValues: FormData) => {
-    console.log('allValues---------', allValues);
     if (submitAnyway.current) {
       onOk(allValues);
       return;
@@ -181,38 +181,12 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
-  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    const keys = Object.keys(changedValues);
-    const isExcludeField = keys.some((key) => excludeFields.includes(key));
-    const hasValue = keys.every((key) => {
-      return !!changedValues[key];
+  const onValuesChange = async (changedValues: any, allValues: any) => {
+    handleOnValuesChange?.({
+      changedValues,
+      allValues,
+      source: props.source
     });
-
-    // let hasExcludeField = false;
-    // let allFieldsHaveValue = true;
-
-    // for (const key of keys) {
-    //   if (excludeFields.includes(key)) {
-    //     hasExcludeField = true;
-    //     break;
-    //   }
-    //   if (!changedValues[key]) {
-    //     allFieldsHaveValue = false;
-    //   }
-    // }
-
-    if (
-      !isExcludeField &&
-      hasValue &&
-      !_.has(changedValues, 'backend') &&
-      !_.has(changedValues, 'local_path')
-    ) {
-      const values = form.current?.form.getFieldsValue?.();
-      const data = getSourceRepoConfigValue(props.source, values);
-
-      const evalutionData = await handleEvaluate(data.values);
-      handleShowCompatibleAlert?.(evalutionData);
-    }
   };
 
   const handleCancel = useCallback(() => {
@@ -285,6 +259,7 @@ const AddModal: FC<AddModalProps> = (props) => {
               <ColWrapper>
                 <ColumnWrapper>
                   <SearchModel
+                    hasLinuxWorker={hasLinuxWorker}
                     modelSource={props.source}
                     onSelectModel={handleOnSelectModel}
                   ></SearchModel>
@@ -382,7 +357,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                   gpuOptions={props.gpuOptions}
                   modelFileOptions={props.modelFileOptions}
                   onBackendChange={handleBackendChange}
-                  onValuesChange={handleOnValuesChange}
+                  onValuesChange={onValuesChange}
                 ></DataForm>
               </>
             </ColumnWrapper>

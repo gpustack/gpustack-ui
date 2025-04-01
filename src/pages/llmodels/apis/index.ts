@@ -5,6 +5,7 @@ import qs from 'query-string';
 import {
   CatalogItem,
   CatalogSpec,
+  EvaluateResult,
   EvaluateSpec,
   FormData,
   GPUListItem,
@@ -373,18 +374,11 @@ export async function evaluationsModelSpec(
   },
   options: { token: any }
 ) {
-  return {
-    results: [
-      {
-        compatible: true
-      }
-    ]
-  };
-  // return request<{ results: EvaluateResult[] }>(`${MODEL_EVALUATIONS}`, {
-  //   method: 'POST',
-  //   data,
-  //   cancelToken: options?.token
-  // });
+  return request<{ results: EvaluateResult[] }>(`${MODEL_EVALUATIONS}`, {
+    method: 'POST',
+    data,
+    cancelToken: options?.token
+  });
 }
 
 // export const evaluationsModelSpec = async (

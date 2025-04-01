@@ -8,13 +8,21 @@ import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec, queryGPUList } from '../apis';
 import {
   backendOptionsMap,
+  excludeFields,
+  getSourceRepoConfigValue,
   modelSourceMap,
   setSourceRepoConfigValue
 } from '../config';
-import { EvaluateResult, GPUListItem, ListItem } from '../config/types';
+import {
+  EvaluateResult,
+  FormData,
+  GPUListItem,
+  ListItem
+} from '../config/types';
 
 export const useGenerateFormEditInitialValues = () => {
   const gpuDeviceList = useRef<any[]>([]);
+  const workerList = useRef<any[]>([]);
 
   const generateCascaderOptions = (
     list: GPUListItem[],
@@ -75,6 +83,7 @@ export const useGenerateFormEditInitialValues = () => {
     ]);
     const gpuList = generateCascaderOptions(gpuData.items, workerData.items);
     gpuDeviceList.current = gpuList;
+    workerList.current = workerData.items;
     return gpuList;
   };
 
@@ -115,7 +124,8 @@ export const useGenerateFormEditInitialValues = () => {
   return {
     getGPUList,
     generateFormValues,
-    gpuDeviceList
+    gpuDeviceList,
+    workerList
   };
 };
 
@@ -331,6 +341,65 @@ export const useCheckCompatibility = () => {
     return warningMessage;
   };
 
+  const generateGPUIds = (data: FormData) => {
+    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+    if (!gpu_ids.length) {
+      return {
+        gpu_selector: null
+      };
+    }
+
+    const result = _.reduce(
+      gpu_ids,
+      (acc: string[], item: string | string[], index: number) => {
+        if (Array.isArray(item)) {
+          acc.push(item[1]);
+        } else if (index === 1) {
+          acc.push(item);
+        }
+        return acc;
+      },
+      []
+    );
+
+    return {
+      gpu_selector: {
+        gpu_ids: result
+      }
+    };
+  };
+
+  const handleOnValuesChange = async (params: {
+    changedValues: any;
+    allValues: any;
+    source: string;
+  }) => {
+    const { changedValues, allValues, source } = params;
+    const keys = Object.keys(changedValues);
+    const isExcludeField = keys.some((key) => excludeFields.includes(key));
+    const hasValue = keys.every((key) => {
+      return !!changedValues[key];
+    });
+
+    if (
+      !isExcludeField &&
+      hasValue &&
+      !_.has(changedValues, 'backend') &&
+      !_.has(changedValues, 'local_path')
+    ) {
+      const data = getSourceRepoConfigValue(source, allValues);
+      const gpuSelector = generateGPUIds(data.values);
+
+      const evalutionData = await handleEvaluate({
+        ...data.values,
+        ...gpuSelector
+      });
+      handleShowCompatibleAlert?.(evalutionData);
+    }
+  };
+
+  const debounceHandleValuesChange = _.debounce(handleOnValuesChange, 300);
+
   useEffect(() => {
     return () => {
       checkTokenRef.current?.cancel();
@@ -341,8 +410,10 @@ export const useCheckCompatibility = () => {
   return {
     handleShowCompatibleAlert,
     handleUpdateWarning,
+    handleOnValuesChange: debounceHandleValuesChange,
     warningStatus,
     checkTokenRef,
+    generateGPUIds,
     handleEvaluate,
     setWarningStatus
   };

@@ -26,6 +26,7 @@ const CloseWrapper = styled.div`
   top: 6px;
   right: 18px;
   cursor: pointer;
+  background-color: var(--ant-color-warning-bg);
 `;
 
 const MessageWrapper = styled.div`

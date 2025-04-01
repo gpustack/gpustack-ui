@@ -1,4 +1,3 @@
-import AlertBlockInfo from '@/components/alert-info/block';
 import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
@@ -9,20 +8,23 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form, Modal, Typography } from 'antd';
+import { Button, Form, Modal, Typography } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   backendOptionsMap,
   backendTipsList,
+  getSourceRepoConfigValue,
   localPathTipsList,
   modelSourceMap,
   ollamaModelOptions,
   sourceOptions
 } from '../config';
 import { FormData, ListItem } from '../config/types';
+import { useCheckCompatibility } from '../hooks';
 import AdvanceConfig from './advance-config';
 import ColumnWrapper from './column-wrapper';
+import CompatibilityAlert from './compatible-alert';
 
 type AddModalProps = {
   title: string;
@@ -51,17 +53,21 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     onCancel,
     updateFormInitials: { gpuOptions, isGGUF, data: formData }
   } = props || {};
+  const {
+    handleShowCompatibleAlert,
+    handleUpdateWarning,
+    setWarningStatus,
+    handleEvaluate,
+    generateGPUIds,
+    handleOnValuesChange,
+    checkTokenRef,
+    warningStatus
+  } = useCheckCompatibility();
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
   const localPathCache = useRef<string>('');
-  const [warningStatus, setWarningStatus] = useState<{
-    show: boolean;
-    message: string;
-  }>({
-    show: false,
-    message: ''
-  });
+  const submitAnyway = useRef<boolean>(false);
 
   const handleSetGPUIds = (backend: string) => {
     if (backend === backendOptionsMap.llamaBox) {
@@ -77,37 +83,30 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
-  const updateShowWarning = (backend: string) => {
+  // trigger from local_path change or backend change
+  const handleBackendChangeHook = async () => {
     const localPath = form.getFieldValue?.('local_path');
+    const backend = form.getFieldValue?.('backend');
 
-    if (formData?.source !== modelSourceMap.local_path_value || !localPath) {
-      return;
-    }
-
-    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
-    const isOllamaModel = localPath?.includes('ollama');
-    const isGGUFFile = localPath.endsWith('.gguf');
-
-    let warningMessage = '';
-
-    if (isBlobFile && isOllamaModel && backend === backendOptionsMap.llamaBox) {
-      warningMessage = '';
-    } else if (
-      isBlobFile &&
-      isOllamaModel &&
-      backend !== backendOptionsMap.llamaBox
-    ) {
-      warningMessage = 'models.form.ollama.warning';
-    } else if (isGGUFFile && backend !== backendOptionsMap.llamaBox) {
-      warningMessage = 'models.form.backend.warning';
-    } else if (!isGGUFFile && backend === backendOptionsMap.llamaBox) {
-      warningMessage = 'models.form.backend.warning.llamabox';
-    }
-
-    setWarningStatus({
-      show: !!warningMessage,
-      message: warningMessage
+    const res = handleUpdateWarning?.({
+      backend,
+      localPath: localPath,
+      source: formData?.source as string
     });
+
+    if (!res.show) {
+      const values = form.getFieldsValue?.();
+      const data = getSourceRepoConfigValue(formData?.source as string, values);
+      const evalutionData = await handleEvaluate(
+        _.omit(data.values, [
+          'cpu_offloading',
+          'distributed_inference_across_workers'
+        ])
+      );
+      handleShowCompatibleAlert?.(evalutionData);
+    } else {
+      setWarningStatus?.(res);
+    }
   };
 
   const handleBackendChange = (val: string) => {
@@ -119,7 +118,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     form.setFieldValue('backend_version', '');
     handleSetGPUIds(val);
-    updateShowWarning(val);
+    handleBackendChangeHook();
   };
 
   const handleOnFocus = () => {
@@ -289,37 +288,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     form.submit();
   };
 
-  const generateGPUIds = (data: FormData) => {
-    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-    if (!gpu_ids.length) {
-      return {};
-    }
-
-    const result = _.reduce(
-      gpu_ids,
-      (acc: string[], item: string | string[], index: number) => {
-        if (Array.isArray(item)) {
-          acc.push(item[1]);
-        } else if (index === 1) {
-          acc.push(item);
-        }
-        return acc;
-      },
-      []
-    );
-
-    if (result.length) {
-      return {
-        gpu_selector: {
-          gpu_ids: result
-        }
-      };
-    }
-    return {};
+  const handleSubmitAnyway = async () => {
+    submitAnyway.current = true;
+    form.submit?.();
   };
 
-  const handleOk = (formdata: FormData) => {
+  const handleOk = async (formdata: FormData) => {
     let obj = {};
+    let submitData = {} as FormData;
     if (
       [backendOptionsMap.vllm, backendOptionsMap.voxBox].includes(
         formdata.backend
@@ -332,26 +308,40 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     if (formdata.scheduleType === 'manual') {
       const gpuSelector = generateGPUIds(formdata);
-      onOk({
+      submitData = {
         ..._.omit(formdata, ['scheduleType']),
         categories: formdata.categories ? [formdata.categories] : [],
         worker_selector: null,
-        gpu_selector: formdata.gpu_selector?.gpu_ids?.length
-          ? {
-              gpu_ids: formdata.gpu_selector.gpu_ids
-            }
-          : null,
         ...obj,
         ...gpuSelector
-      });
+      };
     } else {
-      onOk({
+      submitData = {
         ..._.omit(formdata, ['scheduleType']),
         categories: formdata.categories ? [formdata.categories] : [],
         gpu_selector: null,
         ...obj
-      });
+      };
     }
+
+    if (submitAnyway.current) {
+      onOk(submitData);
+      return;
+    }
+
+    const evalutionData = await handleEvaluate(submitData);
+    handleShowCompatibleAlert?.(evalutionData);
+    if (evalutionData?.compatible) {
+      onOk(submitData);
+    }
+  };
+
+  const onValuesChange = (changedValues: any, allValues: any) => {
+    handleOnValuesChange({
+      changedValues,
+      allValues,
+      source: formData?.source as string
+    });
   };
 
   const handleOnClose = () => {
@@ -363,6 +353,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       form.setFieldsValue(formData);
     }
     if (!open) {
+      checkTokenRef.current?.cancel?.();
       setWarningStatus({
         show: false,
         message: ''
@@ -401,40 +392,55 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       }}
       footer={
         <>
-          <ModalFooter onCancel={onCancel} onOk={handleSumit}></ModalFooter>
+          <ModalFooter
+            onCancel={onCancel}
+            onOk={handleSumit}
+            showOkBtn={!warningStatus.show}
+            extra={
+              warningStatus.show && (
+                <Button
+                  type="primary"
+                  onClick={handleSubmitAnyway}
+                  style={{ width: '130px' }}
+                >
+                  {intl.formatMessage({
+                    id: 'models.form.submit.anyway'
+                  })}
+                </Button>
+              )
+            }
+          ></ModalFooter>
         </>
       }
     >
       <ColumnWrapper
         maxHeight={550}
-        paddingBottom={warningStatus.show ? 70 : 0}
+        paddingBottom={
+          warningStatus.show
+            ? Array.isArray(warningStatus.message)
+              ? 100
+              : 70
+            : 0
+        }
         footer={
-          <div style={{ paddingInline: 12 }}>
-            {warningStatus.show && (
-              <AlertBlockInfo
-                ellipsis={false}
-                message={
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: intl.formatMessage({
-                        id: warningStatus.message
-                      })
-                    }}
-                  ></span>
-                }
-                title={intl.formatMessage({
-                  id: 'common.text.tips'
-                })}
-                type="warning"
-              ></AlertBlockInfo>
-            )}
-          </div>
+          <CompatibilityAlert
+            showClose={true}
+            onClose={() => {
+              setWarningStatus({
+                show: false,
+                message: ''
+              });
+            }}
+            warningStatus={warningStatus}
+            contentStyle={{ paddingInline: 0 }}
+          ></CompatibilityAlert>
         }
       >
         <Form
           name="addModalForm"
           form={form}
           onFinish={handleOk}
+          onValuesChange={onValuesChange}
           preserve={false}
           clearOnDestroy={true}
           initialValues={{

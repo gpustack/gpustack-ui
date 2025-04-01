@@ -13,7 +13,7 @@ import { Button, Checkbox, Form, Input, Spin, Tag, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
-import {
+import React, {
   forwardRef,
   useCallback,
   useEffect,
@@ -113,7 +113,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
   const [queryValue, setQueryValue] = useState<string>('');
   const selectionTextRef = useRef<any>(null);
-  const [metaData, setMetaData] = useState<any>({});
 
   const { initialize, updateScrollerPosition: updateDocumentScrollerPosition } =
     useOverlayScroller();
@@ -353,7 +352,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (!multiplePasteEnable.current) return;
       const text = e.clipboardData.getData('text');
       if (text) {
-        const currentContent = textList[index]?.text;
         const dataLlist = text.split('\n').map((item: string) => {
           return {
             text: item?.trim(),
@@ -432,9 +430,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const onValuesChange = useCallback((changedValues: any, allValues: any) => {
     if (changedValues.model) {
       setTokenResult(null);
-    } else {
-      handleOnValuesChange(changedValues, allValues);
     }
+    handleOnValuesChange(changedValues, allValues);
   }, []);
 
   // useHotkeys(

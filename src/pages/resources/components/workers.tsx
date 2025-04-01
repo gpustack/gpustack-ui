@@ -308,8 +308,8 @@ const Workers: React.FC = () => {
                           borderRadius: 12
                         }}
                       >
-                        <span className="font-600">{key}</span>
-                        <span className="text-tertiary">:{value}</span>
+                        <span>{key}</span>
+                        <span>:{value}</span>
                       </AutoTooltip>
                     );
                   })}

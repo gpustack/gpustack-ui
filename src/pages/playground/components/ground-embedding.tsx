@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { Resizable } from 're-resizable';
-import {
+import React, {
   forwardRef,
   useCallback,
   useEffect,
@@ -438,9 +438,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (changeValues.model) {
         setScatterData([]);
         setTokenResult(null);
-      } else {
-        handleOnValuesChange(changeValues, allValues);
       }
+      handleOnValuesChange(changeValues, allValues);
     },
     []
   );

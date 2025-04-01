@@ -60,7 +60,7 @@ interface FilterBarProps {
   handleClickPrimary: (item: any) => void;
   rowSelection: any;
   actionItems: ActionItem[];
-  selectOptions?: Global.BaseListItem<string>[];
+  selectOptions?: Global.BaseOption<string | number>[];
   showSelect?: boolean;
   buttonText: string;
   buttonIcon?: React.ReactNode;

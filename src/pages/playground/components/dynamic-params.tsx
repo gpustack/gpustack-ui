@@ -79,6 +79,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           ])
         );
         form.setFieldsValue(normalizedValues);
+        console.log('handleValuesChange', normalizedValues, allValues);
         onValuesChange?.(normalizedValues, {
           ...allValues,
           ...normalizedValues

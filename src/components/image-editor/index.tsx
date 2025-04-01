@@ -27,6 +27,7 @@ const LoadWrapper = styled.div<{ width?: number; height?: number }>`
   width: ${(props) => `${props.width}px` || '100%'};
   z-index: 100;
 `;
+
 const Loading = (props: { width: number; height: number }) => {
   const { width, height } = props;
   return (
@@ -161,37 +162,35 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       link.click();
     }, [generateMask]);
 
-    const drawFillRect = useCallback(
-      (
-        ctx: CanvasRenderingContext2D,
-        stroke: Stroke | Point[],
-        options: {
-          lineWidth?: number;
-          color: string;
-          isInitial?: boolean;
-        }
-      ) => {
-        const { color, isInitial } = options;
+    const drawFillRect = (
+      ctx: CanvasRenderingContext2D,
+      stroke: Stroke | Point[],
+      options: {
+        lineWidth?: number;
+        color: string;
+        isInitial?: boolean;
+      }
+    ) => {
+      const { color, isInitial } = options;
 
-        stroke.forEach((point) => {
-          const { x, y } = getTransformedPoint(point.x, point.y);
-          const width = getTransformLineWidth(point.lineWidth);
-          if (isInitial) {
-            ctx.save();
-            ctx.fillStyle = 'rgba(0,0,0,1)';
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.fillRect(x - width / 2, y - width / 2, width, width);
-            ctx.restore();
-          }
-
-          // draw the new stroke
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.fillStyle = color;
+      stroke.forEach((point) => {
+        const { x, y } = getTransformedPoint(point.x, point.y);
+        const width = getTransformLineWidth(point.lineWidth);
+        console.log('Drawing stroke:', point, width);
+        if (isInitial) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(0,0,0,1)';
+          ctx.globalCompositeOperation = 'destination-out';
           ctx.fillRect(x - width / 2, y - width / 2, width, width);
-        });
-      },
-      [getTransformLineWidth, getTransformedPoint]
-    );
+          ctx.restore();
+        }
+
+        // draw the new stroke
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = color;
+        ctx.fillRect(x - width / 2, y - width / 2, width, width);
+      });
+    };
 
     const onReset = useCallback(() => {
       clearOverlayCanvas();
@@ -210,12 +209,13 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       const overlayCanvas = overlayCanvasRef.current!;
       const overlayCtx = overlayCanvas.getContext('2d')!;
 
-      strokes.forEach((stroke: Point[]) => {
+      strokes.forEach((stroke: Point[], index) => {
         drawFillRect(overlayCtx, stroke, {
           color: COLOR,
           isInitial: isInitial
         });
       });
+      console.log('Loading mask pixels-------:');
     };
 
     const redrawStrokes = (strokes: Stroke[]) => {

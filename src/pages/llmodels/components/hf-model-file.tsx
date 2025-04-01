@@ -309,12 +309,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       handleSelectModelFile(sortList[0]);
       setDataSource({ fileList: sortList, loading: false });
 
-      // if (timer.current) {
-      //   clearTimeout(timer.current);
-      // }
-      // timer.current = setTimeout(() => {
-      //   handleEvaluate(sortList);
-      // }, 200);
       handleEvaluate(sortList);
     } catch (error) {
       setDataSource({ fileList: [], loading: false });

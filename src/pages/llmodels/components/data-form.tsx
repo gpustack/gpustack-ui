@@ -159,7 +159,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const generateGPUIds = (data: FormData) => {
     const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
     if (!gpu_ids.length) {
-      return {};
+      return {
+        gpu_selector: null
+      };
     }
 
     const result = _.reduce(
@@ -175,14 +177,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       []
     );
 
-    if (result.length) {
-      return {
-        gpu_selector: {
-          gpu_ids: result
-        }
-      };
-    }
-    return {};
+    return {
+      gpu_selector: {
+        gpu_ids: result
+      }
+    };
   };
 
   const handleOk = async (formdata: FormData) => {
@@ -197,6 +196,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       ..._.omit(data, ['scheduleType']),
       ...gpuSelector
     };
+
+    console.log('allValues--------', allValues);
 
     onOk(allValues);
   };

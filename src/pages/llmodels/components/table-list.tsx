@@ -59,7 +59,6 @@ import {
 import {
   InstanceRealtimeLogStatus,
   backendOptionsMap,
-  getSourceRepoConfigValue,
   modelCategories,
   modelCategoriesMap,
   modelSourceMap
@@ -261,14 +260,8 @@ const Models: React.FC<ModelsProps> = ({
   const handleModalOk = useCallback(
     async (data: FormData) => {
       try {
-        const result = getSourceRepoConfigValue(
-          currentData.current?.source,
-          data
-        );
         await updateModel({
-          data: {
-            ...result.values
-          },
+          data,
           id: currentData.current?.id as number
         });
         setOpenAddModal(false);
@@ -299,12 +292,8 @@ const Models: React.FC<ModelsProps> = ({
       try {
         console.log('data:', data, openDeployModal);
 
-        const result = getSourceRepoConfigValue(openDeployModal.source, data);
-
         const modelData = await createModel({
-          data: {
-            ...result.values
-          }
+          data
         });
         setOpenDeployModal({
           ...openDeployModal,

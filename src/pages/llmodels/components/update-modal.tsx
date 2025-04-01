@@ -293,7 +293,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     form.submit?.();
   };
 
-  const handleOk = async (formdata: FormData) => {
+  const handleOk = async (data: FormData) => {
+    const formdata = getSourceRepoConfigValue(data.source, data).values;
     let obj = {};
     let submitData = {} as FormData;
     if (
@@ -306,23 +307,16 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         cpu_offloading: false
       };
     }
-    if (formdata.scheduleType === 'manual') {
-      const gpuSelector = generateGPUIds(formdata);
-      submitData = {
-        ..._.omit(formdata, ['scheduleType']),
-        categories: formdata.categories ? [formdata.categories] : [],
-        worker_selector: null,
-        ...obj,
-        ...gpuSelector
-      };
-    } else {
-      submitData = {
-        ..._.omit(formdata, ['scheduleType']),
-        categories: formdata.categories ? [formdata.categories] : [],
-        gpu_selector: null,
-        ...obj
-      };
-    }
+
+    submitData = {
+      ..._.omit(formdata, ['scheduleType']),
+      categories: formdata.categories ? [formdata.categories] : [],
+      worker_selector: null,
+      ...obj,
+      ...(formdata.scheduleType === 'manual'
+        ? generateGPUIds(formdata)
+        : { gpu_selector: null })
+    };
 
     if (submitAnyway.current) {
       onOk(submitData);

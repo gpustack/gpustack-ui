@@ -13,7 +13,7 @@ interface CompatibilityAlertProps {
     show: boolean;
     title?: string;
     isHtml?: boolean;
-    type: 'danger' | 'warning' | 'transition' | 'info';
+    type?: 'danger' | 'warning' | 'transition';
     message: string | string[];
   };
   contentStyle?: React.CSSProperties;

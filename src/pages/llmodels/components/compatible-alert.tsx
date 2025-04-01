@@ -1,5 +1,9 @@
 import AlertBlockInfo from '@/components/alert-info/block';
-import { CloseOutlined } from '@ant-design/icons';
+import {
+  CloseOutlined,
+  LoadingOutlined,
+  WarningFilled
+} from '@ant-design/icons';
 import { isArray } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -9,6 +13,7 @@ interface CompatibilityAlertProps {
     show: boolean;
     title?: string;
     isHtml?: boolean;
+    type: 'danger' | 'warning' | 'transition' | 'info';
     message: string | string[];
   };
   contentStyle?: React.CSSProperties;
@@ -38,7 +43,7 @@ const MessageWrapper = styled.div`
 
 const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
   const { warningStatus, contentStyle, showClose, onClose } = props;
-  const { title, show, message, isHtml } = warningStatus;
+  const { title, show, message, isHtml, type } = warningStatus;
 
   const renderMessage = useMemo(() => {
     if (!message || !show) {
@@ -76,9 +81,10 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           message={renderMessage}
           title={title}
           contentStyle={contentStyle}
-          type="warning"
+          type={type || 'warning'}
+          icon={type === 'transition' ? <LoadingOutlined /> : <WarningFilled />}
         ></AlertBlockInfo>
-        {showClose && (
+        {showClose && type !== 'transition' && (
           <CloseWrapper onClick={onClose}>
             <CloseOutlined />
           </CloseWrapper>

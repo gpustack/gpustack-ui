@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import OverlayScroller from '../overlay-scroller';
 import './block.less';
 interface AlertInfoProps {
-  type: 'danger' | 'warning';
+  type: 'danger' | 'warning' | 'transition' | 'info';
   message: React.ReactNode;
   rows?: number;
   icon?: React.ReactNode;
@@ -38,7 +38,8 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
     ellipsis,
     style,
     title,
-    contentStyle
+    contentStyle,
+    icon
   } = props;
 
   return (
@@ -57,7 +58,9 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
             }
           >
             <div className={classNames('title', type)}>
-              <WarningFilled className={classNames('info-icon', type)} />
+              <span className={classNames('info-icon', type)}>
+                {icon ?? <WarningFilled />}
+              </span>
             </div>
             {title && <TitleWrapper>{title}</TitleWrapper>}
             <OverlayScroller maxHeight={80} style={{ ...contentStyle }}>

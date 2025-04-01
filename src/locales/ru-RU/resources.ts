@@ -69,11 +69,13 @@ export default {
   'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
   'resources.filter.worker': 'Фильтровать по узлу',
   'resources.filter.source': 'Фильтровать по источнику',
-  'resources.modelfiles.delete.tips': 'Also delete the file from disk!'
+  'resources.modelfiles.delete.tips': 'Also delete the file from disk!',
+  'resources.modelfiles.copy.tips': 'Copy Full Path'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'resources.modelfiles.delete.tips',
 // 2. 'resources.worker.add.step1',
-// 3. 'resources.worker.add.step2.tips
+// 3. 'resources.worker.add.step2.tips,
+// 4. 'resources.modelfiles.copy.tips',
 // ========== End of To-Do List ==========

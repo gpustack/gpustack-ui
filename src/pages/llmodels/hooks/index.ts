@@ -217,6 +217,7 @@ export const useCheckCompatibility = () => {
   const [warningStatus, setWarningStatus] = useState<{
     show: boolean;
     title?: string;
+    type?: 'transition' | 'warning' | 'error';
     message: string | string[];
   }>({
     show: false,
@@ -231,7 +232,8 @@ export const useCheckCompatibility = () => {
       setWarningStatus({
         show: true,
         title: '',
-        message: 'Evaluating compatibility...'
+        type: 'transition',
+        message: intl.formatMessage({ id: 'models.form.check.params' })
       });
       const evalution = await evaluationsModelSpec(
         {

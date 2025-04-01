@@ -411,6 +411,10 @@ const ModelFiles = () => {
     }
   };
 
+  const getResolvedPath = (pathList: string[]) => {
+    return _.split(pathList?.[0], /[\\/]/).pop();
+  };
+
   const columns = [
     {
       title: intl.formatMessage({ id: 'models.form.source' }),
@@ -474,6 +478,9 @@ const ModelFiles = () => {
                   text={record.resolved_paths?.[0]}
                   type="link"
                   btnStyle={{ width: 18, paddingInline: 2 }}
+                  tips={intl.formatMessage({
+                    id: 'resources.modelfiles.copy.tips'
+                  })}
                 ></CopyButton>
               </span>
               {renderParts(record)}

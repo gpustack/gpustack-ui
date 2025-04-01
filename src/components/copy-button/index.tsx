@@ -11,6 +11,7 @@ type CopyButtonProps = {
   type?: 'text' | 'primary' | 'dashed' | 'link' | 'default';
   size?: 'small' | 'middle' | 'large';
   shape?: 'circle' | 'round' | 'default';
+  tips?: string;
   placement?:
     | 'top'
     | 'left'
@@ -25,6 +26,7 @@ type CopyButtonProps = {
 };
 
 const CopyButton: React.FC<CopyButtonProps> = ({
+  tips,
   text,
   disabled,
   type = 'text',
@@ -68,7 +70,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
 
   return (
     <Tooltip
-      title={intl.formatMessage({ id: 'common.button.copy' })}
+      title={tips ?? intl.formatMessage({ id: 'common.button.copy' })}
       placement={placement}
     >
       <Button

@@ -217,5 +217,5 @@ export interface EvaluateResult {
   compatible: boolean;
   compatibility_messages: string[];
   scheduling_messages: string[];
-  default_backend_parameters: any[];
+  default_spec: Record<string, any>;
 }

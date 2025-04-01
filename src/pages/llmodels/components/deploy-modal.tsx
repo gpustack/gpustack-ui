@@ -95,7 +95,8 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
-      backend: backendOptionsMap.llamaBox
+      backend: backendOptionsMap.llamaBox,
+      ...item.evaluateResult?.default_spec
     });
     if (item.fakeName) {
       handleShowCompatibleAlert(item.evaluateResult);
@@ -107,6 +108,9 @@ const AddModal: FC<AddModalProps> = (props) => {
     form.current?.handleOnSelectModel?.(item);
     if (!isgguf) {
       handleShowCompatibleAlert(item.evaluateResult);
+      form.current?.setFieldsValue?.({
+        ...item.evaluateResult?.default_spec
+      });
     }
   };
 

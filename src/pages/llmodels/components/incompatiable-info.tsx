@@ -1,5 +1,5 @@
 import OverlayScroller from '@/components/overlay-scroller';
-import { WarningOutlined } from '@ant-design/icons';
+import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tag, Tooltip } from 'antd';
 import React from 'react';
@@ -14,6 +14,8 @@ interface IncompatiableInfoProps {
 const CompatibleTag = styled(Tag)`
   border-radius: 4px;
   margin-right: 0;
+  font-size: var(--font-size-base);
+  background: transparent !important;
 `;
 
 const IncompatibleInfo = styled.div`
@@ -50,11 +52,13 @@ const SMTitle = styled.div<{ $isTitle?: boolean }>`
 const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
   const { data, isEvaluating } = props;
   const intl = useIntl();
-  console.log('IncompatiableInfo', data, isEvaluating);
+
   if (isEvaluating) {
     return (
-      <CompatibleTag color="warning">
-        {intl.formatMessage({ id: 'models.form.evaluating' })}
+      <CompatibleTag color="blue" bordered={false}>
+        <Tooltip title={intl.formatMessage({ id: 'models.form.evaluating' })}>
+          <LoadingOutlined />
+        </Tooltip>
       </CompatibleTag>
     );
   }
@@ -67,23 +71,28 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
       title={
         <OverlayScroller maxHeight={200}>
           <IncompatibleInfo>
-            <SMTitle $isTitle={!!data?.scheduling_messages?.length}>
-              {data?.compatibility_messages}
+            <SMTitle $isTitle={true}>
+              {intl.formatMessage({ id: 'models.form.incompatible' })}
             </SMTitle>
-            {!!data?.scheduling_messages?.length && (
+            {
               <ul>
+                {data?.compatibility_messages.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
                 {data?.scheduling_messages.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
-            )}
+            }
           </IncompatibleInfo>
         </OverlayScroller>
       }
     >
-      <CompatibleTag icon={<WarningOutlined />} color="warning">
-        {intl.formatMessage({ id: 'models.form.incompatible' })}
-      </CompatibleTag>
+      <CompatibleTag
+        icon={<WarningOutlined />}
+        color="warning"
+        bordered={false}
+      ></CompatibleTag>
     </Tooltip>
   );
 };

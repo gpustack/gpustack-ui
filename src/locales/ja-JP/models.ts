@@ -120,11 +120,12 @@ export default {
   'models.form.files': 'files',
   'models.table.status': 'Status',
   'models.form.submit.anyway': 'Submit Anyway',
-  'models.form.evaluating': 'Evaluating...',
-  'models.form.incompatible': 'Incompatible',
+  'models.form.evaluating': 'Evaluating Model Compatibliity',
+  'models.form.incompatible': 'Incompatibility Detected',
   'models.form.restart.onerror': 'Auto-Restart On Error',
   'models.form.restart.onerror.tips':
-    'When an error occurs, it will automatically attempt to restart.'
+    'When an error occurs, it will automatically attempt to restart.',
+  'models.form.check.params': 'Checking configuration...'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -134,5 +135,6 @@ export default {
 // 4. 'models.form.evaluating',
 // 5. 'models.form.incompatible',
 // 6. 'models.form.restart.onerror',
-// 7. 'models.form.restart.onerror.tips'
+// 7. 'models.form.restart.onerror.tips',
+// 8. 'models.form.check.params',
 // ========== End of To-Do List ==========

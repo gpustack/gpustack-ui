@@ -71,7 +71,8 @@ export default {
     'Waiting for download to complete...',
   'resources.filter.worker': 'Filter by Worker',
   'resources.filter.source': 'Filter by Source',
-  'resources.modelfiles.delete.tips': 'Also delete the file from disk!'
+  'resources.modelfiles.delete.tips': 'Also delete the file from disk!',
+  'resources.modelfiles.copy.tips': 'Copy Full Path'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -89,4 +90,5 @@ export default {
 // 12. 'resources.modelfiles.delete.tips',
 // 13. 'resources.worker.add.step1',
 // 14. 'resources.worker.add.step2.tips',
+// 15. 'resources.modelfiles.copy.tips',
 // ========== End of To-Do List ==========

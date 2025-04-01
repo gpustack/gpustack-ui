@@ -529,7 +529,7 @@ const ModelFiles = () => {
         handleDeleteByBatch={handleDeleteByBatch}
         handleClickPrimary={handleClickDropdown}
         handleSearch={handleSearch}
-        selectOptions={onLineSourceOptions}
+        selectOptions={workersList}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}
         actionItems={onLineSourceOptions}

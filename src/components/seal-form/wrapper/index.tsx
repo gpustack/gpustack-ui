@@ -87,13 +87,13 @@ const WrapperBox = styled.div`
 
 // wrapper
 const InnerWrapper = styled.div.attrs<{
-  noWrapperStyle?: boolean;
-  nolabel?: boolean;
+  $noWrapperStyle?: boolean;
+  $nolabel?: boolean;
 }>((props) => ({
   className: classNames({
     __wrapper__: true,
-    'no-wrapper-style': props.noWrapperStyle,
-    'no-label': props.nolabel
+    'no-wrapper-style': props.$noWrapperStyle,
+    'no-label': props.$nolabel
   })
 }))`
   position: relative;
@@ -118,13 +118,13 @@ const InnerWrapper = styled.div.attrs<{
 
 // label
 export const Label = styled.div.attrs<{
-  isFocus?: boolean;
-  hasPrefix?: boolean;
+  $isFocus?: boolean;
+  $hasPrefix?: boolean;
 }>((props) => ({
   className: classNames({
-    'isfoucs-has-value': props.isFocus,
-    'blur-no-value': !props.isFocus,
-    'has-prefix': props.hasPrefix
+    'isfoucs-has-value': props.$isFocus,
+    'blur-no-value': !props.$isFocus,
+    'has-prefix': props.$hasPrefix
   })
 }))`
   position: absolute;
@@ -204,12 +204,12 @@ const Wrapper: FC<WrapperProps> = ({
   return (
     <WrapperBox className={wrapperClass}>
       <InnerWrapper
-        noWrapperStyle={noWrapperStyle}
-        nolabel={!label}
+        $noWrapperStyle={noWrapperStyle}
+        $nolabel={!label}
         onClick={onClick}
       >
         {label && (
-          <Label isFocus={isFocus} hasPrefix={hasPrefix} onClick={onClick}>
+          <Label $isFocus={isFocus} $hasPrefix={hasPrefix} onClick={onClick}>
             <LabelInfo
               label={label}
               required={required}

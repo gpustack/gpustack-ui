@@ -127,32 +127,26 @@ export default function useDrawing(props: {
     offCtx!.setTransform(scale, 0, 0, scale, translateX, translateY);
   }, []);
 
-  const getTransformedPoint = useCallback(
-    (offsetX: number, offsetY: number) => {
-      const { current: scale } = autoScale;
-      console.log('lineWidth:----------', lineWidth, autoScale.current);
+  const getTransformedPoint = (offsetX: number, offsetY: number) => {
+    const { current: scale } = autoScale;
+    console.log('lineWidth:----------', lineWidth, autoScale.current);
 
-      const { x: translateX, y: translateY } = translatePos.current;
+    const { x: translateX, y: translateY } = translatePos.current;
 
-      const transformedX = (offsetX - translateX) / scale;
-      const transformedY = (offsetY - translateY) / scale;
+    const transformedX = (offsetX - translateX) / scale;
+    const transformedY = (offsetY - translateY) / scale;
 
-      return {
-        x: transformedX,
-        y: transformedY
-      };
-    },
-    []
-  );
+    return {
+      x: transformedX,
+      y: transformedY
+    };
+  };
 
-  const getTransformLineWidth = useCallback(
-    (w = 1) => {
-      console.log('lineWidth:', lineWidth, autoScale.current);
-      const width = w || lineWidth;
-      return width / autoScale.current;
-    },
-    [lineWidth]
-  );
+  const getTransformLineWidth = (w = 1) => {
+    console.log('lineWidth:', lineWidth, autoScale.current);
+    const width = w || lineWidth;
+    return width / autoScale.current;
+  };
 
   const drawLine = useCallback(
     (

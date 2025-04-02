@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec, queryGPUList } from '../apis';
 import {
   backendOptionsMap,
-  excludeFields,
   getSourceRepoConfigValue,
   modelSourceMap,
   setSourceRepoConfigValue
@@ -157,7 +156,10 @@ export const useGenerateModelFileOptions = () => {
       labels: worker.labels,
       parent: true,
       children: list
-        .filter((item) => item.worker_id === worker.id)
+        .filter(
+          (item) =>
+            item.worker_id === worker.id && !!item.resolved_paths?.length
+        )
         .map((item) => {
           const resolved_paths =
             Array.isArray(item.resolved_paths) && item.resolved_paths.length
@@ -384,34 +386,21 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const { changedValues, allValues, source } = params;
-    const keys = Object.keys(changedValues);
-    const isExcludeField = keys.some((key) => excludeFields.includes(key));
-    const hasValue = keys.every((key) => {
-      return !!changedValues[key];
+    const data = getSourceRepoConfigValue(source, allValues);
+    const gpuSelector = generateGPUIds(data.values);
+
+    const currentRequestId = updateRequestId();
+    const evalutionData = await handleEvaluate({
+      ...data.values,
+      ...gpuSelector
     });
 
-    if (
-      !isExcludeField &&
-      hasValue &&
-      !_.has(changedValues, 'backend') &&
-      !_.has(changedValues, 'local_path')
-    ) {
-      const data = getSourceRepoConfigValue(source, allValues);
-      const gpuSelector = generateGPUIds(data.values);
-
-      const currentRequestId = updateRequestId();
-      const evalutionData = await handleEvaluate({
-        ...data.values,
-        ...gpuSelector
-      });
-
-      if (currentRequestId === requestIdRef.current) {
-        handleShowCompatibleAlert?.(evalutionData);
-      }
+    if (currentRequestId === requestIdRef.current) {
+      handleShowCompatibleAlert?.(evalutionData);
     }
   };
 
-  const debounceHandleValuesChange = _.debounce(handleOnValuesChange, 300);
+  const debounceHandleValuesChange = _.debounce(handleOnValuesChange, 500);
 
   const cancelEvaluate = () => {
     checkTokenRef.current?.cancel();

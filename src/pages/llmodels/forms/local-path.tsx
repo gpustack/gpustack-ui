@@ -22,7 +22,7 @@ const LocalPathForm: React.FC = () => {
   const { modelFileOptions, byBuiltIn } = formCtx;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
-  const localPathCache = useRef<string>(form.getFieldValue('local_path'));
+  const localPathCache = useRef<string>(form.getFieldValue('local_path') || '');
 
   if (![modelSourceMap.local_path_value].includes(source) || byBuiltIn) {
     return null;
@@ -30,7 +30,7 @@ const LocalPathForm: React.FC = () => {
 
   const handleLocalPathBlur = (e: any) => {
     const value = e.target.value;
-    if (value === localPathCache.current && value) {
+    if (value === localPathCache.current || !value) {
       return;
     }
     const isEndwithGGUF = _.endsWith(value, '.gguf');

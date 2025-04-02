@@ -419,7 +419,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleOk = async (values: FormData) => {
-    const data = generateSubmitData(values);
+    const data = {
+      ..._.omit(selectSpecRef.current, ['name']),
+      ...values
+    };
     onOk(data);
   };
 

@@ -13,6 +13,7 @@ import {
   ModelscopeTaskMap,
   backendOptionsMap,
   backendTipsList,
+  excludeFields,
   modelSourceMap,
   modelTaskMap,
   sourceOptions
@@ -23,7 +24,7 @@ import { FormData, SourceType } from '../config/types';
 import CatalogFrom from '../forms/catalog';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
-import OllamaForm from '../forms/ollama-library';
+import OllamaForm from '../forms/ollama_library';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
@@ -190,18 +191,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleOk = async (formdata: FormData) => {
     let data = _.cloneDeep(formdata);
-    if (data.categories) {
-      data.categories = [data.categories];
-    } else {
-      data.categories = [];
-    }
+    data.categories = Array.isArray(data.categories)
+      ? data.categories
+      : data.categories
+        ? [data.categories]
+        : [];
     const gpuSelector = generateGPUIds(data);
     const allValues = {
       ..._.omit(data, ['scheduleType']),
       ...gpuSelector
     };
-
-    console.log('allValues--------', allValues);
 
     onOk(allValues);
   };
@@ -211,7 +210,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    console.log('changeValues--------', changedValues);
+    const fieldName = Object.keys(changedValues)[0];
+    if (excludeFields.includes(fieldName)) {
+      return;
+    }
     onValuesChange?.(changedValues, allValues);
   };
 
@@ -251,6 +253,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       style={{ padding: '16px 24px' }}
       clearOnDestroy={true}
       onValuesChange={handleOnValuesChange}
+      scrollToFirstError={true}
       initialValues={{
         replicas: 1,
         source: props.source,
@@ -258,6 +261,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         cpu_offloading: true,
         scheduleType: 'auto',
         categories: null,
+        restart_on_error: true,
         distributed_inference_across_workers: true,
         ...initialValues
       }}

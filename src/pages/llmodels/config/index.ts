@@ -450,6 +450,8 @@ export const modelLabels = [
 ];
 
 export const excludeFields = [
+  'repo_id',
+  'file_name',
   'replicas',
   'categories',
   'name',
@@ -460,5 +462,8 @@ export const excludeFields = [
   'size',
   'restart_on_error',
   'worker_selector',
-  'backend_parameters'
+  'backend_parameters',
+  'local_path',
+  'backend_version',
+  'ollama_library_model_name'
 ];

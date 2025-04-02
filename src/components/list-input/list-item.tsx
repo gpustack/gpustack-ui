@@ -8,6 +8,7 @@ import './styles/list-item.less';
 interface LabelItemProps {
   onRemove: () => void;
   onChange: (value: string) => void;
+  onBlur?: (e: any) => void;
   value: string;
   label?: string;
   placeholder?: string;
@@ -15,7 +16,7 @@ interface LabelItemProps {
 }
 
 const ListItem: React.FC<LabelItemProps> = (props) => {
-  const { onRemove, onChange, label, value, options } = props;
+  const { onRemove, onChange, onBlur, label, value, options } = props;
 
   const handleOnChange = (value: any) => {
     onChange(value);
@@ -26,6 +27,7 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
       <HintInput
         value={value}
         onChange={handleOnChange}
+        onBlur={onBlur}
         label={label}
         sourceOptions={options}
         placeholder={props.placeholder}

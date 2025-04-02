@@ -132,16 +132,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
+  // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {
-    if (backend === backendOptionsMap.llamaBox) {
-      return;
-    }
-    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']);
+    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
 
-    if (!gpuids?.length) {
-      return;
-    }
-    if (gpuids.length > 1 && Array.isArray(gpuids[0])) {
+    if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
       form.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
     }
   };

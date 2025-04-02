@@ -1,13 +1,14 @@
 import React from 'react';
 
 interface FormContextProps {
-  isGGUF: boolean;
+  isGGUF?: boolean;
   byBuiltIn?: boolean;
   sizeOptions?: Global.BaseOption<number>[];
   quantizationOptions?: Global.BaseOption<string>[];
   modelFileOptions?: any[];
   onSizeChange?: (val: number) => void;
   onQuantizationChange?: (val: string) => void;
+  onValuesChange?: (val: any) => void;
 }
 
 interface FormInnerContextProps {

@@ -9,11 +9,13 @@ interface LabelSelectorProps {
   btnText?: string;
   description?: React.ReactNode;
   onChange?: (labels: Record<string, any>) => void;
+  onBlur?: (e: any, type: string, index: number) => void;
 }
 
 const LabelSelector: React.FC<LabelSelectorProps> = ({
   labels,
   onChange,
+  onBlur,
   label,
   btnText,
   description
@@ -87,6 +89,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
       onChange={handleLabelsChange}
       onLabelListChange={handleLabelListChange}
       onPaste={handleOnPaste}
+      onBlur={onBlur}
     />
   );
 };

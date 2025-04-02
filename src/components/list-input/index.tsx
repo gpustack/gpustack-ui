@@ -15,6 +15,7 @@ interface ListInputProps {
   placeholder?: string;
   labelExtra?: React.ReactNode;
   onChange: (data: string[]) => void;
+  onBlur?: (e: any, index: number) => void;
 }
 
 const ListInput: React.FC<ListInputProps> = (props) => {
@@ -24,6 +25,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
     label,
     description,
     onChange,
+    onBlur,
     btnText,
     options,
     labelExtra
@@ -89,6 +91,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
               options={options}
               key={item.uid}
               value={item.value}
+              onBlur={(e) => onBlur?.(e, index)}
               onRemove={() => handleOnRemove(index)}
               onChange={(val) => handleOnChange(val, index)}
             />

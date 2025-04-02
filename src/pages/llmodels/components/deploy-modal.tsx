@@ -77,9 +77,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const {
     handleShowCompatibleAlert,
-    handleUpdateWarning,
     setWarningStatus,
-    handleEvaluate,
     handleOnValuesChange,
     checkTokenRef,
     warningStatus,
@@ -140,40 +138,25 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
-  // trigger from local_path change or backend change
-  const handleBackendChangeBefore = async () => {
-    const localPath = form.current.form.getFieldValue?.('local_path');
-    const backend = form.current.form.getFieldValue?.('backend');
-
-    const res = handleUpdateWarning?.({
-      backend,
-      localPath: localPath,
-      source: props.source
-    });
-
-    if (!res.show) {
-      const values = form.current.form.getFieldsValue?.();
-      const data = getSourceRepoConfigValue(props.source, values);
-      const evalutionData = await handleEvaluate(
-        _.omit(data.values, [
-          'cpu_offloading',
-          'distributed_inference_across_workers'
-        ])
-      );
-      handleShowCompatibleAlert?.(evalutionData);
-    } else {
-      setWarningStatus?.(res);
-    }
-  };
-
   const handleBackendChange = async (backend: string) => {
-    handleBackendChangeBefore();
-    if (backend === backendOptionsMap.vllm) {
-      setIsGGUF(false);
-    }
-
     if (backend === backendOptionsMap.llamaBox) {
       setIsGGUF(true);
+    } else {
+      setIsGGUF(false);
+    }
+    const data = form.current.form.getFieldsValue?.();
+    if (data.local_path || props.source !== modelSourceMap.local_path_value) {
+      handleOnValuesChange?.({
+        changedValues: {},
+        allValues:
+          backend === backendOptionsMap.llamaBox
+            ? data
+            : _.omit(data, [
+                'cpu_offloading',
+                'distributed_inference_across_workers'
+              ]),
+        source: props.source
+      });
     }
   };
 
@@ -291,7 +274,8 @@ const AddModal: FC<AddModalProps> = (props) => {
         <FormContext.Provider
           value={{
             isGGUF: isGGUF,
-            modelFileOptions: props.modelFileOptions
+            modelFileOptions: props.modelFileOptions,
+            onValuesChange: handleOnValuesChange
           }}
         >
           <FormWrapper>

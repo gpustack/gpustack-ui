@@ -19,6 +19,7 @@ interface LabelItemProps {
   labelList: { key: string; value: string }[];
   onChange?: (params: { key: string; value: string }) => void;
   onPaste?: (e: any) => void;
+  onBlur?: (e: any, type: string) => void;
 }
 const LabelItem: React.FC<LabelItemProps> = ({
   label,
@@ -28,7 +29,8 @@ const LabelItem: React.FC<LabelItemProps> = ({
   valueAddon,
   onChange,
   onDelete,
-  onPaste
+  onPaste,
+  onBlur
 }) => {
   const intl = useIntl();
   const [open, setOpen] = useState(false);
@@ -49,7 +51,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
     });
   };
 
-  const handleKeyOnBlur = (e: any) => {
+  const handleKeyOnBlur = (e: any, type: string) => {
     const val = e.target.value;
     // has duplicate key
     const duplicates = _.filter(
@@ -68,6 +70,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
     } else {
       setOpen(false);
     }
+    onBlur?.(e, type);
   };
 
   return (
@@ -83,7 +86,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
               label={intl.formatMessage({ id: 'common.input.key' })}
               value={label.key}
               onChange={handleOnKeyChange}
-              onBlur={handleKeyOnBlur}
+              onBlur={(e: any) => handleKeyOnBlur(e, 'key')}
               onPaste={onPaste}
             ></SealInput.Input>
           </Tooltip>
@@ -97,6 +100,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
             label={intl.formatMessage({ id: 'common.input.value' })}
             value={label.value}
             onChange={handleOnValueChange}
+            onBlur={(e: any) => onBlur?.(e, 'value')}
           ></SealInput.Input>
         )}
       </div>

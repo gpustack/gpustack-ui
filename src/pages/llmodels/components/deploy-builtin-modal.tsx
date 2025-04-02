@@ -496,7 +496,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           sizeOptions: sizeOptions,
           quantizationOptions: quantizationOptions,
           onSizeChange: handleOnSizeChange,
-          onQuantizationChange: handleOnQuantizationChange
+          onQuantizationChange: handleOnQuantizationChange,
+          onValuesChange: handleOnValuesChange
         }}
       >
         <FormWrapper>

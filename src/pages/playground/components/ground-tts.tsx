@@ -10,7 +10,7 @@ import { Form, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
-import {
+import React, {
   forwardRef,
   useCallback,
   useEffect,
@@ -248,7 +248,6 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
 
       const newList = sortVoiceList(locale, list);
-
       setVoiceList(newList);
       setParams((pre: any) => {
         return {
@@ -269,14 +268,14 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         setParams(allValues);
       }
     },
-    []
+    [handleSelectModel]
   );
 
   useEffect(() => {
     if (paramsRef.current) {
       innitializeParams(paramsRef.current);
     }
-  }, [paramsRef.current, innitializeParams]);
+  }, [innitializeParams]);
 
   const handleOnCheckChange = (e: any) => {
     checkvalueRef.current = e.target.checked;
@@ -301,10 +300,10 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [paramsConfig, intl, voiceList]);
 
   useEffect(() => {
-    if (defaultModel) {
+    if (defaultModel && modelList.length) {
       handleSelectModel(defaultModel);
     }
-  }, [defaultModel]);
+  }, [defaultModel, modelList.length]);
 
   useEffect(() => {
     if (scroller.current) {

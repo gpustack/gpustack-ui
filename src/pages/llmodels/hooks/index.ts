@@ -244,7 +244,7 @@ export const useCheckCompatibility = () => {
         show: true,
         title: '',
         type: 'transition',
-        message: intl.formatMessage({ id: 'models.form.check.params' })
+        message: intl.formatMessage({ id: 'models.form.evaluating' })
       });
       const evalution = await evaluationsModelSpec(
         {

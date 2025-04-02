@@ -102,6 +102,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return modelTaskData;
   };
 
+  // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
   const handleOnSelectModel = (selectModel: any) => {
     let name = _.split(selectModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
@@ -117,12 +118,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         backend:
           modelTaskData.type === modelTaskMap.audio
             ? backendOptionsMap.voxBox
-            : form.getFieldValue('backend')
+            : selectModel.isGGUF
+              ? backendOptionsMap.llamaBox
+              : backendOptionsMap.vllm
       });
     } else {
       form.setFieldsValue({
         ollama_library_model_name: selectModel.name,
-        name: name
+        name: name,
+        backend: backendOptionsMap.llamaBox
       });
     }
   };

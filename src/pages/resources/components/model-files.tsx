@@ -18,7 +18,6 @@ import {
 } from '@/pages/llmodels/config';
 import { identifyModelTask } from '@/pages/llmodels/config/audio-catalog';
 import {
-  generateSource,
   modalConfig,
   modelFileActions,
   onLineSourceOptions
@@ -422,7 +421,9 @@ const ModelFiles = () => {
               {intl.formatMessage({ id: 'models.form.localPath' })}
             </AutoTooltip>
           ) : (
-            <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
+            <AutoTooltip ghost>
+              {_.get(modelSourceMap, record.source, '')}
+            </AutoTooltip>
           )}
         </span>
       )
@@ -467,7 +468,7 @@ const ModelFiles = () => {
           record.resolved_paths?.length > 0 && (
             <PathWrapper>
               <AutoTooltip ghost>
-                <span>{record.resolved_paths?.[0]}</span>
+                <span>{getResolvedPath(record.resolved_paths)}</span>
               </AutoTooltip>
               <span className="btn-wrapper">
                 <CopyButton

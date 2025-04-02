@@ -214,6 +214,8 @@ export const useCheckCompatibility = () => {
   const intl = useIntl();
 
   const checkTokenRef = useRef<any>(null);
+  const submitAnyway = useRef<boolean>(false);
+  const requestIdRef = useRef(0);
   const [warningStatus, setWarningStatus] = useState<{
     show: boolean;
     title?: string;
@@ -224,6 +226,11 @@ export const useCheckCompatibility = () => {
     title: '',
     message: []
   });
+
+  const updateRequestId = () => {
+    requestIdRef.current += 1;
+    return requestIdRef.current;
+  };
 
   const handleEvaluate = async (data: any) => {
     try {
@@ -392,11 +399,15 @@ export const useCheckCompatibility = () => {
       const data = getSourceRepoConfigValue(source, allValues);
       const gpuSelector = generateGPUIds(data.values);
 
+      const currentRequestId = updateRequestId();
       const evalutionData = await handleEvaluate({
         ...data.values,
         ...gpuSelector
       });
-      handleShowCompatibleAlert?.(evalutionData);
+
+      if (currentRequestId === requestIdRef.current) {
+        handleShowCompatibleAlert?.(evalutionData);
+      }
     }
   };
 
@@ -415,6 +426,7 @@ export const useCheckCompatibility = () => {
     handleOnValuesChange: debounceHandleValuesChange,
     warningStatus,
     checkTokenRef,
+    submitAnyway,
     generateGPUIds,
     handleEvaluate,
     setWarningStatus

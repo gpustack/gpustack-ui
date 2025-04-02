@@ -32,7 +32,7 @@ interface SearchInputProps {
   isDownload?: boolean;
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
-  onSelectModel: (model: any, isGGUF?: boolean) => void;
+  onSelectModel: (model: any) => void;
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
@@ -98,7 +98,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   const handleOnSelectModel = (item: any) => {
-    onSelectModel(item, checkIsGGUF(item));
+    onSelectModel(item);
     setCurrent(item.id);
   };
 
@@ -121,7 +121,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         return {
           ...item,
           value: item.name,
-          label: item.name
+          label: item.name,
+          isGGUF: checkIsGGUF(item),
+          source: modelSourceMap.modelscope_value
         };
       });
       return list;
@@ -157,7 +159,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           revision: item.Revision,
           task: item.Tasks?.map((sItem: any) => sItem.Name).join(','),
           tags: item.Tags,
-          libraries: item.Libraries
+          libraries: item.Libraries,
+          isGGUF: checkIsGGUF({ tags: item.Tags, libraries: item.Libraries }),
+          source: modelSourceMap.modelscope_value
         };
       });
 

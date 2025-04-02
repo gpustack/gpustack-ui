@@ -69,5 +69,6 @@ export default {
   'resources.filter.worker': '按 worker 筛选',
   'resources.filter.source': '按来源筛选',
   'resources.modelfiles.delete.tips': '同时从磁盘删除文件！',
-  'resources.modelfiles.copy.tips': '复制完整路径'
+  'resources.modelfiles.copy.tips': '复制完整路径',
+  'resources.filter.path': '路径查询'
 };

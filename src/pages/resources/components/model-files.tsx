@@ -527,7 +527,7 @@ const ModelFiles = () => {
       <FilterBar
         actionType="dropdown"
         selectHolder="resources.filter.worker"
-        inputHolder="resources.filter.source"
+        inputHolder="resources.filter.path"
         buttonText={intl.formatMessage({ id: 'resources.modelfiles.download' })}
         handleSelectChange={handleWorkerChange}
         handleDeleteByBatch={handleDeleteByBatch}

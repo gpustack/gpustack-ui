@@ -597,7 +597,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
               </span>
             </Col>
             <Col span={4}>
-              <span style={{ paddingLeft: 45 }} className="flex">
+              <span style={{ paddingLeft: 43 }} className="flex">
                 <AutoTooltip ghost>
                   {dayjs(instanceData.created_at).format('YYYY-MM-DD HH:mm:ss')}
                 </AutoTooltip>

@@ -67,9 +67,10 @@ export default {
     'The default storage directory is <span class="desc-block">/var/lib/gpustack/cache</span> or the directory specified with <span class="desc-block">--data-dir</span>.',
   'resources.modelfiles.retry.download': 'Retry Download',
   'resources.modelfiles.storagePath.holder':
-    'Waiting for download to complete...',
+    'Waiting for the download to complete...',
   'resources.filter.worker': 'Filter by Worker',
   'resources.filter.source': 'Filter by Source',
   'resources.modelfiles.delete.tips': 'Also delete the file from disk!',
-  'resources.modelfiles.copy.tips': 'Copy Full Path'
+  'resources.modelfiles.copy.tips': 'Copy Full Path',
+  'resources.filter.path': 'Filter by Path'
 };

@@ -83,6 +83,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     setWarningStatus,
     handleEvaluate,
     generateGPUIds,
+    cancelEvaluate,
+    submitAnyway,
     handleOnValuesChange,
     warningStatus
   } = useCheckCompatibility();
@@ -99,7 +101,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
-  const submitAnyway = useRef<any>(null);
 
   const handleSumit = () => {
     form.current?.submit?.();
@@ -111,9 +112,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const generateSubmitData = (formData: FormData) => {
+    const gpuSelector = generateGPUIds(formData);
     const data = {
       ..._.omit(selectSpecRef.current, ['name']),
-      ...formData
+      ...formData,
+      ...gpuSelector
     };
 
     return data;
@@ -233,6 +236,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     return evalutionData;
   };
 
+  const handleCheckFormData = () => {
+    const values = form.current?.getFieldsValue();
+    const allValues = generateSubmitData(values);
+    handleCheckCompatibility(allValues);
+  };
+
   const handleSourceChange = (source: string) => {
     const defaultSpec = _.get(sourceGroupMap.current, `${source}.0`, {});
     initFormDataBySource(defaultSpec);
@@ -245,8 +254,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
     // set form value
     initFormDataBySource(defaultSpec);
-    const data = generateSubmitData(form.current.getFieldsValue());
-    handleCheckCompatibility(data);
+    handleCheckFormData();
   };
 
   const checkSize = (list: any[]) => {
@@ -314,7 +322,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current.setFieldsValue({
       ...data
     });
-    handleCheckCompatibility(data);
+    handleCheckFormData();
   };
 
   const fetchSpecData = async () => {
@@ -364,12 +372,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         'name',
         _.toLower(current.name).replace(/\s/g, '-') || ''
       );
-      if (defaultSpec.backend === backendOptionsMap.vllm) {
-        setIsGGUF(false);
-      }
+
+      const allValues = generateSubmitData(defaultSpec);
+      handleCheckCompatibility(allValues);
 
       if (defaultSpec.backend === backendOptionsMap.llamaBox) {
         setIsGGUF(true);
+      } else {
+        setIsGGUF(false);
       }
       console.log('values====', form.current.form.getFieldsValue());
     } catch (error) {
@@ -386,8 +396,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current.setFieldsValue({
       ...data
     });
-    const allValues = generateSubmitData(data);
-    handleCheckCompatibility(allValues);
+    handleCheckFormData();
   };
 
   const handleOnSizeChange = (val: number) => {
@@ -408,21 +417,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current.setFieldsValue({
       ...data
     });
-    const allValues = generateSubmitData(data);
-    handleCheckCompatibility(allValues);
+    handleCheckFormData();
   };
 
   const handleOk = async (values: FormData) => {
     const data = generateSubmitData(values);
-
-    if (submitAnyway.current) {
-      onOk(data);
-      return;
-    }
-    const evaluateResult = await handleCheckCompatibility(data);
-    if (evaluateResult?.compatible) {
-      onOk(data);
-    }
+    onOk(data);
   };
 
   const handleCancel = useCallback(() => {
@@ -436,6 +436,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     }
     return () => {
       axiosToken.current?.cancel?.();
+      cancelEvaluate();
       setWarningStatus({
         show: false,
         title: '',

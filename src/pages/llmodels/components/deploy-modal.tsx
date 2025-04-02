@@ -117,16 +117,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const handleOnOk = async (allValues: FormData) => {
     const result = getSourceRepoConfigValue(props.source, allValues).values;
-    if (submitAnyway.current) {
-      onOk(result);
-      return;
-    }
-
-    const evalutionData = await handleEvaluate(result);
-    handleShowCompatibleAlert?.(evalutionData);
-    if (evalutionData?.compatible) {
-      onOk(result);
-    }
+    onOk(result);
   };
 
   const handleSubmitAnyway = async () => {
@@ -198,22 +189,25 @@ const AddModal: FC<AddModalProps> = (props) => {
     onCancel?.();
   }, [onCancel]);
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
+  const handleOnOpen = useCallback(() => {
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
       });
-      setIsGGUF(props.isGGUF || false);
     } else {
       const backend =
         source === modelSourceMap.ollama_library_value
           ? backendOptionsMap.llamaBox
           : backendOptionsMap.vllm;
       form.current?.setFieldValue?.('backend', backend);
-      setIsGGUF(backend === backendOptionsMap.llamaBox);
+    }
+  }, [source, props.initialValues, props.deploymentType]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    } else {
+      handleOnOpen();
     }
 
     return () => {
@@ -225,7 +219,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       });
       checkTokenRef.current?.cancel();
     };
-  }, [open, props.isGGUF, source, props.initialValues, props.deploymentType]);
+  }, [open, handleOnOpen]);
 
   return (
     <Drawer

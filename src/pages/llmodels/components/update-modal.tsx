@@ -311,23 +311,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     submitData = {
       ..._.omit(formdata, ['scheduleType']),
       categories: formdata.categories ? [formdata.categories] : [],
-      worker_selector: null,
+      worker_selector:
+        formdata.scheduleType === 'manual' ? null : formdata.worker_selector,
       ...obj,
-      ...(formdata.scheduleType === 'manual'
-        ? generateGPUIds(formdata)
-        : { gpu_selector: null })
+      ...generateGPUIds(formdata)
     };
-
-    if (submitAnyway.current) {
-      onOk(submitData);
-      return;
-    }
-
-    const evalutionData = await handleEvaluate(submitData);
-    handleShowCompatibleAlert?.(evalutionData);
-    if (evalutionData?.compatible) {
-      onOk(submitData);
-    }
+    onOk(submitData);
   };
 
   const onValuesChange = (changedValues: any, allValues: any) => {

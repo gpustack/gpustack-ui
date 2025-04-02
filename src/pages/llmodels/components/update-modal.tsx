@@ -295,25 +295,24 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const handleOk = async (data: FormData) => {
     const formdata = getSourceRepoConfigValue(data.source, data).values;
-    let obj = {};
+
     let submitData = {} as FormData;
-    if (
-      [backendOptionsMap.vllm, backendOptionsMap.voxBox].includes(
-        formdata.backend
-      )
-    ) {
-      obj = {
-        distributed_inference_across_workers: false,
-        cpu_offloading: false
-      };
-    }
+    const isVllmOrVoxBox = [
+      backendOptionsMap.vllm,
+      backendOptionsMap.voxBox
+    ].includes(formdata.backend);
 
     submitData = {
       ..._.omit(formdata, ['scheduleType']),
       categories: formdata.categories ? [formdata.categories] : [],
       worker_selector:
         formdata.scheduleType === 'manual' ? null : formdata.worker_selector,
-      ...obj,
+      ...(isVllmOrVoxBox
+        ? {
+            distributed_inference_across_workers: false,
+            cpu_offloading: false
+          }
+        : {}),
       ...generateGPUIds(formdata)
     };
     onOk(submitData);
@@ -498,8 +497,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   label: 'vox-box',
                   value: backendOptionsMap.voxBox,
                   disabled:
-                    formData?.source === modelSourceMap.ollama_library_value ||
-                    isGGUF
+                    formData?.source === modelSourceMap.local_path_value
+                      ? false
+                      : isGGUF
                 }
               ]}
               disabled={

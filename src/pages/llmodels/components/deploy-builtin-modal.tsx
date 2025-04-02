@@ -373,15 +373,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         _.toLower(current.name).replace(/\s/g, '-') || ''
       );
 
-      const allValues = generateSubmitData(defaultSpec);
-      handleCheckCompatibility(allValues);
-
       if (defaultSpec.backend === backendOptionsMap.llamaBox) {
         setIsGGUF(true);
       } else {
         setIsGGUF(false);
       }
-      console.log('values====', form.current.form.getFieldsValue());
+      const allValues = generateSubmitData(defaultSpec);
+      handleCheckCompatibility(allValues);
     } catch (error) {
       // ignore
     }

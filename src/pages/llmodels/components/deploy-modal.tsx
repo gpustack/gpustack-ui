@@ -82,7 +82,8 @@ const AddModal: FC<AddModalProps> = (props) => {
     handleEvaluate,
     handleOnValuesChange,
     checkTokenRef,
-    warningStatus
+    warningStatus,
+    submitAnyway
   } = useCheckCompatibility();
   const form = useRef<any>({});
   const intl = useIntl();
@@ -90,7 +91,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
-  const submitAnyway = useRef<boolean>(false);
 
   const handleSelectModelFile = useCallback((item: any) => {
     form.current?.setFieldsValue?.({
@@ -103,10 +103,11 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   }, []);
 
-  const handleOnSelectModel = (item: any, isgguf?: boolean) => {
+  const handleOnSelectModel = (item: any) => {
     setSelectedModel(item);
     form.current?.handleOnSelectModel?.(item);
-    if (!isgguf) {
+    if (!item.isGGUF) {
+      setIsGGUF(false);
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
         ...item.evaluateResult?.default_spec
@@ -149,7 +150,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   // trigger from local_path change or backend change
-  const handleBackendChangeHook = async () => {
+  const handleBackendChangeBefore = async () => {
     const localPath = form.current.form.getFieldValue?.('local_path');
     const backend = form.current.form.getFieldValue?.('backend');
 
@@ -175,7 +176,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = async (backend: string) => {
-    handleBackendChangeHook();
+    handleBackendChangeBefore();
     if (backend === backendOptionsMap.vllm) {
       setIsGGUF(false);
     }

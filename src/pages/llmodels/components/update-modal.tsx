@@ -84,7 +84,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   // trigger from local_path change or backend change
-  const handleBackendChangeHook = async () => {
+  const handleBackendChangeBefore = async () => {
     const localPath = form.getFieldValue?.('local_path');
     const backend = form.getFieldValue?.('backend');
 
@@ -118,7 +118,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     form.setFieldValue('backend_version', '');
     handleSetGPUIds(val);
-    handleBackendChangeHook();
+    handleBackendChangeBefore();
   };
 
   const handleOnFocus = () => {

@@ -456,5 +456,7 @@ export const excludeFields = [
   'source',
   'quantization',
   'size',
-  'restart_on_error'
+  'restart_on_error',
+  'worker_selector',
+  'backend_parameters'
 ];

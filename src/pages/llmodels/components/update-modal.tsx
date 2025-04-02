@@ -14,6 +14,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import {
   backendOptionsMap,
   backendTipsList,
+  excludeFields,
   getSourceRepoConfigValue,
   localPathTipsList,
   modelSourceMap,
@@ -319,6 +320,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onValuesChange = (changedValues: any, allValues: any) => {
+    const fieldName = Object.keys(changedValues)[0];
+    if (excludeFields.includes(fieldName)) {
+      return;
+    }
     handleOnValuesChange({
       changedValues,
       allValues,
@@ -423,6 +428,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           form={form}
           onFinish={handleOk}
           onValuesChange={onValuesChange}
+          scrollToFirstError={true}
           preserve={false}
           clearOnDestroy={true}
           initialValues={{

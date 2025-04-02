@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
 import {
   DeleteOutlined,
+  DownloadOutlined,
   EditOutlined,
   ExperimentOutlined,
   RetweetOutlined,
@@ -17,6 +18,7 @@ const icons = {
   DeleteOutlined: React.createElement(DeleteOutlined),
   ThunderboltOutlined: React.createElement(ThunderboltOutlined),
   RetweetOutlined: React.createElement(RetweetOutlined),
+  DownloadOutlined: React.createElement(DownloadOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),
   Catalog: React.createElement(IconFont, { type: 'icon-catalog' }),
@@ -199,7 +201,7 @@ export const modelFileActions = [
   {
     label: 'resources.modelfiles.retry.download',
     key: 'retry',
-    icon: icons.RetweetOutlined
+    icon: icons.DownloadOutlined
   },
   {
     label: 'common.button.delete',

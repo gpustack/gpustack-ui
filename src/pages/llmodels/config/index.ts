@@ -186,6 +186,7 @@ interface ModelSource {
   modelscope_value: string;
   local_path: string;
   local_path_value: string;
+  model_scope: string;
 }
 
 export const modelSourceMap: ModelSource = {
@@ -195,6 +196,7 @@ export const modelSourceMap: ModelSource = {
   ollama_library_value: 'ollama_library',
   modelScope: 'ModelScope',
   modelscope_value: 'model_scope',
+  model_scope: 'ModelScope',
   local_path: 'Local Path',
   local_path_value: 'local_path'
 };

@@ -123,7 +123,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           value: item.name,
           label: item.name,
           isGGUF: checkIsGGUF(item),
-          source: modelSourceMap.modelscope_value
+          source: modelSource
         };
       });
       return list;
@@ -161,7 +161,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           tags: item.Tags,
           libraries: item.Libraries,
           isGGUF: checkIsGGUF({ tags: item.Tags, libraries: item.Libraries }),
-          source: modelSourceMap.modelscope_value
+          source: modelSource
         };
       });
 

@@ -182,11 +182,13 @@ const Models: React.FC<ModelsProps> = ({
     hasLinuxWorker?: boolean;
     source: SourceType;
     gpuOptions: any[];
+    isGGUF?: boolean;
     modelFileOptions?: any[];
   }>({
     show: false,
     hasLinuxWorker: false,
     width: 600,
+    isGGUF: false,
     source: modelSourceMap.huggingface_value as SourceType,
     gpuOptions: [],
     modelFileOptions: []
@@ -830,6 +832,7 @@ const Models: React.FC<ModelsProps> = ({
         title={intl.formatMessage({ id: 'models.button.deploy' })}
         source={openDeployModal.source}
         width={openDeployModal.width}
+        isGGUF={openDeployModal.isGGUF}
         hasLinuxWorker={openDeployModal.hasLinuxWorker}
         gpuOptions={openDeployModal.gpuOptions}
         modelFileOptions={openDeployModal.modelFileOptions || []}

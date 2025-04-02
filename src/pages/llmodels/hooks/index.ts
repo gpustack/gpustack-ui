@@ -413,6 +413,11 @@ export const useCheckCompatibility = () => {
 
   const debounceHandleValuesChange = _.debounce(handleOnValuesChange, 300);
 
+  const cancelEvaluate = () => {
+    checkTokenRef.current?.cancel();
+    checkTokenRef.current = null;
+  };
+
   useEffect(() => {
     return () => {
       checkTokenRef.current?.cancel();
@@ -429,6 +434,7 @@ export const useCheckCompatibility = () => {
     submitAnyway,
     generateGPUIds,
     handleEvaluate,
-    setWarningStatus
+    setWarningStatus,
+    cancelEvaluate
   };
 };

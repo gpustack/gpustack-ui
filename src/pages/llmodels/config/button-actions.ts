@@ -29,7 +29,7 @@ const icons = {
 
 export const modalConfig: Record<
   string,
-  { show: boolean; width: string | number; source: any }
+  { show: boolean; width: string | number; source: any; isGGUF?: boolean }
 > = {
   huggingface: {
     show: true,
@@ -39,6 +39,7 @@ export const modalConfig: Record<
   ollama_library: {
     show: true,
     width: 600,
+    isGGUF: true,
     source: modelSourceMap.ollama_library_value
   },
   modelscope: {

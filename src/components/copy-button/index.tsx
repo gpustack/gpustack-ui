@@ -5,6 +5,7 @@ import ClipboardJS from 'clipboard';
 import React, { useEffect, useRef, useState } from 'react';
 
 type CopyButtonProps = {
+  children?: React.ReactNode;
   text: string;
   disabled?: boolean;
   fontSize?: string;
@@ -26,6 +27,7 @@ type CopyButtonProps = {
 };
 
 const CopyButton: React.FC<CopyButtonProps> = ({
+  children,
   tips,
   text,
   disabled,
@@ -91,7 +93,9 @@ const CopyButton: React.FC<CopyButtonProps> = ({
             <CopyOutlined style={{ fontSize: fontSize, ...style }} />
           )
         }
-      ></Button>
+      >
+        {children}
+      </Button>
     </Tooltip>
   );
 };

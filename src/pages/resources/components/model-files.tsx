@@ -467,7 +467,7 @@ const ModelFiles = () => {
         return (
           record.resolved_paths?.length > 0 && (
             <PathWrapper>
-              <AutoTooltip ghost>
+              <AutoTooltip ghost title={record.resolved_paths?.[0]} showTitle>
                 <span>{getResolvedPath(record.resolved_paths)}</span>
               </AutoTooltip>
               <span className="btn-wrapper">

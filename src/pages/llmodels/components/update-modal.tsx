@@ -21,6 +21,7 @@ import {
   ollamaModelOptions,
   sourceOptions
 } from '../config';
+import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import { useCheckCompatibility } from '../hooks';
 import AdvanceConfig from './advance-config';
@@ -55,10 +56,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     updateFormInitials: { gpuOptions, isGGUF, data: formData }
   } = props || {};
   const {
-    handleShowCompatibleAlert,
-    handleUpdateWarning,
     setWarningStatus,
-    handleEvaluate,
     generateGPUIds,
     handleOnValuesChange,
     checkTokenRef,
@@ -70,56 +68,42 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const localPathCache = useRef<string>('');
   const submitAnyway = useRef<boolean>(false);
 
+  // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {
-    if (backend === backendOptionsMap.llamaBox) {
-      return;
-    }
-    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']);
+    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
 
-    if (!gpuids?.length) {
-      return;
-    }
-    if (gpuids.length > 1 && Array.isArray(gpuids[0])) {
+    if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
       form.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
     }
   };
 
-  // trigger from local_path change or backend change
-  const handleBackendChangeBefore = async () => {
-    const localPath = form.getFieldValue?.('local_path');
-    const backend = form.getFieldValue?.('backend');
-
-    const res = handleUpdateWarning?.({
-      backend,
-      localPath: localPath,
-      source: formData?.source as string
-    });
-
-    if (!res.show) {
-      const values = form.getFieldsValue?.();
-      const data = getSourceRepoConfigValue(formData?.source as string, values);
-      const evalutionData = await handleEvaluate(
-        _.omit(data.values, [
-          'cpu_offloading',
-          'distributed_inference_across_workers'
-        ])
-      );
-      handleShowCompatibleAlert?.(evalutionData);
-    } else {
-      setWarningStatus?.(res);
-    }
-  };
-
-  const handleBackendChange = (val: string) => {
-    if (val === backendOptionsMap.llamaBox) {
-      form.setFieldsValue({
+  const handleBackendChange = (backend: string) => {
+    const updates = {
+      backend_version: ''
+    };
+    if (backend === backendOptionsMap.llamaBox) {
+      Object.assign(updates, {
         distributed_inference_across_workers: true,
         cpu_offloading: true
       });
     }
-    form.setFieldValue('backend_version', '');
-    handleSetGPUIds(val);
-    handleBackendChangeBefore();
+    form.setFieldsValue(updates);
+    handleSetGPUIds(backend);
+
+    const data = form.getFieldsValue?.();
+    if (data.local_path || data.source !== modelSourceMap.local_path_value) {
+      handleOnValuesChange?.({
+        changedValues: {},
+        allValues:
+          backend === backendOptionsMap.llamaBox
+            ? data
+            : _.omit(data, [
+                'cpu_offloading',
+                'distributed_inference_across_workers'
+              ]),
+        source: data.source
+      });
+    }
   };
 
   const handleOnFocus = () => {
@@ -137,8 +121,21 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     if (!isEndwithGGUF || !isBlobFile) {
       backend = backendOptionsMap.vllm;
     }
-    handleBackendChange?.(backend);
     form.setFieldValue('backend', backend);
+    handleBackendChange?.(backend);
+  };
+
+  const handleOnBlur = (e: any) => {
+    const value = e.target.value;
+    if (value) {
+      handleOnValuesChange?.({
+        changedValues: {},
+        allValues: {
+          ...form.getFieldsValue?.()
+        },
+        source: formData?.source
+      });
+    }
   };
 
   const renderHuggingfaceFields = () => {
@@ -159,6 +156,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ]}
         >
           <SealInput.Input
+            onBlur={handleOnBlur}
             label={intl.formatMessage({ id: 'models.form.repoid' })}
             required
             disabled={false}
@@ -180,6 +178,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             ]}
           >
             <SealInput.Input
+              onBlur={handleOnBlur}
               label={intl.formatMessage({ id: 'models.form.filename' })}
               required
               disabled={false}
@@ -212,6 +211,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             defaultActiveFirstOption
             disabled={false}
             options={ollamaModelOptions}
+            onBlur={handleOnBlur}
             placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
             description={
               <span>
@@ -423,137 +423,143 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           ></CompatibilityAlert>
         }
       >
-        <Form
-          name="addModalForm"
-          form={form}
-          onFinish={handleOk}
-          onValuesChange={onValuesChange}
-          scrollToFirstError={true}
-          preserve={false}
-          clearOnDestroy={true}
-          initialValues={{
-            ...formData
-          }}
-          style={{
-            padding: 'var(--ant-modal-content-padding)',
-            paddingBlock: 0
+        <FormContext.Provider
+          value={{
+            onValuesChange: handleOnValuesChange
           }}
         >
-          <Form.Item<FormData>
-            name="name"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'common.table.name')
-              }
-            ]}
+          <Form
+            name="addModalForm"
+            form={form}
+            onFinish={handleOk}
+            onValuesChange={onValuesChange}
+            scrollToFirstError={true}
+            preserve={false}
+            clearOnDestroy={true}
+            initialValues={{
+              ...formData
+            }}
+            style={{
+              padding: 'var(--ant-modal-content-padding)',
+              paddingBlock: 0
+            }}
           >
-            <SealInput.Input
-              label={intl.formatMessage({
-                id: 'common.table.name'
-              })}
-              required
-            ></SealInput.Input>
-          </Form.Item>
-          <Form.Item<FormData>
-            name="source"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('select', 'models.form.source')
-              }
-            ]}
-          >
-            {action === PageAction.EDIT && (
-              <SealSelect
-                disabled={true}
-                label={intl.formatMessage({
-                  id: 'models.form.source'
-                })}
-                options={sourceOptions}
-                required
-              ></SealSelect>
-            )}
-          </Form.Item>
-          {renderFieldsBySource}
-          <Form.Item name="backend" rules={[{ required: true }]}>
-            <SealSelect
-              required
-              onChange={handleBackendChange}
-              label={intl.formatMessage({ id: 'models.form.backend' })}
-              description={<TooltipList list={backendTipsList}></TooltipList>}
-              options={[
+            <Form.Item<FormData>
+              name="name"
+              rules={[
                 {
-                  label: `llama-box`,
-                  value: backendOptionsMap.llamaBox,
-                  disabled:
-                    formData?.source === modelSourceMap.local_path_value
-                      ? false
-                      : !isGGUF
-                },
-                {
-                  label: 'vLLM',
-                  value: backendOptionsMap.vllm,
-                  disabled:
-                    formData?.source === modelSourceMap.local_path_value
-                      ? false
-                      : isGGUF
-                },
-                {
-                  label: 'vox-box',
-                  value: backendOptionsMap.voxBox,
-                  disabled:
-                    formData?.source === modelSourceMap.local_path_value
-                      ? false
-                      : isGGUF
+                  required: true,
+                  message: getRuleMessage('input', 'common.table.name')
                 }
               ]}
-              disabled={
-                action === PageAction.EDIT &&
-                formData?.source !== modelSourceMap.local_path_value
-              }
-            ></SealSelect>
-          </Form.Item>
-          <Form.Item<FormData>
-            name="replicas"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'models.form.replicas')
-              }
-            ]}
-          >
-            <SealInput.Number
-              style={{ width: '100%' }}
-              label={intl.formatMessage({
-                id: 'models.form.replicas'
-              })}
-              required
-              description={intl.formatMessage(
+            >
+              <SealInput.Input
+                label={intl.formatMessage({
+                  id: 'common.table.name'
+                })}
+                required
+              ></SealInput.Input>
+            </Form.Item>
+            <Form.Item<FormData>
+              name="source"
+              rules={[
                 {
-                  id: 'models.form.replicas.tips'
-                },
-                { api: `${window.location.origin}/v1` }
+                  required: true,
+                  message: getRuleMessage('select', 'models.form.source')
+                }
+              ]}
+            >
+              {action === PageAction.EDIT && (
+                <SealSelect
+                  disabled={true}
+                  label={intl.formatMessage({
+                    id: 'models.form.source'
+                  })}
+                  options={sourceOptions}
+                  required
+                ></SealSelect>
               )}
-              min={0}
-            ></SealInput.Number>
-          </Form.Item>
-          <Form.Item<FormData> name="description">
-            <SealInput.TextArea
-              label={intl.formatMessage({
-                id: 'common.table.description'
-              })}
-            ></SealInput.TextArea>
-          </Form.Item>
+            </Form.Item>
+            {renderFieldsBySource}
+            <Form.Item name="backend" rules={[{ required: true }]}>
+              <SealSelect
+                required
+                onChange={handleBackendChange}
+                label={intl.formatMessage({ id: 'models.form.backend' })}
+                description={<TooltipList list={backendTipsList}></TooltipList>}
+                options={[
+                  {
+                    label: `llama-box`,
+                    value: backendOptionsMap.llamaBox,
+                    disabled:
+                      formData?.source === modelSourceMap.local_path_value
+                        ? false
+                        : !isGGUF
+                  },
+                  {
+                    label: 'vLLM',
+                    value: backendOptionsMap.vllm,
+                    disabled:
+                      formData?.source === modelSourceMap.local_path_value
+                        ? false
+                        : isGGUF
+                  },
+                  {
+                    label: 'vox-box',
+                    value: backendOptionsMap.voxBox,
+                    disabled:
+                      formData?.source === modelSourceMap.local_path_value
+                        ? false
+                        : isGGUF
+                  }
+                ]}
+                disabled={
+                  action === PageAction.EDIT &&
+                  formData?.source !== modelSourceMap.local_path_value
+                }
+              ></SealSelect>
+            </Form.Item>
+            <Form.Item<FormData>
+              name="replicas"
+              rules={[
+                {
+                  required: true,
+                  message: getRuleMessage('input', 'models.form.replicas')
+                }
+              ]}
+            >
+              <SealInput.Number
+                style={{ width: '100%' }}
+                label={intl.formatMessage({
+                  id: 'models.form.replicas'
+                })}
+                required
+                description={intl.formatMessage(
+                  {
+                    id: 'models.form.replicas.tips'
+                  },
+                  { api: `${window.location.origin}/v1` }
+                )}
+                min={0}
+              ></SealInput.Number>
+            </Form.Item>
+            <Form.Item<FormData> name="description">
+              <SealInput.TextArea
+                label={intl.formatMessage({
+                  id: 'common.table.description'
+                })}
+              ></SealInput.TextArea>
+            </Form.Item>
 
-          <AdvanceConfig
-            form={form}
-            gpuOptions={gpuOptions}
-            action={PageAction.EDIT}
-            source={formData?.source || ''}
-            isGGUF={formData?.backend === backendOptionsMap.llamaBox}
-          ></AdvanceConfig>
-        </Form>
+            <AdvanceConfig
+              form={form}
+              gpuOptions={gpuOptions}
+              action={PageAction.EDIT}
+              source={formData?.source || ''}
+              isGGUF={formData?.backend === backendOptionsMap.llamaBox}
+            ></AdvanceConfig>
+          </Form>
+        </FormContext.Provider>
       </ColumnWrapper>
     </Modal>
   );

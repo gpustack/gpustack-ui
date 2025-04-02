@@ -6,6 +6,7 @@ interface HintInputProps {
   value: string;
   label?: string;
   onChange: (value: string) => void;
+  onBlur?: (e: any) => void;
   placeholder?: string;
   sourceOptions?: Global.HintOptions[];
 }
@@ -13,7 +14,7 @@ interface HintInputProps {
 const matchReg = /[^=]+=[^=]*$/;
 
 const HintInput: React.FC<HintInputProps> = (props) => {
-  const { value, label, onChange, sourceOptions } = props;
+  const { value, label, onChange, onBlur, sourceOptions } = props;
   const cursorPosRef = React.useRef(0);
   const contextBeforeCursorRef = React.useRef('');
   const [options, setOptions] = React.useState<
@@ -89,6 +90,7 @@ const HintInput: React.FC<HintInputProps> = (props) => {
       onInput={handleInput}
       onSelect={handleOnSelect}
       onFocus={getContextBeforeCursor}
+      onBlur={onBlur}
       label={label}
       options={options}
       style={{ width: '100%' }}

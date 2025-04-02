@@ -1,6 +1,6 @@
 import { AutoComplete, Form, Spin } from 'antd';
 import type { AutoCompleteProps } from 'antd/lib';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
 
@@ -15,6 +15,7 @@ const SealAutoComplete: React.FC<
     isInFormItems = true,
     trim = true,
     onSelect,
+    onBlur,
     extra,
     style,
     addAfter,

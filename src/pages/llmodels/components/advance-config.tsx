@@ -26,6 +26,7 @@ import {
   modelCategories,
   placementStrategyOptions
 } from '../config';
+import { useFormContext } from '../config/form-context';
 import llamaConfig from '../config/llama-config';
 import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
@@ -73,6 +74,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const placement_strategy = Form.useWatch('placement_strategy', form);
   const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
   const worker_selector = Form.useWatch('worker_selector', form);
+  const { onValuesChange } = useFormContext();
 
   const placementStrategyTips = [
     {
@@ -152,6 +154,37 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const handleBackendParametersChange = useCallback((list: string[]) => {
     form.setFieldValue('backend_parameters', list);
   }, []);
+
+  const handleBackendParametersOnBlur = () => {
+    const backendParams = form.getFieldValue('backend_parameters');
+    console.log('backendParams==', backendParams);
+    onValuesChange?.({
+      source: source,
+      allValues: form.getFieldsValue(),
+      changedValues: {}
+    });
+  };
+
+  const handleSelectorOnBlur = () => {
+    const workerSelector = form.getFieldValue('worker_selector');
+    console.log('workerSelector==', workerSelector);
+    onValuesChange?.({
+      source: source,
+      allValues: form.getFieldsValue(),
+      changedValues: {}
+    });
+  };
+
+  const handleBackendVersionOnBlur = () => {
+    const backendVersion = form.getFieldValue('backend_version');
+    if (backendVersion) {
+      onValuesChange?.({
+        source: source,
+        allValues: form.getFieldsValue(),
+        changedValues: {}
+      });
+    }
+  };
 
   const collapseItems = useMemo(() => {
     const children = (
@@ -233,6 +266,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 })}
                 labels={wokerSelector}
                 onChange={handleWorkerLabelsChange}
+                onBlur={handleSelectorOnBlur}
                 description={
                   <span>
                     {intl.formatMessage({
@@ -275,6 +309,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
 
         <Form.Item name="backend_version">
           <SealInput.Input
+            onBlur={handleBackendVersionOnBlur}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
             description={intl.formatMessage(
               {
@@ -324,6 +359,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             })}
             dataList={form.getFieldValue('backend_parameters') || []}
             onChange={handleBackendParametersChange}
+            onBlur={handleBackendParametersOnBlur}
             options={paramsConfig}
             description={
               backendParamsTips && (

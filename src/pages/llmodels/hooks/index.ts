@@ -215,9 +215,11 @@ export const useGenerateModelFileOptions = () => {
 export const useCheckCompatibility = () => {
   const intl = useIntl();
 
+  const cacheFormValuesRef = useRef<any>({});
   const checkTokenRef = useRef<any>(null);
   const submitAnyway = useRef<boolean>(false);
   const requestIdRef = useRef(0);
+  const updateStatusTimer = useRef<any>(null);
   const [warningStatus, setWarningStatus] = useState<{
     show: boolean;
     title?: string;
@@ -295,7 +297,12 @@ export const useCheckCompatibility = () => {
 
   const handleShowCompatibleAlert = (evaluateResult: EvaluateResult | null) => {
     const result = handleCheckCompatibility(evaluateResult);
-    setWarningStatus(result);
+    if (updateStatusTimer.current) {
+      clearTimeout(updateStatusTimer.current);
+    }
+    updateStatusTimer.current = setTimeout(() => {
+      setWarningStatus(result);
+    }, 300);
   };
 
   const updateShowWarning = (params: {
@@ -386,6 +393,15 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const { changedValues, allValues, source } = params;
+
+    if (
+      _.isEqual(cacheFormValuesRef.current, allValues) ||
+      (allValues.source === modelSourceMap.local_path_value &&
+        !allValues.local_path)
+    ) {
+      return;
+    }
+    cacheFormValuesRef.current = allValues;
     const data = getSourceRepoConfigValue(source, allValues);
     const gpuSelector = generateGPUIds(data.values);
 

@@ -13,6 +13,7 @@ interface LabelSelectorProps {
   onLabelListChange: (list: { key: string; value: string }[]) => void;
   onChange?: (labels: Record<string, any>) => void;
   onPaste?: (e: any, index: number) => void;
+  onBlur?: (e: any, type: string, index: number) => void;
   description?: React.ReactNode;
 }
 
@@ -22,6 +23,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
   onChange,
   onLabelListChange,
   onPaste,
+  onBlur,
   label,
   btnText,
   description
@@ -82,6 +84,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
               onDelete={() => handleOnDelete(index)}
               onChange={(obj) => handleOnChange(index, obj)}
               onPaste={(e) => onPaste?.(e, index)}
+              onBlur={(e: any, type: string) => onBlur?.(e, type, index)}
             />
           );
         })}

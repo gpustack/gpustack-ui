@@ -94,7 +94,7 @@ export default {
   'models.catalog.release.date': 'Release Date',
   'models.localpath.gguf.tips.title': 'GGUF format model',
   'models.localpat.safe.tips.title': 'Safetensors format model',
-  'models.localpath.shared.tips.title': 'Sharded GGUF Format Model',
+  'models.localpath.shared.tips.title': 'Sharded GGUF format model',
   'models.localpath.gguf.tips':
     ' Specify the model file, e.g., /data/models/model.gguf.',
   'models.localpath.safe.tips':

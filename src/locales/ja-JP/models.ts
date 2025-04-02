@@ -13,10 +13,8 @@ export default {
   'models.form.env': '環境変数',
   'models.form.configurations': '設定',
   'models.form.s3address': 'S3アドレス',
-  'models.form.partialoffload.tips':
-    'CPUオフロードを有効にすると、GPUStackは可能な限り多くのレイヤーをGPUにロードしてパフォーマンスを最大化します。GPUリソースが制限されている場合、一部のレイヤーがCPUにオフロードされ、GPUが利用できない場合は完全にCPU推論が使用されます。',
-  'models.form.distribution.tips':
-    '単一のGPUまたはワーカーのリソースが不足している場合、計算の一部を単一または複数のリモートワーカーにオフロードすることを許可します。',
+  'models.form.partialoffload.tips': `When CPU offloading is enabled, if GPU resources are insufficient, part of the model's layers will be offloaded to the CPU. If no GPU is available, full CPU inference will be used.`,
+  'models.form.distribution.tips': `Allows for offloading part of the model's layers to single or multiple remote workers when the resources of a worker are insufficient.`,
   'models.openinplayground': 'プレイグラウンドで開く',
   'models.instances': 'インスタンス',
   'models.table.replicas.edit': 'レプリカを編集',
@@ -137,4 +135,6 @@ export default {
 // 6. 'models.form.restart.onerror',
 // 7. 'models.form.restart.onerror.tips',
 // 8. 'models.form.check.params',
+// 9. 'models.form.partialoffload.tips',
+// 10. 'models.form.distribution.tips
 // ========== End of To-Do List ==========

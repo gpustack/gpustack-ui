@@ -58,7 +58,7 @@ export default {
   'resources.worker.script.install': 'スクリプトインストール',
   'resources.worker.container.install': 'コンテナインストール（Linuxのみ）',
   'resources.worker.cann.tips': `<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> を必要なGPUインデックスに設定します。GPU0からGPU3の場合、<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> または <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span> を使用します。`,
-  'resources.modelfiles.form.path': 'Storage path',
+  'resources.modelfiles.form.path': 'Storage Path',
   'resources.modelfiles.modelfile': 'Model Files',
   'resources.modelfiles.download': 'Add Model File',
   'resources.modelfiles.size': 'Size',

@@ -15,7 +15,7 @@ export default {
   'common.button.run': 'Запустить',
   'common.button.viewcode': 'Посмотреть код',
   'common.button.copy': 'Копировать',
-  'common.button.copied': 'Copied',
+  'common.button.copied': 'Скопировано',
   'common.button.collapse': 'Свернуть',
   'common.button.expand': 'Развернуть',
   'common.button.cancel': 'Отмена',
@@ -81,10 +81,8 @@ export default {
   'common.button.back': 'Назад',
   'common.button.undo': 'Отменить',
   'common.button.discardChange': 'Отменить изменения',
-  'common.tips.save':
-    'Есть несохранённые изменения. Выход приведёт к их потере.',
-  'common.tips.cancel':
-    'У вас есть несохранённые изменения. Всё равно продолжить?',
+  'common.tips.save': 'Есть несохранённые изменения. Выход приведёт к их потере.',
+  'common.tips.cancel': 'У вас есть несохранённые изменения. Всё равно продолжить?',
   'common.tips.discard': 'Отменить изменения?',
   'common.tips.title': 'Подсказка:',
   'common.input.range.start': 'Начальное значение',
@@ -137,9 +135,8 @@ export default {
   'common.table.createdBy': 'Оператор',
   'common.table.yes': 'Да',
   'common.table.no': 'Нет',
-  'common.validate.labelName':
-    'Должен содержать только строчные буквы, цифры или "-", начинаться и заканчиваться буквой/цифрой.',
-  'common.search.nodata': 'нет совпадений',
+  'common.validate.labelName': 'Должен содержать только строчные буквы, цифры или "-", начинаться и заканчиваться буквой/цифрой.',
+  'common.search.nodata': 'Нет совпадений',
   'common.data.empty': 'Нет данных',
   'common.tips.change': 'Есть несохраненные изменения!',
   'common.copy.notSupport': 'Ваш браузер не поддерживает буфер обмена',
@@ -182,8 +179,7 @@ export default {
   'common.rule.array': 'должен быть массивом',
   'common.rule.object': 'должен быть объектом',
   'common.rule.syntaxerror': 'синтаксическая ошибка',
-  'common.code.hide.tips':
-    '... Скрыто {rows} строк, нажмите чтобы раскрыть ...',
+  'common.code.hide.tips': '... Скрыто {rows} строк, нажмите чтобы раскрыть ...',
   'common.nodata.created': 'Еще не создано ни одного {type}',
   'common.nodata.added': 'Еще не добавлено ни одного {type}',
   'common.status.edited': 'Изменено',
@@ -191,14 +187,11 @@ export default {
   'common.settings.instructions': 'Инструкции',
   'common.settings.language': 'Язык',
   'common.delete.confirm': 'Вы уверены, что хотите удалить выбранный {type}?',
-  'common.delete.single.confirm':
-    'Вы уверены, что хотите удалить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+  'common.delete.single.confirm': 'Вы уверены, что хотите удалить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
   'common.stop.confirm': 'Вы уверены, что хотите остановить выбранный {type}?',
-  'common.stop.single.confirm':
-    'Вы уверены, что хотите остановить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+  'common.stop.single.confirm': 'Вы уверены, что хотите остановить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
   'common.start.confirm': 'Вы уверены, что хотите запустить выбранный {type}?',
-  'common.start.single.confirm':
-    'Вы уверены, что хотите запустить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+  'common.start.single.confirm': 'Вы уверены, что хотите запустить <span style="font-size: 13px;font-weight: 700">{name}</span>?',
   'common.filter.name': 'Фильтр по имени',
   'common.form.password': 'Пароль',
   'common.form.username': 'Имя пользователя',
@@ -236,5 +229,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.button.copied',
+
 // ========== End of To-Do List ==========

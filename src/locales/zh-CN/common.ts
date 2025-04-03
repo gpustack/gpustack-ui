@@ -15,6 +15,7 @@ export default {
   'common.button.run': '运行',
   'common.button.viewcode': '查看代码',
   'common.button.copy': '复制',
+  'common.button.copied': '复制成功',
   'common.button.collapse': '折叠',
   'common.button.expand': '展开',
   'common.button.submit': '提交',

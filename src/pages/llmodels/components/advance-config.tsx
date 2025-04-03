@@ -157,32 +157,18 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
 
   const handleBackendParametersOnBlur = () => {
     const backendParams = form.getFieldValue('backend_parameters');
-    console.log('backendParams==', backendParams);
-    onValuesChange?.({
-      source: source,
-      allValues: form.getFieldsValue(),
-      changedValues: {}
-    });
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const handleSelectorOnBlur = () => {
     const workerSelector = form.getFieldValue('worker_selector');
-    console.log('workerSelector==', workerSelector);
-    onValuesChange?.({
-      source: source,
-      allValues: form.getFieldsValue(),
-      changedValues: {}
-    });
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const handleBackendVersionOnBlur = () => {
     const backendVersion = form.getFieldValue('backend_version');
     if (backendVersion) {
-      onValuesChange?.({
-        source: source,
-        allValues: form.getFieldsValue(),
-        changedValues: {}
-      });
+      onValuesChange?.({}, form.getFieldsValue());
     }
   };
 

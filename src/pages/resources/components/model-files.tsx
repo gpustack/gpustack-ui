@@ -1,8 +1,8 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
-import CopyButton from '@/components/copy-button';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
+import OverlayScroller from '@/components/overlay-scroller';
 import { FilterBar } from '@/components/page-tools';
 import StatusTag from '@/components/status-tag';
 import { PageAction } from '@/config';
@@ -25,12 +25,25 @@ import {
 import { SourceType } from '@/pages/llmodels/config/types';
 import DownloadModal from '@/pages/llmodels/download';
 import { convertFileSize } from '@/utils';
+import {
+  CheckCircleFilled,
+  CopyOutlined,
+  InfoCircleOutlined
+} from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
-import { ConfigProvider, Empty, Table, Tag, message } from 'antd';
+import {
+  ConfigProvider,
+  Empty,
+  Table,
+  Tag,
+  Tooltip,
+  Typography,
+  message
+} from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   useGenerateFormEditInitialValues,
@@ -85,6 +98,44 @@ const PathWrapper = styled.div`
     }
   }
 `;
+
+const ItemWrapper = styled.ul`
+  max-width: 300px;
+  margin: 0;
+  padding-inline: 8px 0;
+  word-break: break-word;
+`;
+
+const FilesTag = styled(Tag)`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-inline: 4px 0;
+  height: 22px;
+  border-radius: var(--border-radius-base);
+`;
+
+const TooltipTitle: React.FC<{ path: string }> = ({ path }) => {
+  const intl = useIntl();
+  return (
+    <Typography.Paragraph
+      style={{ background: 'transparent', color: 'inherit' }}
+      copyable={{
+        icon: [
+          <CopyOutlined key="copy-icon" />,
+          <CheckCircleFilled key="copied-icon" />
+        ],
+        text: path,
+        tooltips: [
+          intl.formatMessage({ id: 'common.button.copy' }),
+          intl.formatMessage({ id: 'common.button.copied' })
+        ]
+      }}
+    >
+      {path}
+    </Typography.Paragraph>
+  );
+};
 
 const getWorkerName = (
   id: number,
@@ -260,27 +311,33 @@ const ModelFiles = () => {
   };
 
   const renderParts = (record: ListItem) => {
-    const parts = _.tail(record.resolved_paths);
-    if (!parts.length) {
+    const parts = record.resolved_paths || [];
+    if (parts.length <= 1) {
       return null;
     }
 
+    const renderItem = () => {
+      return (
+        <ItemWrapper>
+          {parts.map((item: string, index: number) => {
+            return <li key={index}>{_.split(item, /[\\/]/).pop()}</li>;
+          })}
+        </ItemWrapper>
+      );
+    };
+
     return (
-      <Tag
-        className="flex-center"
-        color="purple"
-        style={{
-          marginRight: 0,
-          marginLeft: 4,
-          height: 22,
-          borderRadius: 'var(--border-radius-base)'
-        }}
+      <Tooltip
+        title={<OverlayScroller>{renderItem()}</OverlayScroller>}
+        overlayInnerStyle={{ width: 'max-content', maxWidth: 300 }}
       >
-        <span style={{ opacity: 1 }}>
-          {record.resolved_paths?.length}{' '}
-          {intl.formatMessage({ id: 'models.form.files' })}
-        </span>
-      </Tag>
+        <FilesTag color="purple" icon={<InfoCircleOutlined />}>
+          <span style={{ opacity: 1 }}>
+            {record.resolved_paths?.length}{' '}
+            {intl.formatMessage({ id: 'models.form.files' })}
+          </span>
+        </FilesTag>
+      </Tooltip>
     );
   };
 
@@ -467,19 +524,17 @@ const ModelFiles = () => {
         return (
           record.resolved_paths?.length > 0 && (
             <PathWrapper>
-              <AutoTooltip ghost title={record.resolved_paths?.[0]} showTitle>
+              <AutoTooltip
+                ghost
+                showTitle
+                title={
+                  <TooltipTitle
+                    path={record.resolved_paths?.[0]}
+                  ></TooltipTitle>
+                }
+              >
                 <span>{getResolvedPath(record.resolved_paths)}</span>
               </AutoTooltip>
-              <span className="btn-wrapper">
-                <CopyButton
-                  text={record.resolved_paths?.[0]}
-                  type="link"
-                  btnStyle={{ width: 18, paddingInline: 2 }}
-                  tips={intl.formatMessage({
-                    id: 'resources.modelfiles.copy.tips'
-                  })}
-                ></CopyButton>
-              </span>
               {renderParts(record)}
             </PathWrapper>
           )
@@ -493,7 +548,7 @@ const ModelFiles = () => {
       render: (text: string, record: ListItem) => {
         return (
           <AutoTooltip ghost maxWidth={100}>
-            <span>{convertFileSize(record.size, 1)}</span>
+            <span>{convertFileSize(record.size, 1, true)}</span>
           </AutoTooltip>
         );
       }

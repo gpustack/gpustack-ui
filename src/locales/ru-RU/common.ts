@@ -15,6 +15,7 @@ export default {
   'common.button.run': 'Запустить',
   'common.button.viewcode': 'Посмотреть код',
   'common.button.copy': 'Копировать',
+  'common.button.copied': 'Copied',
   'common.button.collapse': 'Свернуть',
   'common.button.expand': 'Развернуть',
   'common.button.cancel': 'Отмена',
@@ -233,3 +234,7 @@ export default {
   'common.text.error': 'Ошибка',
   'common.text.tips': 'Советы'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'common.button.copied',
+// ========== End of To-Do List ==========

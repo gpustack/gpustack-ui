@@ -382,7 +382,7 @@ export const useCheckCompatibility = () => {
 
     return {
       gpu_selector: {
-        gpu_ids: result
+        gpu_ids: result || []
       }
     };
   };
@@ -393,6 +393,7 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const { changedValues, allValues, source } = params;
+    console.log('params+++++++', params);
 
     if (
       _.isEqual(cacheFormValuesRef.current, allValues) ||

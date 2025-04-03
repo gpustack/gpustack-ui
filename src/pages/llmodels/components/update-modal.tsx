@@ -331,6 +331,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     });
   };
 
+  const handleManulOnValuesChange = (changedValues: any, allValues: any) => {
+    handleOnValuesChange({
+      changedValues,
+      allValues,
+      source: formData?.source as string
+    });
+  };
+
   const handleOnClose = () => {
     onCancel?.();
   };
@@ -425,7 +433,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       >
         <FormContext.Provider
           value={{
-            onValuesChange: handleOnValuesChange
+            onValuesChange: handleManulOnValuesChange
           }}
         >
           <Form

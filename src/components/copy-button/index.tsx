@@ -2,7 +2,7 @@ import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip, message } from 'antd';
 import ClipboardJS from 'clipboard';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 type CopyButtonProps = {
   children?: React.ReactNode;
@@ -63,6 +63,13 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     }
   };
 
+  const tipTitle = useMemo(() => {
+    if (copied) {
+      return intl.formatMessage({ id: 'common.button.copied' });
+    }
+    return tips ?? intl.formatMessage({ id: 'common.button.copy' });
+  }, [copied, intl, tips]);
+
   useEffect(() => {
     initClipboard();
     return () => {
@@ -71,10 +78,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   }, [buttonRef]);
 
   return (
-    <Tooltip
-      title={tips ?? intl.formatMessage({ id: 'common.button.copy' })}
-      placement={placement}
-    >
+    <Tooltip title={tipTitle} placement={placement}>
       <Button
         className="copy-button"
         ref={buttonRef}

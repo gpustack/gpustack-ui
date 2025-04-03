@@ -366,7 +366,6 @@ export const getSourceRepoConfigValue = (
       omits.push(key);
     }
   });
-
   return {
     values: { ...result, ..._.omit(data, omits) }
   };

@@ -21,11 +21,12 @@ export const handleBatchRequest = async (
 
 export const convertFileSize = (
   sizeInBytes: number | undefined,
-  prec?: number
+  prec?: number,
+  allowEmpty = false
 ) => {
   const precision = prec ?? 1;
   if (!sizeInBytes) {
-    return '0';
+    return allowEmpty ? '' : '0';
   }
   if (sizeInBytes < 1024) {
     return `${sizeInBytes.toFixed(precision)} B`;

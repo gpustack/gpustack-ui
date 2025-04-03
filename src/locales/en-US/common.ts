@@ -15,6 +15,7 @@ export default {
   'common.button.run': 'Run',
   'common.button.viewcode': 'View Code',
   'common.button.copy': 'Copy',
+  'common.button.copied': 'Copied',
   'common.button.collapse': 'Collapse',
   'common.button.expand': 'Expand',
   'common.button.cancel': 'Cancel',

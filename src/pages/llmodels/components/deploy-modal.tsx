@@ -275,7 +275,7 @@ const AddModal: FC<AddModalProps> = (props) => {
           value={{
             isGGUF: isGGUF,
             modelFileOptions: props.modelFileOptions,
-            onValuesChange: handleOnValuesChange
+            onValuesChange: onValuesChange
           }}
         >
           <FormWrapper>

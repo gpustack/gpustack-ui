@@ -15,6 +15,7 @@ export default {
   'common.button.run': '実行',
   'common.button.viewcode': 'コードを表示',
   'common.button.copy': 'コピー',
+  'common.button.copied': 'Copied',
   'common.button.collapse': '折りたたむ',
   'common.button.expand': '展開',
   'common.button.cancel': 'キャンセル',
@@ -235,3 +236,7 @@ export default {
   'common.text.error': 'エラー',
   'common.text.tips': 'ヒント'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'common.button.copied',
+// ========== End of To-Do List ==========

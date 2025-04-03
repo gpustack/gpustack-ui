@@ -111,6 +111,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current?.submit?.();
   };
 
+  const pickSomeFieldsValue = () => {
+    const formData = form.current?.getFieldsValue();
+    return _.pick(formData, ['worker_selector', 'gpu_selector', 'env']);
+  };
+
   const generateSubmitData = (formData: FormData) => {
     const gpuSelector = generateGPUIds(formData);
     const data = {
@@ -285,10 +290,29 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onValuesChange = async (changedValues: any, allValues: any) => {
+    const data = {
+      ..._.omit(selectSpecRef.current, ['name']),
+      ...allValues
+    };
     handleOnValuesChange?.({
       changedValues,
-      allValues: generateSubmitData(allValues),
+      allValues: data,
       source: props.source
+    });
+  };
+
+  const handleAdvanceOnValuesChange = (data: {
+    changedValues: any;
+    allValues: any;
+    source: string;
+  }) => {
+    handleOnValuesChange?.({
+      changedValues: data.changedValues,
+      allValues: {
+        ..._.omit(selectSpecRef.current, ['name']),
+        ...data.allValues
+      },
+      source: data.source
     });
   };
 
@@ -392,7 +416,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       quantization: val
     });
     form.current.setFieldsValue({
-      ...data
+      ...data,
+      ...pickSomeFieldsValue()
     });
     handleCheckFormData();
   };
@@ -413,7 +438,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
     // set form data
     form.current.setFieldsValue({
-      ...data
+      ...data,
+      ...pickSomeFieldsValue()
     });
     handleCheckFormData();
   };
@@ -497,7 +523,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           quantizationOptions: quantizationOptions,
           onSizeChange: handleOnSizeChange,
           onQuantizationChange: handleOnQuantizationChange,
-          onValuesChange: handleOnValuesChange
+          onValuesChange: onValuesChange
         }}
       >
         <FormWrapper>

@@ -8,7 +8,7 @@ interface FormContextProps {
   modelFileOptions?: any[];
   onSizeChange?: (val: number) => void;
   onQuantizationChange?: (val: string) => void;
-  onValuesChange?: (val: any) => void;
+  onValuesChange?: (changedValues: any, allValues: any) => void;
 }
 
 interface FormInnerContextProps {

@@ -65,7 +65,7 @@ export default {
   'resources.modelfiles.selecttarget': 'Select Target',
   'resources.modelfiles.form.localdir': 'Local Directory',
   'resources.modelfiles.form.localdir.tips':
-    'The default storage directory is <span class="desc-block">/var/lib/gpustack/cache</span> or the directory specified with <span class="desc-block">--data-dir</span>.',
+    'The default storage directory is <span class="desc-block">/var/lib/gpustack/cache</span> or the directory specified with <span class="desc-block">--cache-dir</span>.',
   'resources.modelfiles.retry.download': 'Retry Download',
   'resources.modelfiles.storagePath.holder':
     'Waiting for download to complete...',

@@ -7,18 +7,14 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import {
-  HuggingFaceTaskMap,
-  ModelscopeTaskMap,
   backendOptionsMap,
   backendTipsList,
   excludeFields,
   modelSourceMap,
-  modelTaskMap,
   sourceOptions
 } from '../config';
-import { identifyModelTask } from '../config/audio-catalog';
 import { FormInnerContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
 import CatalogFrom from '../forms/catalog';
@@ -70,66 +66,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
-  const [modelTask, setModelTask] = useState<Record<string, any>>({
-    type: '',
-    value: '',
-    text2speech: false,
-    speech2text: false
-  });
 
   const handleSumit = () => {
     form.submit();
-  };
-
-  const handleRecognizeAudioModel = (selectModel: any) => {
-    const modelTaskType = identifyModelTask(props.source, selectModel.name);
-
-    const modelTask =
-      HuggingFaceTaskMap.audio.includes(selectModel.task) ||
-      ModelscopeTaskMap.audio.includes(selectModel.task)
-        ? modelTaskMap.audio
-        : '';
-
-    const modelTaskData = {
-      value: selectModel.task,
-      type: modelTaskType || modelTask,
-      text2speech:
-        HuggingFaceTaskMap[modelTaskMap.textToSpeech] === selectModel.task ||
-        ModelscopeTaskMap[modelTaskMap.textToSpeech] === selectModel.task,
-      speech2text:
-        HuggingFaceTaskMap[modelTaskMap.speechToText] === selectModel.task ||
-        ModelscopeTaskMap[modelTaskMap.speechToText] === selectModel.task
-    };
-    return modelTaskData;
-  };
-
-  // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
-  const handleOnSelectModel = (selectModel: any) => {
-    let name = _.split(selectModel.name, '/').slice(-1)[0];
-    const reg = /(-gguf)$/i;
-    name = _.toLower(name).replace(reg, '');
-
-    const modelTaskData = handleRecognizeAudioModel(selectModel);
-    setModelTask(modelTaskData);
-
-    if (SEARCH_SOURCE.includes(props.source)) {
-      form.setFieldsValue({
-        repo_id: selectModel.name,
-        name: name,
-        backend:
-          modelTaskData.type === modelTaskMap.audio
-            ? backendOptionsMap.voxBox
-            : selectModel.isGGUF
-              ? backendOptionsMap.llamaBox
-              : backendOptionsMap.vllm
-      });
-    } else {
-      form.setFieldsValue({
-        ollama_library_model_name: selectModel.name,
-        name: name,
-        backend: backendOptionsMap.llamaBox
-      });
-    }
   };
 
   // voxbox is not support multi gpu
@@ -184,6 +123,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   };
 
+  // generate the data is available for the backend including the gpu_ids
   const handleOk = async (formdata: FormData) => {
     let data = _.cloneDeep(formdata);
     data.categories = Array.isArray(data.categories)
@@ -217,7 +157,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     () => {
       return {
         form: form,
-        handleOnSelectModel: handleOnSelectModel,
         submit: handleSumit,
         setFieldsValue: (values: FormData) => {
           form.setFieldsValue(values);

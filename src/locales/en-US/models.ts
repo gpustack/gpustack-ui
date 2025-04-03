@@ -127,7 +127,7 @@ export default {
   'models.form.restart.onerror.tips':
     'When an error occurs, it will automatically attempt to restart.',
   'models.form.check.params': 'Checking configuration...',
-  'models.form.check.passed': 'Check Compatibility Passed',
+  'models.form.check.passed': 'Compatibility Check Passed',
   'models.form.check.claims':
     'The model requires approximately {vram} VRAM and {ram} RAM.'
 };

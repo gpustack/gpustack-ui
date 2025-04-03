@@ -64,7 +64,7 @@ export default {
   'resources.modelfiles.selecttarget': 'Выбрать назначение',
   'resources.modelfiles.form.localdir': 'Локальный каталог',
   'resources.modelfiles.form.localdir.tips':
-    'Каталог по умолчанию <span class="desc-block>/var/lib/gpustack/cache</span> или каталог, указанный через <span class="desc-block">--data-dir</span>.',
+    'Каталог по умолчанию <span class="desc-block>/var/lib/gpustack/cache</span> или каталог, указанный через <span class="desc-block">--cache-dir</span>.',
   'resources.modelfiles.retry.download': 'Повторить загрузку',
   'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
   'resources.filter.worker': 'Фильтровать по узлу',

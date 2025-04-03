@@ -13,7 +13,7 @@ import {
 } from '../config';
 import { FormContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
-import { useCheckCompatibility } from '../hooks';
+import { useCheckCompatibility, useSelectModel } from '../hooks';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
@@ -84,6 +84,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
+  const { onSelectModel } = useSelectModel();
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
@@ -91,25 +92,28 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
 
-  const handleSelectModelFile = useCallback((item: any) => {
+  const handleSelectModelFile = (item: any) => {
+    const modelInfo = onSelectModel(selectedModel, props.source);
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
-      backend: backendOptionsMap.llamaBox,
-      ...item.evaluateResult?.default_spec
+      ...item.evaluateResult?.default_spec,
+      ...modelInfo
     });
+
     if (item.fakeName) {
       handleShowCompatibleAlert(item.evaluateResult);
     }
-  }, []);
+  };
 
   const handleOnSelectModel = (item: any) => {
     setSelectedModel(item);
-    form.current?.handleOnSelectModel?.(item);
     if (!item.isGGUF) {
       setIsGGUF(false);
+      const modelInfo = onSelectModel(item, props.source);
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
-        ...item.evaluateResult?.default_spec
+        ...item.evaluateResult?.default_spec,
+        ...modelInfo
       });
     }
   };

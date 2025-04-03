@@ -1,4 +1,4 @@
-import SealAutoComplete from '@/components/seal-form/auto-complete';
+import SealInput from '@/components/seal-form/seal-input';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
@@ -60,17 +60,14 @@ const LocalPathForm: React.FC = () => {
           }
         ]}
       >
-        <SealAutoComplete
+        <SealInput.Input
           allowClear
           required
-          filterOption
-          defaultActiveFirstOption
-          options={modelFileOptions}
           onBlur={handleLocalPathBlur}
           onFocus={handleOnFocus}
           label={intl.formatMessage({ id: 'models.form.filePath' })}
           description={<TooltipList list={localPathTipsList}></TooltipList>}
-        ></SealAutoComplete>
+        ></SealInput.Input>
       </Form.Item>
     </>
   );

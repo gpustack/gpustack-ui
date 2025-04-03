@@ -127,11 +127,10 @@ export default {
   'models.form.restart.onerror.tips':
     'При возникновении ошибки система автоматически попытается перезапуститься.',
   'models.form.check.params': 'Проверка конфигурации...',
-  'models.form.check.passed': 'Проверка совместимости: успешно пройдена',
-  'models.form.check.claims':
-    'Модель требует примерно {vram} VRAM и {ram} RAM.'
+  'models.form.check.passed': 'Compatibility Check Passed',
+  'models.form.check.claims': 'Модель требует примерно {vram} VRAM и {ram} RAM.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.form.check.passed'
 // ========== End of To-Do List ==========

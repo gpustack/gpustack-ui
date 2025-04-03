@@ -83,6 +83,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   });
   const [sortType, setSortType] = useState<string>('size');
   const [current, setCurrent] = useState<string>('');
+  const currentPathRef = useRef<string>('');
   const modelFilesSortOptions = useRef<any[]>([
     {
       label: intl.formatMessage({ id: 'models.sort.size' }),
@@ -100,6 +101,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const handleSelectModelFile = (item: any) => {
     props.onSelectFile?.(item);
     setCurrent(item.path);
+    currentPathRef.current = item.path;
   };
 
   const parseFilename = (filename: string) => {
@@ -274,7 +276,13 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           evaluateResult: evaluationList[index]
         };
       });
-      handleSelectModelFile(resultList[0]);
+      const currentItem = _.find(
+        resultList,
+        (item: any) => item.path === currentPathRef.current
+      );
+      if (currentItem) {
+        handleSelectModelFile(currentItem);
+      }
       setDataSource({ fileList: resultList, loading: false });
       setIsEvaluating(false);
     } catch (error) {

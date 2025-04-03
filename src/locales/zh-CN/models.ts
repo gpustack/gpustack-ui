@@ -120,5 +120,7 @@ export default {
   'models.form.incompatible': '检测到不兼容',
   'models.form.restart.onerror': '错误时重启',
   'models.form.restart.onerror.tips': '当发生错误时，将自动尝试恢复',
-  'models.form.check.params': '正在校验配置...'
+  'models.form.check.params': '正在校验配置...',
+  'models.form.check.passed': '兼容性检查通过',
+  'models.form.check.claims': '该模型大约需要 {vram} 显存和 {ram} 内存.'
 };

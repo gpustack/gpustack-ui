@@ -162,14 +162,18 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
 
   const handleSelectorOnBlur = () => {
     const workerSelector = form.getFieldValue('worker_selector');
-    onValuesChange?.({}, form.getFieldsValue());
+    // check if all keys have values
+    const hasEmptyValue = _.some(_.keys(workerSelector), (k: string) => {
+      return !workerSelector[k];
+    });
+    if (!hasEmptyValue) {
+      onValuesChange?.({}, form.getFieldsValue());
+    }
   };
 
   const handleBackendVersionOnBlur = () => {
     const backendVersion = form.getFieldValue('backend_version');
-    if (backendVersion) {
-      onValuesChange?.({}, form.getFieldsValue());
-    }
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const collapseItems = useMemo(() => {

@@ -78,6 +78,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const {
     handleShowCompatibleAlert,
     setWarningStatus,
+    handleBackendChangeBefore,
     handleOnValuesChange,
     checkTokenRef,
     warningStatus,
@@ -144,7 +145,12 @@ const AddModal: FC<AddModalProps> = (props) => {
     } else {
       setIsGGUF(false);
     }
+
     const data = form.current.form.getFieldsValue?.();
+    const res = handleBackendChangeBefore(data);
+    if (res.show) {
+      return;
+    }
     if (data.local_path || props.source !== modelSourceMap.local_path_value) {
       handleOnValuesChange?.({
         changedValues: {},
@@ -303,9 +309,12 @@ const AddModal: FC<AddModalProps> = (props) => {
                   <ModalFooter
                     onCancel={handleCancel}
                     onOk={handleSumit}
-                    showOkBtn={!warningStatus.show}
+                    showOkBtn={
+                      !warningStatus.show || warningStatus.type === 'success'
+                    }
                     extra={
-                      warningStatus.show && (
+                      warningStatus.show &&
+                      warningStatus.type !== 'success' && (
                         <Button
                           type="primary"
                           onClick={handleSubmitAnyway}

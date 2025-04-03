@@ -68,6 +68,8 @@ import {
   ListItem as WorkerListItem
 } from '../config/types';
 
+const { Paragraph } = Typography;
+
 const filterPattern = /^(.*?)(?:-\d+-of-\d+)?(\.gguf)?$/;
 
 const PathWrapper = styled.div`
@@ -115,11 +117,18 @@ const FilesTag = styled(Tag)`
   border-radius: var(--border-radius-base);
 `;
 
+const TypographyPara = styled(Paragraph)`
+  background: transparent;
+  color: inherit;
+  margin-bottom: 0;
+  font-size: 13px;
+`;
+
 const TooltipTitle: React.FC<{ path: string }> = ({ path }) => {
   const intl = useIntl();
   return (
-    <Typography.Paragraph
-      style={{ background: 'transparent', color: 'inherit' }}
+    <TypographyPara
+      style={{ margin: 0 }}
       copyable={{
         icon: [
           <CopyOutlined key="copy-icon" />,
@@ -133,7 +142,7 @@ const TooltipTitle: React.FC<{ path: string }> = ({ path }) => {
       }}
     >
       {path}
-    </Typography.Paragraph>
+    </TypographyPara>
   );
 };
 

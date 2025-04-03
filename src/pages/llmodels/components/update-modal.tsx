@@ -58,7 +58,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const {
     setWarningStatus,
     generateGPUIds,
-    handleOnValuesChange,
+    handleBackendChangeBefore,
     checkTokenRef,
     warningStatus
   } = useCheckCompatibility();
@@ -67,6 +67,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const intl = useIntl();
   const localPathCache = useRef<string>('');
   const submitAnyway = useRef<boolean>(false);
+
+  const handleOnValuesChange = (data: any) => {};
 
   // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {
@@ -91,6 +93,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     handleSetGPUIds(backend);
 
     const data = form.getFieldsValue?.();
+    const res = handleBackendChangeBefore(data);
+    if (res.show) {
+      return;
+    }
     if (data.local_path || data.source !== modelSourceMap.local_path_value) {
       handleOnValuesChange?.({
         changedValues: {},
@@ -390,9 +396,10 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           <ModalFooter
             onCancel={onCancel}
             onOk={handleSumit}
-            showOkBtn={!warningStatus.show}
+            showOkBtn={!warningStatus.show || warningStatus.type === 'success'}
             extra={
-              warningStatus.show && (
+              warningStatus.show &&
+              warningStatus.type !== 'success' && (
                 <Button
                   type="primary"
                   onClick={handleSubmitAnyway}

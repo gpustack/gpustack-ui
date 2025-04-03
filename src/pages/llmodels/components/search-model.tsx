@@ -61,6 +61,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   ];
   const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
   const [current, setCurrent] = useState<string>('');
+  const currentRef = useRef<string>('');
   const cacheRepoOptions = useRef<any[]>([]);
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
@@ -100,6 +101,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const handleOnSelectModel = (item: any) => {
     onSelectModel(item);
     setCurrent(item.id);
+    currentRef.current = item.id;
   };
 
   // huggeface
@@ -222,7 +224,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           repoOptions: resultList
         };
       });
-      handleOnSelectModel(resultList[0]);
+      const currentItem = resultList.find(
+        (item) => item.id === currentRef.current
+      );
+      if (currentItem) {
+        handleOnSelectModel(currentItem);
+      }
     } catch (error) {
       setIsEvaluating(false);
     }
@@ -264,9 +271,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       handleOnSelectModel(list[0]);
       setLoadingModel?.(false);
 
-      timer.current = setTimeout(() => {
-        handleEvaluate(list);
-      }, 200);
+      handleEvaluate(list);
     } catch (error: any) {
       setDataSource({
         repoOptions: [],

@@ -18,6 +18,12 @@ const CompatibleTag = styled(Tag)`
   background: transparent !important;
 `;
 
+const ClaimTag = styled(Tag)`
+  margin: 0;
+  opacity: 0.7;
+  border-radius: var(--border-radius-base);
+`;
+
 const IncompatibleInfo = styled.div`
   display: flex;
   flex-direction: column;

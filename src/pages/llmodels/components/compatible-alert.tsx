@@ -1,5 +1,6 @@
 import AlertBlockInfo from '@/components/alert-info/block';
 import {
+  CheckCircleFilled,
   CloseOutlined,
   LoadingOutlined,
   WarningFilled
@@ -13,7 +14,7 @@ interface CompatibilityAlertProps {
     show: boolean;
     title?: string;
     isHtml?: boolean;
-    type?: 'danger' | 'warning' | 'transition';
+    type?: Global.MessageType;
     message: string | string[];
   };
   contentStyle?: React.CSSProperties;
@@ -28,7 +29,7 @@ const DivWrapper = styled.div`
 
 const CloseWrapper = styled.div`
   position: absolute;
-  top: 6px;
+  top: 10px;
   right: 18px;
   cursor: pointer;
   background-color: var(--ant-color-warning-bg);
@@ -43,7 +44,7 @@ const MessageWrapper = styled.div`
 
 const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
   const { warningStatus, contentStyle, showClose, onClose } = props;
-  const { title, show, message, isHtml, type } = warningStatus;
+  const { title, show, message, isHtml, type = 'warning' } = warningStatus;
 
   const renderMessage = useMemo(() => {
     if (!message || !show) {
@@ -73,6 +74,16 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
     return '';
   }, [message, show]);
 
+  const renderIcon = useMemo(() => {
+    if (type === 'transition') {
+      return <LoadingOutlined />;
+    }
+    if (type === 'success') {
+      return <CheckCircleFilled />;
+    }
+    return <WarningFilled />;
+  }, [type]);
+
   return (
     show && (
       <DivWrapper>
@@ -82,9 +93,9 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           title={title}
           contentStyle={contentStyle}
           type={type || 'warning'}
-          icon={type === 'transition' ? <LoadingOutlined /> : <WarningFilled />}
+          icon={renderIcon}
         ></AlertBlockInfo>
-        {showClose && type !== 'transition' && (
+        {showClose && !['transition', 'success'].includes(type) && (
           <CloseWrapper onClick={onClose}>
             <CloseOutlined />
           </CloseWrapper>

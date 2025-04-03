@@ -75,5 +75,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.filter.path'
+// 1. 'resources.filter.path',
 // ========== End of To-Do List ==========

@@ -123,7 +123,10 @@ export default {
   'models.form.restart.onerror': 'Auto-Restart On Error',
   'models.form.restart.onerror.tips':
     'When an error occurs, it will automatically attempt to restart.',
-  'models.form.check.params': 'Checking configuration...'
+  'models.form.check.params': 'Checking configuration...',
+  'models.form.check.passed': 'Check Compatibility Passed',
+  'models.form.check.claims':
+    'The model requires approximately {vram} VRAM and {ram} RAM.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -136,5 +139,7 @@ export default {
 // 7. 'models.form.restart.onerror.tips',
 // 8. 'models.form.check.params',
 // 9. 'models.form.partialoffload.tips',
-// 10. 'models.form.distribution.tips
+// 10. 'models.form.distribution.tips,
+// 11. 'models.form.check.passed',
+// 12. 'models.form.check.claims',
 // ========== End of To-Do List ==========

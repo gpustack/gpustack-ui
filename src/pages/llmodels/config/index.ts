@@ -448,6 +448,7 @@ export const modelLabels = [
   { label: 'Embedding', value: 'embedding_only' }
 ];
 
+// do not trigger form check compatibility
 export const excludeFields = [
   'repo_id',
   'file_name',
@@ -464,5 +465,8 @@ export const excludeFields = [
   'backend_parameters',
   'local_path',
   'backend_version',
-  'ollama_library_model_name'
+  'ollama_library_model_name',
+  'scheduleType',
+  'placement_strategy',
+  'backend'
 ];

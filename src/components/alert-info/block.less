@@ -27,6 +27,21 @@
     border-color: var(--ant-geekblue-3);
   }
 
+  &.success {
+    border: 1px solid var(--color-progress-green);
+    color: var(--color-progress-green);
+
+    .title-text {
+      color: var(--color-progress-green);
+    }
+
+    .content.success {
+      color: var(--color-progress-green);
+      font-weight: var(--font-weight-normal);
+      opacity: 0.85;
+    }
+  }
+
   .title {
     position: absolute;
     left: 0;
@@ -47,6 +62,10 @@
 
       &.transition {
         color: var(--ant-geekblue-7);
+      }
+
+      &.success {
+        color: var(--color-progress-green);
       }
     }
 

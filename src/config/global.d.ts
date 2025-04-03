@@ -42,6 +42,8 @@ declare namespace Global {
   }
 
   type SearchParams = Pagination & { search?: string };
+
+  type MessageType = 'transition' | 'warning' | 'danger' | 'success' | 'info';
 }
 
 interface Window {

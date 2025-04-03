@@ -79,9 +79,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     width = 600
   } = props || {};
   const {
-    handleShowCompatibleAlert,
     setWarningStatus,
-    handleEvaluate,
+    handleDoEvalute,
     generateGPUIds,
     cancelEvaluate,
     submitAnyway,
@@ -228,17 +227,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleCheckCompatibility = async (formData: FormData) => {
-    const evalutionData = await handleEvaluate(formData);
-
-    if (evalutionData?.compatible) {
-      setWarningStatus({
-        show: false,
-        message: ''
-      });
-    } else {
-      handleShowCompatibleAlert?.(evalutionData);
-    }
-    return evalutionData;
+    handleDoEvalute(formData);
   };
 
   const handleCheckFormData = () => {
@@ -551,9 +540,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
-                  showOkBtn={!warningStatus.show}
+                  showOkBtn={
+                    !warningStatus.show || warningStatus.type === 'success'
+                  }
                   extra={
-                    warningStatus.show && (
+                    warningStatus.show &&
+                    warningStatus.type !== 'success' && (
                       <Button
                         type="primary"
                         onClick={handleSubmitAnyway}

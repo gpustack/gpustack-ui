@@ -126,10 +126,15 @@ export default {
   'models.form.restart.onerror': 'Автоперезапуск при ошибке',
   'models.form.restart.onerror.tips':
     'При возникновении ошибки система автоматически попытается перезапуститься.',
-  'models.form.check.params': 'Проверка конфигурации...'
+  'models.form.check.params': 'Проверка конфигурации...',
+  'models.form.check.passed': 'Check Compatibility Passed',
+  'models.form.check.claims':
+    'The model requires approximately {vram} VRAM and {ram} RAM.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.form.partialoffload.tips',
-// 2. 'models.form.distribution.tips
+// 2. 'models.form.distribution.tips,
+// 3. 'models.form.check.passed',
+// 4. 'models.form.check.claims',
 // ========== End of To-Do List ==========

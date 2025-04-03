@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import OverlayScroller from '../overlay-scroller';
 import './block.less';
 interface AlertInfoProps {
-  type: 'danger' | 'warning' | 'transition' | 'info';
+  type: Global.MessageType;
   message: React.ReactNode;
   rows?: number;
   icon?: React.ReactNode;
@@ -62,9 +62,16 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
                 {icon ?? <WarningFilled />}
               </span>
             </div>
-            {title && <TitleWrapper>{title}</TitleWrapper>}
+            {title && (
+              <TitleWrapper className="title-text">{title}</TitleWrapper>
+            )}
             <OverlayScroller maxHeight={80} style={{ ...contentStyle }}>
-              <ContentWrapper $hasTitle={!!title}>{message}</ContentWrapper>
+              <ContentWrapper
+                $hasTitle={!!title}
+                className={classNames('content', type)}
+              >
+                {message}
+              </ContentWrapper>
             </OverlayScroller>
           </Typography.Paragraph>
         </div>

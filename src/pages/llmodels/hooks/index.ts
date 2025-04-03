@@ -2,6 +2,7 @@ import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { queryModelFilesList, queryWorkersList } from '@/pages/resources/apis';
 import { WorkerStatusMap } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
@@ -18,6 +19,15 @@ import {
   GPUListItem,
   ListItem
 } from '../config/types';
+
+type MessageStatus = {
+  show: boolean;
+  title?: string;
+  type?: Global.MessageType;
+  isHtml?: boolean;
+  message: string | string[];
+  evaluateResult?: EvaluateResult;
+};
 
 export const useGenerateFormEditInitialValues = () => {
   const gpuDeviceList = useRef<any[]>([]);
@@ -220,12 +230,7 @@ export const useCheckCompatibility = () => {
   const submitAnyway = useRef<boolean>(false);
   const requestIdRef = useRef(0);
   const updateStatusTimer = useRef<any>(null);
-  const [warningStatus, setWarningStatus] = useState<{
-    show: boolean;
-    title?: string;
-    type?: 'transition' | 'warning' | 'danger';
-    message: string | string[];
-  }>({
+  const [warningStatus, setWarningStatus] = useState<MessageStatus>({
     show: false,
     title: '',
     message: []
@@ -269,7 +274,9 @@ export const useCheckCompatibility = () => {
     }
   };
 
-  const handleCheckCompatibility = (evaluateResult: EvaluateResult | null) => {
+  const handleCheckCompatibility = (
+    evaluateResult: EvaluateResult | null
+  ): MessageStatus => {
     if (!evaluateResult) {
       return {
         show: false,
@@ -279,11 +286,13 @@ export const useCheckCompatibility = () => {
     const {
       compatible,
       compatibility_messages = [],
-      scheduling_messages = []
+      scheduling_messages = [],
+      resource_claim
     } = evaluateResult || {};
 
-    return {
-      show: !compatible,
+    const hasClaim = !!resource_claim?.ram || !!resource_claim?.vram;
+
+    let msgData = {
       title:
         scheduling_messages?.length > 0
           ? compatibility_messages?.join(' ')
@@ -292,6 +301,24 @@ export const useCheckCompatibility = () => {
         scheduling_messages?.length > 0
           ? scheduling_messages
           : compatibility_messages?.join(' ')
+    };
+    if (hasClaim) {
+      const ram = convertFileSize(resource_claim.ram, 1);
+      const vram = convertFileSize(resource_claim.vram, 1);
+      msgData = {
+        title: intl.formatMessage({ id: 'models.form.check.passed' }),
+        message: intl.formatMessage(
+          { id: 'models.form.check.claims' },
+          { ram, vram }
+        )
+      };
+    }
+
+    return {
+      show: !compatible || hasClaim,
+      type: !compatible ? 'warning' : 'success',
+      isHtml: hasClaim,
+      ...msgData
     };
   };
 
@@ -387,14 +414,22 @@ export const useCheckCompatibility = () => {
     };
   };
 
+  const handleDoEvalute = async (formData: FormData) => {
+    const currentRequestId = updateRequestId();
+    const evalutionData = await handleEvaluate(formData);
+
+    if (currentRequestId === requestIdRef.current) {
+      handleShowCompatibleAlert?.(evalutionData);
+    }
+    return evalutionData;
+  };
+
   const handleOnValuesChange = async (params: {
     changedValues: any;
     allValues: any;
     source: string;
   }) => {
-    const { changedValues, allValues, source } = params;
-    console.log('params+++++++', params);
-
+    const { allValues, source } = params;
     if (
       _.isEqual(cacheFormValuesRef.current, allValues) ||
       (allValues.source === modelSourceMap.local_path_value &&
@@ -405,16 +440,30 @@ export const useCheckCompatibility = () => {
     cacheFormValuesRef.current = allValues;
     const data = getSourceRepoConfigValue(source, allValues);
     const gpuSelector = generateGPUIds(data.values);
-
-    const currentRequestId = updateRequestId();
-    const evalutionData = await handleEvaluate({
+    await handleDoEvalute({
       ...data.values,
       ...gpuSelector
     });
+  };
 
-    if (currentRequestId === requestIdRef.current) {
-      handleShowCompatibleAlert?.(evalutionData);
+  // trigger from local_path change or backend change
+  const handleBackendChangeBefore = (params: {
+    local_path: string;
+    backend: string;
+    source: string;
+  }) => {
+    const { local_path, backend, source } = params;
+
+    const res = handleUpdateWarning?.({
+      backend,
+      localPath: local_path,
+      source: source
+    });
+
+    if (res.show) {
+      setWarningStatus?.(res);
     }
+    return res;
   };
 
   const debounceHandleValuesChange = _.debounce(handleOnValuesChange, 500);
@@ -434,13 +483,15 @@ export const useCheckCompatibility = () => {
   return {
     handleShowCompatibleAlert,
     handleUpdateWarning,
-    handleOnValuesChange: debounceHandleValuesChange,
-    warningStatus,
-    checkTokenRef,
-    submitAnyway,
+    handleDoEvalute,
     generateGPUIds,
     handleEvaluate,
     setWarningStatus,
-    cancelEvaluate
+    cancelEvaluate,
+    handleBackendChangeBefore,
+    handleOnValuesChange: debounceHandleValuesChange,
+    warningStatus,
+    checkTokenRef,
+    submitAnyway
   };
 };

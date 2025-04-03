@@ -13,8 +13,8 @@ export default {
   'models.form.env': 'Переменные окружения',
   'models.form.configurations': 'Конфигурации',
   'models.form.s3address': 'S3-адрес',
-  'models.form.partialoffload.tips': `When CPU offloading is enabled, if GPU resources are insufficient, part of the model's layers will be offloaded to the CPU. If no GPU is available, full CPU inference will be used.`,
-  'models.form.distribution.tips': `Allows for offloading part of the model's layers to single or multiple remote workers when the resources of a worker are insufficient.`,
+  'models.form.partialoffload.tips': `При включенном оффлоудинге на CPU: если ресурсов GPU недостаточно, часть слоёв модели будет перенесена на CPU. Если GPU отсутствует, будет использоваться полный вывод на CPU.`,
+  'models.form.distribution.tips': `Позволяет переносить часть слоёв модели на один или несколько удалённых воркеров, когда ресурсов текущего воркера недостаточно.`,
   'models.openinplayground': 'Открыть в Песочнице',
   'models.instances': 'инстансы',
   'models.table.replicas.edit': 'Редактировать реплики',
@@ -118,7 +118,7 @@ export default {
     'Чтобы использовать бэкенд llama-box , укажите полный путь к файлу модели (например,<span style="font-weight: 700">/data/models/model.gguf</span>). Для шардированных моделей укажите путь к первому шарду (например,<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>).',
   'models.form.keyvalue.paste':
     'Вставьте несколько строк текста, где каждая строка содержит пару ключ-значение. Ключ и значение разделяются знаком равенства (=), а разные пары — символами новой строки.',
-  'models.form.files': 'файлы',
+  'models.form.files': 'Файлы',
   'models.table.status': 'Статус',
   'models.form.submit.anyway': 'Отправить в любом случае',
   'models.form.evaluating': 'Анализ совместимости модели',
@@ -127,14 +127,11 @@ export default {
   'models.form.restart.onerror.tips':
     'При возникновении ошибки система автоматически попытается перезапуститься.',
   'models.form.check.params': 'Проверка конфигурации...',
-  'models.form.check.passed': 'Check Compatibility Passed',
+  'models.form.check.passed': 'Проверка совместимости: успешно пройдена',
   'models.form.check.claims':
-    'The model requires approximately {vram} VRAM and {ram} RAM.'
+    'Модель требует примерно {vram} VRAM и {ram} RAM.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.partialoffload.tips',
-// 2. 'models.form.distribution.tips,
-// 3. 'models.form.check.passed',
-// 4. 'models.form.check.claims',
+
 // ========== End of To-Do List ==========

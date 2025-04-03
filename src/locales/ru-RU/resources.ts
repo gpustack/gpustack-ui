@@ -71,9 +71,9 @@ export default {
   'resources.filter.source': 'Фильтровать по источнику',
   'resources.modelfiles.delete.tips': 'Также удалить файл с диска!',
   'resources.modelfiles.copy.tips': 'Скопировать полный путь',
-  'resources.filter.path': 'Filter by Path'
+  'resources.filter.path': 'Фильтрация по пути'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.filter.path',
+
 // ========== End of To-Do List ==========

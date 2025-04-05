@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import { KeyMap } from '@/config/hotkeys';
+import UploadImg from '@/pages/playground/components/upload-img';
 import {
   ClearOutlined,
   DownloadOutlined,
@@ -16,11 +17,14 @@ interface ToolsBarProps {
   disabled: boolean;
   loading: boolean;
   lineWidth: number;
-  uploadButton: React.ReactNode;
+  uploadButton?: React.ReactNode;
+  invertMask?: boolean;
   handleBrushSizeChange: (value: number) => void;
   undo: () => void;
   onClear: () => void;
   handleFitView: () => void;
+  handleUpdateImageList: (fileList: any[]) => void;
+  handleUpdateMaskList: (fileList: any[]) => void;
 }
 
 const ToolsBar: React.FC<ToolsBarProps> = (props) => {
@@ -28,11 +32,14 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
     disabled,
     loading,
     lineWidth,
+    uploadButton,
+    invertMask,
     handleBrushSizeChange,
     undo,
     onClear,
-    uploadButton,
-    handleFitView
+    handleFitView,
+    handleUpdateImageList,
+    handleUpdateMaskList
   } = props;
   const intl = useIntl();
   return (
@@ -88,6 +95,22 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
         </Button>
       </Tooltip>
       {uploadButton}
+      <UploadImg
+        disabled={loading || invertMask}
+        handleUpdateImgList={handleUpdateImageList}
+        size="middle"
+        accept="image/*"
+      ></UploadImg>
+      <UploadImg
+        title={intl.formatMessage({
+          id: 'playground.image.mask.upload'
+        })}
+        icon={<IconFont type="icon-mosaic-2"></IconFont>}
+        disabled={loading || invertMask}
+        handleUpdateImgList={handleUpdateMaskList}
+        size="middle"
+        accept="image/*"
+      ></UploadImg>
       <Tooltip title={intl.formatMessage({ id: 'playground.image.fitview' })}>
         <Button
           onClick={handleFitView}

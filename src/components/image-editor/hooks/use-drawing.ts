@@ -33,6 +33,7 @@ export default function useDrawing(props: {
   const baseScale = useRef<number>(1);
   const contentPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const maskStorkeRef = useRef<Stroke[]>([]);
+  const isLoadingMaskRef = useRef<boolean>(false);
 
   const disabled = useMemo(() => {
     return isDisabled || invertMask || !!maskUpload?.length;
@@ -411,6 +412,7 @@ export default function useDrawing(props: {
     autoScale,
     baseScale,
     maskStorkeRef,
+    isLoadingMaskRef,
     creatOffscreenCanvas,
     setMaskStrokes,
     fitView,

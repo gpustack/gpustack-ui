@@ -50,7 +50,9 @@ type CanvasImageEditorProps = {
   clearUploadMask?: () => void;
   onSave: (imageData: { mask: string | null; img: string }) => void;
   onScaleImageSize?: (data: { width: number; height: number }) => void;
-  uploadButton: React.ReactNode;
+  handleUpdateImageList: (fileList: any[]) => void;
+  handleUpdateMaskList: (fileList: any[]) => void;
+  uploadButton?: React.ReactNode;
   imageStatus: {
     isOriginal: boolean;
     isResetNeeded: boolean;
@@ -70,11 +72,15 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       imageStatus,
       onSave,
       onScaleImageSize,
+      handleUpdateImageList,
+      handleUpdateMaskList,
       uploadButton,
       maskUpload
     },
     ref
   ) => {
+    const invertWorkerRef = useRef<any>(null);
+    const loadMaksWorkerRef = useRef<any>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [lineWidth, setLineWidth] = useState<number>(60);
     const translatePos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -98,6 +104,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       autoScale,
       baseScale,
       maskStorkeRef,
+      isLoadingMaskRef,
       setMaskStrokes,
       draw,
       drawStroke,
@@ -134,7 +141,8 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       lineWidth,
       translatePos,
       autoScale,
-      baseScale
+      baseScale,
+      isLoadingMaskRef
     });
 
     const disabled = useMemo(() => {
@@ -201,54 +209,62 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       console.log('Resetting strokes', currentStroke.current);
     }, []);
 
-    const loadMaskPixs = async (strokes: Stroke[], isInitial?: boolean) => {
-      if (!strokes.length) {
-        return;
-      }
+    const loadMaskPixs = (maskStrokes: Stroke[], mainStrokes?: Stroke[]) => {
+      try {
+        if (!maskStrokes.length && !mainStrokes?.length) {
+          return;
+        }
 
-      const overlayCanvas = overlayCanvasRef.current!;
-      const overlayCtx = overlayCanvas.getContext('2d')!;
+        isLoadingMaskRef.current = true;
 
-      strokes.forEach((stroke: Point[], index) => {
-        drawFillRect(overlayCtx, stroke, {
-          color: COLOR,
-          isInitial: isInitial
+        const offscreenCanvas = new OffscreenCanvas(
+          overlayCanvasRef.current!.width,
+          overlayCanvasRef.current!.height
+        );
+
+        if (!loadMaksWorkerRef.current) {
+          loadMaksWorkerRef.current = new Worker(
+            new URL('./offscreen-worker.ts', import.meta.url),
+            {
+              type: 'module'
+            }
+          );
+        }
+
+        loadMaksWorkerRef.current!.onmessage = (event: any) => {
+          if (event.data.type === 'done' && event.data.imageData) {
+            // draw the data to the overlay canvas
+            const ctx = overlayCanvasRef.current!.getContext('2d')!;
+            ctx.putImageData(event.data.imageData, 0, 0);
+
+            isLoadingMaskRef.current = false;
+          }
+        };
+
+        // send offscreen canvas to worker
+        loadMaksWorkerRef.current?.postMessage(
+          { canvas: offscreenCanvas, type: 'init' },
+          [offscreenCanvas]
+        );
+
+        // send draw data to worker
+        loadMaksWorkerRef.current?.postMessage({
+          type: 'draw',
+          maskStrokes: maskStrokes,
+          strokes: mainStrokes || []
         });
-      });
-      console.log('Loading mask pixels-------:');
+      } catch (error) {
+        console.log('error---', error);
+      }
     };
 
-    const redrawStrokes = (strokes: Stroke[]) => {
-      clearOverlayCanvas();
-      setTransform();
-      console.log(
-        'Redrawing strokes:',
-        strokes.length,
-        maskStorkeRef.current.length
-      );
+    const redrawStrokes = async (strokes: Stroke[]) => {
       if (!strokes.length && !maskStorkeRef.current.length) {
+        clearOverlayCanvas();
         return;
       }
 
-      const overlayCanvas = overlayCanvasRef.current!;
-
-      const overlayCtx = overlayCanvas!.getContext('2d')!;
-
-      // clear offscreen canvas
-
-      loadMaskPixs(maskStorkeRef.current);
-
-      strokes?.forEach((stroke: Point[], index) => {
-        drawStroke(overlayCtx, stroke, {
-          color: COLOR,
-          compositeOperation: 'destination-out'
-        });
-
-        drawStroke(overlayCtx, stroke, {
-          color: COLOR,
-          compositeOperation: 'source-over'
-        });
-      });
+      loadMaskPixs(maskStorkeRef.current, strokes);
     };
 
     const undo = useCallback(() => {
@@ -362,23 +378,45 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
 
         clearOverlayCanvas();
 
-        ctx.fillStyle = COLOR;
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        const offscreenCanvas = new OffscreenCanvas(
+          overlayCanvasRef.current!.width,
+          overlayCanvasRef.current!.height
+        );
 
-        setTransform();
-        ctx.globalCompositeOperation = 'destination-out';
+        if (!invertWorkerRef.current) {
+          invertWorkerRef.current = new Worker(
+            new URL('./invert-worker.ts', import.meta.url),
+            {
+              type: 'module'
+            }
+          );
+        }
 
-        [...strokesRef.current, ...maskStorkeRef.current].forEach((stroke) => {
-          stroke.forEach((point: Point) => {
-            const { x, y } = getTransformedPoint(point.x, point.y);
-            const lineWidth = getTransformLineWidth(point.lineWidth);
-            ctx.fillStyle = 'rgba(0,0,0,1)';
-            ctx.beginPath();
-            ctx.arc(x, y, lineWidth / 2, 0, Math.PI * 2);
-            ctx.fill();
-          });
+        invertWorkerRef.current.onmessage = (event: any) => {
+          if (event.data.type === 'done' && event.data.imageData) {
+            // draw the data to the overlay canvas
+            const ctx = overlayCanvasRef.current!.getContext('2d')!;
+            ctx.putImageData(event.data.imageData, 0, 0);
+
+            isLoadingMaskRef.current = false;
+          }
+        };
+
+        // send offscreen canvas to worker
+        invertWorkerRef.current?.postMessage(
+          { canvas: offscreenCanvas, type: 'init' },
+          [offscreenCanvas]
+        );
+
+        // send draw data to worker
+        const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+        invertWorkerRef.current?.postMessage({
+          type: 'draw',
+          width: imageData.width,
+          height: imageData.height,
+          strokes: strokesRef.current,
+          maskStrokes: maskStorkeRef.current
         });
-        ctx.globalCompositeOperation = 'source-out';
       } else {
         redrawStrokes(strokesRef.current);
       }
@@ -491,9 +529,30 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         setStrokes([]);
         setTransform();
         clearOverlayCanvas();
-        loadMaskPixs(strokes, true);
+        loadMaskPixs(strokes);
       }
     }));
+
+    useEffect(() => {
+      invertWorkerRef.current = new Worker(
+        new URL('./invert-worker.ts', import.meta.url),
+        {
+          type: 'module'
+        }
+      );
+
+      loadMaksWorkerRef.current = new Worker(
+        new URL('./offscreen-worker.ts', import.meta.url),
+        {
+          type: 'module'
+        }
+      );
+
+      return () => {
+        invertWorkerRef.current?.terminate();
+        loadMaksWorkerRef.current?.terminate();
+      };
+    }, []);
 
     useEffect(() => {
       if (maskUpload?.length) {
@@ -516,9 +575,11 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             undo={undo}
             onClear={onReset}
             handleFitView={handleFitView}
-            uploadButton={uploadButton}
+            handleUpdateImageList={handleUpdateImageList}
+            handleUpdateMaskList={handleUpdateMaskList}
             disabled={disabled}
             lineWidth={lineWidth}
+            invertMask={invertMask}
             loading={loading}
           ></ToolsBar>
 
@@ -556,20 +617,32 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             })}
             style={{ position: 'absolute', zIndex: 10, cursor: 'none' }}
             onMouseDown={(event) => {
+              if (isLoadingMaskRef.current) {
+                return;
+              }
               mouseDownState.current = true;
               startDrawing(event);
             }}
             onMouseUp={(event) => {
+              if (isLoadingMaskRef.current) {
+                return;
+              }
               mouseDownState.current = false;
               endDrawing(event);
             }}
             onMouseEnter={handleMouseEnter}
             onWheel={handleOnWheel}
             onMouseMove={(e) => {
+              if (isLoadingMaskRef.current) {
+                return;
+              }
               handleMouseMove(e);
               draw(e);
             }}
             onMouseLeave={(e) => {
+              if (isLoadingMaskRef.current) {
+                return;
+              }
               endDrawing(e);
               handleMouseLeave();
             }}

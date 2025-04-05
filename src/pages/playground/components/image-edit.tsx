@@ -263,7 +263,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   );
 
   const handleUpdateImageList = useCallback(
-    (base64List: any) => {
+    (base64List: any[]) => {
       const currentImg = _.get(base64List, '[0]', {});
       const img = _.get(currentImg, 'dataUrl', '');
       handleOnScaleImageSize(currentImg);
@@ -281,13 +281,11 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     [handleOnScaleImageSize]
   );
 
-  const handleUpdateMaskList = useCallback(async (base64List: any) => {
-    // setMaskUpload(base64List);
+  const handleUpdateMaskList = useCallback(async (base64List: any[]) => {
     const mask = _.get(base64List, '[0].dataUrl', '');
     const maskColors = await processImage(mask);
     console.log('maskColors:', maskColors);
     imageEditorRef.current?.loadMaskPixs(maskColors || []);
-    // setMask(mask);
   }, []);
 
   const handleClearUploadMask = useCallback(() => {
@@ -322,27 +320,9 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           disabled={loading || !imageStatus.isOriginal}
           onSave={handleOnSave}
           clearUploadMask={handleClearUploadMask}
+          handleUpdateImageList={handleUpdateImageList}
+          handleUpdateMaskList={handleUpdateMaskList}
           maskUpload={maskUpload}
-          uploadButton={
-            <>
-              <UploadImg
-                disabled={loading}
-                handleUpdateImgList={handleUpdateImageList}
-                size="middle"
-                accept="image/*"
-              ></UploadImg>
-              <UploadImg
-                title={intl.formatMessage({
-                  id: 'playground.image.mask.upload'
-                })}
-                icon={<IconFont type="icon-mosaic-2"></IconFont>}
-                disabled={loading}
-                handleUpdateImgList={handleUpdateMaskList}
-                size="middle"
-                accept="image/*"
-              ></UploadImg>
-            </>
-          }
         ></CanvasImageEditor>
       );
     }

@@ -160,6 +160,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
+  const handleDeleteBackendParameters = (index: number) => {
+    onValuesChange?.({}, form.getFieldsValue());
+  };
+
   const handleSelectorOnBlur = () => {
     const workerSelector = form.getFieldValue('worker_selector');
     // check if all keys have values
@@ -169,6 +173,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     if (!hasEmptyValue) {
       onValuesChange?.({}, form.getFieldsValue());
     }
+  };
+
+  const handleDeleteWorkerSelector = (index: number) => {
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const handleBackendVersionOnBlur = () => {
@@ -257,6 +265,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 labels={wokerSelector}
                 onChange={handleWorkerLabelsChange}
                 onBlur={handleSelectorOnBlur}
+                onDelete={handleDeleteWorkerSelector}
                 description={
                   <span>
                     {intl.formatMessage({
@@ -350,6 +359,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             dataList={form.getFieldValue('backend_parameters') || []}
             onChange={handleBackendParametersChange}
             onBlur={handleBackendParametersOnBlur}
+            onDelete={handleDeleteBackendParameters}
             options={paramsConfig}
             description={
               backendParamsTips && (

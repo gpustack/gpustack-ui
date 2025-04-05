@@ -474,12 +474,12 @@ export const useCheckCompatibility = () => {
   const cancelEvaluate = () => {
     checkTokenRef.current?.cancel();
     checkTokenRef.current = null;
+    cacheFormValuesRef.current = {};
   };
 
   useEffect(() => {
     return () => {
-      checkTokenRef.current?.cancel();
-      checkTokenRef.current = null;
+      cancelEvaluate();
     };
   }, []);
 

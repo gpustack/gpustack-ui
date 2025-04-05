@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MutableRefObject, useState } from 'react';
+import React, { MutableRefObject, useState } from 'react';
 
 export default function useZoom(props: {
   overlayCanvasRef: any;
@@ -10,6 +10,7 @@ export default function useZoom(props: {
   autoScale: MutableRefObject<number>;
   baseScale: MutableRefObject<number>;
   translatePos: MutableRefObject<{ x: number; y: number }>;
+  isLoadingMaskRef: MutableRefObject<boolean>;
 }) {
   const MIN_SCALE = 0.5;
   const MAX_SCALE = 8;
@@ -22,7 +23,8 @@ export default function useZoom(props: {
     lineWidth,
     translatePos,
     autoScale,
-    baseScale
+    baseScale,
+    isLoadingMaskRef
   } = props;
 
   const [activeScale, setActiveScale] = useState<number>(1);
@@ -96,6 +98,9 @@ export default function useZoom(props: {
   };
 
   const handleOnWheel = (event: any) => {
+    if (isLoadingMaskRef.current) {
+      return;
+    }
     // stop
     handleZoom(event);
     updateCursorSize();

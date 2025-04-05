@@ -79,8 +79,8 @@ const AddModal: FC<AddModalProps> = (props) => {
     handleShowCompatibleAlert,
     setWarningStatus,
     handleBackendChangeBefore,
+    cancelEvaluate,
     handleOnValuesChange,
-    checkTokenRef,
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
@@ -182,10 +182,16 @@ const AddModal: FC<AddModalProps> = (props) => {
     onCancel?.();
   }, [onCancel]);
 
-  const handleOnOpen = useCallback(() => {
+  const handleOnOpen = () => {
+    console.log('handleOnOpen----------', props.source, props.deploymentType);
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
+      });
+      handleOnValuesChange?.({
+        changedValues: {},
+        allValues: props.initialValues,
+        source: source
       });
     } else {
       const backend =
@@ -194,15 +200,14 @@ const AddModal: FC<AddModalProps> = (props) => {
           : backendOptionsMap.vllm;
       form.current?.setFieldValue?.('backend', backend);
     }
-  }, [source, props.initialValues, props.deploymentType]);
+  };
 
   useEffect(() => {
-    if (!open) {
-      return;
-    } else {
+    if (open) {
       handleOnOpen();
+    } else {
+      cancelEvaluate();
     }
-
     return () => {
       setSelectedModel({});
       setWarningStatus({
@@ -210,9 +215,8 @@ const AddModal: FC<AddModalProps> = (props) => {
         title: '',
         message: []
       });
-      checkTokenRef.current?.cancel();
     };
-  }, [open, handleOnOpen]);
+  }, [open]);
 
   return (
     <Drawer

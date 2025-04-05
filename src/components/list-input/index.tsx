@@ -16,6 +16,7 @@ interface ListInputProps {
   labelExtra?: React.ReactNode;
   onChange: (data: string[]) => void;
   onBlur?: (e: any, index: number) => void;
+  onDelete?: (index: number) => void;
 }
 
 const ListInput: React.FC<ListInputProps> = (props) => {
@@ -26,6 +27,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
     description,
     onChange,
     onBlur,
+    onDelete,
     btnText,
     options,
     labelExtra
@@ -44,6 +46,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
     const valueList = _.map(values, 'value').filter((val: string) => !!val);
     setList(values);
     onChange(valueList);
+    onDelete?.(index);
   };
 
   const handleOnChange = (value: string, index: number) => {

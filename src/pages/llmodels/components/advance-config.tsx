@@ -191,9 +191,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   };
 
   const handleGpuSelectorChange = (value: any[] | string) => {
-    if (!value?.length || !value) {
-      return;
-    }
     onValuesChange?.({}, form.getFieldsValue());
   };
 

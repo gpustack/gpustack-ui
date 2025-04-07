@@ -172,9 +172,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         },
         getFieldsValue: () => {
           return form.getFieldsValue();
-        },
-        resetFields() {
-          form.resetFields();
         }
       };
     },
@@ -271,6 +268,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               {
                 label: 'vLLM',
                 value: backendOptionsMap.vllm,
+                disabled:
+                  props.source === modelSourceMap.local_path_value
+                    ? false
+                    : isGGUF
+              },
+              {
+                label: 'Ascend Mindie',
+                value: backendOptionsMap.ascendMindie,
                 disabled:
                   props.source === modelSourceMap.local_path_value
                     ? false

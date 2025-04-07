@@ -520,6 +520,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                         : isGGUF
                   },
                   {
+                    label: 'Ascend Mindie',
+                    value: backendOptionsMap.ascendMindie,
+                    disabled:
+                      formData?.source === modelSourceMap.local_path_value
+                        ? false
+                        : isGGUF
+                  },
+                  {
                     label: 'vox-box',
                     value: backendOptionsMap.voxBox,
                     disabled:

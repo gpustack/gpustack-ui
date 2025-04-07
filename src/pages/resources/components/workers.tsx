@@ -1,7 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
-import PageTools from '@/components/page-tools';
+import { FilterBar } from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
@@ -11,21 +11,10 @@ import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
   EditOutlined,
-  InfoCircleOutlined,
-  PlusOutlined,
-  SyncOutlined
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  ConfigProvider,
-  Empty,
-  Input,
-  Space,
-  Table,
-  Tooltip,
-  message
-} from 'antd';
+import { ConfigProvider, Empty, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -206,54 +195,18 @@ const Workers: React.FC = () => {
 
   return (
     <>
-      <PageTools
-        marginBottom={10}
-        marginTop={10}
-        left={
-          <Space>
-            <Input
-              placeholder={intl.formatMessage({
-                id: 'common.filter.name'
-              })}
-              style={{ width: 300 }}
-              allowClear
-              onChange={handleNameChange}
-            ></Input>
-            <Button
-              type="text"
-              style={{ color: 'var(--ant-color-text-tertiary)' }}
-              onClick={handleSearch}
-              icon={<SyncOutlined></SyncOutlined>}
-            ></Button>
-          </Space>
-        }
-        right={
-          <Space size={20}>
-            <Button
-              icon={<PlusOutlined></PlusOutlined>}
-              type="primary"
-              onClick={handleAddWorker}
-            >
-              {intl.formatMessage({ id: 'resources.button.create' })}
-            </Button>
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={handleDeleteBatch}
-              disabled={!rowSelection.selectedRowKeys.length}
-            >
-              <span>
-                {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                {rowSelection.selectedRowKeys.length > 0 && (
-                  <span>({rowSelection.selectedRowKeys?.length})</span>
-                )}
-              </span>
-            </Button>
-          </Space>
-        }
-      ></PageTools>
+      <FilterBar
+        buttonText={intl.formatMessage({ id: 'resources.button.create' })}
+        handleDeleteByBatch={handleDeleteBatch}
+        handleSearch={handleSearch}
+        handleClickPrimary={handleAddWorker}
+        handleInputChange={handleNameChange}
+        rowSelection={rowSelection}
+        width={{ input: 300 }}
+      ></FilterBar>
       <ConfigProvider renderEmpty={renderEmpty}>
         <Table
+          tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
           style={{ width: '100%' }}
           dataSource={dataSource.dataList}
           loading={dataSource.loading}

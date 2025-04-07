@@ -15,6 +15,9 @@ const SliderWrapper = styled.div`
     padding-block: 5px;
     padding-inline: ${INPUT_INNER_PADDING}px;
   }
+  .isfoucs-has-value {
+    left: 0;
+  }
   .slider-label {
     display: flex;
     justify-content: space-between;

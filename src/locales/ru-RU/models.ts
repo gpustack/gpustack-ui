@@ -132,5 +132,6 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.check.passed'
+// 1. 'models.form.check.passed',
+// 2. 'models.form.partialoffload.tips
 // ========== End of To-Do List ==========

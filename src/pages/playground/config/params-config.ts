@@ -507,6 +507,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       min: 256,
       max: 1024,
       step: 64,
+      labelWidth: 314,
       inputnumber: false
     },
     rules: [
@@ -527,6 +528,7 @@ export const ImageCustomSizeConfig: ParamsSchema[] = [
       min: 256,
       max: 1024,
       step: 64,
+      labelWidth: 314,
       inputnumber: false
     },
     rules: [
@@ -554,6 +556,7 @@ export const ChatParamsConfig: ParamsSchema[] = [
     attrs: {
       max: 2,
       step: 0.01,
+      labelWidth: 314,
       inputnumber: true
     },
     rules: [
@@ -577,6 +580,7 @@ export const ChatParamsConfig: ParamsSchema[] = [
     attrs: {
       max: 1024,
       step: 1,
+      labelWidth: 314,
       inputnumber: true
     },
     rules: [
@@ -600,6 +604,7 @@ export const ChatParamsConfig: ParamsSchema[] = [
     attrs: {
       max: 1,
       step: 0.01,
+      labelWidth: 314,
       inputnumber: true
     },
     rules: [
@@ -624,6 +629,7 @@ export const ChatParamsConfig: ParamsSchema[] = [
       max: 2,
       min: -2,
       step: 0.01,
+      labelWidth: 314,
       inputnumber: true
     },
     rules: [
@@ -648,6 +654,7 @@ export const ChatParamsConfig: ParamsSchema[] = [
       max: 2,
       min: -2,
       step: 0.01,
+      labelWidth: 314,
       inputnumber: true
     },
     rules: [

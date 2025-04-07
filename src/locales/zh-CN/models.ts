@@ -14,7 +14,7 @@ export default {
   'models.form.configurations': '配置',
   'models.form.s3address': 'S3 地址',
   'models.form.partialoffload.tips':
-    '启用 CPU 卸载的说明：启用 CPU 卸载时，如果 GPU 资源不足，则模型的一部分层将被卸载到 CPU 上，在没有 GPU 可用时，会使用纯 CPU 推理。',
+    '启用 CPU 卸载时，如果 GPU 资源不足，则模型的一部分层将被卸载到 CPU 上，在没有 GPU 可用时，会使用纯 CPU 推理。',
   'models.form.distribution.tips':
     '允许在单个 worker 资源不足时，将部分计算卸载到一个或多个远程 worker。',
   'models.openinplayground': '在 Playground 中打开',

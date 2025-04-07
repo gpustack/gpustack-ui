@@ -27,9 +27,6 @@ const OllamaForm: React.FC = () => {
   };
 
   const handleOnBlur = (e: any) => {
-    if (!e.target.value) {
-      return;
-    }
     onValuesChange?.({}, formInstance.getFieldsValue());
   };
   return (

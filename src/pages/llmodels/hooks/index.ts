@@ -428,6 +428,13 @@ export const useCheckCompatibility = () => {
   };
 
   const checkRequiredValue = (allValues: any) => {
+    const { scheduleType } = allValues;
+    const gpuIds = allValues.gpu_selector?.gpu_ids || [];
+
+    if (scheduleType === 'manual') {
+      return !gpuIds.length;
+    }
+
     const noLocalValue =
       allValues.source === modelSourceMap.local_path_value &&
       !allValues.local_path;
@@ -435,6 +442,7 @@ export const useCheckCompatibility = () => {
     const noOllamaValue =
       allValues.source === modelSourceMap.ollama_library_value &&
       !allValues.ollama_library_model_name;
+
     return noLocalValue || noOllamaValue;
   };
 

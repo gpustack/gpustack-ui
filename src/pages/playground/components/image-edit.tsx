@@ -356,7 +356,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         >
           <div
             className="flex-column flex-center gap-10 justify-center"
-            style={{ width: 150, height: 150 }}
+            style={{ width: 155, height: 155 }}
           >
             <IconFont
               type="icon-upload_image"

@@ -5,8 +5,9 @@ import { Cascader, Empty, Form } from 'antd';
 import _, { cloneDeep } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AutoTooltip from '../auto-tooltip';
-import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import SelectWrapper from './wrapper/select';
 
 const tag = (props: any) => {
   if (props.isMaxTag) {
@@ -152,36 +153,41 @@ const SealCascader: React.FC<
   };
 
   return (
-    <Wrapper
-      className="seal-select-wrapper"
-      classList={visible ? 'dropdown-visible' : ''}
-      status={status}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      onClick={handleClickWrapper}
-    >
-      <Cascader
-        {...rest}
-        optionRender={
-          optionNode
-            ? (data) => (
-                <OptionNodes data={data} optionNode={optionNode}></OptionNodes>
-              )
-            : undefined
-        }
-        tagRender={tagRender ?? renderTag}
-        ref={inputRef}
-        options={children ? null : _options}
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onChange={handleChange}
-        notFoundContent={null}
-        onDropdownVisibleChange={handleDropdownVisibleChange}
-      ></Cascader>
-    </Wrapper>
+    <SelectWrapper>
+      <Wrapper
+        className="seal-select-wrapper"
+        classList={visible ? 'dropdown-visible' : ''}
+        status={status}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        onClick={handleClickWrapper}
+      >
+        <Cascader
+          {...rest}
+          optionRender={
+            optionNode
+              ? (data) => (
+                  <OptionNodes
+                    data={data}
+                    optionNode={optionNode}
+                  ></OptionNodes>
+                )
+              : undefined
+          }
+          tagRender={tagRender ?? renderTag}
+          ref={inputRef}
+          options={children ? null : _options}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={handleChange}
+          notFoundContent={null}
+          onDropdownVisibleChange={handleDropdownVisibleChange}
+        ></Cascader>
+      </Wrapper>
+    </SelectWrapper>
   );
 };
 

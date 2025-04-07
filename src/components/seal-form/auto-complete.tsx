@@ -1,8 +1,9 @@
 import { AutoComplete, Form, Spin } from 'antd';
 import type { AutoCompleteProps } from 'antd/lib';
 import React, { useEffect, useRef, useState } from 'react';
-import Wrapper from './components/wrapper';
 import { SealFormItemProps } from './types';
+import Wrapper from './wrapper';
+import SelectWrapper from './wrapper/select';
 
 const SealAutoComplete: React.FC<
   AutoCompleteProps & SealFormItemProps & { onInput?: (e: Event) => void }
@@ -79,35 +80,37 @@ const SealAutoComplete: React.FC<
   };
 
   return (
-    <Wrapper
-      className="seal-select-wrapper"
-      status={status}
-      extra={extra}
-      label={label}
-      isFocus={isFocus}
-      required={required}
-      description={description}
-      disabled={props.disabled}
-      addAfter={renderAfter()}
-      onClick={handleClickWrapper}
-    >
-      <AutoComplete
-        {...rest}
-        ref={inputRef}
-        placeholder={
-          isFocus || !label ? (
-            <span style={{ paddingLeft: '12px' }}>{placeholder}</span>
-          ) : (
-            ''
-          )
-        }
-        onSelect={handleOnSelect}
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onSearch={handleSearch}
-        onChange={handleChange}
-      ></AutoComplete>
-    </Wrapper>
+    <SelectWrapper>
+      <Wrapper
+        className="seal-select-wrapper"
+        status={status}
+        extra={extra}
+        label={label}
+        isFocus={isFocus}
+        required={required}
+        description={description}
+        disabled={props.disabled}
+        addAfter={renderAfter()}
+        onClick={handleClickWrapper}
+      >
+        <AutoComplete
+          {...rest}
+          ref={inputRef}
+          placeholder={
+            isFocus || !label ? (
+              <span style={{ paddingLeft: '12px' }}>{placeholder}</span>
+            ) : (
+              ''
+            )
+          }
+          onSelect={handleOnSelect}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onSearch={handleSearch}
+          onChange={handleChange}
+        ></AutoComplete>
+      </Wrapper>
+    </SelectWrapper>
   );
 };
 

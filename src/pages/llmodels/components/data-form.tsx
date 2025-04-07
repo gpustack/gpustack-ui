@@ -158,6 +158,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return {
         form: form,
         submit: handleSumit,
+        resetFields: (fields: any[]) => {
+          form.resetFields(fields);
+        },
         setFieldsValue: (values: FormData) => {
           form.setFieldsValue(values);
         },

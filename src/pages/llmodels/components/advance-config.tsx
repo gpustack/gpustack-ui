@@ -184,6 +184,19 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
+  const handleScheduleTypeChange = (value: string) => {
+    if (value === 'auto') {
+      onValuesChange?.({}, form.getFieldsValue());
+    }
+  };
+
+  const handleGpuSelectorChange = (value: any[] | string) => {
+    if (!value?.length || !value) {
+      return;
+    }
+    onValuesChange?.({}, form.getFieldsValue());
+  };
+
   const collapseItems = useMemo(() => {
     const children = (
       <>
@@ -198,6 +211,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         </Form.Item>
         <Form.Item name="scheduleType">
           <SealSelect
+            onChange={handleScheduleTypeChange}
             label={intl.formatMessage({ id: 'models.form.scheduletype' })}
             description={<TooltipList list={scheduleTypeTips}></TooltipList>}
             options={[
@@ -301,6 +315,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
                 optionNode={GPUCard}
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                onChange={handleGpuSelectorChange}
               ></SealCascader>
             </Form.Item>
           </>

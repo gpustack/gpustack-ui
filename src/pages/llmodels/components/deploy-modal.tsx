@@ -99,13 +99,21 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
 
+  const getCategory = (item: any) => {
+    const categories = item.evaluateResult?.default_spec?.categories || [];
+    if (Array.isArray(categories)) {
+      return categories?.[0] || null;
+    }
+    return categories || null;
+  };
   const handleSelectModelFile = (item: any) => {
     form.current?.form?.resetFields(resetFields);
     const modelInfo = onSelectModel(selectedModel, props.source);
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
       ...item.evaluateResult?.default_spec,
-      ...modelInfo
+      ...modelInfo,
+      categories: getCategory(item)
     });
 
     if (item.fakeName) {
@@ -122,7 +130,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
         ...item.evaluateResult?.default_spec,
-        ...modelInfo
+        ...modelInfo,
+        categories: getCategory(item)
       });
     }
   };

@@ -427,17 +427,32 @@ export const useCheckCompatibility = () => {
     return evalutionData;
   };
 
+  const checkRequiredValue = (allValues: any) => {
+    const noLocalValue =
+      allValues.source === modelSourceMap.local_path_value &&
+      !allValues.local_path;
+
+    const noOllamaValue =
+      allValues.source === modelSourceMap.ollama_library_value &&
+      !allValues.ollama_library_model_name;
+    return noLocalValue || noOllamaValue;
+  };
+
   const handleOnValuesChange = async (params: {
     changedValues: any;
     allValues: any;
     source: string;
   }) => {
     const { allValues, source } = params;
-    if (
-      _.isEqual(cacheFormValuesRef.current, allValues) ||
-      (allValues.source === modelSourceMap.local_path_value &&
-        !allValues.local_path)
-    ) {
+    if (_.isEqual(cacheFormValuesRef.current, allValues)) {
+      return;
+    }
+    if (checkRequiredValue(allValues)) {
+      setWarningStatus({
+        show: false,
+        title: '',
+        message: ''
+      });
       return;
     }
     cacheFormValuesRef.current = allValues;

@@ -52,6 +52,10 @@ const backendOptions = [
     value: backendOptionsMap.vllm
   },
   {
+    label: 'Ascend Mindie',
+    value: backendOptionsMap.ascendMindie
+  },
+  {
     label: 'vox-box',
     value: backendOptionsMap.voxBox
   }
@@ -306,12 +310,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = (backend: string) => {
-    if (backend === backendOptionsMap.vllm) {
-      setIsGGUF(false);
-    }
-
     if (backend === backendOptionsMap.llamaBox) {
       setIsGGUF(true);
+    } else {
+      setIsGGUF(false);
     }
     const sizeList = handleSetSizeOptions({
       backend: backend

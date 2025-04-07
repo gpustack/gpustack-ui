@@ -131,7 +131,8 @@ export const localPathTipsList = [
 export const backendOptionsMap = {
   llamaBox: 'llama-box',
   vllm: 'vllm',
-  voxBox: 'vox-box'
+  voxBox: 'vox-box',
+  ascendMindie: 'ascend-mindie'
 };
 
 export const backendParamsHolderTips = {

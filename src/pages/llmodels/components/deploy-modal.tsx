@@ -26,7 +26,6 @@ import TitleWrapper from './title-wrapper';
 const resetFields = [
   'cpu_offloading',
   'distributed_inference_across_workers',
-  'backend',
   'backend_version',
   'backend_parameters'
 ];

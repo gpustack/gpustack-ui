@@ -469,5 +469,6 @@ export const excludeFields = [
   'ollama_library_model_name',
   'scheduleType',
   'placement_strategy',
-  'backend'
+  'backend',
+  'gpu_selector'
 ];

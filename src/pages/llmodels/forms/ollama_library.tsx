@@ -11,7 +11,7 @@ import { FormData } from '../config/types';
 const OllamaForm: React.FC = () => {
   const formCtx = useFormContext();
   const formInnerCtx = useFormInnerContext();
-  const { byBuiltIn } = formCtx;
+  const { byBuiltIn, onValuesChange } = formCtx;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const source = Form.useWatch('source');
@@ -20,6 +20,18 @@ const OllamaForm: React.FC = () => {
   if (![modelSourceMap.ollama_library_value].includes(source) || byBuiltIn) {
     return null;
   }
+  const handleModelNameChange = (value: string) => {
+    if (value) {
+      onValuesChange?.({}, formInstance.getFieldsValue());
+    }
+  };
+
+  const handleOnBlur = (e: any) => {
+    if (!e.target.value) {
+      return;
+    }
+    onValuesChange?.({}, formInstance.getFieldsValue());
+  };
   return (
     <>
       <Form.Item<FormData>
@@ -38,6 +50,8 @@ const OllamaForm: React.FC = () => {
           defaultActiveFirstOption
           disabled={false}
           options={ollamaModelOptions}
+          onSelect={handleModelNameChange}
+          onBlur={handleOnBlur}
           description={
             <span>
               <span>

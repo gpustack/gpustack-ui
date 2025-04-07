@@ -21,7 +21,8 @@ export default {
   'model.form.ollama.model': 'Ollamaモデル',
   'model.form.ollamaholder': 'モデル名を選択または入力してください',
   'model.deploy.sort': '並び替え',
-  'model.deploy.search.placeholder': '{source}からモデルを検索',
+  'model.deploy.search.placeholder':
+    'Type <kbd>/</kbd> to search models from {source}',
   'model.form.ollamatips':
     'ヒント: 以下はGPUStackで事前設定されたOllamaモデルです。希望するモデルを選択するか、右側の【{name}】入力ボックスにデプロイしたいモデルを直接入力してください。',
   'models.sort.name': '名前',
@@ -142,4 +143,5 @@ export default {
 // 10. 'models.form.distribution.tips,
 // 11. 'models.form.check.passed',
 // 12. 'models.form.check.claims',
+// 13. 'model.deploy.search.placeholder',
 // ========== End of To-Do List ==========

@@ -827,15 +827,16 @@ body {
 
 .ant-tooltip-content {
   .ant-tooltip-inner {
+    width: max-content;
+    max-width: 300px;
+
+    .text-tertiary {
+      color: var(--color-white-secondary);
+    }
+
     a {
       color: var(--ant-color-link-hover);
     }
-  }
-}
-
-.ant-tooltip-inner {
-  .text-tertiary {
-    color: var(--color-white-secondary);
   }
 }
 

@@ -24,7 +24,7 @@ const TitleTip: React.FC<TitleTipProps> = (props) => {
       <div
         style={{
           width: 'max-content',
-          maxWidth: 250,
+          maxWidth: 300,
           paddingInline: 10
         }}
       >

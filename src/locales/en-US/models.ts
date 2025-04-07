@@ -21,7 +21,8 @@ export default {
   'model.form.ollama.model': 'Ollama Model',
   'model.form.ollamaholder': 'Please select or input model name',
   'model.deploy.sort': 'Sort',
-  'model.deploy.search.placeholder': 'Search models from {source}',
+  'model.deploy.search.placeholder':
+    'Type <kbd>/</kbd> to search models from {source}',
   'model.form.ollamatips':
     'Tip: The following are the preconfigured Ollama models in GPUStack. Please select the model you want, or directly enter the model you wish to deploy in the 【{name}】 input box on the right.',
   'models.sort.name': 'Name',

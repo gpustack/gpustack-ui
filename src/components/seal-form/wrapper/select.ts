@@ -34,7 +34,7 @@ const SelectWrapper = styled.div`
         }
 
         &:hover {
-          :global(.ant-select-dropdown) {
+          .ant-select-dropdown {
             border-color: var(--ant-input-active-border-color);
           }
         }
@@ -75,17 +75,15 @@ const SelectWrapper = styled.div`
       &.no-label {
         padding-block: 0;
 
-        :global {
-          .ant-select-arrow {
-            top: 50%;
-          }
+        .ant-select-arrow {
+          top: 50%;
         }
 
         .ant-select-selector {
           padding-block-start: 0 !important;
         }
 
-        :global(.ant-select .ant-select-selection-search) {
+        .ant-select .ant-select-selection-search {
           top: 10px !important;
         }
       }

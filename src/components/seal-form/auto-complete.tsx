@@ -80,7 +80,7 @@ const SealAutoComplete: React.FC<
   };
 
   return (
-    <SelectWrapper>
+    <SelectWrapper style={style}>
       <Wrapper
         className="seal-select-wrapper"
         status={status}

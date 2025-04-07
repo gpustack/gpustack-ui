@@ -56,22 +56,24 @@ interface FilterBarProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange?: (value: any) => void;
   handleSearch: () => void;
-  handleDeleteByBatch: () => void;
-  handleClickPrimary: (item: any) => void;
-  rowSelection: any;
-  actionItems: ActionItem[];
+  handleDeleteByBatch?: () => void;
+  handleClickPrimary?: (item: any) => void;
+  rowSelection?: any;
+  actionItems?: ActionItem[];
   selectOptions?: Global.BaseOption<string | number>[];
   showSelect?: boolean;
   buttonText: string;
   buttonIcon?: React.ReactNode;
   marginBottom?: number;
   marginTop?: number;
-  inputHolder: string;
-  selectHolder: string;
-  actionType: 'dropdown' | 'button';
+  inputHolder?: string;
+  selectHolder?: string;
+  actionType?: 'dropdown' | 'button';
+  showPrimaryButton?: boolean;
+  showDeleteButton?: boolean;
   width?: {
-    input: number;
-    select: number;
+    input?: number;
+    select?: number;
   };
 }
 
@@ -88,14 +90,63 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     showSelect,
     buttonText,
     buttonIcon,
-    actionType,
+    actionType = 'button',
     marginBottom = 10,
     marginTop = 10,
-    inputHolder,
+    inputHolder = 'common.filter.name',
     selectHolder,
+    showPrimaryButton = true,
+    showDeleteButton = true,
     width
   } = props;
   const intl = useIntl();
+
+  const renderRight = useMemo(() => {
+    if (!showPrimaryButton && !showDeleteButton) {
+      return null;
+    }
+    return (
+      <Space size={20}>
+        {actionType === 'dropdown' ? (
+          <DropDownActions
+            menu={{
+              items: actionItems,
+              onClick: handleClickPrimary
+            }}
+          >
+            <Button
+              icon={<DownOutlined></DownOutlined>}
+              type="primary"
+              iconPosition="end"
+            >
+              {buttonText}
+            </Button>
+          </DropDownActions>
+        ) : (
+          <Button
+            icon={buttonIcon ?? <PlusOutlined></PlusOutlined>}
+            type="primary"
+            onClick={handleClickPrimary}
+          >
+            {buttonText}
+          </Button>
+        )}
+        <Button
+          icon={<DeleteOutlined />}
+          danger
+          onClick={handleDeleteByBatch}
+          disabled={!rowSelection.selectedRowKeys.length}
+        >
+          <span>
+            {intl?.formatMessage?.({ id: 'common.button.delete' })}
+            {rowSelection.selectedRowKeys.length > 0 && (
+              <span>({rowSelection.selectedRowKeys?.length})</span>
+            )}
+          </span>
+        </Button>
+      </Space>
+    );
+  }, [actionItems, actionType]);
 
   return (
     <PageTools
@@ -132,47 +183,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
           ></Button>
         </Space>
       }
-      right={
-        <Space size={20}>
-          {actionType === 'dropdown' ? (
-            <DropDownActions
-              menu={{
-                items: actionItems,
-                onClick: handleClickPrimary
-              }}
-            >
-              <Button
-                icon={<DownOutlined></DownOutlined>}
-                type="primary"
-                iconPosition="end"
-              >
-                {buttonText}
-              </Button>
-            </DropDownActions>
-          ) : (
-            <Button
-              icon={buttonIcon ?? <PlusOutlined></PlusOutlined>}
-              type="primary"
-              onClick={handleClickPrimary}
-            >
-              {buttonText}
-            </Button>
-          )}
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={handleDeleteByBatch}
-            disabled={!rowSelection.selectedRowKeys.length}
-          >
-            <span>
-              {intl?.formatMessage?.({ id: 'common.button.delete' })}
-              {rowSelection.selectedRowKeys.length > 0 && (
-                <span>({rowSelection.selectedRowKeys?.length})</span>
-              )}
-            </span>
-          </Button>
-        </Space>
-      }
+      right={renderRight}
     ></PageTools>
   );
 };

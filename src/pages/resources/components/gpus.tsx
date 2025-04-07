@@ -1,13 +1,13 @@
 import AutoTooltip from '@/components/auto-tooltip';
-import PageTools from '@/components/page-tools';
+import { FilterBar } from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { convertFileSize } from '@/utils';
-import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, ConfigProvider, Empty, Input, Space, Table } from 'antd';
+import { ConfigProvider, Empty, Table } from 'antd';
 import _ from 'lodash';
+import React from 'react';
 import { queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
@@ -67,30 +67,17 @@ const GPUList: React.FC = () => {
 
   return (
     <>
-      <PageTools
-        marginBottom={10}
-        marginTop={10}
-        left={
-          <Space>
-            <Input
-              placeholder={intl.formatMessage({
-                id: 'common.filter.name'
-              })}
-              style={{ width: 300 }}
-              allowClear
-              onChange={handleNameChange}
-            ></Input>
-            <Button
-              type="text"
-              style={{ color: 'var(--ant-color-text-tertiary)' }}
-              onClick={handleSearch}
-              icon={<SyncOutlined></SyncOutlined>}
-            ></Button>
-          </Space>
-        }
-      ></PageTools>
+      <FilterBar
+        buttonText={intl.formatMessage({ id: 'resources.button.create' })}
+        handleSearch={handleSearch}
+        handleInputChange={handleNameChange}
+        showDeleteButton={false}
+        showPrimaryButton={false}
+        width={{ input: 300 }}
+      ></FilterBar>
       <ConfigProvider renderEmpty={renderEmpty}>
         <Table
+          tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
           dataSource={dataSource.dataList}
           loading={dataSource.loading}
           rowKey="id"

@@ -13,8 +13,16 @@ export default function useTableFetch<ListItem>(options: {
   fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
   deleteAPI?: (id: number, params?: any) => Promise<any>;
   contentForDelete?: string;
+  defaultData?: any[];
 }) {
-  const { fetchAPI, deleteAPI, contentForDelete, API, watch } = options;
+  const {
+    fetchAPI,
+    deleteAPI,
+    contentForDelete,
+    API,
+    watch,
+    defaultData = []
+  } = options;
   const chunkRequedtRef = useRef<any>(null);
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
@@ -28,7 +36,7 @@ export default function useTableFetch<ListItem>(options: {
     loadend: boolean;
     total: number;
   }>({
-    dataList: [],
+    dataList: [...defaultData],
     loading: false,
     loadend: false,
     total: 0

@@ -70,6 +70,11 @@ export const HuggingFaceModels = [
     type: 'tts',
     org: 'FunAudioLLM',
     name: 'CosyVoice-300M'
+  },
+  {
+    type: 'tts',
+    org: 'FunAudioLLM',
+    name: 'CosyVoice2-0.5B'
   }
 ];
 
@@ -103,6 +108,11 @@ export const ModelScopeModels = [
     type: 'tts',
     org: 'iic',
     name: 'CosyVoice-300M-25Hz'
+  },
+  {
+    type: 'tts',
+    org: 'iic',
+    name: 'CosyVoice2-0.5B'
   },
   {
     type: 'tts',

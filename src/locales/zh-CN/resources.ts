@@ -55,7 +55,7 @@ export default {
   'resources.worker.script.install': '脚本安装',
   'resources.worker.container.install': '容器安装(仅支持 Linux)',
   'resources.worker.cann.tips':
-    '按需要挂载的 GPU index 设置 <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES</span>，如需挂载 GPU0 - GPU3，则设为 <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES=0,1,2,3</span> 或 <span style="color: #000;font-weight: 600">ASCEND_VISIBLE_DEVICES=0-3</span>',
+    '按需要挂载的 NPU index 设置 <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span>，如需挂载 NPU0 - NPU1，则添加 <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>',
   'resources.modelfiles.form.path': '存储路径',
   'resources.modelfiles.modelfile': '模型文件',
   'resources.modelfiles.download': '添加模型文件',

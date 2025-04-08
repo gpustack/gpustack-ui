@@ -65,7 +65,7 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
             {title && (
               <TitleWrapper className="title-text">{title}</TitleWrapper>
             )}
-            <OverlayScroller maxHeight={80} style={{ ...contentStyle }}>
+            <OverlayScroller maxHeight={86} style={{ ...contentStyle }}>
               <ContentWrapper
                 $hasTitle={!!title}
                 className={classNames('content', type)}

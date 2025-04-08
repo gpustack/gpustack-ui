@@ -56,7 +56,7 @@ export default {
     'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
   'resources.worker.container.install': 'Установка контейнером (только Linux)',
-  'resources.worker.cann.tips': `Укажите индексы GPU через <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> или <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`,
+  'resources.worker.cann.tips': `Set <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> according to the required NPU index. For example, to mount NPU0 and NPU1, add <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`,
   'resources.modelfiles.form.path': 'Путь хранения',
   'resources.modelfiles.modelfile': 'Файлы моделей',
   'resources.modelfiles.download': 'Добавить файл модели',
@@ -75,5 +75,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'resources.worker.cann.tips'
 // ========== End of To-Do List ==========

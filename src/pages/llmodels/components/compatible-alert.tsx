@@ -5,6 +5,7 @@ import {
   LoadingOutlined,
   WarningFilled
 } from '@ant-design/icons';
+import { Button } from 'antd';
 import { isArray } from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -24,13 +25,19 @@ interface CompatibilityAlertProps {
 
 const DivWrapper = styled.div`
   position: relative;
-  padding-inline: 12px;
+  padding-inline: 8px;
+  &:hover {
+    .close-wrapper {
+      display: block;
+    }
+  }
 `;
 
 const CloseWrapper = styled.div`
+  display: none;
   position: absolute;
-  top: 12px;
-  right: 18px;
+  top: 6px;
+  right: 12px;
   line-height: 1;
   cursor: pointer;
   background-color: var(--ant-color-warning-bg);
@@ -98,8 +105,13 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           icon={renderIcon}
         ></AlertBlockInfo>
         {showClose && !['transition', 'success'].includes(type) && (
-          <CloseWrapper onClick={onClose}>
-            <CloseOutlined />
+          <CloseWrapper className="close-wrapper">
+            <Button
+              onClick={onClose}
+              icon={<CloseOutlined />}
+              size="small"
+              type="text"
+            ></Button>
           </CloseWrapper>
         )}
       </DivWrapper>

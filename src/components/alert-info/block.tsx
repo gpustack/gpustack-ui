@@ -13,7 +13,7 @@ interface AlertInfoProps {
   ellipsis?: boolean;
   style?: React.CSSProperties;
   contentStyle?: React.CSSProperties;
-  title: React.ReactNode;
+  title?: React.ReactNode;
 }
 
 const TitleWrapper = styled.div`

@@ -45,7 +45,7 @@ export default {
     'Получить токен <span class="note-text">(Запустить на сервере)</span>',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
   'resources.worker.add.step2.tips':
-    '(выполнить на подключаемом воркере, <span style="color: #000;font-weight: 600">mytoken</span> это токен, полученный на первом шаге)',
+    '(выполнить на подключаемом воркере, <span style="color: #000;font-weight: 600">token</span> это токен, полученный на первом шаге)',
   'resources.worker.add.step3':
     'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',

@@ -50,7 +50,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       <HighlightCode
         code={addWorkerGuide.mac.registerWorker({
           server: origin,
-          token: '${mytoken}'
+          token: '${token}'
         })}
         theme="dark"
       ></HighlightCode>
@@ -59,7 +59,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         theme="dark"
         code={addWorkerGuide.win.registerWorker({
           server: origin,
-          token: '${mytoken}'
+          token: '${token}'
         })}
       ></HighlightCode>
       <h3 className="m-b-0 m-t-10 font-size-14 font-600">3. {labels.step3}</h3>

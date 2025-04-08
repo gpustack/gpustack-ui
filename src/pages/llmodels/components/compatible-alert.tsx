@@ -29,8 +29,9 @@ const DivWrapper = styled.div`
 
 const CloseWrapper = styled.div`
   position: absolute;
-  top: 10px;
+  top: 12px;
   right: 18px;
+  line-height: 1;
   cursor: pointer;
   background-color: var(--ant-color-warning-bg);
 `;

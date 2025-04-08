@@ -228,7 +228,6 @@ export const useGenerateModelFileOptions = () => {
 
 export const useCheckCompatibility = () => {
   const intl = useIntl();
-
   const cacheFormValuesRef = useRef<any>({});
   const checkTokenRef = useRef<any>(null);
   const submitAnyway = useRef<boolean>(false);

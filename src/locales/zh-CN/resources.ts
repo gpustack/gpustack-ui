@@ -42,10 +42,10 @@ export default {
   'resources.table.unified': '统一内存',
   'resources.worker.linuxormaxos': 'Linux 或 macOS',
   'resources.worker.add.step1':
-    '获取 token<span class="note-text">（在 Server 上运行）</span>',
+    '获取 Token<span class="note-text">（在 Server 上运行）</span>',
   'resources.worker.add.step2': '注册 Worker',
   'resources.worker.add.step2.tips':
-    '（在需要添加的 Worker 上运行，<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 token）',
+    '（在需要添加的 Worker 上运行，<span style="color: #000;font-weight: 600">token</span> 为第一步获取到的 token）',
   'resources.worker.add.step3': '成功后，刷新 Worker 列表即可看到新的 Worker',
   'resources.worker.container.supported': '不支持 macOS 和 Windows',
   'resources.worker.current.version': '当前版本为 {version}',

@@ -11,11 +11,7 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
-import {
-  backendOptionsMap,
-  modelSourceMap,
-  setSourceRepoConfigValue
-} from '@/pages/llmodels/config';
+import { backendOptionsMap, modelSourceMap } from '@/pages/llmodels/config';
 import { identifyModelTask } from '@/pages/llmodels/config/audio-catalog';
 import {
   modalConfig,
@@ -297,8 +293,6 @@ const ModelFiles = () => {
 
     const targetWorker = _.find(workersList, { value: record.worker_id })
       ?.labels?.['worker-name'];
-
-    const result = setSourceRepoConfigValue(record.source, record);
 
     return {
       source: modelSourceMap.local_path_value,

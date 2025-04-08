@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const isNotEmptyValue = (value: any) => {
   if (Array.isArray(value)) {
     return value.length > 0;
@@ -20,25 +22,22 @@ export const handleBatchRequest = async (
 };
 
 export const convertFileSize = (
-  sizeInBytes: number | undefined,
-  prec?: number,
+  sizeInBytes?: number,
+  prec = 1,
   allowEmpty = false
-) => {
-  const precision = prec ?? 1;
-  if (!sizeInBytes) {
-    return allowEmpty ? '' : '0';
+): string => {
+  if (!sizeInBytes) return allowEmpty ? '' : '0';
+
+  const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+  let size = sizeInBytes;
+  let unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
   }
-  if (sizeInBytes < 1024) {
-    return `${sizeInBytes.toFixed(precision)} B`;
-  } else if (sizeInBytes < 1024 * 1024) {
-    return `${(sizeInBytes / 1024).toFixed(precision)} KiB`;
-  } else if (sizeInBytes < 1024 * 1024 * 1024) {
-    return `${(sizeInBytes / (1024 * 1024)).toFixed(precision)} MiB`;
-  } else if (sizeInBytes < 1024 * 1024 * 1024 * 1024) {
-    return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(precision)} GiB`;
-  } else {
-    return `${(sizeInBytes / (1024 * 1024 * 1024 * 1024)).toFixed(precision)} TiB`;
-  }
+
+  return `${_.round(size, prec)} ${units[unitIndex]}`;
 };
 
 export const platformCall = () => {

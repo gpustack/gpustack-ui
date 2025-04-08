@@ -62,8 +62,8 @@ export default {
   'models.search.gguf.tips':
     'GGUF 模型用 llama-box(支持 Linux, macOS 和 Windows)。',
   'models.search.vllm.tips':
-    ' 非 GGUF 的音频模型用 vox-box，其它非 GGUF 的模型用 vLLM(仅支持 x86 Linux)。',
-  'models.search.voxbox.tips': '若需部署音频模型取消勾选 GGUF 复选框。',
+    ' 非 GGUF 的语音模型用 vox-box，其它非 GGUF 的模型用 vLLM(仅支持 x86 Linux)。',
+  'models.search.voxbox.tips': '若需部语音模型取消勾选 GGUF 复选框。',
   'models.form.ollamalink': '在 Ollama Library 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
     '例如，--ctx-size=8192',
@@ -83,9 +83,9 @@ export default {
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows',
   'models.form.backend.vllm': '用于非 GGUF 格式模型，仅支持 x86 Linux',
-  'models.form.backend.voxbox': '用于非 GGUF 格式的音频模型',
+  'models.form.backend.voxbox': '用于非 GGUF 格式的语音模型',
   'models.form.search.gguftips':
-    '当 macOS 或 Windows 作 Worker 时勾选 GGUF（搜索音频模型时取消勾选）',
+    '当 macOS 或 Windows 作 Worker 时勾选 GGUF（搜索语音模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',
   'models.filter.category': '按类别筛选',
   'models.list.more.logs': '查看更多',

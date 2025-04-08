@@ -181,21 +181,27 @@ export const ModelScopeModels = [
   }
 ];
 
+const checkModelName = (
+  modelName: string,
+  item: { type: string; org: string; name: string }
+) => {
+  let sourceName = `${item.org}/${item.name}`;
+  if (item.name === '*') {
+    sourceName = `${item.org}`;
+  }
+  return (
+    `${sourceName}`.indexOf(modelName) > -1 ||
+    modelName?.indexOf(`${sourceName}`) > -1
+  );
+};
+
 export const identifyModelTask = (source: string, modelName: string) => {
   let data = null;
   if (source === modelSourceMap.huggingface_value) {
-    data = HuggingFaceModels.find(
-      (item) =>
-        `${item.org}/${item.name}`.indexOf(modelName) > -1 ||
-        modelName?.indexOf(`${item.org}/${item.name}`) > -1
-    );
+    data = HuggingFaceModels.find((item) => checkModelName(modelName, item));
   }
   if (source === modelSourceMap.modelscope_value) {
-    data = ModelScopeModels.find(
-      (item) =>
-        `${item.org}/${item.name}`.indexOf(modelName) > -1 ||
-        modelName?.indexOf(`${item.org}/${item.name}`) > -1
-    );
+    data = ModelScopeModels.find((item) => checkModelName(modelName, item));
   }
   if (data) {
     return modelTaskMap.audio;

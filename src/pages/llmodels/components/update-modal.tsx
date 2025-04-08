@@ -56,6 +56,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     onCancel,
     updateFormInitials: { gpuOptions, isGGUF, data: formData }
   } = props || {};
+  const intl = useIntl();
   const {
     setWarningStatus,
     generateGPUIds,
@@ -63,9 +64,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     checkTokenRef,
     warningStatus
   } = useCheckCompatibility();
+
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
-  const intl = useIntl();
   const localPathCache = useRef<string>('');
   const submitAnyway = useRef<boolean>(false);
 
@@ -353,6 +354,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   useEffect(() => {
     if (open && formData) {
       form.setFieldsValue(formData);
+      setWarningStatus({
+        show: true,
+        message: intl.formatMessage({
+          id: 'models.form.update.tips'
+        })
+      });
     }
     if (!open) {
       checkTokenRef.current?.cancel?.();
@@ -426,17 +433,19 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             : 0
         }
         footer={
-          <CompatibilityAlert
-            showClose={true}
-            onClose={() => {
-              setWarningStatus({
-                show: false,
-                message: ''
-              });
-            }}
-            warningStatus={warningStatus}
-            contentStyle={{ paddingInline: 0 }}
-          ></CompatibilityAlert>
+          <>
+            <CompatibilityAlert
+              showClose={false}
+              onClose={() => {
+                setWarningStatus({
+                  show: false,
+                  message: ''
+                });
+              }}
+              warningStatus={warningStatus}
+              contentStyle={{ paddingInline: 0 }}
+            ></CompatibilityAlert>
+          </>
         }
       >
         <FormContext.Provider

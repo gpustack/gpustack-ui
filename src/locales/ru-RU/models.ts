@@ -129,11 +129,15 @@ export default {
     'При возникновении ошибки система автоматически попытается перезапуститься.',
   'models.form.check.params': 'Проверка конфигурации...',
   'models.form.check.passed': 'Compatibility Check Passed',
-  'models.form.check.claims': 'Модель требует примерно {vram} VRAM и {ram} RAM.'
+  'models.form.check.claims':
+    'Модель требует примерно {vram} VRAM и {ram} RAM.',
+  'models.form.update.tips':
+    'Changes will only apply after you delete and recreate the instance.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.form.check.passed',
 // 2. 'models.form.partialoffload.tips
-// 3. 'model.deploy.search.placeholder'
+// 3. 'model.deploy.search.placeholder',
+// 4. 'models.form.update.tips',
 // ========== End of To-Do List ==========

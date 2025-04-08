@@ -1,6 +1,7 @@
 import { useIntl } from '@umijs/max';
 import { Button, Space } from 'antd';
 import React from 'react';
+import styled from 'styled-components';
 
 type ModalFooterProps = {
   onOk?: () => void;
@@ -16,7 +17,16 @@ type ModalFooterProps = {
   showCancelBtn?: boolean;
   extra?: React.ReactNode;
   form?: any;
+  description?: React.ReactNode;
 };
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+`;
+
 const ModalFooter: React.FC<ModalFooterProps> = ({
   onOk,
   onCancel,
@@ -28,29 +38,37 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   htmlType = 'button',
   style,
   showOkBtn = true,
+  description,
   extra,
   form
 }) => {
   const intl = useIntl();
   return (
-    <Space size={20} style={{ ...style }}>
-      <Button onClick={onCancel} style={{ width: '88px' }} {...cancelBtnProps}>
-        {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
-      </Button>
-      {extra}
-      {showOkBtn && (
+    <Wrapper>
+      <div>{description}</div>
+      <Space size={20} style={{ ...style }}>
         <Button
-          type="primary"
-          onClick={onOk}
+          onClick={onCancel}
           style={{ width: '88px' }}
-          loading={loading}
-          htmlType={htmlType}
-          {...okBtnProps}
+          {...cancelBtnProps}
         >
-          {okText || intl.formatMessage({ id: 'common.button.save' })}
+          {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
         </Button>
-      )}
-    </Space>
+        {extra}
+        {showOkBtn && (
+          <Button
+            type="primary"
+            onClick={onOk}
+            style={{ width: '88px' }}
+            loading={loading}
+            htmlType={htmlType}
+            {...okBtnProps}
+          >
+            {okText || intl.formatMessage({ id: 'common.button.save' })}
+          </Button>
+        )}
+      </Space>
+    </Wrapper>
   );
 };
 

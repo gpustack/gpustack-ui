@@ -356,6 +356,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       form.setFieldsValue(formData);
       setWarningStatus({
         show: true,
+        isDefault: true,
         message: intl.formatMessage({
           id: 'models.form.update.tips'
         })
@@ -404,10 +405,15 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           <ModalFooter
             onCancel={onCancel}
             onOk={handleSumit}
-            showOkBtn={!warningStatus.show || warningStatus.type === 'success'}
+            showOkBtn={
+              !warningStatus.show ||
+              warningStatus.type === 'success' ||
+              warningStatus.isDefault
+            }
             extra={
               warningStatus.show &&
-              warningStatus.type !== 'success' && (
+              warningStatus.type !== 'success' &&
+              !warningStatus.isDefault && (
                 <Button
                   type="primary"
                   onClick={handleSubmitAnyway}

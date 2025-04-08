@@ -146,7 +146,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
         </Button>
       </Space>
     );
-  }, [actionItems, actionType]);
+  }, [actionItems, actionType, rowSelection?.selectedRowKeys]);
 
   return (
     <PageTools

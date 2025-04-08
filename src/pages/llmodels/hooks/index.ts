@@ -8,15 +8,13 @@ import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec, queryGPUList } from '../apis';
 import {
-  HuggingFaceTaskMap,
-  ModelscopeTaskMap,
   backendOptionsMap,
   getSourceRepoConfigValue,
   modelSourceMap,
   modelTaskMap,
   setSourceRepoConfigValue
 } from '../config';
-import { identifyModelTask } from '../config/audio-catalog';
+import { handleRecognizeAudioModel } from '../config/audio-catalog';
 import {
   EvaluateResult,
   FormData,
@@ -310,10 +308,12 @@ export const useCheckCompatibility = () => {
       const vram = convertFileSize(resource_claim.vram, 2);
       msgData = {
         title: intl.formatMessage({ id: 'models.form.check.passed' }),
-        message: intl.formatMessage(
-          { id: 'models.form.check.claims' },
-          { ram, vram }
-        )
+        message: ram
+          ? intl.formatMessage(
+              { id: 'models.form.check.claims' },
+              { ram, vram }
+            )
+          : intl.formatMessage({ id: 'models.form.check.claims2' }, { vram })
       };
     }
 
@@ -522,28 +522,6 @@ export const useCheckCompatibility = () => {
 };
 
 export const useSelectModel = () => {
-  const handleRecognizeAudioModel = (selectModel: any, source: string) => {
-    const modelTaskType = identifyModelTask(source, selectModel.name);
-
-    const modelTask =
-      HuggingFaceTaskMap.audio.includes(selectModel.task) ||
-      ModelscopeTaskMap.audio.includes(selectModel.task)
-        ? modelTaskMap.audio
-        : '';
-
-    const modelTaskData = {
-      value: selectModel.task,
-      type: modelTaskType || modelTask,
-      text2speech:
-        HuggingFaceTaskMap[modelTaskMap.textToSpeech] === selectModel.task ||
-        ModelscopeTaskMap[modelTaskMap.textToSpeech] === selectModel.task,
-      speech2text:
-        HuggingFaceTaskMap[modelTaskMap.speechToText] === selectModel.task ||
-        ModelscopeTaskMap[modelTaskMap.speechToText] === selectModel.task
-    };
-    return modelTaskData;
-  };
-
   // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
   const onSelectModel = (selectModel: any, source: string) => {
     let name = _.split(selectModel.name, '/').slice(-1)[0];
@@ -551,6 +529,7 @@ export const useSelectModel = () => {
     name = _.toLower(name).replace(reg, '');
 
     const modelTaskData = handleRecognizeAudioModel(selectModel, source);
+
     return {
       repo_id: selectModel.name,
       name: name,

@@ -131,6 +131,7 @@ export default {
   'models.form.check.passed': 'Compatibility Check Passed',
   'models.form.check.claims':
     'Модель требует примерно {vram} VRAM и {ram} RAM.',
+  'models.form.check.claims2': 'Модель требует примерно {vram} VRAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.'
 };

@@ -85,7 +85,7 @@ const InputWrapper = styled.div`
   input.ant-input-number-input {
     flex: 1;
     height: ${INPUTHEIGHT}px !important;
-    padding-block: 5px 4px;
+    padding-block: 6px 4px;
     padding-inline: ${INPUT_INNER_PADDING}px;
   }
   .ant-input-group {

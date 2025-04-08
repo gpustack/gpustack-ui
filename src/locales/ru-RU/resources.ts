@@ -20,7 +20,7 @@ export default {
   'resources.form.binpack.tips':
     'Максимизирует утилизацию ресурсов, уменьшая фрагментацию на воркерах/GPU.',
   'resources.form.workerSelector.description':
-    'Система выбирает подходящие GPU/воркеры для развертывания моделей на основе меток.',
+    'Система выбирает подходящие воркеры для развертывания моделей на основе меток.',
   'resources.table.ip': 'IP-адрес',
   'resources.table.cpu': 'CPU',
   'resources.table.memory': 'ОЗУ',

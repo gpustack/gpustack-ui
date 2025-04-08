@@ -20,7 +20,7 @@ export default {
   'resources.form.binpack.tips':
     'Prioritize the overall utilization of cluster resources, reducing resource fragmentation on GPUs/Workers.',
   'resources.form.workerSelector.description':
-    'The system selects the most suitable GPU or Worker for deploying model instances based on predefined labels.',
+    'The system selects the most suitable Worker for deploying model instances based on predefined labels.',
   'resources.table.ip': 'IP',
   'resources.table.cpu': 'CPU',
   'resources.table.memory': 'RAM',

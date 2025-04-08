@@ -24,7 +24,7 @@ export const StatusColorMap: Record<
   },
   success: {
     text: `var(--color-progress-green)`,
-    bg: `var(--ant-green-1)`
+    bg: `var(--color-green-fill-light)`
   },
   inactive: {
     text: `var(--ant-color-text-tertiary)`,

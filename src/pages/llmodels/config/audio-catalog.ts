@@ -1,4 +1,9 @@
-import { modelSourceMap, modelTaskMap } from './index';
+import {
+  HuggingFaceTaskMap,
+  ModelscopeTaskMap,
+  modelSourceMap,
+  modelTaskMap
+} from './index';
 
 export const HuggingFaceModels = [
   {
@@ -207,4 +212,33 @@ export const identifyModelTask = (source: string, modelName: string) => {
     return modelTaskMap.audio;
   }
   return '';
+};
+
+export const handleRecognizeAudioModel = (selectModel: any, source: string) => {
+  const modelTaskType = identifyModelTask(source, selectModel.name);
+  let isAudio = modelTaskType === modelTaskMap.audio;
+
+  // Check if the model is audio type, if not, check if the task is audio
+  if (!isAudio) {
+    const modelTask =
+      HuggingFaceTaskMap.audio.includes(selectModel.task) ||
+      ModelscopeTaskMap.audio.includes(selectModel.task)
+        ? modelTaskMap.audio
+        : '';
+
+    isAudio = modelTask === modelTaskMap.audio;
+  }
+
+  const modelTaskData = {
+    value: selectModel.task,
+    type: isAudio ? modelTaskMap.audio : '',
+    isAudio: isAudio,
+    text2speech:
+      HuggingFaceTaskMap[modelTaskMap.textToSpeech] === selectModel.task ||
+      ModelscopeTaskMap[modelTaskMap.textToSpeech] === selectModel.task,
+    speech2text:
+      HuggingFaceTaskMap[modelTaskMap.speechToText] === selectModel.task ||
+      ModelscopeTaskMap[modelTaskMap.speechToText] === selectModel.task
+  };
+  return modelTaskData;
 };

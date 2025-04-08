@@ -9,6 +9,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import {
+  backendLabelMap,
   backendOptionsMap,
   backendTipsList,
   excludeFields,
@@ -259,7 +260,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           options={
             backendOptions ?? [
               {
-                label: `llama-box`,
+                label: backendLabelMap[backendOptionsMap.llamaBox],
                 value: backendOptionsMap.llamaBox,
                 disabled:
                   props.source === modelSourceMap.local_path_value
@@ -267,7 +268,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                     : !isGGUF
               },
               {
-                label: 'vLLM',
+                label: backendLabelMap[backendOptionsMap.vllm],
                 value: backendOptionsMap.vllm,
                 disabled:
                   props.source === modelSourceMap.local_path_value
@@ -275,7 +276,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                     : isGGUF
               },
               {
-                label: 'Ascend Mindie',
+                label: backendLabelMap[backendOptionsMap.ascendMindie],
                 value: backendOptionsMap.ascendMindie,
                 disabled:
                   props.source === modelSourceMap.local_path_value
@@ -283,7 +284,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
                     : isGGUF
               },
               {
-                label: 'vox-box',
+                label: backendLabelMap[backendOptionsMap.voxBox],
                 value: backendOptionsMap.voxBox,
                 disabled:
                   props.source === modelSourceMap.local_path_value

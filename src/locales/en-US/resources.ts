@@ -18,7 +18,7 @@ export default {
   'resources.form.spread.tips':
     'Make the resources of the entire cluster relatively evenly distributed among all workers. It may produce more resource fragmentation on a single worker.',
   'resources.form.binpack.tips':
-    'Prioritize the overall utilization of cluster resources, reducing resource fragmentation on Workers/GPUs.',
+    'Prioritize the overall utilization of cluster resources, reducing resource fragmentation on GPUs/Workers.',
   'resources.form.workerSelector.description':
     'The system selects the most suitable GPU or Worker for deploying model instances based on predefined labels.',
   'resources.table.ip': 'IP',
@@ -39,16 +39,16 @@ export default {
   'resources.table.used': 'Used',
   'resources.table.allocated': 'Allocated',
   'resources.table.wokers': 'workers',
-  'resources.worker.linuxormaxos': 'Linux or MacOS',
+  'resources.worker.linuxormaxos': 'Linux or macOS',
   'resources.table.unified': 'Unified Memory',
   'resources.worker.add.step1':
     'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'Register Worker',
   'resources.worker.add.step2.tips':
-    'Note: run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
+    '(Run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.)',
   'resources.worker.add.step3':
-    'After success, refresh the workers list to see the new worker.',
-  'resources.worker.container.supported': 'Do not support MacOS or Windows.',
+    'After success, refresh the workers list to view the new worker.',
+  'resources.worker.container.supported': 'Do not support macOS or Windows.',
   'resources.worker.current.version': 'Current version is {version}.',
   'resources.worker.driver.install':
     'Ensure all necessary drivers and libraries are installed on the system prior to installing GPUStack.',
@@ -68,9 +68,9 @@ export default {
   'resources.modelfiles.retry.download': 'Retry Download',
   'resources.modelfiles.storagePath.holder':
     'Waiting for the download to complete...',
-  'resources.filter.worker': 'Filter by Worker',
+  'resources.filter.worker': 'Filter by worker',
   'resources.filter.source': 'Filter by Source',
   'resources.modelfiles.delete.tips': 'Also delete the file from disk!',
   'resources.modelfiles.copy.tips': 'Copy Full Path',
-  'resources.filter.path': 'Filter by Path'
+  'resources.filter.path': 'Filter by path'
 };

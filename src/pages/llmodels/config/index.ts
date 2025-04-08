@@ -135,6 +135,13 @@ export const backendOptionsMap = {
   ascendMindie: 'ascend-mindie'
 };
 
+export const backendLabelMap = {
+  [backendOptionsMap.llamaBox]: 'llama-box',
+  [backendOptionsMap.vllm]: 'vLLM',
+  [backendOptionsMap.voxBox]: 'vox-box',
+  [backendOptionsMap.ascendMindie]: 'Ascend MindIE'
+};
+
 export const backendParamsHolderTips = {
   [backendOptionsMap.llamaBox]: {
     holder: 'models.form.backend_parameters.llamabox.placeholder',

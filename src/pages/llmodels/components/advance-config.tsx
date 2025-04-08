@@ -21,6 +21,7 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
+  backendLabelMap,
   backendOptionsMap,
   backendParamsHolderTips,
   modelCategories,
@@ -327,7 +328,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 id: 'models.form.backendVersion.tips'
               },
               {
-                backend: backend,
+                backend: backendLabelMap[backend],
                 link: backendParamsTips?.releases && (
                   <span
                     style={{
@@ -336,7 +337,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                   >
                     <Typography.Link
                       className="flex-center"
-                      style={{ lineHeight: 1 }}
+                      style={{ display: 'inline' }}
                       href={backendParamsTips?.releases}
                       target="_blank"
                     >
@@ -375,12 +376,13 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={paramsConfig}
             description={
               backendParamsTips && (
-                <span>
+                <span style={{ marginLeft: 5 }}>
                   {intl.formatMessage(
                     { id: 'models.form.backend_parameters.vllm.tips' },
                     { backend: backendParamsTips.backend || '' }
                   )}{' '}
                   <Typography.Link
+                    style={{ display: 'inline' }}
                     className="flex-center"
                     href={backendParamsTips.link}
                     target="_blank"

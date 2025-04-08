@@ -21,8 +21,10 @@ import {
   ModelScopeSortType,
   ModelSortType,
   ModelscopeTaskMap,
+  backendOptionsMap,
   modelSourceMap
 } from '../config';
+import { identifyModelTask } from '../config/audio-catalog';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -204,7 +206,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
     try {
       const repoList = list.map((item) => {
+        const isAuido = identifyModelTask(modelSource, item.name);
         return {
+          ...(isAuido ? { backend: backendOptionsMap.voxBox } : {}),
           source: modelSource,
           ...(modelSource === modelSourceMap.huggingface_value
             ? {

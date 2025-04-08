@@ -27,6 +27,7 @@ type MessageStatus = {
   title?: string;
   type?: Global.MessageType;
   isHtml?: boolean;
+  isDefault?: boolean;
   message: string | string[];
   evaluateResult?: EvaluateResult;
 };

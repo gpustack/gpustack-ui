@@ -60,10 +60,10 @@ export default {
   'models.form.backend': '后端',
   'models.form.backend_parameters': '后端参数',
   'models.search.gguf.tips':
-    'GGUF 模型用 llama-box(支持 Linux, macOS 和 Windows)。',
+    'GGUF 模型用 llama-box（支持 Linux, macOS 和 Windows）。',
   'models.search.vllm.tips':
-    ' 非 GGUF 的语音模型用 vox-box，其它非 GGUF 的模型用 vLLM(仅支持 x86 Linux)。',
-  'models.search.voxbox.tips': '若需部语音模型取消勾选 GGUF 复选框。',
+    ' 非 GGUF 的语音模型用 vox-box，其它非 GGUF 的模型用 vLLM（仅支持 x86 Linux）。',
+  'models.search.voxbox.tips': '若需部署语音模型取消勾选。',
   'models.form.ollamalink': '在 Ollama Library 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
     '例如，--ctx-size=8192',
@@ -123,5 +123,6 @@ export default {
   'models.form.check.params': '正在校验配置...',
   'models.form.check.passed': '兼容性检查通过',
   'models.form.check.claims': '该模型大约需要 {vram} 显存和 {ram} 内存。',
+  'models.form.check.claims2': '该模型大约需要 {vram} 显存。',
   'models.form.update.tips': '更改仅在删除并重新创建实例后生效。'
 };

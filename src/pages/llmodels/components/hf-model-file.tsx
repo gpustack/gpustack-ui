@@ -1,9 +1,6 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import { convertFileSize } from '@/utils';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, Empty, Row, Select, Spin, Tag, Tooltip } from 'antd';
-import classNames from 'classnames';
+import { Empty, Select, Spin } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -16,17 +13,24 @@ import React, {
 } from 'react';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+import styled from 'styled-components';
 import {
   evaluationsModelSpec,
   queryHuggingfaceModelFiles,
   queryModelScopeModelFiles
 } from '../apis';
 import { modelSourceMap } from '../config';
-import { getFileType } from '../config/file-type';
 import '../style/hf-model-file.less';
-import FileParts from './file-parts';
-import IncompatiableInfo from './incompatiable-info';
+import ModelFileItem from './model-file-item';
 import TitleWrapper from './title-wrapper';
+
+const ItemFileWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  gap: 24px;
+`;
 
 interface HFModelFileProps {
   isDownload?: boolean;
@@ -43,35 +47,6 @@ const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
 const filterReg = /\.(safetensors|gguf)$/i;
 const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
-
-const FilePartsTag = (props: { parts: any[] }) => {
-  if (!props.parts || !props.parts.length) {
-    return null;
-  }
-  const { parts } = props;
-  return (
-    <Tooltip
-      overlayInnerStyle={{
-        width: 180,
-        padding: 0
-      }}
-      title={<FileParts fileList={parts}></FileParts>}
-    >
-      <Tag
-        className="tag-item"
-        color="purple"
-        style={{
-          marginRight: 0
-        }}
-      >
-        <span style={{ opacity: 1 }}>
-          <InfoCircleOutlined className="m-r-5" />
-          {parts.length} parts
-        </span>
-      </Tag>
-    </Tooltip>
-  );
-};
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const { collapsed, modelSource, isDownload } = props;
@@ -332,28 +307,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     setDataSource({ ...dataSource, fileList: list });
   };
 
-  const getModelQuantizationType = useCallback((item: any) => {
-    let path = item.path;
-    if (item?.parts?.length) {
-      path = `${item.path}.gguf`;
-    }
-    const quanType = getFileType(path);
-    if (quanType) {
-      return (
-        <Tag
-          className="tag-item"
-          color="cyan"
-          style={{
-            marginRight: 0
-          }}
-        >
-          {_.toUpper(quanType)}
-        </Tag>
-      );
-    }
-    return null;
-  }, []);
-
   const handleOnEnter = (e: any, item: any) => {
     e.stopPropagation();
     if (e.key === 'Enter') {
@@ -418,43 +371,20 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       >
         <div style={{ padding: '16px 24px' }}>
           {dataSource.fileList.length ? (
-            <Row gutter={[16, 24]}>
+            <ItemFileWrapper>
               {_.map(dataSource.fileList, (item: any) => {
                 return (
-                  <Col span={24} key={item.path}>
-                    <div
-                      className={classNames('hf-model-file', {
-                        active: item.path === current
-                      })}
-                      tabIndex={0}
-                      onClick={() => handleSelectModelFile(item)}
-                      onKeyDown={(e) => handleOnEnter(e, item)}
-                    >
-                      <div className="title">{item.path}</div>
-                      <div className="tags flex-between">
-                        <span className="flex-center gap-8">
-                          <Tag
-                            className="tag-item"
-                            color="green"
-                            style={{
-                              marginRight: 0
-                            }}
-                          >
-                            {convertFileSize(item.size)}
-                          </Tag>
-                          {getModelQuantizationType(item)}
-                          <FilePartsTag parts={item.parts}></FilePartsTag>
-                        </span>
-                        <IncompatiableInfo
-                          isEvaluating={isEvaluating}
-                          data={item.evaluateResult}
-                        ></IncompatiableInfo>
-                      </div>
-                    </div>
-                  </Col>
+                  <ModelFileItem
+                    key={item.path}
+                    data={item}
+                    isEvaluating={isEvaluating}
+                    active={item.path === current}
+                    handleSelectModelFile={handleSelectModelFile}
+                    handleOnEnter={handleOnEnter}
+                  ></ModelFileItem>
                 );
               })}
-            </Row>
+            </ItemFileWrapper>
           ) : (
             !dataSource.loading &&
             !dataSource.fileList.length && (

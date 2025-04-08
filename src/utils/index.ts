@@ -25,8 +25,8 @@ export const convertFileSize = (
   sizeInBytes?: number,
   prec = 1,
   allowEmpty = false
-): string => {
-  if (!sizeInBytes) return allowEmpty ? '' : '0';
+): string | number => {
+  if (!sizeInBytes) return allowEmpty ? '' : 0;
 
   const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
   let size = sizeInBytes;

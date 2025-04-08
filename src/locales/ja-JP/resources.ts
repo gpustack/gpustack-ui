@@ -20,7 +20,7 @@ export default {
   'resources.form.binpack.tips':
     'クラスターリソースの全体的な利用率を優先し、ワーカー/GPU上のリソース断片化を減らします。',
   'resources.form.workerSelector.description':
-    'システムは、事前定義されたラベルに基づいて、モデルインスタンスをデプロイするために最適なGPUまたはワーカーを選択します。',
+    'The system selects the most suitable Worker for deploying model instances based on predefined labels.',
   'resources.table.ip': 'IP',
   'resources.table.cpu': 'CPU',
   'resources.table.memory': 'メモリ',
@@ -93,4 +93,5 @@ export default {
 // 14. 'resources.worker.add.step2.tips',
 // 15. 'resources.modelfiles.copy.tips',
 // 16. 'resources.filter.path',
+// 17. 'resources.form.workerSelector.description
 // ========== End of To-Do List ==========

@@ -14,9 +14,10 @@ const SearchInputWrapper = styled.div`
 const Holder = styled.div`
   pointer-events: none;
   position: absolute;
-  top: 12px;
+  top: 13px;
   left: 34px;
   color: var(--ant-color-text-quaternary);
+  font-size: var(--font-size-small);
   z-index: 10;
   kbd {
     border: 1px solid var(--ant-color-border);

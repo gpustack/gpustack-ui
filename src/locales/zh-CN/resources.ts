@@ -20,7 +20,7 @@ export default {
   'resources.form.binpack.tips':
     '优先考虑整体集群的资源最大化利用，减少 GPU/Worker 上的资源碎片。',
   'resources.form.workerSelector.description':
-    '系统在部署模型实例时，会根据预定义的标签来选择最符合要求的 GPU 或 Worker。',
+    '系统在部署模型实例时，会根据预定义的标签来选择最符合要求的 Worker。',
   'resources.table.ip': 'IP',
   'resources.table.cpu': 'CPU',
   'resources.table.memory': '内存',

@@ -64,7 +64,7 @@ export default {
   'models.search.vllm.tips':
     'Non-GGUF models use vox-box for audio and vLLM(x86 Linux only) for others.',
   'models.search.voxbox.tips':
-    'To deploy an audio model, uncheck the GGUF checkbox.',
+    'To deploy an audio model, uncheck the checkbox.',
   'models.form.ollamalink': 'Find More in Ollama Library',
   'models.form.backend_parameters.llamabox.placeholder':
     'e.g., --ctx-size=8192',
@@ -131,6 +131,7 @@ export default {
   'models.form.check.passed': 'Compatibility Check Passed',
   'models.form.check.claims':
     'The model requires approximately {vram} VRAM and {ram} RAM.',
+  'models.form.check.claims2': 'The model requires approximately {vram} VRAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.'
 };

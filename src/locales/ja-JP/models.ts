@@ -128,6 +128,7 @@ export default {
   'models.form.check.passed': 'Compatibility Check Passed',
   'models.form.check.claims':
     'The model requires approximately {vram} VRAM and {ram} RAM.',
+  'models.form.check.claims2': 'The model requires approximately {vram} VRAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.'
 };
@@ -146,5 +147,6 @@ export default {
 // 11. 'models.form.check.passed',
 // 12. 'models.form.check.claims',
 // 13. 'model.deploy.search.placeholder',
-// 14. 'models.form.update.tips
+// 14. 'models.form.update.tips,
+// 15. models.form.check.claims2
 // ========== End of To-Do List ==========

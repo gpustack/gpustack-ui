@@ -45,7 +45,7 @@ export default {
     'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'ワーカーを登録',
   'resources.worker.add.step2.tips':
-    'Note: run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.',
+    '(Run on the worker to be added, <span style="color: #000;font-weight: 600">mytoken</span> is the token obtained in the first step.)',
   'resources.worker.add.step3':
     '成功後、ワーカーリストを更新して新しいワーカーを確認してください。',
   'resources.worker.container.supported':
@@ -69,11 +69,11 @@ export default {
   'resources.modelfiles.retry.download': 'Retry Download',
   'resources.modelfiles.storagePath.holder':
     'Waiting for download to complete...',
-  'resources.filter.worker': 'Filter by Worker',
+  'resources.filter.worker': 'Filter by worker',
   'resources.filter.source': 'Filter by Source',
   'resources.modelfiles.delete.tips': 'Also delete the file from disk!',
   'resources.modelfiles.copy.tips': 'Copy Full Path',
-  'resources.filter.path': 'Filter by Path'
+  'resources.filter.path': 'Filter by path'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

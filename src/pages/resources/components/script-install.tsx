@@ -42,7 +42,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           className="font-size-12"
           style={{ color: 'var(--ant-color-text-tertiary)' }}
           dangerouslySetInnerHTML={{
-            __html: `(${labels.step2Tips})`
+            __html: `${labels.step2Tips}`
           }}
         ></span>
       </h3>

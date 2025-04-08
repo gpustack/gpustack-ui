@@ -10,6 +10,7 @@ import React, {
   useRef,
   useState
 } from 'react';
+import styled from 'styled-components';
 import {
   evaluationsModelSpec,
   queryHuggingfaceModels,
@@ -25,6 +26,12 @@ import {
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
+
+const UL = styled.ul`
+  list-style: decimal;
+  padding-left: 16px;
+  margin: 0;
+`;
 
 interface SearchInputProps {
   hasLinuxWorker?: boolean;
@@ -315,7 +322,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       <Tooltip
         overlayInnerStyle={{ width: 'max-content' }}
         title={
-          <ul className="tips-desc-list">
+          <UL>
             <li>{intl.formatMessage({ id: 'models.search.gguf.tips' })}</li>
             <li>{intl.formatMessage({ id: 'models.search.vllm.tips' })}</li>
             <li>
@@ -323,7 +330,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                 id: 'models.search.voxbox.tips'
               })}
             </li>
-          </ul>
+          </UL>
         }
       >
         GGUF

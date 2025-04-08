@@ -307,8 +307,8 @@ export const useCheckCompatibility = () => {
           : compatibility_messages?.join(' ')
     };
     if (hasClaim) {
-      const ram = convertFileSize(resource_claim.ram, 1);
-      const vram = convertFileSize(resource_claim.vram, 1);
+      const ram = convertFileSize(resource_claim.ram, 2);
+      const vram = convertFileSize(resource_claim.vram, 2);
       msgData = {
         title: intl.formatMessage({ id: 'models.form.check.passed' }),
         message: intl.formatMessage(

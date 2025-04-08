@@ -88,6 +88,21 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       [onValuesChange]
     );
 
+    const renderDescription = useCallback(
+      (description: any) => {
+        let desc = description?.text;
+        if (description?.isLocalized) {
+          desc = intl.formatMessage({ id: description?.text });
+        }
+        if (description?.html) {
+          return <div dangerouslySetInnerHTML={{ __html: desc }}></div>;
+        }
+
+        return desc;
+      },
+      [intl]
+    );
+
     const renderFields = useMemo(() => {
       if (!paramsConfig?.length) {
         return null;
@@ -108,11 +123,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                   ? item.disabledConfig?.when?.(formValues)
                   : item.disabled
               }
-              description={
-                item.description?.isLocalized
-                  ? intl.formatMessage({ id: item.description.text })
-                  : item.description?.text
-              }
+              description={renderDescription(item.description)}
               onChange={null}
               {..._.omit(item, [
                 'name',

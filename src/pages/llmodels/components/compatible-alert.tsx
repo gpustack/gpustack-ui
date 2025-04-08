@@ -85,7 +85,8 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
   }, [type]);
 
   return (
-    show && (
+    show &&
+    !!message && (
       <DivWrapper>
         <AlertBlockInfo
           ellipsis={false}

@@ -99,9 +99,9 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           className="font-size-12"
           style={{ color: 'var(--ant-color-text-tertiary)' }}
           dangerouslySetInnerHTML={{
-            __html: `(${intl.formatMessage({
+            __html: `${intl.formatMessage({
               id: 'resources.worker.add.step2.tips'
-            })})`
+            })}`
           }}
         ></span>
       </h3>

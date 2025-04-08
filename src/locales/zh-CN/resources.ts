@@ -14,11 +14,11 @@ export default {
   'resources.form.placementStrategy': '放置策略',
   'resources.form.workerSelector': 'Worker 选择器',
   'resources.form.enableDistributedInferenceAcrossWorkers':
-    '允许跨 worker 分布式推理',
+    '允许跨 Worker 分布式推理',
   'resources.form.spread.tips':
     '使得集群整体的资源在所有 Worker 之间分配得相对均匀。可能会在单个 Worker 上产生较多资源碎片。',
   'resources.form.binpack.tips':
-    '优先考虑整体集群的资源最大化利用，减少 Worker/GPU 上的资源碎片。',
+    '优先考虑整体集群的资源最大化利用，减少 GPU/Worker 上的资源碎片。',
   'resources.form.workerSelector.description':
     '系统在部署模型实例时，会根据预定义的标签来选择最符合要求的 GPU 或 Worker。',
   'resources.table.ip': 'IP',
@@ -40,14 +40,14 @@ export default {
   'resources.table.allocated': '已分配',
   'resources.table.wokers': 'workers',
   'resources.table.unified': '统一内存',
-  'resources.worker.linuxormaxos': 'Linux 或 MacOS',
+  'resources.worker.linuxormaxos': 'Linux 或 macOS',
   'resources.worker.add.step1':
-    '获取 Token <span class="note-text">(在 server 上运行)</span>',
+    '获取 token<span class="note-text">（在 Server 上运行）</span>',
   'resources.worker.add.step2': '注册 Worker',
   'resources.worker.add.step2.tips':
-    '注意：在需要添加的 worker 上运行，<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 Token',
-  'resources.worker.add.step3': '成功后，刷新 worker 列表即可看到新的 worker',
-  'resources.worker.container.supported': '不支持 MacOS 和 Windows',
+    '（在需要添加的 Worker 上运行，<span style="color: #000;font-weight: 600">mytoken</span> 为第一步获取到的 token）',
+  'resources.worker.add.step3': '成功后，刷新 Worker 列表即可看到新的 Worker',
+  'resources.worker.container.supported': '不支持 macOS 和 Windows',
   'resources.worker.current.version': '当前版本为 {version}',
   'resources.worker.select.command': '选择一个标签生成命令并使用复制按钮复制',
   'resources.worker.driver.install':
@@ -66,7 +66,7 @@ export default {
     '默认存储目录为 <span class="desc-block">/var/lib/gpustack/cache</span>，或使用 <span class="desc-block">--cache-dir</span> 指定的目录',
   'resources.modelfiles.retry.download': '重新下载',
   'resources.modelfiles.storagePath.holder': '等待下载完成...',
-  'resources.filter.worker': '按 worker 筛选',
+  'resources.filter.worker': '按 Worker 筛选',
   'resources.filter.source': '按来源筛选',
   'resources.modelfiles.delete.tips': '同时从磁盘删除文件！',
   'resources.modelfiles.copy.tips': '复制完整路径',

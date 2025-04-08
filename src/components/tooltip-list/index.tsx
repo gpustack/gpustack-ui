@@ -1,6 +1,26 @@
 import { useIntl } from '@umijs/max';
-import { Typography } from 'antd';
 import React from 'react';
+import styled from 'styled-components';
+
+const UL = styled.ul`
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  li {
+    display: flex;
+    flex-direction: column;
+    .title {
+      font-weight: 600;
+      color: var(--ant-color-text-light-solid);
+    }
+    .content {
+      color: var(--color-white-tertiary);
+      display: inline-flex;
+    }
+  }
+`;
 
 interface TooltipListProps {
   list: { title: any; tips: string }[];
@@ -10,36 +30,23 @@ const TooltipList: React.FC<TooltipListProps> = (props) => {
   const intl = useIntl();
   const { list } = props;
   return (
-    <ul className="tips-desc-list">
+    <UL>
       {list.map((item, index: number) => {
         return (
-          <li className="m-b-8" key={index}>
-            <Typography.Title
-              level={5}
-              style={{
-                color: 'var(--color-white-1)',
-                marginRight: 10,
-                marginBottom: 0
-              }}
-            >
+          <li key={index}>
+            <span className="title">
               {item.title?.locale
                 ? intl.formatMessage({ id: item.title?.text || '' })
                 : item.title}
               :
-            </Typography.Title>
-            <Typography.Text
-              style={{
-                color: 'var(--color-white-1)',
-                display: 'inline-flex',
-                lineHeight: 1.5
-              }}
-            >
+            </span>
+            <span className="content">
               {intl.formatMessage({ id: item.tips })}
-            </Typography.Text>
+            </span>
           </li>
         );
       })}
-    </ul>
+    </UL>
   );
 };
 

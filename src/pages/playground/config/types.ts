@@ -64,5 +64,6 @@ export interface ParamsSchema {
     text: string;
     html?: boolean;
     isLocalized?: boolean;
+    isLink?: boolean;
   };
 }

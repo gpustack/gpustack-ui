@@ -12,6 +12,7 @@ import { Button, Form, Modal, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
+  backendLabelMap,
   backendOptionsMap,
   backendTipsList,
   excludeFields,
@@ -504,7 +505,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                 description={<TooltipList list={backendTipsList}></TooltipList>}
                 options={[
                   {
-                    label: `llama-box`,
+                    label: backendLabelMap[backendOptionsMap.llamaBox],
                     value: backendOptionsMap.llamaBox,
                     disabled:
                       formData?.source === modelSourceMap.local_path_value
@@ -512,7 +513,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                         : !isGGUF
                   },
                   {
-                    label: 'vLLM',
+                    label: backendLabelMap[backendOptionsMap.vllm],
                     value: backendOptionsMap.vllm,
                     disabled:
                       formData?.source === modelSourceMap.local_path_value
@@ -520,7 +521,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                         : isGGUF
                   },
                   {
-                    label: 'Ascend Mindie',
+                    label: backendLabelMap[backendOptionsMap.ascendMindie],
                     value: backendOptionsMap.ascendMindie,
                     disabled:
                       formData?.source === modelSourceMap.local_path_value
@@ -528,7 +529,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                         : isGGUF
                   },
                   {
-                    label: 'vox-box',
+                    label: backendLabelMap[backendOptionsMap.voxBox],
                     value: backendOptionsMap.voxBox,
                     disabled:
                       formData?.source === modelSourceMap.local_path_value

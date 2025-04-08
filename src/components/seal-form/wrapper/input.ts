@@ -10,6 +10,9 @@ import {
 const InputWrapper = styled.div`
   .seal-input-number {
     padding-right: 0;
+    .isfoucs-has-value {
+      top: 9px;
+    }
   }
   .seal-input-wrapper-disabled {
     background-color: var(--ant-color-bg-container-disabled);
@@ -82,7 +85,7 @@ const InputWrapper = styled.div`
   input.ant-input-number-input {
     flex: 1;
     height: ${INPUTHEIGHT}px !important;
-    padding-block: 5px;
+    padding-block: 5px 4px;
     padding-inline: ${INPUT_INNER_PADDING}px;
   }
   .ant-input-group {

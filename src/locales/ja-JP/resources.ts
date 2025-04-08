@@ -57,7 +57,7 @@ export default {
     'ラベルを選択してコマンドを生成し、コピーを使用してコマンドをコピーします。',
   'resources.worker.script.install': 'スクリプトインストール',
   'resources.worker.container.install': 'コンテナインストール（Linuxのみ）',
-  'resources.worker.cann.tips': `<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> を必要なGPUインデックスに設定します。GPU0からGPU3の場合、<span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> または <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span> を使用します。`,
+  'resources.worker.cann.tips': `Set <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> according to the required NPU index. For example, to mount NPU0 and NPU1, add <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`,
   'resources.modelfiles.form.path': 'Storage Path',
   'resources.modelfiles.modelfile': 'Model Files',
   'resources.modelfiles.download': 'Add Model File',
@@ -93,5 +93,6 @@ export default {
 // 14. 'resources.worker.add.step2.tips',
 // 15. 'resources.modelfiles.copy.tips',
 // 16. 'resources.filter.path',
-// 17. 'resources.form.workerSelector.description
+// 17. 'resources.form.workerSelector.description,
+// 18. 'resources.worker.cann.tips',
 // ========== End of To-Do List ==========

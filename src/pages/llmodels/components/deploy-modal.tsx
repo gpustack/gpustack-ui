@@ -99,6 +99,14 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
   const modelFileRef = useRef<any>(null);
 
+  const getDefaultSpec = (item: any) => {
+    const defaultSpec = item.evaluateResult?.default_spec || {};
+    return _.omit(defaultSpec, [
+      'cpu_offloading',
+      'distributed_inference_across_workers'
+    ]);
+  };
+
   const getCategory = (item: any) => {
     const categories = item.evaluateResult?.default_spec?.categories || [];
     if (Array.isArray(categories)) {
@@ -111,7 +119,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     const modelInfo = onSelectModel(selectedModel, props.source);
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
-      ...item.evaluateResult?.default_spec,
+      ...getDefaultSpec(item),
       ...modelInfo,
       categories: getCategory(item)
     });
@@ -129,7 +137,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       const modelInfo = onSelectModel(item, props.source);
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
-        ...item.evaluateResult?.default_spec,
+        ...getDefaultSpec(item),
         ...modelInfo,
         categories: getCategory(item)
       });

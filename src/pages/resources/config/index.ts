@@ -62,11 +62,48 @@ export const addWorkerGuide: Record<string, any> = {
     }) {
       return `docker run -d --name gpustack \
     --restart=unless-stopped \
-    -e ASCEND_VISIBLE_DEVICES=0,1 \
+    --device /dev/davinci0 \
+    --device /dev/davinci1 \
+    --device /dev/davinci_manager \
+    --device /dev/devmm_svm \
+    --device /dev/hisi_hdc \
+    -v /usr/local/dcmi:/usr/local/dcmi \
+    -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+    -v /usr/local/Ascend/driver/lib64/:/usr/local/Ascend/driver/lib64/ \
+    -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+    -v /etc/ascend_install.info:/etc/ascend_install.info \
     --network=host \
     --ipc=host \
     -v gpustack-data:/var/lib/gpustack \
     gpustack/gpustack:${params.tag} \
+    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    }
+  },
+  npu310p: {
+    getToken:
+      'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack \
+    --restart=unless-stopped \
+    --device /dev/davinci0 \
+    --device /dev/davinci1 \
+    --device /dev/davinci_manager \
+    --device /dev/devmm_svm \
+    --device /dev/hisi_hdc \
+    -v /usr/local/dcmi:/usr/local/dcmi \
+    -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
+    -v /usr/local/Ascend/driver/lib64/:/usr/local/Ascend/driver/lib64/ \
+    -v /usr/local/Ascend/driver/version.info:/usr/local/Ascend/driver/version.info \
+    -v /etc/ascend_install.info:/etc/ascend_install.info \
+    --network=host \
+    --ipc=host \
+    -v gpustack-data:/var/lib/gpustack \
+    gpustack/gpustack:${params.tag}-310p \
     --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },

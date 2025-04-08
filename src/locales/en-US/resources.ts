@@ -56,7 +56,7 @@ export default {
     'Select a label to generate the command and copy it using the copy button.',
   'resources.worker.script.install': 'Script Installation',
   'resources.worker.container.install': 'Container Installation(Linux Only)',
-  'resources.worker.cann.tips': `Set <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES</span> to the required GPU indices. For GPU0 to GPU3, use <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0,1,2,3</span> or <span style='color: #000;font-weight: 600'>ASCEND_VISIBLE_DEVICES=0-3</span>.`,
+  'resources.worker.cann.tips': `Set <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> according to the required NPU index. For example, to mount NPU0 and NPU1, add <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`,
   'resources.modelfiles.form.path': 'Storage Path',
   'resources.modelfiles.modelfile': 'Model Files',
   'resources.modelfiles.download': 'Add Model File',

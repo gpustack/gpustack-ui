@@ -13,21 +13,21 @@ export default {
     '你可以使用以下代码将当前的提示和设置集成到你的应用程序中。',
   'playground.completion': '补全',
   'playground.prompt': '提示',
-  'playground.timeToFirstToken': '输出首个 token 时间',
-  'playground.timePerOutputToken': '生成每个 token 时间',
+  'playground.timeToFirstToken': '输出首个 Token 时间',
+  'playground.timePerOutputToken': '生成每个 Token 时间',
   'playground.tokenusage': 'Token 使用量',
   'models.openinplayground': '打开试验场',
   'playground.tokenoutput': '输出',
   'playground.params.temperature.tips':
     '控制随机性：降低温度会导致更少的随机完成。当温度接近零时，模型将变得确定性和重复性。',
   'playground.params.maxtokens.tips':
-    '生成的最大 token 数。输入的 token 和生成的 token 的总长度受模型上下文长度的限制。',
+    '生成的最大 Token 数。输入的 Token 和生成的 Token 的总长度受模型上下文长度的限制。',
   'playground.params.topp.tips':
     '通过核心采样控制多样性：0.5 表示考虑所有基于概率权重选项的一半。',
   'playground.params.seed.tips':
-    '如果指定，我们的系统将尽最大努力进行确定性采样，以便使用相同 seed 和参数的重复请求应返回相同的结果。',
+    '如果指定，系统将尽最大努力进行确定性采样，以便使用相同 Seed 和参数的重复请求应返回相同的结果。',
   'playground.params.stop.tips':
-    '停止序列是一个预定义或用户指定的文本字符串，当这些序列出现时，它会提示 AI 停止生成后续的 token。',
+    '停止序列是一个预定义或用户指定的文本字符串，当这些序列出现时，它会提示 AI 停止生成后续的 Token',
   'playground.viewcode.tips':
     '{here} 查看 API 密钥。您应该使用环境变量或密钥管理工具将您的密钥暴露给您的应用程序。',
   'playground.viewcode.here': '这里',
@@ -122,10 +122,10 @@ export default {
     '图片生成的最大尺寸受控于模型的部署参数。<a href="https://github.com/gpustack/llama-box" target="_blank">参考文档</a>',
   'playground.documents.verify.embedding': '至少输入两条文本',
   'playground.documents.verify.rerank': '文档不能为空',
-  'playground.image.guidance.tip': '引导比例，影响图片的质量和多样性',
+  'playground.image.guidance.tip': '引导比例，影响图片的质量和多样性。',
   'playground.image.cfg_scale.tip':
-    '无分类器引导比例，影响图片的对Prompt的贴合度',
-  'playground.image.strength.tip': '值越高，它对原图的修改越大',
+    '无分类器引导比例，影响图片的对 Prompt 的贴合度。',
+  'playground.image.strength.tip': '值越高，它对原图的修改越大。',
   'playground.image.edit.tips': '点击或拖动图片到此区域上传',
   'playground.image.saveMask': '保存遮罩',
   'playground.image.negativeMask': '反向遮罩',
@@ -143,5 +143,7 @@ export default {
   'playground.image.origin': '原图',
   'playground.image.mask': '遮罩',
   'playground.image.negativeMask.tips':
-    '1. 选择后，将不可再绘制遮罩；因此，你应该先绘制遮罩然后再勾选.\n 2. 当上传了遮罩图片，将不可再生成遮罩'
+    '1. 选择后，将不可再绘制遮罩；因此，你应该先绘制遮罩然后再勾选.\n 2. 当上传了遮罩图片，将不可再生成遮罩',
+  'playground.model.noavailable.tips2':
+    '若预期的模型未显示，请检查模型是否已正常运行并被正确分类。如分类不正确，请编辑模型并手动调整其类别。'
 };

@@ -149,5 +149,7 @@ export default {
   'playground.image.origin': 'Original',
   'playground.image.mask': 'Mask',
   'playground.image.negativeMask.tips':
-    '1. After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.\n 2. Once a mask image is uploaded, no further masks can be generated.'
+    '1. After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.\n 2. Once a mask image is uploaded, no further masks can be generated.',
+  'playground.model.noavailable.tips2':
+    'If the expected model isn’t showing up, make sure it’s running and correctly categorized. If the category is incorrect, you can manually adjust it in the model’s settings.'
 };

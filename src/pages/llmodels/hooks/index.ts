@@ -431,10 +431,6 @@ export const useCheckCompatibility = () => {
     const { scheduleType } = allValues;
     const gpuIds = allValues.gpu_selector?.gpu_ids || [];
 
-    if (scheduleType === 'manual') {
-      return !gpuIds.length;
-    }
-
     const noLocalValue =
       allValues.source === modelSourceMap.local_path_value &&
       !allValues.local_path;
@@ -442,6 +438,10 @@ export const useCheckCompatibility = () => {
     const noOllamaValue =
       allValues.source === modelSourceMap.ollama_library_value &&
       !allValues.ollama_library_model_name;
+
+    if (scheduleType === 'manual') {
+      return !gpuIds.length || noLocalValue || noOllamaValue;
+    }
 
     return noLocalValue || noOllamaValue;
   };
@@ -455,6 +455,7 @@ export const useCheckCompatibility = () => {
     if (_.isEqual(cacheFormValuesRef.current, allValues)) {
       return;
     }
+
     if (checkRequiredValue(allValues)) {
       setWarningStatus({
         show: false,

@@ -246,8 +246,7 @@ const Workers: React.FC = () => {
                   style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: 6,
-                    maxWidth: 200
+                    gap: 6
                   }}
                 >
                   {_.map(record.labels, (value: any, key: string) => {
@@ -255,7 +254,7 @@ const Workers: React.FC = () => {
                       <AutoTooltip
                         key={key}
                         className="m-r-0"
-                        maxWidth={120}
+                        maxWidth={155}
                         style={{
                           paddingInline: 8,
                           borderRadius: 12

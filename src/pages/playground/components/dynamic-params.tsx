@@ -174,6 +174,9 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
                   ]}
                 >
                   <SealSelect
+                    description={intl.formatMessage({
+                      id: 'playground.model.noavailable.tips2'
+                    })}
                     onChange={handleOnModelChange}
                     showSearch={true}
                     options={modelList}

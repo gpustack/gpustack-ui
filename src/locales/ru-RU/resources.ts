@@ -45,7 +45,7 @@ export default {
     'Получить токен <span class="note-text">(Запустить на сервере)</span>',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
   'resources.worker.add.step2.tips':
-    '(выполнить на подключаемом воркере, <span style="color: #000;font-weight: 600">token</span> это токен, полученный на первом шаге)',
+    '(Run on the worker to be added, <span style="color: #000;font-weight: 600">token</span> is the value obtained in the first step.)',
   'resources.worker.add.step3':
     'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',
@@ -75,5 +75,6 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.worker.cann.tips'
+// 1. 'resources.worker.cann.tips',
+// 2. 'resources.worker.add.step2.tips'
 // ========== End of To-Do List ==========

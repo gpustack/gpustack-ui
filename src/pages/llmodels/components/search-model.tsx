@@ -213,9 +213,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             backend: backendOptionsMap.voxBox
           };
         } else if (item.isGGUF) {
-          // backendObj = {
-          //   backend: backendOptionsMap.llamaBox
-          // };
+          backendObj = {
+            backend: backendOptionsMap.llamaBox
+          };
         }
 
         return {

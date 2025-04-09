@@ -19,7 +19,7 @@ import {
   queryHuggingfaceModelFiles,
   queryModelScopeModelFiles
 } from '../apis';
-import { modelSourceMap } from '../config';
+import { backendOptionsMap, modelSourceMap } from '../config';
 import '../style/hf-model-file.less';
 import ModelFileItem from './model-file-item';
 import TitleWrapper from './title-wrapper';
@@ -228,6 +228,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     try {
       const evaluateFileList = list.map((item: any) => {
         return {
+          backend: backendOptionsMap.llamaBox,
           source: modelSource,
           ...(modelSource === modelSourceMap.huggingface_value
             ? {

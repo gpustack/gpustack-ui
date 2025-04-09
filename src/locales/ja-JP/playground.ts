@@ -152,5 +152,11 @@ export default {
   'playground.image.origin': 'オリジナル',
   'playground.image.mask': 'マスク',
   'playground.image.negativeMask.tips':
-    '1. 選択後は追加のマスクを描画できません。そのため、最初にマスクを描画してからオプションを選択してください。\n 2. マスク画像をアップロードすると、追加のマスクを生成することはできません。'
+    '1. 選択後は追加のマスクを描画できません。そのため、最初にマスクを描画してからオプションを選択してください。\n 2. マスク画像をアップロードすると、追加のマスクを生成することはできません。',
+  'playground.model.noavailable.tips2':
+    'If the expected model isn’t showing up, make sure it’s running and correctly categorized. If the category is incorrect, you can manually adjust it in the model’s settings.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'playground.model.noavailable.tips2'
+// ========== End of To-Do List ==========

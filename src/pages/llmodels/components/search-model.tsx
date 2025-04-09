@@ -207,8 +207,19 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     try {
       const repoList = list.map((item) => {
         const res = handleRecognizeAudioModel(item, modelSource);
+        let backendObj = {};
+        if (res.isAudio) {
+          backendObj = {
+            backend: backendOptionsMap.voxBox
+          };
+        } else if (item.isGGUF) {
+          // backendObj = {
+          //   backend: backendOptionsMap.llamaBox
+          // };
+        }
+
         return {
-          ...(res.isAudio ? { backend: backendOptionsMap.voxBox } : {}),
+          ...backendObj,
           source: modelSource,
           ...(modelSource === modelSourceMap.huggingface_value
             ? {

@@ -97,6 +97,13 @@ const PathWrapper = styled.div`
   }
 `;
 
+const OverlayScrollerWrapper = styled.div`
+  .overlay-scroller-wrapper {
+    padding-block: 0;
+    padding-inline: 6px 0;
+  }
+`;
+
 const ItemWrapper = styled.ul`
   max-width: 300px;
   margin: 0;
@@ -331,7 +338,11 @@ const ModelFiles = () => {
 
     return (
       <Tooltip
-        title={<OverlayScroller>{renderItem()}</OverlayScroller>}
+        title={
+          <OverlayScrollerWrapper>
+            <OverlayScroller>{renderItem()}</OverlayScroller>
+          </OverlayScrollerWrapper>
+        }
         overlayInnerStyle={{ width: 'max-content', maxWidth: 300 }}
       >
         <FilesTag color="purple" icon={<InfoCircleOutlined />}>

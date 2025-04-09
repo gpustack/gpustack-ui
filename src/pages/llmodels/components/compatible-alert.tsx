@@ -25,7 +25,8 @@ interface CompatibilityAlertProps {
 
 const DivWrapper = styled.div`
   position: relative;
-  padding-inline: 8px;
+  padding-inline: 24px;
+  padding-block: 10px 0;
   &:hover {
     .close-wrapper {
       display: block;
@@ -36,11 +37,10 @@ const DivWrapper = styled.div`
 const CloseWrapper = styled.div`
   display: none;
   position: absolute;
-  top: 6px;
-  right: 12px;
+  top: 14px;
+  right: 28px;
   line-height: 1;
   cursor: pointer;
-  background-color: var(--ant-color-warning-bg);
 `;
 
 const MessageWrapper = styled.div`
@@ -104,7 +104,7 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           type={type || 'warning'}
           icon={renderIcon}
         ></AlertBlockInfo>
-        {showClose && !['transition', 'success'].includes(type) && (
+        {showClose && !['transition'].includes(type) && (
           <CloseWrapper className="close-wrapper">
             <Button
               onClick={onClose}

@@ -126,7 +126,6 @@ const InputWrapper = styled.div`
   }
   .seal-textarea-wrapper {
     height: auto;
-    padding-bottom: 10px;
     padding-right: 10px;
   }
 `;

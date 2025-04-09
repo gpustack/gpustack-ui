@@ -16,6 +16,7 @@ const CompatibleTag = styled(Tag)`
   margin-right: 0;
   font-size: var(--font-size-base);
   background: transparent !important;
+  padding-inline: 0;
 `;
 
 const ClaimTag = styled(Tag)`

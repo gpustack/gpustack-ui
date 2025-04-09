@@ -1,33 +1,40 @@
-import { Select } from 'antd';
 import React from 'react';
+import styled from 'styled-components';
 import CopyButton from '../copy-button';
+import SegmentLine from '../segment-line';
 import './index.less';
 
+const Wrapper = styled.div<{ $height: number }>`
+  height: ${(props) => props.$height}px;
+`;
+
 interface EditorwrapProps {
+  headerHeight?: number;
   header?: React.ReactNode;
   children: React.ReactNode;
   showHeader?: boolean;
   copyText: string;
   defaultValue?: string;
-  langOptions?: { label: string; value: string }[];
+  langOptions?: Global.BaseOption<string | number>[];
   styles?: {
     wrapper?: React.CSSProperties;
     header?: React.CSSProperties;
     content?: React.CSSProperties;
   };
-  onChangeLang?: (value: string) => void;
+  onChangeLang?: (value: string | number) => void;
 }
 const EditorWrap: React.FC<EditorwrapProps> = ({
+  headerHeight = 40,
   header,
   children,
   copyText,
-  langOptions,
+  langOptions = [],
   onChangeLang,
   defaultValue,
   styles = {},
   showHeader = true
 }) => {
-  const handleChangeLang = (value: string) => {
+  const handleChangeLang = (value: string | number) => {
     onChangeLang?.(value);
   };
   const renderHeader = () => {
@@ -36,15 +43,14 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
     }
     if (showHeader) {
       return (
-        <div className="editor-header">
-          <Select
+        <Wrapper className="editor-header" $height={headerHeight}>
+          <SegmentLine
+            height={headerHeight}
             defaultValue={defaultValue}
-            style={{ width: 120 }}
-            size="middle"
-            variant="filled"
+            size="small"
             options={langOptions}
             onChange={handleChangeLang}
-          ></Select>
+          ></SegmentLine>
           <CopyButton
             text={copyText}
             size="small"
@@ -52,7 +58,7 @@ const EditorWrap: React.FC<EditorwrapProps> = ({
               color: 'rgba(255,255,255,.7)'
             }}
           />
-        </div>
+        </Wrapper>
       );
     }
     return null;

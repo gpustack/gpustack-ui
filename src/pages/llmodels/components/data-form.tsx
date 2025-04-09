@@ -325,6 +325,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       </Form.Item>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
+          scaleSize={true}
           label={intl.formatMessage({
             id: 'common.table.description'
           })}

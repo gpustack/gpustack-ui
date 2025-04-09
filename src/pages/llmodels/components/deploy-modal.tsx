@@ -320,13 +320,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         >
           <FormWrapper>
             <ColumnWrapper
-              paddingBottom={
-                warningStatus.show
-                  ? Array.isArray(warningStatus.message)
-                    ? 150
-                    : 125
-                  : 50
-              }
+              paddingBottom={warningStatus.show ? 170 : 50}
               footer={
                 <>
                   <CompatibilityAlert

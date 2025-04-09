@@ -1,5 +1,6 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { getAtomStorage } from '@/atoms/utils';
+import EditorWrap from '@/components/editor-wrap';
 import HighlightCode from '@/components/highlight-code';
 import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -12,11 +13,17 @@ type ViewModalProps = {
   token: string;
 };
 
+const npuOptions = [
+  { label: '910B', value: 'npu' },
+  { label: '310P', value: 'npu310p' }
+];
+
 const AddWorker: React.FC<ViewModalProps> = (props) => {
   const intl = useIntl();
 
   const origin = window.location.origin;
   const [activeKey, setActiveKey] = React.useState('cuda');
+  const [npuKey, setNpuKey] = React.useState('npu');
   const versionInfo = getAtomStorage(GPUStackVersionAtom);
 
   const code = React.useMemo(() => {
@@ -25,7 +32,11 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       version = 'main';
     }
 
-    const commandCode = addWorkerGuide[activeKey];
+    let commandCode = addWorkerGuide[activeKey];
+
+    if (npuKey === 'npu310p') {
+      commandCode = addWorkerGuide[npuKey];
+    }
 
     if (activeKey === 'cuda') {
       return commandCode?.registerWorker({
@@ -41,20 +52,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       token: '${token}',
       workerip: '${workerip}'
     });
-  }, [versionInfo, activeKey, props.token]);
+  }, [versionInfo, activeKey, props.token, npuKey]);
+
+  const handleOnChange = (value: string | number) => {
+    setNpuKey(value as string);
+  };
 
   return (
     <div className="container-install">
       <ul className="notes">
-        <li>
-          <span>
-            {intl.formatMessage({ id: 'resources.worker.container.supported' })}
-          </span>
-          <WarningOutlined
-            style={{ color: 'var(--ant-color-warning)' }}
-            className="font-size-14 m-l-5"
-          />
-        </li>
         <li>
           {intl.formatMessage(
             { id: 'resources.worker.current.version' },
@@ -125,7 +131,31 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           }}
         ></div>
       )}
-      <HighlightCode theme="dark" code={code} lang="bash"></HighlightCode>
+      {activeKey === 'npu' ? (
+        <EditorWrap
+          headerHeight={32}
+          copyText={code}
+          langOptions={npuOptions}
+          defaultValue="npu"
+          showHeader={true}
+          onChangeLang={handleOnChange}
+          styles={{
+            wrapper: {
+              backgroundColor: 'var(--color-editor-dark)'
+            }
+          }}
+        >
+          <HighlightCode
+            theme="dark"
+            code={code}
+            lang="bash"
+            copyable={false}
+            height={160}
+          ></HighlightCode>
+        </EditorWrap>
+      ) : (
+        <HighlightCode theme="dark" code={code} lang="bash"></HighlightCode>
+      )}
       <h3 className="m-b-0 m-t-10 font-size-14 font-600">
         3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
       </h3>

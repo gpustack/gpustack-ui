@@ -32,7 +32,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const { title, open, onCancel, viewCodeContent } = props || {};
 
   const intl = useIntl();
-  const [lang, setLang] = useState(langMap.shell);
+  const [lang, setLang] = useState<string>(langMap.shell);
 
   const codeValue = useMemo(() => {
     if (lang === langMap.shell) {
@@ -47,8 +47,8 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
     return '';
   }, [lang, viewCodeContent]);
 
-  const handleOnChangeLang = (value: string) => {
-    setLang(value);
+  const handleOnChangeLang = (value: string | number) => {
+    setLang(value as string);
   };
 
   const handleClose = () => {

@@ -280,3 +280,29 @@
 .color-white-light-4 {
   color: var(--color-white-light-4);
 }
+
+textarea {
+  padding-inline: 6px 0;
+  padding-block: 0;
+  background-color: transparent;
+}
+
+textarea::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+}
+
+textarea::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 6px;
+}
+
+textarea:hover {
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-scrollbar-thumb);
+    border-radius: 6px;
+  }
+}

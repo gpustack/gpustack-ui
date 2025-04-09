@@ -432,11 +432,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       <ColumnWrapper
         maxHeight={550}
         paddingBottom={
-          warningStatus.show
-            ? Array.isArray(warningStatus.message)
-              ? 100
-              : 70
-            : 0
+          warningStatus.show ? (warningStatus.isDefault ? 50 : 100) : 0
         }
         footer={
           <>
@@ -584,6 +580,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             </Form.Item>
             <Form.Item<FormData> name="description">
               <SealInput.TextArea
+                scaleSize={true}
                 label={intl.formatMessage({
                   id: 'common.table.description'
                 })}

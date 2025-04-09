@@ -107,4 +107,7 @@ export default {
   Password: SealPassword,
   Number: SealInputNumber,
   Search: SealInputSearch
-} as Record<string, React.FC<InputProps & SealFormItemProps>>;
+} as Record<
+  string,
+  React.FC<InputProps & SealFormItemProps & { scaleSize?: boolean }>
+>;

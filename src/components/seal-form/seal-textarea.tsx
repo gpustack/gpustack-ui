@@ -1,11 +1,28 @@
 import { Form, Input } from 'antd';
 import type { TextAreaProps } from 'antd/es/input/TextArea';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
+import styled from 'styled-components';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import InputWrapper from './wrapper/input';
 
-const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
+const LabelWrapper = styled.div`
+  background-color: var(--color-white-1);
+`;
+
+interface InputTextareaProps extends TextAreaProps {
+  scaleSize?: boolean;
+}
+
+const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
+  props
+) => {
   const {
     label,
     placeholder,
@@ -21,6 +38,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     extra,
     addAfter,
     trim,
+    scaleSize,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -36,6 +54,16 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
       setIsFocus(true);
     }
   }, [props.value]);
+
+  const autoSize = useMemo(() => {
+    const focusRows = props.autoSize || { minRows: 2, maxRows: 5 };
+
+    if (scaleSize) {
+      return isFocus ? focusRows : { minRows: 1, maxRows: 1 };
+    }
+
+    return focusRows;
+  }, [props.autoSize, isFocus, scaleSize]);
 
   const handleClickWrapper = useCallback(() => {
     if (!props.disabled && !isFocus) {
@@ -68,7 +96,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
         onBlur?.(e);
       }
     },
-    [onBlur]
+    [onBlur, scaleSize]
   );
 
   const handleInput = useCallback(
@@ -82,7 +110,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
     <InputWrapper>
       <Wrapper
         status={status}
-        label={label}
+        label={<LabelWrapper>{label}</LabelWrapper>}
         isFocus={isFocus}
         required={required}
         description={description}
@@ -94,7 +122,7 @@ const SealTextArea: React.FC<TextAreaProps & SealFormItemProps> = (props) => {
       >
         <Input.TextArea
           {...rest}
-          autoSize={rest.autoSize || { minRows: 2, maxRows: 5 }}
+          autoSize={autoSize}
           ref={inputRef}
           style={{ minHeight: '80px', ...style }}
           className="seal-textarea"

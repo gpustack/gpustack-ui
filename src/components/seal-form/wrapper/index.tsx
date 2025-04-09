@@ -143,7 +143,7 @@ export const Label = styled.div.attrs<{
   }
 
   &.blur-no-value {
-    top: 21px;
+    top: 20px;
     transition: all 0.2s var(--seal-transition-func);
   }
 

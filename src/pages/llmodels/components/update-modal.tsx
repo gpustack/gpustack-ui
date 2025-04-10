@@ -349,17 +349,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     const formdata = getSourceRepoConfigValue(data.source, data).values;
 
     let submitData = {} as FormData;
-    const isVllmOrVoxBox = [
-      backendOptionsMap.vllm,
-      backendOptionsMap.voxBox
-    ].includes(formdata.backend);
+    const isVoxBox = [backendOptionsMap.voxBox].includes(formdata.backend);
 
     submitData = {
       ..._.omit(formdata, ['scheduleType']),
       categories: formdata.categories ? [formdata.categories] : [],
       worker_selector:
         formdata.scheduleType === 'manual' ? null : formdata.worker_selector,
-      ...(isVllmOrVoxBox
+      ...(isVoxBox
         ? {
             distributed_inference_across_workers: false,
             cpu_offloading: false

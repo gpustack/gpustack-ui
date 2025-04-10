@@ -479,3 +479,40 @@ export const excludeFields = [
   'backend',
   'gpu_selector'
 ];
+
+export const updateExcludeFields = [
+  'repo_id',
+  'file_name',
+  'description',
+  'source',
+  'worker_selector',
+  'backend_parameters',
+  'local_path',
+  'backend_version',
+  'ollama_library_model_name',
+  'scheduleType',
+  'backend',
+  'gpu_selector'
+];
+
+export const formFields = [
+  'name',
+  'repo_id',
+  'file_name',
+  'local_path',
+  'ollama_library_model_name',
+  'backend',
+  'replicas',
+  'source',
+  'description',
+  'worker_selector',
+  'cpu_offloading',
+  'distributed_inference_across_workers',
+  'gpu_selector',
+  'gpu_ids',
+  'categories',
+  'backend_version',
+  'env',
+  'scheduleType',
+  'restart_on_error'
+];

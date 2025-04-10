@@ -15,7 +15,7 @@ import {
   backendLabelMap,
   backendOptionsMap,
   backendTipsList,
-  excludeFields,
+  updateExcludeFields as excludeFields,
   getSourceRepoConfigValue,
   localPathTipsList,
   modelSourceMap,
@@ -69,8 +69,51 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const [form] = Form.useForm();
   const localPathCache = useRef<string>('');
   const submitAnyway = useRef<boolean>(false);
+  const originFormData = useRef<any>(null);
+  const timer0 = useRef<any>(null);
 
-  const handleOnValuesChange = (data: any) => {};
+  const setOriginalFormData = () => {
+    if (!originFormData.current) {
+      clearTimeout(timer0.current);
+      timer0.current = setTimeout(() => {
+        originFormData.current = form.getFieldsValue?.();
+      }, 200);
+    }
+  };
+
+  const handleOnValuesChange = _.debounce((data: any) => {
+    const formdata = form.getFieldsValue?.();
+    let alldata = {};
+    if (formdata.scheduleType === 'manual') {
+      alldata = {
+        ..._.omit(formdata, ['worker_selector']),
+        gpu_selector:
+          formdata.gpu_selector?.gpu_ids?.length > 0
+            ? originFormData.current?.gpu_selector
+            : null
+      };
+    } else {
+      alldata = {
+        ..._.omit(formdata, ['gpu_selector']),
+        worker_selector: originFormData.current?.worker_selector || null
+      };
+    }
+    const isEqual = _.isEqual(alldata, originFormData.current);
+    if (isEqual) {
+      setWarningStatus({
+        show: false,
+        message: ''
+      });
+    } else {
+      setWarningStatus({
+        show: true,
+        isDefault: true,
+        message: intl.formatMessage({
+          id: 'models.form.update.tips'
+        })
+      });
+    }
+  }, 300);
 
   // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {
@@ -353,17 +396,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   useEffect(() => {
     if (open && formData) {
-      form.setFieldsValue(formData);
-      setWarningStatus({
-        show: true,
-        isDefault: true,
-        message: intl.formatMessage({
-          id: 'models.form.update.tips'
-        })
-      });
+      setOriginalFormData();
     }
     if (!open) {
       checkTokenRef.current?.cancel?.();
+      originFormData.current = null;
       setWarningStatus({
         show: false,
         message: ''
@@ -456,7 +493,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           }}
         >
           <Form
-            name="addModalForm"
+            name="updateModalForm"
             form={form}
             onFinish={handleOk}
             onValuesChange={onValuesChange}

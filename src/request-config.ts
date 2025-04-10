@@ -22,7 +22,6 @@ export const requestConfig: RequestConfig = {
 
         history.push('/login', { replace: true });
       }
-      console.log('error==============', error);
     }
   },
   requestInterceptors: [

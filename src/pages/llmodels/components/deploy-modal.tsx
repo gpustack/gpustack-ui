@@ -96,7 +96,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
-  const [isGGUF, setIsGGUF] = useState<boolean>(props.isGGUF || false);
+  const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
 
   const getDefaultSpec = (item: any) => {
@@ -225,6 +225,7 @@ const AddModal: FC<AddModalProps> = (props) => {
           ? backendOptionsMap.llamaBox
           : backendOptionsMap.vllm;
       form.current?.setFieldValue?.('backend', backend);
+      setIsGGUF(source === modelSourceMap.ollama_library_value);
     }
   };
 

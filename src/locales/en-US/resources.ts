@@ -51,7 +51,7 @@ export default {
   'resources.worker.container.supported': 'Do not support macOS or Windows.',
   'resources.worker.current.version': 'Current version is {version}.',
   'resources.worker.driver.install':
-    'Ensure all necessary drivers and libraries are installed on the system prior to installing GPUStack.',
+    'Install <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">required drivers and libraries</a> prior to GPUStack installation.',
   'resources.worker.select.command':
     'Select a label to generate the command and copy it using the copy button.',
   'resources.worker.script.install': 'Script Installation',

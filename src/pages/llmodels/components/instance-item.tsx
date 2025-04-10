@@ -46,7 +46,7 @@ const downloadList: ColumnProps[] = [
     width: 200
   },
   {
-    title: 'models.table.status',
+    title: 'models.table.download.progress',
     locale: true,
     key: 'download_progress',
     render: ({ row }) => {

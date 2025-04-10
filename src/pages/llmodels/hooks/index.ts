@@ -212,7 +212,6 @@ export const useGenerateModelFileOptions = () => {
       }
       return acc;
     }, []);
-    console.log('childrenList', childrenList);
 
     return childrenList;
 

@@ -2,9 +2,8 @@ import { GPUStackVersionAtom } from '@/atoms/user';
 import { getAtomStorage } from '@/atoms/utils';
 import EditorWrap from '@/components/editor-wrap';
 import HighlightCode from '@/components/highlight-code';
-import { WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Radio } from 'antd';
+import { Radio } from 'antd';
 import React from 'react';
 import { addWorkerGuide, containerInstallOptions } from '../config';
 import './styles/installation.less';
@@ -68,22 +67,13 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           )}
         </li>
         <li>
-          <span>
-            {intl.formatMessage({ id: 'resources.worker.driver.install' })}
-          </span>
-          <WarningOutlined
-            style={{ color: 'var(--ant-color-warning)' }}
-            className="font-size-14 m-l-5 m-r-5"
-          />
-          <Button
-            style={{ padding: 0 }}
-            type="link"
-            size="small"
-            href="https://docs.gpustack.ai/latest/installation/installation-requirements/"
-            target="_blank"
-          >
-            {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}
-          </Button>
+          <span
+            dangerouslySetInnerHTML={{
+              __html: intl.formatMessage({
+                id: 'resources.worker.driver.install'
+              })
+            }}
+          ></span>
         </li>
       </ul>
       <h3 className="font-size-14 font-600">
@@ -150,7 +140,6 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
             code={code}
             lang="bash"
             copyable={false}
-            height={160}
           ></HighlightCode>
         </EditorWrap>
       ) : (

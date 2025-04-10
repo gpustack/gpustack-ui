@@ -52,7 +52,7 @@ export default {
     'MacOSまたはWindowsはサポートされていません。',
   'resources.worker.current.version': '現在のバージョンは {version} です。',
   'resources.worker.driver.install':
-    'GPUStackをインストールする前に、必要なすべてのドライバーとライブラリがシステムにインストールされていることを確認してください。',
+    'Install <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">required drivers and libraries</a> prior to GPUStack installation.',
   'resources.worker.select.command':
     'ラベルを選択してコマンドを生成し、コピーを使用してコマンドをコピーします。',
   'resources.worker.script.install': 'スクリプトインストール',
@@ -95,4 +95,5 @@ export default {
 // 16. 'resources.filter.path',
 // 17. 'resources.form.workerSelector.description,
 // 18. 'resources.worker.cann.tips',
+// 19. 'resources.worker.driver.install'
 // ========== End of To-Do List ==========

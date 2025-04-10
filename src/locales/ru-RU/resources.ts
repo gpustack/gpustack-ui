@@ -51,7 +51,7 @@ export default {
   'resources.worker.container.supported': 'Только для Linux.',
   'resources.worker.current.version': 'Текущая версия: {version}',
   'resources.worker.driver.install':
-    'Установите необходимые драйверы и библиотеки перед установкой GPUStack.',
+    'Install <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">required drivers and libraries</a> prior to GPUStack installation.',
   'resources.worker.select.command':
     'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
@@ -76,5 +76,6 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'resources.worker.cann.tips',
-// 2. 'resources.worker.add.step2.tips'
+// 2. 'resources.worker.add.step2.tips',
+// 3. 'resources.worker.driver.install'
 // ========== End of To-Do List ==========

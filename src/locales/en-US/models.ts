@@ -132,5 +132,6 @@ export default {
     'The model requires approximately {vram} VRAM and {ram} RAM.',
   'models.form.check.claims2': 'The model requires approximately {vram} VRAM.',
   'models.form.update.tips':
-    'Changes will only apply after you delete and recreate the instance.'
+    'Changes will only apply after you delete and recreate the instance.',
+  'models.table.download.progress': 'Download Progress'
 };

@@ -129,7 +129,8 @@ export default {
     'The model requires approximately {vram} VRAM and {ram} RAM.',
   'models.form.check.claims2': 'The model requires approximately {vram} VRAM.',
   'models.form.update.tips':
-    'Changes will only apply after you delete and recreate the instance.'
+    'Changes will only apply after you delete and recreate the instance.',
+  'models.table.download.progress': 'Download Progress'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -147,5 +148,6 @@ export default {
 // 12. 'models.form.check.claims',
 // 13. 'model.deploy.search.placeholder',
 // 14. 'models.form.update.tips,
-// 15. models.form.check.claims2
+// 15. models.form.check.claims2,
+// 16. 'models.table.download.progress'
 // ========== End of To-Do List ==========

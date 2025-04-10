@@ -1,10 +1,16 @@
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
-import { Space } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo } from 'react';
+import styled from 'styled-components';
 import { ModelInstanceListItem } from '../config/types';
 import '../style/instance-item.less';
 import InstanceItem from './instance-item';
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
 
 interface InstanceItemProps {
   list: ModelInstanceListItem[];
@@ -39,7 +45,7 @@ const Instances: React.FC<InstanceItemProps> = ({
   }, []);
 
   return (
-    <Space size={16} direction="vertical" style={{ width: '100%' }}>
+    <Wrapper>
       {_.map(list, (item: ModelInstanceListItem, index: number) => {
         return (
           <InstanceItem
@@ -52,7 +58,7 @@ const Instances: React.FC<InstanceItemProps> = ({
           ></InstanceItem>
         );
       })}
-    </Space>
+    </Wrapper>
   );
 };
 export default Instances;

@@ -148,12 +148,6 @@ const useSetChunkRequest = () => {
           } else {
             handler(response);
           }
-
-          console.log('chunkrequest===', {
-            result: response,
-            url,
-            params
-          });
         }
       });
       setRequestReadyState(requestData?.readyState);
@@ -197,11 +191,6 @@ const useSetChunkRequest = () => {
   }, []);
 
   useEffect(() => {
-    console.log(
-      'chunkrequest===retryCount.current==',
-      requestReadyState,
-      retryCount.current
-    );
     if (requestReadyState === 4 && retryCount.current > 0) {
       requestConfig.current.beforeReconnect?.();
       clearTimeout(timer.current);

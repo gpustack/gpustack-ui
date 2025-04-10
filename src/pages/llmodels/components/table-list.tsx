@@ -78,12 +78,12 @@ import {
   SourceType
 } from '../config/types';
 import { useGenerateFormEditInitialValues } from '../hooks';
+import APIAccessInfoModal from './api-access-info';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
 import ModelTag from './model-tag';
 import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
-
 interface ModelsProps {
   handleSearch: () => void;
   handleNameChange: (e: any) => void;
@@ -174,6 +174,10 @@ const Models: React.FC<ModelsProps> = ({
     defaultSortOrder: 'descend'
   });
 
+  const [apiAccessInfo, setAPIAccessInfo] = useState<any>({
+    show: false,
+    data: {}
+  });
   const [openLogModal, setOpenLogModal] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openDeployModal, setOpenDeployModal] = useState<{
@@ -438,6 +442,17 @@ const Models: React.FC<ModelsProps> = ({
     saveScrollHeight();
   };
 
+  const handleViewAPIInfo = useCallback((row: ListItem) => {
+    setAPIAccessInfo({
+      show: true,
+      data: {
+        id: row.id,
+        name: row.name,
+        categories: row.categories,
+        url: `${MODELS_API}/${row.id}/instances`
+      }
+    });
+  }, []);
   const handleSelect = useCallback(
     async (val: any, row: ListItem) => {
       try {
@@ -454,6 +469,10 @@ const Models: React.FC<ModelsProps> = ({
           await handleStartModel(row);
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           updateExpandedRowKeys([row.id, ...expandedRowKeys]);
+        }
+
+        if (val === 'api') {
+          handleViewAPIInfo(row);
         }
 
         if (val === 'stop') {
@@ -848,6 +867,16 @@ const Models: React.FC<ModelsProps> = ({
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
+      <APIAccessInfoModal
+        open={apiAccessInfo.show}
+        data={apiAccessInfo.data}
+        onClose={() => {
+          setAPIAccessInfo({
+            ...apiAccessInfo,
+            show: false
+          });
+        }}
+      ></APIAccessInfoModal>
     </>
   );
 };

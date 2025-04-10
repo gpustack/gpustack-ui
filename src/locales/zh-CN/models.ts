@@ -124,6 +124,15 @@ export default {
   'models.form.check.passed': '兼容性检查通过',
   'models.form.check.claims': '该模型大约需要 {vram} 显存和 {ram} 内存。',
   'models.form.check.claims2': '该模型大约需要 {vram} 显存。',
+  'models.form.check.claims3': '该模型大约需要 {ram} 内存。',
   'models.form.update.tips': '更改仅在删除并重新创建实例后生效。',
-  'models.table.download.progress': '下载进度'
+  'models.table.download.progress': '下载进度',
+  'models.table.button.apiAccessInfo': 'API 接入信息',
+  'models.table.button.apiAccessInfo.tips': `当您需要将本模型与第三方应用集成时，请使用以下信息：访问地址、模型名称和 API 密钥。这些信息是确保外部系统能正确连接并调用模型服务的关键凭证。`,
+  'models.table.apiAccessInfo.enpoint': '接入地址',
+  'models.table.apiAccessInfo.modelName': '模型名称',
+  'models.table.apiAccessInfo.apikey': 'API 密钥',
+  'models.table.apiAccessInfo.openaiCompatible': 'OpenAI 兼容',
+  'models.table.apiAccessInfo.jinaCompatible': 'Jina 兼容',
+  'models.table.apiAccessInfo.gotoCreate': '去创建'
 };

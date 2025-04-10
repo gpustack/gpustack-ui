@@ -63,8 +63,6 @@ const KeyMap: Record<KeyBindingType, KeybindingValue> = KeybiningList.reduce(
   {}
 );
 
-console.log('KeyMap=========', KeyMap);
-
 export { KeyMap, KeybiningList };
 
 export default KeybindingsMap;

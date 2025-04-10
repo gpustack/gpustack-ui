@@ -131,9 +131,18 @@ export default {
   'models.form.check.claims':
     'Модель требует примерно {vram} VRAM и {ram} RAM.',
   'models.form.check.claims2': 'Модель требует примерно {vram} VRAM.',
+  'models.form.check.claims3': 'Модель требует примерно {ram} RAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.',
-  'models.table.download.progress': 'Download Progress'
+  'models.table.download.progress': 'Download Progress',
+  'models.table.button.apiAccessInfo': 'API Access Info',
+  'models.table.button.apiAccessInfo.tips': `To integrate this model with third-party applications, use the following details: access URL, model name, and API key. These credentials are required to ensure proper connection and usage of the model service.`,
+  'models.table.apiAccessInfo.enpoint': 'Access URL',
+  'models.table.apiAccessInfo.modelName': 'Model Name',
+  'models.table.apiAccessInfo.apikey': 'API Key',
+  'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Compatible',
+  'models.table.apiAccessInfo.jinaCompatible': 'Jina Compatible',
+  'models.table.apiAccessInfo.gotoCreate': 'Go to Create'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -141,5 +150,13 @@ export default {
 // 2. 'models.form.partialoffload.tips
 // 3. 'model.deploy.search.placeholder',
 // 4. 'models.form.update.tips',
-// 5. 'models.table.download.progress
+// 5. 'models.table.download.progress,
+// 6. 'models.table.button.apiAccessInfo',
+// 7. 'models.table.button.apiAccessInfo.tips',
+// 8. 'models.table.apiAccessInfo.enpoint',
+// 9. 'models.table.apiAccessInfo.modelName',
+// 10. 'models.table.apiAccessInfo.apikey',
+// 11. 'models.table.apiAccessInfo.openaiCompatible',
+// 12. 'models.table.apiAccessInfo.jinaCompatible',
+// 13. 'models.table.apiAccessInfo.gotoCreate',
 // ========== End of To-Do List ==========

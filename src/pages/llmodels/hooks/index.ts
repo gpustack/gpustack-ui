@@ -306,14 +306,16 @@ export const useCheckCompatibility = () => {
     if (hasClaim) {
       const ram = convertFileSize(resource_claim.ram, 2);
       const vram = convertFileSize(resource_claim.vram, 2);
+      let messageId = 'models.form.check.claims';
+      if (!ram) {
+        messageId = 'models.form.check.claims2';
+      }
+      if (!vram) {
+        messageId = 'models.form.check.claims3';
+      }
       msgData = {
         title: intl.formatMessage({ id: 'models.form.check.passed' }),
-        message: ram
-          ? intl.formatMessage(
-              { id: 'models.form.check.claims' },
-              { ram, vram }
-            )
-          : intl.formatMessage({ id: 'models.form.check.claims2' }, { vram })
+        message: intl.formatMessage({ id: messageId }, { ram, vram })
       };
     }
 

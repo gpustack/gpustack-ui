@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
 import {
+  ApiOutlined,
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
@@ -19,6 +20,7 @@ const icons = {
   ThunderboltOutlined: React.createElement(ThunderboltOutlined),
   RetweetOutlined: React.createElement(RetweetOutlined),
   DownloadOutlined: React.createElement(DownloadOutlined),
+  ApiOutlined: React.createElement(ApiOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),
   Catalog: React.createElement(IconFont, { type: 'icon-catalog' }),
@@ -75,6 +77,11 @@ export const ActionList: ActionItem[] = [
     label: 'models.openinplayground',
     key: 'chat',
     icon: icons.ExperimentOutlined
+  },
+  {
+    label: 'models.table.button.apiAccessInfo',
+    key: 'api',
+    icon: icons.ApiOutlined
   },
   {
     label: 'common.button.stop',
@@ -177,7 +184,7 @@ export const generateSource = (record: any) => {
 
 export const setModelActionList = (record: any) => {
   return _.filter(ActionList, (action: any) => {
-    if (action.key === 'chat') {
+    if (action.key === 'chat' || action.key === 'api') {
       return record.ready_replicas > 0;
     }
     if (action.key === 'start') {

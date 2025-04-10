@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 type ModalFooterProps = {
   onOk?: () => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   cancelText?: string;
   okText?: string;
   htmlType?: 'button' | 'submit';
@@ -40,6 +40,7 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
   showOkBtn = true,
   description,
   extra,
+  showCancelBtn = true,
   form
 }) => {
   const intl = useIntl();
@@ -47,13 +48,15 @@ const ModalFooter: React.FC<ModalFooterProps> = ({
     <Wrapper>
       <div>{description}</div>
       <Space size={20} style={{ ...style }}>
-        <Button
-          onClick={onCancel}
-          style={{ width: '88px' }}
-          {...cancelBtnProps}
-        >
-          {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
-        </Button>
+        {showCancelBtn && (
+          <Button
+            onClick={onCancel}
+            style={{ width: '88px' }}
+            {...cancelBtnProps}
+          >
+            {cancelText || intl.formatMessage({ id: 'common.button.cancel' })}
+          </Button>
+        )}
         {extra}
         {showOkBtn && (
           <Button

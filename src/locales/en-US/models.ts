@@ -131,7 +131,16 @@ export default {
   'models.form.check.claims':
     'The model requires approximately {vram} VRAM and {ram} RAM.',
   'models.form.check.claims2': 'The model requires approximately {vram} VRAM.',
+  'models.form.check.claims3': 'The model requires approximately {ram} RAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.',
-  'models.table.download.progress': 'Download Progress'
+  'models.table.download.progress': 'Download Progress',
+  'models.table.button.apiAccessInfo': 'API Access Info',
+  'models.table.button.apiAccessInfo.tips': `To integrate this model with third-party applications, use the following details: access URL, model name, and API key. These credentials are required to ensure proper connection and usage of the model service.`,
+  'models.table.apiAccessInfo.enpoint': 'Access URL',
+  'models.table.apiAccessInfo.modelName': 'Model Name',
+  'models.table.apiAccessInfo.apikey': 'API Key',
+  'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Compatible',
+  'models.table.apiAccessInfo.jinaCompatible': 'Jina Compatible',
+  'models.table.apiAccessInfo.gotoCreate': 'Go to Create'
 };

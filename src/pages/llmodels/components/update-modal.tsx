@@ -126,9 +126,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const handleBackendChange = (backend: string) => {
     const updates = {
-      backend_version: '',
-      backend_parameters: [],
-      env: {}
+      backend_version: ''
     };
     if (backend === backendOptionsMap.llamaBox) {
       Object.assign(updates, {
@@ -136,12 +134,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         cpu_offloading: true
       });
     }
-    form.setFieldsValue(updates);
+    form.setFieldsValue({ ...updates, backend_parameters: [], env: null });
     handleSetGPUIds(backend);
 
     const data = form.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
-    console.log('res+++++++++++', res);
     if (res.show) {
       return;
     }

@@ -29,6 +29,7 @@ import {
 } from '../config';
 import { useFormContext } from '../config/form-context';
 import llamaConfig from '../config/llama-config';
+import mindieConfig from '../config/mindie-config';
 import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
@@ -118,6 +119,9 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     if (backend === backendOptionsMap.vllm) {
       return vllmConfig;
     }
+    if (backend === backendOptionsMap.ascendMindie) {
+      return mindieConfig;
+    }
     return [];
   }, [backend]);
 
@@ -136,6 +140,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#cli-reference'
       };
     }
+
     return null;
   }, [backend]);
 

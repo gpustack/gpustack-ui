@@ -64,7 +64,8 @@ export default {
     'Non-GGUF models use vox-box for audio and vLLM(x86 Linux only) for others.',
   'models.search.voxbox.tips':
     'To deploy an audio model, uncheck the checkbox.',
-  'models.form.ollamalink': 'Find More in Ollama Library',
+  'models.form.ollamalink':
+    'Find More in  <a href="https://www.ollama.com/library" target="_blank">Ollama Library</a>.',
   'models.form.backend_parameters.llamabox.placeholder':
     'e.g., --ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':

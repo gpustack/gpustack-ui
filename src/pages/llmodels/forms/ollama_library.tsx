@@ -1,8 +1,7 @@
-import IconFont from '@/components/icon-font';
 import SealAutoComplete from '@/components/seal-form/auto-complete';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form, Typography } from 'antd';
+import { Form } from 'antd';
 import React from 'react';
 import { modelSourceMap, ollamaModelOptions } from '../config';
 import { useFormContext, useFormInnerContext } from '../config/form-context';
@@ -50,21 +49,11 @@ const OllamaForm: React.FC = () => {
           onSelect={handleModelNameChange}
           onBlur={handleOnBlur}
           description={
-            <span>
-              <span>
-                {intl.formatMessage({ id: 'models.form.ollamalink' })}
-              </span>
-              <Typography.Link
-                className="flex-center"
-                href="https://www.ollama.com/library"
-                target="_blank"
-              >
-                <IconFont
-                  type="icon-external-link"
-                  className="font-size-14"
-                ></IconFont>
-              </Typography.Link>
-            </span>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({ id: 'models.form.ollamalink' })
+              }}
+            ></span>
           }
           label={intl.formatMessage({ id: 'model.form.ollama.model' })}
           placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}

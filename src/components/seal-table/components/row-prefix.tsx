@@ -1,13 +1,26 @@
 import IconFont from '@/components/icon-font';
 import { Button, Checkbox } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
+
+const ButtonWrapper = styled.div`
+  width: 30px;
+  margin-right: 5px;
+  &.disable-expand {
+    .ant-btn {
+      display: none;
+    }
+  }
+`;
 
 interface RowPrefixProps {
   expandable?: boolean | React.ReactNode;
   enableSelection?: boolean;
   expanded?: boolean;
   checked?: boolean;
+  disableExpand?: boolean;
   handleRowExpand?: () => void;
   handleSelectChange?: (e: any) => void;
 }
@@ -18,26 +31,33 @@ const RowPrefix: React.FC<RowPrefixProps> = (props) => {
     enableSelection,
     expanded,
     checked,
+    disableExpand,
     handleRowExpand,
     handleSelectChange
   } = props;
 
+  const isExpanded = useMemo(() => {
+    return expanded;
+  }, [expanded]);
+
   if (expandable && enableSelection) {
     return (
       <div className="row-prefix-wrapper">
-        <span style={{ marginRight: 5 }}>
+        <ButtonWrapper
+          className={classNames({ 'disable-expand': disableExpand })}
+        >
           {_.isBoolean(expandable) ? (
             <Button type="text" size="small" onClick={handleRowExpand}>
               <IconFont
                 type="icon-down"
-                rotate={expanded ? 0 : -90}
+                rotate={isExpanded ? 0 : -90}
                 className="size-14"
               ></IconFont>
             </Button>
           ) : (
             expandable
           )}
-        </span>
+        </ButtonWrapper>
         <Checkbox onChange={handleSelectChange} checked={checked}></Checkbox>
       </div>
     );
@@ -45,17 +65,26 @@ const RowPrefix: React.FC<RowPrefixProps> = (props) => {
   if (expandable) {
     return (
       <div className="row-prefix-wrapper">
-        {_.isBoolean(expandable) ? (
-          <Button type="text" size="small" onClick={handleRowExpand}>
-            <IconFont
-              type="icon-down"
-              rotate={expanded ? 0 : -90}
-              className="size-14"
-            ></IconFont>
-          </Button>
-        ) : (
-          expandable
-        )}
+        <ButtonWrapper
+          className={classNames({ 'disable-expand': disableExpand })}
+        >
+          {_.isBoolean(expandable) ? (
+            <Button
+              type="text"
+              size="small"
+              onClick={handleRowExpand}
+              disabled={disableExpand}
+            >
+              <IconFont
+                type="icon-down"
+                rotate={isExpanded ? 0 : -90}
+                className="size-14"
+              ></IconFont>
+            </Button>
+          ) : (
+            expandable
+          )}
+        </ButtonWrapper>
       </div>
     );
   }

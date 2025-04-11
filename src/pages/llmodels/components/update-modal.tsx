@@ -126,7 +126,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const handleBackendChange = (backend: string) => {
     const updates = {
-      backend_version: ''
+      backend_version: '',
+      backend_parameters: [],
+      env: {}
     };
     if (backend === backendOptionsMap.llamaBox) {
       Object.assign(updates, {

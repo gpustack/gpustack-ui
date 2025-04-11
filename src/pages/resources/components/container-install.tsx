@@ -137,13 +137,19 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         >
           <HighlightCode
             theme="dark"
-            code={code}
+            code={code.replace(/\\/g, '')}
+            copyValue={code}
             lang="bash"
             copyable={false}
           ></HighlightCode>
         </EditorWrap>
       ) : (
-        <HighlightCode theme="dark" code={code} lang="bash"></HighlightCode>
+        <HighlightCode
+          theme="dark"
+          code={code.replace(/\\/g, '')}
+          copyValue={code}
+          lang="bash"
+        ></HighlightCode>
       )}
       <h3 className="m-b-0 m-t-10 font-size-14 font-600">
         3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}

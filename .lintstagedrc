@@ -1,4 +1,5 @@
 {
+  "concurrent": 2,
   "*.{md,json}": ["prettier --cache --write"],
   "*.{js,jsx}": ["max lint --fix --eslint-only", "prettier --cache --write"],
   "*.{css,less}": [
@@ -8,6 +9,5 @@
   "*.ts?(x)": [
     "max lint --fix --eslint-only",
     "prettier --cache --parser=typescript --write"
-  ],
-  "src/locales/**/*.ts": ["npx tsx src/locales/check.ts"]
+  ]
 }

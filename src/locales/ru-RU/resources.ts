@@ -64,7 +64,7 @@ export default {
   'resources.modelfiles.selecttarget': 'Выбрать назначение',
   'resources.modelfiles.form.localdir': 'Локальный каталог',
   'resources.modelfiles.form.localdir.tips':
-    'Каталог по умолчанию <span class="desc-block>/var/lib/gpustack/cache</span> или каталог, указанный через <span class="desc-block">--cache-dir</span>.',
+    'The default storage directory is <span class="desc-block">/var/lib/gpustack/cache</span>, or the directory specified by <span class="desc-block">--cache-dir</span> (preferred) or <span class="desc-block">--data-dir</span>.',
   'resources.modelfiles.retry.download': 'Повторить загрузку',
   'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
   'resources.filter.worker': 'Фильтровать по узлу',
@@ -77,5 +77,6 @@ export default {
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'resources.worker.cann.tips',
 // 2. 'resources.worker.add.step2.tips',
-// 3. 'resources.worker.driver.install'
+// 3. 'resources.worker.driver.install',
+// 4. 'resources.modelfiles.form.localdir.tips',
 // ========== End of To-Do List ==========

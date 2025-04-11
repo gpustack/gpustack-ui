@@ -82,7 +82,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleBackendChange = async (val: string) => {
     const updates = {
-      backend_version: ''
+      backend_version: '',
+      backend_parameters: [],
+      env: {}
     };
     if (val === backendOptionsMap.llamaBox) {
       Object.assign(updates, {

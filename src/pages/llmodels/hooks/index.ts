@@ -353,14 +353,12 @@ export const useCheckCompatibility = () => {
     const isOllamaModel = localPath?.includes('ollama');
     const isGGUFFile = localPath.endsWith('.gguf');
 
+    const isOllamaModelFile = isBlobFile || isOllamaModel;
+
     let warningMessage = '';
-    if (isBlobFile && isOllamaModel && backend === backendOptionsMap.llamaBox) {
+    if (isOllamaModelFile && backend === backendOptionsMap.llamaBox) {
       warningMessage = '';
-    } else if (
-      isBlobFile &&
-      isOllamaModel &&
-      backend !== backendOptionsMap.llamaBox
-    ) {
+    } else if (isOllamaModelFile && backend !== backendOptionsMap.llamaBox) {
       warningMessage = intl.formatMessage({
         id: 'models.form.ollama.warning'
       });
@@ -488,9 +486,7 @@ export const useCheckCompatibility = () => {
       source: source
     });
 
-    if (res.show) {
-      setWarningStatus?.(res);
-    }
+    setWarningStatus?.(res);
     return res;
   };
 

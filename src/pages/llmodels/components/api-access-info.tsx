@@ -11,35 +11,23 @@ import styled from 'styled-components';
 import { modelCategoriesMap } from '../config';
 
 const ApiAccessInfoWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
   padding-left: 20px;
-  .item {
+  grid-template-columns: max-content 1fr max-content;
+  gap: 12px 0px;
+  justify-items: start;
+  align-items: center;
+  .label {
+    font-weight: 600;
+  }
+  .value {
+    margin-left: 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    .label-wrapper {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 16px;
-      .label {
-        width: 86px;
-        font-weight: 600;
-      }
-      .value {
-        display: flex;
-        align-items: center;
-        color: var(--ant-color-text-secondary);
-      }
-    }
-    .copy-btn {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+    color: var(--ant-color-text-secondary);
+  }
+  .copy-btn {
+    margin-left: 8px;
   }
 `;
 
@@ -129,67 +117,55 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
         </dl>
       </Tips>
       <ApiAccessInfoWrapper>
-        <div className="item">
-          <span className="label-wrapper">
-            <span className="label">
-              {intl.formatMessage({ id: 'models.table.apiAccessInfo.enpoint' })}
-            </span>
-            <span className="value">
-              <AutoTooltip ghost maxWidth={200}>
-                {endPoint}
-              </AutoTooltip>
-              <APITAG color="geekblue">
-                {intl.formatMessage({
-                  id: isRanker
-                    ? 'models.table.apiAccessInfo.jinaCompatible'
-                    : 'models.table.apiAccessInfo.openaiCompatible'
-                })}
-              </APITAG>
-            </span>
-          </span>
-          <span className="copy-btn">
-            <CopyButton text={endPoint} type="link" size="small"></CopyButton>
-          </span>
-        </div>
-        <div className="item">
-          <span className="label-wrapper">
-            <span className="label">
-              {intl.formatMessage({
-                id: 'models.table.apiAccessInfo.modelName'
-              })}
-            </span>
-            <span className="value">
-              <AutoTooltip ghost maxWidth={300}>
-                {data.name}
-              </AutoTooltip>
-            </span>
-          </span>
-          <span className="copy-btn">
-            <CopyButton text={data.name} type="link" size="small"></CopyButton>
-          </span>
-        </div>
-        <div className="item">
-          <span className="label-wrapper">
-            <span className="label">
-              {intl.formatMessage({ id: 'models.table.apiAccessInfo.apikey' })}
-            </span>
-            <span className="value">
-              <CreateButton
-                type="link"
-                size="small"
-                onClick={() => navigate('/api-keys')}
-              >
-                {intl.formatMessage({
-                  id: 'models.table.apiAccessInfo.gotoCreate'
-                })}
-                <IconFont
-                  type="icon-external-link"
-                  className="font-size-14"
-                ></IconFont>
-              </CreateButton>
-            </span>
-          </span>
-        </div>
+        <span className="label">
+          {intl.formatMessage({ id: 'models.table.apiAccessInfo.enpoint' })}
+        </span>
+        <span className="value">
+          <AutoTooltip ghost maxWidth={200}>
+            {endPoint}
+          </AutoTooltip>
+          <APITAG color="geekblue">
+            {intl.formatMessage({
+              id: isRanker
+                ? 'models.table.apiAccessInfo.jinaCompatible'
+                : 'models.table.apiAccessInfo.openaiCompatible'
+            })}
+          </APITAG>
+        </span>
+        <span className="copy-btn">
+          <CopyButton text={endPoint} type="link" size="small"></CopyButton>
+        </span>
+        <span className="label">
+          {intl.formatMessage({
+            id: 'models.table.apiAccessInfo.modelName'
+          })}
+        </span>
+        <span className="value">
+          <AutoTooltip ghost maxWidth={300}>
+            {data.name}
+          </AutoTooltip>
+        </span>
+        <span className="copy-btn">
+          <CopyButton text={data.name} type="link" size="small"></CopyButton>
+        </span>
+        <span className="label">
+          {intl.formatMessage({ id: 'models.table.apiAccessInfo.apikey' })}
+        </span>
+        <span className="value">
+          <CreateButton
+            type="link"
+            size="small"
+            onClick={() => navigate('/api-keys')}
+          >
+            {intl.formatMessage({
+              id: 'models.table.apiAccessInfo.gotoCreate'
+            })}
+            <IconFont
+              type="icon-external-link"
+              className="font-size-14"
+            ></IconFont>
+          </CreateButton>
+        </span>
       </ApiAccessInfoWrapper>
     </ScrollerModal>
   );

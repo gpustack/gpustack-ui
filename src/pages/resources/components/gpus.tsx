@@ -95,9 +95,10 @@ const GPUList: React.FC = () => {
             title={intl.formatMessage({ id: 'common.table.name' })}
             dataIndex="name"
             key="name"
+            width={240}
             render={(text, record) => {
               return (
-                <AutoTooltip ghost style={{ width: '100%' }}>
+                <AutoTooltip ghost maxWidth={240}>
                   {text}
                 </AutoTooltip>
               );

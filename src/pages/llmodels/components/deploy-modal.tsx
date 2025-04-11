@@ -4,7 +4,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import _, { debounce } from 'lodash';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   backendOptionsMap,
@@ -229,6 +229,10 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
+  const showExtraButton = useMemo(() => {
+    return warningStatus.show && warningStatus.type !== 'success';
+  }, [warningStatus.show, warningStatus.type]);
+
   useEffect(() => {
     if (open) {
       handleOnOpen();
@@ -338,12 +342,9 @@ const AddModal: FC<AddModalProps> = (props) => {
                   <ModalFooter
                     onCancel={handleCancel}
                     onOk={handleSumit}
-                    showOkBtn={
-                      !warningStatus.show || warningStatus.type === 'success'
-                    }
+                    showOkBtn={!showExtraButton}
                     extra={
-                      warningStatus.show &&
-                      warningStatus.type !== 'success' && (
+                      showExtraButton && (
                         <Button
                           type="primary"
                           onClick={handleSubmitAnyway}

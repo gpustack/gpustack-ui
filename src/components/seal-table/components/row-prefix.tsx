@@ -51,7 +51,7 @@ const RowPrefix: React.FC<RowPrefixProps> = (props) => {
               <IconFont
                 type="icon-down"
                 rotate={isExpanded ? 0 : -90}
-                className="size-14"
+                style={{ fontSize: '12px' }}
               ></IconFont>
             </Button>
           ) : (
@@ -78,7 +78,7 @@ const RowPrefix: React.FC<RowPrefixProps> = (props) => {
               <IconFont
                 type="icon-down"
                 rotate={isExpanded ? 0 : -90}
-                className="size-14"
+                style={{ fontSize: '12px' }}
               ></IconFont>
             </Button>
           ) : (

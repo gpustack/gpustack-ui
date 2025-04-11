@@ -1,5 +1,3 @@
-import IconFont from '@/components/icon-font';
-
 /**
  * Language configuration map
  * Warning: The key of the map must be the same as the directory name in the locales directory
@@ -70,7 +68,7 @@ const langConfigMap = {
   'en-US': {
     lang: 'en-US',
     label: 'English',
-    icon: <IconFont type="icon-English" />,
+    icon: '🇺🇸',
     title: 'Language'
   },
   'es-ES': {
@@ -322,7 +320,7 @@ const langConfigMap = {
   'zh-CN': {
     lang: 'zh-CN',
     label: '简体中文',
-    icon: <IconFont type="icon-chinese" />,
+    icon: '🇨🇳',
     title: '语言'
   },
   'zh-TW': {

@@ -5,7 +5,14 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import _ from 'lodash';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
@@ -448,6 +455,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     axiosToken.current?.cancel?.();
   }, [onCancel]);
 
+  const showExtraButton = useMemo(() => {
+    return warningStatus.show && warningStatus.type !== 'success';
+  }, [warningStatus.show, warningStatus.type]);
+
   useEffect(() => {
     if (open) {
       fetchSpecData();
@@ -542,12 +553,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
-                  showOkBtn={
-                    !warningStatus.show || warningStatus.type === 'success'
-                  }
+                  showOkBtn={!showExtraButton}
                   extra={
-                    warningStatus.show &&
-                    warningStatus.type !== 'success' && (
+                    showExtraButton && (
                       <Button
                         type="primary"
                         onClick={handleSubmitAnyway}

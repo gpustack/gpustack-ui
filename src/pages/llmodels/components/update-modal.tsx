@@ -141,6 +141,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
     const data = form.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
+    console.log('res+++++++++++', res);
     if (res.show) {
       return;
     }
@@ -393,6 +394,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     onCancel?.();
   };
 
+  const showExtraButton = useMemo(() => {
+    return (
+      warningStatus.show &&
+      warningStatus.type !== 'success' &&
+      !warningStatus.isDefault
+    );
+  }, [warningStatus.show, warningStatus.type, warningStatus.isDefault]);
+
   useEffect(() => {
     if (open && formData) {
       setOriginalFormData();
@@ -441,15 +450,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           <ModalFooter
             onCancel={onCancel}
             onOk={handleSumit}
-            showOkBtn={
-              !warningStatus.show ||
-              warningStatus.type === 'success' ||
-              warningStatus.isDefault
-            }
+            showOkBtn={!showExtraButton}
             extra={
-              warningStatus.show &&
-              warningStatus.type !== 'success' &&
-              !warningStatus.isDefault && (
+              showExtraButton && (
                 <Button
                   type="primary"
                   onClick={handleSubmitAnyway}

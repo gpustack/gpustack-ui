@@ -104,7 +104,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
             {children}
           </TitleTip>
         ) : (
-          ''
+          false
         )
       }
       {...tooltipProps}

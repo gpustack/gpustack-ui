@@ -64,7 +64,8 @@ export default {
   'models.search.vllm.tips':
     ' 非 GGUF 的语音模型用 vox-box，其它非 GGUF 的模型用 vLLM（仅支持 x86 Linux）。',
   'models.search.voxbox.tips': '若需部署语音模型取消勾选。',
-  'models.form.ollamalink': '在 Ollama Library 中查找',
+  'models.form.ollamalink':
+    '在 <a href="https://www.ollama.com/library" target="_blank">Ollama Library</a> 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
     '例如，--ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':

@@ -389,6 +389,10 @@ const Models: React.FC = () => {
     };
   }, []);
 
+  const setDisableExpand = useCallback((record: any) => {
+    return !record?.replicas;
+  }, []);
+
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
@@ -419,7 +423,8 @@ const Models: React.FC = () => {
   return (
     <TableContext.Provider
       value={{
-        allChildren: modelInstances
+        allChildren: modelInstances,
+        setDisableExpand: setDisableExpand
       }}
     >
       <TableList

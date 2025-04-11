@@ -64,7 +64,8 @@ export default {
     'Не-GGUF модели используют vox-box для аудио и vLLM (только x86 Linux) для остальных.',
   'models.search.voxbox.tips':
     'Для развертывания аудиомодели снимите отметку GGUF.',
-  'models.form.ollamalink': 'Больше моделей в библиотеке Ollama',
+  'models.form.ollamalink':
+    'Больше моделей в библиотеке <a href="https://www.ollama.com/library" target="_blank">Ollama</a>',
   'models.form.backend_parameters.llamabox.placeholder':
     'например: --ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder':

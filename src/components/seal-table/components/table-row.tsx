@@ -42,6 +42,7 @@ const TableRow: React.FC<
   const tableContext: any = React.useContext<{
     allChildren?: any[];
     allSubChildren?: any[];
+    setDisableExpand?: (record: any) => boolean;
   }>(TableContext);
   const { setChunkRequest } = useSetChunkRequest();
   const [childrenData, setChildrenData] = useState<any[]>([]);
@@ -206,6 +207,10 @@ const TableRow: React.FC<
     }
   };
 
+  const disableExpand = useMemo(() => {
+    return tableContext.setDisableExpand?.(record);
+  }, [tableContext.setDisableExpand, record]);
+
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
@@ -249,6 +254,7 @@ const TableRow: React.FC<
             checked={checked}
             handleRowExpand={handleRowExpand}
             handleSelectChange={handleSelectChange}
+            disableExpand={disableExpand}
           ></RowPrefix>
           <Row className="seal-table-row">
             {columns?.map((columnProps) => {

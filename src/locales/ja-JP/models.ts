@@ -64,7 +64,8 @@ export default {
     '非GGUFモデルは、音声にはvox-boxを、その他にはvLLM（x86 Linuxのみ）を使用します。',
   'models.search.voxbox.tips':
     '音声モデルをデプロイするには、GGUFチェックボックスをオフにしてください。',
-  'models.form.ollamalink': 'Ollamaライブラリでさらに探す',
+  'models.form.ollamalink':
+    '<a href="https://www.ollama.com/library" target="_blank">Ollama</a>ライブラリでさらに探す',
   'models.form.backend_parameters.llamabox.placeholder': '例: --ctx-size=8192',
   'models.form.backend_parameters.vllm.placeholder': '例: --max-model-len=8192',
   'models.form.backend_parameters.vllm.tips': '詳細な{backend}パラメータ情報',

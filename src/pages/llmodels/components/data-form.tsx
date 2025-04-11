@@ -82,9 +82,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleBackendChange = async (val: string) => {
     const updates = {
-      backend_version: '',
-      backend_parameters: [],
-      env: {}
+      backend_version: ''
     };
     if (val === backendOptionsMap.llamaBox) {
       Object.assign(updates, {
@@ -92,7 +90,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         cpu_offloading: true
       });
     }
-    form.setFieldsValue(updates);
+    form.setFieldsValue({
+      ...updates,
+      backend_parameters: [],
+      env: null
+    });
     handleSetGPUIds(val);
     props.onBackendChange?.(val);
   };

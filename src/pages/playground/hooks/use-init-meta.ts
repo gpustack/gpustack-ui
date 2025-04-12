@@ -75,6 +75,26 @@ export const useInitLLmMeta = (
     // use for multiple chat
     return model;
   }, [model, modelList, isChat]);
+
+  const getMaxTokens = (meta: any) => {
+    const { max_model_len, n_ctx, n_slot, max_total_tokens } = meta || {};
+
+    let max_tokens: number = 0;
+
+    if (n_ctx && n_slot) {
+      max_tokens = _.divide(n_ctx, n_slot);
+    } else if (max_model_len) {
+      max_tokens = max_model_len;
+    } else if (max_total_tokens) {
+      max_tokens = max_total_tokens;
+    }
+
+    return {
+      max_tokens: max_tokens || 16 * 1024,
+      defaultFormValue: max_tokens ? _.divide(max_tokens, 2) : 1024
+    };
+  };
+
   const extractLLMMeta = (meta: any) => {
     const towKeys = new Set(precisionTwoKeys);
     const modelMeta = meta || {};
@@ -87,23 +107,22 @@ export const useInitLLmMeta = (
       return acc;
     }, {});
 
-    let defaultMaxTokens = 1024;
-
-    if (obj.n_ctx && obj.n_slot) {
-      defaultMaxTokens = _.divide(obj.n_ctx / 2, obj.n_slot);
-    } else if (obj.max_model_len) {
-      defaultMaxTokens = obj.max_model_len / 2;
-    }
+    const tokensRes = getMaxTokens(obj);
 
     return {
       form: _.merge({}, defaultValues, {
-        ..._.omit(obj, ['n_ctx', 'n_slot', 'max_model_len']),
+        ..._.omit(obj, [
+          'n_ctx',
+          'n_slot',
+          'max_model_len',
+          'max_total_tokens'
+        ]),
         seed: obj.seed === -1 ? null : obj.seed,
-        max_tokens: defaultMaxTokens
+        max_tokens: tokensRes.defaultFormValue
       }),
       meta: {
         ...obj,
-        max_tokens: obj.max_model_len || _.divide(obj.n_ctx, obj.n_slot)
+        max_tokens: tokensRes.max_tokens
       }
     };
   };
@@ -132,7 +151,7 @@ export const useInitLLmMeta = (
           ...item,
           attrs:
             item.name === 'max_tokens'
-              ? { ...item.attrs, max: meta.max_tokens || 16 * 1024 }
+              ? { ...item.attrs, max: meta.max_tokens }
               : {
                   ...item.attrs
                 }

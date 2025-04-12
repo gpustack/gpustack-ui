@@ -7,7 +7,8 @@ export const LLM_METAKEYS: Record<string, any> = {
   n_slot: 'n_slot',
   max_model_len: 'max_model_len',
   frequency_penalty: 'frequency_penalty',
-  presence_penalty: 'presence_penalty'
+  presence_penalty: 'presence_penalty',
+  max_total_tokens: 'max_total_tokens'
 };
 
 export const precisionTwoKeys = [

@@ -77,6 +77,10 @@ const options = [
   {
     label: '--trust-remote-code',
     value: '--trust-remote-code'
+  },
+  {
+    label: '--truncation',
+    value: '--truncation'
   }
 ];
 

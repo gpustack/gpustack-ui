@@ -147,7 +147,8 @@ export default {
   'models.table.apiAccessInfo.apikey': 'API Key',
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Compatible',
   'models.table.apiAccessInfo.jinaCompatible': 'Jina Compatible',
-  'models.table.apiAccessInfo.gotoCreate': 'Go to Create'
+  'models.table.apiAccessInfo.gotoCreate': 'Go to Create',
+  'models.search.parts': '{n} parts'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -167,4 +168,5 @@ export default {
 // 14. 'models.form.backend.vllm',
 // 15. 'models.form.backend.voxbox',
 // 16. 'models.form.backend.mindie',
+// 17. 'models.search.parts'
 // ========== End of To-Do List ==========

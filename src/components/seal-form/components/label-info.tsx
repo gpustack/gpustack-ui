@@ -15,7 +15,13 @@ const NoteInfo: React.FC<NoteInfoProps> = (props) => {
   return (
     <span className="label-text">
       {description ? (
-        <Tooltip title={description}>
+        <Tooltip
+          title={description}
+          overlayInnerStyle={{
+            maxWidth: 'var(--width-tooltip-max)',
+            width: 'max-content'
+          }}
+        >
           <span>{label}</span>
           <span className="note-info">
             {required && (

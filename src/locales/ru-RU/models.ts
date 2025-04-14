@@ -84,8 +84,12 @@ export default {
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
-  'models.form.backend.vllm': 'Для моделей не-GGUF формата. Только x86 Linux.',
-  'models.form.backend.voxbox': 'Для аудиомоделей не-GGUF формата.',
+  'models.form.backend.vllm':
+    'For non-GGUF format models, supported only on Linux (amd64/x86_64).',
+  'models.form.backend.voxbox':
+    'For non-GGUF format audio models, supported only on NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie':
+    'For non-GGUF format models, supported only on Ascend 910B and 310P.',
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
@@ -160,4 +164,7 @@ export default {
 // 11. 'models.table.apiAccessInfo.openaiCompatible',
 // 12. 'models.table.apiAccessInfo.jinaCompatible',
 // 13. 'models.table.apiAccessInfo.gotoCreate',
+// 14. 'models.form.backend.vllm',
+// 15. 'models.form.backend.voxbox',
+// 16. 'models.form.backend.mindie',
 // ========== End of To-Do List ==========

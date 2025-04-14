@@ -85,8 +85,11 @@ export default {
   'models.form.backend.llamabox':
     'For GGUF format models, supports Linux, macOS, and Windows.',
   'models.form.backend.vllm':
-    'For non-GGUF format models, supports x86 Linux only.',
-  'models.form.backend.voxbox': 'For non-GGUF format audio models.',
+    'For non-GGUF format models, supported only on Linux (amd64/x86_64).',
+  'models.form.backend.voxbox':
+    'For non-GGUF format audio models, supported only on NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie':
+    'For non-GGUF format models, supported only on Ascend 910B and 310P.',
   'models.form.search.gguftips':
     'If using macOS or Windows as a worker, check GGUF (uncheck for audio models).',
   'models.form.button.addlabel': 'Add Label',

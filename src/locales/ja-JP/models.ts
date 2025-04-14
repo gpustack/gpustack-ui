@@ -82,8 +82,11 @@ export default {
   'models.form.backend.llamabox':
     'GGUF形式のモデル用（Linux、macOS、Windowsをサポート）。',
   'models.form.backend.vllm':
-    '非GGUF形式のモデル用（x86 Linuxのみをサポート）。',
-  'models.form.backend.voxbox': '非GGUF形式の音声モデル用。',
+    'For non-GGUF format models, supported only on Linux (amd64/x86_64).',
+  'models.form.backend.voxbox':
+    'For non-GGUF format audio models, supported only on NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie':
+    'For non-GGUF format models, supported only on Ascend 910B and 310P.',
   'models.form.search.gguftips':
     'macOSまたはWindowsをワーカーとして使用する場合、GGUFをチェックしてください（音声モデルの場合はオフにしてください）。',
   'models.form.button.addlabel': 'ラベルを追加',
@@ -169,4 +172,7 @@ export default {
 // 23. 'models.table.apiAccessInfo.openaiCompatible',
 // 24. 'models.table.apiAccessInfo.jinaCompatible',
 // 25. 'models.table.apiAccessInfo.gotoCreate',
+// 26. 'models.form.backend.vllm',
+// 27. 'models.form.backend.voxbox',
+// 28. 'models.form.backend.mindie',
 // ========== End of To-Do List ==========

@@ -99,6 +99,10 @@ export const backendTipsList = [
     tips: 'models.form.backend.vllm'
   },
   {
+    title: 'Ascend MindIE',
+    tips: 'models.form.backend.mindie'
+  },
+  {
     title: 'vox-box',
     tips: 'models.form.backend.voxbox'
   }

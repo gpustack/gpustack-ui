@@ -1,6 +1,9 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { queryModelFilesList, queryWorkersList } from '@/pages/resources/apis';
-import { WorkerStatusMap } from '@/pages/resources/config';
+import {
+  WorkerStatusMap,
+  WorkerStatusMapValue
+} from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
@@ -40,6 +43,7 @@ export const useGenerateFormEditInitialValues = () => {
     list: GPUListItem[],
     workerList: WorkerListItem[]
   ) => {
+    // pick the worker fields from gpuList
     const workerFields = new Set(['worker_name', 'worker_id', 'worker_ip']);
 
     // generate a map for workerList by name to data
@@ -59,11 +63,11 @@ export const useGenerateFormEditInitialValues = () => {
     const gpuSelectorList = Array.from(workersMap.entries()).map(
       ([workerName, items]) => {
         const firstItem = items[0];
-        const disDisabled =
-          WorkerStatusMap.ready !== workerDataMap.get(workerName)?.state;
+        const currentState = workerDataMap.get(workerName)?.state || '';
+        const disDisabled = WorkerStatusMap.ready !== currentState;
         return {
           label: disDisabled
-            ? `${workerName} [${workerDataMap.get(workerName)?.state}]`
+            ? `${workerName} [${WorkerStatusMapValue[currentState]}]`
             : workerName,
           value: workerName,
           parent: true,

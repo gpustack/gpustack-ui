@@ -82,9 +82,13 @@ export default {
     '固定以使用期望的 {backend} 版本，在线环境会自动创建虚拟环境安装对应版本的 {backend}。在 GPUStack 升级后也将保持固定的后端版本。{link}',
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
-    '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows',
-  'models.form.backend.vllm': '用于非 GGUF 格式模型，仅支持 x86 Linux',
-  'models.form.backend.voxbox': '用于非 GGUF 格式的语音模型',
+    '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows。',
+  'models.form.backend.vllm':
+    '用于非 GGUF 格式模型，仅支持 x86 Linux（amd64/x86_64）。',
+  'models.form.backend.voxbox':
+    '用于非 GGUF 格式的语音模型，仅支持 NVIDIA GPU 与 CPU。',
+  'models.form.backend.mindie':
+    '用于非 GGUF 格式模型，仅支持昇腾 910B 和 310P。',
   'models.form.search.gguftips':
     '当 macOS 或 Windows 作 Worker 时勾选 GGUF（搜索语音模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',

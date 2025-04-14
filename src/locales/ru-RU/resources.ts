@@ -44,27 +44,24 @@ export default {
   'resources.worker.add.step1':
     'Получить токен <span class="note-text">(Запустить на сервере)</span>',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
-  'resources.worker.add.step2.tips':
-    '(Run on the worker to be added, <span style="color: #000;font-weight: 600">token</span> is the value obtained in the first step.)',
+  'resources.worker.add.step2.tips': '(Запустить на добавляемом воркере, <span style="color: #000;font-weight: 600">token</span> — это значение, полученное на первом шаге.)', // Translated
   'resources.worker.add.step3':
     'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',
   'resources.worker.current.version': 'Текущая версия: {version}',
-  'resources.worker.driver.install':
-    'Install <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">required drivers and libraries</a> prior to GPUStack installation.',
+  'resources.worker.driver.install': 'Установите <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">необходимые драйверы и библиотеки</a> перед установкой GPUStack.', // Translated
   'resources.worker.select.command':
     'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
   'resources.worker.container.install': 'Установка контейнером (только Linux)',
-  'resources.worker.cann.tips': `Set <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> according to the required NPU index. For example, to mount NPU0 and NPU1, add <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`,
+  'resources.worker.cann.tips': `Установите <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> в соответствии с требуемым индексом NPU. Например, чтобы подключить NPU0 и NPU1, добавьте <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`, // Translated
   'resources.modelfiles.form.path': 'Путь хранения',
   'resources.modelfiles.modelfile': 'Файлы моделей',
   'resources.modelfiles.download': 'Добавить файл модели',
   'resources.modelfiles.size': 'Размер',
   'resources.modelfiles.selecttarget': 'Выбрать назначение',
   'resources.modelfiles.form.localdir': 'Локальный каталог',
-  'resources.modelfiles.form.localdir.tips':
-    'The default storage directory is <span class="desc-block">/var/lib/gpustack/cache</span>, or the directory specified by <span class="desc-block">--cache-dir</span> (preferred) or <span class="desc-block">--data-dir</span>.',
+  'resources.modelfiles.form.localdir.tips': 'Каталог хранения по умолчанию — <span class="desc-block">/var/lib/gpustack/cache</span>, или каталог, указанный с помощью <span class="desc-block">--cache-dir</span> (предпочтительно) или <span class="desc-block">--data-dir</span>.', // Translated
   'resources.modelfiles.retry.download': 'Повторить загрузку',
   'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
   'resources.filter.worker': 'Фильтровать по узлу',
@@ -75,8 +72,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.worker.cann.tips',
-// 2. 'resources.worker.add.step2.tips',
-// 3. 'resources.worker.driver.install',
-// 4. 'resources.modelfiles.form.localdir.tips',
+
 // ========== End of To-Do List ==========

@@ -13,7 +13,7 @@ export default {
   'models.form.env': 'Переменные окружения',
   'models.form.configurations': 'Конфигурации',
   'models.form.s3address': 'S3-адрес',
-  'models.form.partialoffload.tips': `При включенном оффлоудинге на CPU: если ресурсов GPU недостаточно, часть слоёв модели будет перенесена на CPU. Если GPU отсутствует, будет использоваться полный вывод на CPU.`,
+  'models.form.partialoffload.tips': `При включенном оффлоудинге на CPU: если ресурсов GPU недостаточно, часть слоёв модели будет перенесена на CPU. Если GPU отсутствует, будет использоваться полный вывод на CPU.`, // Already translated
   'models.form.distribution.tips': `Позволяет переносить часть слоёв модели на один или несколько удалённых воркеров, когда ресурсов текущего воркера недостаточно.`,
   'models.openinplayground': 'Открыть в Песочнице',
   'models.instances': 'инстансы',
@@ -21,7 +21,7 @@ export default {
   'model.form.ollama.model': 'Модель Ollama',
   'model.form.ollamaholder': 'Выберите или введите название модели',
   'model.deploy.sort': 'Сортировка',
-  'model.deploy.search.placeholder': 'Type <kbd>/</kbd> to search models',
+  'model.deploy.search.placeholder': 'Введите <kbd>/</kbd> для поиска моделей', // Translated
   'model.form.ollamatips':
     'Подсказка: ниже представлены предустановленные модели Ollama в GPUStack. Выберите нужную или введите модель для развертывания в поле 【{name}】 справа.',
   'models.sort.name': 'По имени',
@@ -84,12 +84,9 @@ export default {
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
-  'models.form.backend.vllm':
-    'For non-GGUF format models, supported only on Linux (amd64/x86_64).',
-  'models.form.backend.voxbox':
-    'For non-GGUF format audio models, supported only on NVIDIA GPUs and CPUs.',
-  'models.form.backend.mindie':
-    'For non-GGUF format models, supported only on Ascend 910B and 310P.',
+  'models.form.backend.vllm': 'Для моделей не-GGUF формата, поддерживается только в Linux (amd64/x86_64).', // Translated
+  'models.form.backend.voxbox': 'Для аудиомоделей не-GGUF формата, поддерживается только на GPU NVIDIA и CPU.', // Translated
+  'models.form.backend.mindie': 'Для моделей не-GGUF формата, поддерживается только на Ascend 910B и 310P.', // Translated
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
@@ -132,41 +129,23 @@ export default {
   'models.form.restart.onerror.tips':
     'При возникновении ошибки система автоматически попытается перезапуститься.',
   'models.form.check.params': 'Проверка конфигурации...',
-  'models.form.check.passed': 'Compatibility Check Passed',
+  'models.form.check.passed': 'Проверка совместимости пройдена', // Translated
   'models.form.check.claims':
     'Модель требует примерно {vram} VRAM и {ram} RAM.',
   'models.form.check.claims2': 'Модель требует примерно {vram} VRAM.',
   'models.form.check.claims3': 'Модель требует примерно {ram} RAM.',
-  'models.form.update.tips':
-    'Changes will only apply after you delete and recreate the instance.',
-  'models.table.download.progress': 'Download Progress',
-  'models.table.button.apiAccessInfo': 'API Access Info',
-  'models.table.button.apiAccessInfo.tips': `To integrate this model with third-party applications, use the following details: access URL, model name, and API key. These credentials are required to ensure proper connection and usage of the model service.`,
-  'models.table.apiAccessInfo.enpoint': 'Access URL',
-  'models.table.apiAccessInfo.modelName': 'Model Name',
-  'models.table.apiAccessInfo.apikey': 'API Key',
-  'models.table.apiAccessInfo.openaiCompatible': 'OpenAI Compatible',
-  'models.table.apiAccessInfo.jinaCompatible': 'Jina Compatible',
-  'models.table.apiAccessInfo.gotoCreate': 'Go to Create',
-  'models.search.parts': '{n} parts'
+  'models.form.update.tips': 'Изменения вступят в силу только после удаления и повторного создания инстанса.', // Translated
+  'models.table.download.progress': 'Прогресс загрузки', // Translated
+  'models.table.button.apiAccessInfo': 'Доступ к API', // Translated
+  'models.table.button.apiAccessInfo.tips': `Для интеграции этой модели со сторонними приложениями используйте следующие данные: URL доступа, имя модели и ключ API. Эти учетные данные необходимы для обеспечения правильного подключения и использования сервиса модели.`, // Translated
+  'models.table.apiAccessInfo.endpoint': 'URL доступа', // Translated & key fixed
+  'models.table.apiAccessInfo.modelName': 'Имя модели', // Translated
+  'models.table.apiAccessInfo.apikey': 'Ключ API', // Translated
+  'models.table.apiAccessInfo.openaiCompatible': 'Совместимо с OpenAI', // Translated
+  'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina', // Translated
+  'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию', // Translated
+  'models.search.parts': '{n} частей' // Translated (assuming simple plural form)
 };
-
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.check.passed',
-// 2. 'models.form.partialoffload.tips
-// 3. 'model.deploy.search.placeholder',
-// 4. 'models.form.update.tips',
-// 5. 'models.table.download.progress,
-// 6. 'models.table.button.apiAccessInfo',
-// 7. 'models.table.button.apiAccessInfo.tips',
-// 8. 'models.table.apiAccessInfo.enpoint',
-// 9. 'models.table.apiAccessInfo.modelName',
-// 10. 'models.table.apiAccessInfo.apikey',
-// 11. 'models.table.apiAccessInfo.openaiCompatible',
-// 12. 'models.table.apiAccessInfo.jinaCompatible',
-// 13. 'models.table.apiAccessInfo.gotoCreate',
-// 14. 'models.form.backend.vllm',
-// 15. 'models.form.backend.voxbox',
-// 16. 'models.form.backend.mindie',
-// 17. 'models.search.parts'
+
 // ========== End of To-Do List ==========

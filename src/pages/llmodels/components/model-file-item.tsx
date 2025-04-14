@@ -1,6 +1,7 @@
 import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import { convertFileSize } from '@/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -20,10 +21,12 @@ interface ModelFileItemProps {
 }
 
 const FilePartsTag = (props: { parts: any[] }) => {
+  const { parts } = props;
+  const intl = useIntl();
   if (!props.parts || !props.parts.length) {
     return null;
   }
-  const { parts } = props;
+
   return (
     <TooltipOverlayScroller title={<FileParts fileList={parts}></FileParts>}>
       <Tag
@@ -35,7 +38,10 @@ const FilePartsTag = (props: { parts: any[] }) => {
       >
         <span style={{ opacity: 1 }}>
           <InfoCircleOutlined className="m-r-5" />
-          {parts.length} parts
+          {intl.formatMessage(
+            { id: 'models.search.parts' },
+            { n: parts.length }
+          )}
         </span>
       </Tag>
     </TooltipOverlayScroller>

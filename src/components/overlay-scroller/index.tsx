@@ -32,6 +32,7 @@ const OverlayScroller: React.FC<any> = ({
   return (
     <Wrapper
       ref={scroller}
+      data-overlayscrollbars-initialize
       className="overlay-scroller-wrapper"
       $maxHeight={maxHeight || 200}
       hidden={false}

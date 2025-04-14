@@ -2,7 +2,7 @@ import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
-import OverlayScroller from '@/components/overlay-scroller';
+import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import { FilterBar } from '@/components/page-tools';
 import StatusTag from '@/components/status-tag';
 import { PageAction } from '@/config';
@@ -27,15 +27,7 @@ import {
   InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
-import {
-  ConfigProvider,
-  Empty,
-  Table,
-  Tag,
-  Tooltip,
-  Typography,
-  message
-} from 'antd';
+import { ConfigProvider, Empty, Table, Tag, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -97,18 +89,14 @@ const PathWrapper = styled.div`
   }
 `;
 
-const OverlayScrollerWrapper = styled.div`
-  .overlay-scroller-wrapper {
-    padding-block: 0;
-    padding-inline: 6px 0;
-  }
-`;
-
 const ItemWrapper = styled.ul`
   max-width: 300px;
   margin: 0;
-  padding-inline: 8px 0;
+  padding-inline: 15px 0;
   word-break: break-word;
+  li {
+    line-height: 1.6;
+  }
 `;
 
 const FilesTag = styled(Tag)`
@@ -337,21 +325,14 @@ const ModelFiles = () => {
     };
 
     return (
-      <Tooltip
-        title={
-          <OverlayScrollerWrapper>
-            <OverlayScroller>{renderItem()}</OverlayScroller>
-          </OverlayScrollerWrapper>
-        }
-        overlayInnerStyle={{ width: 'max-content', maxWidth: 300 }}
-      >
+      <TooltipOverlayScroller title={renderItem()}>
         <FilesTag color="purple" icon={<InfoCircleOutlined />}>
           <span style={{ opacity: 1 }}>
             {record.resolved_paths?.length}{' '}
             {intl.formatMessage({ id: 'models.form.files' })}
           </span>
         </FilesTag>
-      </Tooltip>
+      </TooltipOverlayScroller>
     );
   };
 

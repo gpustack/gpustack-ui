@@ -81,6 +81,10 @@ const options = [
   {
     label: '--truncation',
     value: '--truncation'
+  },
+  {
+    label: '--max-link-num',
+    value: '--max-link-num'
   }
 ];
 

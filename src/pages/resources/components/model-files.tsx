@@ -31,7 +31,7 @@ import { ConfigProvider, Empty, Table, Tag, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   useGenerateFormEditInitialValues,
@@ -92,7 +92,7 @@ const PathWrapper = styled.div`
 const ItemWrapper = styled.ul`
   max-width: 300px;
   margin: 0;
-  padding-inline: 15px 0;
+  padding-inline: 13px 0;
   word-break: break-word;
   li {
     line-height: 1.6;
@@ -203,17 +203,17 @@ const ModelFiles = () => {
     useGenerateModelFileOptions();
   const intl = useIntl();
   const { showSuccess } = useAppUtils();
-  const [workersList, setWorkersList] = useState<Global.BaseOption<number>[]>(
-    []
-  );
+  const [workersList, setWorkersList] = useState<any[]>([]);
   const [downloadModalStatus, setDownlaodMoalStatus] = useState<{
     show: boolean;
     width: number | string;
     source: string;
+    hasLinuxWorker: boolean;
     gpuOptions: any[];
   }>({
     show: false,
     width: 600,
+    hasLinuxWorker: false,
     source: modelSourceMap.huggingface_value,
     gpuOptions: []
   });
@@ -388,12 +388,18 @@ const ModelFiles = () => {
     return <div></div>;
   };
 
-  const handleClickDropdown = (item: any) => {
-    const config = modalConfig[item.key];
-    if (config) {
-      setDownlaodMoalStatus({ ...config, gpuOptions: [] });
-    }
-  };
+  const handleClickDropdown = useCallback(
+    (item: any) => {
+      const config = modalConfig[item.key];
+      const hasLinuxWorker = workersList.some(
+        (worker) => _.toLower(worker.labels?.os) === 'linux'
+      );
+      if (config) {
+        setDownlaodMoalStatus({ ...config, hasLinuxWorker, gpuOptions: [] });
+      }
+    },
+    [workersList]
+  );
 
   const handleDownloadCancel = () => {
     setDownlaodMoalStatus({
@@ -617,6 +623,7 @@ const ModelFiles = () => {
         open={downloadModalStatus.show}
         source={downloadModalStatus.source}
         width={downloadModalStatus.width}
+        hasLinuxWorker={downloadModalStatus.hasLinuxWorker}
         workersList={workersList.filter(
           (item: any) => item.state === WorkerStatusMap.ready
         )}

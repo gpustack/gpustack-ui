@@ -8,7 +8,6 @@ const Wrapper = styled.div<{ $maxHeight?: number }>`
     typeof $maxHeight === 'number' ? `${$maxHeight}px` : $maxHeight};
   overflow-y: auto;
   width: 100%;
-  padding-inline: 8px;
 `;
 
 const OverlayScroller: React.FC<any> = ({
@@ -38,6 +37,8 @@ const OverlayScroller: React.FC<any> = ({
       hidden={false}
       as="div"
       style={{
+        paddingInlineStart: 8,
+        paddingInlineEnd: 8,
         ...style
       }}
     >
@@ -51,7 +52,6 @@ export const TooltipOverlayScroller: React.FC<
 > = ({ children, maxHeight, title, ...rest }) => {
   return (
     <Tooltip
-      destroyTooltipOnHide
       overlayInnerStyle={{
         width: 'max-content',
         maxWidth: 300,

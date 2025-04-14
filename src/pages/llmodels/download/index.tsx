@@ -19,6 +19,7 @@ type AddModalProps = {
   open: boolean;
   source: string;
   width?: string | number;
+  hasLinuxWorker?: boolean;
   workersList: Global.BaseOption<number>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
@@ -31,6 +32,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     open,
     onOk,
     onCancel,
+    hasLinuxWorker,
     source,
     width = 600
   } = props || {};
@@ -172,6 +174,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
             >
               <ColumnWrapper>
                 <SearchModel
+                  hasLinuxWorker={hasLinuxWorker}
                   modelSource={props.source}
                   onSelectModel={handleOnSelectModel}
                   isDownload={true}

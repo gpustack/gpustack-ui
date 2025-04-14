@@ -1,4 +1,5 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { Tooltip, TooltipProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -7,7 +8,7 @@ const Wrapper = styled.div<{ $maxHeight?: number }>`
     typeof $maxHeight === 'number' ? `${$maxHeight}px` : $maxHeight};
   overflow-y: auto;
   width: 100%;
-  padding-inline: 10px;
+  padding-inline: 8px;
 `;
 
 const OverlayScroller: React.FC<any> = ({
@@ -33,7 +34,7 @@ const OverlayScroller: React.FC<any> = ({
     <Wrapper
       ref={scroller}
       className="overlay-scroller-wrapper"
-      $maxHeight={maxHeight || '100%'}
+      $maxHeight={maxHeight || 200}
       hidden={false}
       as="div"
       style={{
@@ -42,6 +43,34 @@ const OverlayScroller: React.FC<any> = ({
     >
       {children}
     </Wrapper>
+  );
+};
+
+export const TooltipOverlayScroller: React.FC<
+  TooltipProps & { maxHeight?: number }
+> = ({ children, maxHeight, title, ...rest }) => {
+  return (
+    <Tooltip
+      destroyTooltipOnHide
+      overlayInnerStyle={{
+        width: 'max-content',
+        maxWidth: 300,
+        paddingInlineEnd: 0
+      }}
+      title={
+        title && (
+          <OverlayScroller
+            style={{ paddingInlineStart: 0 }}
+            maxHeight={maxHeight}
+          >
+            {title}
+          </OverlayScroller>
+        )
+      }
+      {...rest}
+    >
+      {children}
+    </Tooltip>
   );
 };
 

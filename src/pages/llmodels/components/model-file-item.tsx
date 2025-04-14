@@ -1,6 +1,7 @@
+import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import { convertFileSize } from '@/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { Tag, Tooltip } from 'antd';
+import { Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
@@ -24,13 +25,7 @@ const FilePartsTag = (props: { parts: any[] }) => {
   }
   const { parts } = props;
   return (
-    <Tooltip
-      overlayInnerStyle={{
-        width: 180,
-        padding: 0
-      }}
-      title={<FileParts fileList={parts}></FileParts>}
-    >
+    <TooltipOverlayScroller title={<FileParts fileList={parts}></FileParts>}>
       <Tag
         className="tag-item"
         color="purple"
@@ -43,7 +38,7 @@ const FilePartsTag = (props: { parts: any[] }) => {
           {parts.length} parts
         </span>
       </Tag>
-    </Tooltip>
+    </TooltipOverlayScroller>
   );
 };
 

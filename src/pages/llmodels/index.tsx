@@ -350,10 +350,9 @@ const Models: React.FC = () => {
     };
 
     const init = async () => {
-      const [modelRes, workerRes, cList, modelFileList] = await Promise.all([
+      const [modelRes, workerRes, modelFileList] = await Promise.all([
         getTableData(),
         getWorkerList(),
-        getCataLogList(),
         getModelFileList()
       ]);
       const dataList = generateModelFileOptions(
@@ -368,7 +367,6 @@ const Models: React.FC = () => {
         deletedIds: []
       });
       setWorkerList(workerRes.items || []);
-      setCatalogList(cList);
       setModelFileOptions(dataList);
 
       clearTimeout(timer);

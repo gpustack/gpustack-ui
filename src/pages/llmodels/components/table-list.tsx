@@ -808,7 +808,6 @@ const Models: React.FC<ModelsProps> = ({
         ></PageTools>
 
         <SealTable
-          empty={renderEmpty}
           columns={columns}
           dataSource={dataSource}
           rowSelection={rowSelection}

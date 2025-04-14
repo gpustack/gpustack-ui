@@ -529,7 +529,7 @@ const Models: React.FC<ModelsProps> = ({
 
     const config = modalConfig[item.key];
     const hasLinuxWorker = workerList.some(
-      (worker) => worker.labels?.os === 'linux'
+      (worker) => _.toLower(worker.labels?.os) === 'linux'
     );
 
     if (config) {

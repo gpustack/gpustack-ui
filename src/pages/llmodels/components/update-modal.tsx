@@ -169,8 +169,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     const isEndwithGGUF = _.endsWith(value, '.gguf');
     const isBlobFile = value.split('/').pop().includes('sha256');
     let backend = backendOptionsMap.llamaBox;
+    const isVllmOrAscend = [
+      backendOptionsMap.vllm,
+      backendOptionsMap.ascendMindie
+    ].includes(form.getFieldValue('backend'));
+
     if (!isEndwithGGUF || !isBlobFile) {
-      backend = backendOptionsMap.vllm;
+      backend = isVllmOrAscend ? formData!.backend : backendOptionsMap.vllm;
     }
     form.setFieldValue('backend', backend);
     handleBackendChange?.(backend);
@@ -399,6 +404,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     );
   }, [warningStatus.show, warningStatus.type, warningStatus.isDefault]);
 
+  const isVllmOrAscend = useMemo(() => {
+    return (
+      formData?.backend === backendOptionsMap.vllm ||
+      formData?.backend === backendOptionsMap.ascendMindie
+    );
+  }, [formData?.backend]);
+
   useEffect(() => {
     if (open && formData) {
       setOriginalFormData();
@@ -563,7 +575,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                     label: backendLabelMap[backendOptionsMap.vllm],
                     value: backendOptionsMap.vllm,
                     disabled:
-                      formData?.source === modelSourceMap.local_path_value
+                      formData?.source === modelSourceMap.local_path_value ||
+                      isVllmOrAscend
                         ? false
                         : isGGUF
                   },
@@ -571,7 +584,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                     label: backendLabelMap[backendOptionsMap.ascendMindie],
                     value: backendOptionsMap.ascendMindie,
                     disabled:
-                      formData?.source === modelSourceMap.local_path_value
+                      formData?.source === modelSourceMap.local_path_value ||
+                      isVllmOrAscend
                         ? false
                         : isGGUF
                   },
@@ -579,14 +593,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                     label: backendLabelMap[backendOptionsMap.voxBox],
                     value: backendOptionsMap.voxBox,
                     disabled:
-                      formData?.source === modelSourceMap.local_path_value
-                        ? false
-                        : isGGUF
+                      formData?.source !== modelSourceMap.local_path_value ||
+                      !isVllmOrAscend
                   }
                 ]}
                 disabled={
                   action === PageAction.EDIT &&
-                  formData?.source !== modelSourceMap.local_path_value
+                  formData?.source !== modelSourceMap.local_path_value &&
+                  !isVllmOrAscend
                 }
               ></SealSelect>
             </Form.Item>

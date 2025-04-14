@@ -68,6 +68,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
+  console.log('hasLinuxWorker---------:', hasLinuxWorker);
   const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
   const [current, setCurrent] = useState<string>('');
   const currentRef = useRef<string>('');

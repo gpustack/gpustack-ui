@@ -556,11 +556,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
-                      <Button
-                        type="primary"
-                        onClick={handleSubmitAnyway}
-                        style={{ width: '130px' }}
-                      >
+                      <Button type="primary" onClick={handleSubmitAnyway}>
                         {intl.formatMessage({
                           id: 'models.form.submit.anyway'
                         })}

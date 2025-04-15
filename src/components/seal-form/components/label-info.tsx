@@ -12,42 +12,39 @@ interface NoteInfoProps {
 const NoteInfo: React.FC<NoteInfoProps> = (props) => {
   const { required, description, label, labelExtra } = props || {};
   if (!label) return null;
+  const renderRequiredStar = required ? (
+    <span className="star" style={{ color: 'red' }}>
+      *
+    </span>
+  ) : null;
+
+  const renderQuestionIcon = description ? (
+    <span
+      className="desc desc-icon"
+      style={{ marginLeft: required ? 5 : 0, color: 'gray' }}
+    >
+      <QuestionCircleOutlined />
+    </span>
+  ) : null;
+
+  const labelContent = (
+    <>
+      <span>{label}</span>
+      {(required || description) && (
+        <span className="note-info">
+          {renderRequiredStar}
+          {renderQuestionIcon}
+        </span>
+      )}
+    </>
+  );
+
   return (
     <span className="label-text">
       {description ? (
-        <Tooltip
-          title={description}
-          overlayInnerStyle={{
-            maxWidth: 'var(--width-tooltip-max)',
-            width: 'max-content'
-          }}
-        >
-          <span>{label}</span>
-          <span className="note-info">
-            {required && (
-              <span style={{ color: 'red' }} className="star">
-                *
-              </span>
-            )}
-            <span
-              style={{ marginLeft: required ? 5 : 0, color: 'gray' }}
-              className="desc desc-icon"
-            >
-              <QuestionCircleOutlined />
-            </span>
-          </span>
-        </Tooltip>
+        <Tooltip title={description}>{labelContent}</Tooltip>
       ) : (
-        <>
-          <span>{label}</span>
-          {required && (
-            <span className="note-info">
-              <span style={{ color: 'red' }} className="star">
-                *
-              </span>
-            </span>
-          )}
-        </>
+        labelContent
       )}
       {labelExtra}
     </span>

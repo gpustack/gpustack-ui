@@ -54,18 +54,11 @@ export const TooltipOverlayScroller: React.FC<
   return (
     <Tooltip
       overlayInnerStyle={{
-        width: 'max-content',
-        maxWidth: 300,
-        paddingInlineEnd: 0
+        paddingInline: 0
       }}
       title={
         title && (
-          <OverlayScroller
-            style={{ paddingInlineStart: 0 }}
-            maxHeight={maxHeight}
-          >
-            {title}
-          </OverlayScroller>
+          <OverlayScroller maxHeight={maxHeight}>{title}</OverlayScroller>
         )
       }
       {...rest}

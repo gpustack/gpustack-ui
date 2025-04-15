@@ -827,17 +827,21 @@ body {
   }
 }
 
-.ant-tooltip-content {
-  .ant-tooltip-inner {
-    width: fit-content;
-    max-width: 300px;
+.ant-tooltip {
+  max-width: var(--width-tooltip-max);
 
-    .text-tertiary {
-      color: var(--color-white-secondary);
-    }
+  .ant-tooltip-content {
+    .ant-tooltip-inner {
+      width: fit-content;
+      max-width: var(--width-tooltip-max);
 
-    a {
-      color: var(--ant-color-link-hover);
+      .text-tertiary {
+        color: var(--color-white-secondary);
+      }
+
+      a {
+        color: var(--ant-color-link-hover);
+      }
     }
   }
 }

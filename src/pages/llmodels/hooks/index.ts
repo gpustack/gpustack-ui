@@ -302,8 +302,7 @@ export const useCheckCompatibility = () => {
       return {
         show: true,
         type: 'danger',
-        title: intl.formatMessage({ id: 'models.search.evaluate.error' }),
-        message: error_message || ''
+        message: `${intl.formatMessage({ id: 'models.search.evaluate.error' })}${error_message}`
       };
     }
 

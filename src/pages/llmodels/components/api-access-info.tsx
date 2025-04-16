@@ -80,7 +80,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
         top: '20%'
       }}
       title={intl.formatMessage({ id: 'models.table.button.apiAccessInfo' })}
-      width={510}
+      width={550}
       destroyOnClose
       closable={true}
       maskClosable={false}
@@ -121,7 +121,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
         </span>
         <span className="value">
-          <AutoTooltip ghost maxWidth={200}>
+          <AutoTooltip ghost maxWidth={180}>
             {endPoint}
           </AutoTooltip>
           <APITAG color="geekblue">

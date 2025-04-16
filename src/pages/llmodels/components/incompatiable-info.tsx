@@ -1,4 +1,4 @@
-import OverlayScroller from '@/components/overlay-scroller';
+import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import { LoadingOutlined, WarningOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tag, Tooltip } from 'antd';
@@ -73,26 +73,24 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
     return null;
   }
   return (
-    <Tooltip
-      overlayInnerStyle={{ paddingInline: 0 }}
+    <TooltipOverlayScroller
+      maxHeight={200}
       title={
-        <OverlayScroller maxHeight={200}>
-          <IncompatibleInfo>
-            <SMTitle $isTitle={true}>
-              {intl.formatMessage({ id: 'models.form.incompatible' })}
-            </SMTitle>
-            {
-              <ul>
-                {data?.compatibility_messages.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-                {data?.scheduling_messages.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            }
-          </IncompatibleInfo>
-        </OverlayScroller>
+        <IncompatibleInfo>
+          <SMTitle $isTitle={true}>
+            {intl.formatMessage({ id: 'models.form.incompatible' })}
+          </SMTitle>
+          {
+            <ul>
+              {data?.compatibility_messages.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+              {data?.scheduling_messages.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          }
+        </IncompatibleInfo>
       }
     >
       <CompatibleTag
@@ -100,7 +98,7 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
         color="warning"
         bordered={false}
       ></CompatibleTag>
-    </Tooltip>
+    </TooltipOverlayScroller>
   );
 };
 

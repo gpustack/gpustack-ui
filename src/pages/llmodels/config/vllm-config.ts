@@ -5,6 +5,11 @@ const options = [
     options: ['debug', 'info', 'warning', 'error', 'critical', 'trace']
   },
   {
+    label: '--disable-uvicorn-access-log',
+    value: '--disable-uvicorn-access-log',
+    options: []
+  },
+  {
     label: '--allow-credentials',
     value: '--allow-credentials',
     options: []
@@ -60,6 +65,11 @@ const options = [
     options: []
   },
   {
+    label: '--enable-ssl-refresh',
+    value: '--enable-ssl-refresh',
+    options: []
+  },
+  {
     label: '--ssl-ca-certs',
     value: '--ssl-ca-certs',
     options: []
@@ -90,6 +100,11 @@ const options = [
     options: []
   },
   {
+    label: '--enable-request-id-headers',
+    value: '--enable-request-id-headers',
+    options: []
+  },
+  {
     label: '--enable-auto-tool-choice',
     value: '--enable-auto-tool-choice',
     options: []
@@ -104,6 +119,7 @@ const options = [
       'jamba',
       'llama3_json',
       'granite-20b-fc',
+      'phi4_mini_json',
       'granite',
       'pythonic'
     ]
@@ -118,7 +134,8 @@ const options = [
       'embed',
       'classify',
       'score',
-      'reward'
+      'reward',
+      'transcription'
     ]
   },
   {
@@ -139,6 +156,11 @@ const options = [
   {
     label: '--tokenizer',
     value: '--tokenizer',
+    options: []
+  },
+  {
+    label: '--hf-config-path',
+    value: '--hf-config-path',
     options: []
   },
   {
@@ -164,7 +186,7 @@ const options = [
   {
     label: '--tokenizer-mode',
     value: '--tokenizer-mode',
-    options: ['auto', 'slow', 'mistral']
+    options: ['auto', 'slow', 'mistral', 'custom']
   },
   {
     label: '--trust-remote-code',
@@ -190,7 +212,8 @@ const options = [
       'gguf',
       'bitsandbytes',
       'mistral',
-      'runai_streamer'
+      'runai_streamer',
+      'fastsafetensors'
     ]
   },
   {
@@ -214,6 +237,11 @@ const options = [
     options: ['auto', 'hf', 'mistral']
   },
   {
+    label: '--disable-cascade-attn',
+    value: '--disable-cascade-attn',
+    options: []
+  },
+  {
     label: '--dtype',
     value: '--dtype',
     options: ['auto', 'half', 'float16', 'bfloat16', 'float', 'float32']
@@ -222,6 +250,16 @@ const options = [
     label: '--kv-cache-dtype',
     value: '--kv-cache-dtype',
     options: ['auto', 'fp8', 'fp8_e5m2', 'fp8_e4m3']
+  },
+  {
+    label: '--disable-chunked-mm-input',
+    value: '--disable-chunked-mm-input',
+    options: []
+  },
+  {
+    label: 'DISABLE_CHUNKED_MM_INPUT',
+    value: 'DISABLE_CHUNKED_MM_INPUT',
+    options: []
   },
   {
     label: '--quantization-param-path',
@@ -260,6 +298,16 @@ const options = [
     options: []
   },
   {
+    label: '--data-parallel-size',
+    value: '--data-parallel-size',
+    options: []
+  },
+  {
+    label: '--enable-expert-parallel',
+    value: '--enable-expert-parallel',
+    options: []
+  },
+  {
     label: '--pipeline-parallel-size',
     value: '--pipeline-parallel-size',
     options: []
@@ -288,6 +336,11 @@ const options = [
     label: '--enable-prefix-caching',
     value: '--enable-prefix-caching',
     options: []
+  },
+  {
+    label: '--prefix-caching-hash-algo',
+    value: '--prefix-caching-hash-algo',
+    options: ['builtin', 'sha256']
   },
   {
     label: '--disable-sliding-window',
@@ -335,6 +388,23 @@ const options = [
     options: []
   },
   {
+    label: '--max-num-partial-prefills',
+    value: '--max-num-partial-prefills',
+    options: []
+  },
+
+  {
+    label: '--max-long-partial-prefills',
+    value: '--max-long-partial-prefills',
+    options: []
+  },
+
+  {
+    label: '--long-prefill-token-threshold',
+    value: '--long-prefill-token-threshold',
+    options: []
+  },
+  {
     label: '--max-num-seqs',
     value: '--max-num-seqs',
     options: []
@@ -355,6 +425,17 @@ const options = [
     options: []
   },
   {
+    label: '--hf-token',
+    value: '--hf-token',
+    options: []
+  },
+
+  {
+    label: 'HF_TOKEN',
+    value: 'HF_TOKEN',
+    options: []
+  },
+  {
     label: '--disable-mm-preprocessor-cache',
     value: '--disable-mm-preprocessor-cache',
     options: []
@@ -368,23 +449,26 @@ const options = [
       'deepspeedfp',
       'tpu_int8',
       'fp8',
+      'ptpc_fp8',
       'fbgemm_fp8',
       'modelopt',
+      'nvfp4',
       'marlin',
       'gguf',
-      'hqq',
       'gptq_marlin_24',
       'gptq_marlin',
       'awq_marlin',
       'gptq',
-      'quark',
-      'moe_wna16',
       'compressed-tensors',
       'bitsandbytes',
       'qqq',
+      'hqq',
       'experts_int8',
       'neuron_quant',
       'ipex',
+      'quark',
+      'moe_wna16',
+      'torchao',
       'None'
     ]
   },
@@ -506,7 +590,12 @@ const options = [
   {
     label: '--device',
     value: '--device',
-    options: ['auto', 'cuda', 'neuron', 'cpu', 'openvino', 'tpu', 'xpu', 'hpu']
+    options: ['auto', 'cuda', 'neuron', 'cpu', 'tpu', 'xpu', 'hpu']
+  },
+  {
+    label: '--speculative-config',
+    value: '--speculative-config',
+    options: []
   },
   {
     label: '--num-scheduler-steps',
@@ -529,102 +618,28 @@ const options = [
     options: []
   },
   {
-    label: '--speculative-model',
-    value: '--speculative-model',
-    options: []
-  },
-  {
-    label: '--speculative-model-quantization',
-    value: '--speculative-model-quantization',
-    options: [
-      'aqlm',
-      'awq',
-      'deepspeedfp',
-      'tpu_int8',
-      'fp8',
-      'fbgemm_fp8',
-      'modelopt',
-      'marlin',
-      'gguf',
-      'gptq_marlin_24',
-      'gptq_marlin',
-      'awq_marlin',
-      'gptq',
-      'compressed-tensors',
-      'bitsandbytes',
-      'qqq',
-      'hqq',
-      'experts_int8',
-      'neuron_quant',
-      'ipex',
-      'quark',
-      'moe_wna16',
-      'None'
-    ]
-  },
-  {
-    label: '--num-speculative-tokens',
-    value: '--num-speculative-tokens',
-    options: []
-  },
-  {
-    label: '--speculative-disable-mqa-scorer',
-    value: '--speculative-disable-mqa-scorer',
-    options: []
-  },
-  {
-    label: '--speculative-draft-tensor-parallel-size',
-    value: '--speculative-draft-tensor-parallel-size',
-    options: []
-  },
-  {
-    label: '--speculative-max-model-len',
-    value: '--speculative-max-model-len',
-    options: []
-  },
-  {
-    label: '--speculative-disable-by-batch-size',
-    value: '--speculative-disable-by-batch-size',
-    options: []
-  },
-  {
-    label: '--ngram-prompt-lookup-max',
-    value: '--ngram-prompt-lookup-max',
-    options: []
-  },
-  {
-    label: '--ngram-prompt-lookup-min',
-    value: '--ngram-prompt-lookup-min',
-    options: []
-  },
-  {
-    label: '--spec-decoding-acceptance-method',
-    value: '--spec-decoding-acceptance-method',
-    options: ['rejection_sampler', 'typical_acceptance_sampler']
-  },
-  {
-    label: '--typical-acceptance-sampler-posterior-threshold',
-    value: '--typical-acceptance-sampler-posterior-threshold',
-    options: []
-  },
-  {
-    label: '--typical-acceptance-sampler-posterior-alpha',
-    value: '--typical-acceptance-sampler-posterior-alpha',
-    options: []
-  },
-  {
-    label: '--disable-logprobs-during-spec-decoding',
-    value: '--disable-logprobs-during-spec-decoding',
-    options: []
-  },
-  {
     label: '--model-loader-extra-config',
     value: '--model-loader-extra-config',
     options: []
   },
   {
+    label: '--scheduler-cls',
+    value: '--scheduler-cls',
+    options: []
+  },
+  {
+    label: '--use-tqdm-on-load',
+    value: '--use-tqdm-on-load',
+    options: []
+  },
+  {
     label: '--ignore-patterns',
     value: '--ignore-patterns',
+    options: []
+  },
+  {
+    label: '--show-hidden-metrics-for-version',
+    value: '--show-hidden-metrics-for-version',
     options: []
   },
   {
@@ -714,6 +729,11 @@ const options = [
     options: []
   },
   {
+    label: '--additional-config',
+    value: '--additional-config',
+    options: []
+  },
+  {
     label: '--max-log-len',
     value: '--max-log-len',
     options: []
@@ -726,6 +746,11 @@ const options = [
   {
     label: '--enable-prompt-tokens-details',
     value: '--enable-prompt-tokens-details',
+    options: []
+  },
+  {
+    label: '--enable-server-load-tracking',
+    value: '--enable-server-load-tracking',
     options: []
   }
 ];

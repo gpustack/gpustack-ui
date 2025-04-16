@@ -118,7 +118,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
       </Tips>
       <ApiAccessInfoWrapper>
         <span className="label">
-          {intl.formatMessage({ id: 'models.table.apiAccessInfo.enpoint' })}
+          {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
         </span>
         <span className="value">
           <AutoTooltip ghost maxWidth={200}>

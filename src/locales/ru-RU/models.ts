@@ -21,7 +21,7 @@ export default {
   'model.form.ollama.model': 'Модель Ollama',
   'model.form.ollamaholder': 'Выберите или введите название модели',
   'model.deploy.sort': 'Сортировка',
-  'model.deploy.search.placeholder': 'Введите <kbd>/</kbd> для поиска моделей', // Translated
+  'model.deploy.search.placeholder': 'Введите <kbd>/</kbd> для поиска моделей',
   'model.form.ollamatips':
     'Подсказка: ниже представлены предустановленные модели Ollama в GPUStack. Выберите нужную или введите модель для развертывания в поле 【{name}】 справа.',
   'models.sort.name': 'По имени',
@@ -84,9 +84,12 @@ export default {
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
-  'models.form.backend.vllm': 'Для моделей не-GGUF формата, поддерживается только в Linux (amd64/x86_64).', // Translated
-  'models.form.backend.voxbox': 'Для аудиомоделей не-GGUF формата, поддерживается только на GPU NVIDIA и CPU.', // Translated
-  'models.form.backend.mindie': 'Для моделей не-GGUF формата, поддерживается только на Ascend 910B и 310P.', // Translated
+  'models.form.backend.vllm':
+    'Для моделей не-GGUF формата, поддерживается только в Linux (amd64/x86_64).',
+  'models.form.backend.voxbox':
+    'Для аудиомоделей не-GGUF формата, поддерживается только на GPU NVIDIA и CPU.',
+  'models.form.backend.mindie':
+    'Для моделей не-GGUF формата, поддерживается только на Ascend 910B и 310P.',
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
@@ -129,23 +132,25 @@ export default {
   'models.form.restart.onerror.tips':
     'При возникновении ошибки система автоматически попытается перезапуститься.',
   'models.form.check.params': 'Проверка конфигурации...',
-  'models.form.check.passed': 'Проверка совместимости пройдена', // Translated
+  'models.form.check.passed': 'Проверка совместимости пройдена',
   'models.form.check.claims':
     'Модель требует примерно {vram} VRAM и {ram} RAM.',
   'models.form.check.claims2': 'Модель требует примерно {vram} VRAM.',
   'models.form.check.claims3': 'Модель требует примерно {ram} RAM.',
-  'models.form.update.tips': 'Изменения вступят в силу только после удаления и повторного создания инстанса.', // Translated
-  'models.table.download.progress': 'Прогресс загрузки', // Translated
-  'models.table.button.apiAccessInfo': 'Доступ к API', // Translated
+  'models.form.update.tips':
+    'Изменения вступят в силу только после удаления и повторного создания инстанса.',
+  'models.table.download.progress': 'Прогресс загрузки',
+  'models.table.button.apiAccessInfo': 'Доступ к API',
   'models.table.button.apiAccessInfo.tips': `Для интеграции этой модели со сторонними приложениями используйте следующие данные: URL доступа, имя модели и ключ API. Эти учетные данные необходимы для обеспечения правильного подключения и использования сервиса модели.`, // Translated
-  'models.table.apiAccessInfo.endpoint': 'URL доступа', // Translated & key fixed
-  'models.table.apiAccessInfo.modelName': 'Имя модели', // Translated
-  'models.table.apiAccessInfo.apikey': 'Ключ API', // Translated
-  'models.table.apiAccessInfo.openaiCompatible': 'Совместимо с OpenAI', // Translated
-  'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina', // Translated
-  'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию', // Translated
-  'models.search.parts': '{n} частей' // Translated (assuming simple plural form)
+  'models.table.apiAccessInfo.endpoint': 'URL доступа',
+  'models.table.apiAccessInfo.modelName': 'Имя модели',
+  'models.table.apiAccessInfo.apikey': 'Ключ API',
+  'models.table.apiAccessInfo.openaiCompatible': 'Совместимо с OpenAI',
+  'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina',
+  'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию',
+  'models.search.parts': '{n} частей'
 };
+
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 
 // ========== End of To-Do List ==========

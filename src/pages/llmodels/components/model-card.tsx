@@ -277,18 +277,21 @@ const ModelCard: React.FC<{
     return null;
   };
 
-  const generateModeScopeImgLink = (imgSrc: string) => {
-    if (!imgSrc) {
+  const generateModeScopeImgLink = useCallback(
+    (imgSrc: string) => {
+      if (!imgSrc) {
+        return '';
+      }
+      if (modelSource === modelSourceMap.modelscope_value) {
+        return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
+      }
+      if (modelSource === modelSourceMap.huggingface_value) {
+        return `https://huggingface.co/${modelData?.id}/resolve/main/${imgSrc}`;
+      }
       return '';
-    }
-    if (modelSource === modelSourceMap.modelscope_value) {
-      return `https://modelscope.cn/api/v1/models/${modelData?.name}/repo?Revision=${modelData?.Revision}&View=true&FilePath=${imgSrc}`;
-    }
-    if (modelSource === modelSourceMap.huggingface_value) {
-      return `https://huggingface.co/${modelData?.id}/resolve/main/${imgSrc}`;
-    }
-    return '';
-  };
+    },
+    [modelSource, modelData?.name, modelData?.id, modelData?.Revision]
+  );
 
   useEffect(() => {
     getModelCardData();

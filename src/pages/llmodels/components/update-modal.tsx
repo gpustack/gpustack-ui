@@ -81,12 +81,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
-  const handleOnValuesChange = _.debounce((data: any) => {
+  const handleOnValuesChange = (data: any) => {
     const formdata = form.getFieldsValue?.();
     let alldata = {};
     if (formdata.scheduleType === 'manual') {
       alldata = {
         ..._.omit(formdata, ['worker_selector']),
+        env: formdata.env || {},
         gpu_selector:
           formdata.gpu_selector?.gpu_ids?.length > 0
             ? originFormData.current?.gpu_selector
@@ -95,6 +96,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     } else {
       alldata = {
         ..._.omit(formdata, ['gpu_selector']),
+        env: formdata.env || {},
         worker_selector: originFormData.current?.worker_selector || null
       };
     }
@@ -113,7 +115,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         })
       });
     }
-  }, 300);
+  };
 
   // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {
@@ -168,14 +170,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
     const isEndwithGGUF = _.endsWith(value, '.gguf');
     const isBlobFile = value.split('/').pop().includes('sha256');
-    let backend = backendOptionsMap.llamaBox;
-    const isVllmOrAscend = [
-      backendOptionsMap.vllm,
-      backendOptionsMap.ascendMindie
-    ].includes(form.getFieldValue('backend'));
+    let backend = form.getFieldValue('backend');
 
-    if (!isEndwithGGUF || !isBlobFile) {
-      backend = isVllmOrAscend ? formData!.backend : backendOptionsMap.vllm;
+    if (
+      !isEndwithGGUF &&
+      !isBlobFile &&
+      backend === backendOptionsMap.llamaBox
+    ) {
+      backend = backendOptionsMap.vllm;
     }
     form.setFieldValue('backend', backend);
     handleBackendChange?.(backend);

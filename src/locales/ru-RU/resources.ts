@@ -44,12 +44,14 @@ export default {
   'resources.worker.add.step1':
     'Получить токен <span class="note-text">(Запустить на сервере)</span>',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
-  'resources.worker.add.step2.tips': '(Запустить на добавляемом воркере, <span style="color: #000;font-weight: 600">token</span> — это значение, полученное на первом шаге.)', // Translated
+  'resources.worker.add.step2.tips':
+    '(Запустить на добавляемом воркере, <span style="color: #000;font-weight: 600">token</span> — это значение, полученное на первом шаге.)', // Translated
   'resources.worker.add.step3':
     'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',
   'resources.worker.current.version': 'Текущая версия: {version}',
-  'resources.worker.driver.install': 'Установите <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">необходимые драйверы и библиотеки</a> перед установкой GPUStack.', // Translated
+  'resources.worker.driver.install':
+    'Установите <a href="https://docs.gpustack.ai/latest/installation/installation-requirements/" target="_blank">необходимые драйверы и библиотеки</a> перед установкой GPUStack.', // Translated
   'resources.worker.select.command':
     'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
@@ -61,9 +63,11 @@ export default {
   'resources.modelfiles.size': 'Размер',
   'resources.modelfiles.selecttarget': 'Выбрать назначение',
   'resources.modelfiles.form.localdir': 'Локальный каталог',
-  'resources.modelfiles.form.localdir.tips': 'Каталог хранения по умолчанию — <span class="desc-block">/var/lib/gpustack/cache</span>, или каталог, указанный с помощью <span class="desc-block">--cache-dir</span> (предпочтительно) или <span class="desc-block">--data-dir</span>.', // Translated
+  'resources.modelfiles.form.localdir.tips':
+    'Каталог хранения по умолчанию — <span class="desc-block">/var/lib/gpustack/cache</span>, или каталог, указанный с помощью <span class="desc-block">--cache-dir</span> (предпочтительно) или <span class="desc-block">--data-dir</span>.', // Translated
   'resources.modelfiles.retry.download': 'Повторить загрузку',
-  'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
+  'resources.modelfiles.storagePath.holder':
+    'Download in progress: <span style="font-weight: 700">{name}</span>',
   'resources.filter.worker': 'Фильтровать по узлу',
   'resources.filter.source': 'Фильтровать по источнику',
   'resources.modelfiles.delete.tips': 'Также удалить файл с диска!',
@@ -72,5 +76,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'resources.modelfiles.storagePath.holder',
 // ========== End of To-Do List ==========

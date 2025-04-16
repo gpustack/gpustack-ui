@@ -145,6 +145,35 @@ const getWorkerName = (
   return worker?.label || '';
 };
 
+const getModelInfo = (record: ListItem) => {
+  if (record.source === modelSourceMap.huggingface_value) {
+    return {
+      title: `${record.huggingface_repo_id}/${record.huggingface_filename}`,
+      filename: record.huggingface_filename
+    };
+  }
+  if (record.source === modelSourceMap.modelscope_value) {
+    return {
+      title: `${record.model_scope_model_id}/${record.model_scope_file_path}`,
+      filename: record.model_scope_file_path
+    };
+  }
+  if (record.source === modelSourceMap.ollama_library_value) {
+    return {
+      title: record.ollama_library_model_name,
+      filename: record.ollama_library_model_name
+    };
+  }
+  return {
+    title: record.local_path,
+    filename: _.split(record.local_path, /[\\/]/).pop()
+  };
+};
+
+const getResolvedPath = (pathList: string[]) => {
+  return _.split(pathList?.[0], /[\\/]/).pop();
+};
+
 const InstanceStatusTag = (props: { data: ListItem }) => {
   const { data } = props;
   if (!data.state) {
@@ -171,6 +200,80 @@ const InstanceStatusTag = (props: { data: ListItem }) => {
             : data.state_message
       }}
     />
+  );
+};
+
+const RenderParts = (props: { record: ListItem }) => {
+  const { record } = props;
+  const intl = useIntl();
+  const parts = record.resolved_paths || [];
+  if (parts.length <= 1) {
+    return null;
+  }
+
+  const renderItem = () => {
+    return (
+      <ItemWrapper>
+        {parts.map((item: string, index: number) => {
+          return <li key={index}>{_.split(item, /[\\/]/).pop()}</li>;
+        })}
+      </ItemWrapper>
+    );
+  };
+
+  return (
+    <TooltipOverlayScroller title={renderItem()}>
+      <FilesTag color="purple" icon={<InfoCircleOutlined />}>
+        <span style={{ opacity: 1 }}>
+          {record.resolved_paths?.length}{' '}
+          {intl.formatMessage({ id: 'models.form.files' })}
+        </span>
+      </FilesTag>
+    </TooltipOverlayScroller>
+  );
+};
+
+const ResolvedPathColumn = (props: { record: ListItem }) => {
+  const { record } = props;
+  const intl = useIntl();
+  if (
+    !record.resolved_paths.length &&
+    record.state === ModelfileStateMap.Downloading
+  ) {
+    const modelInfo = getModelInfo(record);
+    const { title, filename } = modelInfo;
+    return (
+      <AutoTooltip ghost showTitle title={title}>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: intl.formatMessage(
+              {
+                id: 'resources.modelfiles.storagePath.holder'
+              },
+              {
+                name: filename
+              }
+            )
+          }}
+        ></span>
+      </AutoTooltip>
+    );
+  }
+  return (
+    record.resolved_paths?.length > 0 && (
+      <PathWrapper>
+        <AutoTooltip
+          ghost
+          showTitle
+          title={
+            <TooltipTitle path={record.resolved_paths?.[0]}></TooltipTitle>
+          }
+        >
+          <span>{getResolvedPath(record.resolved_paths)}</span>
+        </AutoTooltip>
+        <RenderParts record={record}></RenderParts>
+      </PathWrapper>
+    )
   );
 };
 
@@ -308,34 +411,6 @@ const ModelFiles = () => {
     };
   };
 
-  const renderParts = (record: ListItem) => {
-    const parts = record.resolved_paths || [];
-    if (parts.length <= 1) {
-      return null;
-    }
-
-    const renderItem = () => {
-      return (
-        <ItemWrapper>
-          {parts.map((item: string, index: number) => {
-            return <li key={index}>{_.split(item, /[\\/]/).pop()}</li>;
-          })}
-        </ItemWrapper>
-      );
-    };
-
-    return (
-      <TooltipOverlayScroller title={renderItem()}>
-        <FilesTag color="purple" icon={<InfoCircleOutlined />}>
-          <span style={{ opacity: 1 }}>
-            {record.resolved_paths?.length}{' '}
-            {intl.formatMessage({ id: 'models.form.files' })}
-          </span>
-        </FilesTag>
-      </TooltipOverlayScroller>
-    );
-  };
-
   const handleSelect = async (val: any, record: ListItem) => {
     try {
       if (val === 'delete') {
@@ -464,10 +539,6 @@ const ModelFiles = () => {
     }
   };
 
-  const getResolvedPath = (pathList: string[]) => {
-    return _.split(pathList?.[0], /[\\/]/).pop();
-  };
-
   const columns = [
     {
       title: intl.formatMessage({ id: 'models.form.source' }),
@@ -509,38 +580,9 @@ const ModelFiles = () => {
       title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
       dataIndex: 'resolved_paths',
       width: '35%',
-      render: (text: string, record: ListItem) => {
-        if (
-          !record.resolved_paths.length &&
-          record.state === ModelfileStateMap.Downloading
-        ) {
-          return (
-            <span>
-              {intl.formatMessage({
-                id: 'resources.modelfiles.storagePath.holder'
-              })}
-            </span>
-          );
-        }
-        return (
-          record.resolved_paths?.length > 0 && (
-            <PathWrapper>
-              <AutoTooltip
-                ghost
-                showTitle
-                title={
-                  <TooltipTitle
-                    path={record.resolved_paths?.[0]}
-                  ></TooltipTitle>
-                }
-              >
-                <span>{getResolvedPath(record.resolved_paths)}</span>
-              </AutoTooltip>
-              {renderParts(record)}
-            </PathWrapper>
-          )
-        );
-      }
+      render: (text: string, record: ListItem) => (
+        <ResolvedPathColumn record={record} />
+      )
     },
     {
       title: intl.formatMessage({ id: 'resources.modelfiles.size' }),

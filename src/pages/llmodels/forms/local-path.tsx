@@ -19,7 +19,7 @@ const LocalPathForm: React.FC = () => {
   const formInnerCtx = useFormInnerContext();
   const source = Form.useWatch('source', form);
   const { onBackendChange } = formInnerCtx;
-  const { modelFileOptions, byBuiltIn } = formCtx;
+  const { byBuiltIn } = formCtx;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const localPathCache = useRef<string>(form.getFieldValue('local_path') || '');
@@ -35,8 +35,13 @@ const LocalPathForm: React.FC = () => {
     }
     const isEndwithGGUF = _.endsWith(value, '.gguf');
     const isBlobFile = value.split('/').pop().includes('sha256');
-    let backend = backendOptionsMap.llamaBox;
-    if (!isEndwithGGUF && !isBlobFile) {
+    let backend = form.getFieldValue('backend');
+
+    if (
+      !isEndwithGGUF &&
+      !isBlobFile &&
+      backend === backendOptionsMap.llamaBox
+    ) {
       backend = backendOptionsMap.vllm;
     }
     form.setFieldValue('backend', backend);

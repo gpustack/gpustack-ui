@@ -19,12 +19,6 @@ const CompatibleTag = styled(Tag)`
   padding-inline: 0;
 `;
 
-const ClaimTag = styled(Tag)`
-  margin: 0;
-  opacity: 0.7;
-  border-radius: var(--border-radius-base);
-`;
-
 const IncompatibleInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -35,10 +29,13 @@ const IncompatibleInfo = styled.div`
     padding-left: 16px;
     color: var(--color-white-secondary);
     list-style: none;
+    &.error-msg {
+      padding-left: 0;
+    }
     li {
       position: relative;
     }
-    li::before {
+    li.normal::before {
       position: absolute;
       content: '';
       display: inline-block;
@@ -56,8 +53,29 @@ const SMTitle = styled.div<{ $isTitle?: boolean }>`
   font-weight: ${(props) => (props.$isTitle ? 'bold' : 'normal')};
   font-size: var(--font-size-small);
 `;
+
+const MessageList = ({
+  messageList,
+  error
+}: {
+  messageList: string[];
+  error?: boolean;
+}) => {
+  return (
+    <ul className={`${error ? 'error-msg' : ''}`}>
+      {messageList.map((item, index) => (
+        <li key={index} className={`${!error ? 'normal' : 'error'}`}>
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
   const { data, isEvaluating } = props;
+  const { error, error_message, compatibility_messages, scheduling_messages } =
+    data || {};
   const intl = useIntl();
 
   if (isEvaluating) {
@@ -72,30 +90,28 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
   if (!data || data?.compatible) {
     return null;
   }
+  const messageList = [
+    ...(compatibility_messages || []),
+    ...(scheduling_messages || []),
+    ...(error_message ? [error_message] : [])
+  ];
   return (
     <TooltipOverlayScroller
       maxHeight={200}
       title={
         <IncompatibleInfo>
           <SMTitle $isTitle={true}>
-            {intl.formatMessage({ id: 'models.form.incompatible' })}
+            {error
+              ? intl.formatMessage({ id: 'models.search.evaluate.error' })
+              : intl.formatMessage({ id: 'models.form.incompatible' })}
           </SMTitle>
-          {
-            <ul>
-              {data?.compatibility_messages.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-              {data?.scheduling_messages.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          }
+          <MessageList messageList={messageList} error={error}></MessageList>
         </IncompatibleInfo>
       }
     >
       <CompatibleTag
         icon={<WarningOutlined />}
-        color="warning"
+        color={error ? 'error' : 'warning'}
         bordered={false}
       ></CompatibleTag>
     </TooltipOverlayScroller>

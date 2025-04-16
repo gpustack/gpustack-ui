@@ -37,7 +37,7 @@ const DivWrapper = styled.div`
 const CloseWrapper = styled.div`
   display: none;
   position: absolute;
-  top: 14px;
+  top: 16px;
   right: 28px;
   line-height: 1;
   cursor: pointer;

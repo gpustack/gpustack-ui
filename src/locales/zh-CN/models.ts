@@ -140,5 +140,6 @@ export default {
   'models.table.apiAccessInfo.openaiCompatible': 'OpenAI 兼容',
   'models.table.apiAccessInfo.jinaCompatible': 'Jina 兼容',
   'models.table.apiAccessInfo.gotoCreate': '去创建',
-  'models.search.parts': '{n} 个文件'
+  'models.search.parts': '{n} 个文件',
+  'models.search.evaluate.error': '评估过程中发生了错误：'
 };

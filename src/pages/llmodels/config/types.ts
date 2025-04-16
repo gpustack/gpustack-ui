@@ -218,6 +218,8 @@ export interface EvaluateResult {
   compatibility_messages: string[];
   scheduling_messages: string[];
   default_spec: Record<string, any>;
+  error?: boolean;
+  error_message?: string;
   resource_claim?: {
     ram: number;
     vram: number;

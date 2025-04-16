@@ -195,7 +195,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           token: checkTokenRef.current?.token
         }
       );
-      return evaluations.results || [];
+      return evaluations.results;
     } catch (error) {
       return [];
     }

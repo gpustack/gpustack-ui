@@ -2,7 +2,7 @@ import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
-import {
+import React, {
   forwardRef,
   useImperativeHandle,
   useMemo,
@@ -144,7 +144,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
           </>
         </div>
-        {tokenResult && (
+        {tokenResult && !loading && (
           <div style={{ height: 40 }}>
             <ReferenceParams usage={tokenResult}></ReferenceParams>
           </div>

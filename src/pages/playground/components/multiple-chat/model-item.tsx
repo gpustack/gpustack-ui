@@ -260,7 +260,9 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
             }}
           ></Select>
         </span>
-        <ReferenceParams usage={tokenResult} scaleable></ReferenceParams>
+        {tokenResult && !loading && (
+          <ReferenceParams usage={tokenResult} scaleable></ReferenceParams>
+        )}
         <span className="action">
           <Dropdown
             menu={{

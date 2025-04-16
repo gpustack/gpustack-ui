@@ -148,9 +148,10 @@ export default {
   'models.table.apiAccessInfo.openaiCompatible': 'Совместимо с OpenAI',
   'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina',
   'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию',
-  'models.search.parts': '{n} частей'
+  'models.search.parts': '{n} частей',
+  'models.search.evaluate.error': 'An error occurred during evaluation: '
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.search.evaluate.error'
 // ========== End of To-Do List ==========

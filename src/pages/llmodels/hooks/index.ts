@@ -292,8 +292,20 @@ export const useCheckCompatibility = () => {
       compatible,
       compatibility_messages = [],
       scheduling_messages = [],
-      resource_claim
+      resource_claim,
+      error,
+      error_message
     } = evaluateResult || {};
+
+    // error message
+    if (error) {
+      return {
+        show: true,
+        type: 'danger',
+        title: intl.formatMessage({ id: 'models.search.evaluate.error' }),
+        message: error_message || ''
+      };
+    }
 
     const hasClaim = !!resource_claim?.ram || !!resource_claim?.vram;
 

@@ -29,6 +29,7 @@ import React, {
   useState
 } from 'react';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
+import { extractErrorMessage } from '../config';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-left.less';
@@ -250,7 +251,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     } catch (error: any) {
       setTokenResult({
         error: true,
-        errorMessage: error.response?.data?.error?.message
+        errorMessage: extractErrorMessage(error.response)
       });
     } finally {
       setLoading(false);

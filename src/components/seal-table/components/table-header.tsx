@@ -2,6 +2,7 @@ import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React from 'react';
 import '../styles/header.less';
+
 import { TableHeaderProps } from '../types';
 
 const TableHeader: React.FC<TableHeaderProps> = (props) => {

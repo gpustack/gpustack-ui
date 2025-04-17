@@ -48,8 +48,6 @@ interface MessageProps {
 
 const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
-  const acceptType =
-    '.txt, .doc, .docx, .xls, .xlsx, .csv, .md, .pdf, .eml, .msg, .ppt, .pptx, .xml, .epub, .html';
   const messageId = useRef<number>(0);
 
   const intl = useIntl();
@@ -266,15 +264,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     setShow(false);
   };
 
-  const handleUpdateFileList = (
-    files: { text: string; name: string; uid: number | string }[]
-  ) => {
-    console.log('files:', files);
-    setFileList((preList) => {
-      return [...preList, ...files];
-    });
-  };
-
   const handleScaleOutputSize = (
     e: any,
     direction: string,
@@ -444,18 +433,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     },
     []
   );
-
-  // useHotkeys(
-  //   HotKeys.SUBMIT,
-  //   (e: any) => {
-  //     e.preventDefault();
-  //     handleSendMessage();
-  //   },
-  //   {
-  //     enabled: !loading,
-  //     preventDefault: true
-  //   }
-  // );
 
   useEffect(() => {
     if (scroller.current) {

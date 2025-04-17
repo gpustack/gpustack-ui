@@ -34,7 +34,7 @@ const WrapperBox = styled.div`
   border-style: var(--ant-line-type);
   border-color: var(--ant-color-border);
   border-radius: var(--border-radius-base);
-  background-color: var(--color-white-1);
+  // background-color: var(--color-white-1);
   &.borderless {
     border: none;
     box-shadow: none;

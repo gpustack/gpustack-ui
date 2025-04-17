@@ -1,16 +1,8 @@
 import Chart from '@/components/echarts/chart';
-import {
-  grid,
-  legend,
-  lineItemConfig,
-  title as titleConfig,
-  tooltip,
-  xAxis,
-  yAxis
-} from '@/components/echarts/config';
+import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import { memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { ChartProps } from './types';
 
 const LineChart: React.FC<ChartProps> = (props) => {
@@ -26,6 +18,15 @@ const LineChart: React.FC<ChartProps> = (props) => {
     smooth,
     title
   } = props;
+  const {
+    grid,
+    legend,
+    lineItemConfig,
+    title: titleConfig,
+    tooltip,
+    xAxis,
+    yAxis
+  } = useChartConfig();
 
   const options = {
     title: {
@@ -93,7 +94,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-  }, [seriesData, xAxisData, yAxisName, title, smooth, legendData]);
+  }, [seriesData, xAxisData, yAxisName, title, smooth, legendData, options]);
 
   return (
     <>

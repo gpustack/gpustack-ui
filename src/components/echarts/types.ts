@@ -4,7 +4,7 @@ export interface ChartProps {
   xAxisData: string[];
   legendData?: string[];
   labelFormatter?: (val?: any) => string;
-  tooltipValueFormatter?: (val?: any) => string;
+  tooltipValueFormatter?: (val: any) => string;
   height: string | number;
   width?: string | number;
   title?: string;

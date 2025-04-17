@@ -1,3 +1,5 @@
+import { userSettingsHelperAtom } from '@/atoms/settings';
+import { useAtom } from 'jotai';
 import { throttle } from 'lodash';
 import {
   UseOverlayScrollbarsParams,
@@ -28,6 +30,7 @@ export default function useOverlayScroller(data?: {
   events?: any;
   defer?: boolean;
 }) {
+  const [useSettings] = useAtom(userSettingsHelperAtom);
   const { options, events, defer = true } = data || {};
   const scrollEventElement = React.useRef<any>(null);
   const instanceRef = React.useRef<any>(null);
@@ -44,7 +47,10 @@ export default function useOverlayScroller(data?: {
         x: 'hidden'
       },
       scrollbars: {
-        theme: options?.theme || 'os-theme-dark',
+        theme:
+          options?.theme || useSettings.theme === 'light'
+            ? 'os-theme-dark'
+            : 'os-theme-light',
         autoHide: 'scroll',
         autoHideDelay: 600,
         clickScroll: 'instant'

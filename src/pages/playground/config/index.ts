@@ -173,6 +173,7 @@ export const extractErrorMessage = (result: any) => {
     result?.detail ||
     result?.message ||
     result?.error?.message ||
+    result?.data ||
     'Unknown error occurred'
   );
 };

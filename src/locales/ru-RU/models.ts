@@ -149,9 +149,9 @@ export default {
   'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina',
   'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию',
   'models.search.parts': '{n} частей',
-  'models.search.evaluate.error': 'An error occurred during evaluation: '
+  'models.search.evaluate.error': 'Возникла ошибка при вычислении: '
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.search.evaluate.error'
+
 // ========== End of To-Do List ==========

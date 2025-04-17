@@ -23,6 +23,7 @@ import React, {
   useState
 } from 'react';
 import { rerankerQuery } from '../apis';
+import { extractErrorMessage } from '../config';
 import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
@@ -298,7 +299,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     } catch (error: any) {
       setTokenResult({
         error: true,
-        errorMessage: error.response?.data?.error?.message
+        errorMessage: extractErrorMessage(error.response)
       });
     } finally {
       setLoading(false);

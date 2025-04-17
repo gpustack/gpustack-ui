@@ -1,9 +1,9 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CHAT_API } from '../apis';
-import { Roles, generateMessages } from '../config';
+import { Roles, extractErrorMessage, generateMessages } from '../config';
 import { MessageItem } from '../config/types';
 
 export default function useChatCompletion(
@@ -153,8 +153,7 @@ export default function useChatCompletion(
       if (result?.error) {
         setTokenResult({
           error: true,
-          errorMessage:
-            result?.data?.error?.message || result?.data?.message || ''
+          errorMessage: extractErrorMessage(result)
         });
         return;
       }
@@ -164,7 +163,7 @@ export default function useChatCompletion(
         if (chunk?.error) {
           setTokenResult({
             error: true,
-            errorMessage: chunk?.error?.message || chunk?.message || ''
+            errorMessage: extractErrorMessage(chunk)
           });
           return;
         }

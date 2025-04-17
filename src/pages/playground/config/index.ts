@@ -167,7 +167,13 @@ export const extractErrorMessage = (result: any) => {
     result?.data?.data?.message ||
     result?.data?.error?.message ||
     result?.data?.error ||
-    ''
+    result?.data?.detail ||
+    result?.data?.message ||
+    result?.error ||
+    result?.detail ||
+    result?.message ||
+    result?.error?.message ||
+    'Unknown error occurred'
   );
 };
 

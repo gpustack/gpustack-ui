@@ -142,7 +142,7 @@ export default function useTextImage(props: any) {
         if (chunk?.error) {
           setTokenResult({
             error: true,
-            errorMessage: chunk?.error?.message || chunk?.message || ''
+            errorMessage: extractErrorMessage(chunk)
           });
           return;
         }

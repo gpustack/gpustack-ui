@@ -14,7 +14,7 @@ import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
-import {
+import React, {
   forwardRef,
   useCallback,
   useEffect,
@@ -24,7 +24,7 @@ import {
   useState
 } from 'react';
 import { AUDIO_SPEECH_TO_TEXT_API, speechToText } from '../apis';
-import { SpeechToTextFormat } from '../config';
+import { SpeechToTextFormat, extractErrorMessage } from '../config';
 import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
 import '../style/ground-left.less';
 import '../style/speech-to-text.less';
@@ -140,12 +140,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
       ) {
         setTokenResult({
           error: true,
-          errorMessage:
-            result?.data?.error?.message ||
-            result?.error?.message ||
-            result?.data?.message ||
-            result?.detail ||
-            ''
+          errorMessage: extractErrorMessage(result)
         });
         return;
       }
@@ -161,12 +156,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (res?.error || (res?.status_code && res?.status_code !== 200)) {
         setTokenResult({
           error: true,
-          errorMessage:
-            res?.error?.message ||
-            res?.data?.error?.message ||
-            res?.data?.error ||
-            res?.detail ||
-            ''
+          errorMessage: extractErrorMessage(res)
         });
       }
     } finally {

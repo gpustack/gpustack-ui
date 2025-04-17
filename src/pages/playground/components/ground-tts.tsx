@@ -20,6 +20,7 @@ import React, {
   useState
 } from 'react';
 import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
+import { extractErrorMessage } from '../config';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
 import '../style/ground-left.less';
@@ -179,12 +180,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       if ((res?.status_code && res?.status_code !== 200) || res?.error) {
         setTokenResult({
           error: true,
-          errorMessage:
-            res?.data?.error?.message ||
-            res?.error?.message ||
-            res?.data?.error ||
-            res?.detail ||
-            ''
+          errorMessage: extractErrorMessage(res)
         });
         setMessageList([]);
         return;
@@ -207,12 +203,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (res?.error) {
         setTokenResult({
           error: true,
-          errorMessage:
-            res?.error?.message ||
-            res?.data?.error?.message ||
-            res?.data?.error ||
-            res?.detail ||
-            ''
+          errorMessage: extractErrorMessage(res)
         });
       }
     } finally {

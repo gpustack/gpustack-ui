@@ -43,6 +43,8 @@ const LocalPathForm: React.FC = () => {
       backend === backendOptionsMap.llamaBox
     ) {
       backend = backendOptionsMap.vllm;
+    } else if (isEndwithGGUF || isBlobFile) {
+      backend = backendOptionsMap.llamaBox;
     }
     form.setFieldValue('backend', backend);
 

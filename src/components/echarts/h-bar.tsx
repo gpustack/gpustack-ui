@@ -1,15 +1,8 @@
 import Chart from '@/components/echarts/chart';
-import {
-  grid,
-  legend,
-  title as titleConfig,
-  tooltip,
-  xAxis,
-  yAxis
-} from '@/components/echarts/config';
+import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import { memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { ChartProps } from './types';
 
 const BarChart: React.FC<ChartProps> = (props) => {
@@ -22,6 +15,14 @@ const BarChart: React.FC<ChartProps> = (props) => {
     legendData,
     title
   } = props;
+  const {
+    grid,
+    legend,
+    title: titleConfig,
+    tooltip,
+    xAxis,
+    yAxis
+  } = useChartConfig();
 
   const options = {
     title: {

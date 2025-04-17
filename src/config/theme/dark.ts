@@ -8,9 +8,12 @@ export default {
       inputFontSizeLG: 14
     },
     Table: {
+      headerBorderRadius: 4,
+      cellPaddingInline: 16,
+      cellPaddingBlock: 6,
       cellFontSize: 14,
-      rowSelectedHoverBg: 'rgb(249 249 249)',
-      rowHoverBg: 'rgb(249 249 249)',
+      rowSelectedHoverBg: 'rgb(24 25 27)',
+      rowHoverBg: 'rgb(24 25 27)',
       rowSelectedBg: 'transparent'
     },
     Button: {
@@ -20,19 +23,22 @@ export default {
       dangerShadow: 'none'
     },
     Tabs: {
-      titleFontSizeLG: 14
+      titleFontSizeLG: 14,
+      cardBg: '#1D1E20'
     },
     Menu: {
       iconSize: 16,
       iconMarginInlineEnd: 12,
       itemBorderRadius: 4,
-      itemSelectedColor: '#007BFF',
       itemHeight: 44,
+      itemSelectedColor: '#007BFF',
+      darkItemSelectedBg: 'rgb(24 25 27)',
+      darkItemHoverBg: 'rgb(24 25 27)',
       groupTitleColor: 'rgba(0,0,0,1)',
       itemHoverColor: 'rgba(0,0,0,1)',
       itemColor: 'rgba(0,0,0,1)',
-      itemHoverBg: 'rgba(0,0,0,0.04)',
-      itemActiveBg: 'rgba(0,0,0,0.04)'
+      itemHoverBg: 'rgb(24 25 27)',
+      itemActiveBg: 'rgb(24 25 27)'
     },
     Progress: {
       lineBorderRadius: 2
@@ -45,7 +51,7 @@ export default {
       contentPadding: '12px 16px'
     },
     Tooltip: {
-      colorBgSpotlight: '#3e3e3e'
+      colorBgSpotlight: '#1D1E20'
     },
     Cascader: {
       dropdownHeight: 240
@@ -65,12 +71,19 @@ export default {
   token: {
     fontFamily:
       "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
-    colorText: 'rgba(0,0,0,1)',
+    colorText: '#ccc',
     colorPrimary: '#007BFF',
     colorSuccess: '#54cc98',
     borderRadius: 4,
     borderRadiusSM: 2,
     fontSize: 14,
-    motion: true
+    motion: true,
+    colorFill: 'rgb(0,0,0)',
+    colorFillTertiary: '#1D1E20',
+    colorBgContainer: '#141414',
+    colorBgBase: '#000',
+    colorBorder: '#353535',
+    colorSplit: '#262626',
+    colorBorderSecondary: '#262626'
   }
 };

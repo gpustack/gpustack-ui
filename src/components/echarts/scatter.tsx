@@ -1,88 +1,105 @@
 import Chart from '@/components/echarts/chart';
-import { grid, title as titleConfig } from '@/components/echarts/config';
+import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import { memo, useCallback, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { ChartProps } from './types';
 
-const options: any = {
-  animation: false,
-  grid: {
-    ...grid,
-    right: 10,
-    top: 10,
-    bottom: 2,
-    left: 2,
-    containLabel: true,
-    borderRadius: 4
-  },
-  xAxis: {
-    min: -1,
-    max: 1,
-    scale: false,
-    slient: true,
-    splitNumber: 15,
-    splitLine: {
-      lineStyle: {
-        color: '#F2F2F2'
-      }
-    },
-    axisLine: {
-      show: true,
-      lineStyle: {
-        color: '#DCDCDC'
-      }
-    },
-    axisTick: {
-      show: false
-    },
-    axisLabel: {
-      show: true
-    },
-    boundaryGap: [0.05, 0.05]
-  },
-  yAxis: {
-    min: -1,
-    max: 1,
-    scale: false,
-    slient: true,
-    splitNumber: 10,
-    boundaryGap: [0.05, 0.05],
-    splitLine: {
-      lineStyle: {
-        color: '#F2F2F2'
-      }
-    },
-    axisLine: {
-      show: true,
-      lineStyle: {
-        color: '#DCDCDC'
-      }
-    },
-    axisTick: {
-      show: false
-    },
-    axisLabel: {
-      show: true
-    }
-  },
-
-  symbol: 'roundRect',
-  label: {
-    show: true,
-    shadowColor: 'none',
-    textBorderColor: 'none',
-    formatter: (params: any) => {
-      return params.name;
-    }
-  },
-  series: []
-};
-
 const Scatter: React.FC<ChartProps> = (props) => {
+  const { grid, title: titleConfig, isDark, chartColorMap } = useChartConfig();
   const { seriesData, xAxisData, height, width, showEmpty, title } = props;
 
   const chart = useRef<any>(null);
+
+  const options = useMemo(() => {
+    const colorMap = isDark
+      ? {
+          split: chartColorMap.splitLineColor,
+          axis: chartColorMap.axislabelColor,
+          label: chartColorMap.axislabelColor
+        }
+      : {
+          split: '#F2F2F2',
+          axis: '#dcdcdc',
+          label: '#dcdcdc'
+        };
+
+    return {
+      animation: false,
+      grid: {
+        ...grid,
+        right: 10,
+        top: 10,
+        bottom: 2,
+        left: 2,
+        containLabel: true,
+        borderRadius: 4
+      },
+      xAxis: {
+        min: -1,
+        max: 1,
+        scale: false,
+        slient: true,
+        splitNumber: 15,
+        splitLine: {
+          lineStyle: {
+            color: colorMap.split
+          }
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: colorMap.axis
+          }
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: true,
+          color: colorMap.label
+        },
+        boundaryGap: [0.05, 0.05]
+      },
+      yAxis: {
+        min: -1,
+        max: 1,
+        scale: false,
+        slient: true,
+        splitNumber: 10,
+        boundaryGap: [0.05, 0.05],
+        splitLine: {
+          lineStyle: {
+            color: colorMap.split
+          }
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: colorMap.axis
+          }
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: true,
+          color: colorMap.label
+        }
+      },
+
+      symbol: 'roundRect',
+      label: {
+        show: true,
+        shadowColor: 'none',
+        textBorderColor: 'none',
+        formatter: (params: any) => {
+          return params.name;
+        }
+      },
+      series: []
+    };
+  }, [isDark]);
 
   const findOverlappingPoints = useCallback(
     (data: any[], currentPoint: any) => {
@@ -151,6 +168,8 @@ const Scatter: React.FC<ChartProps> = (props) => {
       tooltip: {
         trigger: 'item',
         borderWidth: 0,
+        backgroundColor: chartColorMap.colorBgBase,
+        borderColor: 'transparent',
         formatter(params: any, callback?: (val: any) => any) {
           const dataList = findOverlappingPoints(seriseDataList, params.data);
           let result = '';
@@ -177,7 +196,7 @@ const Scatter: React.FC<ChartProps> = (props) => {
         data: seriseDataList
       }
     };
-  }, [seriesData, xAxisData, title, findOverlappingPoints]);
+  }, [seriesData, xAxisData, title, options, findOverlappingPoints]);
 
   return (
     <>

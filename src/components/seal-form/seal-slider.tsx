@@ -72,7 +72,7 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
     );
   }, [label, labelWidth, description, value, max, min, step, defaultValue]);
   return (
-    <SliderWrapper>
+    <SliderWrapper className="slider-wrapper">
       <Wrapper
         required={required}
         status={checkStatus || status}

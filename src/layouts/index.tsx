@@ -7,9 +7,9 @@ import ShortCuts, {
 } from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import routeCachekey from '@/config/route-cachekey';
-import theme from '@/config/theme';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import useUserSettings from '@/hooks/use-user-settings';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
@@ -99,6 +99,7 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
+  const { themeData, setTheme, userSettings } = useUserSettings();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
@@ -160,6 +161,7 @@ export default (props: any) => {
       }
     }
   };
+
   const runtimeConfig = {
     ...initialInfo,
     logout: async (userInfo) => {
@@ -171,6 +173,10 @@ export default (props: any) => {
     },
     showShortcuts: () => {
       return showShortcuts();
+    },
+    toggleTheme: () => {
+      const newTheme = userSettings.theme === 'realDark' ? 'light' : 'realDark';
+      setTheme(newTheme);
     },
     notFound: <span>404 not found</span>
   };
@@ -288,7 +294,7 @@ export default (props: any) => {
 
       return dom;
     },
-    [intl, showUpgrade]
+    [intl, showUpgrade, userSettings.theme]
   );
 
   const itemRender = useCallback((route, _, routes) => {
@@ -400,13 +406,12 @@ export default (props: any) => {
   };
 
   return (
-    <ConfigProvider componentSize="large" theme={theme}>
-      <div className="background"></div>
+    <ConfigProvider componentSize="large" theme={themeData}>
       <ProLayout
         route={route}
         location={location}
         title={userConfig.title}
-        navTheme="light"
+        navTheme={userSettings.theme}
         layout="side"
         contentStyle={{
           paddingBlock: 0,

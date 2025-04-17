@@ -1,5 +1,5 @@
 import { throttle } from 'lodash';
-import {
+import React, {
   forwardRef,
   useCallback,
   useEffect,
@@ -36,13 +36,16 @@ const Chart: React.FC<{
     chart.current?.resize();
   }, []);
 
-  const setOption = useCallback((options: ECOption) => {
-    chart.current?.clear();
-    chart.current?.setOption(options, {
-      notMerge: true,
-      lazyUpdate: true
-    });
-  }, []);
+  const setOption = useCallback(
+    (options: ECOption) => {
+      chart.current?.clear();
+      chart.current?.setOption(options, {
+        notMerge: true,
+        lazyUpdate: true
+      });
+    },
+    [options]
+  );
 
   useEffect(() => {
     if (container.current) {
@@ -78,17 +81,6 @@ const Chart: React.FC<{
       }
     };
   }, []);
-
-  // resize on window resize
-  // useEffect(() => {
-  //   const handleResize = throttle(() => {
-  //     chart.current?.resize();
-  //   }, 100);
-  //   window.addEventListener('resize', handleResize);
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []);
 
   return (
     <div className="chart-wrapper" style={{ width: width, height }}>

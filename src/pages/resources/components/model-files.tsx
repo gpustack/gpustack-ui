@@ -31,7 +31,7 @@ import { ConfigProvider, Empty, Table, Tag, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import {
   useGenerateFormEditInitialValues,
@@ -108,6 +108,13 @@ const FilesTag = styled(Tag)`
   border-radius: var(--border-radius-base);
 `;
 
+const TextWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 100%;
+`;
+
 const TypographyPara = styled(Paragraph)`
   background: transparent;
   color: inherit;
@@ -148,23 +155,27 @@ const getWorkerName = (
 const getModelInfo = (record: ListItem) => {
   if (record.source === modelSourceMap.huggingface_value) {
     return {
+      repo_id: record.huggingface_repo_id,
       title: `${record.huggingface_repo_id}/${record.huggingface_filename}`,
-      filename: record.huggingface_filename
+      filename: record.huggingface_filename || record.huggingface_repo_id
     };
   }
   if (record.source === modelSourceMap.modelscope_value) {
     return {
+      repo_id: record.model_scope_model_id,
       title: `${record.model_scope_model_id}/${record.model_scope_file_path}`,
-      filename: record.model_scope_file_path
+      filename: record.model_scope_file_path || record.model_scope_model_id
     };
   }
   if (record.source === modelSourceMap.ollama_library_value) {
     return {
+      repo_id: record.ollama_library_model_name,
       title: record.ollama_library_model_name,
       filename: record.ollama_library_model_name
     };
   }
   return {
+    repo_id: record.local_path,
     title: record.local_path,
     filename: _.split(record.local_path, /[\\/]/).pop()
   };
@@ -241,36 +252,36 @@ const ResolvedPathColumn = (props: { record: ListItem }) => {
     record.state === ModelfileStateMap.Downloading
   ) {
     const modelInfo = getModelInfo(record);
-    const { title, filename } = modelInfo;
+    const { filename } = modelInfo;
     return (
-      <AutoTooltip ghost showTitle title={title}>
-        <span
-          dangerouslySetInnerHTML={{
-            __html: intl.formatMessage(
-              {
-                id: 'resources.modelfiles.storagePath.holder'
-              },
-              {
-                name: filename
-              }
-            )
-          }}
-        ></span>
-      </AutoTooltip>
+      <span
+        dangerouslySetInnerHTML={{
+          __html: intl.formatMessage(
+            {
+              id: 'resources.modelfiles.storagePath.holder'
+            },
+            {
+              name: filename
+            }
+          )
+        }}
+      ></span>
     );
   }
   return (
     record.resolved_paths?.length > 0 && (
       <PathWrapper>
-        <AutoTooltip
-          ghost
-          showTitle
-          title={
-            <TooltipTitle path={record.resolved_paths?.[0]}></TooltipTitle>
-          }
-        >
-          <span>{getResolvedPath(record.resolved_paths)}</span>
-        </AutoTooltip>
+        <TextWrapper>
+          <AutoTooltip
+            ghost
+            showTitle
+            title={
+              <TooltipTitle path={record.resolved_paths?.[0]}></TooltipTitle>
+            }
+          >
+            <span>{getResolvedPath(record.resolved_paths)}</span>
+          </AutoTooltip>
+        </TextWrapper>
         <RenderParts record={record}></RenderParts>
       </PathWrapper>
     )
@@ -543,19 +554,17 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'models.form.source' }),
       dataIndex: 'source',
-      render: (text: string, record: ListItem) => (
-        <span className="flex flex-column" style={{ width: '100%' }}>
-          {record.source === modelSourceMap.local_path_value ? (
-            <AutoTooltip ghost>
-              {intl.formatMessage({ id: 'models.form.localPath' })}
-            </AutoTooltip>
-          ) : (
-            <AutoTooltip ghost>
+      render: (text: string, record: ListItem) => {
+        const modelInfo = getModelInfo(record);
+        const { repo_id } = modelInfo;
+        return (
+          <TextWrapper>
+            <AutoTooltip ghost showTitle title={repo_id}>
               {_.get(modelSourceMap, record.source, '')}
             </AutoTooltip>
-          )}
-        </span>
-      )
+          </TextWrapper>
+        );
+      }
     },
     {
       title: 'Worker',
@@ -620,6 +629,10 @@ const ModelFiles = () => {
     }
   ];
 
+  const readyWorkers = useMemo(() => {
+    return workersList.filter((item) => item.state === WorkerStatusMap.ready);
+  }, [workersList]);
+
   return (
     <>
       <FilterBar
@@ -666,9 +679,7 @@ const ModelFiles = () => {
         source={downloadModalStatus.source}
         width={downloadModalStatus.width}
         hasLinuxWorker={downloadModalStatus.hasLinuxWorker}
-        workersList={workersList.filter(
-          (item: any) => item.state === WorkerStatusMap.ready
-        )}
+        workersList={readyWorkers}
       ></DownloadModal>
       <DeployModal
         deploymentType="modelFiles"

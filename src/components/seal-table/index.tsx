@@ -1,11 +1,23 @@
-import { Pagination, Spin, type PaginationProps } from 'antd';
+import { Pagination, Spin, theme, type PaginationProps } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
+import styled from 'styled-components';
 import Header from './components/header';
 import HeaderPrefix from './components/header-prefix';
 import TableBody from './components/table-body';
 import './styles/index.less';
 import { SealColumnProps, SealTableProps } from './types';
+
+const Wrapper = styled.div<{ $token: any }>`
+  --ant-table-cell-padding-inline: ${(props) =>
+    props.$token.cellPaddingInline}px;
+  --ant-table-cell-padding-block: ${(props) => props.$token.cellPaddingBlock}px;
+  --ant-table-header-border-radius: ${(props) =>
+    props.$token.headerBorderRadius}px;
+  --ant-table-header-split-color: ${(props) => props.$token.headerSplitColor};
+  --ant-table-row-selected-bg: var(--ant-table-row-selected-bg);
+  --ant-table-row-selected-hover-bg: var(--ant-table-row-selected-hover-bg);
+`;
 
 const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   props
@@ -32,7 +44,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     loadChildren,
     loadChildrenAPI
   } = props;
-
+  const { token } = theme.useToken();
   const parsedColumns = useMemo(() => {
     if (columns) return columns;
 
@@ -122,7 +134,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   };
 
   return (
-    <>
+    <Wrapper $token={token.Table}>
       <div className="seal-table-container">
         <div className="header-row-wrapper">
           <HeaderPrefix
@@ -166,7 +178,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
           ></Pagination>
         </div>
       )}
-    </>
+    </Wrapper>
   );
 };
 

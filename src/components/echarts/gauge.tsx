@@ -1,15 +1,13 @@
 import Chart from '@/components/echarts/chart';
-import {
-  gaugeItemConfig,
-  title as titleConfig
-} from '@/components/echarts/config';
+import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { ChartProps } from './types';
 
 const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
   props
 ) => {
+  const { gaugeItemConfig, title: titleConfig } = useChartConfig();
   const { value, height, width, labelFormatter, title, color } = props;
   if (!value && value !== 0) {
     return <EmptyData height={height} title={title}></EmptyData>;

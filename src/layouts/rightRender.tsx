@@ -10,6 +10,7 @@ import {
   HomeOutlined,
   InfoCircleOutlined,
   LogoutOutlined,
+  MoonOutlined,
   QuestionCircleOutlined,
   ReadOutlined,
   SettingOutlined
@@ -250,6 +251,14 @@ export const getRightRenderContent = (opts: {
           </span>
         ),
         children: [
+          {
+            key: 'theme',
+            label: 'Appearance',
+            icon: <MoonOutlined />,
+            onClick: () => {
+              opts.runtimeConfig.toggleTheme();
+            }
+          },
           {
             key: 'settings',
             label: (

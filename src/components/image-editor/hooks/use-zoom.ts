@@ -12,7 +12,7 @@ export default function useZoom(props: {
   translatePos: MutableRefObject<{ x: number; y: number }>;
   isLoadingMaskRef: MutableRefObject<boolean>;
 }) {
-  const MIN_SCALE = 0.5;
+  const MIN_SCALE = 0.2;
   const MAX_SCALE = 8;
   const ZOOM_SPEED = 0.1;
   const {
@@ -69,6 +69,15 @@ export default function useZoom(props: {
     translatePos.current = { x: newTranslateX, y: newTranslateY };
   };
 
+  const applyCanvasTransform = () => {
+    const scale = autoScale.current;
+    const transform = `scale(${scale})`;
+
+    overlayCanvasRef.current!.style.transform = transform;
+    canvasRef.current!.style.transform = transform;
+    offscreenCanvasRef.current!.style.transform = transform;
+  };
+
   const handleZoom = (event: React.WheelEvent<HTMLCanvasElement>) => {
     const scaleChange = event.deltaY > 0 ? -ZOOM_SPEED : ZOOM_SPEED;
 
@@ -78,10 +87,7 @@ export default function useZoom(props: {
 
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
-
-    overlayCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
-    canvasRef.current!.style.transform = `scale(${autoScale.current})`;
-    offscreenCanvasRef.current!.style.transform = `scale(${autoScale.current})`;
+    applyCanvasTransform();
 
     setCanvasTransformOrigin(event);
     updateZoom(scaleChange, mouseX, mouseY);
@@ -101,6 +107,7 @@ export default function useZoom(props: {
     if (isLoadingMaskRef.current) {
       return;
     }
+    event.preventDefault();
     // stop
     handleZoom(event);
     updateCursorSize();
@@ -108,8 +115,12 @@ export default function useZoom(props: {
     setActiveScale(autoScale.current);
   };
 
+  const throttleHandleOnWheel = _.throttle((event: any) => {
+    handleOnWheel(event);
+  }, 16);
+
   return {
-    handleOnWheel,
+    handleOnWheel: handleOnWheel,
     setActiveScale,
     activeScale,
     autoScale,

@@ -33,21 +33,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
 
     let commandCode = addWorkerGuide[activeKey];
 
-    if (npuKey === 'npu310p') {
+    if (npuKey === 'npu310p' && activeKey === 'npu') {
       commandCode = addWorkerGuide[npuKey];
     }
 
-    if (activeKey === 'cuda') {
-      return commandCode?.registerWorker({
-        server: origin,
-        tag: version,
-        token: '${token}',
-        workerip: '${workerip}'
-      });
-    }
+    const tag = activeKey === 'cuda' ? version : `${version}-${activeKey}`;
+
     return commandCode?.registerWorker({
       server: origin,
-      tag: `${version}-${activeKey}`,
+      tag: tag,
       token: '${token}',
       workerip: '${workerip}'
     });

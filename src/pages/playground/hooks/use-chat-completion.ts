@@ -93,6 +93,7 @@ export default function useChatCompletion(
   const handleStopConversation = () => {
     controllerRef.current?.abort?.();
     setLoading(false);
+    setTokenResult(null);
   };
 
   const resetPerRequestCache = () => {

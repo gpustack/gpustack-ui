@@ -5,7 +5,7 @@ const externalLinks = {
   site: 'https://gpustack.ai/',
   release: 'https://github.com/gpustack/gpustack/releases',
   reportIssue: 'https://github.com/gpustack/gpustack/issues/new/choose',
-  faq: 'https://github.com/gpustack/gpustack/wiki/FAQ'
+  faq: 'https://docs.gpustack.ai/latest/faq/'
 };
 
 export default externalLinks;

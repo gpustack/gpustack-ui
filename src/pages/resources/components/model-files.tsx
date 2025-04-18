@@ -251,21 +251,12 @@ const ResolvedPathColumn = (props: { record: ListItem }) => {
     !record.resolved_paths.length &&
     record.state === ModelfileStateMap.Downloading
   ) {
-    const modelInfo = getModelInfo(record);
-    const { filename } = modelInfo;
     return (
-      <span
-        dangerouslySetInnerHTML={{
-          __html: intl.formatMessage(
-            {
-              id: 'resources.modelfiles.storagePath.holder'
-            },
-            {
-              name: filename
-            }
-          )
-        }}
-      ></span>
+      <span>
+        {intl.formatMessage({
+          id: 'resources.modelfiles.storagePath.holder'
+        })}
+      </span>
     );
   }
   return (

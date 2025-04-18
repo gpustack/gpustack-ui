@@ -359,19 +359,25 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleUpdateImageList
   ]);
 
-  const handleOnImgClick = useCallback((item: any, isOrigin: boolean) => {
-    if (item.progress < 100 && !isOrigin) {
-      return;
-    }
-    setActiveImgUid(item.uid);
-    setImage(item.dataUrl);
-    setImageStatus({
-      isOriginal: isOrigin,
-      isResetNeeded: false,
-      width: item.width,
-      height: item.height
-    });
-  }, []);
+  const handleOnImgClick = useCallback(
+    (item: any, isOrigin: boolean) => {
+      if (item.progress < 100 && !isOrigin) {
+        return;
+      }
+      if (item.uid === activeImgUid) {
+        return;
+      }
+      setActiveImgUid(item.uid);
+      setImage(item.dataUrl);
+      setImageStatus({
+        isOriginal: isOrigin,
+        isResetNeeded: false,
+        width: item.width,
+        height: item.height
+      });
+    },
+    [activeImgUid]
+  );
 
   useEffect(() => {
     if (imageList.length > 0) {

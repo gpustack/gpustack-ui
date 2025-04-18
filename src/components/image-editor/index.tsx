@@ -170,36 +170,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       link.click();
     }, [generateMask]);
 
-    const drawFillRect = (
-      ctx: CanvasRenderingContext2D,
-      stroke: Stroke | Point[],
-      options: {
-        lineWidth?: number;
-        color: string;
-        isInitial?: boolean;
-      }
-    ) => {
-      const { color, isInitial } = options;
-
-      stroke.forEach((point) => {
-        const { x, y } = getTransformedPoint(point.x, point.y);
-        const width = getTransformLineWidth(point.lineWidth);
-        console.log('Drawing stroke:', point, width);
-        if (isInitial) {
-          ctx.save();
-          ctx.fillStyle = 'rgba(0,0,0,1)';
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.fillRect(x - width / 2, y - width / 2, width, width);
-          ctx.restore();
-        }
-
-        // draw the new stroke
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = color;
-        ctx.fillRect(x - width / 2, y - width / 2, width, width);
-      });
-    };
-
     const onReset = useCallback(() => {
       clearOverlayCanvas();
       setStrokes([]);
@@ -238,6 +208,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             ctx.putImageData(event.data.imageData, 0, 0);
 
             isLoadingMaskRef.current = false;
+            saveImage();
           }
         };
 
@@ -399,6 +370,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             ctx.putImageData(event.data.imageData, 0, 0);
 
             isLoadingMaskRef.current = false;
+            saveImage();
           }
         };
 
@@ -434,7 +406,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         height: canvasRef.current!.height
       });
 
-      console.log('Image status:', imageStatus, invertMask);
+      console.log('Image status:', imageStatus, negativeMaskRef.current);
 
       if (imageStatus.isResetNeeded) {
         onReset();
@@ -442,26 +414,19 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       } else if (
         (strokesRef.current.length || maskStorkeRef.current.length) &&
         imageStatus.isOriginal &&
-        !invertMask
+        !negativeMaskRef.current
       ) {
         redrawStrokes(strokesRef.current);
-        saveImage();
       } else if (
         (strokesRef.current.length || maskStorkeRef.current.length) &&
         imageStatus.isOriginal &&
-        invertMask
+        negativeMaskRef.current
       ) {
         invertPainting(true);
-        saveImage();
       }
 
       updateCursorSize();
-    }, [
-      drawImage,
-      imageStatus.isOriginal,
-      imageStatus.isResetNeeded,
-      invertMask
-    ]);
+    }, [drawImage, imageStatus.isOriginal, imageStatus.isResetNeeded]);
 
     const handleFitView = () => {
       fitView();
@@ -480,7 +445,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       negativeMaskRef.current = e.target.checked;
       invertPainting(e.target.checked);
       setInvertMask(e.target.checked);
-      saveImage();
     };
 
     useEffect(() => {

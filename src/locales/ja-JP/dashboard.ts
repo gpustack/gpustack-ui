@@ -21,5 +21,5 @@ export default {
   'dashboard.activeModels': 'アクティブなモデル',
   'dashboard.runninginstances': '稼働中のインスタンス',
   'dashboard.activeModels.name': 'モデル名',
-  'dashboard.allocatevram': '割り当て済みVRAM / RAM'
+  'dashboard.allocatevram': '割り当て済みVRAM / メモリ'
 };

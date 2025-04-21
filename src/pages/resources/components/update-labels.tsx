@@ -2,11 +2,11 @@ import LabelSelector from '@/components/label-selector';
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
+import SimpleOverlay from '@/components/simple-overlay';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 
 type ViewModalProps = {
@@ -67,7 +67,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
         <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
       }
     >
-      <SimpleBar
+      <SimpleOverlay
         style={{
           maxHeight: '550px'
         }}
@@ -131,7 +131,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
             ></LabelSelector>
           </Form.Item>
         </Form>
-      </SimpleBar>
+      </SimpleOverlay>
     </ScrollerModal>
   );
 };

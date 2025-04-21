@@ -152,9 +152,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       }
 
       if (token.type === 'code') {
-        htmlstr = (
-          <HighlightCode theme={theme} code={token.text} lang={token.lang} />
-        );
+        htmlstr = <HighlightCode code={token.text} lang={token.lang} />;
       }
 
       if (token.type === 'link') {

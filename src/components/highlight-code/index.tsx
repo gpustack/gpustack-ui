@@ -1,3 +1,4 @@
+import useUserSettings from '@/hooks/use-user-settings';
 import React from 'react';
 import CodeViewerDark from './code-viewer-dark';
 import CodeViewerLight from './code-viewer-light';
@@ -22,9 +23,15 @@ const HighlightCode: React.FC<{
     height = 'auto'
   } = props;
 
+  const { userSettings } = useUserSettings();
+
+  const currentTheme = React.useMemo(() => {
+    return theme || userSettings.theme === 'realDark' ? 'dark' : 'light';
+  }, [theme, userSettings.theme]);
+
   return (
     <div className="high-light-wrapper hj-wrapper">
-      {theme === 'dark' ? (
+      {currentTheme === 'dark' ? (
         <CodeViewerDark
           lang={lang}
           code={code}

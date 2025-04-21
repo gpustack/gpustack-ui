@@ -3,6 +3,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
+import React from 'react';
 import './index.less';
 
 type Trigger = 'click' | 'hover';
@@ -68,7 +69,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
               <div
                 className="flex flex-column "
                 style={{
-                  backgroundColor: 'var(--color-white-1)',
+                  backgroundColor: 'var(--ant-color-bg-elevated)',
                   padding: 5,
                   alignItems: 'flex-start',
                   borderRadius: 'var(--border-radius-base)',

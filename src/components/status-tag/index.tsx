@@ -4,9 +4,9 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { useEffect, useMemo, useState } from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import CopyButton from '../copy-button';
+import SimpleOverlay from '../simple-overlay';
 import CopyStyle from './copy-btn.less';
 import './index.less';
 
@@ -118,11 +118,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
           })}
         </div>
 
-        <SimpleBar
-          style={{ maxHeight: 200 }}
-          autoHide={false}
-          className="tooltip-scrollbar"
-        >
+        <SimpleOverlay style={{ maxHeight: 200 }}>
           <div
             style={{
               width: 'max-content',
@@ -139,7 +135,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
               <span dangerouslySetInnerHTML={{ __html: messageLink }}></span>
             )}
           </div>
-        </SimpleBar>
+        </SimpleOverlay>
       </div>
     );
   }, [statusValue]);
@@ -155,6 +151,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
     >
       {statusValue.message ? (
         <Tooltip
+          trigger={['hover']}
           title={renderTitle}
           destroyTooltipOnHide={true}
           overlayInnerStyle={{ paddingInline: 0 }}

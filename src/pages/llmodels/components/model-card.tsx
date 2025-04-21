@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import MarkdownViewer from '@/components/markdown-viewer';
+import SimpleOverlay from '@/components/simple-overlay';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   DownOutlined,
@@ -17,7 +18,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import {
   downloadModelFile,
@@ -357,7 +357,7 @@ const ModelCard: React.FC<{
                     {collapsed ? <DownOutlined /> : <RightOutlined />}
                   </span>
                 </span>
-                <SimpleBar
+                <SimpleOverlay
                   style={{
                     paddingTop: collapsed ? 12 : 0,
                     maxHeight: collapsed ? 300 : 0
@@ -368,7 +368,7 @@ const ModelCard: React.FC<{
                     content={readmeText}
                     theme="light"
                   ></MarkdownViewer>
-                </SimpleBar>
+                </SimpleOverlay>
               </div>
             )}
           </div>

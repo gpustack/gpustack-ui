@@ -1,3 +1,4 @@
+import SimpleOverlay from '@/components/simple-overlay';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
 import { Empty, Select, Spin } from 'antd';
@@ -11,7 +12,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import styled from 'styled-components';
 import {
@@ -399,11 +399,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           ></Spin>
         </div>
       )}
-      <SimpleBar
-        style={{
-          height: collapsed ? 'max-content' : 'calc(100vh - 300px)'
-        }}
-      >
+      <SimpleOverlay height={collapsed ? 'max-content' : 'calc(100vh - 300px)'}>
         <div style={{ padding: '16px 24px' }}>
           {dataSource.fileList.length ? (
             <ItemFileWrapper>
@@ -433,7 +429,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
             )
           )}
         </div>
-      </SimpleBar>
+      </SimpleOverlay>
     </div>
   );
 });

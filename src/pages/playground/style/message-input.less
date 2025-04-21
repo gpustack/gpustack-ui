@@ -80,11 +80,17 @@
     width: 100%;
     display: flex;
     position: relative;
+    background-color: var(--ant-color-bg-elevated);
+    border-radius: var(--border-radius-base);
+
+    textarea {
+      padding-block-start: var(--ant-padding-xxs);
+    }
 
     .holder {
       pointer-events: none;
       position: absolute;
-      top: 0;
+      top: var(--ant-padding-xxs);
       left: 6px;
       color: var(--ant-color-text-quaternary);
 

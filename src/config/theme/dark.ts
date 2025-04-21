@@ -12,8 +12,8 @@ export default {
       cellPaddingInline: 16,
       cellPaddingBlock: 6,
       cellFontSize: 14,
-      rowSelectedHoverBg: 'rgb(24 25 27)',
-      rowHoverBg: 'rgb(24 25 27)',
+      rowSelectedHoverBg: '#1d1d1d',
+      rowHoverBg: '#1d1d1d',
       rowSelectedBg: 'transparent'
     },
     Button: {
@@ -23,8 +23,8 @@ export default {
       dangerShadow: 'none'
     },
     Tabs: {
-      titleFontSizeLG: 14,
-      cardBg: '#1D1E20'
+      titleFontSizeLG: 14
+      // cardBg: '#1D1E20'
     },
     Menu: {
       iconSize: 16,
@@ -32,8 +32,8 @@ export default {
       itemBorderRadius: 4,
       itemHeight: 44,
       itemSelectedColor: '#007BFF',
-      darkItemSelectedBg: 'rgb(24 25 27)',
-      darkItemHoverBg: 'rgb(24 25 27)',
+      darkItemSelectedBg: '#141414',
+      darkItemHoverBg: '#141414',
       groupTitleColor: 'rgba(0,0,0,1)',
       itemHoverColor: 'rgba(0,0,0,1)',
       itemColor: 'rgba(0,0,0,1)',
@@ -44,14 +44,14 @@ export default {
       lineBorderRadius: 2
     },
     Select: {
-      optionSelectedBg: 'rgba(230, 230, 230, 88%)',
+      optionSelectedBg: '#333',
       fontSizeLG: 14
     },
     Message: {
       contentPadding: '12px 16px'
     },
     Tooltip: {
-      colorBgSpotlight: '#1D1E20'
+      // colorBgSpotlight: '#333'
     },
     Cascader: {
       dropdownHeight: 240
@@ -59,13 +59,13 @@ export default {
     Slider: {
       handleSize: 8,
       handleSizeHover: 8,
-      trackBg: 'rgba(0,0,0,0.15)',
-      handleColor: 'rgba(0,0,0,0.2)',
-      trackHoverBg: 'rgba(0,0,0,0.25)',
-      handleActiveColor: 'rgba(0,0,0,0.3)',
-      dotActiveBorderColor: 'rgba(0,0,0,0.25)',
-      handleActiveOutlineColor: 'rgba(0,0,0,0.25)',
-      dotBorderColor: 'rgba(0,0,0,0.25)'
+      trackBg: 'rgba(255,255,255,.15)',
+      handleColor: 'rgba(255,255,255,0.2)',
+      trackHoverBg: 'rgba(255,255,255,0.25)',
+      handleActiveColor: 'rgba(255,255,255,0.3)',
+      dotActiveBorderColor: 'rgba(255,255,255,0.25)',
+      handleActiveOutlineColor: 'rgba(255,255,255,0.25)',
+      dotBorderColor: 'rgba(255,255,255,0.25)'
     }
   },
   token: {
@@ -78,12 +78,12 @@ export default {
     borderRadiusSM: 2,
     fontSize: 14,
     motion: true,
-    colorFill: 'rgb(0,0,0)',
-    colorFillTertiary: '#1D1E20',
-    colorBgContainer: '#141414',
-    colorBgBase: '#000',
-    colorBorder: '#353535',
-    colorSplit: '#262626',
-    colorBorderSecondary: '#262626'
+    colorFill: '#000',
+    // colorFillTertiary: '#1D1E20',
+    // colorBgContainer: '#141414',
+    colorBgBase: '#000'
+    // colorBorder: '#353535'
+    // colorSplit: '#262626',
+    // colorBorderSecondary: '#262626'
   }
 };

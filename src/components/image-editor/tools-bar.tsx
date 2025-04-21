@@ -177,7 +177,7 @@ const ImageActionsBar: React.FC<ImageActionsBarProps> = (props) => {
             })}
           >
             <Button onClick={downloadMask} size="middle" type="text">
-              <IconFont className="font-size-14" type="icon-save2"></IconFont>
+              <IconFont className="font-size-14" type="icon-save1"></IconFont>
             </Button>
           </Tooltip>
         </>

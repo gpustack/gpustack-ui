@@ -27,7 +27,7 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
-import { Button, ConfigProvider, Modal } from 'antd';
+import { Button, ConfigProvider, Modal, theme } from 'antd';
 import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -99,7 +99,7 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
-  const { themeData, setTheme, userSettings } = useUserSettings();
+  const { themeData, setTheme, userSettings, isDarkTheme } = useUserSettings();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const { initialize: initializeMenu } = useOverlayScroller();
   const [userInfo] = useAtom(userAtom);
@@ -406,7 +406,13 @@ export default (props: any) => {
   };
 
   return (
-    <ConfigProvider componentSize="large" theme={themeData}>
+    <ConfigProvider
+      componentSize="large"
+      theme={{
+        algorithm: isDarkTheme ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        ...themeData
+      }}
+    >
       <ProLayout
         route={route}
         location={location}

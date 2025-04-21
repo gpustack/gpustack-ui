@@ -40,7 +40,6 @@ import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, {
-  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -880,4 +879,4 @@ const Models: React.FC<ModelsProps> = ({
   );
 };
 
-export default memo(Models);
+export default Models;

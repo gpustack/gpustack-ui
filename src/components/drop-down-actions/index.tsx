@@ -1,5 +1,6 @@
 import { useIntl } from '@umijs/max';
 import { Dropdown, DropDownProps } from 'antd';
+import _ from 'lodash';
 import React, { useMemo } from 'react';
 
 const DropDownActions: React.FC<DropDownProps> = (props) => {
@@ -14,7 +15,7 @@ const DropDownActions: React.FC<DropDownProps> = (props) => {
 
   const items = useMemo(() => {
     return menu?.items?.map((item: any) => ({
-      ...item,
+      ..._.omit(item, 'locale'),
       label: item.locale ? intl.formatMessage({ id: item.label }) : item.label
     }));
   }, [menu?.items, intl]);

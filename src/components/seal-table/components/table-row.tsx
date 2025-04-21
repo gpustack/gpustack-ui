@@ -269,7 +269,7 @@ const TableRow: React.FC<
             })}
           </Row>
         </div>
-        {expanded && childrenData.length > 0 && (
+        {expanded && (
           <div className="expanded-row">
             <Spin spinning={loading}>{renderChildrenData()}</Spin>
           </div>

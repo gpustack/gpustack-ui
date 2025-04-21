@@ -34,6 +34,7 @@ const IncompatibleInfo = styled.div`
     }
     li {
       position: relative;
+      line-height: 20px;
     }
     li.normal::before {
       position: absolute;

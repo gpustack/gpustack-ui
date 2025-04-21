@@ -1,5 +1,6 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
+import OverlayScroller from '@/components/overlay-scroller';
 import {
   ClearOutlined,
   DeleteOutlined,
@@ -278,21 +279,27 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
           </Dropdown>
           <Popover
             placement="bottomRight"
-            overlayInnerStyle={{ width: 384 }}
+            overlayInnerStyle={{ width: 384, paddingInline: 0 }}
             content={
-              <DynamicParams
-                ref={formRef}
-                onValuesChange={OnValuesChange}
-                paramsConfig={paramsConfig}
-                initialValues={initialValues}
-                showModelSelector={false}
-              />
+              <OverlayScroller
+                maxHeight={500}
+                style={{ paddingInline: '16px' }}
+                theme="os-theme-dark"
+              >
+                <DynamicParams
+                  ref={formRef}
+                  onValuesChange={OnValuesChange}
+                  paramsConfig={paramsConfig}
+                  initialValues={initialValues}
+                  showModelSelector={false}
+                />
+              </OverlayScroller>
             }
             trigger={['click']}
             arrow={false}
             fresh={true}
             title={
-              <div>
+              <div style={{ paddingInline: '16px' }}>
                 <Checkbox onChange={handleApplyToAllModels}>
                   {intl.formatMessage({
                     id: 'playground.compare.applytoall'

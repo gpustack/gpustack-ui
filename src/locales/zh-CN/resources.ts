@@ -45,7 +45,7 @@ export default {
     '获取 Token<span class="note-text">（在 Server 上运行）</span>',
   'resources.worker.add.step2': '注册 Worker',
   'resources.worker.add.step2.tips':
-    '（在需要添加的 Worker 上运行，<span style="color: #000;font-weight: 600">token</span> 为第一步获取到的值。）',
+    '（在需要添加的 Worker 上运行，<span class="bold-text">token</span> 为第一步获取到的值。）',
   'resources.worker.add.step3': '成功后，刷新 Worker 列表即可看到新的 Worker',
   'resources.worker.container.supported': '不支持 macOS 和 Windows',
   'resources.worker.current.version': '当前版本为 {version}',
@@ -55,7 +55,7 @@ export default {
   'resources.worker.script.install': '脚本安装',
   'resources.worker.container.install': '容器安装(仅支持 Linux)',
   'resources.worker.cann.tips':
-    '按需要挂载的 NPU index 设置 <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span>，如需挂载 NPU0 - NPU1，则添加 <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>',
+    '按需要挂载的 NPU index 设置 <span class="bold-text">--device /dev/davinci{index}</span>，如需挂载 NPU0 - NPU1，则添加 <span class="bold-text">--device /dev/davinci0 --device /dev/davinci1</span>',
   'resources.modelfiles.form.path': '存储路径',
   'resources.modelfiles.modelfile': '模型文件',
   'resources.modelfiles.download': '添加模型文件',

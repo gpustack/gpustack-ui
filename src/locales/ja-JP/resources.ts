@@ -45,7 +45,7 @@ export default {
     'トークンを取得 <span class="note-text">（サーバーで実行）</span>',
   'resources.worker.add.step2': 'ワーカーを登録',
   'resources.worker.add.step2.tips':
-    '（追加するワーカーで実行し、<span style="color: #000;font-weight: 600">トークン</span> は最初のステップで取得した値です。）',
+    '（追加するワーカーで実行し、<span class="bold-text">トークン</span> は最初のステップで取得した値です。）',
   'resources.worker.add.step3':
     '成功後、ワーカーリストを更新して新しいワーカーを確認してください。',
   'resources.worker.container.supported':
@@ -57,7 +57,7 @@ export default {
     'ラベルを選択してコマンドを生成し、コピーを使用してコマンドをコピーします。',
   'resources.worker.script.install': 'スクリプトインストール',
   'resources.worker.container.install': 'コンテナインストール（Linuxのみ）',
-  'resources.worker.cann.tips': `<span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> を必要なNPUインデックスに応じて設定します。例えば、NPU0とNPU1をマウントするには、<span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span> を追加します。`,
+  'resources.worker.cann.tips': `<span class="bold-text">--device /dev/davinci{index}</span> を必要なNPUインデックスに応じて設定します。例えば、NPU0とNPU1をマウントするには、<span class="bold-text">--device /dev/davinci0 --device /dev/davinci1</span> を追加します。`,
   'resources.modelfiles.form.path': 'ストレージパス',
   'resources.modelfiles.modelfile': 'モデルファイル',
   'resources.modelfiles.download': 'モデルファイルを追加',

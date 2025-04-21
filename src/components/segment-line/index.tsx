@@ -28,6 +28,7 @@ const SegmentedQwrapper = styled.div<{ $height: number }>`
       padding: 0px;
       bottom: 0px;
       top: unset;
+      background-color: var(--color-white-primary) !important;
     }
     .ant-segmented-item-label {
       display: flex;

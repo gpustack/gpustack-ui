@@ -34,7 +34,7 @@ const WrapperBox = styled.div`
   border-style: var(--ant-line-type);
   border-color: var(--ant-color-border);
   border-radius: var(--border-radius-base);
-  // background-color: var(--color-white-1);
+  background-color: var(--ant-color-bg-container);
   &.borderless {
     border: none;
     box-shadow: none;
@@ -167,7 +167,7 @@ const Extra = styled.div`
 const AddAfter = styled.div`
   position: relative;
   color: var(--ant-color-text-quaternary);
-  font-size: 14px;
+  font-size: var(--font-size-base);
   padding-right: calc(var(--ant-padding-sm) - 1px);
 `;
 

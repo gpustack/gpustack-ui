@@ -15,8 +15,10 @@ const Wrapper = styled.div<{ $token: any }>`
   --ant-table-header-border-radius: ${(props) =>
     props.$token.headerBorderRadius}px;
   --ant-table-header-split-color: ${(props) => props.$token.headerSplitColor};
-  --ant-table-row-selected-bg: var(--ant-table-row-selected-bg);
-  --ant-table-row-selected-hover-bg: var(--ant-table-row-selected-hover-bg);
+  --ant-table-row-selected-bg: ${(props) => props.$token.rowSelectedBg};
+  --ant-table-row-selected-hover-bg: ${(props) =>
+    props.$token.rowSelectedHoverBg};
+  --ant-table-row-hover-bg: ${(props) => props.$token.rowHoverBg};
 `;
 
 const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
@@ -45,6 +47,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     loadChildrenAPI
   } = props;
   const { token } = theme.useToken();
+  console.log('seal-table-props', token.Table);
   const parsedColumns = useMemo(() => {
     if (columns) return columns;
 

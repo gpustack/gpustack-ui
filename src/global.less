@@ -4,7 +4,7 @@
 @import url('./overrides.less');
 
 html {
-  --font-family: 'noto sans', sans-serif;
+  // --font-family: 'noto sans', sans-serif;
   // --ant-color-text-secondary: rgba(0, 0, 0, 65%);
   // --ant-color-text-tertiary: rgba(0, 0, 0, 45%);
   // --ant-color-text-quaternary: rgba(0, 0, 0, 25%);
@@ -21,7 +21,8 @@ html {
   --scrollbar-handle-hover-bg: rgba(0, 0, 0, 55%);
   --color-editor-dark: #282c34;
   --color-editor-light: #fafafa;
-  --color-scrollbar-track: var(--ant-color-fill-tertiary);
+  --color-scrollbar-track: #f4f5f4; // according to: --ant-color-fill-tertiary
+  --color-fill-sider: #f4f5f4;
   --color-bg-1: #f4f5f4;
   --color-scroll-bg: #d9d9d9;
   --color-fill-2: #fff;
@@ -40,7 +41,6 @@ html {
   --border-radius-mini: 4px;
   --border-radius-2px: 2px;
   --color-white-1: rgba(255, 255, 255, 100%);
-  --color-fill-sider: var(--ant-color-fill-tertiary);
   --font-weight-500: 500;
   --font-weight-normal: 400;
   --font-weight-medium: 600;
@@ -71,13 +71,13 @@ html {
   --ant-color-error: #ff4d4f;
   --ant-box-shadow-secondary: 0 6px 16px 0 rgba(0, 0, 0, 8%),
     0 3px 6px -4px rgba(0, 0, 0, 12%), 0 9px 28px 8px rgba(0, 0, 0, 5%);
-  --table-cell-padding-inline: var(--ant-table-cell-padding-inline);
-  --table-cell-padding-block: var(--ant-table-cell-padding-block);
-  --table-header-border-radius: var(--ant-table-header-border-radius);
-  --table-header-split-color: var(--ant-table-header-split-color);
-  --table-row-selected-bg: var(--ant-table-row-selected-bg);
-  --table-row-selected-hover-bg: var(--ant-table-row-selected-hover-bg);
-  --table-row-hover-bg: var(--ant-table-row-hover-bg);
+  // --table-cell-padding-inline: var(--ant-table-cell-padding-inline);
+  // --table-cell-padding-block: var(--ant-table-cell-padding-block);
+  // --table-header-border-radius: var(--ant-table-header-border-radius);
+  // --table-header-split-color: var(--ant-table-header-split-color);
+  // --table-row-selected-bg: var(--ant-table-row-selected-bg);
+  // --table-row-selected-hover-bg: var(--ant-table-row-selected-hover-bg);
+  // --table-row-hover-bg: var(--ant-table-row-hover-bg);
   --color-chart-red: rgba(255, 77, 79, 80%);
   --color-chart-green: rgb(84, 204, 152, 80%);
   --color-chart-glod: rgba(250, 173, 20, 80%);
@@ -107,12 +107,12 @@ html {
     --ant-font-size-lg: var(--font-size-base);
     --ant-font-size-xl: 20px;
     --ant-font-size: var(--font-size-base);
-    --ant-padding-sm: 14px;
-    --ant-border-radius-lg: 4px;
-    --ant-color-text: #000;
-    --ant-color-error: #ff4d4f;
-    --ant-color-bg-mask: rgba(0, 0, 0, 35%);
-    --ant-color-border: rgb(217 217 217 / 100%);
+    // --ant-padding-sm: 14px;
+    // --ant-border-radius-lg: 4px;
+    // --ant-color-text: #000;
+    // --ant-color-error: #ff4d4f;
+    // --ant-color-bg-mask: rgba(0, 0, 0, 35%);
+    // --ant-color-border: blue;
 
     &.ant-popover {
       --ant-popover-inner-padding: 26px;
@@ -157,7 +157,14 @@ html {
 }
 
 html[data-theme='realDark'] {
-  --color-white-1: #1d1e20;
+  --color-logs-bg: #141414;
+  --color-white-1: #141414;
+  --color-fill-sider: #1f1f1f;
+  --color-editor-dark: #141414;
+  --color-editor-light: #fafafa;
+  --color-fill-mask: rgba(255, 255, 255, 10%);
+
+  background: #141414;
 }
 
 body {
@@ -175,18 +182,6 @@ body {
   .ant-slider:hover .ant-slider-handle::after {
     box-shadow: 0 0 0 var(--ant-slider-handle-line-width)
       var(--ant-slider-track-hover-bg);
-  }
-
-  .ant-select-selector {
-    .ant-select-selection-item {
-      font-weight: var(--font-weight-normal);
-    }
-  }
-
-  .ant-checkbox {
-    .ant-checkbox-inner {
-      border-radius: var(--checkbox-border-radius) !important;
-    }
   }
 
   // table
@@ -330,11 +325,7 @@ body {
     }
 
     .ant-pro-sider .ant-layout-sider-children {
-      background-color: var(--ant-color-fill-tertiary);
-      // box-shadow:
-      //   0px 1px 2px 0px rgb(0 0 0 / 30%),
-      //   0px 2px 6px 2px rgb(0 0 0 / 15%);
-      // border-radius: 0 16px 16px 0;
+      background-color: var(--color-fill-sider);
     }
   }
 
@@ -393,7 +384,7 @@ body {
   .ant-pro-layout-container {
     overflow-x: auto;
     min-height: 100vh;
-    background: var(--ant-color-bg-container);
+    background-color: var(--ant-color-bg-container);
   }
 
   .ant-pro-sider {

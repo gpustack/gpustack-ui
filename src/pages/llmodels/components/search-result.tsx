@@ -1,9 +1,9 @@
 import IconFont from '@/components/icon-font';
+import SimpleOverlay from '@/components/simple-overlay';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Col, Empty, Row, Spin } from 'antd';
 import React, { useMemo } from 'react';
-import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import { modelSourceMap } from '../config';
 import '../style/search-result.less';
@@ -89,7 +89,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
   }, [networkError, source, intl]);
 
   return (
-    <SimpleBar style={{ height: 'calc(100vh - 224px)' }}>
+    <SimpleOverlay style={{ height: 'calc(100vh - 224px)' }}>
       <div style={{ ...props.style }} className="search-result-wrap">
         <Spin spinning={props.loading}>
           <div style={{ minHeight: 200 }}>
@@ -124,7 +124,7 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
           </div>
         </Spin>
       </div>
-    </SimpleBar>
+    </SimpleOverlay>
   );
 };
 

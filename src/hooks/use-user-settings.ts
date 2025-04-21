@@ -3,7 +3,7 @@ import themeConfig from '@/config/theme';
 import { useAtom } from 'jotai';
 import { useEffect, useMemo } from 'react';
 
-type Theme = 'light' | 'realDark';
+type Theme = 'light' | 'realDark' | 'auto';
 
 export default function useUserSettings() {
   const { light, dark } = themeConfig;
@@ -33,6 +33,22 @@ export default function useUserSettings() {
 
   useEffect(() => {
     setHtmlThemeAttr(userSettings.theme);
+  }, [userSettings.theme]);
+
+  // set theme by system theme: only for theme is auto
+  useEffect(() => {
+    if (userSettings.theme === 'auto') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      console.log('mediaQuery', mediaQuery);
+      const handleChange = (e: MediaQueryListEvent) => {
+        setTheme(e.matches ? 'realDark' : 'light');
+      };
+      mediaQuery.addEventListener('change', handleChange);
+      handleChange(mediaQuery);
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+    }
   }, [userSettings.theme]);
 
   return {

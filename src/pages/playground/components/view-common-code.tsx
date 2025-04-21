@@ -86,20 +86,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
               }
             }}
           >
-            <div
-              style={{
-                paddingRight: 2,
-                paddingBottom: 2
-              }}
-            >
-              <HighlightCode
-                height={380}
-                theme="dark"
-                code={codeValue}
-                lang={lang}
-                copyable={false}
-              ></HighlightCode>
-            </div>
+            <HighlightCode
+              height={380}
+              theme="dark"
+              code={codeValue}
+              lang={lang}
+              copyable={false}
+            ></HighlightCode>
           </EditorWrap>
           <div
             style={{ marginTop: 10, display: 'flex', alignItems: 'baseline' }}

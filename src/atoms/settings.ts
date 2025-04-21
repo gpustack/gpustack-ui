@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
 type UserSettings = {
-  theme: 'light' | 'realDark';
+  theme: 'light' | 'realDark' | 'auto';
 };
 
 export const userSettingsAtom = atomWithStorage<UserSettings>('userSettings', {

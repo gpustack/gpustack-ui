@@ -68,7 +68,6 @@ export default function useChartConfig() {
   const legend = {
     itemWidth: 8,
     itemHeight: 8,
-    padding: 0,
     textStyle: {
       color: chartColorMap.axislabelColor
     }

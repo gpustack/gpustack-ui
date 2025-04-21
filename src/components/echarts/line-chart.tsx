@@ -51,7 +51,12 @@ const LineChart: React.FC<ChartProps> = (props) => {
     yAxis,
     legend: {
       ...legend,
-      data: legendData
+      data: legendData.map((item: any) => {
+        return {
+          name: item,
+          icon: 'circle'
+        };
+      })
     },
 
     series: []

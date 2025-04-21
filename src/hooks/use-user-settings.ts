@@ -22,13 +22,13 @@ export default function useUserSettings() {
     };
   }, [userSettings.theme]);
 
-  const isDarkTheme = useMemo(() => {
-    return userSettings.theme === 'realDark';
-  }, [userSettings.theme]);
-
   const setTheme = (theme: Theme) => {
     setHtmlThemeAttr(theme);
-    setUserSettings({ ...userSettings, theme: theme });
+    setUserSettings({
+      ...userSettings,
+      theme: theme,
+      isDarkTheme: theme === 'realDark'
+    });
   };
 
   useEffect(() => {
@@ -37,25 +37,25 @@ export default function useUserSettings() {
 
   // set theme by system theme: only for theme is auto
   useEffect(() => {
+    const handleChange = (e: MediaQueryListEvent) => {
+      setTheme(e.matches ? 'realDark' : 'light');
+    };
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', handleChange);
+
     if (userSettings.theme === 'auto') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      console.log('mediaQuery', mediaQuery);
-      const handleChange = (e: MediaQueryListEvent) => {
-        setTheme(e.matches ? 'realDark' : 'light');
-      };
-      mediaQuery.addEventListener('change', handleChange);
-      handleChange(mediaQuery);
-      return () => {
-        mediaQuery.removeEventListener('change', handleChange);
-      };
+      setTheme(mediaQuery.matches ? 'realDark' : 'light');
     }
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
   }, [userSettings.theme]);
 
   return {
     userSettings,
     setUserSettings,
     setTheme,
-    isDarkTheme,
+    isDarkTheme: userSettings.isDarkTheme,
     themeData,
     componentSize: 'large'
   };

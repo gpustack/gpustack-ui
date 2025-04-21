@@ -23,8 +23,8 @@ export const StatusColorMap: Record<
     bg: `var(--ant-blue-1)`
   },
   success: {
-    text: `var(--color-progress-green)`,
-    bg: `var(--color-green-fill-light)`
+    text: `var(--ant-color-success)`,
+    bg: `var(--ant-color-success-bg)`
   },
   inactive: {
     text: `var(--ant-color-text-tertiary)`,

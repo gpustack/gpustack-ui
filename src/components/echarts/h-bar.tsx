@@ -24,32 +24,31 @@ const BarChart: React.FC<ChartProps> = (props) => {
     yAxis
   } = useChartConfig();
 
-  const options = {
-    title: {
-      ...titleConfig,
-      left: 'start'
-    },
-    grid,
-    tooltip: {
-      ...tooltip
-    },
-    xAxis: {
-      ...xAxis,
-      axisLabel: {
-        ...xAxis.axisLabel,
-        formatter: labelFormatter
-      }
-    },
-    yAxis,
-    legend: {
-      ...legend,
-      data: []
-    },
-
-    series: []
-  };
-
   const dataOptions = useMemo((): any => {
+    const options = {
+      title: {
+        ...titleConfig,
+        left: 'start'
+      },
+      grid,
+      tooltip: {
+        ...tooltip
+      },
+      xAxis: {
+        ...xAxis,
+        axisLabel: {
+          ...xAxis.axisLabel,
+          formatter: labelFormatter
+        }
+      },
+      yAxis,
+      legend: {
+        ...legend,
+        data: []
+      },
+
+      series: []
+    };
     const data = _.map(seriesData, (item: any) => {
       return {
         ...item,
@@ -103,7 +102,17 @@ const BarChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-  }, [seriesData, xAxisData, title]);
+  }, [
+    seriesData,
+    xAxisData,
+    title,
+    labelFormatter,
+    tooltip,
+    grid,
+    xAxis,
+    yAxis,
+    legend
+  ]);
 
   return (
     <>

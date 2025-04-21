@@ -29,8 +29,7 @@ export const grid = {
 export default function useChartConfig() {
   const { userSettings, isDarkTheme } = useUserSettings();
   const { useToken } = theme;
-  const { token, hashId } = useToken();
-  console.log('token+++++++++++++++', token, hashId);
+  const { token } = useToken();
 
   const chartColorMap = useMemo(() => {
     return {
@@ -39,13 +38,13 @@ export default function useChartConfig() {
       tickLineColor: token.colorSplit,
       axislabelColor: token.colorTextTertiary,
       gaugeSplitLineColor: 'rgba(255, 255, 255, 0.38)',
-      colorBgBase: token.colorBgBase
+      colorBgContainerHover: isDarkTheme ? '#424242' : '#fff'
     };
-  }, [userSettings.theme]);
+  }, [userSettings.theme, isDarkTheme]);
 
   const tooltip = {
     trigger: 'axis',
-    backgroundColor: chartColorMap.colorBgBase,
+    backgroundColor: chartColorMap.colorBgContainerHover,
     borderColor: 'transparent',
     formatter(params: any, callback?: (val: any) => any) {
       let result = `<span class="tooltip-x-name">${params[0].axisValue}</span>`;

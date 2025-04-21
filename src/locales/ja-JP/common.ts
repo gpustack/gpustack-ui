@@ -234,5 +234,16 @@ export default {
   'common.button.moreInfo': '詳細情報',
   'common.text.warning': '警告',
   'common.text.error': 'エラー',
-  'common.text.tips': 'ヒント'
+  'common.text.tips': 'ヒント',
+  'common.appearance': 'Appearance',
+  'common.appearance.dark': 'Dark',
+  'common.appearance.light': 'Light',
+  'common.appearance.system': 'System Default'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'common.appearance.dark': 'Dark',
+// 2. 'common.appearance.light': 'Light',
+// 3. 'common.appearance.system': 'System Default',
+// 4. 'common.appearance': 'Appearance',
+// ========== End of To-Do List ==========

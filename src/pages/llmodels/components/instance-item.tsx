@@ -174,7 +174,7 @@ const RenderWorkerDownloading = (props: {
         showInfo={false}
         type="circle"
         size={16}
-        strokeColor="var(--color-progress-green)"
+        strokeColor="var(--ant-color-success)"
         percent={
           _.find(rayActors, (item: any) => item.download_progress < 100)
             ?.download_progress || 0

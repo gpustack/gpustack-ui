@@ -1,5 +1,5 @@
 import { Progress, Tooltip } from 'antd';
-import { memo, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
 const RenderProgress = memo(
   (props: {
@@ -19,7 +19,7 @@ const RenderProgress = memo(
       }
 
       if (percent <= 50) {
-        return 'var(--color-progress-green)';
+        return 'var(--ant-color-success)';
       }
       if (percent <= 80) {
         return 'var(--ant-color-warning)';

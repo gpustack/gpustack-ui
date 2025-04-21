@@ -6,6 +6,9 @@ const SliderWrapper = styled.div`
     height: 100%;
     justify-content: center;
   }
+  .borderless {
+    background-color: transparent;
+  }
   padding-block: 0;
   padding-inline: 2px;
   input.ant-input-number-input {

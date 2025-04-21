@@ -45,7 +45,7 @@ export default {
     'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'Register Worker',
   'resources.worker.add.step2.tips':
-    '(Run on the worker to be added, <span style="color: #000;font-weight: 600">token</span> is the value obtained in the first step.)',
+    '(Run on the worker to be added, <span class="bold-text">token</span> is the value obtained in the first step.)',
   'resources.worker.add.step3':
     'After success, refresh the workers list to view the new worker.',
   'resources.worker.container.supported': 'Do not support macOS or Windows.',
@@ -56,7 +56,7 @@ export default {
     'Select a label to generate the command and copy it using the copy button.',
   'resources.worker.script.install': 'Script Installation',
   'resources.worker.container.install': 'Container Installation(Linux Only)',
-  'resources.worker.cann.tips': `Set <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> according to the required NPU index. For example, to mount NPU0 and NPU1, add <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`,
+  'resources.worker.cann.tips': `Set <span class="bold-text">--device /dev/davinci{index}</span> according to the required NPU index. For example, to mount NPU0 and NPU1, add <span class="bold-text">--device /dev/davinci0 --device /dev/davinci1</span>.`,
   'resources.modelfiles.form.path': 'Storage Path',
   'resources.modelfiles.modelfile': 'Model Files',
   'resources.modelfiles.download': 'Add Model File',

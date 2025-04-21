@@ -45,7 +45,7 @@ export default {
     'Получить токен <span class="note-text">(Запустить на сервере)</span>',
   'resources.worker.add.step2': 'Зарегистрировать воркер',
   'resources.worker.add.step2.tips':
-    '(Запустить на добавляемом воркере, <span style="color: #000;font-weight: 600">token</span> — это значение, полученное на первом шаге.)', // Translated
+    '(Запустить на добавляемом воркере, <span class="bold-text">token</span> — это значение, полученное на первом шаге.)', // Translated
   'resources.worker.add.step3':
     'После успешной регистрации обновите список воркеров.',
   'resources.worker.container.supported': 'Только для Linux.',
@@ -56,7 +56,7 @@ export default {
     'Выберите метку для генерации команды и скопируйте её.',
   'resources.worker.script.install': 'Установка скриптом',
   'resources.worker.container.install': 'Установка контейнером (только Linux)',
-  'resources.worker.cann.tips': `Установите <span style="color: #000;font-weight: 600">--device /dev/davinci{index}</span> в соответствии с требуемым индексом NPU. Например, чтобы подключить NPU0 и NPU1, добавьте <span style="color: #000;font-weight: 600">--device /dev/davinci0 --device /dev/davinci1</span>.`, // Translated
+  'resources.worker.cann.tips': `Установите <span class="bold-text">--device /dev/davinci{index}</span> в соответствии с требуемым индексом NPU. Например, чтобы подключить NPU0 и NPU1, добавьте <span class="bold-text">--device /dev/davinci0 --device /dev/davinci1</span>.`, // Translated
   'resources.modelfiles.form.path': 'Путь хранения',
   'resources.modelfiles.modelfile': 'Файлы моделей',
   'resources.modelfiles.download': 'Добавить файл модели',

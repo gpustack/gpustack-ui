@@ -18,12 +18,15 @@ interface RequestTokenInnerProps {
   }[];
   xAxisData: string[];
 }
+
+const labelFormatter = (v: any) => {
+  return dayjs(v).format('MM-DD');
+};
+
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   const { requestData, tokenData, xAxisData } = props;
   const intl = useIntl();
-  const labelFormatter = (v: any) => {
-    return dayjs(v).format('MM-DD');
-  };
+
   return (
     <CardWrapper style={{ width: '100%' }}>
       <Row style={{ width: '100%' }}>

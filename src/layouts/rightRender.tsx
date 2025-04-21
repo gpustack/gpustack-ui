@@ -13,12 +13,31 @@ import {
   MoonOutlined,
   QuestionCircleOutlined,
   ReadOutlined,
-  SettingOutlined
+  SettingOutlined,
+  SunOutlined
 } from '@ant-design/icons';
 import { getAllLocales, history, setLocale } from '@umijs/max';
 import { Avatar, Menu, Spin } from 'antd';
 import _ from 'lodash';
 import React from 'react';
+
+const themeConfig = [
+  {
+    key: 'realDark',
+    label: 'common.appearance.dark',
+    icon: <MoonOutlined />
+  },
+  {
+    key: 'light',
+    label: 'common.appearance.light',
+    icon: <SunOutlined />
+  }
+  // {
+  //   key: 'auto',
+  //   label: 'common.appearance.system',
+  //   icon: <IconFont type="icon-theme-auto" />
+  // }
+];
 
 export const getRightRenderContent = (opts: {
   runtimeConfig: any;
@@ -29,7 +48,7 @@ export const getRightRenderContent = (opts: {
   siderWidth: number;
   intl: any;
 }) => {
-  const { intl, collapsed, siderWidth, showUpgrade } = opts;
+  const { intl, collapsed, siderWidth, showUpgrade, isDarkTheme } = opts;
 
   const allLocals = getAllLocales();
   if (opts.runtimeConfig.rightRender) {
@@ -215,6 +234,31 @@ export const getRightRenderContent = (opts: {
     ]
   };
 
+  const themeMenu = {
+    selectedKeys: [],
+    className: collapsed
+      ? 'user-menu-container user-menu-collapsed'
+      : 'user-menu-container',
+    mode: 'vertical',
+    expandIcon: false,
+    // inlineCollapsed: collapsed,
+    triggerSubMenuAction: 'click',
+    items: [
+      {
+        key: 'theme',
+        icon: isDarkTheme ? <MoonOutlined /> : <SunOutlined />,
+        label: (
+          <span className="sub-title">
+            {intl?.formatMessage?.({ id: 'common.appearance' })}
+          </span>
+        ),
+        onClick: () => {
+          opts.runtimeConfig.toggleTheme();
+        }
+      }
+    ]
+  };
+
   const userMenu = {
     selectedKeys: [],
     className: collapsed
@@ -251,14 +295,6 @@ export const getRightRenderContent = (opts: {
           </span>
         ),
         children: [
-          {
-            key: 'theme',
-            label: 'Appearance',
-            icon: <MoonOutlined />,
-            onClick: () => {
-              opts.runtimeConfig.toggleTheme();
-            }
-          },
           {
             key: 'settings',
             label: (
@@ -305,10 +341,8 @@ export const getRightRenderContent = (opts: {
     <div>
       <Menu {...helpMenu} style={getMenuStyle(collapsed, siderWidth)} />
       <Menu {...langMenu} style={getMenuStyle(collapsed, siderWidth)} />
-      <Menu
-        {...userMenu}
-        style={getMenuStyle(collapsed, siderWidth, { marginTop: 20 })}
-      />
+      <Menu {...themeMenu} style={getMenuStyle(collapsed, siderWidth)} />
+      <Menu {...userMenu} style={getMenuStyle(collapsed, siderWidth)} />
     </div>
   );
 };

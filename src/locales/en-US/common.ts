@@ -234,5 +234,9 @@ export default {
   'common.button.moreInfo': 'More Info',
   'common.text.warning': 'Warning',
   'common.text.error': 'Error',
-  'common.text.tips': 'Tips'
+  'common.text.tips': 'Tips',
+  'common.appearance': 'Appearance',
+  'common.appearance.dark': 'Dark',
+  'common.appearance.light': 'Light',
+  'common.appearance.system': 'System Default'
 };

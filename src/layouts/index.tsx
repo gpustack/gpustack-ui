@@ -174,6 +174,7 @@ export default (props: any) => {
     showShortcuts: () => {
       return showShortcuts();
     },
+    setTheme: setTheme,
     toggleTheme: () => {
       const newTheme = userSettings.theme === 'realDark' ? 'light' : 'realDark';
       setTheme(newTheme);
@@ -287,6 +288,7 @@ export default (props: any) => {
         initialState,
         setInitialState,
         intl,
+        isDarkTheme: userSettings.isDarkTheme,
         siderWidth: layoutProps.siderWidth,
         collapsed: layoutProps.collapsed,
         showUpgrade
@@ -294,7 +296,7 @@ export default (props: any) => {
 
       return dom;
     },
-    [intl, showUpgrade, userSettings.theme]
+    [intl, showUpgrade, userSettings.theme, userSettings.isDarkTheme]
   );
 
   const itemRender = useCallback((route, _, routes) => {
@@ -409,7 +411,9 @@ export default (props: any) => {
     <ConfigProvider
       componentSize="large"
       theme={{
-        algorithm: isDarkTheme ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        algorithm: userSettings.isDarkTheme
+          ? theme.darkAlgorithm
+          : theme.defaultAlgorithm,
         ...themeData
       }}
     >

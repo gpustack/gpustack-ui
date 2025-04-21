@@ -229,5 +229,9 @@ export default {
   'common.text.error': '错误',
   'common.text.tips': '提示',
   'settings.system': '系统设置',
-  'common.filter.byId': '按 ID 查询'
+  'common.filter.byId': '按 ID 查询',
+  'common.appearance': '外观',
+  'common.appearance.dark': '深色',
+  'common.appearance.light': '浅色',
+  'common.appearance.system': '跟随系统'
 };

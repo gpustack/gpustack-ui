@@ -162,7 +162,7 @@ export const promptList = [
 ];
 
 export const extractErrorMessage = (result: any) => {
-  return (
+  const errorMsg =
     result?.data?.data?.detail ||
     result?.data?.data?.message ||
     result?.data?.error?.message ||
@@ -173,9 +173,15 @@ export const extractErrorMessage = (result: any) => {
     result?.detail ||
     result?.message ||
     result?.error?.message ||
-    result?.data ||
-    'Unknown error occurred'
-  );
+    result?.data;
+  if (errorMsg) {
+    return errorMsg;
+  }
+  try {
+    return typeof result === 'string' ? result : JSON.stringify(result);
+  } catch {
+    return 'Unknown error';
+  }
 };
 
 export const scaleImageSize = (size: { width: number; height: number }) => {

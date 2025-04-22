@@ -175,7 +175,7 @@ export const extractErrorMessage = (result: any) => {
     result?.error?.message ||
     result?.data;
   if (errorMsg) {
-    return errorMsg;
+    return typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg);
   }
   try {
     return typeof result === 'string' ? result : JSON.stringify(result);

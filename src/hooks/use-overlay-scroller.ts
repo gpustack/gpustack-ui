@@ -32,6 +32,9 @@ export default function useOverlayScroller(data?: {
   const scrollEventElement = React.useRef<any>(null);
   const instanceRef = React.useRef<any>(null);
   const initialized = React.useRef(false);
+  const scrollElementRef = React.useRef<any>(null);
+  const stopUpdatePosition = React.useRef(false);
+  const timerRef = React.useRef<any>(null);
   const [initialize, instance] = useOverlayScrollbars({
     options: {
       update: {
@@ -57,6 +60,20 @@ export default function useOverlayScroller(data?: {
   scrollEventElement.current =
     instanceRef.current?.elements()?.scrollEventElement;
 
+  const handleOnScroll = () => {
+    const scrollTop = scrollEventElement.current?.scrollTop;
+    const scrollHeight = scrollEventElement.current?.scrollHeight;
+    const clientHeight = scrollEventElement.current?.clientHeight;
+
+    const isBottom = scrollTop + clientHeight + 20 >= scrollHeight;
+
+    if (isBottom) {
+      stopUpdatePosition.current = false;
+    } else {
+      stopUpdatePosition.current = true;
+    }
+  };
+
   const throttledScroll = React.useCallback(
     throttle(() => {
       scrollEventElement.current?.scrollTo?.({
@@ -79,6 +96,9 @@ export default function useOverlayScroller(data?: {
   // scroll to bottom
   const throttledUpdateScrollerPosition = React.useCallback(
     (delay?: number) => {
+      if (stopUpdatePosition.current) {
+        return;
+      }
       if (delay === 0) {
         scrollauto();
       } else {
@@ -103,6 +123,29 @@ export default function useOverlayScroller(data?: {
       instanceRef.current?.elements()?.scrollEventElement;
   };
 
+  const handleWheelCallback = React.useCallback((e: any) => {
+    handleOnScroll();
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      stopUpdatePosition.current = false;
+    }, 1500);
+  }, []);
+
+  // add  wheel event
+  const handleWheelEvent = () => {
+    scrollElementRef.current?.addEventListener?.('wheel', handleWheelCallback);
+  };
+
+  // remove wheel event
+  const removeWheelEvent = () => {
+    scrollElementRef.current?.removeEventListener?.(
+      'wheel',
+      handleWheelCallback
+    );
+  };
+
   const createInstance = React.useCallback(
     (el: any) => {
       if (instanceRef.current) {
@@ -110,10 +153,12 @@ export default function useOverlayScroller(data?: {
       }
       if (el) {
         initialize(el);
+        scrollElementRef.current = el;
         initialized.current = true;
         instanceRef.current = instance?.();
         scrollEventElement.current =
           instanceRef.current?.elements()?.scrollEventElement;
+        handleWheelEvent();
       }
       return instanceRef.current;
     },
@@ -123,6 +168,7 @@ export default function useOverlayScroller(data?: {
   useEffect(() => {
     return () => {
       instanceRef.current?.destroy?.();
+      removeWheelEvent();
     };
   }, [instance]);
 

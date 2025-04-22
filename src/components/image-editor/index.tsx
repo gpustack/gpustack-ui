@@ -74,7 +74,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       onScaleImageSize,
       handleUpdateImageList,
       handleUpdateMaskList,
-      uploadButton,
       maskUpload
     },
     ref
@@ -203,6 +202,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
 
         loadMaksWorkerRef.current!.onmessage = (event: any) => {
           if (event.data.type === 'done' && event.data.imageData) {
+            console.log('load mask done');
             // draw the data to the overlay canvas
             const ctx = overlayCanvasRef.current!.getContext('2d')!;
             ctx.putImageData(event.data.imageData, 0, 0);
@@ -406,8 +406,6 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
         height: canvasRef.current!.height
       });
 
-      console.log('Image status:', imageStatus, negativeMaskRef.current);
-
       if (imageStatus.isResetNeeded) {
         onReset();
         resetCanvas();
@@ -424,6 +422,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       ) {
         invertPainting(true);
       }
+      console.log('Image status:', imageStatus, negativeMaskRef.current);
 
       updateCursorSize();
     }, [drawImage, imageStatus.isOriginal, imageStatus.isResetNeeded]);

@@ -176,7 +176,6 @@ export default function useChatCompletion(
       setLoading(false);
     }
   };
-  const throttleUpdatePosition = _.throttle(updateScrollerPosition, 100);
 
   useEffect(() => {
     if (scroller.current) {

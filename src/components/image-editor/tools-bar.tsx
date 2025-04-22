@@ -32,7 +32,6 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
     disabled,
     loading,
     lineWidth,
-    uploadButton,
     invertMask,
     handleBrushSizeChange,
     undo,
@@ -94,7 +93,6 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
           <ClearOutlined className="font-size-14" />
         </Button>
       </Tooltip>
-      {uploadButton}
       <UploadImg
         disabled={loading || invertMask}
         handleUpdateImgList={handleUpdateImageList}

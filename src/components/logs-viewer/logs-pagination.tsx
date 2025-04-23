@@ -32,7 +32,7 @@ const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
 
   return (
     <div className="pagination">
-      {page > 1 && (
+      {
         <>
           <Tooltip
             title={intl.formatMessage({ id: 'models.logs.pagination.first' })}
@@ -64,7 +64,7 @@ const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
             </Button>
           </Tooltip>
         </>
-      )}
+      }
       <span className="pages">
         <span className="curr">{page}</span> /{' '}
         <span className="total">{total}</span>

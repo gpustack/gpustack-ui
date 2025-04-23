@@ -52,7 +52,7 @@ export default {
   'common.button.authorize': 'Role Authorization',
   'common.button.confirm': 'Confirm',
   'common.button.viewlog': 'View Logs',
-  'common.table.operation': 'Operation',
+  'common.table.operation': 'Operations',
   'common.table.createTime': 'Created',
   'common.table.updateTime': 'Updated',
   'common.table.description': 'Description',

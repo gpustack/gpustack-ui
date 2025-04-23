@@ -169,10 +169,10 @@ export const extractErrorMessage = (result: any) => {
     result?.data?.error ||
     result?.data?.detail ||
     result?.data?.message ||
+    result?.error?.message ||
     result?.error ||
     result?.detail ||
     result?.message ||
-    result?.error?.message ||
     result?.data;
   if (errorMsg) {
     return typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg);

@@ -73,7 +73,7 @@ export default {
       "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
     colorText: '#ccc',
     colorPrimary: '#007BFF',
-    // colorSuccess: '#48A77E',
+    colorSuccess: '#48A77E',
     borderRadius: 4,
     borderRadiusSM: 2,
     fontSize: 14,

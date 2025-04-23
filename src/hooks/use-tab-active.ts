@@ -1,7 +1,8 @@
 import { getActiveStatus, setActiveStatus } from '@/atoms/tab-active';
 
 const tabsMap = {
-  resources: 'resources'
+  resources: 'resources',
+  userSettings: 'userSettings'
 };
 
 export default function useTabActive() {

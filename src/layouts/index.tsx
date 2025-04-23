@@ -407,9 +407,21 @@ export default (props: any) => {
     );
   };
 
+  const currentTheme = useMemo(() => {
+    const data = {
+      algorithm: userSettings.isDarkTheme
+        ? theme.darkAlgorithm
+        : theme.defaultAlgorithm,
+      ...themeData
+    };
+    console.log('currentTheme====', data);
+    return data;
+  }, [userSettings.isDarkTheme, themeData]);
+
   return (
     <ConfigProvider
       componentSize="large"
+      key={userSettings.colorPrimary}
       theme={{
         algorithm: userSettings.isDarkTheme
           ? theme.darkAlgorithm

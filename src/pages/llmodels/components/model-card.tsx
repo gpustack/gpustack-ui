@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import MarkdownViewer from '@/components/markdown-viewer';
 import SimpleOverlay from '@/components/simple-overlay';
+import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   DownOutlined,
@@ -8,7 +9,7 @@ import {
   RightOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Empty, Spin, Tag, Tooltip } from 'antd';
+import { Button, Empty, Spin, Tooltip } from 'antd';
 import { some } from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -317,26 +318,29 @@ const ModelCard: React.FC<{
           <div className="model-card-wrap">
             <div className="flex-center">
               {modelType && (
-                <Tag className="tag-item" color="gold">
-                  <span style={{ opacity: 0.65 }}>
-                    <span className="m-r-5">
-                      {intl.formatMessage({ id: 'models.architecture' })}:
-                    </span>
-                    {modelType}
+                <ThemeTag className="tag-item" color="gold" opacity={0.65}>
+                  <span className="m-r-5">
+                    {intl.formatMessage({ id: 'models.architecture' })}:
                   </span>
-                </Tag>
+                  {modelType}
+                </ThemeTag>
               )}
               {isGGUFModel && (
-                <Tag className="tag-item" color="magenta">
-                  <span style={{ opacity: 0.65 }}>GGUF</span>
-                </Tag>
+                <ThemeTag className="tag-item" color="magenta" opacity={0.65}>
+                  GGUF
+                </ThemeTag>
               )}
               {!!modelTags.length &&
                 modelTags.map((tag: string, index: number) => {
                   return (
-                    <Tag className="tag-item" color="geekblue" key={index}>
-                      <span style={{ opacity: 0.65 }}>{tag}</span>
-                    </Tag>
+                    <ThemeTag
+                      className="tag-item"
+                      color="geekblue"
+                      key={index}
+                      opacity={0.65}
+                    >
+                      {tag}
+                    </ThemeTag>
                   );
                 })}
             </div>

@@ -5,6 +5,7 @@ import RowChildren from '@/components/seal-table/components/row-children';
 import SimpleTabel, { ColumnProps } from '@/components/simple-table';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
+import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { HandlerOptions } from '@/hooks/use-chunk-fetch';
 import useDownloadStream from '@/hooks/use-download-stream';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
@@ -17,7 +18,7 @@ import {
   ThunderboltFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, Progress, Row, Tag, Tooltip, notification } from 'antd';
+import { Button, Col, Progress, Row, Tooltip, notification } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
@@ -480,7 +481,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         }}
         title={renderDistributedServer(severList)}
       >
-        <Tag
+        <ThemeTag
+          opacity={0.75}
           color="processing"
           style={{
             marginRight: 0,
@@ -491,7 +493,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            opacity: 0.75,
             borderRadius: 12
           }}
         >
@@ -499,7 +500,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           {intl.formatMessage({
             id: 'models.table.acrossworker'
           })}
-        </Tag>
+        </ThemeTag>
       </Tooltip>
     );
   };
@@ -533,7 +534,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           <InfoColumn fieldList={fieldList} data={offloadData}></InfoColumn>
         }
       >
-        <Tag
+        <ThemeTag
+          opacity={0.75}
           color="cyan"
           style={{
             display: 'flex',
@@ -543,7 +545,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            opacity: 0.75,
             borderRadius: 12
           }}
         >
@@ -551,7 +552,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           {intl.formatMessage({
             id: 'models.table.cpuoffload'
           })}
-        </Tag>
+        </ThemeTag>
       </Tooltip>
     );
   }, [

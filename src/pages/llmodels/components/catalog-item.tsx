@@ -2,8 +2,9 @@ import fallbackImg from '@/assets/images/img.png';
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import TagWrapper from '@/components/tags-wrapper';
+import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { useIntl } from '@umijs/max';
-import { Tag, Typography } from 'antd';
+import { Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback } from 'react';
@@ -31,9 +32,10 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
 
   const renderTag = (sItem: any) => {
     return (
-      <Tag
+      <ThemeTag
         key={sItem}
         className="tag-item"
+        opacity={0.7}
         style={{
           marginRight: 0,
           display: 'flex',
@@ -42,12 +44,11 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
           padding: '2px 6px',
           borderRadius: 4,
           fontSize: 12,
-          opacity: 0.7,
           height: 22
         }}
       >
         {sItem}B
-      </Tag>
+      </ThemeTag>
     );
   };
 
@@ -119,21 +120,31 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
         <div className="tags">
           {data.categories.map((sItem, i) => {
             return (
-              <Tag key={sItem} className="tag-item" color="blue">
+              <ThemeTag
+                key={sItem}
+                className="tag-item"
+                color="blue"
+                opacity={0.7}
+              >
                 {_.find(modelCategories, { value: sItem })?.label || sItem}
-              </Tag>
+              </ThemeTag>
             );
           })}
           {data.capabilities?.length > 0 &&
             data.capabilities.map((sItem, i) => {
               return (
-                <Tag key={sItem} className="tag-item" color="purple">
+                <ThemeTag
+                  key={sItem}
+                  className="tag-item"
+                  color="purple"
+                  opacity={0.7}
+                >
                   {_.map(_.split(sItem, '/'), (s: string) => {
                     return _.split(s, '_').join(' ');
                   })
                     .reverse()
                     .join(' ')}
-                </Tag>
+                </ThemeTag>
               );
             })}
           {data.sizes?.length > 0 && (

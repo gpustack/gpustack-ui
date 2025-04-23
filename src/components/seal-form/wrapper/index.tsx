@@ -1,3 +1,4 @@
+import { theme } from 'antd';
 import classNames from 'classnames';
 import React, { FC } from 'react';
 import styled from 'styled-components';
@@ -191,6 +192,8 @@ const Wrapper: FC<WrapperProps> = ({
   labelExtra,
   onClick
 }) => {
+  const { token } = theme.useToken();
+  console.log('token=====', token);
   const wrapperClass = classNames(
     status ? `validate-status-${status}` : '',
     className,
@@ -201,8 +204,21 @@ const Wrapper: FC<WrapperProps> = ({
       'seal-input-wrapper-disabled': disabled
     }
   );
+  const wrapperStyle: Record<string, any> = {
+    '--ant-line-width': '1px',
+    '--ant-line-type': 'solid',
+    '--ant-color-border': token.colorBorder,
+    '--ant-color-bg-container': token.colorBgContainer,
+    '--ant-color-bg-container-disabled': token.colorBgContainerDisabled,
+    '--ant-color-error': token.colorError,
+    '--ant-input-hover-border-color': token.colorPrimaryHover,
+    '--ant-color-error-border-hover': token.colorErrorBorderHover,
+    '--ant-input-active-border-color': token.colorPrimary,
+    '--ant-input-active-shadow': `0 0 0 2px ${token.controlOutline}`,
+    '--ant-input-active-bg': token.colorBgContainer
+  };
   return (
-    <WrapperBox className={wrapperClass}>
+    <WrapperBox className={wrapperClass} style={wrapperStyle}>
       <InnerWrapper
         $noWrapperStyle={noWrapperStyle}
         $nolabel={!label}

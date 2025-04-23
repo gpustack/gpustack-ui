@@ -6,7 +6,7 @@ import { useEffect, useMemo } from 'react';
 type Theme = 'light' | 'realDark' | 'auto';
 
 export default function useUserSettings() {
-  const { light, dark } = themeConfig;
+  const { light, dark, colorPrimary } = themeConfig;
   const [userSettings, setUserSettings] = useAtom(userSettingsHelperAtom);
 
   const setHtmlThemeAttr = (theme: string) => {
@@ -17,15 +17,16 @@ export default function useUserSettings() {
   };
 
   const themeData = useMemo(() => {
+    const themeTokens = userSettings.theme === 'realDark' ? dark : light;
+    themeTokens.token.colorPrimary = userSettings.colorPrimary || colorPrimary;
     return {
-      ...(userSettings.theme === 'realDark' ? dark : light)
+      ...themeTokens
     };
-  }, [userSettings.theme]);
+  }, [userSettings.theme, userSettings.colorPrimary]);
 
   const setTheme = (theme: Theme) => {
     setHtmlThemeAttr(theme);
     setUserSettings({
-      ...userSettings,
       theme: theme,
       isDarkTheme: theme === 'realDark'
     });
@@ -35,7 +36,6 @@ export default function useUserSettings() {
     setHtmlThemeAttr(userSettings.theme);
   }, [userSettings.theme]);
 
-  // set theme by system theme: only for theme is auto
   useEffect(() => {
     const handleChange = (e: MediaQueryListEvent) => {
       setTheme(e.matches ? 'realDark' : 'light');

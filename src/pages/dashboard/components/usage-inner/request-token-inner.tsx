@@ -13,7 +13,9 @@ interface RequestTokenInnerProps {
     areaStyle: any;
     data: { time: string; value: number }[];
   }[];
-  tokenData: { time: string; value: number }[];
+  tokenData: {
+    data: { time: string; value: number }[];
+  }[];
   xAxisData: string[];
 }
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {

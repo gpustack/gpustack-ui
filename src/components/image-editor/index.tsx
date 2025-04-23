@@ -53,6 +53,7 @@ type CanvasImageEditorProps = {
   handleUpdateImageList: (fileList: any[]) => void;
   handleUpdateMaskList: (fileList: any[]) => void;
   uploadButton?: React.ReactNode;
+  accept?: string;
   imageStatus: {
     isOriginal: boolean;
     isResetNeeded: boolean;
@@ -70,11 +71,12 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
       imageSrc,
       disabled: isDisabled,
       imageStatus,
+      maskUpload,
+      accept,
       onSave,
       onScaleImageSize,
       handleUpdateImageList,
-      handleUpdateMaskList,
-      maskUpload
+      handleUpdateMaskList
     },
     ref
   ) => {
@@ -544,6 +546,7 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
             lineWidth={lineWidth}
             invertMask={invertMask}
             loading={loading}
+            accept={accept}
           ></ToolsBar>
 
           <ImageActionsBar

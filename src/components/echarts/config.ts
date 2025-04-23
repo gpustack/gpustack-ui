@@ -4,6 +4,22 @@ const chartColorMap = {
   axislabelColor: 'rgba(0, 0, 0, 0.4)'
 };
 
+const formatLargeNumber = (value: number) => {
+  if (typeof value !== 'number' || isNaN(value)) {
+    return value;
+  }
+
+  if (value >= 1e9) {
+    return (value / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  } else if (value >= 1e6) {
+    return (value / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  } else if (value >= 1e3) {
+    return (value / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  } else {
+    return value;
+  }
+};
+
 export const tooltip = {
   trigger: 'axis',
   // axisPointer: {
@@ -70,7 +86,8 @@ export const yAxis = {
   },
   axisLabel: {
     color: chartColorMap.axislabelColor,
-    fontSize: 12
+    fontSize: 12,
+    formatter: formatLargeNumber
   },
   axisTick: {
     show: false

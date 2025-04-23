@@ -174,7 +174,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
         <IconFont
           type="icon-assistant-filled"
           className="font-size-16 m-r-5"
-          style={{ color: 'var(--ant-blue-4)' }}
+          style={{ color: 'var(--ant-blue-5)' }}
         />
       );
     }

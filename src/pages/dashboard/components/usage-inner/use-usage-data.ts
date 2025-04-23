@@ -29,30 +29,6 @@ interface TopUserData {
   topUserList: string[];
 }
 
-const getCurrentMonthDays = () => {
-  const now = dayjs();
-  const daysInMonth = now.daysInMonth();
-  const year = dayjs().year();
-  const month = dayjs().month() + 1;
-
-  const dates = [];
-  for (let day = 1; day <= daysInMonth; day++) {
-    dates.push(dayjs(`${year}-${month}-${day}`).format('YYYY-MM-DD'));
-  }
-  return dates;
-};
-
-const getLast30Days = () => {
-  const dates: string[] = [];
-
-  for (let i = 29; i >= 0; i--) {
-    const date = dayjs().subtract(i, 'day').format('YYYY-MM-DD');
-    dates.push(date);
-  }
-
-  return dates;
-};
-
 const getAdjustedDateRange = (startDate: number, endDate: number): string[] => {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
@@ -82,15 +58,26 @@ const getAdjustedDateRange = (startDate: number, endDate: number): string[] => {
     dateRange.push(adjustedStart.add(i, 'day').format('YYYY-MM-DD'));
   }
 
-  console.log('dateRange', dateRange, diff);
-
   return dateRange;
 };
 
-const findByDate = (list: any[], date: string) => {
-  return list.find(
-    (item) => dayjs(item.timestamp * 1000).format('YYYY-MM-DD') === date
+const generateValueMap = (list: { timestamp: number; value: number }[]) => {
+  return new Map(
+    list.map((item) => [
+      dayjs(item.timestamp * 1000).format('YYYY-MM-DD'),
+      item.value
+    ])
   );
+};
+
+const generateData = (dateRage: string[], valueMap: Map<string, number>) => {
+  return dateRage.map((date) => {
+    const value = valueMap.get(date) || 0;
+    return {
+      time: date,
+      value: value
+    };
+  });
 };
 
 export default function useUseageData(data: any) {
@@ -98,17 +85,6 @@ export default function useUseageData(data: any) {
     requestTokenData: RequestTokenData;
     topUserData: TopUserData;
   }>(() => {
-    let topUserData: TopUserData = {
-      userData: [],
-      topUserList: []
-    };
-
-    let requestTokenData: RequestTokenData = {
-      requestData: [],
-      tokenData: [],
-      xAxisData: []
-    };
-
     const startDate = _.get(data?.api_request_history, '0.timestamp', 0);
     const endDate = _.get(
       data?.api_request_history || [],
@@ -116,16 +92,28 @@ export default function useUseageData(data: any) {
       0
     ).timestamp;
 
-    const currentMonthDays = getAdjustedDateRange(
-      startDate * 1000,
-      endDate * 1000
-    );
+    const dateRange = getAdjustedDateRange(startDate * 1000, endDate * 1000);
 
     const completionTokenHistory = data.completion_token_history || [];
     const promptTokenHistory = data.prompt_token_history || [];
     const apiRequestHistory = data.api_request_history || [];
     const topUsers = data.top_users || [];
 
+    if (!completionTokenHistory.length) {
+      return {
+        requestTokenData: {
+          requestData: [],
+          tokenData: [],
+          xAxisData: []
+        },
+        topUserData: {
+          userData: [],
+          topUserList: []
+        }
+      };
+    }
+
+    // ========== API request ==============
     const requestList: {
       name: string;
       color: string;
@@ -135,112 +123,55 @@ export default function useUseageData(data: any) {
       name: 'API requests',
       areaStyle: {},
       color: baseColorMap.base,
-      data: []
+      data: generateData(dateRange, generateValueMap(apiRequestHistory))
     };
 
+    // =========== token usage data ==============
     const completionData: any = {
       name: 'Completion tokens',
       color: baseColorMap.base,
-      data: []
+      data: generateData(dateRange, generateValueMap(completionTokenHistory))
     };
     const promptData: any = {
       name: 'Prompt tokens',
       color: baseColorMap.baseR3,
-      data: []
+      data: generateData(dateRange, generateValueMap(promptTokenHistory))
     };
 
+    // ========== top user data ==============
     const topUserPrompt: any = {
       name: 'Prompt tokens',
       color: baseColorMap.baseR3,
-      data: []
+      data: [] as { name: string; value: number }[]
     };
     const topUserCompletion: any = {
       name: 'Completion tokens',
       color: baseColorMap.base,
-      data: []
+      data: [] as { name: string; value: number }[]
     };
 
-    _.each(currentMonthDays, (date: string) => {
-      // tokens data
-
-      const item = findByDate(data.completion_token_history || [], date);
-      if (!item) {
-        completionData.data.push({
-          time: date,
-          value: 0
-        });
-      } else {
-        completionData.data.push({
-          value: item.value,
-          time: dayjs(item.timestamp * 1000).format('YYYY-MM-DD')
-        });
-      }
-
-      const promptItem = findByDate(data.prompt_token_history || [], date);
-      if (!promptItem) {
-        promptData.data.push({
-          value: 0,
-          time: date
-        });
-      } else {
-        promptData.data.push({
-          value: promptItem.value,
-          time: dayjs(promptItem.timestamp * 1000).format('YYYY-MM-DD')
-        });
-      }
-
-      // ============== api request data =================
-
-      const requestItem = findByDate(data.api_request_history || [], date);
-
-      if (!requestItem) {
-        requestList.data.push({
-          time: date,
-          value: 0
-        });
-      } else {
-        requestList.data.push({
-          time: dayjs(requestItem.timestamp * 1000).format('YYYY-MM-DD'),
-          value: requestItem.value
-        });
-      }
+    const topUserNames = topUsers.map((item: any) => {
+      topUserPrompt.data.push({
+        name: item.username,
+        value: item.prompt_token_count
+      });
+      topUserCompletion.data.push({
+        name: item.username,
+        value: item.completion_token_count
+      });
+      return item.username;
     });
 
-    // ========== top users ============
-    if (!data.top_users?.length) {
-      topUserData = {
-        userData: [],
-        topUserList: []
-      };
-    } else {
-      const users: string[] = [];
-      _.each(data.top_users, (item: any) => {
-        users.push(item.username);
-        topUserPrompt.data.push({
-          name: item.username,
-          value: item.prompt_token_count
-        });
-        topUserCompletion.data.push({
-          name: item.username,
-          value: item.completion_token_count
-        });
-      });
-
-      topUserData = {
-        userData: [topUserCompletion, topUserPrompt],
-        topUserList: _.uniq(users)
-      };
-    }
-
-    requestTokenData = {
-      requestData: [requestList],
-      tokenData: [completionData, promptData],
-      xAxisData: currentMonthDays
-    };
-
     return {
-      requestTokenData,
-      topUserData
+      requestTokenData: {
+        requestData: [requestList],
+        tokenData: [completionData, promptData],
+        xAxisData: dateRange
+      },
+      topUserData: {
+        userData: [topUserCompletion, topUserPrompt],
+        topUserList: [...new Set(topUserNames)] as string[]
+      }
     };
   }, [data]);
 

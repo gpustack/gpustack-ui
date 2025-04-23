@@ -170,10 +170,11 @@ export const extractErrorMessage = (result: any) => {
     result?.data?.detail ||
     result?.data?.message ||
     result?.error?.message ||
-    result?.error ||
     result?.detail ||
     result?.message ||
-    result?.data;
+    result?.data ||
+    (result?.error === true ? 'Unknown error' : result?.error);
+
   if (errorMsg) {
     return typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg);
   }

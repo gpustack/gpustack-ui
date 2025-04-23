@@ -3,6 +3,7 @@ import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
 import useUserSettings from '@/hooks/use-user-settings';
 import { useModel } from '@umijs/max';
+import { ConfigProvider, theme } from 'antd';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import styled from 'styled-components';
@@ -37,7 +38,7 @@ const FormWrapper = styled.div`
   width: max-content;
   height: max-content;
   padding: 32px;
-  background-color: rgba(255, 255, 255, 90%);
+  background-color: var(--ant-modal-content-bg);
 
   .field-wrapper {
     background-color: transparent !important;
@@ -49,9 +50,14 @@ const FormWrapper = styled.div`
 `;
 
 const Login = () => {
-  const { themeData } = useUserSettings();
+  const { themeData, userSettings } = useUserSettings();
+  const { token } = theme.useToken();
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
+
+  const globalCssvars: Record<string, any> = {
+    '--ant-modal-content-bg': 'rgba(255, 255, 255, 0.9)'
+  };
 
   const gotoDefaultPage = async (userInfo: any) => {
     if (!userInfo || userInfo?.require_password_change) {
@@ -74,15 +80,30 @@ const Login = () => {
   }, []);
 
   return (
-    <div>
-      <Wrapper></Wrapper>
-      <Box>
-        <FormWrapper>
-          {userInfo?.require_password_change ? <PasswordForm /> : <LoginForm />}
-        </FormWrapper>
-        <Footer />
-      </Box>
-    </div>
+    <ConfigProvider
+      componentSize="large"
+      key={userSettings.colorPrimary}
+      theme={{
+        algorithm: userSettings.isDarkTheme
+          ? theme.darkAlgorithm
+          : theme.defaultAlgorithm,
+        ...themeData
+      }}
+    >
+      <div style={globalCssvars}>
+        <Wrapper></Wrapper>
+        <Box>
+          <FormWrapper>
+            {userInfo?.require_password_change ? (
+              <PasswordForm />
+            ) : (
+              <LoginForm />
+            )}
+          </FormWrapper>
+          <Footer />
+        </Box>
+      </div>
+    </ConfigProvider>
   );
 };
 

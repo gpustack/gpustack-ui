@@ -1,8 +1,8 @@
 import { TooltipOverlayScroller } from '@/components/overlay-scroller';
+import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { convertFileSize } from '@/utils';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tag } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
@@ -29,7 +29,8 @@ const FilePartsTag = (props: { parts: any[] }) => {
 
   return (
     <TooltipOverlayScroller title={<FileParts fileList={parts}></FileParts>}>
-      <Tag
+      <ThemeTag
+        opacity={0.7}
         className="tag-item"
         color="purple"
         style={{
@@ -43,7 +44,7 @@ const FilePartsTag = (props: { parts: any[] }) => {
             { n: parts.length }
           )}
         </span>
-      </Tag>
+      </ThemeTag>
     </TooltipOverlayScroller>
   );
 };
@@ -65,7 +66,8 @@ const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
     const quanType = getFileType(path);
     if (quanType) {
       return (
-        <Tag
+        <ThemeTag
+          opacity={0.7}
           className="tag-item"
           color="cyan"
           style={{
@@ -73,7 +75,7 @@ const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
           }}
         >
           {_.toUpper(quanType)}
-        </Tag>
+        </ThemeTag>
       );
     }
     return null;
@@ -91,7 +93,8 @@ const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
       <div className="title">{item.path}</div>
       <div className="tags flex-between">
         <span className="flex-center gap-8">
-          <Tag
+          <ThemeTag
+            opacity={0.7}
             className="tag-item"
             color="green"
             style={{
@@ -99,7 +102,7 @@ const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
             }}
           >
             {convertFileSize(item.size)}
-          </Tag>
+          </ThemeTag>
           {getModelQuantizationType(item)}
           <FilePartsTag parts={item.parts}></FilePartsTag>
         </span>

@@ -191,3 +191,7 @@ export const scaleImageSize = (size: { width: number; height: number }) => {
   const newHeight = Math.floor(height / scale) * scale;
   return { width: newWidth, height: newHeight };
 };
+
+// png, jpg, jpeg
+const acceptImageType = ['image/png', 'image/jpg', 'image/jpeg'];
+export const EDIT_IMAGE_ACCEPT = acceptImageType.join(',');

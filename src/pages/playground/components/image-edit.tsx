@@ -23,7 +23,7 @@ import React, {
   useState
 } from 'react';
 import { EDIT_IMAGE_API } from '../apis';
-import { scaleImageSize } from '../config';
+import { EDIT_IMAGE_ACCEPT, scaleImageSize } from '../config';
 import { useInitImageMeta } from '../hooks/use-init-meta';
 import useTextImage from '../hooks/use-text-image';
 import '../style/ground-left.less';
@@ -323,13 +323,14 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
           handleUpdateImageList={handleUpdateImageList}
           handleUpdateMaskList={handleUpdateMaskList}
           maskUpload={maskUpload}
+          accept={EDIT_IMAGE_ACCEPT}
         ></CanvasImageEditor>
       );
     }
     return (
       <>
         <UploadImg
-          accept="image/*"
+          accept={EDIT_IMAGE_ACCEPT}
           drag={true}
           multiple={false}
           handleUpdateImgList={handleUpdateImageList}

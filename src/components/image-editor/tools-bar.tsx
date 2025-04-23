@@ -19,6 +19,7 @@ interface ToolsBarProps {
   lineWidth: number;
   uploadButton?: React.ReactNode;
   invertMask?: boolean;
+  accept?: string;
   handleBrushSizeChange: (value: number) => void;
   undo: () => void;
   onClear: () => void;
@@ -33,6 +34,7 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
     loading,
     lineWidth,
     invertMask,
+    accept,
     handleBrushSizeChange,
     undo,
     onClear,
@@ -97,7 +99,7 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
         disabled={loading || invertMask}
         handleUpdateImgList={handleUpdateImageList}
         size="middle"
-        accept="image/*"
+        accept={accept}
       ></UploadImg>
       <UploadImg
         title={intl.formatMessage({
@@ -107,7 +109,7 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
         disabled={loading || invertMask}
         handleUpdateImgList={handleUpdateMaskList}
         size="middle"
-        accept="image/*"
+        accept={accept}
       ></UploadImg>
       <Tooltip title={intl.formatMessage({ id: 'playground.image.fitview' })}>
         <Button

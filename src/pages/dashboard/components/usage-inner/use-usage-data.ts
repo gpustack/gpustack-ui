@@ -11,6 +11,24 @@ const baseColorMap = {
   baseR3: 'rgba(85,167,255,0.8)'
 };
 
+interface RequestTokenData {
+  requestData: {
+    name: string;
+    color: string;
+    areaStyle: any;
+    data: { time: string; value: number }[];
+  }[];
+  tokenData: {
+    data: { time: string; value: number }[];
+  }[];
+  xAxisData: string[];
+}
+
+interface TopUserData {
+  userData: { name: string; value: number }[];
+  topUserList: string[];
+}
+
 const getCurrentMonthDays = () => {
   const now = dayjs();
   const daysInMonth = now.daysInMonth();
@@ -46,11 +64,11 @@ const getAdjustedDateRange = (startDate: number, endDate: number): string[] => {
   let preDays = Math.ceil(diffDays / 2);
   let postDays = Math.floor(diffDays / 2);
 
-  // if the difference is less than 30 days, adjust the start and end dates
+  // if the difference is more than 30 days, adjust the start and end dates
   if (diff >= targetRange) {
     return Array.from({ length: targetRange }, (_, i) =>
-      start.add(i, 'day').format('YYYY-MM-DD')
-    );
+      end.subtract(i, 'day').format('YYYY-MM-DD')
+    ).reverse();
   }
 
   const adjustedStart = start.subtract(preDays, 'day');
@@ -64,6 +82,8 @@ const getAdjustedDateRange = (startDate: number, endDate: number): string[] => {
     dateRange.push(adjustedStart.add(i, 'day').format('YYYY-MM-DD'));
   }
 
+  console.log('dateRange', dateRange, diff);
+
   return dateRange;
 };
 
@@ -74,25 +94,16 @@ const findByDate = (list: any[], date: string) => {
 };
 
 export default function useUseageData(data: any) {
-  const usageData = useMemo(() => {
-    let topUserData: {
-      userData: { name: string; value: number }[];
-      topUserList: string[];
-    } = {
+  const usageData = useMemo<{
+    requestTokenData: RequestTokenData;
+    topUserData: TopUserData;
+  }>(() => {
+    let topUserData: TopUserData = {
       userData: [],
       topUserList: []
     };
 
-    let requestTokenData: {
-      requestData: {
-        name: string;
-        color: string;
-        areaStyle: any;
-        data: { time: string; value: number }[];
-      }[];
-      tokenData: { time: string; value: number }[];
-      xAxisData: string[];
-    } = {
+    let requestTokenData: RequestTokenData = {
       requestData: [],
       tokenData: [],
       xAxisData: []
@@ -109,6 +120,12 @@ export default function useUseageData(data: any) {
       startDate * 1000,
       endDate * 1000
     );
+
+    const completionTokenHistory = data.completion_token_history || [];
+    const promptTokenHistory = data.prompt_token_history || [];
+    const apiRequestHistory = data.api_request_history || [];
+    const topUsers = data.top_users || [];
+
     const requestList: {
       name: string;
       color: string;

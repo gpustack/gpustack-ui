@@ -78,7 +78,8 @@ const quantiCapitMap: Record<string, string> = {
 
 const defaultQuant = ['Q4_K_M'];
 const EmbeddingRerankFirstQuant = ['FP16', 'F16'];
-const AscendNPUQuant = ['F16', 'FP16', 'Q8_0'];
+const AscendNPUQuant_F16 = ['F16', 'FP16'];
+const AscendNPUQuant_Q8 = ['Q8_0'];
 
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
@@ -113,6 +114,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
+  const hasF16Ref = useRef<boolean>(false);
 
   const handleSumit = () => {
     form.current?.submit?.();
@@ -146,17 +148,21 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     condidateQuant?: string[];
   }) => {
     if (
-      data.backend === backendOptionsMap.llamaBox &&
-      checkOnlyAscendNPU(gpuOptions)
-    ) {
-      return AscendNPUQuant.includes(_.toUpper(data.quantOption));
-    }
-    if (
       data.category === modelCategoriesMap.embedding ||
       data.category === modelCategoriesMap.reranker
     ) {
       return EmbeddingRerankFirstQuant.includes(_.toUpper(data.quantOption));
     }
+
+    if (
+      data.backend === backendOptionsMap.llamaBox &&
+      checkOnlyAscendNPU(gpuOptions)
+    ) {
+      return hasF16Ref.current
+        ? AscendNPUQuant_F16.includes(_.toUpper(data.quantOption))
+        : AscendNPUQuant_Q8.includes(_.toUpper(data.quantOption));
+    }
+
     return defaultQuant.includes(_.toUpper(data.quantOption));
   };
 
@@ -384,6 +390,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       });
 
       const list = _.sortBy(res.items, 'size');
+
+      hasF16Ref.current = _.some(res.items, (item: CatalogSpec) => {
+        return AscendNPUQuant_F16.includes(_.toUpper(item.quantization));
+      });
 
       const defaultSpec =
         _.find(list, (item: CatalogSpec) => {

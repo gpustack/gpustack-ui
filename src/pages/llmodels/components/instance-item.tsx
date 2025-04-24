@@ -21,6 +21,7 @@ import { Button, Col, Progress, Row, Tag, Tooltip, notification } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
+import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { ModelInstanceListItem } from '../config/types';
@@ -99,6 +100,11 @@ const WorkerInfo = (props: {
   );
 };
 
+const GPUIndexWrapper = styled.span`
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+`;
 const RenderRayactorDownloading = (props: {
   severList: any[];
   instanceData: any;
@@ -268,6 +274,16 @@ const childActionList = [
   }
 ];
 
+const renderGpuIndexs = (gpuIndexes: number[]) => {
+  return (
+    <GPUIndexWrapper>
+      {_.chunk(gpuIndexes, 8).map((item: number[], index: number) => {
+        return <span key={index}>{item.join(',')}</span>;
+      })}
+    </GPUIndexWrapper>
+  );
+};
+
 const distributeCols: ColumnProps[] = [
   {
     title: 'Worker',
@@ -283,7 +299,17 @@ const distributeCols: ColumnProps[] = [
   {
     title: 'models.table.gpuindex',
     locale: true,
-    key: 'gpu_index'
+    key: 'gpu_index',
+    render: ({ row }) => {
+      return row.is_main ? (
+        <>
+          {renderGpuIndexs(row.gpu_index)}
+          <span>(main)</span>
+        </>
+      ) : (
+        renderGpuIndexs(row.gpu_index)
+      );
+    }
   },
   {
     title: 'models.table.vram.allocated',
@@ -410,8 +436,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         worker_name: data?.name,
         worker_ip: data?.ip,
         port: '',
+        is_main: false,
         vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
-        gpu_index: _.keys(item.computed_resource_claim?.vram).join(',')
+        gpu_index: _.keys(item.computed_resource_claim?.vram)
       };
     });
 
@@ -421,7 +448,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         worker_ip: `${instanceData.worker_ip}`,
         port: '',
         vram: calcTotalVram(instanceData.computed_resource_claim?.vram || {}),
-        gpu_index: `${instanceData.gpu_indexes?.join?.(',')}(main)`
+        is_main: true,
+        gpu_index: instanceData.gpu_indexes
       }
     ];
 

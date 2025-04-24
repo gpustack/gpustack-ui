@@ -13,7 +13,11 @@ import {
 } from '../config';
 import { FormContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
-import { useCheckCompatibility, useSelectModel } from '../hooks';
+import {
+  checkOnlyAscendNPU,
+  useCheckCompatibility,
+  useSelectModel
+} from '../hooks';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
@@ -219,10 +223,13 @@ const AddModal: FC<AddModalProps> = (props) => {
         source: source
       });
     } else {
-      const backend =
-        source === modelSourceMap.ollama_library_value
-          ? backendOptionsMap.llamaBox
-          : backendOptionsMap.vllm;
+      let backend = checkOnlyAscendNPU(props.gpuOptions)
+        ? backendOptionsMap.ascendMindie
+        : backendOptionsMap.vllm;
+
+      if (source === modelSourceMap.ollama_library_value) {
+        backend = backendOptionsMap.llamaBox;
+      }
       form.current?.setFieldValue?.('backend', backend);
       setIsGGUF(source === modelSourceMap.ollama_library_value);
     }
@@ -233,7 +240,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   }, [warningStatus.show, warningStatus.type]);
 
   const displayEvaluateStatus = () => {
-    console.log('displayEvaluateStatus===');
     setWarningStatus({
       show: true,
       title: '',
@@ -256,7 +262,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         message: []
       });
     };
-  }, [open]);
+  }, [open, props.gpuOptions.length]);
 
   return (
     <Drawer

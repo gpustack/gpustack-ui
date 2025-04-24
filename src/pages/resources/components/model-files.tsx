@@ -34,6 +34,7 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import {
+  checkCurrentbackend,
   useGenerateFormEditInitialValues,
   useGenerateModelFileOptions
 } from '../../llmodels/hooks';
@@ -373,7 +374,7 @@ const ModelFiles = () => {
       worker_id: value
     });
   };
-  const generateInitialValues = (record: ListItem) => {
+  const generateInitialValues = (record: ListItem, gpuOptions: any[]) => {
     const isGGUF = _.includes(record.resolved_paths?.[0], 'gguf');
     const isOllama = !!record.ollama_library_model_name;
     const audioModelTag = identifyModelTask(
@@ -403,12 +404,12 @@ const ModelFiles = () => {
           }
         : {},
       name: extractFileName(name),
-      backend:
-        isGGUF || isOllama
-          ? backendOptionsMap.llamaBox
-          : audioModelTag
-            ? backendOptionsMap.voxBox
-            : backendOptionsMap.vllm,
+      backend: checkCurrentbackend({
+        isGGUF: !audioModelTag && (isGGUF || isOllama),
+        isAudio: !!audioModelTag,
+        gpuOptions: gpuOptions,
+        defaultBackend: backendOptionsMap.vllm
+      }),
       isGGUF: !audioModelTag && (isGGUF || isOllama)
     };
   };
@@ -438,7 +439,7 @@ const ModelFiles = () => {
           getGPUList()
         ]);
         const dataList = generateModelFileOptions(modelFileList, workersList);
-        const initialValues = generateInitialValues(record);
+        const initialValues = generateInitialValues(record, gpuList);
         setOpenDeployModal({
           ...openDeployModal,
           modelFileOptions: dataList,

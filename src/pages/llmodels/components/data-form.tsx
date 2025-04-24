@@ -247,7 +247,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
       <FormInnerContext.Provider
         value={{
-          onBackendChange: handleBackendChange
+          onBackendChange: handleBackendChange,
+          gpuOptions: gpuOptions
         }}
       >
         <HuggingFaceForm></HuggingFaceForm>

@@ -12,13 +12,14 @@ import {
 } from '../config';
 import { useFormContext, useFormInnerContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import { checkOnlyAscendNPU } from '../hooks';
 
 const LocalPathForm: React.FC = () => {
   const form = Form.useFormInstance();
   const formCtx = useFormContext();
   const formInnerCtx = useFormInnerContext();
   const source = Form.useWatch('source', form);
-  const { onBackendChange } = formInnerCtx;
+  const { onBackendChange, gpuOptions } = formInnerCtx;
   const { byBuiltIn } = formCtx;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
@@ -37,14 +38,16 @@ const LocalPathForm: React.FC = () => {
     const isBlobFile = value.split('/').pop().includes('sha256');
     let backend = form.getFieldValue('backend');
 
-    if (
+    if (isEndwithGGUF || isBlobFile) {
+      backend = backendOptionsMap.llamaBox;
+    } else if (checkOnlyAscendNPU(gpuOptions || [])) {
+      backend = backendOptionsMap.ascendMindie;
+    } else if (
       !isEndwithGGUF &&
       !isBlobFile &&
       backend === backendOptionsMap.llamaBox
     ) {
       backend = backendOptionsMap.vllm;
-    } else if (isEndwithGGUF || isBlobFile) {
-      backend = backendOptionsMap.llamaBox;
     }
     form.setFieldValue('backend', backend);
 

@@ -13,6 +13,7 @@ interface FormContextProps {
 
 interface FormInnerContextProps {
   onBackendChange?: (backend: string) => void;
+  gpuOptions?: any[];
 }
 
 export const FormContext = React.createContext<FormContextProps>(

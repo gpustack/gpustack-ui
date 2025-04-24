@@ -23,6 +23,7 @@ import {
 import { FormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
 import {
+  checkOnlyAscendNPU,
   useCheckCompatibility,
   useGenerateFormEditInitialValues
 } from '../hooks';
@@ -77,6 +78,7 @@ const quantiCapitMap: Record<string, string> = {
 
 const defaultQuant = ['Q4_K_M'];
 const EmbeddingRerankFirstQuant = ['FP16', 'F16'];
+const AscendNPUQuant = ['F16', 'FP16', 'Q8_0'];
 
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
@@ -137,7 +139,18 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     return data;
   };
 
-  const getDefaultQuant = (data: { category: string; quantOption: string }) => {
+  const getDefaultQuant = (data: {
+    category: string;
+    quantOption: string;
+    backend: string;
+    condidateQuant?: string[];
+  }) => {
+    if (
+      data.backend === backendOptionsMap.llamaBox &&
+      checkOnlyAscendNPU(gpuOptions)
+    ) {
+      return AscendNPUQuant.includes(_.toUpper(data.quantOption));
+    }
     if (
       data.category === modelCategoriesMap.embedding ||
       data.category === modelCategoriesMap.reranker
@@ -282,7 +295,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       _.find(list, (item: { label: string; value: string }) =>
         getDefaultQuant({
           category: _.get(current, 'categories.0', ''),
-          quantOption: item.value
+          quantOption: item.value,
+          backend: form.current.getFieldValue('backend')
         })
       )?.value ||
       _.get(list, '0.value', '')
@@ -375,7 +389,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         _.find(list, (item: CatalogSpec) => {
           return getDefaultQuant({
             category: _.get(current, 'categories.0', ''),
-            quantOption: item.quantization
+            quantOption: item.quantization,
+            backend: item.backend
           });
         }) || _.get(res.items, `0`, {});
 

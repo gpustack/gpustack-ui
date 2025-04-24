@@ -91,14 +91,12 @@ const AddModal: FC<AddModalProps> = (props) => {
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
-  const { onSelectModel } = useSelectModel();
+  const { onSelectModel } = useSelectModel({ gpuOptions: props.gpuOptions });
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
-  const [isEvaluatModel, setIsEvaluatModel] = useState<boolean>(false);
-  const [isEvaluatModelFile, setIsEvaluatModelFile] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
 
   const getDefaultSpec = (item: any) => {
@@ -245,17 +243,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   useEffect(() => {
-    if (isEvaluatModel || isEvaluatModelFile) {
-      setWarningStatus({
-        show: true,
-        title: '',
-        type: 'transition',
-        message: intl.formatMessage({ id: 'models.form.evaluating' })
-      });
-    }
-  }, [isEvaluatModel, isEvaluatModelFile]);
-
-  useEffect(() => {
     if (open) {
       handleOnOpen();
     } else {
@@ -312,6 +299,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                     modelSource={props.source}
                     onSelectModel={handleOnSelectModel}
                     displayEvaluateStatus={displayEvaluateStatus}
+                    gpuOptions={props.gpuOptions}
                   ></SearchModel>
                 </ColumnWrapper>
                 <Separator></Separator>
@@ -333,6 +321,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                       onSelectFile={handleSelectModelFile}
                       collapsed={collapsed}
                       displayEvaluateStatus={displayEvaluateStatus}
+                      gpuOptions={props.gpuOptions}
                     ></HFModelFile>
                   )}
                 </ColumnWrapper>

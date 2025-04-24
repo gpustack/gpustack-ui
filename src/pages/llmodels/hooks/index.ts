@@ -228,6 +228,15 @@ export const useGenerateModelFileOptions = () => {
   };
 };
 
+// handle for ascend npu only
+export const checkOnlyAscendNPU = (gpuOptions: any[]) => {
+  return gpuOptions?.every?.((item) => {
+    return item.children?.every((child: any) => {
+      return _.toLower(child.vendor) === 'huawei';
+    });
+  });
+};
+
 export const useCheckCompatibility = () => {
   const intl = useIntl();
   const cacheFormValuesRef = useRef<any>({});
@@ -535,13 +544,22 @@ export const useCheckCompatibility = () => {
   };
 };
 
-export const useSelectModel = () => {
+export const useSelectModel = (data: { gpuOptions: any[] }) => {
   // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
+  const { gpuOptions } = data;
+
   const onSelectModel = (selectModel: any, source: string) => {
     let name = _.split(selectModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
 
+    if (checkOnlyAscendNPU(gpuOptions)) {
+      return {
+        repo_id: selectModel.name,
+        name: name,
+        backend: backendOptionsMap.ascendMindie
+      };
+    }
     const modelTaskData = handleRecognizeAudioModel(selectModel, source);
 
     return {

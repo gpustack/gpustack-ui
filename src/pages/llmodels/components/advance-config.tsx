@@ -140,6 +140,13 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#cli-reference'
       };
     }
+    if (backend === backendOptionsMap.ascendMindie) {
+      return {
+        backend: 'Ascend MindIE',
+        releases: '',
+        link: 'http://docs.gpustack.ai/latest/user-guide/inference-backends/#parameters-reference_2'
+      };
+    }
 
     return null;
   }, [backend]);

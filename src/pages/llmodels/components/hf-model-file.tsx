@@ -41,7 +41,10 @@ interface HFModelFileProps {
   ref: any;
   gpuOptions?: any[];
   onSelectFile?: (file: any, evaluate?: boolean) => void;
-  displayEvaluateStatus?: (show?: boolean) => void;
+  displayEvaluateStatus?: (data: {
+    show?: boolean;
+    flag: Record<string, boolean>;
+  }) => void;
 }
 
 const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
@@ -251,7 +254,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       });
 
       setIsEvaluating(true);
-      displayEvaluateStatus?.(true);
       const evaluationList = await getEvaluateResults(evaluateFileList);
 
       const resultList = _.map(list, (item: any, index: number) => {
@@ -264,7 +266,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         resultList,
         (item: any) => item.path === currentPathRef.current
       );
-      displayEvaluateStatus?.(false);
+      displayEvaluateStatus?.({
+        show: false,
+        flag: {
+          file: false
+        }
+      });
       if (currentItem) {
         handleSelectModelFile(currentItem, true);
       }
@@ -272,6 +279,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       setIsEvaluating(false);
     } catch (error) {
       setIsEvaluating(false);
+      displayEvaluateStatus?.({
+        show: false,
+        flag: {
+          file: false
+        }
+      });
     }
   };
 
@@ -285,6 +298,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     axiosTokenRef.current?.abort?.();
     axiosTokenRef.current = new AbortController();
     setDataSource({ ...dataSource, loading: true });
+    displayEvaluateStatus?.({
+      show: true,
+      flag: {
+        file: true
+      }
+    });
     setCurrent('');
     try {
       let list = [];
@@ -306,6 +325,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     } catch (error) {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
+      displayEvaluateStatus?.({
+        show: false,
+        flag: {
+          file: false
+        }
+      });
     }
   };
 

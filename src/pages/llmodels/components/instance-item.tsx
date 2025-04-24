@@ -287,7 +287,10 @@ const renderGpuIndexs = (gpuIndexes: number[]) => {
 const distributeCols: ColumnProps[] = [
   {
     title: 'Worker',
-    key: 'worker_name'
+    key: 'worker_name',
+    style: {
+      wordBreak: 'break-word'
+    }
   },
   {
     title: 'IP',
@@ -301,13 +304,14 @@ const distributeCols: ColumnProps[] = [
     locale: true,
     key: 'gpu_index',
     render: ({ row }) => {
+      const list = _.sortBy(row.gpu_index, (item: number) => item);
       return row.is_main ? (
         <>
-          {renderGpuIndexs(row.gpu_index)}
+          {renderGpuIndexs(list)}
           <span>(main)</span>
         </>
       ) : (
-        renderGpuIndexs(row.gpu_index)
+        renderGpuIndexs(list)
       );
     }
   },

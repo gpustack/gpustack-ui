@@ -234,6 +234,9 @@ export const checkOnlyAscendNPU = (gpuOptions: any[]) => {
     return false;
   }
   return gpuOptions?.every?.((item) => {
+    if (!item.children?.length) {
+      return false;
+    }
     return item.children?.every((child: any) => {
       return _.toLower(child.vendor) === 'huawei';
     });

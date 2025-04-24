@@ -20,6 +20,7 @@ import {
   queryModelScopeModelFiles
 } from '../apis';
 import { backendOptionsMap, modelSourceMap } from '../config';
+import { checkOnlyAscendNPU } from '../hooks';
 import '../style/hf-model-file.less';
 import ModelFileItem from './model-file-item';
 import TitleWrapper from './title-wrapper';
@@ -39,6 +40,7 @@ interface HFModelFileProps {
   loadingModel?: boolean;
   modelSource: string;
   ref: any;
+  gpuOptions?: any[];
   onSelectFile?: (file: any, evaluate?: boolean) => void;
   displayEvaluateStatus?: (show?: boolean) => void;
 }
@@ -50,7 +52,13 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const { collapsed, modelSource, isDownload, displayEvaluateStatus } = props;
+  const {
+    collapsed,
+    modelSource,
+    isDownload,
+    gpuOptions,
+    displayEvaluateStatus
+  } = props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
@@ -229,7 +237,9 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     try {
       const evaluateFileList = list.map((item: any) => {
         return {
-          backend: backendOptionsMap.llamaBox,
+          backend: checkOnlyAscendNPU(gpuOptions || [])
+            ? backendOptionsMap.ascendMindie
+            : backendOptionsMap.llamaBox,
           source: modelSource,
           ...(modelSource === modelSourceMap.huggingface_value
             ? {

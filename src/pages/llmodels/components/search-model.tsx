@@ -25,6 +25,7 @@ import {
   modelSourceMap
 } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
+import { checkOnlyAscendNPU } from '../hooks';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -39,6 +40,7 @@ interface SearchInputProps {
   hasLinuxWorker?: boolean;
   modelSource: string;
   isDownload?: boolean;
+  gpuOptions?: any[];
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any, evaluate?: boolean) => void;
@@ -51,6 +53,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     modelSource,
     isDownload,
     hasLinuxWorker,
+    gpuOptions,
     setLoadingModel,
     onSelectModel,
     displayEvaluateStatus
@@ -210,8 +213,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     try {
       const repoList = list.map((item) => {
         const res = handleRecognizeAudioModel(item, modelSource);
+
         let backendObj = {};
-        if (res.isAudio) {
+        if (checkOnlyAscendNPU?.(gpuOptions || [])) {
+          backendObj = {
+            backend: backendOptionsMap.ascendMindie
+          };
+        } else if (res.isAudio) {
           backendObj = {
             backend: backendOptionsMap.voxBox
           };

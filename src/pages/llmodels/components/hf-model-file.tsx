@@ -264,6 +264,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         resultList,
         (item: any) => item.path === currentPathRef.current
       );
+      displayEvaluateStatus?.(false);
       if (currentItem) {
         handleSelectModelFile(currentItem, true);
       }

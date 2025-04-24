@@ -239,7 +239,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         };
       });
       setIsEvaluating(true);
-      displayEvaluateStatus?.(true);
       const evaluations = await getEvaluateResults(repoList);
       const resultList = list.map((item, index) => {
         return {
@@ -248,6 +247,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         };
       });
       setIsEvaluating(false);
+
       setDataSource((pre) => {
         return {
           ...pre,
@@ -258,6 +258,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const currentItem = resultList.find(
         (item) => item.id === currentRef.current
       );
+      displayEvaluateStatus?.(false);
       if (currentItem) {
         handleOnSelectModel(currentItem, true);
       }
@@ -283,6 +284,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         return { ...pre };
       });
       setLoadingModel?.(true);
+      displayEvaluateStatus?.(true);
       cacheRepoOptions.current = [];
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {

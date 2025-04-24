@@ -56,7 +56,7 @@ const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
     initialize(scroller.current);
   }, [initialize]);
   return (
-    <div style={{ maxHeight: 200 }} ref={scroller}>
+    <div style={{ maxHeight: 240 }} ref={scroller}>
       <table
         className={classNames('simple-table', theme, {
           'simple-table-bordered': bordered

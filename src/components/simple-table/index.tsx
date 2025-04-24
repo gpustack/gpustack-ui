@@ -10,6 +10,7 @@ export interface ColumnProps {
   title: string;
   key: string;
   width?: string | number;
+  style?: React.CSSProperties;
   render?: (data: {
     dataIndex: string;
     dataList?: any[];

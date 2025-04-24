@@ -52,7 +52,7 @@ const TableCell: React.FC<TableCellProps> = (props: TableCellProps) => {
         dataList: dataList
       })}
     >
-      <span className="cell-span">
+      <span className="cell-span" style={column.style}>
         {column.render
           ? column.render({
               dataIndex: column.key,

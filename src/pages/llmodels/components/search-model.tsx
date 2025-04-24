@@ -21,11 +21,10 @@ import {
   ModelScopeSortType,
   ModelSortType,
   ModelscopeTaskMap,
-  backendOptionsMap,
   modelSourceMap
 } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
-import { checkOnlyAscendNPU } from '../hooks';
+import { checkCurrentbackend } from '../hooks';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -215,17 +214,15 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         const res = handleRecognizeAudioModel(item, modelSource);
 
         let backendObj = {};
-        if (checkOnlyAscendNPU?.(gpuOptions || [])) {
+        const backend = checkCurrentbackend({
+          isGGUF: item.isGGUF,
+          isAudio: res.isAudio,
+          gpuOptions: gpuOptions || []
+        });
+
+        if (backend) {
           backendObj = {
-            backend: backendOptionsMap.ascendMindie
-          };
-        } else if (res.isAudio) {
-          backendObj = {
-            backend: backendOptionsMap.voxBox
-          };
-        } else if (item.isGGUF) {
-          backendObj = {
-            backend: backendOptionsMap.llamaBox
+            backend: backend
           };
         }
 

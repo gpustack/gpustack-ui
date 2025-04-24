@@ -243,6 +243,27 @@ export const checkOnlyAscendNPU = (gpuOptions: any[]) => {
   });
 };
 
+export const checkCurrentbackend = (data: {
+  isAudio: boolean;
+  isGGUF: boolean;
+  gpuOptions: any[];
+  defaultBackend?: string;
+}) => {
+  const { isAudio, isGGUF, gpuOptions, defaultBackend } = data;
+  if (isAudio) {
+    return backendOptionsMap.voxBox;
+  }
+
+  if (isGGUF) {
+    return backendOptionsMap.llamaBox;
+  }
+
+  if (checkOnlyAscendNPU(gpuOptions)) {
+    return backendOptionsMap.ascendMindie;
+  }
+  return defaultBackend;
+};
+
 export const useCheckCompatibility = () => {
   const intl = useIntl();
   const cacheFormValuesRef = useRef<any>({});
@@ -559,24 +580,19 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
 
-    if (checkOnlyAscendNPU(gpuOptions)) {
-      return {
-        repo_id: selectModel.name,
-        name: name,
-        backend: backendOptionsMap.ascendMindie
-      };
-    }
     const modelTaskData = handleRecognizeAudioModel(selectModel, source);
+
+    const backend = checkCurrentbackend({
+      defaultBackend: backendOptionsMap.vllm,
+      isAudio: modelTaskData.type === modelTaskMap.audio,
+      isGGUF: selectModel.isGGUF,
+      gpuOptions: gpuOptions
+    });
 
     return {
       repo_id: selectModel.name,
       name: name,
-      backend:
-        modelTaskData.type === modelTaskMap.audio
-          ? backendOptionsMap.voxBox
-          : selectModel.isGGUF
-            ? backendOptionsMap.llamaBox
-            : backendOptionsMap.vllm
+      backend: backend
     };
   };
 

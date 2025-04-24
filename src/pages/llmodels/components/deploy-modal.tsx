@@ -142,11 +142,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    if (
-      item.fakeName &&
-      !isHolderRef.current.model &&
-      !isHolderRef.current.file
-    ) {
+    if (item.fakeName) {
       handleShowCompatibleAlert(item.evaluateResult);
     }
   };
@@ -157,10 +153,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       setIsGGUF(false);
       form.current?.form?.resetFields(resetFields);
       const modelInfo = onSelectModel(item, props.source);
-      console.log('isholderRef', isHolderRef.current);
-      if (!isHolderRef.current.model && !isHolderRef.current.file) {
-        handleShowCompatibleAlert(item.evaluateResult);
-      }
+      handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
         ...getDefaultSpec(item),
         ...modelInfo,
@@ -263,15 +256,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const displayEvaluateStatus = (data: {
     show?: boolean;
     flag: Record<string, boolean>;
-  }) => {
-    setIsHolderRef(data.flag);
-    setWarningStatus({
-      show: isHolderRef.current.model || isHolderRef.current.file,
-      title: '',
-      type: 'transition',
-      message: intl.formatMessage({ id: 'models.form.evaluating' })
-    });
-  };
+  }) => {};
 
   useEffect(() => {
     if (open) {

@@ -443,7 +443,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       <Tooltip
         overlayInnerStyle={{
           width: 'max-content',
-          maxWidth: '500px',
+          maxWidth: '520px',
           minWidth: '400px'
         }}
         title={renderDistributedServer(severList)}

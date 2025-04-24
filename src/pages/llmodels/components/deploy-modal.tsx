@@ -102,6 +102,11 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
+  const isHolderRef = useRef<boolean>(false);
+
+  const setIsHolderRef = (flag?: boolean) => {
+    isHolderRef.current = flag || false;
+  };
 
   const getDefaultSpec = (item: any) => {
     const defaultSpec = item.evaluateResult?.default_spec || {};
@@ -139,7 +144,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       setIsGGUF(false);
       form.current?.form?.resetFields(resetFields);
       const modelInfo = onSelectModel(item, props.source);
-      handleShowCompatibleAlert(item.evaluateResult);
+      if (!isHolderRef.current) {
+        handleShowCompatibleAlert(item.evaluateResult);
+      }
       form.current?.setFieldsValue?.({
         ...getDefaultSpec(item),
         ...modelInfo,
@@ -239,9 +246,10 @@ const AddModal: FC<AddModalProps> = (props) => {
     return warningStatus.show && warningStatus.type !== 'success';
   }, [warningStatus.show, warningStatus.type]);
 
-  const displayEvaluateStatus = () => {
+  const displayEvaluateStatus = (show?: boolean) => {
+    setIsHolderRef(show);
     setWarningStatus({
-      show: true,
+      show: show || false,
       title: '',
       type: 'transition',
       message: intl.formatMessage({ id: 'models.form.evaluating' })

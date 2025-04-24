@@ -97,6 +97,8 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
+  const [isEvaluatModel, setIsEvaluatModel] = useState<boolean>(false);
+  const [isEvaluatModelFile, setIsEvaluatModelFile] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
 
   const getDefaultSpec = (item: any) => {
@@ -114,7 +116,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
     return categories || null;
   };
-  const handleSelectModelFile = (item: any) => {
+  const handleSelectModelFile = (item: any, evaluate?: boolean) => {
     form.current?.form?.resetFields(resetFields);
     const modelInfo = onSelectModel(selectedModel, props.source);
     form.current?.setFieldsValue?.({
@@ -129,7 +131,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
-  const handleOnSelectModel = (item: any) => {
+  const handleOnSelectModel = (item: any, evaluate?: boolean) => {
     setSelectedModel(item);
     if (!item.isGGUF) {
       setIsGGUF(false);
@@ -209,7 +211,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   }, [onCancel]);
 
   const handleOnOpen = () => {
-    console.log('handleOnOpen----------', props.source, props.deploymentType);
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
@@ -232,6 +233,27 @@ const AddModal: FC<AddModalProps> = (props) => {
   const showExtraButton = useMemo(() => {
     return warningStatus.show && warningStatus.type !== 'success';
   }, [warningStatus.show, warningStatus.type]);
+
+  const displayEvaluateStatus = () => {
+    console.log('displayEvaluateStatus===');
+    setWarningStatus({
+      show: true,
+      title: '',
+      type: 'transition',
+      message: intl.formatMessage({ id: 'models.form.evaluating' })
+    });
+  };
+
+  useEffect(() => {
+    if (isEvaluatModel || isEvaluatModelFile) {
+      setWarningStatus({
+        show: true,
+        title: '',
+        type: 'transition',
+        message: intl.formatMessage({ id: 'models.form.evaluating' })
+      });
+    }
+  }, [isEvaluatModel, isEvaluatModelFile]);
 
   useEffect(() => {
     if (open) {
@@ -289,6 +311,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                     hasLinuxWorker={hasLinuxWorker}
                     modelSource={props.source}
                     onSelectModel={handleOnSelectModel}
+                    displayEvaluateStatus={displayEvaluateStatus}
                   ></SearchModel>
                 </ColumnWrapper>
                 <Separator></Separator>
@@ -309,6 +332,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                       modelSource={props.source}
                       onSelectFile={handleSelectModelFile}
                       collapsed={collapsed}
+                      displayEvaluateStatus={displayEvaluateStatus}
                     ></HFModelFile>
                   )}
                 </ColumnWrapper>

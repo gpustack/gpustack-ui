@@ -102,10 +102,19 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
-  const isHolderRef = useRef<boolean>(false);
+  const isHolderRef = useRef<{
+    model: boolean;
+    file: boolean;
+  }>({
+    model: false,
+    file: false
+  });
 
-  const setIsHolderRef = (flag?: boolean) => {
-    isHolderRef.current = flag || false;
+  const setIsHolderRef = (flag: Record<string, boolean>) => {
+    isHolderRef.current = {
+      ...isHolderRef.current,
+      ...flag
+    };
   };
 
   const getDefaultSpec = (item: any) => {
@@ -133,7 +142,11 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    if (item.fakeName) {
+    if (
+      item.fakeName &&
+      !isHolderRef.current.model &&
+      !isHolderRef.current.file
+    ) {
       handleShowCompatibleAlert(item.evaluateResult);
     }
   };
@@ -144,7 +157,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       setIsGGUF(false);
       form.current?.form?.resetFields(resetFields);
       const modelInfo = onSelectModel(item, props.source);
-      if (!isHolderRef.current) {
+      console.log('isholderRef', isHolderRef.current);
+      if (!isHolderRef.current.model && !isHolderRef.current.file) {
         handleShowCompatibleAlert(item.evaluateResult);
       }
       form.current?.setFieldsValue?.({
@@ -246,10 +260,13 @@ const AddModal: FC<AddModalProps> = (props) => {
     return warningStatus.show && warningStatus.type !== 'success';
   }, [warningStatus.show, warningStatus.type]);
 
-  const displayEvaluateStatus = (show?: boolean) => {
-    setIsHolderRef(show);
+  const displayEvaluateStatus = (data: {
+    show?: boolean;
+    flag: Record<string, boolean>;
+  }) => {
+    setIsHolderRef(data.flag);
     setWarningStatus({
-      show: show || false,
+      show: isHolderRef.current.model || isHolderRef.current.file,
       title: '',
       type: 'transition',
       message: intl.formatMessage({ id: 'models.form.evaluating' })

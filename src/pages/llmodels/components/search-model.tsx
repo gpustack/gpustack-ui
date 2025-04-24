@@ -43,7 +43,10 @@ interface SearchInputProps {
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any, evaluate?: boolean) => void;
-  displayEvaluateStatus?: (show?: boolean) => void;
+  displayEvaluateStatus?: (data: {
+    show?: boolean;
+    flag: Record<string, boolean>;
+  }) => void;
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
@@ -258,7 +261,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const currentItem = resultList.find(
         (item) => item.id === currentRef.current
       );
-      displayEvaluateStatus?.(false);
+      displayEvaluateStatus?.({
+        show: false,
+        flag: {
+          model: false
+        }
+      });
       if (currentItem) {
         handleOnSelectModel(currentItem, true);
       }
@@ -284,7 +292,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         return { ...pre };
       });
       setLoadingModel?.(true);
-      displayEvaluateStatus?.(true);
+      displayEvaluateStatus?.({
+        show: true,
+        flag: {
+          model: true
+        }
+      });
       cacheRepoOptions.current = [];
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {
@@ -313,6 +326,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         networkError: error?.message === 'Failed to fetch'
       });
       setLoadingModel?.(false);
+      displayEvaluateStatus?.({
+        show: false,
+        flag: {
+          model: false
+        }
+      });
       handleOnSelectModel({});
       cacheRepoOptions.current = [];
     }

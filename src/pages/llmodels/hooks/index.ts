@@ -230,6 +230,9 @@ export const useGenerateModelFileOptions = () => {
 
 // handle for ascend npu only
 export const checkOnlyAscendNPU = (gpuOptions: any[]) => {
+  if (!gpuOptions?.length) {
+    return false;
+  }
   return gpuOptions?.every?.((item) => {
     return item.children?.every((child: any) => {
       return _.toLower(child.vendor) === 'huawei';

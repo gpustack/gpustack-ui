@@ -40,14 +40,14 @@ const LocalPathForm: React.FC = () => {
 
     if (isEndwithGGUF || isBlobFile) {
       backend = backendOptionsMap.llamaBox;
-    } else if (checkOnlyAscendNPU(gpuOptions || [])) {
-      backend = backendOptionsMap.ascendMindie;
     } else if (
       !isEndwithGGUF &&
       !isBlobFile &&
       backend === backendOptionsMap.llamaBox
     ) {
-      backend = backendOptionsMap.vllm;
+      backend = checkOnlyAscendNPU(gpuOptions || [])
+        ? backendOptionsMap.ascendMindie
+        : backendOptionsMap.vllm;
     }
     form.setFieldValue('backend', backend);
 

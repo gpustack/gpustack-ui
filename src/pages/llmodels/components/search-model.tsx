@@ -41,7 +41,8 @@ interface SearchInputProps {
   isDownload?: boolean;
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
-  onSelectModel: (model: any) => void;
+  onSelectModel: (model: any, evaluate?: boolean) => void;
+  displayEvaluateStatus?: (show?: boolean) => void;
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
@@ -51,7 +52,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     isDownload,
     hasLinuxWorker,
     setLoadingModel,
-    onSelectModel
+    onSelectModel,
+    displayEvaluateStatus
   } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
@@ -108,8 +110,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     return isGGUF || isGGUFFromMs;
   };
 
-  const handleOnSelectModel = (item: any) => {
-    onSelectModel(item);
+  const handleOnSelectModel = (item: any, evaluate?: boolean) => {
+    onSelectModel(item, evaluate);
     setCurrent(item.id);
     currentRef.current = item.id;
   };
@@ -232,6 +234,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         };
       });
       setIsEvaluating(true);
+      displayEvaluateStatus?.(true);
       const evaluations = await getEvaluateResults(repoList);
       const resultList = list.map((item, index) => {
         return {
@@ -251,7 +254,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         (item) => item.id === currentRef.current
       );
       if (currentItem) {
-        handleOnSelectModel(currentItem);
+        handleOnSelectModel(currentItem, true);
       }
     } catch (error) {
       setIsEvaluating(false);

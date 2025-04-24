@@ -39,7 +39,8 @@ interface HFModelFileProps {
   loadingModel?: boolean;
   modelSource: string;
   ref: any;
-  onSelectFile?: (file: any) => void;
+  onSelectFile?: (file: any, evaluate?: boolean) => void;
+  displayEvaluateStatus?: (show?: boolean) => void;
 }
 
 const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
@@ -49,7 +50,7 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const { collapsed, modelSource, isDownload } = props;
+  const { collapsed, modelSource, isDownload, displayEvaluateStatus } = props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
@@ -73,8 +74,8 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const checkTokenRef = useRef<any>(null);
   const timer = useRef<any>(null);
 
-  const handleSelectModelFile = (item: any) => {
-    props.onSelectFile?.(item);
+  const handleSelectModelFile = (item: any, evaluate?: boolean) => {
+    props.onSelectFile?.(item, evaluate);
     setCurrent(item.path);
     currentPathRef.current = item.path;
   };
@@ -243,7 +244,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       });
 
       setIsEvaluating(true);
-
+      displayEvaluateStatus?.(true);
       const evaluationList = await getEvaluateResults(evaluateFileList);
 
       const resultList = _.map(list, (item: any, index: number) => {
@@ -257,7 +258,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         (item: any) => item.path === currentPathRef.current
       );
       if (currentItem) {
-        handleSelectModelFile(currentItem);
+        handleSelectModelFile(currentItem, true);
       }
       setDataSource({ fileList: resultList, loading: false });
       setIsEvaluating(false);

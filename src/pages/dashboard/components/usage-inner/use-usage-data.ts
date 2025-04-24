@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import _ from 'lodash';
 import { useMemo } from 'react';
 
 const baseColorMap = {
@@ -29,36 +28,15 @@ interface TopUserData {
   topUserList: string[];
 }
 
-const getAdjustedDateRange = (startDate: number, endDate: number): string[] => {
-  const start = dayjs(startDate);
-  const end = dayjs(endDate);
-  const diff = end.diff(start, 'day') + 1;
+const getLast30Days = () => {
+  const dates: string[] = [];
 
-  const targetRange = 30;
-  const diffDays = targetRange - diff;
-
-  let preDays = Math.ceil(diffDays / 2);
-  let postDays = Math.floor(diffDays / 2);
-
-  // if the difference is more than 30 days, adjust the start and end dates
-  if (diff >= targetRange) {
-    return Array.from({ length: targetRange }, (_, i) =>
-      end.subtract(i, 'day').format('YYYY-MM-DD')
-    ).reverse();
+  for (let i = 29; i >= 0; i--) {
+    const date = dayjs().subtract(i, 'day').format('YYYY-MM-DD');
+    dates.push(date);
   }
 
-  const adjustedStart = start.subtract(preDays, 'day');
-  const adjustedEnd = end.add(postDays, 'day');
-
-  const totalDays = adjustedEnd.diff(adjustedStart, 'day') + 1;
-
-  const dateRange: string[] = [];
-
-  for (let i = 0; i < totalDays; i++) {
-    dateRange.push(adjustedStart.add(i, 'day').format('YYYY-MM-DD'));
-  }
-
-  return dateRange;
+  return dates;
 };
 
 const generateValueMap = (list: { timestamp: number; value: number }[]) => {
@@ -85,14 +63,7 @@ export default function useUseageData(data: any) {
     requestTokenData: RequestTokenData;
     topUserData: TopUserData;
   }>(() => {
-    const startDate = _.get(data?.api_request_history, '0.timestamp', 0);
-    const endDate = _.get(
-      data?.api_request_history || [],
-      data?.api_request_history?.length - 1,
-      0
-    ).timestamp;
-
-    const dateRange = getAdjustedDateRange(startDate * 1000, endDate * 1000);
+    const dateRange = getLast30Days();
 
     const completionTokenHistory = data.completion_token_history || [];
     const promptTokenHistory = data.prompt_token_history || [];

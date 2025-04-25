@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import TitleTip from './title-tip';
+import { TooltipOverlayScroller } from '../overlay-scroller';
 
 // type TagProps = React.ComponentProps<typeof Tag>;
 
@@ -91,23 +91,12 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   );
 
   return (
-    <Tooltip
-      overlayInnerStyle={{ paddingInline: 0 }}
-      destroyTooltipOnHide={false}
-      title={
-        isOverflowing || showTitle ? (
-          <TitleTip
-            isOverflowing={isOverflowing}
-            title={title}
-            showTitle={showTitle}
-          >
-            {children}
-          </TitleTip>
-        ) : (
-          false
-        )
-      }
-      {...tooltipProps}
+    <TooltipOverlayScroller
+      toolTipProps={{
+        ...tooltipProps,
+        destroyTooltipOnHide: false
+      }}
+      title={isOverflowing || showTitle ? children : false}
     >
       {ghost ? (
         <div ref={contentRef} style={tagStyle} data-overflow={isOverflowing}>
@@ -139,7 +128,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
           {children}
         </Tag>
       )}
-    </Tooltip>
+    </TooltipOverlayScroller>
   );
 };
 

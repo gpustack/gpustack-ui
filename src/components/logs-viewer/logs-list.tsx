@@ -31,7 +31,9 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
     initialized
   } = useOverlayScroller({
     options: {
-      theme: 'os-theme-light'
+      scrollbars: {
+        theme: 'os-theme-light'
+      }
     }
   });
   const [innerHieght, setInnerHeight] = useState(

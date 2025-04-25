@@ -1,4 +1,4 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
+import { OverlayScroller } from '@/components/overlay-scroller';
 import React from 'react';
 
 interface TitleTipProps {
@@ -10,27 +10,18 @@ interface TitleTipProps {
 
 const TitleTip: React.FC<TitleTipProps> = (props) => {
   const { isOverflowing, showTitle, title, children } = props;
-  const { initialize } = useOverlayScroller();
-  const scrollRef = React.useRef<any>(null);
-
-  React.useEffect(() => {
-    if (scrollRef.current) {
-      initialize(scrollRef.current);
-    }
-  }, [initialize, scrollRef.current]);
 
   return (
-    <div style={{ maxHeight: 200, overflowY: 'auto' }} ref={scrollRef}>
+    <OverlayScroller maxHeight={200}>
       <div
         style={{
           width: 'fit-content',
-          maxWidth: 'var(--width-tooltip-max)',
-          paddingInline: 8
+          maxWidth: 'var(--width-tooltip-max)'
         }}
       >
         {isOverflowing || showTitle ? title || children : ''}
       </div>
-    </div>
+    </OverlayScroller>
   );
 };
 

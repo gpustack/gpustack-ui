@@ -284,7 +284,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
               <OverlayScroller
                 maxHeight={500}
                 style={{ paddingInline: '16px' }}
-                theme="os-theme-dark"
+                oppositeTheme={true}
               >
                 <DynamicParams
                   ref={formRef}

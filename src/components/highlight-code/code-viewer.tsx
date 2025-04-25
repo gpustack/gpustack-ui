@@ -36,7 +36,7 @@ const CodeHeaderWrapper = styled.div`
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   &.dark {
-    background-color: #383838;
+    background-color: var(--color-editor-header-bg);
     color: rgba(255, 255, 255, 0.65);
   }
 `;

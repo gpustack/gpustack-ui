@@ -1,4 +1,3 @@
-import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import classNames from 'classnames';
 import React from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -37,29 +36,19 @@ export interface ColumnProps {
 
 interface SimpleTableProps {
   theme?: 'dark' | 'light';
+  maxHeight?: number | string;
   columns: ColumnProps[];
   dataSource: any[];
   bordered?: boolean;
-  rowKey?: string;
+  rowKey: string;
 }
 const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
-  const {
-    columns,
-    dataSource,
-    rowKey,
-    bordered = true,
-    theme = 'dark'
-  } = props;
-  const scroller = React.useRef<any>(null);
-  const { initialize } = useOverlayScroller();
+  const { columns, dataSource, rowKey, bordered = true } = props;
 
-  React.useEffect(() => {
-    initialize(scroller.current);
-  }, [initialize]);
   return (
-    <div style={{ maxHeight: 240 }} ref={scroller}>
+    <div>
       <table
-        className={classNames('simple-table', theme, {
+        className={classNames('simple-table', {
           'simple-table-bordered': bordered
         })}
       >
@@ -74,7 +63,7 @@ const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
                 rowIndex={index}
                 columns={columns}
                 dataList={dataSource}
-                key={rowKey ? item[rowKey] : index}
+                key={item[rowKey]}
               ></TableRow>
             );
           })}

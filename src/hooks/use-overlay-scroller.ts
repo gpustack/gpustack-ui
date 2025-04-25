@@ -1,11 +1,20 @@
-import { userSettingsHelperAtom } from '@/atoms/settings';
-import { useAtom } from 'jotai';
 import { throttle } from 'lodash';
 import {
   UseOverlayScrollbarsParams,
   useOverlayScrollbars
 } from 'overlayscrollbars-react';
 import React, { useEffect } from 'react';
+import useUserSettings from './use-user-settings';
+
+export interface OverlayScrollerOptions {
+  oppositeTheme?: boolean;
+  scrollbars?: {
+    theme?: 'os-theme-light' | 'os-theme-dark';
+    autoHide?: 'never' | 'scroll' | 'leave' | 'move';
+    autoHideDelay?: number;
+    clickScroll?: boolean | 'instant';
+  };
+}
 
 export const overlaySollerOptions: UseOverlayScrollbarsParams = {
   options: {
@@ -25,13 +34,19 @@ export const overlaySollerOptions: UseOverlayScrollbarsParams = {
   defer: true
 };
 
+/**
+ *
+ * @param options.theme: if set theme, it will fix the theme
+ * @returns
+ */
 export default function useOverlayScroller(data?: {
-  options?: any;
+  options?: OverlayScrollerOptions;
   events?: any;
   defer?: boolean;
 }) {
-  const [useSettings] = useAtom(userSettingsHelperAtom);
+  const { userSettings } = useUserSettings();
   const { options, events, defer = true } = data || {};
+  const { scrollbars, oppositeTheme } = options || {};
   const scrollEventElement = React.useRef<any>(null);
   const instanceRef = React.useRef<any>(null);
   const initialized = React.useRef(false);
@@ -47,13 +62,13 @@ export default function useOverlayScroller(data?: {
         x: 'hidden'
       },
       scrollbars: {
-        theme:
-          options?.theme || useSettings.theme === 'light'
-            ? 'os-theme-dark'
-            : 'os-theme-light',
         autoHide: 'scroll',
         autoHideDelay: 600,
-        clickScroll: 'instant'
+        clickScroll: 'instant',
+        ...scrollbars,
+        theme:
+          scrollbars?.theme ||
+          (userSettings.theme === 'light' ? 'os-theme-dark' : 'os-theme-light')
       }
     },
     events: {

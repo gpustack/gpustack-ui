@@ -3,10 +3,10 @@ import { StatusType } from '@/config/types';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import CopyButton from '../copy-button';
-import SimpleOverlay from '../simple-overlay';
+import { TooltipOverlayScroller } from '../overlay-scroller';
 import CopyStyle from './copy-btn.less';
 import './index.less';
 
@@ -47,17 +47,13 @@ const StatusTag: React.FC<StatusTagProps> = ({
   type = 'tag'
 }) => {
   const { text, status } = statusValue;
-  const [statusColor, setStatusColor] = useState<{
+
+  const statusColor = useMemo<{
     text: string;
     bg: string;
     border?: string;
-  }>({
-    text: '',
-    bg: ''
-  });
-
-  useEffect(() => {
-    setStatusColor(StatusColorMap[status]);
+  }>(() => {
+    return StatusColorMap[status];
   }, [status]);
 
   const statusMessage = useMemo(() => {
@@ -85,6 +81,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
     }
     return <span>{text}</span>;
   };
+
   const renderTitle = useMemo(() => {
     return (
       <div className={CopyStyle['status-content-wrapper']}>
@@ -118,24 +115,21 @@ const StatusTag: React.FC<StatusTagProps> = ({
           })}
         </div>
 
-        <SimpleOverlay style={{ maxHeight: 200 }}>
-          <div
-            style={{
-              width: 'max-content',
-              maxWidth: 250,
-              paddingInline: 10,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word'
-            }}
-          >
-            {statusMessage}
-            {statusMessage && <span className="m-r-5"></span>}
-            {extra}
-            {messageLink && (
-              <span dangerouslySetInnerHTML={{ __html: messageLink }}></span>
-            )}
-          </div>
-        </SimpleOverlay>
+        <div
+          style={{
+            width: 'max-content',
+            maxWidth: 250,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word'
+          }}
+        >
+          {statusMessage}
+          {statusMessage && <span className="m-r-5"></span>}
+          {extra}
+          {messageLink && (
+            <span dangerouslySetInnerHTML={{ __html: messageLink }}></span>
+          )}
+        </div>
       </div>
     );
   }, [statusValue]);
@@ -150,11 +144,14 @@ const StatusTag: React.FC<StatusTagProps> = ({
       }}
     >
       {statusValue.message ? (
-        <Tooltip
-          trigger={['hover']}
+        <TooltipOverlayScroller
           title={renderTitle}
-          destroyTooltipOnHide={true}
-          overlayInnerStyle={{ paddingInline: 0 }}
+          scrollbars={{
+            autoHide: 'never'
+          }}
+          toolTipProps={{
+            destroyTooltipOnHide: true
+          }}
         >
           <span className="txt err">
             <span className="m-r-5">
@@ -162,7 +159,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
             </span>
             {renderContent()}
           </span>
-        </Tooltip>
+        </TooltipOverlayScroller>
       ) : (
         <span className="txt">{renderContent()}</span>
       )}

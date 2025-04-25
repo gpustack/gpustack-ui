@@ -33,10 +33,7 @@ const CodeViewer = (props: any) => {
   );
 };
 
-const FullMarkdown: React.FC<FullMarkdownProps> = ({
-  content,
-  theme = 'light'
-}) => {
+const FullMarkdown: React.FC<FullMarkdownProps> = ({ content, theme }) => {
   const escapedContent = useMemo(() => {
     return escapeMhchem(escapeBrackets(escapeDollarNumber(content)));
   }, [content]);

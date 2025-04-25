@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
+import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import RowChildren from '@/components/seal-table/components/row-children';
 import SimpleTabel, { ColumnProps } from '@/components/simple-table';
 import InfoColumn from '@/components/simple-table/info-column';
@@ -137,6 +138,7 @@ const RenderRayactorDownloading = (props: {
       <SimpleTabel
         columns={downloadList}
         dataSource={[...mainWorker, ...list]}
+        rowKey="worker_name"
         theme="light"
       ></SimpleTabel>
     </div>
@@ -473,11 +475,13 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       return null;
     }
     return (
-      <Tooltip
-        overlayInnerStyle={{
-          width: 'max-content',
-          maxWidth: '520px',
-          minWidth: '400px'
+      <TooltipOverlayScroller
+        toolTipProps={{
+          overlayInnerStyle: {
+            width: 'max-content',
+            maxWidth: '520px',
+            minWidth: '400px'
+          }
         }}
         title={renderDistributedServer(severList)}
       >
@@ -501,7 +505,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
             id: 'models.table.acrossworker'
           })}
         </ThemeTag>
-      </Tooltip>
+      </TooltipOverlayScroller>
     );
   };
 

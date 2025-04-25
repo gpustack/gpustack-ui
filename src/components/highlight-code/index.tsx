@@ -9,6 +9,7 @@ const HighlightCode: React.FC<{
   lang?: string;
   copyable?: boolean;
   theme?: 'light' | 'dark';
+  fixedTheme?: 'light' | 'dark';
   height?: string | number;
   style?: React.CSSProperties;
   copyValue?: string;
@@ -19,14 +20,16 @@ const HighlightCode: React.FC<{
     copyValue,
     lang = 'bash',
     copyable = true,
-    theme = 'dark',
+    theme,
     height = 'auto'
   } = props;
 
   const { userSettings } = useUserSettings();
 
   const currentTheme = React.useMemo(() => {
-    return theme || userSettings.theme === 'realDark' ? 'dark' : 'light';
+    const res = theme || userSettings.theme === 'realDark' ? 'dark' : 'light';
+    console.log('currentTheme:', res, userSettings.theme, '===>', theme);
+    return res;
   }, [theme, userSettings.theme]);
 
   return (

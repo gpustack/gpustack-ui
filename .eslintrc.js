@@ -8,7 +8,8 @@ module.exports = {
     '@typescript-eslint/class-name-casing': 'off'
   },
   globals: {
-    Global: 'readonly'
+    Global: 'readonly',
+    React: 'readonly'
   },
   ignorePatterns: ['public/static/']
 };

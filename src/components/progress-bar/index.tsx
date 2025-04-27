@@ -36,7 +36,7 @@ const RenderProgress = memo(
             return (
               <span
                 style={{
-                  color: '#fff'
+                  color: 'var(--color-progress-text)'
                 }}
               >
                 {percent}%

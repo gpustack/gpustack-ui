@@ -117,11 +117,6 @@ const SelectWrapper = styled.div`
       padding-block: 20px 0 !important;
       box-shadow: none !important;
 
-      &:hover {
-        border-color: var(--ant-input-hover-border-color) !important;
-        transition: all 0.2s ease;
-      }
-
       &:focus-within {
         border-color: var(--ant-input-active-border-color) !important;
         outline: 0;

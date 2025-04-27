@@ -463,6 +463,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     return (
       <div>
         <SimpleTabel
+          rowKey="worker_name"
           columns={distributeCols}
           dataSource={[...mainWorker, ...list]}
         ></SimpleTabel>

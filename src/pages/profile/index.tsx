@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { TabsProps } from 'antd';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import CustomUI from './components/custom-ui';
+import Appearance from './components/appearance';
 import ModifyPasswordn from './components/modify-password';
 
 const Wrapper = styled.div`
@@ -27,9 +27,9 @@ const Profile: React.FC = () => {
       children: <ModifyPasswordn />
     },
     {
-      key: 'custom-ui',
-      label: 'Custom UI',
-      children: <CustomUI />
+      key: 'appearance',
+      label: intl.formatMessage({ id: 'common.appearance' }),
+      children: <Appearance />
     }
   ];
 

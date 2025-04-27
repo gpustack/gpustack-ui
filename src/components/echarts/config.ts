@@ -37,7 +37,7 @@ export default function useChartConfig() {
       splitLineColor: token.colorBorder,
       tickLineColor: token.colorSplit,
       axislabelColor: token.colorTextTertiary,
-      gaugeSplitLineColor: 'rgba(255, 255, 255, 0.38)',
+      gaugeSplitLineColor: isDarkTheme ? '#b8b8b8' : 'rgba(255, 255, 255, 1)',
       colorBgContainerHover: isDarkTheme ? '#424242' : '#fff'
     };
   }, [userSettings.theme, isDarkTheme]);
@@ -176,7 +176,7 @@ export default function useChartConfig() {
       }
     },
     axisTick: {
-      distance: -12,
+      distance: -11,
       length: 6,
       splitNumber: 5,
       lineStyle: {

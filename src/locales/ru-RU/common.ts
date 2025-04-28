@@ -233,15 +233,12 @@ export default {
   'common.text.warning': 'Предупреждение',
   'common.text.error': 'Ошибка',
   'common.text.tips': 'Советы',
-  'common.appearance': 'Appearance',
-  'common.appearance.dark': 'Dark',
-  'common.appearance.light': 'Light',
-  'common.appearance.system': 'System Default'
+  'common.appearance': 'Внешний вид',
+  'common.appearance.dark': 'Темная',
+  'common.appearance.light': 'Светлая',
+  'common.appearance.system': 'Как в системе'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.appearance': 'Appearance',
-// 2. 'common.appearance.dark': 'Dark',
-// 3. 'common.appearance.light': 'Light',
-// 4. 'common.appearance.system': 'System Default'
+
 // ========== End of To-Do List ==========

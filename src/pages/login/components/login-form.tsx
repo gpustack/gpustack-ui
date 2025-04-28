@@ -2,6 +2,7 @@ import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
 import SealInput from '@/components/seal-form/seal-input';
+import ThemeToggle from '@/components/theme-toggle';
 import {
   CRYPT_TEXT,
   REMEMBER_ME_KEY,
@@ -12,6 +13,7 @@ import {
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
+import { createStyles } from 'antd-style';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
 import { useEffect, useMemo } from 'react';
@@ -19,7 +21,26 @@ import { flushSync } from 'react-dom';
 import { login } from '../apis';
 import { checkDefaultPage } from '../utils';
 
+const useStyles = createStyles(({ token, css }) => ({
+  header: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    .anticon-global {
+      color: ${token.colorText};
+    }
+    .anticon:hover {
+      color: ${token.colorTextTertiary};
+    }
+  `
+}));
+
 const LoginForm = () => {
+  const { styles } = useStyles();
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
@@ -130,14 +151,8 @@ const LoginForm = () => {
 
   return (
     <div>
-      <div
-        style={{
-          position: 'fixed',
-          right: 0,
-          top: 0,
-          padding: '20px'
-        }}
-      >
+      <div className={styles.header}>
+        <ThemeToggle></ThemeToggle>
         <LangSelect />
       </div>
       <div>

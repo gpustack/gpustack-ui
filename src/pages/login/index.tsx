@@ -11,7 +11,7 @@ import LoginForm from './components/login-form';
 import PasswordForm from './components/password-form';
 import { checkDefaultPage } from './utils';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -19,9 +19,11 @@ const Wrapper = styled.div`
   right: 0;
   min-height: 100vh;
   z-index: -1;
-  background: url(${Bg2}) center center no-repeat;
-  background-size: cover;
-  opacity: 0.6;
+  background: ${({ $isDarkTheme }) =>
+    $isDarkTheme
+      ? `repeating-linear-gradient(45deg, #000, transparent 120px)`
+      : `url(${Bg2}) center center /cover no-repeat`};
+  opacity: ${({ $isDarkTheme }) => ($isDarkTheme ? 1 : 0.6)};
 `;
 
 const Box = styled.div`
@@ -38,7 +40,7 @@ const FormWrapper = styled.div`
   width: max-content;
   height: max-content;
   padding: 32px;
-  background-color: var(--ant-modal-content-bg);
+  background-color: var(--color-modal-content-bg);
 
   .field-wrapper {
     background-color: transparent !important;
@@ -50,14 +52,9 @@ const FormWrapper = styled.div`
 `;
 
 const Login = () => {
-  const { themeData, userSettings } = useUserSettings();
-  const { token } = theme.useToken();
+  const { themeData, userSettings, isDarkTheme } = useUserSettings();
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
-
-  const globalCssvars: Record<string, any> = {
-    '--ant-modal-content-bg': 'rgba(255, 255, 255, 0.9)'
-  };
 
   const gotoDefaultPage = async (userInfo: any) => {
     if (!userInfo || userInfo?.require_password_change) {
@@ -72,9 +69,11 @@ const Login = () => {
       }));
     }
   };
+
   useEffect(() => {
     gotoDefaultPage(userInfo);
   }, [userInfo]);
+
   useEffect(() => {
     document.title = 'GPUStack';
   }, []);
@@ -90,8 +89,8 @@ const Login = () => {
         ...themeData
       }}
     >
-      <div style={globalCssvars}>
-        <Wrapper></Wrapper>
+      <div>
+        <Wrapper $isDarkTheme={isDarkTheme}></Wrapper>
         <Box>
           <FormWrapper>
             {userInfo?.require_password_change ? (

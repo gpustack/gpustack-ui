@@ -5,7 +5,7 @@ import { atomWithStorage } from 'jotai/utils';
 type UserSettings = {
   theme: 'light' | 'realDark' | 'auto';
   colorPrimary: string;
-  isDarkTheme?: boolean;
+  isDarkTheme: boolean;
 };
 
 export const userSettingsAtom = atomWithStorage<UserSettings>('userSettings', {

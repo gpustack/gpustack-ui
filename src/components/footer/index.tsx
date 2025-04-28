@@ -4,10 +4,28 @@ import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import { useIntl } from '@umijs/max';
 import { Button, Modal, Space } from 'antd';
-import './index.less';
+import { createStyles } from 'antd-style';
+
+const useStyles = createStyles(({ token, css }) => ({
+  footer: css`
+    bottom: 0;
+    width: 100%;
+    background-color: transparent;
+    padding: 20px 0;
+    text-align: center;
+    font-size: var(--font-size-middle);
+    color: ${token.colorTextTertiary};
+  `,
+  'footer-content-left-text': {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+}));
 
 const Footer: React.FC = () => {
   const intl = useIntl();
+  const { styles } = useStyles();
 
   const showVersion = () => {
     Modal.info({
@@ -18,10 +36,10 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <div className="footer">
+    <div className={styles.footer}>
       <div className="footer-content">
         <div className="footer-content-left">
-          <div className="footer-content-left-text">
+          <div className={styles['footer-content-left-text']}>
             <Space size={4}>
               <span>&copy;</span>
               <span> {new Date().getFullYear()}</span>

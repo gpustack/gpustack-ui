@@ -154,7 +154,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         prompt: currentPrompt
       }
     });
-  }, [finalParameters, currentPrompt, parameters.size]);
+  }, [finalParameters, currentPrompt, isOpenaiCompatible]);
 
   const handleClear = () => {
     setCurrentPrompt('');

@@ -546,6 +546,9 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'models.form.source' }),
       dataIndex: 'source',
+      ellipsis: {
+        showTitle: false
+      },
       render: (text: string, record: ListItem) => {
         const modelInfo = getModelInfo(record);
         const { repo_id } = modelInfo;
@@ -561,6 +564,9 @@ const ModelFiles = () => {
     {
       title: 'Worker',
       dataIndex: 'worker_name',
+      ellipsis: {
+        showTitle: false
+      },
       render: (text: string, record: ListItem) => {
         return (
           <AutoTooltip ghost>
@@ -581,6 +587,9 @@ const ModelFiles = () => {
       title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
       dataIndex: 'resolved_paths',
       width: '35%',
+      ellipsis: {
+        showTitle: false
+      },
       render: (text: string, record: ListItem) => (
         <ResolvedPathColumn record={record} />
       )
@@ -588,10 +597,12 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'resources.modelfiles.size' }),
       dataIndex: 'size',
-      width: 100,
+      ellipsis: {
+        showTitle: false
+      },
       render: (text: string, record: ListItem) => {
         return (
-          <AutoTooltip ghost maxWidth={100}>
+          <AutoTooltip ghost>
             <span>{convertFileSize(record.size, 1, true)}</span>
           </AutoTooltip>
         );
@@ -601,9 +612,11 @@ const ModelFiles = () => {
       title: intl.formatMessage({ id: 'common.table.createTime' }),
       dataIndex: 'created_at',
       sorter: false,
-      width: 180,
+      ellipsis: {
+        showTitle: false
+      },
       render: (text: number) => (
-        <AutoTooltip ghost>
+        <AutoTooltip ghost minWidth={20}>
           {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
         </AutoTooltip>
       )

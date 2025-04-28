@@ -158,15 +158,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
 
     const params = {
-      ..._.omitBy(
-        parameters,
-        (value: string, key: string) =>
-          !value || ['width', 'height', 'seed'].includes(key)
-      ),
-      size:
-        parameters.size === 'custom'
-          ? `${parameters.width}x${parameters.height}`
-          : parameters.size,
+      ..._.omitBy(finalParameters, (value: string) => !value),
       seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
       stream: true,
       stream_options: {

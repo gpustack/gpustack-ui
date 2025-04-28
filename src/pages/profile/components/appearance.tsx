@@ -17,14 +17,18 @@ const ThemeOptions = [
   }
 ];
 const Appearance: React.FC = () => {
-  const { setTheme } = useUserSettings();
+  const { setTheme, userSettings } = useUserSettings();
   const intl = useIntl();
 
   const handleOnChange = (e: any) => {
     setTheme(e.target.value);
   };
   return (
-    <Radio.Group onChange={handleOnChange} style={{ marginTop: 16 }}>
+    <Radio.Group
+      onChange={handleOnChange}
+      style={{ marginTop: 16 }}
+      value={userSettings.theme}
+    >
       {ThemeOptions.map((item) => (
         <Radio key={item.key} value={item.key}>
           {intl.formatMessage({ id: item.label })}

@@ -132,6 +132,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
     return categories || null;
   };
+
   const handleSelectModelFile = (item: any, evaluate?: boolean) => {
     form.current?.form?.resetFields(resetFields);
     const modelInfo = onSelectModel(selectedModel, props.source);
@@ -142,7 +143,11 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    if (item.fakeName) {
+    if (
+      item.fakeName &&
+      !isHolderRef.current.model &&
+      !isHolderRef.current.file
+    ) {
       handleShowCompatibleAlert(item.evaluateResult);
     }
   };
@@ -153,7 +158,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       setIsGGUF(false);
       form.current?.form?.resetFields(resetFields);
       const modelInfo = onSelectModel(item, props.source);
-      handleShowCompatibleAlert(item.evaluateResult);
+      if (!isHolderRef.current.model) {
+        handleShowCompatibleAlert(item.evaluateResult);
+      }
       form.current?.setFieldsValue?.({
         ...getDefaultSpec(item),
         ...modelInfo,
@@ -256,7 +263,15 @@ const AddModal: FC<AddModalProps> = (props) => {
   const displayEvaluateStatus = (data: {
     show?: boolean;
     flag: Record<string, boolean>;
-  }) => {};
+  }) => {
+    setIsHolderRef(data.flag);
+    setWarningStatus({
+      show: isHolderRef.current.model || isHolderRef.current.file,
+      title: '',
+      type: 'transition',
+      message: intl.formatMessage({ id: 'models.form.evaluating' })
+    });
+  };
 
   useEffect(() => {
     if (open) {

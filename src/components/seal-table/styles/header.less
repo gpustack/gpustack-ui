@@ -1,10 +1,21 @@
 .table-header {
+  position: relative;
   min-height: 20px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding-inline: var(--ant-table-cell-padding-inline);
-  border-right: 1px solid var(--ant-table-header-split-color);
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0;
+    width: 1px;
+    height: 1.6em;
+    background-color: var(--ant-table-header-split-color);
+    transform: translateY(-50%);
+    content: '';
+  }
 
   &-last {
     border-right: none;

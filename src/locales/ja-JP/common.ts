@@ -238,7 +238,8 @@ export default {
   'common.appearance': 'Appearance',
   'common.appearance.dark': 'Dark',
   'common.appearance.light': 'Light',
-  'common.appearance.system': 'System Default'
+  'common.appearance.system': 'System Default',
+  'common.exception.404': 'Sorry, the page you visited does not exist.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -246,4 +247,5 @@ export default {
 // 2. 'common.appearance.light': 'Light',
 // 3. 'common.appearance.system': 'System Default',
 // 4. 'common.appearance': 'Appearance',
+// 5. 'common.exception.404': 'Sorry, the page you visited does not exist.'
 // ========== End of To-Do List ==========

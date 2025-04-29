@@ -99,6 +99,7 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
+  const [modal, contextHolder] = Modal.useModal();
   const { themeData, setTheme, userSettings, isDarkTheme } = useUserSettings();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const { initialize: initializeMenu } = useOverlayScroller();
@@ -132,7 +133,7 @@ export default (props: any) => {
 
   const showVersion = () => {
     saveScrollHeight();
-    Modal.info({
+    modal.info({
       ...modalConfig,
       width: 460,
       content: <VersionInfo intl={intl} />,
@@ -477,6 +478,7 @@ export default (props: any) => {
           )}
         </Exception>
       </ProLayout>
+      {contextHolder}
     </ConfigProvider>
   );
 };

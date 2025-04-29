@@ -14,6 +14,39 @@ const InputWrapper = styled.div`
       top: 9px;
     }
   }
+
+  // ============= input initial =============
+  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled):focus,
+  .ant-input-outlined.ant-input-status-error:not(
+      .ant-input-disabled
+    ):focus-within {
+    border: none;
+    box-shadow: none;
+  }
+
+  .ant-input-number-outlined.ant-input-number-status-error:not(
+      .ant-input-number-disabled
+    ) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .ant-input-number-outlined.ant-input-number-status-error:not(
+      .ant-input-number-disabled
+    ):focus,
+  .ant-input-number-outlined.ant-input-number-status-error:not(
+      .ant-input-disabled
+    ):focus-within {
+    border: none;
+    box-shadow: none;
+  }
+  // ============= input initial end =============
+
   .seal-input-wrapper-disabled {
     background-color: var(--ant-color-bg-container-disabled);
     cursor: not-allowed;

@@ -1,5 +1,5 @@
 import Bg2 from '@/assets/images/bg-2.png';
-import GridBg from '@/assets/images/grid_background_1920x1080.png';
+import GridBg from '@/assets/images/noise-bg.svg';
 import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
 import useUserSettings from '@/hooks/use-user-settings';
@@ -22,8 +22,10 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
   z-index: -1;
   background: ${({ $isDarkTheme }) =>
     $isDarkTheme
-      ? `url(${GridBg}) center center /cover no-repeat`
-      : `url(${Bg2}) center center /cover no-repeat`};
+      ? `url(${GridBg}) center center no-repeat`
+      : `url(${Bg2}) center center no-repeat`};
+  background-size: ${({ $isDarkTheme }) =>
+    $isDarkTheme ? '100% 100%' : 'cover'};
   opacity: ${({ $isDarkTheme }) => ($isDarkTheme ? 1 : 0.6)};
 `;
 
@@ -42,7 +44,7 @@ const FormWrapper = styled.div`
   height: max-content;
   padding: 32px;
   background-color: var(--color-modal-content-bg);
-
+  box-shadow: var(--ant-box-shadow-secondary);
   .field-wrapper {
     background-color: transparent !important;
   }
@@ -64,8 +66,8 @@ const Login = () => {
 
     checkDefaultPage(userInfo, true);
     if (!initialState?.currentUser) {
-      setInitialState((s: any) => ({
-        ...s,
+      setInitialState((preState: any) => ({
+        ...preState,
         currentUser: userInfo
       }));
     }

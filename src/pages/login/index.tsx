@@ -1,4 +1,5 @@
 import Bg2 from '@/assets/images/bg-2.png';
+import GridBg from '@/assets/images/grid_background_1920x1080.png';
 import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
 import useUserSettings from '@/hooks/use-user-settings';
@@ -21,7 +22,7 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
   z-index: -1;
   background: ${({ $isDarkTheme }) =>
     $isDarkTheme
-      ? `repeating-linear-gradient(45deg, #000, transparent 120px)`
+      ? `url(${GridBg}) center center /cover no-repeat`
       : `url(${Bg2}) center center /cover no-repeat`};
   opacity: ${({ $isDarkTheme }) => ($isDarkTheme ? 1 : 0.6)};
 `;

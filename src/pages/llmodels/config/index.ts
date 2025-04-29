@@ -489,7 +489,8 @@ export const updateExcludeFields = [
   'ollama_library_model_name',
   'scheduleType',
   'backend',
-  'gpu_selector'
+  'gpu_selector',
+  'categories'
 ];
 
 export const formFields = [

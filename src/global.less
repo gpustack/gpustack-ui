@@ -94,9 +94,13 @@ html[data-theme='realDark'] {
   --color-bg-tooltip: #424242;
   --color-editor-header-bg: #292929;
   --color-progress-text: rgba(255, 255, 255, 80%);
-  --color-modal-content-bg: #1f1f1f;
+  --color-modal-content-bg: #080808;
 
   background: #141414;
+
+  .ant-result-image {
+    opacity: 0.9;
+  }
 }
 
 body {
@@ -118,6 +122,10 @@ body {
 
   // table
   .ant-table-wrapper {
+    .ant-table {
+      background: transparent !important;
+    }
+
     .ant-table-selection-column {
       padding-inline-start: 16px !important;
     }
@@ -144,11 +152,21 @@ body {
       display: flex !important;
     }
 
-    tr > th {
-      border: none;
-      padding-block: 0;
-      height: 50px;
-      background-color: var(--ant-color-fill-tertiary);
+    .ant-table-thead {
+      tr {
+        background-color: var(--ant-color-fill-tertiary);
+
+        > th {
+          border: none;
+          padding-block: 0;
+          height: 50px;
+          background-color: transparent;
+
+          &::before {
+            transition: none !important;
+          }
+        }
+      }
     }
 
     tr > td {
@@ -157,46 +175,17 @@ body {
     }
   }
 
-  // input
-  // .ant-input-css-var.ant-input {
-  //   height: 40px;
-  // }
-
-  // .ant-input-outlined,
-  // .ant-input-affix-wrapper,
-  // .ant-picker {
-  //   height: 40px;
-  // }
-
-  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled) {
-    border: none;
-    box-shadow: none;
+  .ant-input-outlined,
+  .ant-input-number,
+  .ant-select-selector {
+    background: transparent !important;
   }
 
-  .ant-input-outlined.ant-input-status-error:not(.ant-input-disabled):focus,
-  .ant-input-outlined.ant-input-status-error:not(
-      .ant-input-disabled
-    ):focus-within {
-    border: none;
-    box-shadow: none;
-  }
-
-  // input number
-  .ant-input-number-outlined.ant-input-number-status-error:not(
-      .ant-input-number-disabled
-    ) {
-    border: none;
-    box-shadow: none;
-  }
-
-  .ant-input-number-outlined.ant-input-number-status-error:not(
-      .ant-input-number-disabled
-    ):focus,
-  .ant-input-number-outlined.ant-input-number-status-error:not(
-      .ant-input-disabled
-    ):focus-within {
-    border: none;
-    box-shadow: none;
+  // set for the non-form item
+  .ant-input-outlined,
+  .ant-input-affix-wrapper,
+  .ant-picker {
+    height: 40px;
   }
 
   // form item help
@@ -259,10 +248,6 @@ body {
     .ant-pro-sider .ant-layout-sider-children {
       background-color: var(--color-fill-sider);
     }
-  }
-
-  .ant-table-wrapper .ant-table {
-    background-color: unset;
   }
 
   .ant-table-content table {
@@ -732,7 +717,11 @@ body {
       }
 
       a {
-        color: var(--ant-color-link-hover);
+        color: var(--ant-blue);
+
+        &:hover {
+          color: var(--ant-blue-5);
+        }
       }
     }
   }

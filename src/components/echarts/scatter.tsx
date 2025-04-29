@@ -168,7 +168,7 @@ const Scatter: React.FC<ChartProps> = (props) => {
       tooltip: {
         trigger: 'item',
         borderWidth: 0,
-        backgroundColor: chartColorMap.colorBgBase,
+        backgroundColor: chartColorMap.splitLineColor,
         borderColor: 'transparent',
         formatter(params: any, callback?: (val: any) => any) {
           const dataList = findOverlappingPoints(seriseDataList, params.data);

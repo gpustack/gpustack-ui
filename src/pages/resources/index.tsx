@@ -12,6 +12,10 @@ const Wrapper = styled.div`
   .ant-page-header-heading {
     padding-inline: 8px;
   }
+  .ant-tabs-nav .ant-tabs-tab-active,
+  .ant-tabs-tab {
+    background: transparent;
+  }
 `;
 
 const Resources = () => {

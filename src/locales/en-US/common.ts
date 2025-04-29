@@ -238,5 +238,6 @@ export default {
   'common.appearance': 'Appearance',
   'common.appearance.dark': 'Dark',
   'common.appearance.light': 'Light',
-  'common.appearance.system': 'System Default'
+  'common.appearance.system': 'System Default',
+  'common.exception.404': 'Sorry, the page you visited does not exist.'
 };

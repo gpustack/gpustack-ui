@@ -42,7 +42,6 @@ const SliderWrapper = styled.div`
 
       .ant-input-number-input {
         text-align: center !important;
-        background-color: var(--color-white-1);
       }
     }
   }

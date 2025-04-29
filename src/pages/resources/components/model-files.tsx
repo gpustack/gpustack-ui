@@ -154,8 +154,10 @@ const getWorkerName = (
 };
 
 const getModelInfo = (record: ListItem) => {
+  const source = _.get(modelSourceMap, record.source, '');
   if (record.source === modelSourceMap.huggingface_value) {
     return {
+      source: `${source}/${record.huggingface_repo_id}`,
       repo_id: record.huggingface_repo_id,
       title: `${record.huggingface_repo_id}/${record.huggingface_filename}`,
       filename: record.huggingface_filename || record.huggingface_repo_id
@@ -163,6 +165,7 @@ const getModelInfo = (record: ListItem) => {
   }
   if (record.source === modelSourceMap.modelscope_value) {
     return {
+      source: `${source}/${record.model_scope_model_id}`,
       repo_id: record.model_scope_model_id,
       title: `${record.model_scope_model_id}/${record.model_scope_file_path}`,
       filename: record.model_scope_file_path || record.model_scope_model_id
@@ -170,12 +173,14 @@ const getModelInfo = (record: ListItem) => {
   }
   if (record.source === modelSourceMap.ollama_library_value) {
     return {
+      source: `${source}/${record.ollama_library_model_name}`,
       repo_id: record.ollama_library_model_name,
       title: record.ollama_library_model_name,
       filename: record.ollama_library_model_name
     };
   }
   return {
+    source: `${source}${record.local_path}`,
     repo_id: record.local_path,
     title: record.local_path,
     filename: _.split(record.local_path, /[\\/]/).pop()
@@ -551,11 +556,11 @@ const ModelFiles = () => {
       },
       render: (text: string, record: ListItem) => {
         const modelInfo = getModelInfo(record);
-        const { repo_id } = modelInfo;
+        const { repo_id, source } = modelInfo;
         return (
-          <TextWrapper>
-            <AutoTooltip ghost showTitle title={repo_id}>
-              {_.get(modelSourceMap, record.source, '')}
+          <TextWrapper style={{ paddingRight: 8 }}>
+            <AutoTooltip ghost title={source}>
+              {source}
             </AutoTooltip>
           </TextWrapper>
         );
@@ -586,7 +591,7 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
       dataIndex: 'resolved_paths',
-      width: '35%',
+      width: '30%',
       ellipsis: {
         showTitle: false
       },
@@ -597,6 +602,7 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'resources.modelfiles.size' }),
       dataIndex: 'size',
+      width: 100,
       ellipsis: {
         showTitle: false
       },
@@ -612,6 +618,7 @@ const ModelFiles = () => {
       title: intl.formatMessage({ id: 'common.table.createTime' }),
       dataIndex: 'created_at',
       sorter: false,
+      width: 180,
       ellipsis: {
         showTitle: false
       },

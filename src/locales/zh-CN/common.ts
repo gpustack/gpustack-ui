@@ -233,5 +233,6 @@ export default {
   'common.appearance': '外观',
   'common.appearance.dark': '深色',
   'common.appearance.light': '浅色',
-  'common.appearance.system': '跟随系统'
+  'common.appearance.system': '跟随系统',
+  'common.exception.404': '抱歉，你访问的页面不存在'
 };

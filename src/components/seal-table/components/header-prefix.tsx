@@ -13,6 +13,7 @@ interface HeaderPrefixProps {
   indeterminate?: boolean;
   selectAll?: boolean;
   hasColumns?: boolean;
+  disabled?: boolean;
 }
 
 const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
@@ -24,7 +25,8 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
     onExpandAll,
     indeterminate,
     selectAll,
-    expandAll
+    expandAll,
+    disabled
   } = props;
 
   const handleToggleExpand = () => {
@@ -68,6 +70,7 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
           onChange={onSelectAll}
           indeterminate={indeterminate}
           checked={selectAll}
+          disabled={disabled}
         ></Checkbox>
       </div>
     );
@@ -87,7 +90,9 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
   }
   if (enableSelection) {
     return (
-      <div className="header-row-prefix-wrapper">{<Checkbox></Checkbox>}</div>
+      <div className="header-row-prefix-wrapper">
+        {<Checkbox disabled={disabled}></Checkbox>}
+      </div>
     );
   }
   return null;

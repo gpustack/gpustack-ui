@@ -120,7 +120,7 @@ export default [
     name: '404',
     path: '*',
     key: '404',
-    layout: false,
+    hideInMenu: true,
     component: './404'
   }
 ];

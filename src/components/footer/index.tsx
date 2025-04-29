@@ -25,10 +25,11 @@ const useStyles = createStyles(({ token, css }) => ({
 
 const Footer: React.FC = () => {
   const intl = useIntl();
+  const [modal, contextHolder] = Modal.useModal();
   const { styles } = useStyles();
 
   const showVersion = () => {
-    Modal.info({
+    modal.info({
       ...modalConfig,
       width: 460,
       content: <VersionInfo intl={intl} />
@@ -36,32 +37,35 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <div className={styles.footer}>
-      <div className="footer-content">
-        <div className="footer-content-left">
-          <div className={styles['footer-content-left-text']}>
-            <Space size={4}>
-              <span>&copy;</span>
-              <span> {new Date().getFullYear()}</span>
-              <span> {intl.formatMessage({ id: 'settings.company' })}</span>
-            </Space>
-            <Space size={8} style={{ marginLeft: 18 }}>
-              <Button
-                type="link"
-                size="small"
-                href={externalLinks.documentation}
-                target="_blank"
-              >
-                {intl.formatMessage({ id: 'common.button.help' })}
-              </Button>
-              <Button type="link" size="small" onClick={showVersion}>
-                {getAtomStorage(GPUStackVersionAtom)?.version}
-              </Button>
-            </Space>
+    <>
+      {contextHolder}
+      <div className={styles.footer}>
+        <div className="footer-content">
+          <div className="footer-content-left">
+            <div className={styles['footer-content-left-text']}>
+              <Space size={4}>
+                <span>&copy;</span>
+                <span> {new Date().getFullYear()}</span>
+                <span> {intl.formatMessage({ id: 'settings.company' })}</span>
+              </Space>
+              <Space size={8} style={{ marginLeft: 18 }}>
+                <Button
+                  type="link"
+                  size="small"
+                  href={externalLinks.documentation}
+                  target="_blank"
+                >
+                  {intl.formatMessage({ id: 'common.button.help' })}
+                </Button>
+                <Button type="link" size="small" onClick={showVersion}>
+                  {getAtomStorage(GPUStackVersionAtom)?.version}
+                </Button>
+              </Space>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

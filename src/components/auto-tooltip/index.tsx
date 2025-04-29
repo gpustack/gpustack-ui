@@ -96,7 +96,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
         ...tooltipProps,
         destroyTooltipOnHide: false
       }}
-      title={isOverflowing || showTitle ? children : false}
+      title={isOverflowing || showTitle ? title || children : false}
     >
       {ghost ? (
         <div ref={contentRef} style={tagStyle} data-overflow={isOverflowing}>

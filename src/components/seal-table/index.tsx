@@ -14,7 +14,8 @@ const Wrapper = styled.div<{ $token: any }>`
   --ant-table-cell-padding-block: ${(props) => props.$token.cellPaddingBlock}px;
   --ant-table-header-border-radius: ${(props) =>
     props.$token.headerBorderRadius}px;
-  --ant-table-header-split-color: ${(props) => props.$token.headerSplitColor};
+  --ant-table-header-split-color: ${(props) =>
+    props.$token.colorBorderSecondary};
   --ant-table-row-selected-bg: ${(props) => props.$token.rowSelectedBg};
   --ant-table-row-selected-hover-bg: ${(props) =>
     props.$token.rowSelectedHoverBg};
@@ -47,7 +48,6 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     loadChildrenAPI
   } = props;
   const { token } = theme.useToken();
-  console.log('seal-table-props', token.Table);
   const parsedColumns = useMemo(() => {
     if (columns) return columns;
 
@@ -137,7 +137,12 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
   };
 
   return (
-    <Wrapper $token={token.Table}>
+    <Wrapper
+      $token={{
+        ...token.Table,
+        colorBorderSecondary: token.colorBorderSecondary
+      }}
+    >
       <div className="seal-table-container">
         <div className="header-row-wrapper">
           <HeaderPrefix
@@ -148,6 +153,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
             expandAll={expandAll}
             expandable={expandable}
             enableSelection={rowSelection?.enableSelection}
+            disabled={!props.dataSource?.length}
             hasColumns={parsedColumns.length > 0}
           ></HeaderPrefix>
           <Header onSort={onSort} columns={parsedColumns}></Header>

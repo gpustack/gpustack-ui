@@ -31,13 +31,16 @@ export default function useChartConfig() {
   const { useToken } = theme;
   const { token } = useToken();
 
+  console.log('token:', token);
+
   const chartColorMap = useMemo(() => {
     return {
       titleColor: token.colorText,
       splitLineColor: token.colorBorder,
       tickLineColor: token.colorSplit,
       axislabelColor: token.colorTextTertiary,
-      gaugeSplitLineColor: isDarkTheme ? '#b8b8b8' : 'rgba(255, 255, 255, 1)',
+      gaugeBgColor: token.colorFillSecondary,
+      gaugeSplitLineColor: isDarkTheme ? '#ccc' : 'rgba(255, 255, 255, 1)',
       colorBgContainerHover: isDarkTheme ? '#424242' : '#fff'
     };
   }, [userSettings.theme, isDarkTheme]);

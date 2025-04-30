@@ -7,7 +7,11 @@ import { ChartProps } from './types';
 const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
   props
 ) => {
-  const { gaugeItemConfig, title: titleConfig } = useChartConfig();
+  const {
+    gaugeItemConfig,
+    title: titleConfig,
+    chartColorMap
+  } = useChartConfig();
   const { value, height, width, labelFormatter, title, color } = props;
   if (!value && value !== 0) {
     return <EmptyData height={height} title={title}></EmptyData>;
@@ -30,7 +34,7 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
               ...gaugeItemConfig.axisLine.lineStyle,
               color: [
                 [value / 100, color],
-                [1, 'rgba(221, 221, 221, 0.5)']
+                [1, chartColorMap.gaugeBgColor]
               ]
             }
           },

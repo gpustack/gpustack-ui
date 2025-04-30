@@ -141,7 +141,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   const createChunkConnection = async () => {
     chunkRequedtRef.current?.current?.abort?.();
-
+    setLoading(true);
     chunkRequedtRef.current = setChunkFetch({
       url,
       params: {

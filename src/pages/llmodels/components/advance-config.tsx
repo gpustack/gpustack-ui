@@ -171,8 +171,8 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
-  const handleSelectorOnBlur = () => {
-    const workerSelector = form.getFieldValue('worker_selector');
+  const onSelectorChange = (field: string) => {
+    const workerSelector = form.getFieldValue(field);
     // check if all keys have values
     const hasEmptyValue = _.some(_.keys(workerSelector), (k: string) => {
       return !workerSelector[k];
@@ -182,12 +182,23 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     }
   };
 
+  const handleSelectorOnBlur = () => {
+    onSelectorChange('worker_selector');
+  };
+
   const handleDeleteWorkerSelector = (index: number) => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
+  const handleEnvSelectorOnBlur = () => {
+    onSelectorChange('env');
+  };
+
+  const handleDeleteEnvSelector = (index: number) => {
+    onValuesChange?.({}, form.getFieldsValue());
+  };
+
   const handleBackendVersionOnBlur = () => {
-    const backendVersion = form.getFieldValue('backend_version');
     onValuesChange?.({}, form.getFieldsValue());
   };
 
@@ -450,6 +461,8 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             })}
             labels={EnviromentVars}
             btnText="common.button.vars"
+            onBlur={handleEnvSelectorOnBlur}
+            onDelete={handleDeleteEnvSelector}
             onChange={handleEnviromentVarsChange}
           ></LabelSelector>
         </Form.Item>

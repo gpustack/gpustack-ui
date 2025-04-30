@@ -477,6 +477,7 @@ export const excludeFields = [
   'gpu_selector'
 ];
 
+// if some fields need to trigger manual check, add them here
 export const updateExcludeFields = [
   'repo_id',
   'file_name',
@@ -487,10 +488,11 @@ export const updateExcludeFields = [
   'local_path',
   'backend_version',
   'ollama_library_model_name',
-  'scheduleType',
   'backend',
   'gpu_selector',
-  'categories'
+  'categories',
+  'env',
+  'replicas'
 ];
 
 export const formFields = [

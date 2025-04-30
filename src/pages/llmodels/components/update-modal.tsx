@@ -90,6 +90,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const handleOnValuesChange = (data: any) => {
     const formdata = form.getFieldsValue?.();
+
     let alldata = {};
     if (formdata.scheduleType === 'manual') {
       alldata = {
@@ -104,10 +105,16 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       alldata = {
         ..._.omit(formdata, ['gpu_selector']),
         env: formdata.env || {},
-        worker_selector: originFormData.current?.worker_selector || null
+        worker_selector:
+          formdata.worker_selector ||
+          originFormData.current?.worker_selector ||
+          null
       };
     }
-    const isEqual = _.isEqualWith(alldata, originFormData.current, customizer);
+
+    const originalData = _.pick(originFormData.current, Object.keys(alldata));
+
+    const isEqual = _.isEqualWith(alldata, originalData, customizer);
     if (isEqual) {
       setWarningStatus({
         show: false,

@@ -43,6 +43,34 @@ interface AdvanceConfigProps {
   source: string;
 }
 
+const placementStrategyTips = [
+  {
+    title: 'Spread',
+    tips: 'resources.form.spread.tips'
+  },
+  {
+    title: 'Binpack',
+    tips: 'resources.form.binpack.tips'
+  }
+];
+
+const scheduleTypeTips = [
+  {
+    title: {
+      text: 'models.form.scheduletype.auto',
+      locale: true
+    },
+    tips: 'models.form.scheduletype.auto.tips'
+  },
+  {
+    title: {
+      text: 'models.form.scheduletype.manual',
+      locale: true
+    },
+    tips: 'models.form.scheduletype.manual.tips'
+  }
+];
+
 const CheckboxField: React.FC<{
   title: string;
   label: string;
@@ -77,40 +105,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
   const worker_selector = Form.useWatch('worker_selector', form);
   const { onValuesChange } = useFormContext();
-
-  const placementStrategyTips = [
-    {
-      title: 'Spread',
-      tips: intl.formatMessage({
-        id: 'resources.form.spread.tips'
-      })
-    },
-    {
-      title: 'Binpack',
-      tips: intl.formatMessage({
-        id: 'resources.form.binpack.tips'
-      })
-    }
-  ];
-
-  const scheduleTypeTips = [
-    {
-      title: intl.formatMessage({
-        id: 'models.form.scheduletype.auto'
-      }),
-      tips: intl.formatMessage({
-        id: 'models.form.scheduletype.auto.tips'
-      })
-    },
-    {
-      title: intl.formatMessage({
-        id: 'models.form.scheduletype.manual'
-      }),
-      tips: intl.formatMessage({
-        id: 'models.form.scheduletype.manual.tips'
-      })
-    }
-  ];
 
   const paramsConfig = useMemo(() => {
     if (backend === backendOptionsMap.llamaBox) {

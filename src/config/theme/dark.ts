@@ -79,11 +79,6 @@ export default {
     fontSize: 14,
     motion: true,
     colorFill: '#000',
-    // colorFillTertiary: '#1D1E20',
-    // colorBgContainer: '#141414',
     colorBgBase: '#000'
-    // colorBorder: '#353535'
-    // colorSplit: '#262626',
-    // colorBorderSecondary: '#262626'
   }
 };

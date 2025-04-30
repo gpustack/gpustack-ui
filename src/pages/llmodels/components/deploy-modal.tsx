@@ -154,7 +154,6 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const handleOnSelectModel = (item: any, evaluate?: boolean) => {
     setSelectedModel(item);
-    console.log('item.isGGUF=========>', item.isGGUF);
     if (!item.isGGUF) {
       setIsGGUF(false);
       form.current?.form?.resetFields(resetFields);

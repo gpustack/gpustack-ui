@@ -1,8 +1,29 @@
 import useUserSettings from '@/hooks/use-user-settings';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Radio } from 'antd';
-import React from 'react';
+import { Switch } from 'antd';
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+  .theme {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 220px;
+  }
+  .theme-label {
+    font-size: 16px;
+    font-weight: var(--font-weight-500);
+  }
+  .tips {
+    color: var(--ant-color-text-secondary);
+  }
+`;
 
 const ThemeOptions = [
   {
@@ -18,23 +39,34 @@ const ThemeOptions = [
 ];
 const Appearance: React.FC = () => {
   const { setTheme, userSettings } = useUserSettings();
+
   const intl = useIntl();
 
-  const handleOnChange = (e: any) => {
-    setTheme(e.target.value);
+  const handleOnChange = (checked: boolean) => {
+    if (checked) {
+      setTheme('realDark');
+    } else {
+      setTheme('light');
+    }
   };
+
+  const isDarkMode = useMemo(() => {
+    const darkMode = userSettings?.theme === 'realDark';
+    return darkMode;
+  }, [userSettings?.theme]);
+
   return (
-    <Radio.Group
-      onChange={handleOnChange}
-      style={{ marginTop: 16 }}
-      value={userSettings.theme}
-    >
-      {ThemeOptions.map((item) => (
-        <Radio key={item.key} value={item.key}>
-          {intl.formatMessage({ id: item.label })}
-        </Radio>
-      ))}
-    </Radio.Group>
+    <Wrapper>
+      <div className="theme">
+        <span className="theme-label">
+          {intl.formatMessage({ id: 'common.appearance.darkmode' })}
+        </span>
+        <Switch checked={isDarkMode} onChange={handleOnChange} />
+      </div>
+      <div className="tips">
+        {intl.formatMessage({ id: 'common.appearance.tips' })}
+      </div>
+    </Wrapper>
   );
 };
 

@@ -193,7 +193,6 @@ const Wrapper: FC<WrapperProps> = ({
   onClick
 }) => {
   const { token } = theme.useToken();
-  console.log('token=====', token);
   const wrapperClass = classNames(
     status ? `validate-status-${status}` : '',
     className,

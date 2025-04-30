@@ -17,5 +17,6 @@ export default {
   'menu.users': '用户',
   'menu.profile': '个人信息',
   'menu.login': '登录',
-  'menu.usage': '使用量'
+  'menu.usage': '使用量',
+  'menu.404': '404'
 };

@@ -239,7 +239,10 @@ export default {
   'common.appearance.dark': 'Dark',
   'common.appearance.light': 'Light',
   'common.appearance.system': 'System Default',
-  'common.exception.404': 'Sorry, the page you visited does not exist.'
+  'common.exception.404': 'Sorry, the page you visited does not exist.',
+  'common.appearance.darkmode': 'Dark Mode',
+  'common.appearance.lightmode': 'Light Mode',
+  'common.appearance.tips': 'Default follows system preference.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -247,5 +250,8 @@ export default {
 // 2. 'common.appearance.light': 'Light',
 // 3. 'common.appearance.system': 'System Default',
 // 4. 'common.appearance': 'Appearance',
-// 5. 'common.exception.404': 'Sorry, the page you visited does not exist.'
+// 5. 'common.exception.404': 'Sorry, the page you visited does not exist.',
+// 6. 'common.appearance.darkmode': 'Dark Mode',
+// 7. 'common.appearance.lightmode': 'Light Mode',
+// 8. 'common.appearance.tips': 'Default follows system preference.'
 // ========== End of To-Do List ==========

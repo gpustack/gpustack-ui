@@ -17,5 +17,6 @@ export default {
   'menu.users': 'Users',
   'menu.profile': 'Profile',
   'menu.login': 'Login',
-  'menu.usage': 'Usage'
+  'menu.usage': 'Usage',
+  'menu.404': '404'
 };

@@ -13,7 +13,7 @@ import Wrapper from './wrapper';
 import InputWrapper from './wrapper/input';
 
 const LabelWrapper = styled.div`
-  background-color: var(--color-white-1);
+  background-color: var(--ant-color-bg-container);
 `;
 
 interface InputTextareaProps extends TextAreaProps {

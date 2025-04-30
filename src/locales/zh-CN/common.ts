@@ -234,5 +234,8 @@ export default {
   'common.appearance.dark': '深色',
   'common.appearance.light': '浅色',
   'common.appearance.system': '跟随系统',
-  'common.exception.404': '抱歉，你访问的页面不存在'
+  'common.exception.404': '抱歉，你访问的页面不存在',
+  'common.appearance.darkmode': '深色模式',
+  'common.appearance.lightmode': '浅色模式',
+  'common.appearance.tips': '默认跟随系统设置'
 };

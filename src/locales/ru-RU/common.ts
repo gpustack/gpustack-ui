@@ -237,9 +237,15 @@ export default {
   'common.appearance.dark': 'Темная',
   'common.appearance.light': 'Светлая',
   'common.appearance.system': 'Как в системе',
-  'common.exception.404': 'Sorry, the page you visited does not exist.'
+  'common.exception.404': 'Sorry, the page you visited does not exist.',
+  'common.appearance.darkmode': 'Dark Mode',
+  'common.appearance.lightmode': 'Light Mode',
+  'common.appearance.tips': 'Default follows system preference.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.exception.404': 'Sorry, the page you visited does not exist.'
+// 1. 'common.exception.404': 'Sorry, the page you visited does not exist.',
+// 2. 'common.appearance.darkmode': 'Dark Mode',
+// 3. 'common.appearance.lightmode': 'Light Mode',
+// 4. 'common.appearance.tips': 'Default follows system preference.'
 // ========== End of To-Do List ==========

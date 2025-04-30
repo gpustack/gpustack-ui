@@ -81,6 +81,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   };
 
+  const customizer = (val1: any, val2: any) => {
+    if ((val1 === null && val2 === '') || (val1 === '' && val2 === null)) {
+      return true;
+    }
+    return undefined;
+  };
+
   const handleOnValuesChange = (data: any) => {
     const formdata = form.getFieldsValue?.();
     let alldata = {};
@@ -100,7 +107,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         worker_selector: originFormData.current?.worker_selector || null
       };
     }
-    const isEqual = _.isEqual(alldata, originFormData.current);
+    const isEqual = _.isEqualWith(alldata, originFormData.current, customizer);
     if (isEqual) {
       setWarningStatus({
         show: false,

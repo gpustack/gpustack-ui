@@ -239,5 +239,8 @@ export default {
   'common.appearance.dark': 'Dark',
   'common.appearance.light': 'Light',
   'common.appearance.system': 'System Default',
-  'common.exception.404': 'Sorry, the page you visited does not exist.'
+  'common.exception.404': 'Sorry, the page you visited does not exist.',
+  'common.appearance.darkmode': 'Dark Mode',
+  'common.appearance.lightmode': 'Light Mode',
+  'common.appearance.tips': 'Default follows system preference.'
 };

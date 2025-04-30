@@ -74,15 +74,17 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const setOriginalFormData = () => {
     if (!originFormData.current) {
-      clearTimeout(timer0.current);
-      timer0.current = setTimeout(() => {
-        originFormData.current = form.getFieldsValue?.();
-      }, 200);
+      originFormData.current = _.cloneDeep(formData);
     }
   };
 
   const customizer = (val1: any, val2: any) => {
-    if ((val1 === null && val2 === '') || (val1 === '' && val2 === null)) {
+    if (
+      (val1 === null && val2 === '') ||
+      (val1 === '' && val2 === null) ||
+      (_.isEmpty(val1) && val2 === null) ||
+      (_.isEmpty(val2) && val1 === null)
+    ) {
       return true;
     }
     return undefined;
@@ -95,7 +97,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     if (formdata.scheduleType === 'manual') {
       alldata = {
         ..._.omit(formdata, ['worker_selector']),
-        env: formdata.env || {},
+        env: formdata.env || originFormData.current?.env || null,
         gpu_selector:
           formdata.gpu_selector?.gpu_ids?.length > 0
             ? originFormData.current?.gpu_selector
@@ -104,7 +106,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     } else {
       alldata = {
         ..._.omit(formdata, ['gpu_selector']),
-        env: formdata.env || {},
+        env: formdata.env || originFormData.current?.env || null,
         worker_selector:
           formdata.worker_selector ||
           originFormData.current?.worker_selector ||
@@ -171,6 +173,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         source: data.source
       });
     }
+  };
+
+  const handleAsyncBackendChange = (backend: string) => {
+    setTimeout(() => {
+      handleBackendChange(backend);
+    }, 100);
   };
 
   const handleOnFocus = () => {
@@ -573,7 +581,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             <Form.Item name="backend" rules={[{ required: true }]}>
               <SealSelect
                 required
-                onChange={handleBackendChange}
+                onChange={handleAsyncBackendChange}
                 label={intl.formatMessage({ id: 'models.form.backend' })}
                 description={<TooltipList list={backendTipsList}></TooltipList>}
                 options={[

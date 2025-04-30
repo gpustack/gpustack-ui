@@ -20,10 +20,25 @@ interface RequestConfig {
   contentType?: 'json' | 'text';
 }
 
+async function parseErrorResponse(response: Response) {
+  try {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      const text = await response.text();
+      return { message: text || 'Unknown error' };
+    }
+  } catch (e) {
+    return { message: 'Failed to parse error response' };
+  }
+}
+
 const useSetChunkFetch = () => {
   const axiosToken = useRef<any>(null);
   const requestConfig = useRef<any>({});
   const chunkDataRef = useRef<any>([]);
+
   const readTextEventStreamData = async (
     response: Response,
     callback: HandlerFunction,
@@ -103,7 +118,7 @@ const useSetChunkFetch = () => {
         bufferManager.add(chunk);
         throttledCallback();
       } catch (error) {
-        console.log('error============:', error);
+        // handle error
       }
     }
   };
@@ -134,7 +149,7 @@ const useSetChunkFetch = () => {
       );
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await parseErrorResponse(response);
         if (errorHandler) {
           errorHandler(error);
         } else {
@@ -144,8 +159,6 @@ const useSetChunkFetch = () => {
       }
 
       await readTextEventStreamData(response, handler);
-
-      console.log('chunkDataRef.current===1', chunkDataRef.current);
     } catch (error) {
       // handle error: catched in request interceptor
     }

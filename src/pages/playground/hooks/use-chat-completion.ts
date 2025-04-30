@@ -3,7 +3,11 @@ import { fetchChunkedData, readStreamData } from '@/utils/fetch-chunk-data';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import { CHAT_API } from '../apis';
-import { Roles, extractErrorMessage, generateMessages } from '../config';
+import {
+  Roles,
+  extractErrorMessage,
+  generateMessagesByListContent
+} from '../config';
 import { MessageItem } from '../config/types';
 
 export default function useChatCompletion(
@@ -136,7 +140,7 @@ export default function useChatCompletion(
         ...currentMessageRef.current
       ];
 
-      const messages = generateMessages(messageParams);
+      const messages = generateMessagesByListContent(messageParams);
 
       const chatParams = {
         messages: messages,

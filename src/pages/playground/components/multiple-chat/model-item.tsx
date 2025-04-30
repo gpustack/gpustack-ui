@@ -22,7 +22,11 @@ import React, {
   useState
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { OpenAIViewCode, Roles, generateMessages } from '../../config';
+import {
+  OpenAIViewCode,
+  Roles,
+  generateMessagesByListContent
+} from '../../config';
 import CompareContext from '../../config/compare-context';
 import { ChatParamsConfig } from '../../config/params-config';
 import { MessageItem, ModelSelectionItem } from '../../config/types';
@@ -89,10 +93,11 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
   } = useChatCompletion(scroller);
 
   const viewCodeMessage = useMemo(() => {
-    return generateMessages([
-      { role: Roles.System, content: systemMessage },
-      ...messageList
-    ]);
+    const resultList = systemMessage
+      ? [{ role: Roles.System, content: systemMessage }]
+      : [];
+    const list = generateMessagesByListContent([...messageList]);
+    return [...resultList, ...list];
   }, [messageList, systemMessage]);
 
   const abortFetch = () => {

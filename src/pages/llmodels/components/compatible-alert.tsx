@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { Button } from 'antd';
 import { isArray } from 'lodash';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 interface CompatibilityAlertProps {
@@ -49,10 +49,26 @@ const MessageWrapper = styled.div`
   font-size: var(--font-size-small);
   gap: 4px;
 `;
+const linkReg = /<a (.*?)>(.*?)<\/a>/g;
+const replaceReg = /<a(?![^>]*\btarget=)([^>]*)>/gi;
 
 const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
   const { warningStatus, contentStyle, showClose, onClose } = props;
   const { title, show, message, isHtml, type = 'warning' } = warningStatus;
+
+  const handleLinkMessage = useCallback((msg: string) => {
+    const link = msg?.match(linkReg);
+    if (link) {
+      return (
+        <span
+          dangerouslySetInnerHTML={{
+            __html: msg.replace(replaceReg, '<a target="_blank" $1>')
+          }}
+        ></span>
+      );
+    }
+    return msg || null;
+  }, []);
 
   const renderMessage = useMemo(() => {
     if (!message || !show) {
@@ -68,19 +84,19 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
       );
     }
     if (typeof message === 'string') {
-      return message;
+      return handleLinkMessage(message);
     }
     if (isArray(message)) {
       return (
         <MessageWrapper>
           {message.map((item, index) => (
-            <div key={index}>{item}</div>
+            <div key={index}>{handleLinkMessage(item)}</div>
           ))}
         </MessageWrapper>
       );
     }
     return '';
-  }, [message, show]);
+  }, [message, show, handleLinkMessage]);
 
   const renderIcon = useMemo(() => {
     if (type === 'transition') {

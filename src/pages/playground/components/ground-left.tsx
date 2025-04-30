@@ -9,7 +9,11 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { OpenAIViewCode, Roles, generateMessages } from '../config';
+import {
+  OpenAIViewCode,
+  Roles,
+  generateMessagesByListContent
+} from '../config';
 import { ChatParamsConfig } from '../config/params-config';
 import { MessageItem, MessageItemAction } from '../config/types';
 import { LLM_METAKEYS, llmInitialValues } from '../hooks/config';
@@ -86,10 +90,11 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   });
 
   const viewCodeMessage = useMemo(() => {
-    return generateMessages([
-      { role: Roles.System, content: systemMessage },
-      ...messageList
-    ]);
+    const resultList = systemMessage
+      ? [{ role: Roles.System, content: systemMessage }]
+      : [];
+    const list = generateMessagesByListContent([...messageList]);
+    return [...resultList, ...list];
   }, [messageList, systemMessage]);
 
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {

@@ -603,6 +603,7 @@ const ModelFiles = () => {
       title: intl.formatMessage({ id: 'resources.modelfiles.size' }),
       dataIndex: 'size',
       width: 100,
+      align: 'right',
       ellipsis: {
         showTitle: false
       },

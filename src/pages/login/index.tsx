@@ -1,5 +1,4 @@
 import Bg2 from '@/assets/images/bg-2.png';
-import NoiseBg from '@/assets/images/noise_texture.png';
 import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
 import useUserSettings from '@/hooks/use-user-settings';
@@ -22,12 +21,11 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
   z-index: -1;
   background: ${({ $isDarkTheme }) =>
     $isDarkTheme
-      ? `radial-gradient(#404040 0%, #292929 40%, #141414 100%),url(${NoiseBg}) center center repeat`
+      ? `radial-gradient(at 50% 20%, #383838 0%, #292929 40%, #000 100%)`
       : `url(${Bg2}) center center no-repeat`};
   background-size: ${({ $isDarkTheme }) =>
     $isDarkTheme ? 'contain' : 'cover'};
   opacity: ${({ $isDarkTheme }) => ($isDarkTheme ? 1 : 0.6)};
-  background-blend-mode: color-burn;
 `;
 
 const Box = styled.div`

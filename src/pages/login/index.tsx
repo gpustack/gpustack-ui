@@ -1,5 +1,5 @@
 import Bg2 from '@/assets/images/bg-2.png';
-import GridBg from '@/assets/images/noise-bg.svg';
+import NoiseBg from '@/assets/images/noise_texture.png';
 import { userAtom } from '@/atoms/user';
 import Footer from '@/components/footer';
 import useUserSettings from '@/hooks/use-user-settings';
@@ -22,11 +22,12 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
   z-index: -1;
   background: ${({ $isDarkTheme }) =>
     $isDarkTheme
-      ? `url(${GridBg}) center center no-repeat`
+      ? `radial-gradient(#404040 0%, #292929 40%, #141414 100%),url(${NoiseBg}) center center repeat`
       : `url(${Bg2}) center center no-repeat`};
   background-size: ${({ $isDarkTheme }) =>
-    $isDarkTheme ? '100% 100%' : 'cover'};
+    $isDarkTheme ? 'contain' : 'cover'};
   opacity: ${({ $isDarkTheme }) => ($isDarkTheme ? 1 : 0.6)};
+  background-blend-mode: color-burn;
 `;
 
 const Box = styled.div`
@@ -38,13 +39,14 @@ const Box = styled.div`
 `;
 
 const FormWrapper = styled.div`
+  position: relative;
   margin: 0 auto;
   border-radius: var(--border-radius-modal);
   width: max-content;
   height: max-content;
-  padding: 32px;
+  padding: 40px;
   background-color: var(--color-modal-content-bg);
-  box-shadow: var(--ant-box-shadow-secondary);
+
   .field-wrapper {
     background-color: transparent !important;
   }

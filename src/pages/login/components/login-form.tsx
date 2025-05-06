@@ -198,7 +198,7 @@ const LoginForm = () => {
             />
           </Form.Item>
           <Form.Item noStyle name="autoLogin" valuePropName="checked">
-            <Checkbox style={{ marginLeft: 5, marginBottom: 16 }}>
+            <Checkbox style={{ marginLeft: 5, marginBottom: 20 }}>
               <span style={{ color: 'var(--ant-color-text-secondary)' }}>
                 {' '}
                 {intl.formatMessage({ id: 'common.login.rember' })}

@@ -163,7 +163,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   }, []);
 
   const handleBackendParametersOnBlur = () => {
-    const backendParams = form.getFieldValue('backend_parameters');
     onValuesChange?.({}, form.getFieldsValue());
   };
 

@@ -40,7 +40,7 @@ export default function useChartConfig() {
       tickLineColor: token.colorSplit,
       axislabelColor: token.colorTextTertiary,
       gaugeBgColor: token.colorFillSecondary,
-      gaugeSplitLineColor: isDarkTheme ? '#ccc' : 'rgba(255, 255, 255, 1)',
+      gaugeSplitLineColor: isDarkTheme ? '#999' : 'rgba(255, 255, 255, 1)',
       colorBgContainerHover: isDarkTheme ? '#424242' : '#fff'
     };
   }, [userSettings.theme, isDarkTheme]);

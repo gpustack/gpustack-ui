@@ -477,6 +477,9 @@ export const excludeFields = [
   'gpu_selector'
 ];
 
+// ingore fields when compare old and new data
+export const updateIgnoreFields = ['categories', 'replicas', 'description'];
+
 // if some fields need to trigger manual check, add them here
 export const updateExcludeFields = [
   'repo_id',

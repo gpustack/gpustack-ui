@@ -6,6 +6,8 @@ import { RcFile } from 'antd/es/upload';
 import { debounce, round } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 
+const acceptImageType = ['image/png', 'image/jpg', 'image/jpeg'];
+
 interface UploadImgProps {
   size?: 'small' | 'middle' | 'large';
   height?: number;
@@ -34,7 +36,7 @@ const UploadImg: React.FC<UploadImgProps> = ({
   children,
   icon,
   title,
-  accept = 'image/*',
+  accept = acceptImageType.join(','),
   size = 'small'
 }) => {
   const intl = useIntl();

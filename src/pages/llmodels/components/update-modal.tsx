@@ -20,7 +20,8 @@ import {
   localPathTipsList,
   modelSourceMap,
   ollamaModelOptions,
-  sourceOptions
+  sourceOptions,
+  updateIgnoreFields
 } from '../config';
 import { FormContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
@@ -115,8 +116,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
 
     const originalData = _.pick(originFormData.current, Object.keys(alldata));
+    console.log('alldata:', alldata, originalData);
 
-    const isEqual = _.isEqualWith(alldata, originalData, customizer);
+    const isEqual = _.isEqualWith(
+      _.omit(alldata, updateIgnoreFields),
+      _.omit(originalData, updateIgnoreFields),
+      customizer
+    );
     if (isEqual) {
       setWarningStatus({
         show: false,

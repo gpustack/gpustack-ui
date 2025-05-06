@@ -108,15 +108,20 @@ export const useGenerateFormEditInitialValues = () => {
     if (gpu_ids.length === 0) {
       return [];
     }
-    const gpuids: string[][] = [];
 
+    const valueMap = new Map<string, string>();
     gpuOptions?.forEach((item) => {
       item.children?.forEach((child: any) => {
-        if (gpu_ids.includes(child.value)) {
-          gpuids.push([item.value, child.value]);
-        }
+        valueMap.set(child.value, item.value);
       });
     });
+
+    const gpuids: string[][] = gpu_ids
+      .map((id: string) => {
+        const parent = valueMap.get(id);
+        return parent ? [parent, id] : null;
+      })
+      .filter(Boolean) as string[][];
 
     return data.backend === backendOptionsMap.voxBox ? gpuids[0] : gpuids;
   };

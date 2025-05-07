@@ -407,10 +407,13 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         key: 'json',
         label: 'JSON',
         children: (
-          <div style={{ padding: 10, backgroundColor: '#fafafa' }}>
+          <div
+            style={{
+              backgroundColor: 'var(--ant-color-bg-container)'
+            }}
+          >
             <HighlightCode
-              height={outputHeight - 20}
-              theme="light"
+              height={outputHeight - 32}
               code={embeddingData.code}
               copyValue={embeddingData.copyValue}
               lang="json"
@@ -671,9 +674,10 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 style={{
                   border: '1px solid var(--ant-color-border)',
                   borderRadius: 'var(--border-radius-base)',
-                  width: '100%'
+                  width: '100%',
+                  overflow: 'hidden'
                 }}
-                className="scatter "
+                className="scatter"
               >
                 <Tabs
                   defaultActiveKey={outputType}

@@ -3,9 +3,22 @@ import { Col, FloatButton, Row, Spin } from 'antd';
 import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
+import styled from 'styled-components';
 import { CatalogItem as CatalogItemType } from '../config/types';
 import CatalogItem from './catalog-item';
 import CatalogSkelton from './catalog-skelton';
+
+const SpinWrapper = styled.div`
+  width: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  height: 400px;
+  right: 0;
+`;
 
 interface CatalogListProps {
   dataList: any[];
@@ -23,19 +36,7 @@ const ListSkeleton: React.FC<{
   return (
     <div>
       {loading && (
-        <div
-          style={{
-            width: '100%',
-            position: 'absolute',
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            top: 0,
-            left: 0,
-            height: 400,
-            right: 0
-          }}
-        >
+        <SpinWrapper>
           <Spin
             spinning={loading}
             style={{
@@ -45,7 +46,7 @@ const ListSkeleton: React.FC<{
           >
             {isFirst && <CatalogSkelton span={span}></CatalogSkelton>}
           </Spin>
-        </div>
+        </SpinWrapper>
       )}
     </div>
   );

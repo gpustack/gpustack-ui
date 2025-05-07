@@ -10,11 +10,17 @@ import { Button, Input, Pagination, Select, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { createModel, queryCatalogList } from './apis';
 import CatalogList from './components/catalog-list';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
+
+const PageWrapper = styled.div`
+  display: none;
+  margin-block: 32px 16px;
+`;
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
@@ -26,14 +32,16 @@ const Catalog: React.FC = () => {
     dataList: CatalogItemType[];
     loading: boolean;
     total: number;
+    totalPage: number;
   }>({
     dataList: [],
     loading: false,
-    total: 0
+    total: 0,
+    totalPage: 0
   });
   const [queryParams, setQueryParams] = useState({
     page: 1,
-    perPage: 100,
+    perPage: 12,
     search: '',
     categories: ''
   });
@@ -71,39 +79,62 @@ const Catalog: React.FC = () => {
     [cacheData.current]
   );
 
-  const fetchData = useCallback(async () => {
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
-    try {
-      const params = {
-        ..._.pick(queryParams, ['page', 'perPage'])
+  const fetchData = useCallback(
+    async (query?: any) => {
+      const searchQuery = {
+        ...queryParams,
+        ...query
       };
-      const res: any = await queryCatalogList(params);
+      if (
+        dataSource.loading ||
+        (searchQuery.page > dataSource.totalPage && dataSource.totalPage > 0)
+      ) {
+        return;
+      }
+      setDataSource((pre) => {
+        pre.loading = true;
 
-      cacheData.current = res.items || [];
-      const dataList = filterData({
-        search: queryParams.search,
-        categories: queryParams.categories
+        return { ...pre };
       });
-      setDataSource({
-        dataList: dataList,
-        loading: false,
-        total: res.pagination.total
-      });
-    } catch (error) {
-      cacheData.current = [];
-      setDataSource({
-        dataList: [],
-        loading: false,
-        total: dataSource.total
-      });
-      console.log('error', error);
-    } finally {
-      setIsFirst(false);
-    }
-  }, [queryParams, cacheData.current]);
+      try {
+        const params = {
+          ..._.pickBy(searchQuery, (val: string | number) => !!val)
+        };
+        const res: any = await queryCatalogList(params);
+
+        const dataList =
+          searchQuery.page === 1
+            ? res.items
+            : _.concat(dataSource.dataList, res.items);
+        setDataSource({
+          dataList: dataList,
+          loading: false,
+          total: res.pagination.total,
+          totalPage: res.pagination.totalPage
+        });
+        setQueryParams({
+          ...queryParams,
+          ...query
+        });
+      } catch (error) {
+        cacheData.current = [];
+        setDataSource({
+          dataList: [],
+          loading: false,
+          total: dataSource.total,
+          totalPage: dataSource.totalPage
+        });
+        setQueryParams({
+          ...queryParams,
+          ...query
+        });
+        console.log('error', error);
+      } finally {
+        setIsFirst(false);
+      }
+    },
+    [queryParams, cacheData.current]
+  );
 
   const handleDeployModalCancel = () => {
     setOpenDeployModal({
@@ -160,48 +191,56 @@ const Catalog: React.FC = () => {
   );
 
   const handleSearch = (e: any) => {
-    fetchData();
+    fetchData({
+      ...queryParams,
+      page: 1
+    });
   };
 
   const handleNameChange = _.debounce((e: any) => {
-    const dataList = filterData({
-      search: e.target.value,
-      categories: queryParams.categories
-    });
-
-    setQueryParams({
+    fetchData({
       ...queryParams,
       page: 1,
       search: e.target.value
     });
-
-    setDataSource({
-      dataList,
-      loading: false,
-      total: dataSource.total
-    });
   }, 200);
 
   const handleCategoryChange = (value: any) => {
-    const dataList = filterData({
-      search: queryParams.search,
-      categories: value
-    });
-    setQueryParams({
+    fetchData({
       ...queryParams,
       page: 1,
       categories: value
-    });
-    setDataSource({
-      dataList,
-      loading: false,
-      total: dataSource.total
     });
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const handleScroll = async () => {
+      // Determine the scrolling element
+      const scrollingElement = document.documentElement || document.body;
+
+      // Calculate if the user has scrolled to the bottom
+      const isAtBottom =
+        scrollingElement.scrollTop + scrollingElement.clientHeight >=
+        scrollingElement.scrollHeight - 20; // Adding a small buffer for precision
+
+      if (isAtBottom) {
+        fetchData({
+          ...queryParams,
+          page: queryParams.page + 1
+        });
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [fetchData]);
 
   return (
     <PageContainer
@@ -259,7 +298,7 @@ const Catalog: React.FC = () => {
         activeId={-1}
         isFirst={isFirst}
       ></CatalogList>
-      <div style={{ marginBlock: '32px 16px' }}>
+      <PageWrapper>
         <Pagination
           hideOnSinglePage={queryParams.perPage === 100}
           align="end"
@@ -269,7 +308,7 @@ const Catalog: React.FC = () => {
           showSizeChanger
           onChange={handleOnPageChange}
         />
-      </div>
+      </PageWrapper>
       <DelopyBuiltInModal
         open={openDeployModal.show}
         action={PageAction.CREATE}

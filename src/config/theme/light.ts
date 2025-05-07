@@ -75,7 +75,6 @@ export default {
     borderRadiusSM: 2,
     colorBgContainer: '#fff',
     fontSize: 14,
-    motion: true,
-    colorFillTertiary: '#f4f5f4'
+    motion: true
   }
 };

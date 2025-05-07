@@ -1,3 +1,4 @@
+// this list is copied from llamacpp repo
 enum FileType {
   F32 = 0,
   F16 = 1,

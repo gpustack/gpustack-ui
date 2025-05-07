@@ -35,11 +35,13 @@ export default function useTableFetch<ListItem>(options: {
     loading: boolean;
     loadend: boolean;
     total: number;
+    totalPage: number;
   }>({
     dataList: [...defaultData],
     loading: false,
     loadend: false,
-    total: 0
+    total: 0,
+    totalPage: 0
   });
   const [queryParams, setQueryParams] = useState<any>({
     page: 1,
@@ -55,6 +57,7 @@ export default function useTableFetch<ListItem>(options: {
       setDataSource((pre) => {
         return {
           total: pre.total,
+          totalPage: pre.totalPage,
           loading: false,
           loadend: true,
           dataList: list,
@@ -97,11 +100,32 @@ export default function useTableFetch<ListItem>(options: {
       };
       const res = await fetchAPI(params);
 
+      if (
+        !res.items.length &&
+        params.page > res.pagination.totalPage &&
+        res.pagination.totalPage > 0
+      ) {
+        const newParams = {
+          ...params,
+          page: res.pagination.totalPage
+        };
+        const newRes = await fetchAPI(newParams);
+        setDataSource({
+          dataList: newRes.items || [],
+          loading: false,
+          loadend: true,
+          total: newRes.pagination.total,
+          totalPage: newRes.pagination.totalPage
+        });
+        return;
+      }
+
       setDataSource({
         dataList: res.items || [],
         loading: false,
         loadend: true,
-        total: res.pagination.total
+        total: res.pagination.total,
+        totalPage: res.pagination.totalPage
       });
     } catch (error) {
       console.log('error', error);
@@ -109,7 +133,8 @@ export default function useTableFetch<ListItem>(options: {
         dataList: [],
         loading: false,
         loadend: true,
-        total: dataSource.total
+        total: dataSource.total,
+        totalPage: dataSource.totalPage
       });
     }
   };

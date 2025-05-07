@@ -123,6 +123,29 @@ const Models: React.FC = () => {
         const res: any = await queryModelsList(params, {
           cancelToken: axiosToken.token
         });
+
+        if (
+          !res.items.length &&
+          params.page > res.pagination.totalPage &&
+          res.pagination.totalPage > 0
+        ) {
+          const newParams = {
+            ...params,
+            page: res.pagination.totalPage
+          };
+          const newRes: any = await queryModelsList(newParams, {
+            cancelToken: axiosToken.token
+          });
+          setDataSource({
+            dataList: newRes.items || [],
+            loading: false,
+            loadend: true,
+            total: newRes.pagination.total,
+            deletedIds: []
+          });
+          return;
+        }
+
         setDataSource({
           dataList: res.items || [],
           loading: false,

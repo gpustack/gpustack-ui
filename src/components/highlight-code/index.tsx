@@ -28,7 +28,6 @@ const HighlightCode: React.FC<{
 
   const currentTheme = React.useMemo(() => {
     const res = theme || userSettings.theme === 'realDark' ? 'dark' : 'light';
-    console.log('currentTheme:', res, userSettings.theme, '===>', theme);
     return res;
   }, [theme, userSettings.theme]);
 

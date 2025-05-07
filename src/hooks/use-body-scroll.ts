@@ -14,6 +14,7 @@ export default function useBodyScroll() {
       window.__GPUSTACK_BODY_SCROLLER__?.elements()?.scrollEventElement;
 
     instanceRef.current = window.__GPUSTACK_BODY_SCROLLER__;
+    console.log('bodyScroller', bodyScroller.current, instanceRef.current);
   };
 
   const saveScrollHeight = React.useCallback(() => {

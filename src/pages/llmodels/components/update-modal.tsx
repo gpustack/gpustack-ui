@@ -91,7 +91,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     return undefined;
   };
 
-  const handleOnValuesChange = (data: any) => {
+  const handleOnValuesChange = _.debounce((data: any) => {
     const formdata = form.getFieldsValue?.();
 
     let alldata = {};
@@ -116,7 +116,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
 
     const originalData = _.pick(originFormData.current, Object.keys(alldata));
-    console.log('alldata:', alldata, originalData);
+    console.log('alldata:', formdata, alldata, originalData);
 
     const isEqual = _.isEqualWith(
       _.omit(alldata, updateIgnoreFields),
@@ -137,7 +137,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         })
       });
     }
-  };
+  }, 100);
 
   // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {

@@ -170,13 +170,13 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
-  const onSelectorChange = (field: string) => {
+  const onSelectorChange = (field: string, allowEmpty?: boolean) => {
     const workerSelector = form.getFieldValue(field);
     // check if all keys have values
     const hasEmptyValue = _.some(_.keys(workerSelector), (k: string) => {
       return !workerSelector[k];
     });
-    if (!hasEmptyValue) {
+    if (!hasEmptyValue || allowEmpty) {
       onValuesChange?.({}, form.getFieldsValue());
     }
   };
@@ -190,7 +190,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   };
 
   const handleEnvSelectorOnBlur = () => {
-    onSelectorChange('env');
+    onSelectorChange('env', true);
   };
 
   const handleDeleteEnvSelector = (index: number) => {
@@ -428,32 +428,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             }
           ></ListInput>
         </Form.Item>
-        <Form.Item<FormData>
-          name="env"
-          rules={[
-            () => ({
-              validator(rule, value) {
-                if (_.keys(value).length > 0) {
-                  if (_.some(_.keys(value), (k: string) => !value[k])) {
-                    return Promise.reject(
-                      intl.formatMessage(
-                        {
-                          id: 'common.validate.value'
-                        },
-                        {
-                          name: intl.formatMessage({
-                            id: 'common.text.variable'
-                          })
-                        }
-                      )
-                    );
-                  }
-                }
-                return Promise.resolve();
-              }
-            })
-          ]}
-        >
+        <Form.Item<FormData> name="env">
           <LabelSelector
             label={intl.formatMessage({
               id: 'models.form.env'

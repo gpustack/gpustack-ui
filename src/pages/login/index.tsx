@@ -44,7 +44,7 @@ const FormWrapper = styled.div`
   height: max-content;
   padding: 40px;
   background-color: var(--color-modal-content-bg);
-
+  box-shadow: var(--color-modal-box-shadow);
   .field-wrapper {
     background-color: transparent !important;
   }

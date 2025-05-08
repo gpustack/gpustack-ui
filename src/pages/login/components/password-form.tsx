@@ -52,7 +52,7 @@ const PasswordForm: React.FC = () => {
       </div>
       <Form
         form={form}
-        style={{ width: '400px', margin: '0 auto' }}
+        style={{ width: '360px', margin: '0 auto' }}
         onFinish={handleSubmit}
       >
         <h2 className="justify-center m-b-20 flex-column flex-center">

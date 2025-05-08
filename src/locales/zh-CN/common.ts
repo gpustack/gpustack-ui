@@ -237,5 +237,6 @@ export default {
   'common.exception.404': '抱歉，你访问的页面不存在',
   'common.appearance.darkmode': '深色模式',
   'common.appearance.lightmode': '浅色模式',
-  'common.appearance.tips': '默认跟随系统设置'
+  'common.appearance.tips': '默认跟随系统设置',
+  'common.button.forgotpassword': '忘记密码？'
 };

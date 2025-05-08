@@ -3,6 +3,7 @@ import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
 import SealInput from '@/components/seal-form/seal-input';
 import ThemeToggle from '@/components/theme-toggle';
+import externalLinks from '@/constants/external-links';
 import {
   CRYPT_TEXT,
   REMEMBER_ME_KEY,
@@ -158,7 +159,7 @@ const LoginForm = () => {
       <div>
         <Form
           form={form}
-          style={{ width: '400px', margin: '0 auto' }}
+          style={{ width: '360px', margin: '0 auto' }}
           onFinish={handleLogin}
         >
           {renderWelCome}
@@ -198,12 +199,27 @@ const LoginForm = () => {
             />
           </Form.Item>
           <Form.Item noStyle name="autoLogin" valuePropName="checked">
-            <Checkbox style={{ marginLeft: 5, marginBottom: 20 }}>
-              <span style={{ color: 'var(--ant-color-text-secondary)' }}>
-                {' '}
-                {intl.formatMessage({ id: 'common.login.rember' })}
-              </span>
-            </Checkbox>
+            <div
+              className="flex-center flex-between"
+              style={{
+                marginBottom: 24
+              }}
+            >
+              <Checkbox style={{ marginLeft: 5 }}>
+                <span style={{ color: 'var(--ant-color-text-secondary)' }}>
+                  {intl.formatMessage({ id: 'common.login.rember' })}
+                </span>
+              </Checkbox>
+              <Button
+                type="link"
+                size="small"
+                href={externalLinks.resetPassword}
+                target="_blank"
+                style={{ padding: 0 }}
+              >
+                {intl.formatMessage({ id: 'common.button.forgotpassword' })}
+              </Button>
+            </div>
           </Form.Item>
           <Button
             htmlType="submit"

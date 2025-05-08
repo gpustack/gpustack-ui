@@ -190,7 +190,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           <div
             className="pregress-bar"
             style={{
-              backgroundImage: `linear-gradient(90deg, #388bff 0%, #cce1ff 100%)`,
+              backgroundImage: `linear-gradient(90deg, var(--ant-blue-5) 0%, var(--ant-blue-2) 100%)`,
               width: `${percent}%`,
               height: '4px',
               borderRadius: '2px'

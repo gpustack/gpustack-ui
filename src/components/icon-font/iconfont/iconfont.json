@@ -6,6 +6,69 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "44094552",
+      "name": "theme-auto-1",
+      "font_class": "theme-auto-1",
+      "unicode": "e660",
+      "unicode_decimal": 58976
+    },
+    {
+      "icon_id": "44094551",
+      "name": "theme-auto",
+      "font_class": "theme-auto",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "44094550",
+      "name": "theme",
+      "font_class": "auto-theme-1",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
+      "icon_id": "44092227",
+      "name": "routine_36dp_1F1F1F_FILL0_wght400_GRAD0_opsz24",
+      "font_class": "auto-theme",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "44086334",
+      "name": "cols_3",
+      "font_class": "cols_3",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "44086333",
+      "name": "cols_6",
+      "font_class": "cols_6",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "44086332",
+      "name": "cols_2",
+      "font_class": "cols_2",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "44086331",
+      "name": "cols_4",
+      "font_class": "cols_4",
+      "unicode": "e65f",
+      "unicode_decimal": 58975
+    },
+    {
+      "icon_id": "44065884",
+      "name": "save",
+      "font_class": "a-save1",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
       "icon_id": "43808249",
       "name": "uncollapse_all",
       "font_class": "uncollapse_all",
@@ -424,34 +487,6 @@
       "font_class": "AIzhineng",
       "unicode": "e608",
       "unicode_decimal": 58888
-    },
-    {
-      "icon_id": "41755257",
-      "name": "cols_6",
-      "font_class": "cols_6",
-      "unicode": "e651",
-      "unicode_decimal": 58961
-    },
-    {
-      "icon_id": "41755178",
-      "name": "cols_3",
-      "font_class": "cols_3",
-      "unicode": "e650",
-      "unicode_decimal": 58960
-    },
-    {
-      "icon_id": "41754685",
-      "name": "cols_2",
-      "font_class": "cols_2",
-      "unicode": "e64e",
-      "unicode_decimal": 58958
-    },
-    {
-      "icon_id": "41754565",
-      "name": "cols_4",
-      "font_class": "cols_4",
-      "unicode": "e64d",
-      "unicode_decimal": 58957
     },
     {
       "icon_id": "36263088",

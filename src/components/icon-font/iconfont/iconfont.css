@@ -1,9 +1,8 @@
 @font-face {
   font-family: iconfont; /* Project id 4613488 */
-  src:
-    url('iconfont.woff2?t=1744337857781') format('woff2'),
-    url('iconfont.woff?t=1744337857781') format('woff'),
-    url('iconfont.ttf?t=1744337857781') format('truetype');
+  src: url('iconfont.woff2?t=1746695264114') format('woff2'),
+       url('iconfont.woff?t=1746695264114') format('woff'),
+       url('iconfont.ttf?t=1746695264114') format('truetype');
 }
 
 .iconfont {
@@ -14,314 +13,335 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-uncollapse_all::before {
-  content: '\e657';
+.icon-theme-auto-1::before {
+  content: "\e660";
 }
 
-.icon-collapse::before {
-  content: '\e656';
+.icon-theme-auto::before {
+  content: "\e663";
 }
 
-.icon-rocket-launch::before {
-  content: '\e689';
+.icon-auto-theme-1::before {
+  content: "\e664";
 }
 
-.icon-user-filled::before {
-  content: '\e625';
-}
-
-.icon-assistant::before {
-  content: '\e62d';
-}
-
-.icon-assistant-filled::before {
-  content: '\e847';
-}
-
-.icon-save3::before {
-  content: '\e655';
-}
-
-.icon-fankuifaqs::before {
-  content: '\e7bf';
-}
-
-.icon-issues::before {
-  content: '\e816';
-}
-
-.icon-neicun::before {
-  content: '\e688';
-}
-
-.icon-collapse_all::before {
-  content: '\e66f';
-}
-
-.icon-down::before {
-  content: '\e654';
-}
-
-.icon-fenxiang::before {
-  content: '\e604';
-}
-
-.icon-mosaic-2::before {
-  content: '\e64f';
-}
-
-.icon-stars::before {
-  content: '\e8a8';
-}
-
-.icon-mosaic::before {
-  content: '\e636';
-}
-
-.icon-outline-play::before {
-  content: '\e653';
-}
-
-.icon-SelectionInverse::before {
-  content: '\eace';
-}
-
-.icon-justice1::before {
-  content: '\e652';
-}
-
-.icon-New_img::before {
-  content: '\e733';
-}
-
-.icon-new_release_outlined::before {
-  content: '\e66c';
-}
-
-.icon-new-releases::before {
-  content: '\e60f';
-}
-
-.icon-catalog::before {
-  content: '\e62b';
-}
-
-.icon-save2::before {
-  content: '\e635';
-}
-
-.icon-left-template::before {
-  content: '\e62a';
-}
-
-.icon-logs::before {
-  content: '\e6ec';
-}
-
-.icon-gpu::before {
-  content: '\e71e';
-}
-
-.icon-filled-gpu::before {
-  content: '\e6de';
-}
-
-.icon-outline-gpu::before {
-  content: '\e641';
-}
-
-.icon-ts-tubiao_webserver::before {
-  content: '\e716';
-}
-
-.icon-server::before {
-  content: '\e66a';
-}
-
-.icon-host::before {
-  content: '\e7c6';
-}
-
-.icon-playcircle::before {
-  content: '\e80f';
-}
-
-.icon-recreate::before {
-  content: '\e6a5';
-}
-
-.icon-save1::before {
-  content: '\e647';
-}
-
-.icon-save::before {
-  content: '\e67c';
-}
-
-.icon-upload_image::before {
-  content: '\e613';
-}
-
-.icon-sound-wave::before {
-  content: '\e619';
-}
-
-.icon-rank1::before {
-  content: '\e7cb';
-}
-
-.icon-cube::before {
-  content: '\e769';
-}
-
-.icon-speaker-slash::before {
-  content: '\ebb6';
-}
-
-.icon-random::before {
-  content: '\e603';
-}
-
-.icon-suijisenlin::before {
-  content: '\e60e';
-}
-
-.icon-stop2::before {
-  content: '\e8db';
-}
-
-.icon-stop::before {
-  content: '\e60b';
-}
-
-.icon-image::before {
-  content: '\e62c';
-}
-
-.icon-stopcircle-fill::before {
-  content: '\e7cc';
-}
-
-.icon-playcircle-fill::before {
-  content: '\e7cd';
-}
-
-.icon-SpeakerSlash::before {
-  content: '\e661';
-}
-
-.icon-SpeakerHigh::before {
-  content: '\e670';
-}
-
-.icon-user_voice::before {
-  content: '\e667';
-}
-
-.icon-audio::before {
-  content: '\e985';
-}
-
-.icon-hard-disk::before {
-  content: '\eb1d';
-}
-
-.icon-new::before {
-  content: '\e612';
-}
-
-.icon-tu2::before {
-  content: '\e607';
-}
-
-.icon-robot::before {
-  content: '\e634';
-}
-
-.icon-robot1::before {
-  content: '\e602';
-}
-
-.icon-aizhineng::before {
-  content: '\e672';
-}
-
-.icon-copy::before {
-  content: '\e720';
-}
-
-.icon-AIzhineng::before {
-  content: '\e608';
-}
-
-.icon-cols_6::before {
-  content: '\e651';
+.icon-auto-theme::before {
+  content: "\e662";
 }
 
 .icon-cols_3::before {
-  content: '\e650';
+  content: "\e65c";
+}
+
+.icon-cols_6::before {
+  content: "\e65d";
 }
 
 .icon-cols_2::before {
-  content: '\e64e';
+  content: "\e65e";
 }
 
 .icon-cols_4::before {
-  content: '\e64d';
+  content: "\e65f";
+}
+
+.icon-a-save1::before {
+  content: "\e65b";
+}
+
+.icon-uncollapse_all::before {
+  content: "\e657";
+}
+
+.icon-collapse::before {
+  content: "\e656";
+}
+
+.icon-rocket-launch::before {
+  content: "\e689";
+}
+
+.icon-user-filled::before {
+  content: "\e625";
+}
+
+.icon-assistant::before {
+  content: "\e62d";
+}
+
+.icon-assistant-filled::before {
+  content: "\e847";
+}
+
+.icon-save3::before {
+  content: "\e655";
+}
+
+.icon-fankuifaqs::before {
+  content: "\e7bf";
+}
+
+.icon-issues::before {
+  content: "\e816";
+}
+
+.icon-neicun::before {
+  content: "\e688";
+}
+
+.icon-collapse_all::before {
+  content: "\e66f";
+}
+
+.icon-down::before {
+  content: "\e654";
+}
+
+.icon-fenxiang::before {
+  content: "\e604";
+}
+
+.icon-mosaic-2::before {
+  content: "\e64f";
+}
+
+.icon-stars::before {
+  content: "\e8a8";
+}
+
+.icon-mosaic::before {
+  content: "\e636";
+}
+
+.icon-outline-play::before {
+  content: "\e653";
+}
+
+.icon-SelectionInverse::before {
+  content: "\eace";
+}
+
+.icon-justice1::before {
+  content: "\e652";
+}
+
+.icon-New_img::before {
+  content: "\e733";
+}
+
+.icon-new_release_outlined::before {
+  content: "\e66c";
+}
+
+.icon-new-releases::before {
+  content: "\e60f";
+}
+
+.icon-catalog::before {
+  content: "\e62b";
+}
+
+.icon-save2::before {
+  content: "\e635";
+}
+
+.icon-left-template::before {
+  content: "\e62a";
+}
+
+.icon-logs::before {
+  content: "\e6ec";
+}
+
+.icon-gpu::before {
+  content: "\e71e";
+}
+
+.icon-filled-gpu::before {
+  content: "\e6de";
+}
+
+.icon-outline-gpu::before {
+  content: "\e641";
+}
+
+.icon-ts-tubiao_webserver::before {
+  content: "\e716";
+}
+
+.icon-server::before {
+  content: "\e66a";
+}
+
+.icon-host::before {
+  content: "\e7c6";
+}
+
+.icon-playcircle::before {
+  content: "\e80f";
+}
+
+.icon-recreate::before {
+  content: "\e6a5";
+}
+
+.icon-save1::before {
+  content: "\e647";
+}
+
+.icon-save::before {
+  content: "\e67c";
+}
+
+.icon-upload_image::before {
+  content: "\e613";
+}
+
+.icon-sound-wave::before {
+  content: "\e619";
+}
+
+.icon-rank1::before {
+  content: "\e7cb";
+}
+
+.icon-cube::before {
+  content: "\e769";
+}
+
+.icon-speaker-slash::before {
+  content: "\ebb6";
+}
+
+.icon-random::before {
+  content: "\e603";
+}
+
+.icon-suijisenlin::before {
+  content: "\e60e";
+}
+
+.icon-stop2::before {
+  content: "\e8db";
+}
+
+.icon-stop::before {
+  content: "\e60b";
+}
+
+.icon-image::before {
+  content: "\e62c";
+}
+
+.icon-stopcircle-fill::before {
+  content: "\e7cc";
+}
+
+.icon-playcircle-fill::before {
+  content: "\e7cd";
+}
+
+.icon-SpeakerSlash::before {
+  content: "\e661";
+}
+
+.icon-SpeakerHigh::before {
+  content: "\e670";
+}
+
+.icon-user_voice::before {
+  content: "\e667";
+}
+
+.icon-audio::before {
+  content: "\e985";
+}
+
+.icon-hard-disk::before {
+  content: "\eb1d";
+}
+
+.icon-new::before {
+  content: "\e612";
+}
+
+.icon-tu2::before {
+  content: "\e607";
+}
+
+.icon-robot::before {
+  content: "\e634";
+}
+
+.icon-robot1::before {
+  content: "\e602";
+}
+
+.icon-aizhineng::before {
+  content: "\e672";
+}
+
+.icon-copy::before {
+  content: "\e720";
+}
+
+.icon-AIzhineng::before {
+  content: "\e608";
 }
 
 .icon-clear::before {
-  content: '\e60a';
+  content: "\e60a";
 }
 
 .icon-keyboard::before {
-  content: '\e61b';
+  content: "\e61b";
 }
 
 .icon-networkerror::before {
-  content: '\e624';
+  content: "\e624";
 }
 
 .icon-external-link::before {
-  content: '\e66b';
+  content: "\e66b";
 }
 
 .icon-huggingface::before {
-  content: '\e7d1';
+  content: "\e7d1";
 }
 
 .icon-ollama::before {
-  content: '\e601';
+  content: "\e601";
 }
 
 .icon-a-layout6-line::before {
-  content: '\e9ef';
+  content: "\e9ef";
 }
 
 .icon-a-Layout5::before {
-  content: '\e610';
+  content: "\e610";
 }
 
 .icon-English::before {
-  content: '\e8b3';
+  content: "\e8b3";
 }
 
 .icon-chinese::before {
-  content: '\e611';
+  content: "\e611";
 }
 
 .icon-yingguo::before {
-  content: '\e606';
+  content: "\e606";
 }
 
 .icon-code::before {
-  content: '\e84f';
+  content: "\e84f";
 }
 
 .icon-stop1::before {
-  content: '\e783';
+  content: "\e783";
 }
 
 .icon-command::before {
-  content: '\e600';
+  content: "\e600";
 }
+

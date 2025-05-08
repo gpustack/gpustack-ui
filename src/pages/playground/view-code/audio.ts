@@ -77,7 +77,7 @@ export const TextToSpeechCode = ({
   // ========================= Curl =========================
   const curlCode = `
 curl ${host}${api} \\
--H "Content-Type: multipart/form-data" \\
+-H "Content-Type: application/json" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
 ${formatCurlArgs(parameters, false)} \\\n--output output.${parameters.response_format}`.trim();
 

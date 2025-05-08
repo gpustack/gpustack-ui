@@ -9,6 +9,7 @@ import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
+import OllamaTips from '../components/ollama-tips';
 import {
   localPathTipsList,
   modelSourceMap,
@@ -38,6 +39,18 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
     onOk(data);
   };
 
+  const handleOnLocalPathBlur = (e: any) => {
+    let { value } = e.target;
+    // remove the last slash: windows or linux
+    const lastChar = value.slice(-1);
+    if (lastChar === '/' || lastChar === '\\') {
+      value = value.slice(0, -1);
+    }
+    form.setFieldsValue({
+      local_path: value
+    });
+  };
+
   const renderLocalPathFields = () => {
     return (
       <>
@@ -54,6 +67,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
           <SealInput.Input
             required
             label={intl.formatMessage({ id: 'models.form.filePath' })}
+            onBlur={handleOnLocalPathBlur}
             description={<TooltipList list={localPathTipsList}></TooltipList>}
           ></SealInput.Input>
         </Form.Item>
@@ -119,84 +133,89 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
   }, [props.source, intl]);
 
   return (
-    <Form
-      form={form}
-      onFinish={handleOk}
-      preserve={false}
-      style={{ padding: '16px 24px' }}
-      clearOnDestroy={true}
-      initialValues={{
-        source: source
-      }}
-    >
-      <Form.Item<FormData>
-        name="source"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('select', 'models.form.source')
-          }
-        ]}
+    <div>
+      {source === modelSourceMap.ollama_library_value && (
+        <OllamaTips></OllamaTips>
+      )}
+      <Form
+        form={form}
+        onFinish={handleOk}
+        preserve={false}
+        style={{ padding: '16px 24px' }}
+        clearOnDestroy={true}
+        initialValues={{
+          source: source
+        }}
       >
-        {
-          <SealSelect
-            disabled
-            label={intl.formatMessage({
-              id: 'models.form.source'
-            })}
-            options={sourceOptions}
-            required
-          ></SealSelect>
-        }
-      </Form.Item>
-      {renderFieldsBySource}
-      <Form.Item
-        name="worker_id"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('select', 'worker', false)
-          }
-        ]}
-      >
-        {
-          <SealSelect
-            label="Worker"
-            options={workersList}
-            required
-          ></SealSelect>
-        }
-      </Form.Item>
-      {source !== modelSourceMap.local_path_value && (
         <Form.Item<FormData>
-          name="local_dir"
+          name="source"
           rules={[
             {
-              required: false,
-              message: getRuleMessage(
-                'input',
-                'resources.modelfiles.form.localdir'
-              )
+              required: true,
+              message: getRuleMessage('select', 'models.form.source')
             }
           ]}
         >
-          <SealInput.Input
-            description={
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: intl.formatMessage({
-                    id: 'resources.modelfiles.form.localdir.tips'
-                  })
-                }}
-              ></span>
-            }
-            label={intl.formatMessage({
-              id: 'resources.modelfiles.form.localdir'
-            })}
-          ></SealInput.Input>
+          {
+            <SealSelect
+              disabled
+              label={intl.formatMessage({
+                id: 'models.form.source'
+              })}
+              options={sourceOptions}
+              required
+            ></SealSelect>
+          }
         </Form.Item>
-      )}
-    </Form>
+        {renderFieldsBySource}
+        <Form.Item
+          name="worker_id"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('select', 'worker', false)
+            }
+          ]}
+        >
+          {
+            <SealSelect
+              label="Worker"
+              options={workersList}
+              required
+            ></SealSelect>
+          }
+        </Form.Item>
+        {source !== modelSourceMap.local_path_value && (
+          <Form.Item<FormData>
+            name="local_dir"
+            rules={[
+              {
+                required: false,
+                message: getRuleMessage(
+                  'input',
+                  'resources.modelfiles.form.localdir'
+                )
+              }
+            ]}
+          >
+            <SealInput.Input
+              description={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: intl.formatMessage({
+                      id: 'resources.modelfiles.form.localdir.tips'
+                    })
+                  }}
+                ></span>
+              }
+              label={intl.formatMessage({
+                id: 'resources.modelfiles.form.localdir'
+              })}
+            ></SealInput.Input>
+          </Form.Item>
+        )}
+      </Form>
+    </div>
   );
 });
 

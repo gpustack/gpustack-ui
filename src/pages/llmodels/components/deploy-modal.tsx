@@ -23,6 +23,7 @@ import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 import HFModelFile from './hf-model-file';
 import ModelCard from './model-card';
+import OllamaTips from './ollama-tips';
 import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
@@ -360,6 +361,7 @@ const AddModal: FC<AddModalProps> = (props) => {
               </ColWrapper>
             </>
           )}
+
         <FormContext.Provider
           value={{
             isGGUF: isGGUF,
@@ -402,6 +404,9 @@ const AddModal: FC<AddModalProps> = (props) => {
               }
             >
               <>
+                {source === modelSourceMap.ollama_library_value && (
+                  <OllamaTips></OllamaTips>
+                )}
                 {SEARCH_SOURCE.includes(source) &&
                   deploymentType === 'modelList' && (
                     <TitleWrapper>

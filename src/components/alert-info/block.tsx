@@ -14,6 +14,7 @@ interface AlertInfoProps {
   style?: React.CSSProperties;
   contentStyle?: React.CSSProperties;
   title?: React.ReactNode;
+  maxHeight?: number;
 }
 
 const TitleWrapper = styled.div`
@@ -39,7 +40,8 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
     style,
     title,
     contentStyle,
-    icon
+    icon,
+    maxHeight = 86
   } = props;
 
   return (
@@ -65,7 +67,7 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
             {title && (
               <TitleWrapper className="title-text">{title}</TitleWrapper>
             )}
-            <OverlayScroller maxHeight={86} style={{ ...contentStyle }}>
+            <OverlayScroller maxHeight={maxHeight} style={{ ...contentStyle }}>
               <ContentWrapper
                 $hasTitle={!!title}
                 className={classNames('content', type)}

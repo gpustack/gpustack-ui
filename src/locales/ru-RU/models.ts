@@ -149,9 +149,22 @@ export default {
   'models.table.apiAccessInfo.jinaCompatible': 'Совместимо с Jina',
   'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию',
   'models.search.parts': '{n} частей',
-  'models.search.evaluate.error': 'Возникла ошибка при вычислении: '
+  'models.search.evaluate.error': 'Возникла ошибка при вычислении: ',
+  'models.ollama.deprecated.title': 'Ollama Model Source Will Be Removed',
+  'models.ollama.deprecated.current':
+    '<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
+  'models.ollama.deprecated.upcoming':
+    '<span class="bold-text">Upcoming Version (v0.7.0): </span>The Ollama model source will be removed from the UI.',
+  'models.ollama.deprecated.following':
+    '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
+  'models.ollama.deprecated.issue':
+    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.ollama.deprecated.title': 'Ollama Model Source Will Be Removed',
+// 2. 'models.ollama.deprecated.current':'<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
+// 3. 'models.ollama.deprecated.upcoming': '<span class="bold-text">Upcoming Version (v0.7.0): </span>The Ollama model source will be removed from the UI.',
+// 4. 'models.ollama.deprecated.following': '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
+// 5. 'models.ollama.deprecated.issue': 'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.'
 // ========== End of To-Do List ==========

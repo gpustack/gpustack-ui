@@ -3,7 +3,7 @@ import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
-import { SyncOutlined } from '@ant-design/icons';
+import { DoubleRightOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Pagination, Select, Space, message } from 'antd';
@@ -20,6 +20,18 @@ import { CatalogItem as CatalogItemType, FormData } from './config/types';
 const PageWrapper = styled.div`
   display: none;
   margin-block: 32px 16px;
+`;
+
+const MoreWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-block: 16px;
+  opacity: 1;
+  transition: opacity 0.3s;
+  &.loading {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
 `;
 
 const Catalog: React.FC = () => {
@@ -41,7 +53,7 @@ const Catalog: React.FC = () => {
   });
   const [queryParams, setQueryParams] = useState({
     page: 1,
-    perPage: 12,
+    perPage: 30,
     search: '',
     categories: ''
   });
@@ -159,8 +171,6 @@ const Catalog: React.FC = () => {
   const handleCreateModel = useCallback(
     async (data: FormData) => {
       try {
-        console.log('data:', data, openDeployModal);
-
         const modelData = await createModel({
           data: {
             ..._.omit(data, ['size', 'quantization'])
@@ -210,6 +220,13 @@ const Catalog: React.FC = () => {
       ...queryParams,
       page: 1,
       categories: value
+    });
+  };
+
+  const loadMore = () => {
+    fetchData({
+      ...queryParams,
+      page: queryParams.page + 1
     });
   };
 
@@ -298,6 +315,18 @@ const Catalog: React.FC = () => {
         activeId={-1}
         isFirst={isFirst}
       ></CatalogList>
+      {queryParams.page < dataSource.totalPage && (
+        <MoreWrapper className={dataSource.loading ? 'loading' : ''}>
+          <Button
+            onClick={loadMore}
+            size="middle"
+            type="text"
+            icon={<DoubleRightOutlined rotate={90} />}
+          >
+            {intl.formatMessage({ id: 'common.button.more' })}
+          </Button>
+        </MoreWrapper>
+      )}
       <PageWrapper>
         <Pagination
           hideOnSinglePage={queryParams.perPage === 100}

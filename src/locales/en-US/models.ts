@@ -102,7 +102,7 @@ export default {
   'models.localpath.gguf.tips':
     ' Specify the model file, e.g., /data/models/model.gguf.',
   'models.localpath.safe.tips':
-    'Specify the model directory that contains .safetensors and config.json files, e.g., /data/models/model/.',
+    'Specify the model directory that contains .safetensors and config.json files, e.g., /data/models/model.',
   'models.localpath.chunks.tips': `Specify the first shard file of the model, e.g., /data/models/model-00001-of-00004.gguf.`,
   'models.form.replicas.tips':
     'Multiple replicas enable load balancing for { api } inference requests.',
@@ -148,5 +148,14 @@ export default {
   'models.table.apiAccessInfo.jinaCompatible': 'Jina Compatible',
   'models.table.apiAccessInfo.gotoCreate': 'Go to Create',
   'models.search.parts': '{n} parts',
-  'models.search.evaluate.error': 'An error occurred during evaluation: '
+  'models.search.evaluate.error': 'An error occurred during evaluation: ',
+  'models.ollama.deprecated.title': 'Ollama Model Source Will Be Removed',
+  'models.ollama.deprecated.current':
+    '<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
+  'models.ollama.deprecated.upcoming':
+    '<span class="bold-text">Upcoming Version (v0.7.0): </span>The Ollama model source will be removed from the UI.',
+  'models.ollama.deprecated.following':
+    '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
+  'models.ollama.deprecated.issue':
+    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.'
 };

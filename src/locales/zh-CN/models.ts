@@ -100,7 +100,7 @@ export default {
   'models.localpath.shared.tips.title': '分片的 GGUF 格式模型',
   'models.localpath.gguf.tips': '指向模型文件，例如 /data/models/model.gguf',
   'models.localpath.safe.tips':
-    '指向包含 .safetensors, config.json 文件的模型目录，例如 /data/models/model/',
+    '指向包含 .safetensors, config.json 文件的模型目录，例如 /data/models/model',
   'models.localpath.chunks.tips':
     '指向模型第一个分片文件，例如 /data/models/model-00001-of-00004.gguf',
   'models.form.replicas.tips': '多副本数实现 { api } 接口推理请求的负载均衡',
@@ -141,5 +141,14 @@ export default {
   'models.table.apiAccessInfo.jinaCompatible': 'Jina 兼容',
   'models.table.apiAccessInfo.gotoCreate': '去创建',
   'models.search.parts': '{n} 个文件',
-  'models.search.evaluate.error': '评估过程中发生了错误：'
+  'models.search.evaluate.error': '评估过程中发生了错误：',
+  'models.ollama.deprecated.title': 'Ollama 模型源即将被移除',
+  'models.ollama.deprecated.current':
+    '<span class="bold-text">当前版本（v0.6.1）：</span>Ollama 模型目前仍可使用。',
+  'models.ollama.deprecated.upcoming':
+    '<span class="bold-text">即将发布的版本（v0.7.0）：</span>Ollama 模型源将在 UI 中被移除。',
+  'models.ollama.deprecated.following':
+    '<span class="bold-text">在 v0.7.0 更新后：</span> 所有先前部署的模型仍将正常运行。',
+  'models.ollama.deprecated.issue':
+    '参见 GitHub 上的问题 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979</a>。'
 };

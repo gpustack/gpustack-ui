@@ -85,6 +85,22 @@ const options = [
   {
     label: '--max-link-num',
     value: '--max-link-num'
+  },
+  {
+    label: '--dtype',
+    value: '--dtype'
+  },
+  {
+    label: '--rope-scaling',
+    value: '--rope-scaling'
+  },
+  {
+    label: '--rope-theta',
+    value: '--rope-theta'
+  },
+  {
+    label: '--override-generation-config',
+    value: '--override-generation-config'
   }
 ];
 

@@ -237,17 +237,13 @@ export default {
   'common.appearance.dark': 'Темная',
   'common.appearance.light': 'Светлая',
   'common.appearance.system': 'Как в системе',
-  'common.exception.404': 'Sorry, the page you visited does not exist.',
-  'common.appearance.darkmode': 'Dark Mode',
-  'common.appearance.lightmode': 'Light Mode',
-  'common.appearance.tips': 'Default follows system preference.',
-  'common.button.forgotpassword': 'Forgot password?'
+  'common.exception.404': 'Извините, страница, которую вы посетили, не существует.',
+  'common.appearance.darkmode': 'Тёмная тема',
+  'common.appearance.lightmode': 'Светлая тема',
+  'common.appearance.tips': 'По умолчанию соответствует системным настройкам.',
+  'common.button.forgotpassword': 'Забыли пароль?'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.exception.404': 'Sorry, the page you visited does not exist.',
-// 2. 'common.appearance.darkmode': 'Dark Mode',
-// 3. 'common.appearance.lightmode': 'Light Mode',
-// 4. 'common.appearance.tips': 'Default follows system preference.'
-// 5. 'common.button.forgotpassword': 'Forgot Password?'
+
 // ========== End of To-Do List ==========

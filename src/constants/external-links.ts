@@ -5,7 +5,9 @@ const externalLinks = {
   site: 'https://gpustack.ai/',
   release: 'https://github.com/gpustack/gpustack/releases',
   reportIssue: 'https://github.com/gpustack/gpustack/issues/new/choose',
-  faq: 'https://docs.gpustack.ai/latest/faq/'
+  faq: 'https://docs.gpustack.ai/latest/faq/',
+  resetPassword:
+    'https://docs.gpustack.ai/latest/troubleshooting/?h=reset#reset-admin-password'
 };
 
 export default externalLinks;

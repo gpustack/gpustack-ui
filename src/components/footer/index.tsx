@@ -3,8 +3,16 @@ import { getAtomStorage } from '@/atoms/utils';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import externalLinks from '@/constants/external-links';
 import { useIntl } from '@umijs/max';
-import { Button, Modal, Space } from 'antd';
+import { Button, Divider, Modal } from 'antd';
 import { createStyles } from 'antd-style';
+import styled from 'styled-components';
+
+const CompanyWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 0 8px;
+`;
 
 const useStyles = createStyles(({ token, css }) => ({
   footer: css`
@@ -43,24 +51,24 @@ const Footer: React.FC = () => {
         <div className="footer-content">
           <div className="footer-content-left">
             <div className={styles['footer-content-left-text']}>
-              <Space size={4}>
+              <CompanyWrapper>
                 <span>&copy;</span>
                 <span> {new Date().getFullYear()}</span>
                 <span> {intl.formatMessage({ id: 'settings.company' })}</span>
-              </Space>
-              <Space size={8} style={{ marginLeft: 18 }}>
-                <Button
-                  type="link"
-                  size="small"
-                  href={externalLinks.documentation}
-                  target="_blank"
-                >
-                  {intl.formatMessage({ id: 'common.button.help' })}
-                </Button>
-                <Button type="link" size="small" onClick={showVersion}>
-                  {getAtomStorage(GPUStackVersionAtom)?.version}
-                </Button>
-              </Space>
+              </CompanyWrapper>
+              <Divider type="vertical" />
+              <Button
+                type="link"
+                size="small"
+                href={externalLinks.documentation}
+                target="_blank"
+              >
+                {intl.formatMessage({ id: 'common.button.help' })}
+              </Button>
+              <Divider type="vertical" />
+              <Button type="link" size="small" onClick={showVersion}>
+                {getAtomStorage(GPUStackVersionAtom)?.version}
+              </Button>
             </div>
           </div>
         </div>

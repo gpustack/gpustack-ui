@@ -240,7 +240,8 @@ export default {
   'common.exception.404': 'Sorry, the page you visited does not exist.',
   'common.appearance.darkmode': 'Dark Mode',
   'common.appearance.lightmode': 'Light Mode',
-  'common.appearance.tips': 'Default follows system preference.'
+  'common.appearance.tips': 'Default follows system preference.',
+  'common.button.forgotpassword': 'Forgot password?'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -248,4 +249,5 @@ export default {
 // 2. 'common.appearance.darkmode': 'Dark Mode',
 // 3. 'common.appearance.lightmode': 'Light Mode',
 // 4. 'common.appearance.tips': 'Default follows system preference.'
+// 5. 'common.button.forgotpassword': 'Forgot Password?'
 // ========== End of To-Do List ==========

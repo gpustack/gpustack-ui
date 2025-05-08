@@ -41,11 +41,9 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
 
   const handleOnLocalPathBlur = (e: any) => {
     let { value } = e.target;
-    // remove the last slash: windows or linux
-    const lastChar = value.slice(-1);
-    if (lastChar === '/' || lastChar === '\\') {
-      value = value.slice(0, -1);
-    }
+
+    // remove all the backslashes and slashes at the end of the string
+    value = value.replace(/(\\|\/)+$/, '');
     form.setFieldsValue({
       local_path: value
     });

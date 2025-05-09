@@ -76,6 +76,7 @@ html {
   --color-bg-tooltip: '#fff';
   --color-modal-content-bg: rgba(255, 255, 255, 90%);
   --color-modal-box-shadow: 0 4px 16px rgba(0, 0, 0, 10%);
+  --color-spotlight-bg: rgba(255, 255, 255, 100%);
   // ======== input ============
   --box-shadow-base: 0 4px 6px rgba(227, 232, 240, 70%);
   --ant-border-radius-lg: 4px;
@@ -97,6 +98,7 @@ html[data-theme='realDark'] {
   --color-progress-text: rgba(255, 255, 255, 80%);
   --color-modal-content-bg: #1f1f1f;
   --color-modal-box-shadow: none;
+  --color-spotlight-bg: #3e3e3e;
 
   background: #141414;
 
@@ -731,7 +733,7 @@ body {
 
 .light-downloading-tooltip {
   &.ant-tooltip .ant-tooltip-arrow::before {
-    background: var(--color-white-1);
+    background: var(--color-spotlight-bg);
   }
 }
 

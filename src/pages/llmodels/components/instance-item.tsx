@@ -139,7 +139,6 @@ const RenderRayactorDownloading = (props: {
         columns={downloadList}
         dataSource={[...mainWorker, ...list]}
         rowKey="worker_name"
-        theme="light"
       ></SimpleTabel>
     </div>
   );
@@ -162,7 +161,7 @@ const RenderWorkerDownloading = (props: {
       arrow={true}
       overlayInnerStyle={{
         width: 300,
-        backgroundColor: 'var(--color-white-1)'
+        backgroundColor: 'var(--color-spotlight-bg)'
       }}
       overlayClassName="light-downloading-tooltip"
       title={

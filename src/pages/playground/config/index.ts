@@ -1,4 +1,4 @@
-import { map } from 'lodash';
+import _, { map } from 'lodash';
 import { CREAT_IMAGE_API } from '../apis';
 import { MessageItem } from './types';
 
@@ -50,30 +50,33 @@ export const formatMessageParams = (messageList: any[]) => {
 
 export const generateMessagesByListContent = (messageList: any[]) => {
   if (!messageList.length) return [];
-
   return messageList.map((item: MessageItem) => {
-    const content = map(
-      item.imgs,
-      (img: { uid: string | number; dataUrl: string }) => {
-        return {
-          type: 'image_url',
-          image_url: {
-            url: img.dataUrl
-          }
-        };
-      }
-    );
+    if (item.imgs?.length) {
+      const content = map(
+        item.imgs,
+        (img: { uid: string | number; dataUrl: string }) => {
+          return {
+            type: 'image_url',
+            image_url: {
+              url: img.dataUrl
+            }
+          };
+        }
+      );
 
-    if (item.content) {
-      content.push({
-        type: 'text',
-        text: item.content
-      });
+      if (item.content) {
+        content.push({
+          type: 'text',
+          text: item.content
+        });
+      }
+
+      return {
+        role: item.role,
+        content: content
+      };
     }
-    return {
-      role: item.role,
-      content: content
-    };
+    return _.omit(item, ['uid', 'imgs']);
   });
 };
 

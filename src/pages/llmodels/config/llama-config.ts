@@ -592,6 +592,10 @@ const options = [
   {
     label: '--context-shift',
     value: '--context-shift'
+  },
+  {
+    label: '--v2',
+    value: '--v2'
   }
 ];
 

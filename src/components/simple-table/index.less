@@ -8,25 +8,22 @@
     border-spacing: 0;
 
     td {
-      border-bottom: 1px solid rgba(255, 255, 255, 10%);
+      border-bottom: 1px solid var(--ant-color-split);
     }
 
     th {
-      border-bottom: 1px solid rgba(255, 255, 255, 10%);
-    }
-
-    tr:last-child td {
-      // border-bottom: none;
+      border-bottom: 1px solid var(--ant-color-split);
     }
   }
 
   th {
     height: 36px;
     font-weight: 600;
+    color: var(--ant-color-text);
   }
 
   td {
-    color: var(--color-white-quaternary);
+    color: var(--ant-color-text-secondary);
   }
 
   .cell-span {
@@ -37,17 +34,5 @@
 
   .cell-header {
     font-weight: var(--font-weight-medium);
-  }
-
-  &.light {
-    th {
-      color: var(--ant-color-text);
-      border-bottom: 1px solid var(--ant-color-split);
-    }
-
-    td {
-      color: var(--ant-color-text);
-      border-bottom: 1px solid var(--ant-color-split);
-    }
   }
 }

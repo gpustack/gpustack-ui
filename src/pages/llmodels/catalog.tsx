@@ -1,9 +1,10 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
+import MoreButton from '@/components/buttons/more';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
-import { DoubleRightOutlined, SyncOutlined } from '@ant-design/icons';
+import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Pagination, Select, Space, message } from 'antd';
@@ -20,18 +21,6 @@ import { CatalogItem as CatalogItemType, FormData } from './config/types';
 const PageWrapper = styled.div`
   display: none;
   margin-block: 32px 16px;
-`;
-
-const MoreWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-block: 16px;
-  opacity: 1;
-  transition: opacity 0.3s;
-  &.loading {
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  }
 `;
 
 const Catalog: React.FC = () => {
@@ -315,18 +304,11 @@ const Catalog: React.FC = () => {
         activeId={-1}
         isFirst={isFirst}
       ></CatalogList>
-      {queryParams.page < dataSource.totalPage && (
-        <MoreWrapper className={dataSource.loading ? 'loading' : ''}>
-          <Button
-            onClick={loadMore}
-            size="middle"
-            type="text"
-            icon={<DoubleRightOutlined rotate={90} />}
-          >
-            {intl.formatMessage({ id: 'common.button.more' })}
-          </Button>
-        </MoreWrapper>
-      )}
+      <MoreButton
+        show={queryParams.page < dataSource.totalPage}
+        loading={dataSource.loading}
+        loadMore={loadMore}
+      ></MoreButton>
       <PageWrapper>
         <Pagination
           hideOnSinglePage={queryParams.perPage === 100}

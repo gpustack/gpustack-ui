@@ -32,7 +32,8 @@ const resetFields = [
   'cpu_offloading',
   'distributed_inference_across_workers',
   'backend_version',
-  'backend_parameters'
+  'backend_parameters',
+  'env'
 ];
 
 const ModalFooterStyle = {

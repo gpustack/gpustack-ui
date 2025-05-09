@@ -1,3 +1,4 @@
+import MoreButton from '@/components/buttons/more';
 import SimpleOverlay from '@/components/simple-overlay';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
@@ -9,6 +10,7 @@ import React, {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -54,13 +56,7 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const {
-    collapsed,
-    modelSource,
-    isDownload,
-    gpuOptions,
-    displayEvaluateStatus
-  } = props;
+  const { collapsed, modelSource, isDownload, displayEvaluateStatus } = props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
@@ -83,6 +79,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
   const timer = useRef<any>(null);
+  const cacheSortListRef = useRef<any[]>([]);
 
   const handleSelectModelFile = (item: any, evaluate?: boolean) => {
     props.onSelectFile?.(item, evaluate);
@@ -232,7 +229,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     }
   }, []);
 
-  const handleEvaluate = async (list: any[]) => {
+  const handleEvaluate = async (list: any[], first?: boolean) => {
     if (isDownload) {
       return;
     }
@@ -259,7 +256,8 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       const resultList = _.map(list, (item: any, index: number) => {
         return {
           ...item,
-          evaluateResult: evaluationList[index]
+          evaluateResult: evaluationList[index],
+          done: true
         };
       });
       const currentItem = _.find(
@@ -275,7 +273,10 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       if (currentItem) {
         handleSelectModelFile(currentItem, true);
       }
-      setDataSource({ fileList: resultList, loading: false });
+      setDataSource({
+        fileList: first ? resultList : [...dataSource.fileList, ...resultList],
+        loading: false
+      });
       setIsEvaluating(false);
     } catch (error) {
       setIsEvaluating(false);
@@ -318,10 +319,14 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         return sortType === 'size' ? item.size : item.path;
       });
 
-      handleSelectModelFile(sortList[0]);
-      setDataSource({ fileList: sortList, loading: false });
+      cacheSortListRef.current = sortList;
 
-      handleEvaluate(sortList);
+      const headList = cacheSortListRef.current.splice(0, 10);
+
+      handleSelectModelFile(headList[0]);
+      setDataSource({ fileList: headList, loading: false });
+
+      handleEvaluate(headList, true);
     } catch (error) {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
@@ -348,12 +353,28 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       handleSelectModelFile(item);
     }
   };
+
+  const handleOnScrollEnd = () => {
+    const headList = cacheSortListRef.current.splice(0, 10);
+    if (headList.length) {
+      setDataSource({
+        ...dataSource,
+        fileList: [...dataSource.fileList, ...headList]
+      });
+      handleEvaluate(headList);
+    }
+  };
+
   useImperativeHandle(ref, () => ({
     fetchModelFiles: handleFetchModelFiles
   }));
 
+  const maxHeight = useMemo(() => {
+    return collapsed ? 'max-content' : 'calc(100vh - 300px)';
+  }, [collapsed]);
+
   useEffect(() => {
-    if (!props.selectedModel.name) {
+    if (!props.selectedModel?.name) {
       setDataSource({ fileList: [], loading: false });
       handleSelectModelFile({});
     }
@@ -399,7 +420,11 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           ></Spin>
         </div>
       )}
-      <SimpleOverlay height={collapsed ? 'max-content' : 'calc(100vh - 300px)'}>
+      <SimpleOverlay
+        height={maxHeight}
+        onScrollEnd={handleOnScrollEnd}
+        disableTrigger={isEvaluating || dataSource.loading}
+      >
         <div style={{ padding: '16px 24px' }}>
           {dataSource.fileList.length ? (
             <ItemFileWrapper>
@@ -408,7 +433,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
                   <ModelFileItem
                     key={item.path}
                     data={item}
-                    isEvaluating={isEvaluating}
+                    isEvaluating={isEvaluating && !item.done}
                     active={item.path === current}
                     handleSelectModelFile={handleSelectModelFile}
                     handleOnEnter={handleOnEnter}
@@ -428,6 +453,15 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
               />
             )
           )}
+          <MoreButton
+            show={
+              cacheSortListRef.current.length > 0 &&
+              !dataSource.loading &&
+              !isEvaluating
+            }
+            loading={dataSource.loading || isEvaluating}
+            loadMore={handleOnScrollEnd}
+          ></MoreButton>
         </div>
       </SimpleOverlay>
     </div>

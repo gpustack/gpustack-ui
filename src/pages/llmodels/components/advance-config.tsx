@@ -141,11 +141,16 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         backend: 'Ascend MindIE',
         releases: '',
         link: 'http://docs.gpustack.ai/latest/user-guide/inference-backends/#parameters-reference_2',
-        version: 'v0.1.0'
+        version: '1.0.0'
       };
     }
 
-    return null;
+    return {
+      backend: 'vox-box',
+      releases: 'https://github.com/gpustack/vox-box/releases',
+      link: '',
+      version: 'v0.0.13'
+    };
   }, [backend]);
 
   const handleWorkerLabelsChange = useCallback(
@@ -414,7 +419,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             onDelete={handleDeleteBackendParameters}
             options={paramsConfig}
             description={
-              backendParamsTips && (
+              backendParamsTips.link && (
                 <span style={{ marginLeft: 5 }}>
                   {intl.formatMessage(
                     { id: 'models.form.backend_parameters.vllm.tips' },

@@ -124,21 +124,24 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       return {
         backend: 'llama-box',
         releases: 'https://github.com/gpustack/llama-box/releases',
-        link: 'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage'
+        link: 'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage',
+        version: 'v0.0.140'
       };
     }
     if (backend === backendOptionsMap.vllm) {
       return {
         backend: 'vLLM',
         releases: 'https://github.com/vllm-project/vllm/releases',
-        link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#cli-reference'
+        link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#cli-reference',
+        version: 'v0.8.5'
       };
     }
     if (backend === backendOptionsMap.ascendMindie) {
       return {
         backend: 'Ascend MindIE',
         releases: '',
-        link: 'http://docs.gpustack.ai/latest/user-guide/inference-backends/#parameters-reference_2'
+        link: 'http://docs.gpustack.ai/latest/user-guide/inference-backends/#parameters-reference_2',
+        version: 'v0.1.0'
       };
     }
 
@@ -349,6 +352,11 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
 
         <Form.Item name="backend_version">
           <SealInput.Input
+            placeholder={
+              backendParamsTips?.version
+                ? `${intl.formatMessage({ id: 'common.help.eg' })} ${backendParamsTips?.version}`
+                : ''
+            }
             onBlur={handleBackendVersionOnBlur}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
             description={intl.formatMessage(
@@ -357,6 +365,9 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               },
               {
                 backend: backendLabelMap[backend],
+                version: backendParamsTips?.version
+                  ? `(${intl.formatMessage({ id: 'common.help.eg' })} ${backendParamsTips?.version})`
+                  : '',
                 link: backendParamsTips?.releases && (
                   <span
                     style={{

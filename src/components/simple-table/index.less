@@ -8,22 +8,21 @@
     border-spacing: 0;
 
     td {
-      border-bottom: 1px solid var(--ant-color-split);
+      border-bottom: 1px solid var(--color-white-light-1);
     }
 
     th {
-      border-bottom: 1px solid var(--ant-color-split);
+      border-bottom: 1px solid var(--color-white-light-1);
     }
   }
 
   th {
     height: 36px;
     font-weight: 600;
-    color: var(--ant-color-text);
   }
 
   td {
-    color: var(--ant-color-text-secondary);
+    color: var(--color-white-quaternary);
   }
 
   .cell-span {
@@ -34,5 +33,17 @@
 
   .cell-header {
     font-weight: var(--font-weight-medium);
+  }
+
+  &.light {
+    th {
+      color: var(--ant-color-text);
+      border-bottom: 1px solid var(--ant-color-split);
+    }
+
+    td {
+      color: var(--ant-color-text);
+      border-bottom: 1px solid var(--ant-color-split);
+    }
   }
 }

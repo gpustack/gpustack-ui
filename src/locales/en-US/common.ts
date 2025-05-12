@@ -147,7 +147,7 @@ export default {
   'common.copy.notSupport': 'Your browser does not support Clipboard API',
   'common.title.basicInfo': 'Basic',
   'common.help.need': 'Need help?',
-  'common.help.eg': 'e.g.:',
+  'common.help.eg': 'e.g.,',
   'common.filter.label': 'Filters',
   'common.filter.isrequired.holder': 'Optional',
   'common.filter.isrequired.true': 'Required',

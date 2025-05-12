@@ -145,12 +145,12 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    if (
-      item.fakeName &&
-      !isHolderRef.current.model &&
-      !isHolderRef.current.file
-    ) {
-      handleShowCompatibleAlert(item.evaluateResult);
+    if (item.fakeName) {
+      handleOnValuesChange?.({
+        changedValues: {},
+        allValues: form.current?.form?.getFieldsValue?.(),
+        source: props.source
+      });
     }
   };
 
@@ -353,7 +353,6 @@ const AddModal: FC<AddModalProps> = (props) => {
                       modelSource={props.source}
                       onSelectFile={handleSelectModelFile}
                       collapsed={collapsed}
-                      displayEvaluateStatus={displayEvaluateStatus}
                       gpuOptions={props.gpuOptions}
                     ></HFModelFile>
                   )}

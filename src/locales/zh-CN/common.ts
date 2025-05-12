@@ -141,7 +141,7 @@ export default {
   'common.copy.notSupport': '您的浏览器不支持剪贴板 API',
   'common.title.basicInfo': '基本信息',
   'common.help.need': '需要帮助？',
-  'common.help.eg': '例:',
+  'common.help.eg': '例如:',
   'common.filter.label': '筛选',
   'common.filter.isrequired.holder': '是否必填',
   'common.filter.isrequired.true': '必填',

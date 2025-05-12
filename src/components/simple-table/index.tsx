@@ -43,12 +43,12 @@ interface SimpleTableProps {
   rowKey: string;
 }
 const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
-  const { columns, dataSource, rowKey, bordered = true } = props;
+  const { columns, dataSource, rowKey, theme, bordered = true } = props;
 
   return (
     <div>
       <table
-        className={classNames('simple-table', {
+        className={classNames('simple-table', theme, {
           'simple-table-bordered': bordered
         })}
       >

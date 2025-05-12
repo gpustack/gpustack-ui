@@ -160,10 +160,8 @@ const RenderWorkerDownloading = (props: {
     <Tooltip
       arrow={true}
       overlayInnerStyle={{
-        width: 300,
-        backgroundColor: 'var(--color-spotlight-bg)'
+        width: 300
       }}
-      overlayClassName="light-downloading-tooltip"
       title={
         <RenderRayactorDownloading
           severList={rayActors}
@@ -477,6 +475,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     return (
       <TooltipOverlayScroller
         toolTipProps={{
+          trigger: 'click',
           overlayInnerStyle: {
             width: 'max-content',
             maxWidth: '520px',

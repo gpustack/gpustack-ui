@@ -261,12 +261,17 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const currentItem = resultList.find(
         (item) => item.id === currentRef.current
       );
-      displayEvaluateStatus?.({
-        show: false,
-        flag: {
-          model: false
-        }
-      });
+
+      // if item is GGUF, the evaluating would be do after selecting the model file.
+      if (currentItem && !currentItem.isGGUF) {
+        displayEvaluateStatus?.({
+          show: false,
+          flag: {
+            model: false
+          }
+        });
+      }
+
       if (currentItem) {
         handleOnSelectModel(currentItem, true);
       }
@@ -292,12 +297,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         return { ...pre };
       });
       setLoadingModel?.(true);
-      displayEvaluateStatus?.({
-        show: true,
-        flag: {
-          model: true
-        }
-      });
       cacheRepoOptions.current = [];
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {
@@ -306,13 +305,18 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         list = await getModelsFromModelscope(sort);
       }
       cacheRepoOptions.current = list;
-      console.log('list=========', list);
 
       setDataSource({
         repoOptions: list,
         loading: false,
         networkError: false,
         sortType: sort
+      });
+      displayEvaluateStatus?.({
+        show: true,
+        flag: {
+          model: true
+        }
       });
       handleOnSelectModel(list[0]);
       setLoadingModel?.(false);

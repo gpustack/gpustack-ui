@@ -188,7 +188,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
         {roleTitle}
         {data.role === Roles.Assistant && reasoningContent.thought && (
           <ThoughtStatus
-            isThinking={reasoningContent.isThinking}
+            isThinking={loading && reasoningContent.isThinking}
             collapsed={collapsed}
             setCollapsed={setCollapsed}
           ></ThoughtStatus>
@@ -200,6 +200,7 @@ const ContentItem: React.FC<MessageItemProps> = ({
     data.title,
     intl,
     showTitle,
+    loading,
     reasoningContent.thought,
     reasoningContent.isThinking,
     collapsed

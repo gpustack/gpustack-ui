@@ -228,7 +228,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
                     <ThinkContent
                       collapsed={collapsed}
                       content={reasoningContent.thought}
-                      isThinking={reasoningContent.isThinking}
+                      isThinking={loading && reasoningContent.isThinking}
                     ></ThinkContent>
                     <div style={{ paddingInline: 4 }}>
                       <FullMarkdown

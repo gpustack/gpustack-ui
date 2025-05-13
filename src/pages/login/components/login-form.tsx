@@ -198,29 +198,29 @@ const LoginForm = () => {
               label={intl.formatMessage({ id: 'common.form.password' })}
             />
           </Form.Item>
-          <Form.Item noStyle name="autoLogin" valuePropName="checked">
-            <div
-              className="flex-center flex-between"
-              style={{
-                marginBottom: 24
-              }}
-            >
+          <div
+            className="flex-center flex-between"
+            style={{
+              marginBottom: 24
+            }}
+          >
+            <Form.Item noStyle name="autoLogin" valuePropName="checked">
               <Checkbox style={{ marginLeft: 5 }}>
                 <span style={{ color: 'var(--ant-color-text-secondary)' }}>
                   {intl.formatMessage({ id: 'common.login.rember' })}
                 </span>
               </Checkbox>
-              <Button
-                type="link"
-                size="small"
-                href={externalLinks.resetPassword}
-                target="_blank"
-                style={{ padding: 0 }}
-              >
-                {intl.formatMessage({ id: 'common.button.forgotpassword' })}
-              </Button>
-            </div>
-          </Form.Item>
+            </Form.Item>
+            <Button
+              type="link"
+              size="small"
+              href={externalLinks.resetPassword}
+              target="_blank"
+              style={{ padding: 0 }}
+            >
+              {intl.formatMessage({ id: 'common.button.forgotpassword' })}
+            </Button>
+          </div>
           <Button
             htmlType="submit"
             type="primary"

@@ -2,7 +2,7 @@ import useUserSettings from '@/hooks/use-user-settings';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Select } from 'antd';
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -55,10 +55,6 @@ const Appearance: React.FC = () => {
   const handleOnChange = (value: 'light' | 'realDark' | 'auto') => {
     setTheme(value);
   };
-
-  const theme = useMemo(() => {
-    return userSettings?.theme || 'auto';
-  }, [userSettings?.theme]);
 
   return (
     <Wrapper>

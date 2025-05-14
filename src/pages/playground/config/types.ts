@@ -29,7 +29,8 @@ type SchemaType =
   | 'Slider'
   | 'TextArea'
   | 'Checkbox'
-  | 'Textarea';
+  | 'Textarea'
+  | 'Switch';
 
 export interface ParamsSchema {
   type: SchemaType;

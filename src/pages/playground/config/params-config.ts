@@ -423,6 +423,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
       isLocalized: true
     },
     attrs: {
+      scaleSize: true,
       trim: false,
       autoSize: { minRows: 2, maxRows: 2 }
     },
@@ -433,19 +434,11 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'Select',
+    type: 'Switch',
     name: 'preview',
-    options: [
-      { label: 'Faster', value: 'preview_faster' },
-      { label: 'Normal', value: 'preview' },
-      { label: 'common.options.none', value: null, locale: true }
-    ],
     label: {
       text: 'Preview',
       isLocalized: false
-    },
-    attrs: {
-      allowNull: true
     },
     rules: [
       {

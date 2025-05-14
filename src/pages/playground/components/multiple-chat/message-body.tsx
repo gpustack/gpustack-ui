@@ -217,7 +217,6 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
                 autoSize={{ minRows: 1 }}
                 style={{ borderRadius: 'var(--border-radius-mini)' }}
                 readOnly={loading}
-                onKeyDown={handleKeyDown}
                 onChange={handleMessageChange}
                 onPaste={handleOnPaste}
               />
@@ -244,7 +243,6 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
                     variant="filled"
                     autoSize={{ minRows: 1 }}
                     style={{ borderRadius: 'var(--border-radius-mini)' }}
-                    onKeyDown={handleKeyDown}
                     onChange={handleEdit}
                     onPaste={handleOnPaste}
                   />

@@ -243,5 +243,6 @@ export default {
   'common.appearance.darkmode': 'Dark Mode',
   'common.appearance.lightmode': 'Light Mode',
   'common.appearance.tips': 'Default follows system preference.',
-  'common.button.forgotpassword': 'Forgot password?'
+  'common.button.forgotpassword': 'Forgot password?',
+  'common.appearance.theme': 'Theme'
 };

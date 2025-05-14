@@ -149,7 +149,7 @@ export default {
   'models.table.apiAccessInfo.gotoCreate': '作成に移動',
   'models.search.parts': '{n} 部分',
   'models.search.evaluate.error': '評価中にエラーが発生しました: ',
-  'models.ollama.deprecated.title': 'Ollama Model Source Will Be Removed',
+  'models.ollama.deprecated.title': 'Deprecation Notice',
   'models.ollama.deprecated.current':
     '<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
   'models.ollama.deprecated.upcoming':
@@ -157,13 +157,12 @@ export default {
   'models.ollama.deprecated.following':
     '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
   'models.ollama.deprecated.issue':
-    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.'
+    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
+  'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.ollama.deprecated.title': 'Ollama Model Source Will Be Removed',
-// 2. 'models.ollama.deprecated.current':'<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
-// 3. 'models.ollama.deprecated.upcoming': '<span class="bold-text">Upcoming Version (v0.7.0): </span>The Ollama model source will be removed from the UI.',
-// 4. 'models.ollama.deprecated.following': '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
-// 5. 'models.ollama.deprecated.issue': 'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.'
+// 1. 'models.ollama.deprecated.title': 'Deprecation Notice',
+// 2. 'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
+
 // ========== End of To-Do List ==========

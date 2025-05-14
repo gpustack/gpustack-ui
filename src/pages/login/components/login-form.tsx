@@ -2,7 +2,7 @@ import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
 import SealInput from '@/components/seal-form/seal-input';
-import ThemeToggle from '@/components/theme-toggle';
+import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import externalLinks from '@/constants/external-links';
 import {
   CRYPT_TEXT,
@@ -30,6 +30,7 @@ const useStyles = createStyles(({ token, css }) => ({
     position: fixed;
     right: 0;
     top: 0;
+    height: 60px;
     padding: 20px;
     .anticon-global {
       color: ${token.colorText};
@@ -153,7 +154,7 @@ const LoginForm = () => {
   return (
     <div>
       <div className={styles.header}>
-        <ThemeToggle></ThemeToggle>
+        <ThemeDropActions></ThemeDropActions>
         <LangSelect />
       </div>
       <div>

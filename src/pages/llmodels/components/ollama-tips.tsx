@@ -55,37 +55,12 @@ const RenderMessage = () => {
   const intl = useIntl();
   return (
     <Tips>
-      <ul>
-        <li>
-          <span
-            dangerouslySetInnerHTML={{
-              __html: intl.formatMessage({
-                id: 'models.ollama.deprecated.current'
-              })
-            }}
-          ></span>
-        </li>
-        <li>
-          <span
-            dangerouslySetInnerHTML={{
-              __html: intl.formatMessage({
-                id: 'models.ollama.deprecated.upcoming'
-              })
-            }}
-          ></span>
-        </li>
-      </ul>
       <div className="notice">
-        <span
-          dangerouslySetInnerHTML={{
-            __html: intl.formatMessage({
-              id: 'models.ollama.deprecated.following'
-            })
-          }}
-        ></span>
         <div
           dangerouslySetInnerHTML={{
-            __html: intl.formatMessage({ id: 'models.ollama.deprecated.issue' })
+            __html: intl.formatMessage({
+              id: 'models.ollama.deprecated.notice'
+            })
           }}
         ></div>
       </div>

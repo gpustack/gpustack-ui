@@ -149,7 +149,7 @@ export default {
   'models.table.apiAccessInfo.gotoCreate': 'Go to Create',
   'models.search.parts': '{n} parts',
   'models.search.evaluate.error': 'An error occurred during evaluation: ',
-  'models.ollama.deprecated.title': 'Ollama Model Source Will Be Removed',
+  'models.ollama.deprecated.title': 'Deprecation Notice',
   'models.ollama.deprecated.current':
     '<span class="bold-text">Current Version (v0.6.1): </span>Ollama models are currently available for use.',
   'models.ollama.deprecated.upcoming':
@@ -157,5 +157,6 @@ export default {
   'models.ollama.deprecated.following':
     '<span class="bold-text">Following the v0.7.0 update,</span> all previously deployed models will continue to work as expected.',
   'models.ollama.deprecated.issue':
-    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.'
+    'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
+  'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
 };

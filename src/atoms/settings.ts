@@ -3,13 +3,15 @@ import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
 type UserSettings = {
-  theme: 'light' | 'realDark' | 'auto';
+  theme: 'light' | 'realDark';
+  mode: 'light' | 'realDark' | 'auto';
   colorPrimary: string;
   isDarkTheme: boolean;
 };
 
 export const userSettingsAtom = atomWithStorage<UserSettings>('userSettings', {
   theme: 'light',
+  mode: 'auto',
   isDarkTheme: false,
   colorPrimary: colorPrimary
 });

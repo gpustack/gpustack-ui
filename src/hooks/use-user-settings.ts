@@ -9,6 +9,15 @@ export default function useUserSettings() {
   const { light, dark, colorPrimary } = themeConfig;
   const [userSettings, setUserSettings] = useAtom(userSettingsHelperAtom);
 
+  const getCurrentTheme = (mode: Theme): 'light' | 'realDark' => {
+    if (mode === 'auto') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'realDark'
+        : 'light';
+    }
+    return mode;
+  };
+
   const setHtmlThemeAttr = (theme: string) => {
     const html = document.querySelector('html');
     if (html) {
@@ -17,39 +26,42 @@ export default function useUserSettings() {
   };
 
   const themeData = useMemo(() => {
-    const themeTokens = userSettings.theme === 'realDark' ? dark : light;
-    themeTokens.token.colorPrimary = userSettings.colorPrimary || colorPrimary;
+    const baseTokens = userSettings.theme === 'realDark' ? dark : light;
     return {
-      ...themeTokens
+      ...baseTokens,
+      token: {
+        ...baseTokens.token,
+        colorPrimary: userSettings.colorPrimary || colorPrimary
+      }
     };
   }, [userSettings.theme, userSettings.colorPrimary]);
 
-  const setTheme = (theme: Theme) => {
-    setHtmlThemeAttr(theme);
+  const setTheme = (mode: Theme) => {
+    const currentTheme = getCurrentTheme(mode);
+    setHtmlThemeAttr(currentTheme);
     setUserSettings({
-      theme: theme,
-      isDarkTheme: theme === 'realDark'
+      theme: currentTheme,
+      mode: mode,
+      isDarkTheme: currentTheme === 'realDark'
     });
   };
 
   useEffect(() => {
-    setHtmlThemeAttr(userSettings.theme);
-  }, [userSettings.theme]);
+    setTheme(userSettings.mode);
+  }, []);
 
   useEffect(() => {
-    const handleChange = (e: MediaQueryListEvent) => {
-      setTheme(e.matches ? 'realDark' : 'light');
-    };
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', handleChange);
+    if (userSettings.mode !== 'auto') return;
 
-    if (userSettings.theme === 'auto') {
-      setTheme(mediaQuery.matches ? 'realDark' : 'light');
-    }
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      setTheme('auto');
+    };
+    mediaQuery.addEventListener('change', handleChange);
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
     };
-  }, [userSettings.theme]);
+  }, [userSettings.mode]);
 
   return {
     userSettings,

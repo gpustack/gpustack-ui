@@ -142,7 +142,7 @@ export default {
   'models.table.apiAccessInfo.gotoCreate': '去创建',
   'models.search.parts': '{n} 个文件',
   'models.search.evaluate.error': '评估过程中发生了错误：',
-  'models.ollama.deprecated.title': 'Ollama 模型源即将被移除',
+  'models.ollama.deprecated.title': '弃用通知',
   'models.ollama.deprecated.current':
     '<span class="bold-text">当前版本（v0.6.1）：</span>Ollama 模型目前仍可使用。',
   'models.ollama.deprecated.upcoming':
@@ -150,5 +150,6 @@ export default {
   'models.ollama.deprecated.following':
     '<span class="bold-text">在 v0.7.0 更新后：</span> 所有先前部署的模型仍将正常运行。',
   'models.ollama.deprecated.issue':
-    '参见 GitHub 上的问题 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979</a>。'
+    '参见 GitHub 上的问题 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979</a>。',
+  'models.ollama.deprecated.notice': `Ollama 模型来源自 v0.6.1 起已被弃用。更多信息请参见相关的 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">GitHub 问题</a>。`
 };

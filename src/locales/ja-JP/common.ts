@@ -243,7 +243,8 @@ export default {
   'common.appearance.darkmode': 'Dark Mode',
   'common.appearance.lightmode': 'Light Mode',
   'common.appearance.tips': 'Default follows system preference.',
-  'common.button.forgotpassword': 'Forgot password?'
+  'common.button.forgotpassword': 'Forgot password?',
+  'common.appearance.theme': 'Theme'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -256,4 +257,5 @@ export default {
 // 7. 'common.appearance.lightmode': 'Light Mode',
 // 8. 'common.appearance.tips': 'Default follows system preference.'
 // 9. 'common.button.forgotpassword': 'Forgot Password?'
+// 10.  'common.appearance.theme': 'Theme'
 // ========== End of To-Do List ==========

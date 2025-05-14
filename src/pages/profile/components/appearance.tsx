@@ -1,7 +1,7 @@
 import useUserSettings from '@/hooks/use-user-settings';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Switch } from 'antd';
+import { Select } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
@@ -14,9 +14,11 @@ const Wrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 220px;
+    max-width: 300px;
   }
   .theme-label {
+    display: flex;
+    align-items: center;
     font-size: 16px;
     font-weight: var(--font-weight-500);
   }
@@ -25,46 +27,51 @@ const Wrapper = styled.div`
   }
 `;
 
-const ThemeOptions = [
-  {
-    key: 'realDark',
-    label: 'common.appearance.dark',
-    icon: <MoonOutlined />
-  },
-  {
-    key: 'light',
-    label: 'common.appearance.light',
-    icon: <SunOutlined />
-  }
-];
 const Appearance: React.FC = () => {
   const { setTheme, userSettings } = useUserSettings();
 
+  console.log('userSettings', userSettings);
+
   const intl = useIntl();
 
-  const handleOnChange = (checked: boolean) => {
-    if (checked) {
-      setTheme('realDark');
-    } else {
-      setTheme('light');
+  const ThemeOptions = [
+    {
+      value: 'light',
+      label: intl.formatMessage({ id: 'common.appearance.light' }),
+      icon: <SunOutlined />
+    },
+    {
+      value: 'realDark',
+      label: intl.formatMessage({ id: 'common.appearance.dark' }),
+      icon: <MoonOutlined />
+    },
+    {
+      value: 'auto',
+      label: intl.formatMessage({ id: 'common.appearance.system' }),
+      icon: <SunOutlined />
     }
+  ];
+
+  const handleOnChange = (value: 'light' | 'realDark' | 'auto') => {
+    setTheme(value);
   };
 
-  const isDarkMode = useMemo(() => {
-    const darkMode = userSettings?.theme === 'realDark';
-    return darkMode;
+  const theme = useMemo(() => {
+    return userSettings?.theme || 'auto';
   }, [userSettings?.theme]);
 
   return (
     <Wrapper>
       <div className="theme">
         <span className="theme-label">
-          {intl.formatMessage({ id: 'common.appearance.darkmode' })}
+          <span>{intl.formatMessage({ id: 'common.appearance.theme' })}</span>
         </span>
-        <Switch checked={isDarkMode} onChange={handleOnChange} />
-      </div>
-      <div className="tips">
-        {intl.formatMessage({ id: 'common.appearance.tips' })}
+        <Select
+          value={userSettings.mode}
+          options={ThemeOptions}
+          onChange={handleOnChange}
+          style={{ width: 200 }}
+        ></Select>
       </div>
     </Wrapper>
   );

@@ -52,7 +52,7 @@ const WrapperBox = styled.div`
     border-color: var(--ant-input-hover-border-color);
     transition: all 0.2s ease;
   }
-  &:focus-within {
+  &:focus-within:not(.no-focus, .borderless) {
     border-color: var(--ant-input-active-border-color);
     box-shadow: var(--ant-input-active-shadow);
     outline: 0;

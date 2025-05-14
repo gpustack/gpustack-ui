@@ -145,13 +145,8 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       chunk_size: 16 * 1024,
       chunk_results: true
     };
-    if (parameters.preview === 'preview') {
-      stream_options = {
-        preview: true
-      };
-    }
 
-    if (parameters.preview === 'preview_faster') {
+    if (parameters.preview) {
       stream_options = {
         preview_faster: true
       };

@@ -420,25 +420,32 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={paramsConfig}
             description={
               backendParamsTips.link && (
-                <span style={{ marginLeft: 5 }}>
-                  {intl.formatMessage(
-                    { id: 'models.form.backend_parameters.vllm.tips' },
-                    { backend: backendParamsTips.backend || '' }
-                  )}{' '}
-                  <Typography.Link
-                    style={{ display: 'inline' }}
-                    className="flex-center"
-                    href={backendParamsTips.link}
-                    target="_blank"
-                  >
+                <span>
+                  {backend === backendOptionsMap.ascendMindie && (
                     <span>
-                      {intl.formatMessage({ id: 'common.text.here' })}
+                      {intl.formatMessage({ id: 'models.backend.mindie.310p' })}
                     </span>
-                    <IconFont
-                      type="icon-external-link"
-                      className="font-size-14 m-l-4"
-                    ></IconFont>
-                  </Typography.Link>
+                  )}
+                  <span style={{ marginLeft: 5 }}>
+                    {intl.formatMessage(
+                      { id: 'models.form.backend_parameters.vllm.tips' },
+                      { backend: backendParamsTips.backend || '' }
+                    )}{' '}
+                    <Typography.Link
+                      style={{ display: 'inline' }}
+                      className="flex-center"
+                      href={backendParamsTips.link}
+                      target="_blank"
+                    >
+                      <span>
+                        {intl.formatMessage({ id: 'common.text.here' })}
+                      </span>
+                      <IconFont
+                        type="icon-external-link"
+                        className="font-size-14 m-l-4"
+                      ></IconFont>
+                    </Typography.Link>
+                  </span>
                 </span>
               )
             }

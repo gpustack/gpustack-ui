@@ -9,12 +9,17 @@ type UserSettings = {
   isDarkTheme: boolean;
 };
 
-export const userSettingsAtom = atomWithStorage<UserSettings>('userSettings', {
+const defaultSettings: UserSettings = {
   theme: 'light',
   mode: 'auto',
   isDarkTheme: false,
   colorPrimary: colorPrimary
-});
+};
+
+export const userSettingsAtom = atomWithStorage<UserSettings>(
+  'userSettings',
+  defaultSettings
+);
 
 export const userSettingsHelperAtom = atom(
   (get) => get(userSettingsAtom),

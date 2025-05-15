@@ -47,8 +47,8 @@ export default function useUserSettings() {
   };
 
   useEffect(() => {
-    setTheme(userSettings.mode);
-  }, []);
+    setHtmlThemeAttr(userSettings.theme);
+  }, [userSettings.theme]);
 
   useEffect(() => {
     if (userSettings.mode !== 'auto') return;

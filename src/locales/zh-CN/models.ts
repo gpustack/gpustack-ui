@@ -151,5 +151,7 @@ export default {
     '<span class="bold-text">在 v0.7.0 更新后：</span> 所有先前部署的模型仍将正常运行。',
   'models.ollama.deprecated.issue':
     '参见 GitHub 上的问题 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979</a>。',
-  'models.ollama.deprecated.notice': `Ollama 模型来源自 v0.6.1 起已被弃用。更多信息请参见相关的 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">GitHub 问题</a>。`
+  'models.ollama.deprecated.notice': `Ollama 模型来源自 v0.6.1 起已被弃用。更多信息请参见相关的 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">GitHub 问题</a>。`,
+  'models.backend.mindie.310p':
+    'Ascend 310P 仅支持 FP16，需要设置 --dtype=float16。'
 };

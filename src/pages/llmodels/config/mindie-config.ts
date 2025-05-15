@@ -88,7 +88,8 @@ const options = [
   },
   {
     label: '--dtype',
-    value: '--dtype'
+    value: '--dtype',
+    options: ['auto', 'half', 'float16', 'bfloat16', 'float', 'float32']
   },
   {
     label: '--rope-scaling',

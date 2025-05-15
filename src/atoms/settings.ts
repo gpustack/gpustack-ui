@@ -16,6 +16,15 @@ const defaultSettings: UserSettings = {
   colorPrimary: colorPrimary
 };
 
+export const getStorageUserSettings = () => {
+  if (typeof window === 'undefined') return defaultSettings;
+  try {
+    return JSON.parse(localStorage.getItem('userSettings') || '{}');
+  } catch {
+    return defaultSettings;
+  }
+};
+
 export const userSettingsAtom = atomWithStorage<UserSettings>(
   'userSettings',
   defaultSettings

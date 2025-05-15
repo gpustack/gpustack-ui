@@ -2,6 +2,7 @@
 
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
+import DarkMask from '@/components/dark-mask';
 import ShortCuts, {
   modalConfig as ShortCutsConfig
 } from '@/components/short-cuts';
@@ -430,6 +431,7 @@ export default (props: any) => {
         ...themeData
       }}
     >
+      <DarkMask theme={userSettings.theme}></DarkMask>
       <ProLayout
         route={route}
         location={location}

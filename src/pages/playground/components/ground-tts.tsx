@@ -356,7 +356,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
         )}
         <div className="ground-left-footer">
           <MessageInput
-            actions={['check', 'clear']}
+            actions={['check']}
             checkLabel={intl.formatMessage({
               id: 'playground.toolbar.autoplay'
             })}

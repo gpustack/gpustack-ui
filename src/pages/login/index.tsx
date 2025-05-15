@@ -1,5 +1,6 @@
 import Bg2 from '@/assets/images/bg-2.png';
 import { userAtom } from '@/atoms/user';
+import DarkMask from '@/components/dark-mask';
 import Footer from '@/components/footer';
 import useUserSettings from '@/hooks/use-user-settings';
 import { useModel } from '@umijs/max';
@@ -93,6 +94,7 @@ const Login = () => {
       }}
     >
       <div>
+        <DarkMask></DarkMask>
         <Wrapper $isDarkTheme={isDarkTheme}></Wrapper>
         <Box>
           <FormWrapper>

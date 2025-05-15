@@ -431,7 +431,7 @@ export default (props: any) => {
         ...themeData
       }}
     >
-      <DarkMask theme={userSettings.theme}></DarkMask>
+      <DarkMask></DarkMask>
       <ProLayout
         route={route}
         location={location}

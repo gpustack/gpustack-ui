@@ -1,35 +1,29 @@
-import { Component } from 'react';
+import type { ErrorInfo } from 'react';
+import React from 'react';
+import ErrorResult from './error-result';
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-}
-
-class ErrorBoundary extends Component<
+// eslint-disable-next-line @typescript-eslint/ban-types
+class ErrorBoundary extends React.Component<
   { children?: React.ReactNode },
-  ErrorBoundaryState
+  { hasError: boolean; errorInfo: string }
 > {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      hasError: false
-    };
+  state = { hasError: false, errorInfo: '' };
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorInfo: error.message };
   }
 
-  static getDerivedStateFromError(error: any) {
-    console.error('Error caught by Error Boundary:', error);
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: any, info: any) {
-    console.error('Error caught by Error Boundary:', error);
-    console.error(info);
+  componentDidCatch(error: any, errorInfo: ErrorInfo) {
+    // You can also log the error to an error reporting service
+    // eslint-disable-next-line no-console
+    console.log(error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      return <h1>Something went wrong.</h1>;
+      // You can render any custom fallback UI
+      return <ErrorResult extra={this.state.errorInfo} />;
     }
-
     return this.props.children;
   }
 }

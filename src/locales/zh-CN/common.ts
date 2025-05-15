@@ -239,5 +239,7 @@ export default {
   'common.appearance.lightmode': '浅色模式',
   'common.appearance.tips': '默认跟随系统设置',
   'common.button.forgotpassword': '忘记密码？',
-  'common.appearance.theme': '主题'
+  'common.appearance.theme': '主题',
+  'common.page.wentwrong': '哎呀，出了点问题',
+  'common.page.refresh.tips': '出了点问题，试试刷新页面吧！'
 };

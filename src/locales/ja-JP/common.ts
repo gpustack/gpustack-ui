@@ -244,7 +244,10 @@ export default {
   'common.appearance.lightmode': 'Light Mode',
   'common.appearance.tips': 'Default follows system preference.',
   'common.button.forgotpassword': 'Forgot password?',
-  'common.appearance.theme': 'Theme'
+  'common.appearance.theme': 'Theme',
+  'common.page.wentwrong': 'Something went wrong.',
+  'common.page.refresh.tips':
+    'Oops! Something went wrong. Try refreshing the page.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -257,5 +260,7 @@ export default {
 // 7. 'common.appearance.lightmode': 'Light Mode',
 // 8. 'common.appearance.tips': 'Default follows system preference.'
 // 9. 'common.button.forgotpassword': 'Forgot Password?'
-// 10.  'common.appearance.theme': 'Theme'
+// 10.  'common.appearance.theme': 'Theme',
+// 11. 'common.page.wentwrong': 'Something went wrong.',
+// 12. 'common.page.refresh.tips': 'Oops! Something went wrong. Try refreshing the page.'
 // ========== End of To-Do List ==========

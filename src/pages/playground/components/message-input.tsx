@@ -179,12 +179,12 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     const handleClearAll = (e: any) => {
       e.stopPropagation();
       clearAll();
-      handleInputChange({ target: { value: '' } });
-      setMessage({
-        role: Roles.User,
-        content: '',
-        imgs: []
-      });
+      // handleInputChange({ target: { value: '' } });
+      // setMessage({
+      //   role: Roles.User,
+      //   content: '',
+      //   imgs: []
+      // });
     };
 
     const handleAddMessage = (e?: any) => {

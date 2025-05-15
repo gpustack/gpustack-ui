@@ -567,7 +567,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         </div>
         <div style={{ width: 389 }}>
           <MessageInput
-            actions={['clear']}
+            actions={[]}
             defaultSize={{
               minRows: 5,
               maxRows: 5

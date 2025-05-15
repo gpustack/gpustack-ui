@@ -36,6 +36,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
+import ErrorBoundary from './error-boundary';
 import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
 
@@ -465,6 +466,7 @@ export default (props: any) => {
         fixedHeader
         {...runtimeConfig}
         actionsRender={actionRender}
+        ErrorBoundary={ErrorBoundary}
       >
         <Exception
           route={matchedRoute}

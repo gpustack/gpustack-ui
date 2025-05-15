@@ -243,9 +243,14 @@ export default {
   'common.appearance.lightmode': 'Светлая тема',
   'common.appearance.tips': 'По умолчанию соответствует системным настройкам.',
   'common.button.forgotpassword': 'Забыли пароль?',
-  'common.appearance.theme': 'Theme'
+  'common.appearance.theme': 'Theme',
+  'common.page.wentwrong': 'Something went wrong.',
+  'common.page.refresh.tips':
+    'Oops! Something went wrong. Try refreshing the page.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1.  'common.appearance.theme': 'Theme'
+// 1.  'common.appearance.theme': 'Theme',
+// 2. 'common.page.wentwrong': 'Something went wrong.',
+// 3. 'common.page.refresh.tips':'Oops! Something went wrong. Try refreshing the page.'
 // ========== End of To-Do List ==========

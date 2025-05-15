@@ -244,5 +244,8 @@ export default {
   'common.appearance.lightmode': 'Light Mode',
   'common.appearance.tips': 'Default follows system preference.',
   'common.button.forgotpassword': 'Forgot password?',
-  'common.appearance.theme': 'Theme'
+  'common.appearance.theme': 'Theme',
+  'common.page.wentwrong': 'Something went wrong.',
+  'common.page.refresh.tips':
+    'Oops! Something went wrong. Try refreshing the page.'
 };

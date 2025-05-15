@@ -19,7 +19,13 @@ const defaultSettings: UserSettings = {
 export const getStorageUserSettings = () => {
   if (typeof window === 'undefined') return defaultSettings;
   try {
-    return JSON.parse(localStorage.getItem('userSettings') || '{}');
+    const savedSettings = JSON.parse(
+      localStorage.getItem('userSettings') || '{}'
+    );
+    return {
+      ...defaultSettings,
+      ...savedSettings
+    };
   } catch {
     return defaultSettings;
   }

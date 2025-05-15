@@ -37,6 +37,15 @@ const DarkModeMask = () => {
   const maskRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<any>(null);
 
+  const initTheme = () => {
+    const html = document.querySelector('html');
+    if (html) {
+      html.setAttribute('data-theme', savedTheme);
+    }
+  };
+
+  initTheme();
+
   useEffect(() => {
     if (savedTheme === 'realDark') {
       setVisible(true);

@@ -73,10 +73,25 @@ const DeleteModal: FC<DeleteModalProps> = forwardRef((props, ref) => {
   };
 
   const handleOk = async () => {
-    await config.onOk?.();
-    message.success(intl.formatMessage({ id: 'common.message.success' }));
-    setVisible(false);
-    restoreScrollHeight();
+    try {
+      const res = await config.onOk?.();
+      const isArray = Array.isArray(res);
+      if (isArray) {
+        const allSuccess = res.every(
+          (item: any) => item?.status === 'fulfilled'
+        );
+        if (allSuccess) {
+          message.success(intl.formatMessage({ id: 'common.message.success' }));
+        }
+      } else {
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+      }
+    } catch (error) {
+      // Handle error if needed
+    } finally {
+      setVisible(false);
+      restoreScrollHeight();
+    }
   };
 
   return (

@@ -343,11 +343,18 @@ const Models: React.FC<ModelsProps> = ({
       operation: 'common.delete.confirm',
       selection: true,
       async onOk() {
-        await handleBatchRequest(rowSelection.selectedRowKeys, deleteModel);
-        rowSelection.clearSelections();
-        removeExpandedRowKey(rowSelection.selectedRowKeys);
+        const successIds: any[] = [];
+        const res = await handleBatchRequest(
+          rowSelection.selectedRowKeys,
+          async (id: any) => {
+            await deleteModel(id);
+            successIds.push(id);
+          }
+        );
+        rowSelection.removeSelectedKeys(successIds);
         handleDeleteSuccess();
         handleSearch();
+        return res;
       }
     });
   };

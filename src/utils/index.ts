@@ -18,7 +18,7 @@ export const handleBatchRequest = async (
   list: any[],
   fn: (args: any) => void
 ) => {
-  return Promise.all(list.map((item) => fn(item)));
+  return Promise.allSettled(list.map((item) => fn(item)));
 };
 
 export const convertFileSize = (

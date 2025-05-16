@@ -199,13 +199,19 @@ export default function useTableFetch<ListItem>(options: {
       ...options,
       async onOk() {
         if (!deleteAPI) return;
-        await handleBatchRequest(rowSelection.selectedRowKeys, (id) =>
-          deleteAPI(id, {
-            ...modalRef.current?.configuration
-          })
+        const successIds: any[] = [];
+        const res = await handleBatchRequest(
+          rowSelection.selectedRowKeys,
+          async (id: any) => {
+            await deleteAPI(id, {
+              ...modalRef.current?.configuration
+            });
+            successIds.push(id);
+          }
         );
-        rowSelection.clearSelections();
+        rowSelection.removeSelectedKeys(successIds);
         fetchData();
+        return res;
       }
     });
   };

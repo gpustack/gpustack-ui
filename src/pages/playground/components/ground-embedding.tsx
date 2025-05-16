@@ -127,7 +127,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       },
       setCollapse() {
         setCollapse(!collapse);
-      }
+      },
+      calculateNewMaxFromBoundary: (maxWidth?: number, maxHeight?: number) => {
+        resizeRef.current?.calculateNewMaxFromBoundary();
+      },
+      collapse: collapse
     };
   });
 
@@ -396,6 +400,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         label: 'Chart',
         children: (
           <ScatterChart
+            key={collapse ? 'collapse' : 'expand'}
             seriesData={scatterData}
             height={outputHeight}
             width="100%"
@@ -424,7 +429,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         )
       }
     ];
-  }, [outputHeight, scatterData, embeddingData]);
+  }, [outputHeight, collapse, scatterData, embeddingData]);
 
   const onValuesChange = useCallback(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {

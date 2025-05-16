@@ -146,7 +146,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       },
       setCollapse() {
         setCollapse(!collapse);
-      }
+      },
+      collapse: collapse
     };
   });
 

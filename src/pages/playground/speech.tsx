@@ -94,6 +94,9 @@ const Playground: React.FC = () => {
       if (!groundTabRef1.current?.collapse) {
         groundTabRef1.current?.setCollapse?.();
       }
+      if (!groundTabRef2.current?.collapse) {
+        groundTabRef2.current?.setCollapse?.();
+      }
     }
   }, [size.width]);
 

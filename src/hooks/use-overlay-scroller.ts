@@ -6,8 +6,18 @@ import {
 import React, { useEffect } from 'react';
 import useUserSettings from './use-user-settings';
 
+type OverflowBehavior =
+  | 'hidden'
+  | 'scroll'
+  | 'visible'
+  | 'visible-hidden'
+  | 'visible-scroll';
 export interface OverlayScrollerOptions {
   oppositeTheme?: boolean;
+  overflow?: {
+    x?: OverflowBehavior;
+    y?: OverflowBehavior;
+  };
   scrollbars?: {
     theme?: 'os-theme-light' | 'os-theme-dark';
     autoHide?: 'never' | 'scroll' | 'leave' | 'move';
@@ -46,7 +56,7 @@ export default function useOverlayScroller(data?: {
 }) {
   const { userSettings } = useUserSettings();
   const { options, events, defer = true } = data || {};
-  const { scrollbars, oppositeTheme } = options || {};
+  const { scrollbars, overflow, oppositeTheme } = options || {};
   const scrollEventElement = React.useRef<any>(null);
   const instanceRef = React.useRef<any>(null);
   const initialized = React.useRef(false);
@@ -59,7 +69,8 @@ export default function useOverlayScroller(data?: {
         debounce: 0
       },
       overflow: {
-        x: 'hidden'
+        x: 'hidden',
+        ...overflow
       },
       scrollbars: {
         autoHide: 'scroll',

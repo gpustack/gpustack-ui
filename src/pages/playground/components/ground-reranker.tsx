@@ -220,7 +220,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setLoading(false);
   };
 
-  const submitMessage = async () => {
+  const submitMessage = async (query: string) => {
     try {
       await formRef.current?.form.validateFields();
       if (!parameters.model) return;
@@ -245,7 +245,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         {
           model: parameters.model,
           top_n: parameters.top_n,
-          query: queryValue,
+          query: query,
           documents: [
             ...textList.map((item) => item.text),
             ...fileList.map((item) => item.text)
@@ -306,8 +306,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
   };
 
-  const handleSearch = (val: string) => {
-    submitMessage();
+  const handleSearch = (val: string, event: any, action: any) => {
+    if (action.source === 'clear') {
+      return;
+    }
+    submitMessage(val);
   };
 
   const handleQueryChange = (e: any) => {
@@ -434,18 +437,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
     handleOnValuesChange(changedValues, allValues);
   }, []);
-
-  // useHotkeys(
-  //   HotKeys.SUBMIT,
-  //   (e: any) => {
-  //     e.preventDefault();
-  //     handleSearch(queryValue);
-  //   },
-  //   {
-  //     enabled: !loading,
-  //     preventDefault: true
-  //   }
-  // );
 
   useEffect(() => {
     if (scroller.current) {

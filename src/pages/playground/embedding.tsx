@@ -10,21 +10,29 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { queryModelsList } from './apis';
 import GroundEmbedding from './components/ground-embedding';
+import useCollapseLayout from './hooks/use-collapse-layout';
 import './style/play-ground.less';
 
 const PlaygroundEmbedding: React.FC = () => {
   const intl = useIntl();
   const groundLeftRef = useRef<any>(null);
-  const ref = useRef<any>(null);
   const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [loaded, setLoaded] = useState(false);
 
+  useCollapseLayout({
+    handler: () => {
+      groundLeftRef.current?.setCollapse?.();
+      groundLeftRef.current?.calculateNewMaxFromBoundary?.(500, 300);
+    },
+    triggeredRef: groundLeftRef.current
+  });
+
   const handleViewCode = useCallback(() => {
-    ref.current?.viewCode?.();
-  }, [ref.current]);
+    groundLeftRef.current?.viewCode?.();
+  }, [groundLeftRef.current]);
   const handleToggleCollapse = useCallback(() => {
-    ref.current?.setCollapse?.();
-  }, [ref.current]);
+    groundLeftRef.current?.setCollapse?.();
+  }, [groundLeftRef.current]);
 
   useEffect(() => {
     const getModelListByEmbedding = async () => {
@@ -108,7 +116,7 @@ const PlaygroundEmbedding: React.FC = () => {
       <div className="play-ground">
         <div className="chat">
           <GroundEmbedding
-            ref={ref}
+            ref={groundLeftRef}
             modelList={modelList}
             loaded={loaded}
           ></GroundEmbedding>

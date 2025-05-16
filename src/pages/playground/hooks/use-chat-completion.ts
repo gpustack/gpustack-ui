@@ -95,7 +95,7 @@ export default function useChatCompletion(
   };
 
   const handleStopConversation = () => {
-    controllerRef.current?.abort?.();
+    controllerRef.current?.abort?.('stop');
     setLoading(false);
     setTokenResult(null);
   };
@@ -117,7 +117,7 @@ export default function useChatCompletion(
 
       const { current, parameters, system } = params;
 
-      controllerRef.current?.abort?.();
+      controllerRef.current?.abort?.('cancel');
       controllerRef.current = new AbortController();
       const signal = controllerRef.current.signal;
       currentMessageRef.current = current

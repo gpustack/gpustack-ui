@@ -107,7 +107,7 @@ export default function useTextImage(props: any) {
         });
       setImageList(newImageList);
 
-      requestToken.current?.abort?.();
+      requestToken.current?.abort?.('cancel');
       requestToken.current = new AbortController();
 
       let result: any = {};
@@ -172,7 +172,7 @@ export default function useTextImage(props: any) {
       });
     } catch (error) {
       console.log('error:', error);
-      requestToken.current?.abort?.();
+      requestToken.current?.abort?.('cancel');
       setImageList([]);
     } finally {
       setLoading(false);
@@ -186,14 +186,14 @@ export default function useTextImage(props: any) {
   };
 
   const handleStopConversation = () => {
-    requestToken.current?.abort?.();
+    requestToken.current?.abort?.('stop');
     setImageList([]);
     setLoading(false);
   };
 
   useEffect(() => {
     return () => {
-      requestToken.current?.abort?.();
+      requestToken.current?.abort?.('cancel');
     };
   }, []);
 

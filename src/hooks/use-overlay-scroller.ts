@@ -44,6 +44,8 @@ export const overlaySollerOptions: UseOverlayScrollbarsParams = {
   defer: true
 };
 
+const RESETSCROLLDELAY = 5000;
+
 /**
  *
  * @param options.theme: if set theme, it will fix the theme
@@ -162,7 +164,7 @@ export default function useOverlayScroller(data?: {
     }
     timerRef.current = setTimeout(() => {
       stopUpdatePosition.current = false;
-    }, 1500);
+    }, RESETSCROLLDELAY);
   }, []);
 
   // add  wheel event

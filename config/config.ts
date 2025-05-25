@@ -53,11 +53,6 @@ export default defineConfig({
               chunkFilename: `css/[name].${t}.chunk.css`
             }
           ]);
-          config.module
-            .rule('worker')
-            .test(/\.worker\.(js|ts)$/)
-            .use('worker-loader')
-            .loader('worker-loader');
           config.output
             .filename(`js/[name].${t}.js`)
             .chunkFilename(`js/[name].${t}.chunk.js`);

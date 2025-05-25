@@ -16,7 +16,6 @@ import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Form, Segmented, Spin, Tabs, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { PCA } from 'ml-pca';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { Resizable } from 're-resizable';
 import React, {
@@ -31,6 +30,7 @@ import React, {
 import { EMBEDDING_API, handleEmbedding } from '../apis';
 import { extractErrorMessage } from '../config';
 import { LLM_METAKEYS } from '../hooks/config';
+import useEmbeddingWorker from '../hooks/use-embedding-worker';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
 import '../style/ground-left.less';
 import '../style/rerank.less';
@@ -51,6 +51,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const messageId = useRef<number>(0);
 
   const intl = useIntl();
+  const { workerRef, createWorker, postMessage, terminateWorker } =
+    useEmbeddingWorker();
   const requestSource = useRequestToken();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -154,46 +156,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     return list.length < 2;
   }, [textList, fileList]);
 
-  const generateEmbedding = useCallback(
-    (embeddings: any[]) => {
-      try {
-        const dataList = embeddings.map((item) => {
-          return item.embedding;
-        });
-
-        const pca = new PCA(dataList);
-        const pcadata = pca.predict(dataList, { nComponents: 2 }).to2DArray();
-
-        const input = [
-          ...textList.map((item) => item.text).filter((item) => item),
-          ...fileList.map((item) => item.text).filter((item) => item)
-        ];
-
-        const list = pcadata.map((item: number[], index: number) => {
-          return {
-            value: item,
-            name: index + 1,
-            text: input[index]
-          };
-        });
-        setScatterData(list);
-        const embeddingJson = embeddings.map((o, index) => {
-          const item = _.cloneDeep(o);
-          item.embedding = item.embedding.slice(0, 5);
-          item.embedding.push(null);
-          return item;
-        });
-        setEmbeddingData({
-          code: JSON.stringify(embeddingJson, null, 2).replace(/null/g, '...'),
-          copyValue: JSON.stringify(embeddings, null, 2)
-        });
-      } catch (e) {
-        console.log('error:', e);
-      }
-    },
-    [textList, fileList]
-  );
-
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
   };
@@ -245,12 +207,29 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
       );
 
+      console.log('result=========', result);
       setTokenResult(result.usage);
 
       const embeddingsList = result.data || [];
 
-      generateEmbedding(embeddingsList);
+      createWorker();
+
+      workerRef.current!.onmessage = (event: MessageEvent) => {
+        const { scatterData, embeddingData } = event.data;
+        console.log('worker result:', scatterData, embeddingData);
+        setScatterData(scatterData);
+        setEmbeddingData(embeddingData);
+      };
+
+      postMessage({
+        embeddings: embeddingsList,
+        textList: textList,
+        fileList: fileList
+      });
+
+      // generateEmbedding(embeddingsList);
     } catch (error: any) {
+      console.log('result=========error', error);
       setTokenResult({
         error: true,
         errorMessage: extractErrorMessage(error.response)
@@ -324,12 +303,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
       if (!multiplePasteEnable.current) return;
       const text = e.clipboardData.getData('text');
       if (text) {
-        const currentContent = textList[index].text;
         const dataLlist = text.split('\n').map((item: string) => {
           return {
             text: item?.trim(),
-            uid: inputListRef.current?.setMessageId(),
-            name: ''
+            name: '',
+            uid: setMessageId()
           };
         });
         dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
@@ -337,14 +315,8 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
           ...textList.slice(0, index),
           ...dataLlist,
           ...textList.slice(index + 1)
-        ]
-          .filter((item) => item.text)
-          .map((item, index) => {
-            return {
-              ...item,
-              uid: inputListRef.current?.setMessageId()
-            };
-          });
+        ].filter((item) => item.text);
+
         setTextList(result);
       }
     },

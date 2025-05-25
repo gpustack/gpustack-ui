@@ -148,4 +148,4 @@ const RowTextarea: React.FC<SystemMessageProps> = (props) => {
   );
 };
 
-export default React.memo(RowTextarea);
+export default RowTextarea;

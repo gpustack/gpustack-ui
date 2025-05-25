@@ -21,7 +21,7 @@ export default {
   'playground.params.temperature.tips':
     'Controls randomness: Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive.',
   'playground.params.maxtokens.tips':
-    "The maximum number of tokens to generated. The total length of input tokens and generated tokens is limited by the model's context length.",
+    "The maximum number of tokens to generate. The total length of input tokens and generated tokens is limited by the model's context length.",
   'playground.params.topp.tips':
     'Controls diversity via nucleus sampling: 0.5 means half of all likelihood-weighted options are considered.',
   'playground.params.seed.tips':

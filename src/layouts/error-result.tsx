@@ -16,7 +16,10 @@ interface ErrorResultProps {
 
 function isChunkLoadError(msg?: string): boolean {
   if (typeof msg !== 'string') return false;
-  return msg.includes('Loading chunk') && msg.includes('failed');
+  const jsChunkFailed = msg.includes('Loading chunk');
+  const cssChunkFailed = msg.includes('Loading CSS chunk');
+
+  return (jsChunkFailed || cssChunkFailed) && msg.includes('failed');
 }
 
 const ErrorResult: React.FC<ErrorResultProps> = ({ extra }) => {

@@ -111,7 +111,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       name: ''
     }
   ]);
-  const [sortIndexMap, setSortIndexMap] = useState<number[]>([]);
   const [queryValue, setQueryValue] = useState<string>('');
   const selectionTextRef = useRef<any>(null);
 
@@ -237,8 +236,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       setLoading(true);
       setMessageId();
       setTokenResult(null);
-      setSortIndexMap([]);
-
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 
@@ -278,8 +275,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       let sortMap: number[] = [];
 
       result.results?.forEach((item: any, sIndex: number) => {
-        sortMap.push(item.index);
-
         newTextList[item.index] = {
           ...newTextList[item.index],
           uid: setMessageId(),
@@ -295,7 +290,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       });
 
       newTextList = _.sortBy(newTextList, 'rank');
-      setSortIndexMap(sortMap);
       setTextList(newTextList);
     } catch (error: any) {
       setTokenResult({
@@ -360,8 +354,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         const dataLlist = text.split('\n').map((item: string) => {
           return {
             text: item?.trim(),
+            name: '',
             uid: setMessageId(),
-            name: ''
+            percent: undefined,
+            score: undefined,
+            rank: undefined
           };
         });
         dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
@@ -369,34 +366,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           ...textList.slice(0, index),
           ...dataLlist,
           ...textList.slice(index + 1)
-        ]
-          .filter((item) => item.text)
-          .map((item, index) => {
-            item.percent = undefined;
-            item.score = undefined;
-            item.rank = undefined;
-            return {
-              ...item,
-              uid: setMessageId()
-            };
-          });
+        ].filter((item) => item.text);
+
         setTextList(result);
       }
     },
     [textList]
-  );
-
-  const handleOnSort = useCallback(
-    (list: { text: string; uid: number | string; name: string }[]) => {
-      const newList = list?.map((item) => {
-        return {
-          ...item,
-          uid: setMessageId()
-        };
-      });
-      setTextList(newList);
-    },
-    []
   );
 
   const renderExtra = useMemo(() => {
@@ -538,14 +513,11 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             <div className="docs-wrapper">
               <InputList
                 key={messageId.current}
-                sortIndex={sortIndexMap}
                 ref={inputListRef}
                 textList={textList}
                 showLabel={false}
-                sortable={false}
                 height={46}
                 onChange={handleTextListChange}
-                onSort={handleOnSort}
                 extra={renderPercent}
                 onSelect={handleonSelect}
                 onPaste={handleOnPaste}

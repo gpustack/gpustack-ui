@@ -28,6 +28,9 @@ export default defineConfig({
     logLevel: 'info',
     defaultSizes: 'parsed' // stat  // gzip
   },
+  mfsu: {
+    exclude: ['lodash', 'ml-pca']
+  },
   base: process.env.npm_config_base || '/',
   ...(isProduction
     ? {
@@ -52,7 +55,7 @@ export default defineConfig({
           ]);
           config.module
             .rule('worker')
-            .test(/\.worker\.js$/)
+            .test(/\.worker\.(js|ts)$/)
             .use('worker-loader')
             .loader('worker-loader');
           config.output

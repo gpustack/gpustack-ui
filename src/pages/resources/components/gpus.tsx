@@ -8,7 +8,7 @@ import { useIntl } from '@umijs/max';
 import { ConfigProvider, Empty, Table } from 'antd';
 import _ from 'lodash';
 import React from 'react';
-import { queryGpuDevicesList } from '../apis';
+import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 const { Column } = Table;
 
@@ -48,7 +48,9 @@ const GPUList: React.FC = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<GPUDeviceItem>({
-    fetchAPI: queryGpuDevicesList
+    fetchAPI: queryGpuDevicesList,
+    watch: true,
+    API: GPU_DEVICES_API
   });
 
   const intl = useIntl();

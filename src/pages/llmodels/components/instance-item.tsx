@@ -478,7 +478,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     return (
       <TooltipOverlayScroller
         toolTipProps={{
-          trigger: 'click',
+          trigger: 'hover',
           overlayInnerStyle: {
             width: 'max-content',
             maxWidth: '520px',

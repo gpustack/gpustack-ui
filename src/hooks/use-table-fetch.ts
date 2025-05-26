@@ -7,14 +7,18 @@ import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
 
-export default function useTableFetch<ListItem>(options: {
-  API?: string;
-  watch?: boolean;
-  fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
-  deleteAPI?: (id: number, params?: any) => Promise<any>;
-  contentForDelete?: string;
-  defaultData?: any[];
-}) {
+type WatchConfig =
+  | { watch?: false | undefined; API?: string }
+  | { watch: true; API: string };
+
+export default function useTableFetch<ListItem>(
+  options: {
+    fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
+    deleteAPI?: (id: number, params?: any) => Promise<any>;
+    contentForDelete?: string;
+    defaultData?: any[];
+  } & WatchConfig
+) {
   const {
     fetchAPI,
     deleteAPI,

@@ -465,7 +465,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                   </Checkbox>
                 </Tooltip>
 
-                <Button size="middle" onClick={handleAddText}>
+                <Button
+                  size="middle"
+                  onClick={handleAddText}
+                  disabled={loading}
+                >
                   <PlusOutlined />
                   {intl.formatMessage({ id: 'playground.embedding.addtext' })}
                 </Button>

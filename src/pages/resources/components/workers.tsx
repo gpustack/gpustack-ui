@@ -18,7 +18,12 @@ import { ConfigProvider, Empty, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { deleteWorker, queryWorkersList, updateWorker } from '../apis';
+import {
+  WORKERS_API,
+  deleteWorker,
+  queryWorkersList,
+  updateWorker
+} from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 import AddWorker from './add-worker';
@@ -100,7 +105,9 @@ const Workers: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryWorkersList,
     deleteAPI: deleteWorker,
-    contentForDelete: 'worker'
+    contentForDelete: 'worker',
+    watch: true,
+    API: WORKERS_API
   });
 
   const intl = useIntl();

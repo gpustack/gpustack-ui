@@ -547,7 +547,7 @@ const ModelFiles = () => {
     }
   };
 
-  const columns = [
+  const columns: any[] = [
     {
       title: intl.formatMessage({ id: 'models.form.source' }),
       dataIndex: 'source',

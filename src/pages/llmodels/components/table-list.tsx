@@ -475,6 +475,9 @@ const Models: React.FC<ModelsProps> = ({
           await handleStartModel(row);
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           updateExpandedRowKeys([row.id, ...expandedRowKeys]);
+          setTimeout(() => {
+            handleSearch?.();
+          }, 150);
         }
 
         if (val === 'api') {
@@ -490,6 +493,9 @@ const Models: React.FC<ModelsProps> = ({
             name: row.name,
             async onOk() {
               await handleStopModel(row);
+              setTimeout(() => {
+                handleSearch?.();
+              }, 150);
             }
           });
         }

@@ -14,10 +14,14 @@ self.onmessage = (
     const dataList = embeddings.map((item) => {
       return item.embedding;
     });
+    let pca: any = null;
 
-    console.log('list:', dataList);
-    const pca = new PCA(dataList);
-    console.log('list:', pca);
+    // for large datasets, use NIPALS method for PCA
+    if (dataList.length > 200) {
+      pca = new PCA(dataList, { nCompNIPALS: 2, method: 'NIPALS' });
+    } else {
+      pca = new PCA(dataList); // default method is SVD
+    }
     const pcadata = pca.predict(dataList, { nComponents: 2 }).to2DArray();
 
     const input = [

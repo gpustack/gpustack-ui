@@ -181,7 +181,7 @@ const Scatter: React.FC<ChartProps> = (props) => {
              <span class="tooltip-value">${item.text}</span>
             </span>`;
           });
-          return `<div class="tooltip-wrapper">${result}</div>`;
+          return `<div class="tooltip-wrapper scatter">${result}</div>`;
         }
       },
       title: {

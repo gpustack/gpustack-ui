@@ -207,7 +207,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         }
       );
 
-      console.log('result=========', result);
       setTokenResult(result.usage);
 
       const embeddingsList = result.data || [];
@@ -216,9 +215,9 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       workerRef.current!.onmessage = (event: MessageEvent) => {
         const { scatterData, embeddingData } = event.data;
-        console.log('worker result:', scatterData, embeddingData);
         setScatterData(scatterData);
         setEmbeddingData(embeddingData);
+        setLoading(false);
       };
 
       postMessage({
@@ -226,15 +225,11 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         textList: textList,
         fileList: fileList
       });
-
-      // generateEmbedding(embeddingsList);
     } catch (error: any) {
-      console.log('result=========error', error);
       setTokenResult({
         error: true,
         errorMessage: extractErrorMessage(error.response)
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -386,7 +381,9 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
         children: (
           <div
             style={{
-              backgroundColor: 'var(--ant-color-bg-container)'
+              backgroundColor: 'var(--ant-color-bg-container)',
+              borderRadius: 'var(--border-radius-base)',
+              overflow: 'hidden'
             }}
           >
             <HighlightCode
@@ -655,8 +652,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 style={{
                   border: '1px solid var(--ant-color-border)',
                   borderRadius: 'var(--border-radius-base)',
-                  width: '100%',
-                  overflow: 'hidden'
+                  width: '100%'
                 }}
                 className="scatter"
               >

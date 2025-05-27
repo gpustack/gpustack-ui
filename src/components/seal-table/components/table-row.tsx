@@ -27,7 +27,7 @@ const TableRow: React.FC<
     rowIndex,
     expandable,
     rowSelection,
-    expandedRowKeys,
+    expandedRowKeys = [],
     rowKey,
     childParentKey,
     columns,
@@ -79,6 +79,12 @@ const TableRow: React.FC<
   const checked = useMemo(() => {
     return rowSelection?.selectedRowKeys?.includes(record[rowKey]);
   }, [rowSelection?.selectedRowKeys, record, rowKey]);
+
+  useEffect(() => {
+    if (expandedRowKeys?.length === 0) {
+      setCurrentExpand(false);
+    }
+  }, [expandedRowKeys.length]);
 
   const renderChildrenData = () => {
     if (childrenData.length === 0) {

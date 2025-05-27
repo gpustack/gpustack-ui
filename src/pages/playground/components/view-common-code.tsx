@@ -6,7 +6,7 @@ import { Button, Modal } from 'antd';
 import React, { useMemo, useState } from 'react';
 
 type ViewModalProps = {
-  title: string;
+  title?: string;
   open: boolean;
   viewCodeContent: {
     curlCode: string;
@@ -59,7 +59,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   return (
     <>
       <Modal
-        title={title}
+        title={title || intl.formatMessage({ id: 'playground.viewcode' })}
         open={open}
         centered={true}
         onCancel={handleClose}

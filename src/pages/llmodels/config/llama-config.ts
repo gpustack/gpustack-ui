@@ -592,6 +592,10 @@ const options = [
   {
     label: '--context-shift',
     value: '--context-shift'
+  },
+  {
+    label: '--visual-max-image-cache',
+    value: '--visual-max-image-cache'
   }
 ];
 

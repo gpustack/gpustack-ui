@@ -1,4 +1,5 @@
 import SealInput from '@/components/seal-form/seal-input';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -8,10 +9,11 @@ import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const HuggingFaceForm: React.FC = () => {
+  const formInstance = Form.useFormInstance();
   const formCtx = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
-  const { isGGUF, byBuiltIn } = formCtx;
+  const { isGGUF, byBuiltIn, pageAction, onValuesChange } = formCtx;
   const source = Form.useWatch('source');
 
   console.log('HuggingFaceForm', { source, isGGUF });
@@ -25,6 +27,11 @@ const HuggingFaceForm: React.FC = () => {
   ) {
     return null;
   }
+
+  const handleOnBlur = (e: any) => {
+    onValuesChange?.({}, formInstance.getFieldsValue());
+  };
+
   return (
     <>
       <Form.Item<FormData>
@@ -40,7 +47,8 @@ const HuggingFaceForm: React.FC = () => {
         <SealInput.Input
           label={intl.formatMessage({ id: 'models.form.repoid' })}
           required
-          disabled={true}
+          disabled={pageAction === PageAction.CREATE}
+          onBlur={handleOnBlur}
         ></SealInput.Input>
       </Form.Item>
       {isGGUF && (
@@ -57,7 +65,8 @@ const HuggingFaceForm: React.FC = () => {
           <SealInput.Input
             label={intl.formatMessage({ id: 'models.form.filename' })}
             required
-            disabled={true}
+            disabled={pageAction === PageAction.CREATE}
+            onBlur={handleOnBlur}
           ></SealInput.Input>
         </Form.Item>
       )}

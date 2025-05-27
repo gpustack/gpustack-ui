@@ -1,6 +1,4 @@
-import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
-import SealAutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -8,7 +6,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Modal, Typography } from 'antd';
+import { Button, Form, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
@@ -17,14 +15,15 @@ import {
   backendTipsList,
   updateExcludeFields as excludeFields,
   getSourceRepoConfigValue,
-  localPathTipsList,
   modelSourceMap,
-  ollamaModelOptions,
   sourceOptions,
   updateIgnoreFields
 } from '../config';
-import { FormContext } from '../config/form-context';
+import { FormContext, FormInnerContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
+import HuggingFaceForm from '../forms/hugging-face';
+import LocalPathForm from '../forms/local-path';
+import OllamaForm from '../forms/ollama_library';
 import { useCheckCompatibility } from '../hooks';
 import AdvanceConfig from './advance-config';
 import ColumnWrapper from './column-wrapper';
@@ -42,11 +41,6 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
-
-const SEARCH_SOURCE = [
-  modelSourceMap.huggingface_value,
-  modelSourceMap.modelscope_value
-];
 
 const UpdateModal: React.FC<AddModalProps> = (props) => {
   const {
@@ -68,10 +62,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
-  const localPathCache = useRef<string>('');
   const submitAnyway = useRef<boolean>(false);
   const originFormData = useRef<any>(null);
-  const timer0 = useRef<any>(null);
 
   const setOriginalFormData = () => {
     if (!originFormData.current) {
@@ -186,192 +178,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       handleBackendChange(backend);
     }, 100);
   };
-
-  const handleOnFocus = () => {
-    localPathCache.current = form.getFieldValue('local_path');
-  };
-
-  const handleLocalPathBlur = (e: any) => {
-    const value = e.target.value;
-    if (value === localPathCache.current && value) {
-      return;
-    }
-    const isEndwithGGUF = _.endsWith(value, '.gguf');
-    const isBlobFile = value.split('/').pop().includes('sha256');
-    let backend = form.getFieldValue('backend');
-
-    if (
-      !isEndwithGGUF &&
-      !isBlobFile &&
-      backend === backendOptionsMap.llamaBox
-    ) {
-      backend = backendOptionsMap.vllm;
-    } else if (isEndwithGGUF || isBlobFile) {
-      backend = backendOptionsMap.llamaBox;
-    }
-    form.setFieldValue('backend', backend);
-    handleBackendChange?.(backend);
-  };
-
-  const handleOnBlur = (e: any) => {
-    const value = e.target.value;
-    if (value) {
-      handleOnValuesChange?.({
-        changedValues: {},
-        allValues: {
-          ...form.getFieldsValue?.()
-        },
-        source: formData?.source
-      });
-    }
-  };
-
-  const renderHuggingfaceFields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="repo_id"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.repoid' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Input
-            onBlur={handleOnBlur}
-            label={intl.formatMessage({ id: 'models.form.repoid' })}
-            required
-            disabled={false}
-          ></SealInput.Input>
-        </Form.Item>
-        {isGGUF && (
-          <Form.Item<FormData>
-            name="file_name"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  {
-                    id: 'common.form.rule.input'
-                  },
-                  { name: intl.formatMessage({ id: 'models.form.filename' }) }
-                )
-              }
-            ]}
-          >
-            <SealInput.Input
-              onBlur={handleOnBlur}
-              label={intl.formatMessage({ id: 'models.form.filename' })}
-              required
-              disabled={false}
-            ></SealInput.Input>
-          </Form.Item>
-        )}
-      </>
-    );
-  };
-
-  const renderOllamaModelFields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="ollama_library_model_name"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.table.name' }) }
-              )
-            }
-          ]}
-        >
-          <SealAutoComplete
-            filterOption
-            defaultActiveFirstOption
-            disabled={false}
-            options={ollamaModelOptions}
-            onBlur={handleOnBlur}
-            placeholder={intl.formatMessage({ id: 'model.form.ollamaholder' })}
-            description={
-              <span>
-                <span>
-                  {intl.formatMessage({ id: 'models.form.ollamalink' })}
-                </span>
-                <Typography.Link
-                  className="flex-center"
-                  href="https://www.ollama.com/library"
-                  target="_blank"
-                >
-                  <IconFont
-                    type="icon-external-link"
-                    className="font-size-14"
-                  ></IconFont>
-                </Typography.Link>
-              </span>
-            }
-            label={intl.formatMessage({ id: 'model.form.ollama.model' })}
-            required
-          ></SealAutoComplete>
-        </Form.Item>
-      </>
-    );
-  };
-
-  const renderLocalPathFields = () => {
-    return (
-      <>
-        <Form.Item<FormData>
-          name="local_path"
-          key="local_path"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                {
-                  id: 'common.form.rule.input'
-                },
-                { name: intl.formatMessage({ id: 'models.form.filePath' }) }
-              )
-            }
-          ]}
-        >
-          <SealInput.Input
-            onBlur={handleLocalPathBlur}
-            onFocus={handleOnFocus}
-            disabled={false}
-            label={intl.formatMessage({ id: 'models.form.filePath' })}
-            description={<TooltipList list={localPathTipsList}></TooltipList>}
-            required
-          ></SealInput.Input>
-        </Form.Item>
-      </>
-    );
-  };
-
-  const renderFieldsBySource = useMemo(() => {
-    if (SEARCH_SOURCE.includes(formData?.source || '')) {
-      return renderHuggingfaceFields();
-    }
-
-    if (formData?.source === modelSourceMap.ollama_library_value) {
-      return renderOllamaModelFields();
-    }
-
-    if (formData?.source === modelSourceMap.local_path_value) {
-      return renderLocalPathFields();
-    }
-
-    return null;
-  }, [formData?.source, isGGUF, intl]);
 
   const handleSumit = () => {
     form.submit();
@@ -528,6 +334,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       >
         <FormContext.Provider
           value={{
+            isGGUF: isGGUF,
+            pageAction: action,
             onValuesChange: handleManulOnValuesChange
           }}
         >
@@ -583,7 +391,16 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                 ></SealSelect>
               )}
             </Form.Item>
-            {renderFieldsBySource}
+            <FormInnerContext.Provider
+              value={{
+                onBackendChange: handleBackendChange,
+                gpuOptions: gpuOptions
+              }}
+            >
+              <HuggingFaceForm></HuggingFaceForm>
+              <OllamaForm></OllamaForm>
+              <LocalPathForm></LocalPathForm>
+            </FormInnerContext.Provider>
             <Form.Item name="backend" rules={[{ required: true }]}>
               <SealSelect
                 required

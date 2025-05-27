@@ -93,6 +93,7 @@ interface ModelsProps {
   onViewLogs: () => void;
   onCancelViewLogs: () => void;
   handleOnToggleExpandAll: () => void;
+  onStop?: (ids: number[]) => void;
   queryParams: {
     page: number;
     perPage: number;
@@ -132,6 +133,7 @@ const Models: React.FC<ModelsProps> = ({
   onCancelViewLogs,
   handleCategoryChange,
   handleOnToggleExpandAll,
+  onStop,
   modelFileOptions,
   deleteIds,
   dataSource,
@@ -260,6 +262,7 @@ const Models: React.FC<ModelsProps> = ({
   const handleStopModel = async (row: ListItem) => {
     await updateModel(getFormattedData(row, { replicas: 0 }));
     removeExpandedRowKey([row.id]);
+    onStop?.([row.id]);
   };
 
   const handleModalOk = useCallback(
@@ -576,6 +579,7 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRows, handleStopModel);
         rowSelection.clearSelections();
+        onStop?.(rowSelection.selectedRowKeys as number[]);
       }
     });
   };

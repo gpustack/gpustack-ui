@@ -75,7 +75,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     modelSourceMap.huggingface_value,
     modelSourceMap.modelscope_value
   ];
-  console.log('hasLinuxWorker---------:', hasLinuxWorker);
+
   const [isEvaluating, setIsEvaluating] = useState<boolean>(false);
   const [current, setCurrent] = useState<string>('');
   const currentRef = useRef<string>('');
@@ -448,7 +448,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     return () => {
       axiosTokenRef.current?.abort?.();
       checkTokenRef.current?.cancel?.();
-      // workerRef.current?.terminate();
+
       if (timer.current) {
         clearTimeout(timer.current);
       }

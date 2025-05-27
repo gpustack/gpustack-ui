@@ -365,6 +365,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         <FormContext.Provider
           value={{
             isGGUF: isGGUF,
+            pageAction: action,
             modelFileOptions: props.modelFileOptions,
             onValuesChange: onValuesChange
           }}

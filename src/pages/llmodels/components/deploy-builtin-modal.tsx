@@ -548,6 +548,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           byBuiltIn: true,
           sizeOptions: sizeOptions,
           quantizationOptions: quantizationOptions,
+          pageAction: action,
           onSizeChange: handleOnSizeChange,
           onQuantizationChange: handleOnQuantizationChange,
           onValuesChange: onValuesChange

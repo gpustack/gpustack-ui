@@ -596,6 +596,14 @@ const options = [
   {
     label: '--visual-max-image-cache',
     value: '--visual-max-image-cache'
+  },
+  {
+    label: '--max-projected-cache',
+    value: '--max-projected-cache'
+  },
+  {
+    label: '--swa-full',
+    value: '--swa-full'
   }
 ];
 

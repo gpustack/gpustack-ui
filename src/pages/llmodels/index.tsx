@@ -252,6 +252,12 @@ const Models: React.FC = () => {
     });
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
+  const handleOnStop = useCallback((ids: number[]) => {
+    cacheInsDataListRef.current = cacheInsDataListRef.current.filter(
+      (item: any) => !ids.includes(item.model_id)
+    );
+  }, []);
+
   const handleSearch = useCallback(async () => {
     await fetchData();
   }, [fetchData]);
@@ -458,6 +464,7 @@ const Models: React.FC = () => {
         handleOnToggleExpandAll={createModelsInstanceChunkRequest}
         onViewLogs={handleOnViewLogs}
         onCancelViewLogs={handleOnCancelViewLogs}
+        onStop={handleOnStop}
         queryParams={queryParams}
         loading={dataSource.loading}
         loadend={dataSource.loadend}

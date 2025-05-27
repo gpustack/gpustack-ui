@@ -1,8 +1,10 @@
+import { PageActionType } from '@/config/types';
 import React from 'react';
 
 interface FormContextProps {
   isGGUF?: boolean;
   byBuiltIn?: boolean;
+  pageAction: PageActionType;
   sizeOptions?: Global.BaseOption<number>[];
   quantizationOptions?: Global.BaseOption<string>[];
   modelFileOptions?: any[];

@@ -22,10 +22,14 @@ export const formatPyParams = (parameters: Record<string, any>) => {
     if (parameters[key] === null || parameters[key] === undefined) {
       return acc;
     }
+    const vauleType = typeof parameters[key];
     const value =
-      typeof parameters[key] === 'object'
+      vauleType === 'object'
         ? JSON.stringify(parameters[key], null, 2)
-        : `"${parameters[key]}"`;
+        : vauleType === 'string'
+          ? `"${parameters[key]}"`
+          : parameters[key];
+
     return acc + `  ${key}=${value},\n`;
   }, '');
 };

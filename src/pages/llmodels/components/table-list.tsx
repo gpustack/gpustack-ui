@@ -84,7 +84,7 @@ import ModelTag from './model-tag';
 import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
-  handleSearch: () => void;
+  handleSearch: (params?: any) => void;
   handleNameChange: (e: any) => void;
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
@@ -94,6 +94,7 @@ interface ModelsProps {
   onCancelViewLogs: () => void;
   handleOnToggleExpandAll: () => void;
   onStop?: (ids: number[]) => void;
+  onStart?: () => void;
   queryParams: {
     page: number;
     perPage: number;
@@ -134,6 +135,7 @@ const Models: React.FC<ModelsProps> = ({
   handleCategoryChange,
   handleOnToggleExpandAll,
   onStop,
+  onStart,
   modelFileOptions,
   deleteIds,
   dataSource,
@@ -262,7 +264,6 @@ const Models: React.FC<ModelsProps> = ({
   const handleStopModel = async (row: ListItem) => {
     await updateModel(getFormattedData(row, { replicas: 0 }));
     removeExpandedRowKey([row.id]);
-    onStop?.([row.id]);
   };
 
   const handleModalOk = useCallback(
@@ -478,6 +479,7 @@ const Models: React.FC<ModelsProps> = ({
           await handleStartModel(row);
           message.success(intl.formatMessage({ id: 'common.message.success' }));
           updateExpandedRowKeys([row.id, ...expandedRowKeys]);
+          onStart?.();
         }
 
         if (val === 'api') {
@@ -493,6 +495,7 @@ const Models: React.FC<ModelsProps> = ({
             name: row.name,
             async onOk() {
               await handleStopModel(row);
+              onStop?.([row.id]);
             }
           });
         }
@@ -560,6 +563,7 @@ const Models: React.FC<ModelsProps> = ({
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRows, handleStartModel);
         rowSelection.clearSelections();
+        onStart?.();
       }
     });
   };

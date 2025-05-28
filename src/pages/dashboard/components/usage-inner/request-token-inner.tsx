@@ -27,6 +27,8 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   const { requestData, tokenData, xAxisData } = props;
   const intl = useIntl();
 
+  console.log('usage===========', requestData, tokenData, xAxisData);
+
   return (
     <CardWrapper style={{ width: '100%' }}>
       <Row style={{ width: '100%' }}>
@@ -49,6 +51,17 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
           ></BarChart>
         </Col>
       </Row>
+      {/* <MixLineBar
+        title={intl.formatMessage({ id: 'dashboard.apirequest' })}
+        chartData={{
+          line: requestData,
+          bar: tokenData
+        }}
+        seriesData={[]}
+        xAxisData={xAxisData}
+        height={360}
+        labelFormatter={labelFormatter}
+      ></MixLineBar> */}
     </CardWrapper>
   );
 };

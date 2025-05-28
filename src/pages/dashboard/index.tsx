@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-components';
 import { Spin } from 'antd';
-import { memo, useState } from 'react';
+import { useState } from 'react';
 import DashboardInner from './components/dahboard-inner';
 
 const Dashboard: React.FC = () => {
@@ -25,4 +25,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default memo(Dashboard);
+export default Dashboard;

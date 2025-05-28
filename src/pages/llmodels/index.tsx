@@ -260,11 +260,23 @@ const Models: React.FC = () => {
       setTimeout(resolve, 300);
     });
     setModelInstances(cacheInsDataListRef.current);
+    fetchData({
+      loadingVal: false
+    });
   }, []);
 
-  const handleSearch = useCallback(async () => {
-    await fetchData();
-  }, [fetchData]);
+  const handleOnStart = useCallback(() => {
+    fetchData({
+      loadingVal: false
+    });
+  }, []);
+
+  const handleSearch = useCallback(
+    async (params?: any) => {
+      await fetchData(params);
+    },
+    [fetchData]
+  );
 
   const debounceUpdateFilter = _.debounce((e: any) => {
     setQueryParams({
@@ -469,6 +481,7 @@ const Models: React.FC = () => {
         onViewLogs={handleOnViewLogs}
         onCancelViewLogs={handleOnCancelViewLogs}
         onStop={handleOnStop}
+        onStart={handleOnStart}
         queryParams={queryParams}
         loading={dataSource.loading}
         loadend={dataSource.loadend}

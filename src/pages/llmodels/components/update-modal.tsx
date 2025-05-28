@@ -85,16 +85,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   const handleOnValuesChange = _.debounce((data: any) => {
     const formdata = form.getFieldsValue?.();
+    console.log('handleOnValuesChange:', formdata);
 
     let alldata = {};
     if (formdata.scheduleType === 'manual') {
       alldata = {
         ..._.omit(formdata, ['worker_selector']),
         env: formdata.env || originFormData.current?.env || null,
-        gpu_selector:
-          formdata.gpu_selector?.gpu_ids?.length > 0
-            ? originFormData.current?.gpu_selector
-            : null
+        gpu_selector: formdata.gpu_selector
       };
     } else {
       alldata = {

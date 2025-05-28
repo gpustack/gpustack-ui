@@ -55,7 +55,7 @@ export default function useTableFetch<ListItem>(
 
   const { setChunkRequest } = useSetChunkRequest();
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
-    events: ['UPDATE', 'DELETE'],
+    events: ['UPDATE', 'DELETE', 'INSERT'],
     dataList: dataSource.dataList,
     setDataList(list, opts?: any) {
       setDataSource((pre) => {

@@ -41,7 +41,6 @@ const TableRow: React.FC<
   } = props;
   const tableContext: any = React.useContext<{
     allChildren?: any[];
-    allSubChildren?: any[];
     setDisableExpand?: (record: any) => boolean;
   }>(TableContext);
   const { setChunkRequest } = useSetChunkRequest();

@@ -252,10 +252,14 @@ const Models: React.FC = () => {
     });
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
-  const handleOnStop = useCallback((ids: number[]) => {
+  const handleOnStop = useCallback(async (ids: number[]) => {
     cacheInsDataListRef.current = cacheInsDataListRef.current.filter(
       (item: any) => !ids.includes(item.model_id)
     );
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    setModelInstances(cacheInsDataListRef.current);
   }, []);
 
   const handleSearch = useCallback(async () => {

@@ -98,8 +98,6 @@ export default function useChartConfig() {
   };
 
   const yAxis = {
-    // max: 100,
-    // min: 0,
     nameTextStyle: {
       padding: [0, 0, 0, -20]
     },

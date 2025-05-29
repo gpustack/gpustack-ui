@@ -92,8 +92,10 @@ export default function useUseageData(data: any) {
       data: { time: string; value: number }[];
     } = {
       name: 'API requests',
-      areaStyle: {},
-      color: baseColorMap.base,
+      areaStyle: {
+        color: 'rgba(13,171,219,0.15)'
+      },
+      color: baseColorMap.baseR1,
       data: generateData(dateRange, generateValueMap(apiRequestHistory))
     };
 

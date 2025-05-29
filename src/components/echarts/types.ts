@@ -1,8 +1,9 @@
+import type { LegendComponentOption } from 'echarts/components';
 export interface ChartProps {
   seriesData: any[];
   showEmpty?: boolean;
   xAxisData: string[];
-  legendData?: string[];
+  legendData?: LegendComponentOption['data'];
   labelFormatter?: (val?: any) => string;
   tooltipValueFormatter?: (val: any) => string;
   height: string | number;

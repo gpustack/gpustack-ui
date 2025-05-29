@@ -62,12 +62,7 @@ const MixLineBarChart: React.FC<
     yAxis,
     legend: {
       ...legend,
-      data: legendData.map((item: any) => {
-        return {
-          name: item,
-          icon: 'circle'
-        };
-      })
+      data: legendData
     },
 
     series: []
@@ -112,16 +107,10 @@ const MixLineBarChart: React.FC<
       },
       yAxis: [
         {
-          ...options.yAxis,
-          min: 0,
-
-          splitNumber: 7
+          ...options.yAxis
         },
         {
           ...options.yAxis,
-          min: 0,
-          max: 70,
-          splitNumber: 7,
           nameTextStyle: {
             fontSize: 12,
             align: 'right'

@@ -87,6 +87,22 @@ export const formatNumber = (num: number) => {
   }
 };
 
+export const formatLargeNumber = (value: number) => {
+  if (typeof value !== 'number' || isNaN(value)) {
+    return value;
+  }
+
+  if (value >= 1e9) {
+    return (value / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+  } else if (value >= 1e6) {
+    return (value / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  } else if (value >= 1e3) {
+    return (value / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+  } else {
+    return value;
+  }
+};
+
 export function loadLanguageConfig(language: string) {
   // @ts-ignore
   const requireContext = require.context(`./${language}`, false, /\.ts$/);

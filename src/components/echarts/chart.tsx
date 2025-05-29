@@ -48,11 +48,65 @@ const Chart: React.FC<{
   );
 
   useEffect(() => {
+    const handleOnFinished = () => {
+      if (!chart.current) return;
+
+      const currentChart = chart.current;
+      const optionsYAxis = currentChart.getOption()?.yAxis;
+      if (
+        !optionsYAxis ||
+        !Array.isArray(optionsYAxis) ||
+        optionsYAxis.length < 2
+      )
+        return;
+      // @ts-ignore
+      const model = currentChart.getModel();
+
+      const yAxisModels = [
+        model.getComponent('yAxis', 0),
+        model.getComponent('yAxis', 1)
+      ];
+
+      if (!yAxisModels[0] || !yAxisModels[1]) return;
+
+      const axes = yAxisModels.map((m) => m.axis);
+
+      const intervals = axes.map((axis) => axis.scale.getInterval());
+      const ticksList = axes.map((axis) => axis.scale.getTicks());
+      const counts = ticksList.map((t) => t.length);
+
+      if (counts[0] === counts[1]) return;
+
+      const unifiedCount = Math.max(counts[0], counts[1]);
+
+      const newMax0 = intervals[0] * (unifiedCount - 1);
+      const newMax1 = intervals[1] * (unifiedCount - 1);
+
+      const yAxis: any[] = [{}, {}];
+
+      if (counts[0] < unifiedCount) {
+        yAxis[0].max = newMax0;
+      }
+
+      if (counts[1] < unifiedCount) {
+        yAxis[1].max = newMax1;
+      }
+
+      setTimeout(() => {
+        currentChart.setOption({
+          yAxis: yAxis
+        });
+      }, 0);
+    };
+
     if (container.current) {
       init();
+      chart.current?.on('finished', handleOnFinished);
     }
+
     return () => {
       chart.current?.dispose();
+      chart.current?.off('finished', handleOnFinished);
     };
   }, [init]);
 

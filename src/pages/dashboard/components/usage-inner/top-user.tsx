@@ -17,7 +17,7 @@ const TopUser: React.FC<TopUserProps> = (props) => {
         title={intl.formatMessage({ id: 'dashboard.topusers' })}
         seriesData={userData}
         xAxisData={topUserList}
-        height={360}
+        height={520}
       ></HBar>
     </CardWrapper>
   );

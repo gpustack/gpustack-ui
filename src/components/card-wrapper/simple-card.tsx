@@ -9,6 +9,7 @@ const SimpleCardItemWrapper = styled.div`
   width: 100%;
   height: 100%;
   gap: 10px;
+  margin-bottom: 24px;
 `;
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -25,6 +26,9 @@ const useStyles = createStyles(({ css, token }) => ({
     gap: ${token.padding}px;
     .title {
       font-size: ${token.fontSize}px;
+      font-weight: var(--font-weight-medium);
+    }
+    .content {
       font-weight: var(--font-weight-500);
     }
   `
@@ -48,11 +52,12 @@ export const SimpleCardItem: React.FC<{
 
 export const SimpleCard: React.FC<{
   dataList: { label: string; value: React.ReactNode }[];
+  height?: string | number;
 }> = (props) => {
   const { dataList } = props;
 
   return (
-    <SimpleCardItemWrapper>
+    <SimpleCardItemWrapper style={{ height: props.height || '100%' }}>
       {dataList.map((item, index) => (
         <SimpleCardItem
           key={index}

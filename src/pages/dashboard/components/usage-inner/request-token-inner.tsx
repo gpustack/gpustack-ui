@@ -1,8 +1,7 @@
 import CardWrapper from '@/components/card-wrapper';
-import BarChart from '@/components/echarts/bar-chart';
-import LineChart from '@/components/echarts/line-chart';
+import { SimpleCard } from '@/components/card-wrapper/simple-card';
+import MixLineBar from '@/components/echarts/mix-line-bar';
 import { useIntl } from '@umijs/max';
-import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 
@@ -29,13 +28,19 @@ const dataList = [
   { label: '120K', value: 'API Requests' }
 ];
 
+const legendData = [
+  { name: 'Completion tokens', icon: 'roundRect' },
+  { name: 'Prompt tokens', icon: 'roundRect' },
+  { name: 'API requests', icon: 'circle' }
+];
+
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   const { requestData, tokenData, xAxisData } = props;
   const intl = useIntl();
 
   return (
     <CardWrapper style={{ width: '100%' }}>
-      <Row style={{ width: '100%' }}>
+      {/* <Row style={{ width: '100%' }}>
         <Col span={12}>
           <LineChart
             title={intl.formatMessage({ id: 'dashboard.apirequest' })}
@@ -54,7 +59,20 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
             labelFormatter={labelFormatter}
           ></BarChart>
         </Col>
-      </Row>
+      </Row> */}
+      <SimpleCard dataList={dataList} height={80}></SimpleCard>
+      <MixLineBar
+        chartData={{
+          line: requestData,
+          bar: tokenData
+        }}
+        seriesData={[]}
+        xAxisData={xAxisData}
+        height={360}
+        smooth={true}
+        legendData={legendData}
+        labelFormatter={labelFormatter}
+      ></MixLineBar>
     </CardWrapper>
   );
 };

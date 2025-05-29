@@ -30,6 +30,7 @@ const MixLineBarChart: React.FC<
     grid,
     legend,
     lineItemConfig,
+    barItemConfig,
     title: titleConfig,
     tooltip,
     xAxis,
@@ -73,7 +74,7 @@ const MixLineBarChart: React.FC<
   };
 
   const dataOptions = useMemo((): any => {
-    const data = _.map(seriesData, (item: any) => {
+    const linedata = _.map(lineSeriesData, (item: any) => {
       return {
         ...item,
         ...lineItemConfig,
@@ -82,12 +83,26 @@ const MixLineBarChart: React.FC<
           ...lineItemConfig.itemStyle,
           color: item.color
         },
+        yAxisIndex: 1,
         lineStyle: {
           ...lineItemConfig.lineStyle,
           color: item.color
         }
       };
     });
+
+    const barData = _.map(barSeriesData, (item: any) => {
+      return {
+        ...item,
+        ...barItemConfig,
+        stack: 'total',
+        yAxisIndex: 0,
+        itemStyle: {
+          color: item.color
+        }
+      };
+    });
+
     return {
       ...options,
       animation: false,
@@ -95,25 +110,35 @@ const MixLineBarChart: React.FC<
         ...titleConfig,
         text: title
       },
-      yAxis: {
-        ...options.yAxis,
-        name: yAxisName,
-        nameTextStyle: {
-          fontSize: 12,
-          align: 'right'
+      yAxis: [
+        {
+          ...options.yAxis,
+          min: 0,
+
+          splitNumber: 7
+        },
+        {
+          ...options.yAxis,
+          min: 0,
+          max: 70,
+          splitNumber: 7,
+          nameTextStyle: {
+            fontSize: 12,
+            align: 'right'
+          }
         }
-      },
+      ],
       xAxis: {
         ...options.xAxis,
         data: xAxisData
       },
-      series: data
+      series: [...linedata, ...barData]
     };
   }, [seriesData, xAxisData, yAxisName, title, smooth, legendData, options]);
 
   return (
     <>
-      {!seriesData.length ? (
+      {!lineSeriesData.length && !barSeriesData.length ? (
         <EmptyData height={height} title={title}></EmptyData>
       ) : (
         <Chart

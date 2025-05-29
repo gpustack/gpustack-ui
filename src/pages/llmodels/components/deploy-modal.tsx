@@ -28,12 +28,17 @@ import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
 
-const resetFields = [
+const resetFieldsByModel = [
   'cpu_offloading',
   'distributed_inference_across_workers',
   'backend_version',
   'backend_parameters',
   'env'
+];
+
+const resetFieldsByFile = [
+  'cpu_offloading',
+  'distributed_inference_across_workers'
 ];
 
 const ModalFooterStyle = {
@@ -136,7 +141,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleSelectModelFile = (item: any, evaluate?: boolean) => {
-    form.current?.form?.resetFields(resetFields);
+    form.current?.form?.resetFields(resetFieldsByFile);
     const modelInfo = onSelectModel(selectedModel, props.source);
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
@@ -156,9 +161,9 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const handleOnSelectModel = (item: any, evaluate?: boolean) => {
     setSelectedModel(item);
+    form.current?.form?.resetFields(resetFieldsByModel);
     if (!item.isGGUF) {
       setIsGGUF(false);
-      form.current?.form?.resetFields(resetFields);
       const modelInfo = onSelectModel(item, props.source);
       if (!isHolderRef.current.model) {
         handleShowCompatibleAlert(item.evaluateResult);

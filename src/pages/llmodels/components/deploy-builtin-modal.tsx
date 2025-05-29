@@ -125,9 +125,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current?.submit?.();
   };
 
+  // use for size change and quantization change
   const pickSomeFieldsValue = () => {
     const formData = form.current?.getFieldsValue();
-    return _.pick(formData, ['worker_selector', 'gpu_selector', 'env']);
+    return _.pick(formData, [
+      'worker_selector',
+      'gpu_selector',
+      'env',
+      'backend_version',
+      'backend_parameters'
+    ]);
   };
 
   const generateSubmitData = (formData: FormData) => {
@@ -318,21 +325,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       changedValues,
       allValues: data,
       source: props.source
-    });
-  };
-
-  const handleAdvanceOnValuesChange = (data: {
-    changedValues: any;
-    allValues: any;
-    source: string;
-  }) => {
-    handleOnValuesChange?.({
-      changedValues: data.changedValues,
-      allValues: {
-        ..._.omit(selectSpecRef.current, ['name']),
-        ...data.allValues
-      },
-      source: data.source
     });
   };
 

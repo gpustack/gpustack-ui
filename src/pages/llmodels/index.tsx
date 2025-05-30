@@ -252,24 +252,14 @@ const Models: React.FC = () => {
     });
   }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
 
-  const handleOnStop = useCallback(async (ids: number[]) => {
-    cacheInsDataListRef.current = cacheInsDataListRef.current.filter(
-      (item: any) => !ids.includes(item.model_id)
-    );
+  const handleSearchBySilent = useCallback(async () => {
     await new Promise((resolve) => {
       setTimeout(resolve, 300);
     });
-    setModelInstances(cacheInsDataListRef.current);
     fetchData({
       loadingVal: false
     });
-  }, []);
-
-  const handleOnStart = useCallback(() => {
-    fetchData({
-      loadingVal: false
-    });
-  }, []);
+  }, [fetchData]);
 
   const handleSearch = useCallback(
     async (params?: any) => {
@@ -480,8 +470,8 @@ const Models: React.FC = () => {
         handleOnToggleExpandAll={createModelsInstanceChunkRequest}
         onViewLogs={handleOnViewLogs}
         onCancelViewLogs={handleOnCancelViewLogs}
-        onStop={handleOnStop}
-        onStart={handleOnStart}
+        onStop={handleSearchBySilent}
+        onStart={handleSearchBySilent}
         queryParams={queryParams}
         loading={dataSource.loading}
         loadend={dataSource.loadend}

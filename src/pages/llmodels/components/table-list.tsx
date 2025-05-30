@@ -503,7 +503,14 @@ const Models: React.FC<ModelsProps> = ({
         // ignore
       }
     },
-    [handleEdit, handleOpenPlayGround, handleDelete, expandedRowKeys]
+    [
+      handleEdit,
+      handleOpenPlayGround,
+      handleDelete,
+      onStop,
+      onStart,
+      expandedRowKeys
+    ]
   );
 
   const handleChildSelect = useCallback(

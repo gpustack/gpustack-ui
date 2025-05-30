@@ -136,9 +136,6 @@ const TableRow: React.FC<
   }, [record, loadChildren]);
 
   const filterUpdateChildrenHandler = () => {
-    if (!expandedRowKeys?.includes(record[rowKey])) {
-      return;
-    }
     const dataList = _.filter(tableContext.allChildren, (data: any) => {
       return _.get(data, [childParentKey]) === _.get(record, [rowKey]);
     });

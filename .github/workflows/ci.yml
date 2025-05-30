@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - 'main'
+      - 'v*-dev'
     tags:
       - '*.*.*'
   pull_request:
     branches:
       - 'main'
+      - 'v*-dev'
 
 env:
   NODE_VERSION: '21'
@@ -72,11 +74,6 @@ jobs:
     if: github.event_name == 'push'
     timeout-minutes: 30
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        version: ['latest', '${{ github.ref_name  }}']
-        exclude:
-          - version: 'main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -92,10 +89,23 @@ jobs:
             ${{ github.workspace }}/node_modules
       - name: Build
         run: scripts/build
+      - name: Determine Version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "version=latest" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == refs/heads/v*-dev ]]; then
+            echo "version=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+          else
+            echo "Not a publish target"
+            exit 1
+          fi
       - name: Package
         run: scripts/package
         env:
-          VERSION: '${{ matrix.version }}'
+          VERSION: '${{ steps.version.outputs.version }}'
       - name: Release
         uses: TencentCloud/cos-action@b0aa648235fb35a1bdd6a77f529eb0ac4c2f1c25
         with:
@@ -103,7 +113,7 @@ jobs:
           secret_key: ${{ secrets.CI_TECENTCOS_SECRET_KEY }}
           cos_bucket: ${{ secrets.COS_BUCKET }}
           cos_region: ${{ secrets.COS_REGION }}
-          local_path: dist/${{ matrix.version }}.tar.gz
-          remote_path: releases/${{ matrix.version }}.tar.gz
+          local_path: dist/${{ steps.version.outputs.version }}.tar.gz
+          remote_path: releases/${{ steps.version.outputs.version }}.tar.gz
           accelerate: true
           clean: false

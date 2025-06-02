@@ -1,3 +1,4 @@
+import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import PageTools from '@/components/page-tools';
 import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -18,9 +19,20 @@ const FilterWrapper = styled.div`
   .selection {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
   }
 `;
+
+const TitleWrapper = styled.div`
+  margin: 26px 0px;
+  font-weight: 700;
+`;
+
+const dataList = [
+  { label: '100M', value: 'Completion Tokens' },
+  { label: '50M', value: 'Prompt Tokens' },
+  { label: '120K', value: 'API Requests' }
+];
 
 const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
   const intl = useIntl();
@@ -40,14 +52,7 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
 
   return (
     <div>
-      <PageTools
-        style={{ margin: '26px 0px' }}
-        left={
-          <span className="font-700">
-            {intl.formatMessage({ id: 'dashboard.usage' })}
-          </span>
-        }
-      />
+      <PageTools style={{ margin: '0px 0px' }} left={false} />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
         <Col
           xs={24}
@@ -57,6 +62,9 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
           xl={16}
           style={{ paddingRight: paddingRight }}
         >
+          <TitleWrapper>
+            {intl.formatMessage({ id: 'dashboard.usage' })}
+          </TitleWrapper>
           <FilterWrapper>
             <div className="selection">
               <DatePicker.RangePicker></DatePicker.RangePicker>
@@ -71,6 +79,11 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
               {intl.formatMessage({ id: 'common.button.export' })}
             </Button>
           </FilterWrapper>
+          <SimpleCard
+            dataList={dataList}
+            height={80}
+            bordered={true}
+          ></SimpleCard>
           <RequestTokenInner
             requestData={requestTokenData.requestData}
             xAxisData={requestTokenData.xAxisData}
@@ -78,6 +91,9 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
           ></RequestTokenInner>
         </Col>
         <Col xs={24} sm={24} md={24} lg={24} xl={8}>
+          <TitleWrapper>
+            {intl.formatMessage({ id: 'dashboard.topusers' })}
+          </TitleWrapper>
           <TopUser
             userData={topUserData.userData}
             topUserList={topUserData.topUserList}

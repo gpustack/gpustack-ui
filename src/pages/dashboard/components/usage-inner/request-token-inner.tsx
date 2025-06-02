@@ -1,5 +1,4 @@
 import CardWrapper from '@/components/card-wrapper';
-import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import MixLineBar from '@/components/echarts/mix-line-bar';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
@@ -60,7 +59,7 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
           ></BarChart>
         </Col>
       </Row> */}
-      <SimpleCard dataList={dataList} height={80}></SimpleCard>
+      {/* <SimpleCard dataList={dataList} height={80}></SimpleCard> */}
       <MixLineBar
         chartData={{
           line: requestData,

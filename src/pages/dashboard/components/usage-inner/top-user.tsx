@@ -13,12 +13,7 @@ const TopUser: React.FC<TopUserProps> = (props) => {
 
   return (
     <CardWrapper>
-      <HBar
-        title={intl.formatMessage({ id: 'dashboard.topusers' })}
-        seriesData={userData}
-        xAxisData={topUserList}
-        height={520}
-      ></HBar>
+      <HBar seriesData={userData} xAxisData={topUserList} height={512}></HBar>
     </CardWrapper>
   );
 };

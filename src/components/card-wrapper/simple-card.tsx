@@ -8,8 +8,8 @@ const SimpleCardItemWrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  gap: 10px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 16px;
 `;
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -24,12 +24,16 @@ const useStyles = createStyles(({ css, token }) => ({
     justify-content: center;
     align-items: center;
     gap: ${token.padding}px;
+    &.bordered {
+      border: 1px solid ${token.colorBorder};
+    }
     .title {
       font-size: ${token.fontSize}px;
       font-weight: var(--font-weight-medium);
     }
     .content {
-      font-weight: var(--font-weight-500);
+      font-size: ${token.fontSize}px;
+      color: ${token.colorTextSecondary};
     }
   `
 }));
@@ -37,13 +41,14 @@ export const SimpleCardItem: React.FC<{
   title?: string;
   content?: React.ReactNode;
   style?: React.CSSProperties;
+  bordered?: boolean;
 }> = (props) => {
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
 
-  const { title, content, style } = props;
+  const { title, content, style, bordered } = props;
 
   return (
-    <div className={styles.wrapper} style={style}>
+    <div className={cx({ bordered: bordered }, styles.wrapper)} style={style}>
       <div className="title">{title}</div>
       <div className="content">{content}</div>
     </div>
@@ -53,8 +58,9 @@ export const SimpleCardItem: React.FC<{
 export const SimpleCard: React.FC<{
   dataList: { label: string; value: React.ReactNode }[];
   height?: string | number;
+  bordered?: boolean;
 }> = (props) => {
-  const { dataList } = props;
+  const { dataList, bordered } = props;
 
   return (
     <SimpleCardItemWrapper style={{ height: props.height || '100%' }}>
@@ -63,6 +69,7 @@ export const SimpleCard: React.FC<{
           key={index}
           title={item.label}
           content={item.value}
+          bordered={bordered}
         ></SimpleCardItem>
       ))}
     </SimpleCardItemWrapper>

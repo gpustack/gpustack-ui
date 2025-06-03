@@ -16,6 +16,7 @@ export type MessageItemAction =
 export interface MessageItem {
   content: string;
   imgs?: { uid: string | number; dataUrl: string }[];
+  audio?: { uid: string | number; dataUrl: string; format: 'wav' | 'mp3' };
   role: string;
   title?: React.ReactNode;
   uid: number;

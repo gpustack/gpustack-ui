@@ -604,6 +604,10 @@ const options = [
   {
     label: '--swa-full',
     value: '--swa-full'
+  },
+  {
+    label: '--no-enable-reasoning',
+    value: '--no-enable-reasoning'
   }
 ];
 

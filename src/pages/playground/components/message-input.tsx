@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
+import { convertFileToBase64 } from '@/utils/load-audio-file';
 import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
@@ -18,6 +19,12 @@ import { MessageItem } from '../config/types';
 import '../style/message-input.less';
 import ThumbImg from './thumb-img';
 import UploadImg from './upload-img';
+
+const audioTypeMap: Record<string, string> = {
+  'audio/wav': 'wav',
+  'audio/mp3': 'mp3',
+  'audio/mpeg': 'mp3'
+};
 
 type CurrentMessage = Omit<MessageItem, 'uid'>;
 
@@ -260,6 +267,26 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       });
     };
 
+    const handleUploadAudioChange = async (data: {
+      file: any;
+      fileList: any[];
+    }) => {
+      // convert audio file to base64
+      try {
+        console.log('audio file====', data.file);
+        const base64Audio = await convertFileToBase64(data.file);
+        setMessage({
+          ...message,
+          audio: {
+            format: audioTypeMap[data.file.type],
+            dataUrl: base64Audio
+          }
+        });
+      } catch (error) {
+        console.error('Error converting audio to Base64:', error);
+      }
+    };
+
     const handleDeleteImg = (uid: number | string) => {
       const list = _.filter(
         message.imgs,
@@ -354,6 +381,22 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 {checkLabel}
               </Checkbox>
             )}
+            {actions.includes('upload') && message.role === Roles.User && (
+              <UploadImg
+                handleUpdateImgList={handleUpdateImgList}
+                size="middle"
+              ></UploadImg>
+            )}
+            {/* {actions.includes('upload') && message.role === Roles.User && (
+              <UploadAudio
+                type="text"
+                accept={'.mp3,.wav'}
+                size="middle"
+                shape="default"
+                icon={<CustomerServiceOutlined />}
+                onChange={handleUploadAudioChange}
+              ></UploadAudio>
+            )} */}
             {actions.includes('upload') && message.role === Roles.User && (
               <UploadImg
                 handleUpdateImgList={handleUpdateImgList}

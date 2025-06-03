@@ -87,7 +87,7 @@ export default {
   'playground.audio.startrecord': '开始录音',
   'playground.audio.stoprecord': '停止录音',
   'playground.audio.generating.tips': '生成的文本将出现在这里',
-  'playground.audio.uploadfile.tips': '请上传音频文件，支持格式：{formats}',
+  'playground.audio.uploadfile.tips': '上传音频文件，支持格式：{formats}',
   'playground.audio.button.generate': '生成文本',
   'playground.input.multiplePaste': '批量输入',
   'playground.input.multiplePaste.tips':

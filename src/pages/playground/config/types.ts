@@ -13,10 +13,23 @@ export type MessageItemAction =
   | 'markdown'
   | 'edit';
 
+export type AudioFormat = 'wav' | 'mp3';
+
+export interface AudioData {
+  uid: string | number;
+  base64: string;
+  format: AudioFormat;
+  data: {
+    url: string;
+    name: string;
+    duration: number;
+  };
+}
+
 export interface MessageItem {
   content: string;
   imgs?: { uid: string | number; dataUrl: string }[];
-  audio?: { uid: string | number; dataUrl: string; format: 'wav' | 'mp3' };
+  audio?: AudioData[];
   role: string;
   title?: React.ReactNode;
   uid: number;

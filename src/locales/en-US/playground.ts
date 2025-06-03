@@ -90,7 +90,7 @@ export default {
   'playground.audio.stoprecord': 'Stop Recording',
   'playground.audio.generating.tips': 'Generated text will appear here.',
   'playground.audio.uploadfile.tips':
-    'Please upload an audio file, supported formats: {formats}',
+    'Upload an audio file, supported formats: {formats}',
   'playground.input.multiplePaste': 'Batch Input Mode',
   'playground.input.multiplePaste.tips':
     'When enabled, pasted multi-line text will be automatically split by newline into separate entries in the form.',

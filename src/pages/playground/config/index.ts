@@ -1,6 +1,6 @@
 import _, { map } from 'lodash';
 import { CREAT_IMAGE_API } from '../apis';
-import { MessageItem } from './types';
+import { AudioData, MessageItem } from './types';
 
 export const Roles = {
   User: 'user',
@@ -76,7 +76,33 @@ export const generateMessagesByListContent = (messageList: any[]) => {
         content: content
       };
     }
-    return _.omit(item, ['uid', 'imgs']);
+
+    // audio
+    if (item.audio?.length) {
+      const content = map(item.audio, (item: AudioData) => {
+        return {
+          type: 'input_audio',
+          input_audio: {
+            data: item.base64,
+            format: item.format
+          }
+        };
+      });
+
+      if (item.content) {
+        content.push({
+          type: 'text',
+          text: item.content
+        });
+      }
+
+      return {
+        role: item.role,
+        content: content
+      };
+    }
+
+    return _.omit(item, ['uid', 'imgs', 'audio']);
   });
 };
 

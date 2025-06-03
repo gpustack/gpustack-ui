@@ -1,7 +1,14 @@
+import AudioElement from '@/components/audio-player/audio-element';
 import IconFont from '@/components/icon-font';
+import UploadAudio from '@/components/upload-audio';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
-import { convertFileToBase64 } from '@/utils/load-audio-file';
-import { ClearOutlined, SendOutlined, SwapOutlined } from '@ant-design/icons';
+import { convertFileToBase64, readAudioFile } from '@/utils/load-audio-file';
+import {
+  ClearOutlined,
+  CustomerServiceOutlined,
+  SendOutlined,
+  SwapOutlined
+} from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
 import _ from 'lodash';
@@ -14,8 +21,9 @@ import React, {
   useState
 } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import styled from 'styled-components';
 import { Roles } from '../config';
-import { MessageItem } from '../config/types';
+import { AudioFormat, MessageItem } from '../config/types';
 import '../style/message-input.less';
 import ThumbImg from './thumb-img';
 import UploadImg from './upload-img';
@@ -25,6 +33,12 @@ const audioTypeMap: Record<string, string> = {
   'audio/mp3': 'mp3',
   'audio/mpeg': 'mp3'
 };
+
+const AudioWrapper = styled.div`
+  audio {
+    padding-top: 10px;
+  }
+`;
 
 type CurrentMessage = Omit<MessageItem, 'uid'>;
 
@@ -139,8 +153,13 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       content: '',
       imgs: []
     });
-    const imgCountRef = useRef(0);
+    const uidCountRef = useRef(0);
     const inputRef = useRef<any>(null);
+
+    const updateUidCount = () => {
+      uidCountRef.current += 1;
+      return uidCountRef.current;
+    };
 
     const isDisabled = useMemo(() => {
       return disabled
@@ -239,9 +258,9 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
 
           if (imgs.length) {
             const list = _.map(imgs, (img: string) => {
-              imgCountRef.current += 1;
+              updateUidCount();
               return {
-                uid: imgCountRef.current,
+                uid: uidCountRef.current,
                 dataUrl: img
               };
             });
@@ -273,14 +292,19 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     }) => {
       // convert audio file to base64
       try {
-        console.log('audio file====', data.file);
         const base64Audio = await convertFileToBase64(data.file);
+        const audioData = await readAudioFile(data.file);
+        console.log('audioData====', audioData);
         setMessage({
           ...message,
-          audio: {
-            format: audioTypeMap[data.file.type],
-            dataUrl: base64Audio
-          }
+          audio: [
+            {
+              uid: updateUidCount(),
+              format: audioTypeMap[data.file.type] as AudioFormat,
+              base64: base64Audio.split(',')[1],
+              data: _.pick(audioData, ['url', 'name', 'duration'])
+            }
+          ]
         });
       } catch (error) {
         console.error('Error converting audio to Base64:', error);
@@ -295,6 +319,17 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       setMessage({
         ...message,
         imgs: list
+      });
+    };
+
+    const handleDeleteAudio = (uid: number | string) => {
+      const list = _.filter(
+        message.audio,
+        (item: MessageItem) => item.uid !== uid
+      );
+      setMessage({
+        ...message,
+        audio: list
       });
     };
 
@@ -317,16 +352,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
         }
       }
     };
-
-    const handleDeleteLastImage = useCallback(() => {
-      if (message.imgs && message.imgs?.length > 0) {
-        const newImgList = [...(message.imgs || [])];
-        const lastImage = newImgList.pop();
-        if (lastImage) {
-          handleDeleteImg(lastImage.uid);
-        }
-      }
-    }, [message.imgs, handleDeleteImg]);
 
     useImperativeHandle(ref, () => ({
       handleInputChange: handleInputChange
@@ -387,7 +412,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 size="middle"
               ></UploadImg>
             )}
-            {/* {actions.includes('upload') && message.role === Roles.User && (
+            {actions.includes('upload') && message.role === Roles.User && (
               <UploadAudio
                 type="text"
                 accept={'.mp3,.wav'}
@@ -396,12 +421,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 icon={<CustomerServiceOutlined />}
                 onChange={handleUploadAudioChange}
               ></UploadAudio>
-            )} */}
-            {actions.includes('upload') && message.role === Roles.User && (
-              <UploadImg
-                handleUpdateImgList={handleUpdateImgList}
-                size="middle"
-              ></UploadImg>
             )}
             {tools}
             {actions.includes('clear') && (
@@ -490,11 +509,22 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             )}
           </div>
         </div>
-        <ThumbImg
-          dataList={message.imgs || []}
-          onDelete={handleDeleteImg}
-          editable={true}
-        ></ThumbImg>
+        <div className="flex">
+          <ThumbImg
+            dataList={message.imgs || []}
+            onDelete={handleDeleteImg}
+            editable={true}
+          ></ThumbImg>
+          {message.audio && message.audio.length > 0 && (
+            <AudioWrapper>
+              <AudioElement
+                src={message.audio?.[0].data?.url}
+                onDelete={handleDeleteAudio}
+                controls
+              ></AudioElement>
+            </AudioWrapper>
+          )}
+        </div>
         <div className="input-box">
           {actions.includes('paste') ? (
             <TextArea

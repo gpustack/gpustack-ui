@@ -1,3 +1,4 @@
+import AudioElement from '@/components/audio-player/audio-element';
 import FullMarkdown from '@/components/markdown-viewer/full-markdown';
 import { Input } from 'antd';
 import classNames from 'classnames';
@@ -8,10 +9,18 @@ import React, {
   useImperativeHandle,
   useRef
 } from 'react';
+import styled from 'styled-components';
 import { Roles } from '../../config';
 import { MessageItem, MessageItemAction } from '../../config/types';
 import ThumbImg from '../thumb-img';
 import ThinkContent from './think-content';
+
+const AudioWrapper = styled.div`
+  padding-left: 10px;
+  audio {
+    padding-top: 10px;
+  }
+`;
 
 interface MessageBodyProps {
   ref?: any;
@@ -93,6 +102,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
               role: data.role,
               content: data.content,
               uid: data.uid,
+              audio: data.audio || [],
               imgs: [...(data.imgs || []), ...list]
             });
           }
@@ -117,6 +127,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
         role: data.role,
         content: data.content,
         uid: data.uid,
+        audio: data.audio || [],
         imgs: list
       });
     };
@@ -124,6 +135,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
     const handleMessageChange = (e: any) => {
       updateMessage?.({
         imgs: data.imgs || [],
+        audio: data.audio || [],
         role: data.role,
         content: e.target.value,
         uid: data.uid
@@ -143,6 +155,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
         role: data.role,
         content: editContent,
         uid: data.uid,
+        audio: data.audio || [],
         imgs: data.imgs
       });
     };
@@ -182,14 +195,25 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
       return (
         <div
           className={classNames('content-item-content', {
-            'has-img': data.imgs?.length
+            'has-img':
+              data.imgs?.length || (data.audio && data.audio?.length > 0)
           })}
         >
-          <ThumbImg
-            editable={editable}
-            dataList={data.imgs || []}
-            onDelete={handleDeleteImg}
-          />
+          <div className="justify-start">
+            <ThumbImg
+              editable={editable}
+              dataList={data.imgs || []}
+              onDelete={handleDeleteImg}
+            />
+            {data.audio && data.audio.length > 0 && (
+              <AudioWrapper>
+                <AudioElement
+                  src={data.audio?.[0]?.data.url}
+                  controls
+                ></AudioElement>
+              </AudioWrapper>
+            )}
+          </div>
           {data.content && <div className="text">{data.content}</div>}
         </div>
       );
@@ -199,15 +223,26 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
       return (
         <div
           className={classNames('message-content-input', {
-            'has-img': data.imgs?.length
+            'has-img':
+              data.imgs?.length || (data.audio && data.audio?.length > 0)
           })}
           onClick={handleClickWrapper}
         >
-          <ThumbImg
-            editable={editable}
-            dataList={data.imgs || []}
-            onDelete={handleDeleteImg}
-          />
+          <div className="justify-start">
+            <ThumbImg
+              editable={editable}
+              dataList={data.imgs || []}
+              onDelete={handleDeleteImg}
+            />
+            {data.audio && data.audio.length > 0 && (
+              <AudioWrapper>
+                <AudioElement
+                  src={data.audio?.[0]?.data.url}
+                  controls
+                ></AudioElement>
+              </AudioWrapper>
+            )}
+          </div>
           <>
             {data.role === Roles.User ? (
               <Input.TextArea

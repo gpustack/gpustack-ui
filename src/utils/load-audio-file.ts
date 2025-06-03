@@ -9,7 +9,16 @@ export const convertFileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-export const loadAudioData = async (data: any, type: string) => {
+export const loadAudioData = async (
+  data: any,
+  type: string
+): Promise<{
+  data: Blob;
+  size: number | string;
+  type: string;
+  duration: number;
+  url: string;
+}> => {
   return new Promise((resolve, reject) => {
     try {
       const audioBlob = new Blob([data], { type: type });
@@ -40,7 +49,9 @@ export const loadAudioData = async (data: any, type: string) => {
   });
 };
 
-export const readAudioFile = async (file: File) => {
+export const readAudioFile = async (
+  file: File
+): Promise<{ url: string; name: string; duration: number }> => {
   console.log('file====', file);
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

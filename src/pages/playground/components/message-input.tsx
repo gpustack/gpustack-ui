@@ -397,12 +397,6 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 onChange={handleUploadAudioChange}
               ></UploadAudio>
             )} */}
-            {actions.includes('upload') && message.role === Roles.User && (
-              <UploadImg
-                handleUpdateImgList={handleUpdateImgList}
-                size="middle"
-              ></UploadImg>
-            )}
             {tools}
             {actions.includes('clear') && (
               <Tooltip

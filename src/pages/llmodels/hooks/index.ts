@@ -7,6 +7,7 @@ import {
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
+import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec, queryGPUList } from '../apis';
@@ -522,7 +523,7 @@ export const useCheckCompatibility = () => {
     cacheFormValuesRef.current = allValues;
     const data = getSourceRepoConfigValue(source, allValues);
     const gpuSelector = generateGPUIds(data.values);
-    await handleDoEvalute({
+    return await handleDoEvalute({
       ...data.values,
       ...gpuSelector
     });
@@ -546,7 +547,10 @@ export const useCheckCompatibility = () => {
     return res;
   };
 
-  const debounceHandleValuesChange = _.debounce(handleOnValuesChange, 500);
+  const { run: debounceHandleValuesChange } = useDebounceFn(
+    handleOnValuesChange,
+    { wait: 500 }
+  );
 
   const cancelEvaluate = () => {
     checkTokenRef.current?.cancel();
@@ -570,6 +574,7 @@ export const useCheckCompatibility = () => {
     cancelEvaluate,
     handleBackendChangeBefore,
     handleOnValuesChange: debounceHandleValuesChange,
+    handleEvaluateOnChange: handleOnValuesChange,
     warningStatus,
     checkTokenRef,
     submitAnyway

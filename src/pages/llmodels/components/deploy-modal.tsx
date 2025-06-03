@@ -36,6 +36,12 @@ const resetFields = [
   'env'
 ];
 
+const resetFieldsByFile = [
+  'cpu_offloading',
+  'distributed_inference_across_workers',
+  'backend_parameters'
+];
+
 const ModalFooterStyle = {
   padding: '16px 24px',
   display: 'flex',
@@ -94,6 +100,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     handleBackendChangeBefore,
     cancelEvaluate,
     handleOnValuesChange,
+    handleEvaluateOnChange,
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
@@ -135,21 +142,36 @@ const AddModal: FC<AddModalProps> = (props) => {
     return categories || null;
   };
 
-  const handleSelectModelFile = (item: any, evaluate?: boolean) => {
-    form.current?.form?.resetFields(resetFields);
+  const handleSelectModelFile = async (item: any, evaluate?: boolean) => {
+    form.current?.form?.resetFields(resetFieldsByFile);
     const modelInfo = onSelectModel(selectedModel, props.source);
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
-      ...getDefaultSpec(item),
       ...modelInfo,
       categories: getCategory(item)
     });
 
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 0);
+    });
+
     if (item.fakeName) {
-      handleOnValuesChange?.({
+      const evaluateRes = await handleEvaluateOnChange?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
         source: props.source
+      });
+      const defaultSpec = getDefaultSpec({
+        evaluateResult: evaluateRes
+      });
+      console.log('defaultSpec', defaultSpec);
+      form.current?.setFieldsValue?.({
+        file_name: item.fakeName,
+        ...defaultSpec,
+        ...modelInfo,
+        categories: getCategory(item)
       });
     }
   };

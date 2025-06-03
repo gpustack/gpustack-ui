@@ -592,6 +592,22 @@ const options = [
   {
     label: '--context-shift',
     value: '--context-shift'
+  },
+  {
+    label: '--visual-max-image-cache',
+    value: '--visual-max-image-cache'
+  },
+  {
+    label: '--max-projected-cache',
+    value: '--max-projected-cache'
+  },
+  {
+    label: '--swa-full',
+    value: '--swa-full'
+  },
+  {
+    label: '--no-enable-reasoning',
+    value: '--no-enable-reasoning'
   }
 ];
 

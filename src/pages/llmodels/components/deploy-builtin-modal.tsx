@@ -127,12 +127,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const pickSomeFieldsValue = () => {
     const formData = form.current?.getFieldsValue();
-    return _.pick(formData, [
-      'worker_selector',
-      'gpu_selector',
-      'env',
-      'backend_version'
-    ]);
+    return _.pick(formData, ['worker_selector', 'gpu_selector', 'env']);
   };
 
   const generateSubmitData = (formData: FormData) => {

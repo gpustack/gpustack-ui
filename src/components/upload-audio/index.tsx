@@ -7,10 +7,14 @@ interface UploadAudioProps {
   accept?: string;
   maxCount?: number;
   type?: 'text' | 'primary' | 'default';
+  icon?: React.ReactNode;
+  size?: 'small' | 'middle' | 'large';
+  shape?: 'circle' | 'round' | 'default';
   onChange?: (data: { file: any; fileList: any[] }) => void;
 }
 
 const UploadAudio: React.FC<UploadAudioProps> = (props) => {
+  const { icon, accept, type, size = 'large', shape = 'circle' } = props;
   const intl = useIntl();
   const beforeUpload = (file: any) => {
     return false;
@@ -48,9 +52,10 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
           }}
         >
           <Button
-            icon={<UploadOutlined />}
+            size={size}
+            icon={icon ?? <UploadOutlined />}
             type={props.type ?? 'text'}
-            shape="circle"
+            shape={shape}
           ></Button>
         </div>
       </Upload>

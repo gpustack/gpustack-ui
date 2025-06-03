@@ -132,8 +132,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       'worker_selector',
       'gpu_selector',
       'env',
-      'backend_version',
-      'backend_parameters'
+      'backend_version'
     ]);
   };
 

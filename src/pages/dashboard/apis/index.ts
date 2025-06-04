@@ -7,5 +7,6 @@ export async function queryDashboardData() {
 }
 
 export async function queryDashboardUsageData() {
-  return request(`${DASHBOARD_API}/usage`);
+  // return request(`${DASHBOARD_API}/usage`);
+  return {};
 }

@@ -21,5 +21,20 @@ export default {
   'dashboard.activeModels': 'アクティブなモデル',
   'dashboard.runninginstances': '稼働中のインスタンス',
   'dashboard.activeModels.name': 'モデル名',
-  'dashboard.allocatevram': '割り当て済みVRAM / メモリ'
+  'dashboard.allocatevram': '割り当て済みVRAM / メモリ',
+  'dashboard.usage.selectuser': 'Select users',
+  'dashboard.usage.selectmodel': 'Select models',
+  'dashboard.usage.export': 'Export Data',
+  'dashboard.usage.export.user': 'User',
+  'dashboard.usage.export.model': 'Model',
+  'dashboard.usage.export.date': 'Date'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'dashboard.usage.selectuser': 'Select users',
+// 2. 'dashboard.usage.selectmodel': 'Select models',
+// 3. 'dashboard.usage.export': 'Export Data',
+// 4. 'dashboard.usage.export.user': 'User',
+// 5. 'dashboard.usage.export.model': 'Model',
+// 6. 'dashboard.usage.export.date': 'Date'
+// ========== End of To-Do List ==========

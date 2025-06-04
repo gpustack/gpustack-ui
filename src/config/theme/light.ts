@@ -25,6 +25,9 @@ export default {
     Tabs: {
       titleFontSizeLG: 14
     },
+    DatePicker: {
+      fontSizeLG: 14
+    },
     Menu: {
       iconSize: 16,
       iconMarginInlineEnd: 12,

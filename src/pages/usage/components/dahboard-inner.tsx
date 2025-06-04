@@ -33,7 +33,6 @@ const Page: React.FC<{ setLoading: (loading: boolean) => void }> = ({
   return (
     <DashboardContext.Provider value={{ ...data, fetchData: getDashboardData }}>
       <Overview></Overview>
-      {/* <SystemLoad></SystemLoad> */}
       <PageTools
         left={
           <Space>

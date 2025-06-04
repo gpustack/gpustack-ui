@@ -67,9 +67,25 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
           </TitleWrapper>
           <FilterWrapper>
             <div className="selection">
-              <DatePicker.RangePicker></DatePicker.RangePicker>
-              <Select placeholder="Select user"></Select>
-              <Select placeholder="Select model"></Select>
+              <DatePicker.RangePicker
+                style={{ width: 240 }}
+              ></DatePicker.RangePicker>
+              <Select
+                mode="multiple"
+                maxTagCount={1}
+                placeholder={intl.formatMessage({
+                  id: 'dashboard.usage.selectuser'
+                })}
+                style={{ width: 160 }}
+              ></Select>
+              <Select
+                mode="multiple"
+                maxTagCount={1}
+                placeholder={intl.formatMessage({
+                  id: 'dashboard.usage.selectmodel'
+                })}
+                style={{ width: 160 }}
+              ></Select>
             </div>
             <Button
               type="text"

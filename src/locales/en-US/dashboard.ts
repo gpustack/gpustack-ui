@@ -21,5 +21,11 @@ export default {
   'dashboard.activeModels': 'Active Models',
   'dashboard.runninginstances': 'Running Instances',
   'dashboard.activeModels.name': 'Model Name',
-  'dashboard.allocatevram': 'Allocated VRAM / RAM'
+  'dashboard.allocatevram': 'Allocated VRAM / RAM',
+  'dashboard.usage.selectuser': 'Select users',
+  'dashboard.usage.selectmodel': 'Select models',
+  'dashboard.usage.export': 'Export Data',
+  'dashboard.usage.export.user': 'User',
+  'dashboard.usage.export.model': 'Model',
+  'dashboard.usage.export.date': 'Date'
 };

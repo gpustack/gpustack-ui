@@ -1,4 +1,4 @@
-import AudioElement from '@/components/audio-player/audio-element';
+import SimpleAudio from '@/components/audio-player/simple-audio';
 import FullMarkdown from '@/components/markdown-viewer/full-markdown';
 import { Input } from 'antd';
 import classNames from 'classnames';
@@ -17,9 +17,7 @@ import ThinkContent from './think-content';
 
 const AudioWrapper = styled.div`
   padding-left: 10px;
-  audio {
-    padding-top: 10px;
-  }
+  padding-top: 10px;
 `;
 
 interface MessageBodyProps {
@@ -132,6 +130,16 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
       });
     };
 
+    const handleDeleteAudio = () => {
+      updateMessage?.({
+        role: data.role,
+        content: data.content,
+        uid: data.uid,
+        audio: [],
+        imgs: data.imgs || []
+      });
+    };
+
     const handleMessageChange = (e: any) => {
       updateMessage?.({
         imgs: data.imgs || [],
@@ -207,10 +215,11 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
             />
             {data.audio && data.audio.length > 0 && (
               <AudioWrapper>
-                <AudioElement
-                  src={data.audio?.[0]?.data.url}
-                  controls
-                ></AudioElement>
+                <SimpleAudio
+                  url={data.audio?.[0]?.data.url}
+                  actions={[]}
+                  height={44}
+                ></SimpleAudio>
               </AudioWrapper>
             )}
           </div>
@@ -236,10 +245,11 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
             />
             {data.audio && data.audio.length > 0 && (
               <AudioWrapper>
-                <AudioElement
-                  src={data.audio?.[0]?.data.url}
-                  controls
-                ></AudioElement>
+                <SimpleAudio
+                  url={data.audio?.[0]?.data.url}
+                  onDelete={handleDeleteAudio}
+                  height={44}
+                ></SimpleAudio>
               </AudioWrapper>
             )}
           </div>

@@ -1,4 +1,4 @@
-import AudioElement from '@/components/audio-player/audio-element';
+import SimpleAudio from '@/components/audio-player/simple-audio';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
@@ -322,14 +322,10 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       });
     };
 
-    const handleDeleteAudio = (uid: number | string) => {
-      const list = _.filter(
-        message.audio,
-        (item: MessageItem) => item.uid !== uid
-      );
+    const handleDeleteAudio = () => {
       setMessage({
         ...message,
-        audio: list
+        audio: []
       });
     };
 
@@ -517,11 +513,11 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
           ></ThumbImg>
           {message.audio && message.audio.length > 0 && (
             <AudioWrapper>
-              <AudioElement
-                src={message.audio?.[0].data?.url}
+              <SimpleAudio
+                url={message.audio?.[0].data?.url}
+                height={44}
                 onDelete={handleDeleteAudio}
-                controls
-              ></AudioElement>
+              ></SimpleAudio>
             </AudioWrapper>
           )}
         </div>

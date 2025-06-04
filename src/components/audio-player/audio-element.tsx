@@ -11,9 +11,11 @@ const AudioWrapper = styled.div`
 
 const AudioElement: React.FC<any> = (props) => {
   return (
-    <AudioWrapper>
-      <audio {...props}></audio>
-    </AudioWrapper>
+    <div>
+      <AudioWrapper>
+        <audio {...props} controls></audio>
+      </AudioWrapper>
+    </div>
   );
 };
 

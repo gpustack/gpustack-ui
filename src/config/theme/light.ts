@@ -66,6 +66,7 @@ export default {
     }
   },
   token: {
+    darkMode: false,
     fontFamily:
       "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
     colorText: 'rgba(0,0,0,1)',

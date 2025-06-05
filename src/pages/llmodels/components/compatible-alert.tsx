@@ -119,6 +119,11 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           contentStyle={contentStyle}
           type={type || 'warning'}
           icon={renderIcon}
+          overlayScrollerProps={{
+            scrollbars: {
+              autoHide: 'move'
+            }
+          }}
         ></AlertBlockInfo>
         {showClose && !['transition'].includes(type) && (
           <CloseWrapper className="close-wrapper">

@@ -38,8 +38,7 @@ const resetFieldsByModel = [
 
 const resetFieldsByFile = [
   'cpu_offloading',
-  'distributed_inference_across_workers',
-  'backend_parameters'
+  'distributed_inference_across_workers'
 ];
 
 const ModalFooterStyle = {
@@ -99,11 +98,12 @@ const AddModal: FC<AddModalProps> = (props) => {
     setWarningStatus,
     handleBackendChangeBefore,
     cancelEvaluate,
-    handleOnValuesChange,
+    handleOnValuesChange: handleOnValuesChangeBefore,
     handleEvaluateOnChange,
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
+
   const { onSelectModel } = useSelectModel({ gpuOptions: props.gpuOptions });
   const form = useRef<any>({});
   const intl = useIntl();
@@ -118,12 +118,36 @@ const AddModal: FC<AddModalProps> = (props) => {
     model: false,
     file: false
   });
+  const evaluateStateRef = useRef<{ state: 'model' | 'file' | 'form' }>({
+    state: 'form'
+  });
 
+  /**
+   *
+   * @param state target to distinguish the evaluate state
+   */
+  const setEvaluteState = (state: 'model' | 'file' | 'form') => {
+    evaluateStateRef.current.state = state;
+  };
+
+  /**
+   *
+   * @param flag set the evaluate status of the model or file
+   */
   const setIsHolderRef = (flag: Record<string, boolean>) => {
     isHolderRef.current = {
       ...isHolderRef.current,
       ...flag
     };
+  };
+
+  const handleOnValuesChange = (data: {
+    changedValues: any;
+    allValues: any;
+    source: SourceType;
+  }) => {
+    setEvaluteState('form');
+    handleOnValuesChangeBefore(data);
   };
 
   const getDefaultSpec = (item: any) => {
@@ -145,6 +169,10 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleSelectModelFile = async (item: any, evaluate?: boolean) => {
     form.current?.form?.resetFields(resetFieldsByFile);
     const modelInfo = onSelectModel(selectedModel, props.source);
+
+    /** display the selected model file information, but not
+     *  unitl the evaluate result is ready
+     */
     form.current?.setFieldsValue?.({
       file_name: item.fakeName,
       ...modelInfo,
@@ -158,6 +186,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
 
     if (item.fakeName) {
+      setEvaluteState('file');
       const evaluateRes = await handleEvaluateOnChange?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
@@ -166,30 +195,54 @@ const AddModal: FC<AddModalProps> = (props) => {
       const defaultSpec = getDefaultSpec({
         evaluateResult: evaluateRes
       });
-      console.log('defaultSpec', defaultSpec);
+
+      /**
+       * do not reset backend_parameters when select a model file
+       */
+
+      const formBackendParameters =
+        form.current?.getFieldValue?.('backend_parameters') || [];
+
       form.current?.setFieldsValue?.({
         file_name: item.fakeName,
         ...defaultSpec,
         ...modelInfo,
+        backend_parameters:
+          formBackendParameters.length > 0
+            ? formBackendParameters
+            : defaultSpec.backend_parameters || [],
         categories: getCategory(item)
       });
     }
   };
 
   const handleOnSelectModel = (item: any, evaluate?: boolean) => {
-    setSelectedModel(item);
-    form.current?.form?.resetFields(resetFieldsByModel);
-    if (!item.isGGUF) {
-      setIsGGUF(false);
+    // when select a model not from the evaluate result,
+    if (!evaluate) {
+      setEvaluteState('model');
+      setSelectedModel(item);
+      form.current?.form?.resetFields(resetFieldsByModel);
       const modelInfo = onSelectModel(item, props.source);
-      if (!isHolderRef.current.model) {
-        handleShowCompatibleAlert(item.evaluateResult);
-      }
       form.current?.setFieldsValue?.({
-        ...getDefaultSpec(item),
         ...modelInfo,
         categories: getCategory(item)
       });
+    }
+
+    if (!item.isGGUF) {
+      setIsGGUF(false);
+      const modelInfo = onSelectModel(item, props.source);
+      if (
+        !isHolderRef.current.model &&
+        evaluateStateRef.current.state === 'model'
+      ) {
+        handleShowCompatibleAlert(item.evaluateResult);
+        form.current?.setFieldsValue?.({
+          ...getDefaultSpec(item),
+          ...modelInfo,
+          categories: getCategory(item)
+        });
+      }
     }
   };
 

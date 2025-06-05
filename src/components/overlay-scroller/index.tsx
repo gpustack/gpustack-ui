@@ -12,6 +12,9 @@ const Wrapper = styled.div<{ $maxHeight?: number }>`
   width: 100%;
 `;
 
+// export OverlayScrollerOptions
+export type { OverlayScrollerOptions };
+
 export const OverlayScroller: React.FC<
   OverlayScrollerOptions & {
     maxHeight?: number;

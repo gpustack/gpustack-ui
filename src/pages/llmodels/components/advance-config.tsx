@@ -24,6 +24,7 @@ import {
   backendLabelMap,
   backendOptionsMap,
   backendParamsHolderTips,
+  getBackendParamsTips,
   modelCategories,
   placementStrategyOptions
 } from '../config';
@@ -120,37 +121,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   }, [backend]);
 
   const backendParamsTips = useMemo(() => {
-    if (backend === backendOptionsMap.llamaBox) {
-      return {
-        backend: 'llama-box',
-        releases: 'https://github.com/gpustack/llama-box/releases',
-        link: 'https://github.com/gpustack/llama-box?tab=readme-ov-file#usage',
-        version: 'v0.0.140'
-      };
-    }
-    if (backend === backendOptionsMap.vllm) {
-      return {
-        backend: 'vLLM',
-        releases: 'https://github.com/vllm-project/vllm/releases',
-        link: 'https://docs.vllm.ai/en/stable/serving/openai_compatible_server.html#cli-reference',
-        version: 'v0.8.5'
-      };
-    }
-    if (backend === backendOptionsMap.ascendMindie) {
-      return {
-        backend: 'Ascend MindIE',
-        releases: '',
-        link: 'http://docs.gpustack.ai/latest/user-guide/inference-backends/#parameters-reference_2',
-        version: '1.0.0'
-      };
-    }
-
-    return {
-      backend: 'vox-box',
-      releases: 'https://github.com/gpustack/vox-box/releases',
-      link: '',
-      version: 'v0.0.13'
-    };
+    return getBackendParamsTips(backend);
   }, [backend]);
 
   const handleWorkerLabelsChange = useCallback(

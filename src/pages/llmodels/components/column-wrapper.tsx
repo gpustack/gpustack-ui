@@ -9,7 +9,13 @@ const ColumnWrapper: React.FC<any> = ({
   paddingBottom = 50
 }) => {
   const scroller = React.useRef<any>(null);
-  const { initialize } = useOverlayScroller();
+  const { initialize } = useOverlayScroller({
+    options: {
+      scrollbars: {
+        autoHide: 'move'
+      }
+    }
+  });
 
   React.useEffect(() => {
     if (scroller.current) {

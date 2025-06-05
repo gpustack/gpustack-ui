@@ -12,10 +12,6 @@ const options = [
     value: '--host'
   },
   {
-    label: '--port',
-    value: '--port'
-  },
-  {
     label: '--timeout',
     value: '--timeout'
   },

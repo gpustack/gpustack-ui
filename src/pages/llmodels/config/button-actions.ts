@@ -145,13 +145,6 @@ export const onLineSourceOptions = [
     value: modelSourceMap.local_path_value,
     key: 'local_path',
     icon: icons.LocalPath
-  },
-  {
-    label: 'Ollama Library',
-    locale: false,
-    value: modelSourceMap.ollama_library_value,
-    key: 'ollama_library',
-    icon: icons.Ollama
   }
 ];
 

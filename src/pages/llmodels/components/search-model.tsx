@@ -284,7 +284,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (!SUPPORTEDSOURCE.includes(modelSource)) {
       return;
     }
-    axiosTokenRef.current?.abort?.();
+    axiosTokenRef.current?.abort?.('new request');
     axiosTokenRef.current = new AbortController();
     checkTokenRef.current?.cancel?.();
     if (timer.current) {
@@ -342,7 +342,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
   const handleSearchInputChange = useCallback((e: any) => {
     searchInputRef.current = e.target.value;
-    console.log('change:', searchInputRef.current);
   }, []);
 
   const handlerSearchModels = _.debounce(() => handleOnSearchRepo(), 100);

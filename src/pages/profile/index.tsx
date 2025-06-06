@@ -43,7 +43,7 @@ const Profile: React.FC = () => {
       <PageContainer
         ghost
         header={{
-          title: 'User Settings',
+          title: intl.formatMessage({ id: 'users.settings.title' }),
           style: {
             paddingInline: 'var(--layout-content-inlinepadding)'
           }

@@ -27,5 +27,10 @@ export default {
   'users.password.confirm.error': '入力された2つのパスワードが一致しません。',
   'users.login.title': 'ログイン',
   'users.version.islatest': 'GPUStack {version} は最新バージョンです',
-  'users.version.update': 'GPUStack {version} が利用可能です'
+  'users.version.update': 'GPUStack {version} が利用可能です',
+  'users.settings.title': 'User Settings'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'users.settings.title': 'User Settings'
+// ========== End of To-Do List ==========

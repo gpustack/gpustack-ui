@@ -216,7 +216,6 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
 
       workerRef.current!.onmessage = (event: MessageEvent) => {
         const { scatterData, embeddingData } = event.data;
-        console.log('scatterData', scatterData);
         setScatterData(scatterData);
         setEmbeddingData(embeddingData);
         setLoading(false);

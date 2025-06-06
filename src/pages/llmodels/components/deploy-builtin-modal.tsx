@@ -5,14 +5,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
 import _ from 'lodash';
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
@@ -126,14 +119,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   // use for size change and quantization change
-  const pickSomeFieldsValue = () => {
+  const pickSomeFieldsValue = (defaultSpec: CatalogSpec) => {
     const formData = form.current?.getFieldsValue();
-    return _.pick(formData, [
+    const currentData = _.pick(formData, [
       'worker_selector',
       'gpu_selector',
       'env',
-      'backend_version'
+      'backend_version',
+      'backend_parameters'
     ]);
+    return {
+      ...currentData,
+      backend_parameters:
+        currentData.backend_parameters?.length > 0
+          ? currentData.backend_parameters
+          : defaultSpec.backend_parameters || []
+    };
   };
 
   const generateSubmitData = (formData: FormData) => {
@@ -431,7 +432,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
     form.current.setFieldsValue({
       ...data,
-      ...pickSomeFieldsValue()
+      ...pickSomeFieldsValue(data)
     });
     handleCheckFormData();
   };
@@ -453,7 +454,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     // set form data
     form.current.setFieldsValue({
       ...data,
-      ...pickSomeFieldsValue()
+      ...pickSomeFieldsValue(data)
     });
     handleCheckFormData();
   };
@@ -466,10 +467,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     onOk(data);
   };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     onCancel?.();
     axiosToken.current?.cancel?.();
-  }, [onCancel]);
+  };
 
   const showExtraButton = useMemo(() => {
     return warningStatus.show && warningStatus.type !== 'success';
@@ -614,4 +615,4 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   );
 };
 
-export default memo(AddModal);
+export default AddModal;

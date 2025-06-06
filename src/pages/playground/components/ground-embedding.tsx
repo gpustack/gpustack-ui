@@ -38,6 +38,7 @@ import { generateEmbeddingCode } from '../view-code/embedding';
 import DynamicParams from './dynamic-params';
 import FileList from './file-list';
 import InputList from './input-list';
+import TokenUsage from './token-usage';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -525,21 +526,29 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
                 onSelect={handleonSelect}
                 onPaste={handleOnPaste}
               ></InputList>
-              <div style={{ marginTop: 8 }}>
-                <FileList
-                  fileList={fileList}
-                  textListCount={textList.length || 0}
-                  onDelete={handleDeleteFile}
-                ></FileList>
-              </div>
-              {lessTwoInput && (
-                <AlertInfo
-                  type="danger"
-                  message={intl.formatMessage({
-                    id: 'playground.documents.verify.embedding'
-                  })}
-                ></AlertInfo>
+              {fileList.length > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  <FileList
+                    fileList={fileList}
+                    textListCount={textList.length || 0}
+                    onDelete={handleDeleteFile}
+                  ></FileList>
+                </div>
               )}
+              {lessTwoInput && (
+                <div className="m-t-16">
+                  <AlertInfo
+                    type="danger"
+                    message={intl.formatMessage({
+                      id: 'playground.documents.verify.embedding'
+                    })}
+                  ></AlertInfo>
+                </div>
+              )}
+              <TokenUsage
+                tokenResult={tokenResult}
+                className="m-t-16"
+              ></TokenUsage>
             </div>
           </div>
         </div>

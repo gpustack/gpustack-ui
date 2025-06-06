@@ -1,6 +1,27 @@
 import _ from 'lodash';
 import { PCA } from 'ml-pca';
 
+const normalize2D = (data: number[][]) => {
+  const dim = data[0].length;
+  const mins = Array(dim).fill(Infinity);
+  const maxs = Array(dim).fill(-Infinity);
+
+  for (const row of data) {
+    for (let i = 0; i < dim; i++) {
+      mins[i] = Math.min(mins[i], row[i]);
+      maxs[i] = Math.max(maxs[i], row[i]);
+    }
+  }
+
+  return data.map((row) =>
+    row.map((val, i) => {
+      const range = maxs[i] - mins[i];
+      if (range === 0) return 0;
+      return ((val - mins[i]) / range) * 2 - 1;
+    })
+  );
+};
+
 self.onmessage = (
   event: MessageEvent<{
     embeddings: any[];
@@ -29,7 +50,9 @@ self.onmessage = (
       ...fileList.map((item) => item.text).filter((item) => item)
     ];
 
-    const list = pcadata.map((item: number[], index: number) => {
+    const normalizedData = normalize2D(pcadata);
+
+    const list = normalizedData.map((item: number[], index: number) => {
       return {
         value: item,
         name: index + 1,

@@ -33,6 +33,7 @@ import '../style/system-message-wrap.less';
 import { generateRerankCode } from '../view-code/rerank';
 import DynamicParams from './dynamic-params';
 import InputList from './input-list';
+import TokenUsage from './token-usage';
 import ViewCommonCode from './view-common-code';
 
 interface MessageProps {
@@ -179,7 +180,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     return res * 100;
   };
 
-  const renderPercent = useCallback((data: any) => {
+  const renderPercent = (data: any) => {
     if (!data.showExtra || !data.percent) {
       return null;
     }
@@ -208,7 +209,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         </span>
       </div>
     );
-  }, []);
+  };
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -320,59 +321,52 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     inputListRef.current?.handleAdd();
   };
 
-  const handleTextListChange = useCallback(
-    (list: { text: string; uid: number | string; name: string }[]) => {
-      const newList = list?.map((item: any) => {
-        item.percent = undefined;
-        item.score = undefined;
-        item.rank = undefined;
-        return item;
+  const handleTextListChange = (
+    list: { text: string; uid: number | string; name: string }[]
+  ) => {
+    const newList = list?.map((item: any) => {
+      item.percent = undefined;
+      item.score = undefined;
+      item.rank = undefined;
+      return item;
+    });
+    setTextList(newList);
+  };
+
+  const handleonSelect = (data: {
+    start: number;
+    end: number;
+    beforeText: string;
+    afterText: string;
+    index: number;
+  }) => {
+    selectionTextRef.current = data;
+  };
+
+  const handleOnPaste = (e: any, index: number) => {
+    if (!multiplePasteEnable.current) return;
+    const text = e.clipboardData.getData('text');
+    if (text) {
+      const dataLlist = text.split('\n').map((item: string) => {
+        return {
+          text: item?.trim(),
+          name: '',
+          uid: setMessageId(),
+          percent: undefined,
+          score: undefined,
+          rank: undefined
+        };
       });
-      setTextList(newList);
-    },
-    []
-  );
+      dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
+      const result = [
+        ...textList.slice(0, index),
+        ...dataLlist,
+        ...textList.slice(index + 1)
+      ].filter((item) => item.text);
 
-  const handleonSelect = useCallback(
-    (data: {
-      start: number;
-      end: number;
-      beforeText: string;
-      afterText: string;
-      index: number;
-    }) => {
-      selectionTextRef.current = data;
-    },
-    []
-  );
-
-  const handleOnPaste = useCallback(
-    (e: any, index: number) => {
-      if (!multiplePasteEnable.current) return;
-      const text = e.clipboardData.getData('text');
-      if (text) {
-        const dataLlist = text.split('\n').map((item: string) => {
-          return {
-            text: item?.trim(),
-            name: '',
-            uid: setMessageId(),
-            percent: undefined,
-            score: undefined,
-            rank: undefined
-          };
-        });
-        dataLlist[0].text = `${selectionTextRef.current?.beforeText || ''}${dataLlist[0].text}${selectionTextRef.current?.afterText || ''}`;
-        const result = [
-          ...textList.slice(0, index),
-          ...dataLlist,
-          ...textList.slice(index + 1)
-        ].filter((item) => item.text);
-
-        setTextList(result);
-      }
-    },
-    [textList]
-  );
+      setTextList(result);
+    }
+  };
 
   const renderExtra = useMemo(() => {
     if (modelMeta?.n_ctx && modelMeta?.n_slot) {
@@ -469,15 +463,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                   {intl.formatMessage({ id: 'playground.embedding.documents' })}
                 </span>
               </h3>
-              <span className="m-l-10 font-size-12">
-                {' '}
-                {tokenResult?.total_tokens && (
-                  <span style={{ color: 'var(--ant-orange)' }}>
-                    {intl.formatMessage({ id: 'playground.tokenusage' })}:{' '}
-                    {tokenResult?.total_tokens}
-                  </span>
-                )}
-              </span>
+
               <div className="flex-center gap-10">
                 <Tooltip
                   title={intl.formatMessage({
@@ -532,6 +518,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                   ></AlertInfo>
                 </div>
               )}
+              <TokenUsage
+                tokenResult={tokenResult}
+                className="m-t-16"
+              ></TokenUsage>
             </div>
           </div>
           <div></div>

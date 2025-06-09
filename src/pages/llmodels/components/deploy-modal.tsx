@@ -3,7 +3,7 @@ import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Drawer } from 'antd';
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -75,6 +75,14 @@ type AddModalProps = {
   onCancel: () => void;
 };
 
+type EvaluateProccessType = 'model' | 'file' | 'form';
+
+const EvaluateProccess: Record<string, EvaluateProccessType> = {
+  model: 'model',
+  file: 'file',
+  form: 'form'
+};
+
 const AddModal: FC<AddModalProps> = (props) => {
   const {
     title,
@@ -118,7 +126,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     model: false,
     file: false
   });
-  const evaluateStateRef = useRef<{ state: 'model' | 'file' | 'form' }>({
+  const evaluateStateRef = useRef<{ state: EvaluateProccessType }>({
     state: 'form'
   });
 
@@ -126,7 +134,7 @@ const AddModal: FC<AddModalProps> = (props) => {
    *
    * @param state target to distinguish the evaluate state
    */
-  const setEvaluteState = (state: 'model' | 'file' | 'form') => {
+  const setEvaluteState = (state: EvaluateProccessType) => {
     evaluateStateRef.current.state = state;
   };
 
@@ -146,7 +154,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     allValues: any;
     source: SourceType;
   }) => {
-    setEvaluteState('form');
+    setEvaluteState(EvaluateProccess.form);
     handleOnValuesChangeBefore(data);
   };
 
@@ -186,7 +194,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
 
     if (item.fakeName) {
-      setEvaluteState('file');
+      setEvaluteState(EvaluateProccess.file);
       const evaluateRes = await handleEvaluateOnChange?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
@@ -199,7 +207,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       /**
        * do not reset backend_parameters when select a model file
        */
-
       const formBackendParameters =
         form.current?.getFieldValue?.('backend_parameters') || [];
 
@@ -219,7 +226,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleOnSelectModel = (item: any, evaluate?: boolean) => {
     // when select a model not from the evaluate result,
     if (!evaluate) {
-      setEvaluteState('model');
+      setEvaluteState(EvaluateProccess.model);
       setSelectedModel(item);
       form.current?.form?.resetFields(resetFieldsByModel);
       const modelInfo = onSelectModel(item, props.source);
@@ -260,14 +267,16 @@ const AddModal: FC<AddModalProps> = (props) => {
     form.current?.submit?.();
   };
 
-  const debounceFetchModelFiles = debounce(() => {
-    modelFileRef.current?.fetchModelFiles?.();
-  }, 100);
-
-  const handleSetIsGGUF = (flag: boolean) => {
+  const handleSetIsGGUF = async (flag: boolean) => {
+    console.log('handleSetIsGGUF', flag);
     setIsGGUF(flag);
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 0);
+    });
     if (flag) {
-      debounceFetchModelFiles();
+      modelFileRef.current?.fetchModelFiles?.();
     }
   };
 

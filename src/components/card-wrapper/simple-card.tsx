@@ -9,7 +9,6 @@ const SimpleCardItemWrapper = styled.div`
   width: 100%;
   height: 100%;
   gap: 16px;
-  margin-bottom: 16px;
 `;
 
 const useStyles = createStyles(({ css, token }) => ({
@@ -32,8 +31,24 @@ const useStyles = createStyles(({ css, token }) => ({
       font-weight: var(--font-weight-medium);
     }
     .content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       font-size: ${token.fontSize}px;
       color: ${token.colorTextSecondary};
+      gap: 8px;
+      .icon {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        gap: 10px;
+        &.roundRect {
+          border-radius: 2px;
+        }
+        &.circle {
+          border-radius: 50%;
+        }
+      }
     }
   `
 }));
@@ -42,21 +57,36 @@ export const SimpleCardItem: React.FC<{
   content?: React.ReactNode;
   style?: React.CSSProperties;
   bordered?: boolean;
+  color?: string;
+  iconType?: string;
 }> = (props) => {
   const { styles, cx } = useStyles();
 
-  const { title, content, style, bordered } = props;
+  const { title, content, style, bordered, iconType, color } = props;
 
   return (
     <div className={cx({ bordered: bordered }, styles.wrapper)} style={style}>
       <div className="title">{title}</div>
-      <div className="content">{content}</div>
+      <div className="content">
+        <span
+          className={cx([iconType], 'icon')}
+          style={{
+            backgroundColor: color || 'transparent'
+          }}
+        ></span>
+        <span>{content}</span>
+      </div>
     </div>
   );
 };
 
 export const SimpleCard: React.FC<{
-  dataList: { label: string; value: React.ReactNode }[];
+  dataList: {
+    label: string;
+    value: React.ReactNode;
+    color: string;
+    iconType: string;
+  }[];
   height?: string | number;
   bordered?: boolean;
 }> = (props) => {
@@ -70,6 +100,8 @@ export const SimpleCard: React.FC<{
           title={item.label}
           content={item.value}
           bordered={bordered}
+          color={item.color}
+          iconType={item.iconType}
         ></SimpleCardItem>
       ))}
     </SimpleCardItemWrapper>

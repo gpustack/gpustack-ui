@@ -1,4 +1,3 @@
-import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import PageTools from '@/components/page-tools';
 import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -95,11 +94,11 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
               {intl.formatMessage({ id: 'common.button.export' })}
             </Button>
           </FilterWrapper>
-          <SimpleCard
+          {/* <SimpleCard
             dataList={dataList}
             height={80}
             bordered={true}
-          ></SimpleCard>
+          ></SimpleCard> */}
           <RequestTokenInner
             requestData={requestTokenData.requestData}
             xAxisData={requestTokenData.xAxisData}

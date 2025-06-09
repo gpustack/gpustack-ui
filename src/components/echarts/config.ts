@@ -41,18 +41,23 @@ export default function useChartConfig() {
     borderColor: 'transparent',
     formatter(params: any, callback?: (val: any) => any) {
       let result = `<span class="tooltip-x-name">${params[0].axisValue}</span>`;
+
       params.forEach((item: any) => {
         let value = isFunction(callback)
           ? callback?.(item.data.value)
           : item.data.value;
+
+        const borderRadius = item.seriesType === 'bar' ? '2px' : '8px';
+
         result += `<span class="tooltip-item">
-     <span class="tooltip-item-name">
-       <span style="display:inline-block;margin-right:5px;border-radius:8px;width:8px;height:8px;background-color:${item.color};"></span>
-       <span class="tooltip-title">${item.seriesName}</span>:
-     </span>
-      <span class="tooltip-value">${value}</span>
+          <span class="tooltip-item-name">
+            <span style="display:inline-block;margin-right:5px;border-radius:${borderRadius};width:8px;height:8px;background-color:${item.color};"></span>
+            <span class="tooltip-title">${item.seriesName}</span>:
+          </span>
+            <span class="tooltip-value">${value}</span>
       </span>`;
       });
+
       return `<div class="tooltip-wrapper">${result}</div>`;
     }
   };

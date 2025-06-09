@@ -453,7 +453,11 @@ const CanvasImageEditor: React.FC<CanvasImageEditorProps> = forwardRef(
 
     useEffect(() => {
       const handleUndoShortcut = (e: KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        if (
+          (e.ctrlKey || e.metaKey) &&
+          e.key === 'z' &&
+          !negativeMaskRef.current
+        ) {
           undo();
         }
       };

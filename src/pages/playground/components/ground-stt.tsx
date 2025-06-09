@@ -115,7 +115,6 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
       setTokenResult(null);
       setMessageList([]);
 
-      cancelRequest();
       updateCancelToken();
 
       setRouteCache(routeCachekey['/playground/speech'], true);

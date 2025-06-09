@@ -313,7 +313,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         return sortType === 'size' ? item.size : item.path;
       });
 
-      handleSelectModelFile(sortList[0]);
+      handleSelectModelFile(sortList[0] || {});
       setDataSource({ fileList: sortList, loading: false });
     } catch (error) {
       setDataSource({ fileList: [], loading: false });
@@ -329,12 +329,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     setDataSource({ ...dataSource, fileList: list });
   };
 
-  const handleOnEnter = (e: any, item: any) => {
-    e.stopPropagation();
-    if (e.key === 'Enter') {
-      handleSelectModelFile(item);
-    }
-  };
   useImperativeHandle(ref, () => ({
     fetchModelFiles: handleFetchModelFiles
   }));
@@ -398,7 +392,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
                     isEvaluating={isEvaluating}
                     active={item.path === current}
                     handleSelectModelFile={handleSelectModelFile}
-                    handleOnEnter={handleOnEnter}
                   ></ModelFileItem>
                 );
               })}

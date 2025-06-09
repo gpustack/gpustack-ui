@@ -128,6 +128,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       'backend_version',
       'backend_parameters'
     ]);
+
+    // if the backend_parameters is empty, use the defaultSpec.backend_parameters
     return {
       ...currentData,
       backend_parameters:

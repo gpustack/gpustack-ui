@@ -17,7 +17,6 @@ interface ModelFileItemProps {
   isEvaluating: boolean;
   active: boolean;
   handleSelectModelFile: (item: any) => void;
-  handleOnEnter: (e: any, item: any) => void;
 }
 
 const FilePartsTag = (props: { parts: any[] }) => {
@@ -50,13 +49,7 @@ const FilePartsTag = (props: { parts: any[] }) => {
 };
 
 const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
-  const {
-    data: item,
-    isEvaluating,
-    active,
-    handleSelectModelFile,
-    handleOnEnter
-  } = props;
+  const { data: item, isEvaluating, active, handleSelectModelFile } = props;
 
   const getModelQuantizationType = (item: any) => {
     let path = item.path;
@@ -88,7 +81,6 @@ const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
       })}
       tabIndex={0}
       onClick={() => handleSelectModelFile(item)}
-      onKeyDown={(e) => handleOnEnter(e, item)}
     >
       <div className="title">{item.path}</div>
       <div className="tags flex-between">

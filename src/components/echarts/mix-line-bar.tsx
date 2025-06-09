@@ -43,7 +43,11 @@ const MixLineBarChart: React.FC<
     title: {
       text: ''
     },
-    grid,
+    grid: {
+      ...grid,
+      top: 20,
+      bottom: 20
+    },
     tooltip: {
       ...tooltip,
       formatter(params: any) {
@@ -62,7 +66,10 @@ const MixLineBarChart: React.FC<
     yAxis,
     legend: {
       ...legend,
-      data: legendData
+      data: legendData,
+      itemGap: 20,
+      bottom: 5,
+      show: false
     },
 
     series: []

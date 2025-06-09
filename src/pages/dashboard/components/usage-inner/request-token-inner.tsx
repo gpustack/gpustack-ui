@@ -1,8 +1,9 @@
 import CardWrapper from '@/components/card-wrapper';
+import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import MixLineBar from '@/components/echarts/mix-line-bar';
-import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import React from 'react';
+import { baseColorMap } from '../../config';
 
 interface RequestTokenInnerProps {
   requestData: {
@@ -22,9 +23,24 @@ const labelFormatter = (v: any) => {
 };
 
 const dataList = [
-  { label: '100M', value: 'Completion Tokens' },
-  { label: '50M', value: 'Prompt Tokens' },
-  { label: '120K', value: 'API Requests' }
+  {
+    label: '100M',
+    value: 'Completion Tokens',
+    iconType: 'roundRect',
+    color: baseColorMap.base
+  },
+  {
+    label: '50M',
+    value: 'Prompt Tokens',
+    iconType: 'roundRect',
+    color: baseColorMap.baseR3
+  },
+  {
+    label: '120K',
+    value: 'API Requests',
+    iconType: 'circle',
+    color: baseColorMap.baseR1
+  }
 ];
 
 const legendData = [
@@ -35,31 +51,10 @@ const legendData = [
 
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   const { requestData, tokenData, xAxisData } = props;
-  const intl = useIntl();
 
   return (
     <CardWrapper style={{ width: '100%' }}>
-      {/* <Row style={{ width: '100%' }}>
-        <Col span={12}>
-          <LineChart
-            title={intl.formatMessage({ id: 'dashboard.apirequest' })}
-            seriesData={requestData}
-            xAxisData={xAxisData}
-            height={360}
-            labelFormatter={labelFormatter}
-          ></LineChart>
-        </Col>
-        <Col span={12}>
-          <BarChart
-            title={intl.formatMessage({ id: 'dashboard.tokens' })}
-            seriesData={tokenData}
-            xAxisData={xAxisData}
-            height={360}
-            labelFormatter={labelFormatter}
-          ></BarChart>
-        </Col>
-      </Row> */}
-      {/* <SimpleCard dataList={dataList} height={80}></SimpleCard> */}
+      <SimpleCard dataList={dataList} height={80}></SimpleCard>
       <MixLineBar
         chartData={{
           line: requestData,

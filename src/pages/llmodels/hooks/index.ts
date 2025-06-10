@@ -470,8 +470,9 @@ export const useCheckCompatibility = () => {
 
     if (currentRequestId === requestIdRef.current) {
       handleShowCompatibleAlert?.(evalutionData);
+      return evalutionData;
     }
-    return evalutionData;
+    return null;
   };
 
   const checkRequiredValue = (allValues: any) => {

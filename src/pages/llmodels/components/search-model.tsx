@@ -1,15 +1,9 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Select, Tooltip } from 'antd';
+import { Checkbox, Pagination, Select, Tooltip } from 'antd';
 import _ from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   evaluationsModelSpec,
@@ -86,6 +80,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const filterGGUFRef = useRef<boolean | undefined>(!hasLinuxWorker);
   const filterTaskRef = useRef<string>('');
   const timer = useRef<any>(null);
+  const requestIdRef = useRef<number>(0);
+  const [query, setQuery] = useState({
+    page: 1,
+    perPage: 10,
+    total: 100
+  });
   const modelFilesSortOptions = useRef<any[]>([
     {
       label: intl.formatMessage({ id: 'models.sort.trending' }),
@@ -105,6 +105,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   ]);
 
+  const updateRequestId = () => {
+    requestIdRef.current += 1;
+    return requestIdRef.current;
+  };
+
   const checkIsGGUF = (item: any) => {
     const isGGUF = _.some(item.tags, (tag: string) => {
       return tag.toLowerCase() === 'gguf';
@@ -122,7 +127,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   // huggeface
-  const getModelsFromHuggingface = useCallback(async (sort: string) => {
+  const getModelsFromHuggingface = async (sort: string) => {
     try {
       const task: any = searchInputRef.current ? '' : 'text-generation';
       const params = {
@@ -149,10 +154,14 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     } catch (error) {
       return [];
     }
-  }, []);
+  };
 
-  // modelscope
-  const getModelsFromModelscope = useCallback(async (sort: string) => {
+  // modelscope, only modelscope has page and perPage
+  const getModelsFromModelscope = async (queryParams: {
+    sortType: string;
+    page: number;
+    perPage?: number;
+  }) => {
     try {
       const params = {
         Name: `${searchInputRef.current}`,
@@ -160,7 +169,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         tasks: filterTaskRef.current
           ? ([ModelscopeTaskMap[filterTaskRef.current]] as string[])
           : [],
-        SortBy: ModelScopeSortType[sort]
+        SortBy: ModelScopeSortType[queryParams.sortType],
+        PageNumber: queryParams.page,
+        PageSize: queryParams.perPage
       };
       const data = await queryModelScopeModels(params, {
         signal: axiosTokenRef.current.signal
@@ -179,18 +190,28 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           task: item.Tasks?.map((sItem: any) => sItem.Name).join(','),
           tags: item.Tags,
           libraries: item.Libraries,
-          isGGUF: checkIsGGUF({ tags: item.Tags, libraries: item.Libraries }),
+          isGGUF: checkIsGGUF({
+            tags: item.Tags,
+            libraries: item.Libraries
+          }),
           source: modelSource
         };
       });
 
+      setQuery((prev) => {
+        return {
+          ...prev,
+          page: queryParams.page,
+          total: _.get(data, 'Data.Model.TotalCount', 0)
+        };
+      });
       return list;
     } catch (error) {
       return [];
     }
-  }, []);
+  };
 
-  const getEvaluateResults = useCallback(async (repoList: any[]) => {
+  const getEvaluateResults = async (repoList: any[]) => {
     try {
       checkTokenRef.current?.cancel?.();
       checkTokenRef.current = createAxiosToken();
@@ -206,12 +227,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     } catch (error) {
       return [];
     }
-  }, []);
+  };
 
   const handleEvaluate = async (list: any[]) => {
     if (isDownload) {
       return;
     }
+    const currentRequestId = updateRequestId();
     try {
       const repoList = list.map((item) => {
         const res = handleRecognizeAudioModel(item, modelSource);
@@ -241,8 +263,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               })
         };
       });
+
       setIsEvaluating(true);
       const evaluations = await getEvaluateResults(repoList);
+      if (requestIdRef.current !== currentRequestId) {
+        return;
+      }
       const resultList = list.map((item, index) => {
         return {
           ...item,
@@ -262,7 +288,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         (item) => item.id === currentRef.current
       );
 
-      // if item is GGUF, the evaluating would be do after selecting the model file.
+      /**
+       * if item is GGUF, the evaluating would be do after selecting the model file, Or the evaluate status of model would be overrided the
+       * file evaluate status.
+       */
       if (currentItem && !currentItem.isGGUF) {
         displayEvaluateStatus?.({
           show: false,
@@ -276,11 +305,23 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         handleOnSelectModel(currentItem, true);
       }
     } catch (error) {
-      setIsEvaluating(false);
+      if (requestIdRef.current === currentRequestId) {
+        setIsEvaluating(false);
+      }
     }
   };
 
-  const handleOnSearchRepo = async (sortType?: string) => {
+  const getCurrentPage = (page: number) => {
+    const start = (page - 1) * query.perPage;
+    const end = start + query.perPage;
+    return cacheRepoOptions.current.slice(start, end);
+  };
+
+  const handleOnSearchRepo = async (params: {
+    sortType: string;
+    page: number;
+    perPage: number;
+  }) => {
     if (!SUPPORTEDSOURCE.includes(modelSource)) {
       return;
     }
@@ -290,7 +331,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (timer.current) {
       clearTimeout(timer.current);
     }
-    const sort = sortType ?? dataSource.sortType;
+    const sort = params.sortType;
     try {
       setDataSource((pre) => {
         pre.loading = true;
@@ -300,11 +341,22 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       cacheRepoOptions.current = [];
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {
-        list = await getModelsFromHuggingface(sort);
+        const resultList = await getModelsFromHuggingface(sort);
+        cacheRepoOptions.current = resultList;
+
+        // hf has no page and perPage, so we need to slice the resultList
+        list = getCurrentPage(params.page);
+        setQuery((prev) => {
+          return {
+            ...prev,
+            page: params.page,
+            total: resultList.length
+          };
+        });
       } else if (modelSource === modelSourceMap.modelscope_value) {
-        list = await getModelsFromModelscope(sort);
+        list = await getModelsFromModelscope(params);
+        cacheRepoOptions.current = list;
       }
-      cacheRepoOptions.current = list;
 
       setDataSource({
         repoOptions: list,
@@ -340,11 +392,18 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       cacheRepoOptions.current = [];
     }
   };
-  const handleSearchInputChange = useCallback((e: any) => {
+  const handleSearchInputChange = (e: any) => {
     searchInputRef.current = e.target.value;
-  }, []);
-
-  const handlerSearchModels = _.debounce(() => handleOnSearchRepo(), 100);
+  };
+  const handlerSearchModels = _.debounce(
+    () =>
+      handleOnSearchRepo({
+        sortType: dataSource.sortType,
+        page: 1,
+        perPage: query.perPage
+      }),
+    100
+  );
 
   const handleOnOpen = () => {
     if (
@@ -352,17 +411,62 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       !cacheRepoOptions.current.length &&
       SUPPORTEDSOURCE.includes(modelSource)
     ) {
-      handleOnSearchRepo();
+      handleOnSearchRepo({
+        sortType: dataSource.sortType,
+        page: 1,
+        perPage: query.perPage
+      });
     }
   };
 
   const handleSortChange = (value: string) => {
-    handleOnSearchRepo(value || '');
+    handleOnSearchRepo({
+      sortType: value,
+      page: 1,
+      perPage: query.perPage
+    });
   };
 
   const handleFilterGGUFChange = (e: any) => {
     filterGGUFRef.current = e.target.checked;
-    handleOnSearchRepo();
+    handleOnSearchRepo({
+      sortType: dataSource.sortType,
+      page: 1,
+      perPage: query.perPage
+    });
+  };
+
+  const handleOnPageChange = (page: number) => {
+    if (modelSource === modelSourceMap.huggingface_value) {
+      const currentList = getCurrentPage(page);
+      setQuery((prev) => {
+        return {
+          ...prev,
+          page: page
+        };
+      });
+      setDataSource((pre) => {
+        return {
+          ...pre,
+          repoOptions: currentList
+        };
+      });
+      displayEvaluateStatus?.({
+        show: true,
+        flag: {
+          model: true
+        }
+      });
+      console.log('isEvaluating:', isEvaluating);
+      handleOnSelectModel(currentList[0]);
+      handleEvaluate(currentList);
+    } else if (modelSource === modelSourceMap.modelscope_value) {
+      handleOnSearchRepo({
+        sortType: dataSource.sortType,
+        page: page,
+        perPage: query.perPage
+      });
+    }
   };
 
   const renderGGUFTips = useMemo(() => {
@@ -402,23 +506,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         </div>
         <div className={SearchStyle.filter}>
           <span>
-            <span className="value">
-              {intl.formatMessage(
-                { id: 'models.search.result' },
-                { count: dataSource.repoOptions.length }
-              )}
-            </span>
-          </span>
-          <span>
-            <span id="filterGGUF">
-              <Checkbox
-                onChange={handleFilterGGUFChange}
-                className="m-r-5"
-                checked={filterGGUFRef.current}
-              >
-                {renderGGUFTips}
-              </Checkbox>
-            </span>
             <Select
               value={dataSource.sortType}
               onChange={handleSortChange}
@@ -433,7 +520,23 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               size="middle"
               style={{ width: '150px' }}
             ></Select>
+            <Checkbox
+              onChange={handleFilterGGUFChange}
+              className="m-l-8"
+              checked={filterGGUFRef.current}
+            >
+              {renderGGUFTips}
+            </Checkbox>
           </span>
+          <Pagination
+            simple={{ readOnly: true }}
+            total={query.total}
+            current={query.page}
+            pageSize={query.perPage}
+            onChange={handleOnPageChange}
+            showSizeChanger={false}
+            hideOnSinglePage={query.total <= query.perPage}
+          ></Pagination>
         </div>
       </>
     );
@@ -457,6 +560,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   return (
     <div style={{ flex: 1 }}>
       <div className={SearchStyle['search-bar']}>{renderHFSearch()}</div>
+
       <SearchResult
         loading={dataSource.loading}
         resultList={dataSource.repoOptions}

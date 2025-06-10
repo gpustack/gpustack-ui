@@ -54,13 +54,7 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const {
-    collapsed,
-    modelSource,
-    isDownload,
-    gpuOptions,
-    displayEvaluateStatus
-  } = props;
+  const { collapsed, modelSource, isDownload, displayEvaluateStatus } = props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({

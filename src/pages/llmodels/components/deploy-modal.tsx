@@ -129,6 +129,15 @@ const AddModal: FC<AddModalProps> = (props) => {
   const evaluateStateRef = useRef<{ state: EvaluateProccessType }>({
     state: 'form'
   });
+  const requestModelIdRef = useRef<number>(0);
+
+  /**
+   * Update the request model id to distinguish
+   * the evaluate request.
+   */
+  const updateRequestModelId = () => {
+    requestModelIdRef.current += 1;
+  };
 
   /**
    *
@@ -194,12 +203,19 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
 
     if (item.fakeName) {
+      const currentModelId = requestModelIdRef.current;
       setEvaluteState(EvaluateProccess.file);
       const evaluateRes = await handleEvaluateOnChange?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
         source: props.source
       });
+
+      if (currentModelId !== requestModelIdRef.current) {
+        // if the request model id has changed, do not update the form
+        return;
+      }
+
       const defaultSpec = getDefaultSpec({
         evaluateResult: evaluateRes
       });
@@ -224,7 +240,11 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnSelectModel = (item: any, evaluate?: boolean) => {
-    // when select a model not from the evaluate result,
+    /**
+     * evaluate: false means select a new model
+     * evaluate: true means select a model file from the evaluate result
+     */
+    updateRequestModelId();
     if (!evaluate) {
       setEvaluteState(EvaluateProccess.model);
       setSelectedModel(item);
@@ -241,7 +261,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       const modelInfo = onSelectModel(item, props.source);
       if (
         !isHolderRef.current.model &&
-        evaluateStateRef.current.state === 'model'
+        evaluateStateRef.current.state === EvaluateProccess.model
       ) {
         handleShowCompatibleAlert(item.evaluateResult);
         form.current?.setFieldsValue?.({
@@ -268,7 +288,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleSetIsGGUF = async (flag: boolean) => {
-    console.log('handleSetIsGGUF', flag);
     setIsGGUF(flag);
     await new Promise((resolve) => {
       setTimeout(() => {

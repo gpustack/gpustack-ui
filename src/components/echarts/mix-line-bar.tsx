@@ -46,7 +46,7 @@ const MixLineBarChart: React.FC<
     grid: {
       ...grid,
       top: 20,
-      bottom: 20
+      bottom: 10
     },
     tooltip: {
       ...tooltip,

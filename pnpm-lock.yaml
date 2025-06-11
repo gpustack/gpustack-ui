@@ -6,6 +6,7 @@ settings:
 
 overrides:
   immer: ^9.0.6
+  elliptic: ^6.6.1
 
 dependencies:
   '@ant-design/icons':
@@ -60,8 +61,8 @@ dependencies:
     specifier: ^3.6.2
     version: 3.6.2(@types/react@18.3.1)(antd@5.21.6)(react-dom@18.2.0)(react@18.2.0)
   axios:
-    specifier: ^1.7.2
-    version: 1.7.2
+    specifier: ^1.8.2
+    version: 1.9.0
   classnames:
     specifier: ^2.5.1
     version: 2.5.1
@@ -7832,8 +7833,8 @@ packages:
     transitivePeerDependencies:
       - debug
 
-  /axios@1.7.2:
-    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==, tarball: https://registry.npmjs.org/axios/-/axios-1.7.2.tgz}
+  /axios@1.9.0:
+    resolution: {integrity: sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==, tarball: https://registry.npmjs.org/axios/-/axios-1.9.0.tgz}
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -8177,7 +8178,7 @@ packages:
       browserify-rsa: 4.1.0
       create-hash: 1.2.0
       create-hmac: 1.1.7
-      elliptic: 6.5.5
+      elliptic: 6.6.1
       hash-base: 3.0.4
       inherits: 2.0.4
       parse-asn1: 5.1.7
@@ -8790,7 +8791,7 @@ packages:
     resolution: {integrity: sha512-mf+TCx8wWc9VpuxfP2ht0iSISLZnt0JgWlrOKZiNqyUZWnjIaCIVNQArMHnCZKfEYRg6IM7A+NeJoN8gf/Ws0A==, tarball: https://registry.npmjs.org/create-ecdh/-/create-ecdh-4.0.4.tgz}
     dependencies:
       bn.js: 4.12.0
-      elliptic: 6.5.5
+      elliptic: 6.6.1
     dev: false
 
   /create-hash@1.2.0:
@@ -9530,8 +9531,8 @@ packages:
   /electron-to-chromium@1.5.73:
     resolution: {integrity: sha512-8wGNxG9tAG5KhGd3eeA0o6ixhiNdgr0DcHWm85XPCphwZgD1lIEoi6t3VERayWao7SF7AAZTw6oARGJeVjH8Kg==, tarball: https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.73.tgz}
 
-  /elliptic@6.5.5:
-    resolution: {integrity: sha512-7EjbcmUm17NQFu4Pmgmq2olYMj8nwMnpcddByChSUjArp8F5DQWcIcpriwO4ZToLNAJig0yiyjswfyGNje/ixw==, tarball: https://registry.npmjs.org/elliptic/-/elliptic-6.5.5.tgz}
+  /elliptic@6.6.1:
+    resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==, tarball: https://registry.npmjs.org/elliptic/-/elliptic-6.6.1.tgz}
     dependencies:
       bn.js: 4.12.0
       brorand: 1.1.0
@@ -19107,6 +19108,7 @@ packages:
 
   /tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==, tarball: https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz}
+    requiresBuild: true
     dev: false
 
   /trim-lines@3.0.1:
@@ -19928,6 +19930,7 @@ packages:
 
   /webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==, tarball: https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz}
+    requiresBuild: true
     dev: false
 
   /webpack-5-chain@8.0.1:
@@ -20007,6 +20010,7 @@ packages:
 
   /whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==, tarball: https://registry.npmjs.org/whatwg-url/-/whatwg-url-5.0.0.tgz}
+    requiresBuild: true
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1

@@ -128,7 +128,7 @@ const MixLineBarChart: React.FC<
         ...options.xAxis,
         data: xAxisData
       },
-      series: [...linedata, ...barData]
+      series: [...barData, ...linedata]
     };
   }, [seriesData, xAxisData, yAxisName, title, smooth, legendData, options]);
 

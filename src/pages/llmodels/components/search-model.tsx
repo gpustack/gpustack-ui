@@ -84,7 +84,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const [query, setQuery] = useState({
     page: 1,
     perPage: 10,
-    total: 100
+    total: 0
   });
   const modelFilesSortOptions = useRef<any[]>([
     {
@@ -120,7 +120,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     return isGGUF || isGGUFFromMs;
   };
 
-  const handleOnSelectModel = (item: any, evaluate?: boolean) => {
+  const handleOnSelectModel = (model: any, evaluate?: boolean) => {
+    const item = model || {};
     onSelectModel(item, evaluate);
     setCurrent(item.id);
     currentRef.current = item.id;
@@ -207,6 +208,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       });
       return list;
     } catch (error) {
+      setQuery((prev) => {
+        return {
+          ...prev,
+          page: queryParams.page,
+          total: 0
+        };
+      });
       return [];
     }
   };
@@ -367,7 +375,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       displayEvaluateStatus?.({
         show: true,
         flag: {
-          model: true
+          model: list.length > 0
         }
       });
       handleOnSelectModel(list[0]);
@@ -375,6 +383,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
       handleEvaluate(list);
     } catch (error: any) {
+      console.log('error:', error);
       setDataSource({
         repoOptions: [],
         loading: false,

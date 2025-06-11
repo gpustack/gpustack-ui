@@ -20,12 +20,6 @@ export default function createProxyTable(target?: string) {
         ws: true,
         log: 'debug',
         pathRewrite: (pth: string) => pth.replace(`/^/${api}`, `/${api}`),
-        // onProxyRes: (proxyRes: any, req: any, res: any) => {
-        //   console.log('headers=========', {
-        //     res: proxyRes.headers,
-        //     req: req.headers
-        //   });
-        // },
         headers: {
           origin: newTarget,
           Connection: 'keep-alive'

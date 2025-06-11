@@ -36,6 +36,11 @@ type MessageStatus = {
   evaluateResult?: EvaluateResult;
 };
 
+type WarningStausOptions = {
+  lockAfterUpdate?: boolean;
+  override?: boolean;
+};
+
 export const useGenerateFormEditInitialValues = () => {
   const gpuDeviceList = useRef<any[]>([]);
   const workerList = useRef<any[]>([]);
@@ -268,6 +273,7 @@ export const useCheckCompatibility = () => {
   const submitAnyway = useRef<boolean>(false);
   const requestIdRef = useRef(0);
   const updateStatusTimer = useRef<any>(null);
+  const isLockWarningStatus = useRef<boolean>(false);
   const [warningStatus, setWarningStatus] = useState<MessageStatus>({
     show: false,
     title: '',
@@ -277,6 +283,33 @@ export const useCheckCompatibility = () => {
   const updateRequestId = () => {
     requestIdRef.current += 1;
     return requestIdRef.current;
+  };
+
+  const lockWarningStatus = () => {
+    isLockWarningStatus.current = true;
+  };
+
+  const unlockWarningStatus = () => {
+    isLockWarningStatus.current = false;
+  };
+
+  const updateWarningStatus = (
+    params: MessageStatus,
+    options?: WarningStausOptions
+  ) => {
+    const { lockAfterUpdate = false, override = false } = options || {};
+
+    setWarningStatus((prev: MessageStatus) => {
+      if (isLockWarningStatus.current && !override) {
+        return prev;
+      }
+
+      if (lockAfterUpdate) {
+        lockWarningStatus();
+      }
+
+      return params;
+    });
   };
 
   const handleEvaluate = async (data: any) => {
@@ -374,13 +407,16 @@ export const useCheckCompatibility = () => {
     };
   };
 
-  const handleShowCompatibleAlert = (evaluateResult: EvaluateResult | null) => {
+  const handleShowCompatibleAlert = (
+    evaluateResult: EvaluateResult | null,
+    options?: WarningStausOptions
+  ) => {
     const result = handleCheckCompatibility(evaluateResult);
     if (updateStatusTimer.current) {
       clearTimeout(updateStatusTimer.current);
     }
     updateStatusTimer.current = setTimeout(() => {
-      setWarningStatus(result);
+      updateWarningStatus(result, options);
     }, 300);
   };
 
@@ -562,7 +598,8 @@ export const useCheckCompatibility = () => {
     handleDoEvalute,
     generateGPUIds,
     handleEvaluate,
-    setWarningStatus,
+    setWarningStatus: updateWarningStatus,
+    unlockWarningStatus,
     cancelEvaluate,
     handleBackendChangeBefore,
     handleOnValuesChange: debounceHandleValuesChange,

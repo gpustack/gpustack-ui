@@ -49,7 +49,7 @@ const GPUList: React.FC = () => {
     handleNameChange
   } = useTableFetch<GPUDeviceItem>({
     fetchAPI: queryGpuDevicesList,
-    watch: true,
+    polling: true,
     API: GPU_DEVICES_API
   });
 

@@ -8,8 +8,9 @@ import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
 
 type WatchConfig =
-  | { watch?: false | undefined; API?: string }
-  | { watch: true; API: string };
+  | { watch?: false | undefined; API?: string; polling?: boolean }
+  | { watch: true; API: string; polling?: false | undefined }
+  | { polling: true; watch: false | undefined; API?: string };
 
 export default function useTableFetch<ListItem>(
   options: {
@@ -24,9 +25,11 @@ export default function useTableFetch<ListItem>(
     deleteAPI,
     contentForDelete,
     API,
+    polling = false,
     watch,
     defaultData = []
   } = options;
+  const pollingRef = useRef<any>(null);
   const chunkRequedtRef = useRef<any>(null);
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
@@ -92,12 +95,14 @@ export default function useTableFetch<ListItem>(
     }
   };
 
-  const fetchData = async (params?: { query: any }) => {
+  const fetchData = async (params?: { query: any }, polling = false) => {
+    if (!polling) {
+      setDataSource((pre) => {
+        pre.loading = true;
+        return { ...pre };
+      });
+    }
     const { query } = params || {};
-    setDataSource((pre) => {
-      pre.loading = true;
-      return { ...pre };
-    });
     try {
       const params = {
         ..._.pickBy(query || queryParams, (val: any) => !!val)
@@ -141,6 +146,24 @@ export default function useTableFetch<ListItem>(
         totalPage: dataSource.totalPage
       });
     }
+  };
+
+  const fetchAPIWithPolling = async (params: any) => {
+    if (!polling || watch || !fetchAPI) return;
+
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+    }
+
+    // fetch data with polling, 1s interval
+    pollingRef.current = setInterval(async () => {
+      fetchData(
+        {
+          query: params
+        },
+        true
+      );
+    }, 5000);
   };
 
   const handleQueryChange = (params: any) => {
@@ -219,6 +242,17 @@ export default function useTableFetch<ListItem>(
       }
     });
   };
+
+  useEffect(() => {
+    if (dataSource.loadend) {
+      fetchAPIWithPolling(queryParams);
+    }
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, [dataSource.loadend, queryParams]);
 
   useEffect(() => {
     const init = async () => {

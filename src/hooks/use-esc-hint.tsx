@@ -46,14 +46,26 @@ export function useEscHint(options?: {
   const { styles } = useStyles();
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef<any>(null);
+  const isHintActiveRef = useRef(false);
 
   const showHintThrottled = useMemo(
     () =>
       throttle(
         () => {
-          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          if (isHintActiveRef.current) return;
+
+          isHintActiveRef.current = true;
+
           setVisible(true);
-          timeoutRef.current = setTimeout(() => setVisible(false), 2000);
+
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+
+          timeoutRef.current = setTimeout(() => {
+            setVisible(false);
+            isHintActiveRef.current = false;
+          }, 2000);
         },
         throttleDelay,
         {
@@ -67,6 +79,7 @@ export function useEscHint(options?: {
   useHotkeys(
     HotKeys.ESC,
     () => {
+      if (!enabled) return;
       showHintThrottled();
     },
     {

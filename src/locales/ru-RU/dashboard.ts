@@ -22,19 +22,14 @@ export default {
   'dashboard.runninginstances': 'Запущенные инстансы',
   'dashboard.activeModels.name': 'Название модели',
   'dashboard.allocatevram': 'Выделено VRAM / ОЗУ',
-  'dashboard.usage.selectuser': 'Select users',
-  'dashboard.usage.selectmodel': 'Select models',
-  'dashboard.usage.export': 'Export Data',
-  'dashboard.usage.export.user': 'User',
-  'dashboard.usage.export.model': 'Model',
-  'dashboard.usage.export.date': 'Date'
+  'dashboard.usage.selectuser': 'Выбрать пользователей',
+  'dashboard.usage.selectmodel': 'Выбрать модели',
+  'dashboard.usage.export': 'Экспорт данных',
+  'dashboard.usage.export.user': 'Пользователь',
+  'dashboard.usage.export.model': 'Модель',
+  'dashboard.usage.export.date': 'Дата'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'dashboard.usage.selectuser': 'Select users',
-// 2. 'dashboard.usage.selectmodel': 'Select models',
-// 3. 'dashboard.usage.export': 'Export Data',
-// 4. 'dashboard.usage.export.user': 'User',
-// 5. 'dashboard.usage.export.model': 'Model',
-// 6. 'dashboard.usage.export.date': 'Date'
+
 // ========== End of To-Do List ==========

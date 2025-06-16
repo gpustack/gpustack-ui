@@ -27,7 +27,8 @@ const KeybindingsMap = {
   NEW3: ['Ctrl+3', 'Meta+3'],
   NEW4: ['Ctrl+4', 'Meta+4'],
   FOCUS: ['/', '/'],
-  ADD: ['Alt+Ctrl+Enter', 'Alt+Meta+Enter']
+  ADD: ['Alt+Ctrl+Enter', 'Alt+Meta+Enter'],
+  ESC: ['Esc', 'Esc']
 };
 
 type KeyBindingType = keyof typeof KeybindingsMap;

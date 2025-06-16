@@ -1,8 +1,9 @@
 import ModalFooter from '@/components/modal-footer';
+import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Drawer } from 'antd';
+import { Button } from 'antd';
 import _ from 'lodash';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -14,6 +15,8 @@ import {
 import { FormContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
 import {
+  MessageStatus,
+  WarningStausOptions,
   checkOnlyAscendNPU,
   useCheckCompatibility,
   useSelectModel
@@ -106,6 +109,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     setWarningStatus,
     handleBackendChangeBefore,
     cancelEvaluate,
+    unlockWarningStatus,
     handleOnValuesChange: handleOnValuesChangeBefore,
     handleEvaluateOnChange,
     warningStatus,
@@ -141,7 +145,8 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   /**
    *
-   * @param state target to distinguish the evaluate state
+   * @param state target to distinguish the evaluate state, current evaluate state
+   *              can be 'model', 'file' or 'form'.
    */
   const setEvaluteState = (state: EvaluateProccessType) => {
     evaluateStateRef.current.state = state;
@@ -203,6 +208,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
 
     if (item.fakeName) {
+      unlockWarningStatus();
       const currentModelId = requestModelIdRef.current;
       setEvaluteState(EvaluateProccess.file);
       const evaluateRes = await handleEvaluateOnChange?.({
@@ -245,7 +251,10 @@ const AddModal: FC<AddModalProps> = (props) => {
      * evaluate: true means select a model file from the evaluate result
      */
     updateRequestModelId();
+
+    // If the evaluate is false, it means that the user selects a new model or the first time to open the modal.
     if (!evaluate) {
+      unlockWarningStatus();
       setEvaluteState(EvaluateProccess.model);
       setSelectedModel(item);
       form.current?.form?.resetFields(resetFieldsByModel);
@@ -260,8 +269,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       setIsGGUF(false);
       const modelInfo = onSelectModel(item, props.source);
       if (
-        !isHolderRef.current.model &&
-        evaluateStateRef.current.state === EvaluateProccess.model
+        evaluateStateRef.current.state === EvaluateProccess.model &&
+        item.evaluateResult
       ) {
         handleShowCompatibleAlert(item.evaluateResult);
         form.current?.setFieldsValue?.({
@@ -365,17 +374,20 @@ const AddModal: FC<AddModalProps> = (props) => {
     return warningStatus.show && warningStatus.type !== 'success';
   }, [warningStatus.show, warningStatus.type]);
 
-  const displayEvaluateStatus = (data: {
-    show?: boolean;
-    flag: Record<string, boolean>;
-  }) => {
-    setIsHolderRef(data.flag);
-    setWarningStatus({
-      show: isHolderRef.current.model || isHolderRef.current.file,
-      title: '',
-      type: 'transition',
-      message: intl.formatMessage({ id: 'models.form.evaluating' })
-    });
+  // This is only a placeholder for querying the model or file during the transition period.
+  const displayEvaluateStatus = (
+    params: MessageStatus,
+    options?: WarningStausOptions
+  ) => {
+    setWarningStatus(
+      {
+        show: params.show,
+        title: '',
+        type: 'transition',
+        message: intl.formatMessage({ id: 'models.form.evaluating' })
+      },
+      options
+    );
   };
 
   useEffect(() => {
@@ -395,7 +407,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   }, [open, props.gpuOptions.length]);
 
   return (
-    <Drawer
+    <GSDrawer
       title={
         <div className="flex-between flex-center">
           <span>{title}</span>
@@ -435,6 +447,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                     modelSource={props.source}
                     onSelectModel={handleOnSelectModel}
                     displayEvaluateStatus={displayEvaluateStatus}
+                    unlockWarningStatus={unlockWarningStatus}
                     gpuOptions={props.gpuOptions}
                   ></SearchModel>
                 </ColumnWrapper>
@@ -535,7 +548,7 @@ const AddModal: FC<AddModalProps> = (props) => {
           </FormWrapper>
         </FormContext.Provider>
       </div>
-    </Drawer>
+    </GSDrawer>
   );
 };
 

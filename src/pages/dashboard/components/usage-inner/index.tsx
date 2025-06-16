@@ -14,7 +14,7 @@ const FilterWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 0px;
   .selection {
     display: flex;
     align-items: center;
@@ -61,44 +61,48 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
           xl={16}
           style={{ paddingRight: paddingRight }}
         >
-          <TitleWrapper>
-            {intl.formatMessage({ id: 'dashboard.usage' })}
-          </TitleWrapper>
-          <FilterWrapper>
-            <div className="selection">
-              <DatePicker.RangePicker
-                style={{ width: 240 }}
-              ></DatePicker.RangePicker>
-              <Select
-                mode="multiple"
-                maxTagCount={1}
-                placeholder={intl.formatMessage({
-                  id: 'dashboard.usage.selectuser'
-                })}
-                style={{ width: 160 }}
-              ></Select>
-              <Select
-                mode="multiple"
-                maxTagCount={1}
-                placeholder={intl.formatMessage({
-                  id: 'dashboard.usage.selectmodel'
-                })}
-                style={{ width: 160 }}
-              ></Select>
-            </div>
-            <Button
-              type="text"
-              icon={<ExportOutlined />}
-              onClick={handleExport}
-            >
-              {intl.formatMessage({ id: 'common.button.export' })}
-            </Button>
-          </FilterWrapper>
-          {/* <SimpleCard
-            dataList={dataList}
-            height={80}
-            bordered={true}
-          ></SimpleCard> */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 0
+            }}
+          >
+            <TitleWrapper>
+              {intl.formatMessage({ id: 'dashboard.usage' })}
+            </TitleWrapper>
+            <FilterWrapper>
+              <Button
+                type="text"
+                icon={<ExportOutlined />}
+                onClick={handleExport}
+              >
+                {intl.formatMessage({ id: 'common.button.export' })}
+              </Button>
+              <div className="selection">
+                <DatePicker.RangePicker
+                  style={{ width: 240 }}
+                ></DatePicker.RangePicker>
+                <Select
+                  mode="multiple"
+                  maxTagCount={1}
+                  placeholder={intl.formatMessage({
+                    id: 'dashboard.usage.selectuser'
+                  })}
+                  style={{ width: 160 }}
+                ></Select>
+                <Select
+                  mode="multiple"
+                  maxTagCount={1}
+                  placeholder={intl.formatMessage({
+                    id: 'dashboard.usage.selectmodel'
+                  })}
+                  style={{ width: 160 }}
+                ></Select>
+              </div>
+            </FilterWrapper>
+          </div>
           <RequestTokenInner
             requestData={requestTokenData.requestData}
             xAxisData={requestTokenData.xAxisData}

@@ -1,9 +1,10 @@
 import ModalFooter from '@/components/modal-footer';
+import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Drawer } from 'antd';
+import { Button } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -500,7 +501,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, []);
 
   return (
-    <Drawer
+    <GSDrawer
       title={
         <div className="flex-between flex-center">
           <span
@@ -613,7 +614,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           </ColumnWrapper>
         </FormWrapper>
       </FormContext.Provider>
-    </Drawer>
+    </GSDrawer>
   );
 };
 

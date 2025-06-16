@@ -18,7 +18,11 @@ import {
   modelSourceMap
 } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
-import { checkCurrentbackend } from '../hooks';
+import {
+  MessageStatus,
+  WarningStausOptions,
+  checkCurrentbackend
+} from '../hooks';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -37,10 +41,11 @@ interface SearchInputProps {
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any, evaluate?: boolean) => void;
-  displayEvaluateStatus?: (data: {
-    show?: boolean;
-    flag: Record<string, boolean>;
-  }) => void;
+  unlockWarningStatus?: () => void;
+  displayEvaluateStatus?: (
+    data: MessageStatus,
+    options?: WarningStausOptions
+  ) => void;
 }
 
 const SearchModel: React.FC<SearchInputProps> = (props) => {
@@ -52,7 +57,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     gpuOptions,
     setLoadingModel,
     onSelectModel,
-    displayEvaluateStatus
+    displayEvaluateStatus,
+    unlockWarningStatus
   } = props;
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
@@ -296,19 +302,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         (item) => item.id === currentRef.current
       );
 
-      /**
-       * if item is GGUF, the evaluating would be do after selecting the model file, Or the evaluate status of model would be overrided the
-       * file evaluate status.
-       */
-      if (currentItem && !currentItem.isGGUF) {
-        displayEvaluateStatus?.({
-          show: false,
-          flag: {
-            model: false
-          }
-        });
-      }
-
       if (currentItem) {
         handleOnSelectModel(currentItem, true);
       }
@@ -372,12 +365,18 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         networkError: false,
         sortType: sort
       });
-      displayEvaluateStatus?.({
-        show: true,
-        flag: {
-          model: list.length > 0
+
+      // It's a new request, so we need to reset the state
+      unlockWarningStatus?.();
+      displayEvaluateStatus?.(
+        {
+          show: list.length > 0,
+          message: ''
+        },
+        {
+          override: true
         }
-      });
+      );
       handleOnSelectModel(list[0]);
       setLoadingModel?.(false);
 
@@ -393,9 +392,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       setLoadingModel?.(false);
       displayEvaluateStatus?.({
         show: false,
-        flag: {
-          model: false
-        }
+        message: ''
       });
       handleOnSelectModel({});
       cacheRepoOptions.current = [];
@@ -460,12 +457,17 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           repoOptions: currentList
         };
       });
-      displayEvaluateStatus?.({
-        show: true,
-        flag: {
-          model: true
+      unlockWarningStatus?.();
+      // reset evaluate status
+      displayEvaluateStatus?.(
+        {
+          show: true,
+          message: ''
+        },
+        {
+          override: true
         }
-      });
+      );
       console.log('isEvaluating:', isEvaluating);
       handleOnSelectModel(currentList[0]);
       handleEvaluate(currentList);

@@ -245,9 +245,12 @@ export default {
   'common.button.forgotpassword': 'Забыли пароль?',
   'common.appearance.theme': 'Тема',
   'common.page.wentwrong': 'Что-то пошло не так.',
-  'common.page.refresh.tips': 'Упс! Что-то пошло не так. Попробуйте обновить страницу.'
+  'common.page.refresh.tips':
+    'Упс! Что-то пошло не так. Попробуйте обновить страницу.',
+  'common.tips.escape.disable':
+    'Click Cancel or the X at the top right to close.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'common.tips.escape.disable': 'Click Cancel or the X at the top right to close.'
 // ========== End of To-Do List ==========

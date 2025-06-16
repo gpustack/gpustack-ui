@@ -128,4 +128,4 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
   );
 };
 
-export default React.memo(SearchResult);
+export default SearchResult;

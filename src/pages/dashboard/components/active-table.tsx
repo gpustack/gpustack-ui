@@ -75,7 +75,6 @@ const ActiveTable = () => {
           left={
             <span
               style={{
-                padding: '9px 0',
                 fontWeight: 'var(--font-weight-bold)'
               }}
             >

@@ -26,7 +26,7 @@ import {
   ListItem
 } from '../config/types';
 
-type MessageStatus = {
+export type MessageStatus = {
   show: boolean;
   title?: string;
   type?: Global.MessageType;
@@ -36,7 +36,7 @@ type MessageStatus = {
   evaluateResult?: EvaluateResult;
 };
 
-type WarningStausOptions = {
+export type WarningStausOptions = {
   lockAfterUpdate?: boolean;
   override?: boolean;
 };

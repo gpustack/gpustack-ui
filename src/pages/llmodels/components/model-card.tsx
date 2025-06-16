@@ -20,15 +20,50 @@ import React, {
   useState
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
+import styled from 'styled-components';
 import {
   downloadModelFile,
-  downloadModelScopeModelfile,
   queryHuggingfaceModelDetail,
   queryModelScopeModelDetail
 } from '../apis';
 import { modelSourceMap } from '../config';
 import '../style/model-card.less';
 import TitleWrapper from './title-wrapper';
+
+const MkdTitle = styled.span`
+  cursor: pointer;
+  background-color: var(--ant-color-fill-tertiary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  height: 36px;
+`;
+
+const MarkDownTitle: React.FC<{
+  collapsed: boolean;
+  loading: boolean;
+  onCollapse: () => void;
+}> = ({ collapsed, loading, onCollapse }) => {
+  const intl = useIntl();
+  return (
+    <MkdTitle onClick={onCollapse}>
+      <span>
+        <FileTextOutlined className="m-r-2 text-tertiary" />{' '}
+        {intl.formatMessage({ id: 'models.readme' })}
+      </span>
+      <span>
+        {collapsed ? (
+          <DownOutlined />
+        ) : loading ? (
+          <Spin spinning={true} size="small"></Spin>
+        ) : (
+          <RightOutlined />
+        )}
+      </span>
+    </MkdTitle>
+  );
+};
 
 const ModelCard: React.FC<{
   onCollapse: (flag: boolean) => void;
@@ -69,6 +104,7 @@ const ModelCard: React.FC<{
       return modelData?.ModelType?.[0];
     }
   }, [modelData, modelSource]);
+
   const loadFile = useCallback(async (repo: string, sha: string) => {
     try {
       axiosTokenRef.current?.abort?.();
@@ -94,27 +130,6 @@ const ModelCard: React.FC<{
       onCollapse(false);
     }
   };
-
-  const loadConfig = useCallback(async (repo: string, sha: string) => {
-    try {
-      loadConfigTokenRef.current?.abort?.();
-      loadConfigTokenRef.current = new AbortController();
-      const res = await downloadModelFile(
-        {
-          repo,
-          revision: sha,
-          path: 'config.json'
-        },
-        {
-          signal: loadConfigTokenRef.current.signal
-        }
-      );
-      return res || null;
-    } catch (error) {
-      console.log('error======', error);
-      return null;
-    }
-  }, []);
 
   const removeMetadata = useCallback((str: string) => {
     let indexes = [];
@@ -164,23 +179,6 @@ const ModelCard: React.FC<{
       setIsGGUFModel(false);
     }
   };
-
-  const loadModelscopeModelConfig = useCallback(async (name: string) => {
-    try {
-      loadConfigJsonTokenRef.current?.abort?.();
-      loadConfigJsonTokenRef.current = new AbortController();
-      return await downloadModelScopeModelfile(
-        {
-          name: name
-        },
-        {
-          signal: loadConfigJsonTokenRef.current.token
-        }
-      );
-    } catch (error) {
-      return null;
-    }
-  }, []);
 
   const getModelScopeModelDetail = async () => {
     try {
@@ -352,27 +350,25 @@ const ModelCard: React.FC<{
                   overflow: 'hidden'
                 }}
               >
-                <span className="mkd-title" onClick={handleCollapse}>
-                  <span>
-                    <FileTextOutlined className="m-r-2 text-tertiary" />{' '}
-                    README.md
-                  </span>
-                  <span>
-                    {collapsed ? <DownOutlined /> : <RightOutlined />}
-                  </span>
-                </span>
-                <SimpleOverlay
-                  style={{
-                    paddingTop: collapsed ? 12 : 0,
-                    maxHeight: collapsed ? 300 : 0
-                  }}
-                >
-                  <MarkdownViewer
-                    generateImgLink={generateModeScopeImgLink}
-                    content={readmeText}
-                    theme="light"
-                  ></MarkdownViewer>
-                </SimpleOverlay>
+                <MarkDownTitle
+                  onCollapse={handleCollapse}
+                  collapsed={collapsed}
+                  loading={loading}
+                ></MarkDownTitle>
+                <Spin spinning={loading && collapsed}>
+                  <SimpleOverlay
+                    style={{
+                      paddingTop: collapsed ? 12 : 0,
+                      maxHeight: collapsed ? 300 : 0
+                    }}
+                  >
+                    <MarkdownViewer
+                      generateImgLink={generateModeScopeImgLink}
+                      content={readmeText}
+                      theme="light"
+                    ></MarkdownViewer>
+                  </SimpleOverlay>
+                </Spin>
               </div>
             )}
           </div>

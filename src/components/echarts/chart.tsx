@@ -18,6 +18,7 @@ const Chart: React.FC<{
   const chart = useRef<echarts.EChartsType>();
   const resizeable = useRef(false);
   const resizeObserver = useRef<ResizeObserver>();
+  const finished = useRef(false);
 
   useImperativeHandle(ref, () => {
     return {
@@ -49,7 +50,7 @@ const Chart: React.FC<{
 
   useEffect(() => {
     const handleOnFinished = () => {
-      if (!chart.current) return;
+      if (!chart.current || finished.current) return;
 
       const currentChart = chart.current;
       const optionsYAxis = currentChart.getOption()?.yAxis;
@@ -75,22 +76,32 @@ const Chart: React.FC<{
       const ticksList = axes.map((axis) => axis.scale.getTicks());
       const counts = ticksList.map((t) => t.length);
 
-      if (counts[0] === counts[1]) return;
-
       const unifiedCount = Math.max(counts[0], counts[1]);
 
       const newMax0 = intervals[0] * (unifiedCount - 1);
       const newMax1 = intervals[1] * (unifiedCount - 1);
 
+      // get yaxis max value
+      const maxValue0 = Math.max();
+      const maxValue1 = yAxisModels[1].get('max');
+
+      // if newMax0 equal to maxValue0, and newMax1 equal to maxValue1, do not update yAxis
+      if (counts[0] === counts[1]) return;
+
       const yAxis: any[] = [{}, {}];
 
       if (counts[0] < unifiedCount) {
         yAxis[0].max = newMax0;
+        yAxis[0].interval = intervals[0];
+        yAxis[0].splitNumber = unifiedCount;
       }
 
       if (counts[1] < unifiedCount) {
         yAxis[1].max = newMax1;
+        yAxis[1].interval = intervals[1];
+        yAxis[1].splitNumber = unifiedCount;
       }
+      finished.current = true;
 
       setTimeout(() => {
         currentChart.setOption({
@@ -112,6 +123,7 @@ const Chart: React.FC<{
 
   useEffect(() => {
     resizeable.current = false;
+    finished.current = false;
     resize();
     setOption(options);
     resizeable.current = true;

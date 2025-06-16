@@ -247,7 +247,9 @@ export default {
   'common.appearance.theme': 'Theme',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
-    'Oops! Something went wrong. Try refreshing the page.'
+    'Oops! Something went wrong. Try refreshing the page.',
+  'common.tips.escape.disable':
+    'Click Cancel or the X at the top right to close.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -263,4 +265,5 @@ export default {
 // 10.  'common.appearance.theme': 'Theme',
 // 11. 'common.page.wentwrong': 'Something went wrong.',
 // 12. 'common.page.refresh.tips': 'Oops! Something went wrong. Try refreshing the page.'
+// 13. 'common.tips.escape.disable': 'Click Cancel or the X at the top right to close.'
 // ========== End of To-Do List ==========

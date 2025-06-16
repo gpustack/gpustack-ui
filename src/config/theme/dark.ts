@@ -24,7 +24,9 @@ export default {
     },
     Tabs: {
       titleFontSizeLG: 14
-      // cardBg: '#1D1E20'
+    },
+    DatePicker: {
+      fontSizeLG: 14
     },
     Menu: {
       iconSize: 16,

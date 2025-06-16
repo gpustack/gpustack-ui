@@ -28,9 +28,9 @@ export default {
   'users.login.title': 'Вход в',
   'users.version.islatest': 'GPUStack {version} — последняя версия',
   'users.version.update': 'Доступно обновление GPUStack {version}',
-  'users.settings.title': 'User Settings'
+  'users.settings.title': 'Настройки пользователя'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'users.settings.title': 'User Settings'
+
 // ========== End of To-Do List ==========

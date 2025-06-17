@@ -196,8 +196,8 @@ const AddModal: FC<AddModalProps> = (props) => {
      *  unitl the evaluate result is ready
      */
     form.current?.setFieldsValue?.({
-      file_name: item.fakeName,
       ...modelInfo,
+      file_name: item.fakeName,
       categories: getCategory(item)
     });
 
@@ -233,9 +233,9 @@ const AddModal: FC<AddModalProps> = (props) => {
         form.current?.getFieldValue?.('backend_parameters') || [];
 
       form.current?.setFieldsValue?.({
-        file_name: item.fakeName,
         ...defaultSpec,
         ...modelInfo,
+        file_name: item.fakeName,
         backend_parameters:
           formBackendParameters.length > 0
             ? formBackendParameters

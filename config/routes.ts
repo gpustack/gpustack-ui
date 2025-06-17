@@ -5,13 +5,17 @@ export default [
     name: 'dashboard',
     path: '/dashboard',
     key: 'dashboard',
-    icon: 'AppstoreOutlined',
+    icon: 'icon-dashboard',
+    selectedIcon: 'icon-dashboard-filled',
+    defaultIcon: 'icon-dashboard',
     access: 'canSeeAdmin',
     component: './dashboard'
   },
   {
     name: 'playground',
-    icon: 'ExperimentOutlined',
+    icon: 'icon-experiment',
+    selectedIcon: 'icon-experiment-filled',
+    defaultIcon: 'icon-experiment',
     path: '/playground',
     key: 'playground',
     routes: [
@@ -65,7 +69,9 @@ export default [
     name: 'modelCatalog',
     path: '/models/catalog',
     key: 'modelsCatalog',
-    icon: 'icon-catalog',
+    icon: 'icon-layers',
+    selectedIcon: 'icon-layers-filled',
+    defaultIcon: 'icon-layers',
     access: 'canSeeAdmin',
     component: './llmodels/catalog'
   },
@@ -73,7 +79,9 @@ export default [
     name: 'models',
     path: '/models/list',
     key: 'models',
-    icon: 'Block',
+    icon: 'icon-model',
+    selectedIcon: 'icon-model-filled',
+    defaultIcon: 'icon-model',
     access: 'canSeeAdmin',
     component: './llmodels/index'
   },
@@ -81,7 +89,9 @@ export default [
     name: 'resources',
     path: '/resources',
     key: 'resources',
-    icon: 'CloudServer',
+    icon: 'icon-resources',
+    selectedIcon: 'icon-resources-filled',
+    defaultIcon: 'icon-resources',
     access: 'canSeeAdmin',
     component: './resources'
   },
@@ -89,14 +99,18 @@ export default [
     name: 'apikeys',
     path: '/api-keys',
     key: 'apikeys',
-    icon: 'KeyOutlined',
+    selectedIcon: 'icon-key-filled',
+    icon: 'icon-key',
+    defaultIcon: 'icon-key',
     component: './api-keys'
   },
   {
     name: 'users',
     path: '/users',
     key: 'users',
-    icon: 'Team',
+    icon: 'icon-users',
+    selectedIcon: 'icon-users-filled',
+    defaultIcon: 'icon-users',
     access: 'canSeeAdmin',
     component: './users'
   },

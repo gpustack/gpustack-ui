@@ -3,6 +3,7 @@
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
+import IconFont from '@/components/icon-font';
 import ShortCuts, {
   modalConfig as ShortCutsConfig
 } from '@/components/short-cuts';
@@ -14,7 +15,6 @@ import useUserSettings from '@/hooks/use-user-settings';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { ProLayout } from '@ant-design/pro-components';
 import {
   Link,
@@ -32,7 +32,7 @@ import { Button, ConfigProvider, Modal, theme } from 'antd';
 import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
@@ -256,53 +256,51 @@ export default (props: any) => {
     return () => clearTimeout(timeout);
   }, [initializeMenu, matchedRoute, location]);
 
-  const renderMenuHeader = useCallback(
-    (logo, title) => {
-      return (
-        <>
-          {logo}
-          <div className="collapse-wrap" onClick={handleToggleCollapse}>
-            <Button
-              style={{ marginRight: collapsed ? 0 : -14 }}
-              size="small"
-              type={collapsed ? 'default' : 'text'}
-            >
-              <>
-                <MenuUnfoldOutlined
-                  style={{ display: collapsed ? 'block' : 'none' }}
-                />
-                <MenuFoldOutlined
-                  style={{ display: !collapsed ? 'block' : 'none' }}
-                />
-              </>
-            </Button>
-          </div>
-        </>
-      );
-    },
-    [collapsed]
-  );
+  const renderMenuHeader = (logo, title) => {
+    return (
+      <>
+        {logo}
+        <div className="collapse-wrap" onClick={handleToggleCollapse}>
+          <Button
+            style={{ marginRight: collapsed ? 0 : -14 }}
+            size="small"
+            type={collapsed ? 'default' : 'text'}
+          >
+            <>
+              <IconFont
+                type="icon-expand-left"
+                className="font-size-18 text-secondary"
+                style={{ display: collapsed ? 'block' : 'none' }}
+              />
+              <IconFont
+                type="icon-expand-right"
+                className="font-size-18 text-secondary"
+                style={{ display: !collapsed ? 'block' : 'none' }}
+              />
+            </>
+          </Button>
+        </div>
+      </>
+    );
+  };
 
-  const actionRender = useCallback(
-    (layoutProps) => {
-      const dom = getRightRenderContent({
-        runtimeConfig,
-        loading,
-        initialState,
-        setInitialState,
-        intl,
-        isDarkTheme: userSettings.isDarkTheme,
-        siderWidth: layoutProps.siderWidth,
-        collapsed: layoutProps.collapsed,
-        showUpgrade
-      });
+  const actionRender = (layoutProps) => {
+    const dom = getRightRenderContent({
+      runtimeConfig,
+      loading,
+      initialState,
+      setInitialState,
+      intl,
+      isDarkTheme: userSettings.isDarkTheme,
+      siderWidth: layoutProps.siderWidth,
+      collapsed: layoutProps.collapsed,
+      showUpgrade
+    });
 
-      return dom;
-    },
-    [intl, showUpgrade, userSettings.theme, userSettings.isDarkTheme]
-  );
+    return dom;
+  };
 
-  const itemRender = useCallback((route, _, routes) => {
+  const itemRender = (route, _, routes) => {
     const { breadcrumbName, title, path } = route;
     const label = title || breadcrumbName;
     const last = routes[routes.length - 1];
@@ -312,63 +310,81 @@ export default (props: any) => {
       }
     }
     return <Link to={path}>{label}</Link>;
-  }, []);
+  };
 
-  const menuItemRender = useCallback(
-    (menuItemProps, defaultDom) => {
-      if (menuItemProps.isUrl || menuItemProps.children) {
-        return defaultDom;
-      }
-      if (menuItemProps.path && location.pathname !== menuItemProps.path) {
-        return (
-          <Link
-            to={menuItemProps.path.replace('/*', '')}
-            target={menuItemProps.target}
-          >
-            {defaultDom}
-          </Link>
+  const menuItemRender = (menuItemProps, defaultDom) => {
+    if (menuItemProps.isUrl || menuItemProps.children) {
+      return defaultDom;
+    }
+    if (menuItemProps.path && location.pathname !== menuItemProps.path) {
+      return (
+        <Link
+          to={menuItemProps.path.replace('/*', '')}
+          target={menuItemProps.target}
+        >
+          {defaultDom}
+        </Link>
+      );
+    }
+    return <>{defaultDom}</>;
+  };
+
+  const menuDataRender = (menuData) => {
+    const currentItem = menuData.find((s) => location.pathname === s.path);
+    return menuData.map((item) => {
+      const newItem = { ...item };
+
+      const selected =
+        location.pathname === newItem.path ||
+        location.pathname.indexOf(newItem.path) > -1;
+
+      if (newItem.icon) {
+        newItem.icon = selected ? (
+          <IconFont type={newItem.selectedIcon} />
+        ) : (
+          <IconFont type={newItem.defaultIcon} />
         );
       }
-      return <>{defaultDom}</>;
-    },
-    [location.pathname]
-  );
+      if (newItem.children) {
+        newItem.children = menuDataRender(newItem.children);
 
-  const onPageChange = useCallback(
-    (route) => {
-      const { location } = history;
-      const { pathname } = location;
-
-      initRouteCacheValue(pathname);
-      dropRouteCache(pathname);
-
-      // if user is not change password, redirect to change password page
-      if (
-        location.pathname !== loginPath &&
-        userInfo?.require_password_change
-      ) {
-        history.push(loginPath);
-        return;
+        if (selected) {
+          newItem.icon = <IconFont type={newItem.selectedIcon} />;
+        }
       }
+      return newItem;
+    });
+  };
 
-      // if user is not logged in, redirect to login page
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
-      } else if (location.pathname === '/') {
-        const pathname = initialState?.currentUser?.is_admin
-          ? '/dashboard'
-          : '/playground';
-        history.push(pathname);
-      }
-    },
-    [userInfo?.require_password_change, initialState?.currentUser]
-  );
+  const onPageChange = (route) => {
+    const { location } = history;
+    const { pathname } = location;
 
-  const onMenuHeaderClick = useCallback((e) => {
+    initRouteCacheValue(pathname);
+    dropRouteCache(pathname);
+
+    // if user is not change password, redirect to change password page
+    if (location.pathname !== loginPath && userInfo?.require_password_change) {
+      history.push(loginPath);
+      return;
+    }
+
+    // if user is not logged in, redirect to login page
+    if (!initialState?.currentUser && location.pathname !== loginPath) {
+      history.push(loginPath);
+    } else if (location.pathname === '/') {
+      const pathname = initialState?.currentUser?.is_admin
+        ? '/dashboard'
+        : '/playground';
+      history.push(pathname);
+    }
+  };
+
+  const onMenuHeaderClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
     navigate('/dashboard');
-  }, []);
+  };
 
   const onCollapse = (value) => {
     setCollapsed(value);
@@ -417,7 +433,6 @@ export default (props: any) => {
         : theme.defaultAlgorithm,
       ...themeData
     };
-    console.log('currentTheme====', data);
     return data;
   }, [userSettings.isDarkTheme, themeData]);
 
@@ -461,6 +476,7 @@ export default (props: any) => {
         logo={collapsed ? SLogoIcon : LogoIcon}
         menuItemRender={menuItemRender}
         itemRender={itemRender}
+        menuDataRender={menuDataRender}
         disableContentMargin
         fixSiderbar
         fixedHeader

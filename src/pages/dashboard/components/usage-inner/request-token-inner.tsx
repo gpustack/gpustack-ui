@@ -1,7 +1,6 @@
 import CardWrapper from '@/components/card-wrapper';
 import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import MixLineBar from '@/components/echarts/mix-line-bar';
-import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
@@ -79,14 +78,14 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   return (
     <CardWrapperBox>
       <CardWrapper style={{ width: '100%', position: 'relative' }}>
-        <DownloadButton
+        {/* <DownloadButton
           type="link"
           icon={<ExportOutlined />}
           size="small"
           onClick={onExport}
         >
           {intl.formatMessage({ id: 'common.button.export' })}
-        </DownloadButton>
+        </DownloadButton> */}
         <SimpleCard dataList={dataList} height={80}></SimpleCard>
         <MixLineBar
           chartData={{

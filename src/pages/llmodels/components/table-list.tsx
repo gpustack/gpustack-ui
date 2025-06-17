@@ -569,7 +569,6 @@ const Models: React.FC<ModelsProps> = ({
       operation: 'common.start.confirm',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRows, handleStartModel);
-        rowSelection.clearSelections();
         onStart?.();
       }
     });
@@ -583,7 +582,6 @@ const Models: React.FC<ModelsProps> = ({
       operation: 'common.stop.confirm',
       async onOk() {
         await handleBatchRequest(rowSelection.selectedRows, handleStopModel);
-        rowSelection.clearSelections();
         onStop?.(rowSelection.selectedRowKeys as number[]);
       }
     });

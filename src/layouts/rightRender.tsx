@@ -6,12 +6,11 @@ import langConfigMap from '@/locales/lang-config-map';
 import {
   DiscordOutlined,
   GithubOutlined,
-  GlobalOutlined,
   HomeOutlined,
   InfoCircleOutlined,
   LogoutOutlined,
   MoonOutlined,
-  QuestionCircleOutlined,
+  MoreOutlined,
   ReadOutlined,
   SettingOutlined,
   SunOutlined
@@ -140,7 +139,7 @@ export const getRightRenderContent = (opts: {
     items: [
       {
         key: 'help',
-        icon: <QuestionCircleOutlined />,
+        icon: <IconFont type="icon-help" />,
         label: (
           <span className="sub-title ">
             <span className="flex-center">
@@ -213,7 +212,7 @@ export const getRightRenderContent = (opts: {
     items: [
       {
         key: 'lang',
-        icon: <GlobalOutlined />,
+        icon: <IconFont type="icon-language" />,
         label: (
           <span className="sub-title">
             {intl?.formatMessage?.({ id: 'common.settings.language' })}
@@ -265,7 +264,7 @@ export const getRightRenderContent = (opts: {
       ? 'user-menu-container user-menu-collapsed'
       : 'user-menu-container',
     mode: 'vertical',
-    expandIcon: false,
+    expandIcon: collapsed ? false : <MoreOutlined />,
     // inlineCollapsed: collapsed,
     triggerSubMenuAction: 'hover',
     items: [
@@ -274,7 +273,7 @@ export const getRightRenderContent = (opts: {
         key: 'user',
         className: 'user-avatar',
         icon: (
-          <span>
+          <span className="avatar-container">
             <Avatar
               size={28}
               style={{

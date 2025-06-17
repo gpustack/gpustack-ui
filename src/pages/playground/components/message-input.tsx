@@ -164,7 +164,10 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     const isDisabled = useMemo(() => {
       return disabled
         ? true
-        : !message.content && isEmpty && !message.imgs?.length;
+        : !message.content &&
+            isEmpty &&
+            !message.imgs?.length &&
+            !message.audio?.length;
     }, [disabled, message, isEmpty]);
 
     const resetMessage = () => {

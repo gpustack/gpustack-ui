@@ -49,8 +49,7 @@ const MarkDownTitle: React.FC<{
   return (
     <MkdTitle onClick={onCollapse}>
       <span>
-        <FileTextOutlined className="m-r-2 text-tertiary" />{' '}
-        {intl.formatMessage({ id: 'models.readme' })}
+        <FileTextOutlined className="m-r-2 text-tertiary" /> README.md
       </span>
       <span>
         {collapsed ? (

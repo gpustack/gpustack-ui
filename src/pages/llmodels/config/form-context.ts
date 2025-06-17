@@ -15,6 +15,7 @@ interface FormContextProps {
 
 interface FormInnerContextProps {
   onBackendChange?: (backend: string) => void;
+  onValuesChange?: (changedValues: any, allValues: any) => void;
   gpuOptions?: any[];
 }
 

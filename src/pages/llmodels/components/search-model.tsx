@@ -33,6 +33,12 @@ const UL = styled.ul`
   margin: 0;
 `;
 
+const PaginationMain = styled(Pagination)`
+  .ant-pagination-slash {
+    margin-inline: 5px;
+  }
+`;
+
 interface SearchInputProps {
   hasLinuxWorker?: boolean;
   modelSource: string;
@@ -87,6 +93,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const filterTaskRef = useRef<string>('');
   const timer = useRef<any>(null);
   const requestIdRef = useRef<number>(0);
+  const searchIdRef = useRef<number>(0);
   const [query, setQuery] = useState({
     page: 1,
     perPage: 10,
@@ -110,6 +117,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       value: ModelSortType.lastModified
     }
   ]);
+
+  const updateSearchId = () => {
+    searchIdRef.current += 1;
+    return searchIdRef.current;
+  };
 
   const updateRequestId = () => {
     requestIdRef.current += 1;
@@ -135,6 +147,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   // huggeface
   const getModelsFromHuggingface = async (sort: string) => {
+    const currentSearchId = updateSearchId();
     try {
       const task: any = searchInputRef.current ? '' : 'text-generation';
       const params = {
@@ -148,6 +161,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const data = await queryHuggingfaceModels(params, {
         signal: axiosTokenRef.current.signal
       });
+      if (searchIdRef.current !== currentSearchId) {
+        return {
+          notSameRequest: true
+        };
+      }
       let list = _.map(data || [], (item: any) => {
         return {
           ...item,
@@ -159,6 +177,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       });
       return list;
     } catch (error) {
+      if (searchIdRef.current !== currentSearchId) {
+        return {
+          notSameRequest: true
+        };
+      }
       return [];
     }
   };
@@ -169,6 +192,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     page: number;
     perPage?: number;
   }) => {
+    const currentSearchId = updateSearchId();
     try {
       const params = {
         Name: `${searchInputRef.current}`,
@@ -183,6 +207,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const data = await queryModelScopeModels(params, {
         signal: axiosTokenRef.current.signal
       });
+      if (searchIdRef.current !== currentSearchId) {
+        return {
+          notSameRequest: true
+        };
+      }
       let list = _.map(_.get(data, 'Data.Model.Models') || [], (item: any) => {
         return {
           path: item.Path,
@@ -214,6 +243,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       });
       return list;
     } catch (error) {
+      if (searchIdRef.current !== currentSearchId) {
+        return {
+          notSameRequest: true
+        };
+      }
       setQuery((prev) => {
         return {
           ...prev,
@@ -343,6 +377,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {
         const resultList = await getModelsFromHuggingface(sort);
+        if (resultList?.notSameRequest) {
+          return;
+        }
         cacheRepoOptions.current = resultList;
 
         // hf has no page and perPage, so we need to slice the resultList
@@ -356,6 +393,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         });
       } else if (modelSource === modelSourceMap.modelscope_value) {
         list = await getModelsFromModelscope(params);
+        if (list?.notSameRequest) {
+          return;
+        }
         cacheRepoOptions.current = list;
       }
 
@@ -370,7 +410,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       unlockWarningStatus?.();
       displayEvaluateStatus?.(
         {
-          show: list.length > 0,
+          show: list?.length > 0,
           message: ''
         },
         {
@@ -389,6 +429,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         sortType: sort,
         networkError: error?.message === 'Failed to fetch'
       });
+
       setLoadingModel?.(false);
       displayEvaluateStatus?.({
         show: false,
@@ -472,6 +513,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       handleOnSelectModel(currentList[0]);
       handleEvaluate(currentList);
     } else if (modelSource === modelSourceMap.modelscope_value) {
+      setQuery((prev) => {
+        return {
+          ...prev,
+          page: page
+        };
+      });
       handleOnSearchRepo({
         sortType: dataSource.sortType,
         page: page,
@@ -539,7 +586,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               {renderGGUFTips}
             </Checkbox>
           </span>
-          <Pagination
+          <PaginationMain
             simple={{ readOnly: true }}
             total={query.total}
             current={query.page}
@@ -547,7 +594,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             onChange={handleOnPageChange}
             showSizeChanger={false}
             hideOnSinglePage={query.total <= query.perPage}
-          ></Pagination>
+          ></PaginationMain>
         </div>
       </>
     );

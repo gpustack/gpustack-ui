@@ -68,7 +68,7 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   return (
     <CardWrapper style={{ width: '100%', position: 'relative' }}>
       <DownloadButton
-        type="text"
+        type="link"
         icon={<ExportOutlined />}
         size="small"
         onClick={onExport}

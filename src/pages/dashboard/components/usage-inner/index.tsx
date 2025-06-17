@@ -1,8 +1,10 @@
 import { useIntl } from '@umijs/max';
 import { Col, DatePicker, Row, Select } from 'antd';
+import dayjs from 'dayjs';
 import { FC, memo, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { DashboardContext } from '../../config/dashboard-context';
+import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
 import ExportData from './export-data';
 import RequestTokenInner from './request-token-inner';
 import TopUser from './top-user';
@@ -22,6 +24,7 @@ const FilterWrapper = styled.div`
 
 const TitleWrapper = styled.div`
   margin: 26px 0px;
+  margin-bottom: 38px;
   font-weight: 700;
 `;
 
@@ -34,6 +37,16 @@ const dataList = [
 const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
   const intl = useIntl();
 
+  const [query, setQuery] = useState({
+    startDate: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
+    endDate: dayjs().format('YYYY-MM-DD'),
+    user: [],
+    model: []
+  });
+
+  const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
+    range: 60
+  });
   const { model_usage } = useContext(DashboardContext);
   const [open, setOpen] = useState(false);
 
@@ -72,6 +85,10 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
             <FilterWrapper>
               <div className="selection">
                 <DatePicker.RangePicker
+                  defaultValue={[dayjs().add(-30, 'd'), dayjs()]}
+                  disabledDate={disabledRangeDaysDate}
+                  presets={rangePresets}
+                  allowClear={false}
                   style={{ width: 240 }}
                 ></DatePicker.RangePicker>
                 <Select

@@ -1,5 +1,6 @@
+import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Col, DatePicker, Row, Select } from 'antd';
+import { Button, Col, DatePicker, Row, Select, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { FC, memo, useContext, useState } from 'react';
 import styled from 'styled-components';
@@ -107,6 +108,14 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
                   })}
                   style={{ width: 160 }}
                 ></Select>
+                <Tooltip
+                  title={intl.formatMessage({ id: 'common.button.export' })}
+                >
+                  <Button
+                    icon={<ExportOutlined />}
+                    onClick={handleExport}
+                  ></Button>
+                </Tooltip>
               </div>
             </FilterWrapper>
           </div>

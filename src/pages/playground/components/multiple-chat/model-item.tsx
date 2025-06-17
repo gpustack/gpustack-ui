@@ -288,7 +288,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
             ></Button>
           </Dropdown>
           <Popover
-            placement="bottomRight"
+            autoAdjustOverflow={true}
             overlayInnerStyle={{ width: 384, paddingInline: 0 }}
             content={
               <OverlayScroller

@@ -630,6 +630,7 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
 
     return {
       repo_id: selectModel.name,
+      file_name: '',
       name: name,
       backend: backend
     };

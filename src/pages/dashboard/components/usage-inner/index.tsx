@@ -1,7 +1,5 @@
-import PageTools from '@/components/page-tools';
-import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, DatePicker, Row, Select } from 'antd';
+import { Col, DatePicker, Row, Select } from 'antd';
 import { FC, memo, useContext, useState } from 'react';
 import styled from 'styled-components';
 import { DashboardContext } from '../../config/dashboard-context';
@@ -51,7 +49,6 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
 
   return (
     <div>
-      <PageTools style={{ margin: '0px 0px' }} left={false} />
       <Row style={{ width: '100%' }} gutter={[0, 20]}>
         <Col
           xs={24}
@@ -59,7 +56,7 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
           md={24}
           lg={24}
           xl={16}
-          style={{ paddingRight: paddingRight }}
+          style={{ paddingRight: paddingRight, marginTop: 12 }}
         >
           <div
             style={{
@@ -73,13 +70,6 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
               {intl.formatMessage({ id: 'dashboard.usage' })}
             </TitleWrapper>
             <FilterWrapper>
-              <Button
-                type="text"
-                icon={<ExportOutlined />}
-                onClick={handleExport}
-              >
-                {intl.formatMessage({ id: 'common.button.export' })}
-              </Button>
               <div className="selection">
                 <DatePicker.RangePicker
                   style={{ width: 240 }}
@@ -104,12 +94,13 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
             </FilterWrapper>
           </div>
           <RequestTokenInner
+            onExport={handleExport}
             requestData={requestTokenData.requestData}
             xAxisData={requestTokenData.xAxisData}
             tokenData={requestTokenData.tokenData}
           ></RequestTokenInner>
         </Col>
-        <Col xs={24} sm={24} md={24} lg={24} xl={8}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={8} style={{ marginTop: 12 }}>
           <TitleWrapper>
             {intl.formatMessage({ id: 'dashboard.topusers' })}
           </TitleWrapper>

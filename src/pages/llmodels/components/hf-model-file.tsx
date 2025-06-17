@@ -41,10 +41,6 @@ interface HFModelFileProps {
   ref: any;
   gpuOptions?: any[];
   onSelectFile?: (file: any, evaluate?: boolean) => void;
-  displayEvaluateStatus?: (data: {
-    show?: boolean;
-    flag: Record<string, boolean>;
-  }) => void;
 }
 
 const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
@@ -54,7 +50,7 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const { collapsed, modelSource, isDownload, displayEvaluateStatus } = props;
+  const { collapsed, modelSource, isDownload } = props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
@@ -260,12 +256,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
         resultList,
         (item: any) => item.path === currentPathRef.current
       );
-      displayEvaluateStatus?.({
-        show: false,
-        flag: {
-          file: false
-        }
-      });
+
       if (currentItem) {
         handleSelectModelFile(currentItem, true);
       }
@@ -273,12 +264,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       setIsEvaluating(false);
     } catch (error) {
       setIsEvaluating(false);
-      displayEvaluateStatus?.({
-        show: false,
-        flag: {
-          file: false
-        }
-      });
     }
   };
 

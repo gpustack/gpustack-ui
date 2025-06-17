@@ -3,9 +3,11 @@ import ScrollerModal from '@/components/scroller-modal';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
 import { DatePicker, Select, Space, Table } from 'antd';
+import dayjs from 'dayjs';
 import React from 'react';
 import { queryDashboardUsageData } from '../../apis';
 import { exportTableColumns } from '../../config';
+import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
 
 const ExportData: React.FC<{
   open: boolean;
@@ -28,6 +30,9 @@ const ExportData: React.FC<{
   });
   const { open, onCancel } = props || {};
   const intl = useIntl();
+  const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
+    range: 60
+  });
 
   const handleSubmit = () => {};
 
@@ -66,7 +71,16 @@ const ExportData: React.FC<{
       }
     >
       <Space>
-        <DatePicker.RangePicker style={{ width: 240 }}></DatePicker.RangePicker>
+        <DatePicker.RangePicker
+          style={{ width: 240 }}
+          defaultValue={[dayjs().add(-30, 'd'), dayjs()]}
+          disabledDate={disabledRangeDaysDate}
+          presets={rangePresets}
+          allowClear={false}
+          onChange={(dates) => {
+            handleSearch();
+          }}
+        ></DatePicker.RangePicker>
         <Select
           mode="multiple"
           maxTagCount={1}

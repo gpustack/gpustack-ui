@@ -19,7 +19,7 @@ const LocalPathForm: React.FC = () => {
   const formCtx = useFormContext();
   const formInnerCtx = useFormInnerContext();
   const source = Form.useWatch('source', form);
-  const { onBackendChange, gpuOptions } = formInnerCtx;
+  const { onBackendChange, onValuesChange, gpuOptions } = formInnerCtx;
   const { byBuiltIn } = formCtx;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
@@ -29,7 +29,7 @@ const LocalPathForm: React.FC = () => {
     return null;
   }
 
-  const handleLocalPathBlur = (e: any) => {
+  const handleLocalPathBlur = async (e: any) => {
     const value = e.target.value;
     if (value === localPathCache.current || !value) {
       return;
@@ -37,6 +37,7 @@ const LocalPathForm: React.FC = () => {
     const isEndwithGGUF = _.endsWith(value, '.gguf');
     const isBlobFile = value.split('/').pop().includes('sha256');
     let backend = form.getFieldValue('backend');
+    const oldBackend = backend;
 
     if (isEndwithGGUF || isBlobFile) {
       backend = backendOptionsMap.llamaBox;
@@ -51,7 +52,17 @@ const LocalPathForm: React.FC = () => {
     }
     form.setFieldValue('backend', backend);
 
-    onBackendChange?.(backend);
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 0);
+    });
+
+    if (oldBackend !== backend) {
+      onBackendChange?.(backend);
+    } else {
+      onValuesChange?.({ local_path: value }, form.getFieldsValue());
+    }
   };
 
   const handleOnFocus = () => {

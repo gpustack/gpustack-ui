@@ -1,5 +1,15 @@
 import _ from 'lodash';
 
+function toShellSafeMultilineJson(value: any): string {
+  const json = JSON.stringify(value, null, 2);
+  const escaped = json.replace(/'/g, `'\\''`);
+  return `${escaped}`;
+}
+
+function toShellSafeJson(value: any): string {
+  return JSON.stringify(value, null, 2).replace(/'/g, `'\\''`);
+}
+
 // curl format
 export const formatCurlArgs = (
   parameters: Record<string, any>,
@@ -9,11 +19,13 @@ export const formatCurlArgs = (
     return _.keys(parameters).reduce((acc: string, key: string) => {
       const val = parameters[key];
       const value =
-        typeof val === 'object' ? JSON.stringify(val, null, 2) : `${val}`;
+        typeof val === 'object'
+          ? toShellSafeMultilineJson(val)
+          : `${toShellSafeJson(val)}`;
       return acc + `-F ${key}="${value}" \\\n`;
     }, '');
   }
-  return `-d '${JSON.stringify(parameters, null, 2)}'`;
+  return `-d '${toShellSafeMultilineJson(parameters)}'`;
 };
 
 // python format

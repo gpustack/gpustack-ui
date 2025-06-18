@@ -19,7 +19,6 @@ export interface AudioData {
   uid: string | number;
   base64: string;
   format: AudioFormat;
-  name?: string;
   data: {
     url: string;
     name: string;

@@ -276,10 +276,8 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnSelectModelAfterEvaluate = (item: any) => {
-    console.log('handleOnSelectModelAfterEvaluate', item);
-    if (item.isGGUF) {
-      return;
-    }
+    setIsGGUF(item.isGGUF);
+    setSelectedModel(item);
     const modelInfo = onSelectModel(item, props.source);
     if (
       evaluateStateRef.current.state === EvaluateProccess.model &&

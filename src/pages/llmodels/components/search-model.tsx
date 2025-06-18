@@ -343,7 +343,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         (item) => item.id === currentRef.current
       );
 
-      if (currentItem) {
+      // if it is gguf, would trigger a evaluation after select a model file
+      if (currentItem && !currentItem.isGGUF) {
         onSelectModelAfterEvaluate(currentItem);
       }
     } catch (error) {

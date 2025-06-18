@@ -177,7 +177,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     const modelInfo = onSelectModel(selectedModel, props.source);
 
     form.current?.setFieldsValue?.({
-      ...modelInfo,
+      ..._.omit(modelInfo, ['name']),
       file_name: item.fakeName,
       categories: getCategory(item)
     });
@@ -219,7 +219,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
       form.current?.setFieldsValue?.({
         ...defaultSpec,
-        ...modelInfo,
+        ..._.omit(modelInfo, ['name']),
         file_name: item.fakeName,
         backend_parameters:
           formBackendParameters.length > 0

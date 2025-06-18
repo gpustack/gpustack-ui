@@ -1,7 +1,7 @@
 import { formatTime } from '@/utils/index';
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Dropdown, Slider, type MenuProps } from 'antd';
+import { Button, Dropdown, Slider, Tooltip, type MenuProps } from 'antd';
 import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React, {
@@ -20,7 +20,7 @@ interface AudioPlayerProps {
   url: string;
   speed?: number;
   ref?: any;
-  name?: string;
+  name: string;
   height?: number;
   width?: number;
   duration?: number;
@@ -107,6 +107,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     autoplay = false,
     speed: defaultSpeed = 1,
     actions = ['delete'],
+    name,
     onDelete
   } = props;
   const audioRef = React.useRef<HTMLAudioElement>(null);
@@ -117,6 +118,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
     currentTime: 0,
     duration: 0
   });
+  console.log('audioState', name);
   const [playOn, setPlayOn] = React.useState<boolean>(false);
   const [speakerOn, setSpeakerOn] = React.useState<boolean>(false);
   const [volume, setVolume] = React.useState<number>(1);
@@ -246,7 +248,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'audio.mp3'; // Default filename
+    link.download = filename || 'audio.mp3'; // Default filename
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -304,7 +306,11 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
   return (
     <div
       className={styles.wrapper}
-      style={{ width: props.width || '100%', height: props.height || '54px' }}
+      style={{
+        width: props.width || '100%',
+        height: props.height || '60px',
+        position: 'relative'
+      }}
     >
       <div className="inner">
         <Button
@@ -327,10 +333,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
             )
           }
         ></Button>
-        <span className="time current">
-          {formatTime(audioState.currentTime)} /{' '}
-          {formatTime(audioState.duration)}
-        </span>
+        <Tooltip title={name}>
+          <span className="time current">
+            {formatTime(audioState.currentTime)} /{' '}
+            {formatTime(audioState.duration)}
+          </span>
+        </Tooltip>
         <div className="slider">
           <Slider
             tooltip={{ open: false }}

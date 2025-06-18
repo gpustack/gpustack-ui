@@ -530,6 +530,10 @@ export const useCheckCompatibility = () => {
     return noLocalValue || noOllamaValue;
   };
 
+  const clearCahceFormValues = () => {
+    cacheFormValuesRef.current = {};
+  };
+
   const handleOnValuesChange = async (params: {
     changedValues: any;
     allValues: any;
@@ -537,6 +541,7 @@ export const useCheckCompatibility = () => {
   }) => {
     const { allValues, source } = params;
     if (_.isEqual(cacheFormValuesRef.current, allValues)) {
+      console.log('No changes detected, skipping evaluation.');
       return;
     }
 
@@ -604,6 +609,7 @@ export const useCheckCompatibility = () => {
     handleBackendChangeBefore,
     handleOnValuesChange: debounceHandleValuesChange,
     handleEvaluateOnChange: handleOnValuesChange,
+    clearCahceFormValues,
     warningStatus,
     checkTokenRef,
     submitAnyway

@@ -9,11 +9,22 @@ import React from 'react';
 import styled from 'styled-components';
 import { baseColorMap } from '../../config';
 
-const DownloadButton = styled(Button)`
+const DownloadButton = styled(Button).attrs({
+  className: 'download-button'
+})`
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 10;
+  display: none;
+`;
+
+const CardWrapperBox = styled.div`
+  &:hover {
+    .download-button {
+      display: flex;
+    }
+  }
 `;
 
 interface RequestTokenInnerProps {
@@ -66,29 +77,31 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   const intl = useIntl();
 
   return (
-    <CardWrapper style={{ width: '100%', position: 'relative' }}>
-      <DownloadButton
-        type="link"
-        icon={<ExportOutlined />}
-        size="small"
-        onClick={onExport}
-      >
-        {intl.formatMessage({ id: 'common.button.export' })}
-      </DownloadButton>
-      <SimpleCard dataList={dataList} height={80}></SimpleCard>
-      <MixLineBar
-        chartData={{
-          line: requestData,
-          bar: tokenData
-        }}
-        seriesData={[]}
-        xAxisData={xAxisData}
-        height={360}
-        smooth={true}
-        legendData={legendData}
-        labelFormatter={labelFormatter}
-      ></MixLineBar>
-    </CardWrapper>
+    <CardWrapperBox>
+      <CardWrapper style={{ width: '100%', position: 'relative' }}>
+        <DownloadButton
+          type="link"
+          icon={<ExportOutlined />}
+          size="small"
+          onClick={onExport}
+        >
+          {intl.formatMessage({ id: 'common.button.export' })}
+        </DownloadButton>
+        <SimpleCard dataList={dataList} height={80}></SimpleCard>
+        <MixLineBar
+          chartData={{
+            line: requestData,
+            bar: tokenData
+          }}
+          seriesData={[]}
+          xAxisData={xAxisData}
+          height={360}
+          smooth={true}
+          legendData={legendData}
+          labelFormatter={labelFormatter}
+        ></MixLineBar>
+      </CardWrapper>
+    </CardWrapperBox>
   );
 };
 

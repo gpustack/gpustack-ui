@@ -519,7 +519,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
               <SimpleAudio
                 url={message.audio?.[0].data?.url}
                 name={message.audio?.[0].data?.name}
-                height={54}
+                height={50}
                 onDelete={handleDeleteAudio}
               ></SimpleAudio>
             </AudioWrapper>

@@ -1,7 +1,7 @@
 import { formatTime } from '@/utils/index';
 import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Dropdown, Slider, Tooltip, type MenuProps } from 'antd';
+import { Button, Dropdown, Slider, type MenuProps } from 'antd';
 import { createStyles } from 'antd-style';
 import { round } from 'lodash';
 import React, {
@@ -11,6 +11,8 @@ import React, {
   useImperativeHandle,
   useMemo
 } from 'react';
+import styled from 'styled-components';
+import AutoTooltip from '../auto-tooltip';
 import IconFont from '../icon-font';
 
 type ActionItem = 'download' | 'delete' | 'speed';
@@ -28,13 +30,28 @@ interface AudioPlayerProps {
   onDelete?: () => void;
 }
 
+const SliderWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  .ant-slider {
+    flex: 1;
+  }
+  .time {
+    color: var(--ant-color-text-tertiary);
+  }
+`;
+
 const useStyles = createStyles(({ css, token }) => {
   // @ts-ignore
   const isDarkMode = token.darkMode as boolean;
   return {
     wrapper: css`
       position: relative;
-      min-width: 300px;
+      min-width: 320px;
+      width: 320px;
       height: 54px;
       display: flex;
       align-items: center;
@@ -45,13 +62,20 @@ const useStyles = createStyles(({ css, token }) => {
         : '#F1F3F4'};
       border-radius: 28px;
       .inner {
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: flex-start;
         flex: 1;
-        gap: 10px;
+        gap: 8px;
         .slider {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           flex: 1;
+          .ant-slider {
+            margin: 0;
+          }
           &:hover {
             .ant-slider-handle {
               opacity: 1;
@@ -82,6 +106,10 @@ const useStyles = createStyles(({ css, token }) => {
 
 const sliderStyles = {
   rail: {
+    borderRadius: '4px',
+    backgroundColor: 'var(--ant-color-fill-secondary)'
+  },
+  track: {
     borderRadius: '4px',
     backgroundColor: 'var(--ant-color-bg-spotlight)'
   }
@@ -322,33 +350,36 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
           icon={
             !playOn ? (
               <IconFont
-                type="icon-play"
+                type="icon-playcircle-fill"
                 style={{ fontSize: '22px' }}
               ></IconFont>
             ) : (
               <IconFont
-                type="icon-pause"
+                type="icon-stopcircle-fill"
                 style={{ fontSize: '22px' }}
               ></IconFont>
             )
           }
         ></Button>
-        <Tooltip title={name}>
-          <span className="time current">
-            {formatTime(audioState.currentTime)} /{' '}
-            {formatTime(audioState.duration)}
-          </span>
-        </Tooltip>
+
         <div className="slider">
-          <Slider
-            tooltip={{ open: false }}
-            min={0}
-            step={1}
-            styles={sliderStyles}
-            max={audioState.duration}
-            value={audioState.currentTime}
-            onChange={handleCurrentChange}
-          />
+          <div className="flex-center flex-between file-name">
+            <AutoTooltip ghost maxWidth={220}>
+              <span>{name}</span>
+            </AutoTooltip>
+          </div>
+          <SliderWrapper>
+            <span className="time">{formatTime(audioState.currentTime)}</span>
+            <Slider
+              tooltip={{ open: false }}
+              min={0}
+              step={1}
+              styles={sliderStyles}
+              max={audioState.duration}
+              value={audioState.currentTime}
+              onChange={handleCurrentChange}
+            />
+          </SliderWrapper>
         </div>
         <Dropdown menu={{ items }} trigger={['click']}>
           <Button

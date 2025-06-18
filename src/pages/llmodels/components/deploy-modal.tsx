@@ -196,7 +196,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       const currentModelId = updateRequestModelId();
       setEvaluteState(EvaluateProccess.file);
 
-      const evaluateRes = await handleEvaluateOnChange?.({
+      const evaluateRes = await handleOnValuesChangeBefore?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
         source: props.source

@@ -292,7 +292,8 @@ const ModelCard: React.FC<{
   );
 
   useEffect(() => {
-    if (!props.selectedModel) return;
+    console.log('ModelCard selectedModel changed', props.selectedModel);
+    if (!props.selectedModel.name) return;
 
     getModelCardData();
     setIsGGUFModel(props.selectedModel.isGGUF);

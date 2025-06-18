@@ -46,7 +46,8 @@ interface SearchInputProps {
   gpuOptions?: any[];
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
-  onSelectModel: (model: any, evaluate?: boolean) => void;
+  onSelectModel: (model: any) => void;
+  onSelectModelAfterEvaluate: (model: any) => void;
   unlockWarningStatus?: () => void;
   displayEvaluateStatus?: (
     data: MessageStatus,
@@ -63,6 +64,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     gpuOptions,
     setLoadingModel,
     onSelectModel,
+    onSelectModelAfterEvaluate,
     displayEvaluateStatus,
     unlockWarningStatus
   } = props;
@@ -138,9 +140,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     return isGGUF || isGGUFFromMs;
   };
 
-  const handleOnSelectModel = (model: any, evaluate?: boolean) => {
+  const handleOnSelectModel = (model: any) => {
     const item = model || {};
-    onSelectModel(item, evaluate);
+    if (item.evaluateResult && !item.isGGUF) {
+      onSelectModelAfterEvaluate(item);
+    } else {
+      onSelectModel(item);
+    }
     setCurrent(item.id);
     currentRef.current = item.id;
   };
@@ -332,12 +338,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           repoOptions: resultList
         };
       });
+      // current selected item
       const currentItem = resultList.find(
         (item) => item.id === currentRef.current
       );
 
       if (currentItem) {
-        handleOnSelectModel(currentItem, true);
+        onSelectModelAfterEvaluate(currentItem);
       }
     } catch (error) {
       if (requestIdRef.current === currentRequestId) {
@@ -406,17 +413,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         sortType: sort
       });
 
-      // It's a new request, so we need to reset the state
-      unlockWarningStatus?.();
-      displayEvaluateStatus?.(
-        {
-          show: list?.length > 0,
-          message: ''
-        },
-        {
-          override: true
-        }
-      );
       handleOnSelectModel(list[0]);
       setLoadingModel?.(false);
 
@@ -498,18 +494,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           repoOptions: currentList
         };
       });
-      unlockWarningStatus?.();
-      // reset evaluate status
-      displayEvaluateStatus?.(
-        {
-          show: true,
-          message: ''
-        },
-        {
-          override: true
-        }
-      );
-      console.log('isEvaluating:', isEvaluating);
       handleOnSelectModel(currentList[0]);
       handleEvaluate(currentList);
     } else if (modelSource === modelSourceMap.modelscope_value) {

@@ -305,6 +305,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
               uid: updateUidCount(),
               format: audioTypeMap[data.file.type] as AudioFormat,
               base64: base64Audio.split(',')[1],
+              name: audioData.name,
               data: _.pick(audioData, ['url', 'name', 'duration'])
             }
           ]
@@ -518,6 +519,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             <AudioWrapper>
               <SimpleAudio
                 url={message.audio?.[0].data?.url}
+                name={message.audio?.[0].name}
                 height={44}
                 onDelete={handleDeleteAudio}
               ></SimpleAudio>

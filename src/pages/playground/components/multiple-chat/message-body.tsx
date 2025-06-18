@@ -217,6 +217,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
               <AudioWrapper>
                 <SimpleAudio
                   url={data.audio?.[0]?.data.url}
+                  name={data.audio?.[0]?.data.name}
                   actions={[]}
                   height={44}
                 ></SimpleAudio>
@@ -247,6 +248,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
               <AudioWrapper>
                 <SimpleAudio
                   url={data.audio?.[0]?.data.url}
+                  name={data.audio?.[0]?.data.name}
                   onDelete={handleDeleteAudio}
                   height={44}
                 ></SimpleAudio>

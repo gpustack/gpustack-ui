@@ -21,6 +21,7 @@ import {
 } from '../apis';
 import { backendOptionsMap, modelSourceMap } from '../config';
 import '../style/hf-model-file.less';
+import FileSkeleton from './file-skeleton';
 import ModelFileItem from './model-file-item';
 import TitleWrapper from './title-wrapper';
 
@@ -40,7 +41,8 @@ interface HFModelFileProps {
   modelSource: string;
   ref: any;
   gpuOptions?: any[];
-  onSelectFile?: (file: any, evaluate?: boolean) => void;
+  onSelectFile?: (file: any) => void;
+  onSelectFileAfterEvaluate?: (file: any) => void;
 }
 
 const pattern = /^(.*)-(\d+)-of-(\d+)\.(.*)$/;
@@ -50,7 +52,8 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const { collapsed, modelSource, isDownload } = props;
+  const { collapsed, modelSource, isDownload, onSelectFileAfterEvaluate } =
+    props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
@@ -74,8 +77,8 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const checkTokenRef = useRef<any>(null);
   const timer = useRef<any>(null);
 
-  const handleSelectModelFile = (item: any, evaluate?: boolean) => {
-    props.onSelectFile?.(item, evaluate);
+  const handleSelectModelFile = (item: any) => {
+    props.onSelectFile?.(item);
     setCurrent(item.path);
     currentPathRef.current = item.path;
   };
@@ -258,7 +261,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       );
 
       if (currentItem) {
-        handleSelectModelFile(currentItem, true);
+        onSelectFileAfterEvaluate?.(currentItem);
       }
       setDataSource({ fileList: resultList, loading: false });
       setIsEvaluating(false);
@@ -361,7 +364,13 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       )}
       <SimpleOverlay height={collapsed ? 'max-content' : 'calc(100vh - 300px)'}>
         <div style={{ padding: '16px 24px' }}>
-          {dataSource.fileList.length ? (
+          {dataSource.loading ? (
+            <ItemFileWrapper>
+              {_.times(5, (index: number) => {
+                return <FileSkeleton key={index}></FileSkeleton>;
+              })}
+            </ItemFileWrapper>
+          ) : dataSource.fileList.length ? (
             <ItemFileWrapper>
               {_.map(dataSource.fileList, (item: any) => {
                 return (
@@ -376,16 +385,13 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
               })}
             </ItemFileWrapper>
           ) : (
-            !dataSource.loading &&
-            !dataSource.fileList.length && (
-              <Empty
-                imageStyle={{ height: 'auto', marginTop: '20px' }}
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={intl.formatMessage({
-                  id: 'models.search.nofiles'
-                })}
-              />
-            )
+            <Empty
+              imageStyle={{ height: 'auto', marginTop: '20px' }}
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description={intl.formatMessage({
+                id: 'models.search.nofiles'
+              })}
+            />
           )}
         </div>
       </SimpleOverlay>

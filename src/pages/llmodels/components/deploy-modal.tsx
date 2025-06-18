@@ -112,6 +112,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     unlockWarningStatus,
     handleOnValuesChange: handleOnValuesChangeBefore,
     handleEvaluateOnChange,
+    clearCahceFormValues,
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
@@ -123,13 +124,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
-  const isHolderRef = useRef<{
-    model: boolean;
-    file: boolean;
-  }>({
-    model: false,
-    file: false
-  });
   const evaluateStateRef = useRef<{ state: EvaluateProccessType }>({
     state: 'form'
   });
@@ -141,6 +135,7 @@ const AddModal: FC<AddModalProps> = (props) => {
    */
   const updateRequestModelId = () => {
     requestModelIdRef.current += 1;
+    return requestModelIdRef.current;
   };
 
   /**
@@ -150,17 +145,6 @@ const AddModal: FC<AddModalProps> = (props) => {
    */
   const setEvaluteState = (state: EvaluateProccessType) => {
     evaluateStateRef.current.state = state;
-  };
-
-  /**
-   *
-   * @param flag set the evaluate status of the model or file
-   */
-  const setIsHolderRef = (flag: Record<string, boolean>) => {
-    isHolderRef.current = {
-      ...isHolderRef.current,
-      ...flag
-    };
   };
 
   const handleOnValuesChange = (data: {
@@ -188,18 +172,17 @@ const AddModal: FC<AddModalProps> = (props) => {
     return categories || null;
   };
 
-  const handleSelectModelFile = async (item: any, evaluate?: boolean) => {
+  const handleSelectModelFile = async (item: any) => {
     form.current?.form?.resetFields(resetFieldsByFile);
     const modelInfo = onSelectModel(selectedModel, props.source);
 
-    /** display the selected model file information, but not
-     *  unitl the evaluate result is ready
-     */
     form.current?.setFieldsValue?.({
       ...modelInfo,
       file_name: item.fakeName,
       categories: getCategory(item)
     });
+
+    console.log('handleSelectModelFile', item);
 
     await new Promise((resolve) => {
       setTimeout(() => {
@@ -207,10 +190,12 @@ const AddModal: FC<AddModalProps> = (props) => {
       }, 0);
     });
 
+    // evaluate the form data when select a model file
     if (item.fakeName) {
       unlockWarningStatus();
-      const currentModelId = requestModelIdRef.current;
+      const currentModelId = updateRequestModelId();
       setEvaluteState(EvaluateProccess.file);
+
       const evaluateRes = await handleEvaluateOnChange?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
@@ -245,40 +230,67 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
-  const handleOnSelectModel = (item: any, evaluate?: boolean) => {
-    /**
-     * evaluate: false means select a new model
-     * evaluate: true means select a model file from the evaluate result
-     */
-    updateRequestModelId();
+  const handleOnSelectModel = async (item: any) => {
+    // If the item is empty or the same as the selected model, do nothing
+    console.log('handleOnSelectModel', item, selectedModel);
+    if (
+      _.isEmpty(item) ||
+      (item.isGGUF === selectedModel.isGGUF && item.name === selectedModel.name)
+    ) {
+      return;
+    }
+    setIsGGUF(item.isGGUF);
+    clearCahceFormValues();
+    unlockWarningStatus();
+    setEvaluteState(EvaluateProccess.model);
+    setSelectedModel(item);
 
-    // If the evaluate is false, it means that the user selects a new model or the first time to open the modal.
-    if (!evaluate) {
-      unlockWarningStatus();
-      setEvaluteState(EvaluateProccess.model);
-      setSelectedModel(item);
-      form.current?.form?.resetFields(resetFieldsByModel);
-      const modelInfo = onSelectModel(item, props.source);
+    form.current?.form?.resetFields(resetFieldsByModel);
+    const modelInfo = onSelectModel(item, props.source);
+    form.current?.setFieldsValue?.({
+      ...modelInfo,
+      categories: getCategory(item)
+    });
+
+    setWarningStatus(
+      {
+        show: true,
+        title: '',
+        type: 'transition',
+        message: intl.formatMessage({ id: 'models.form.evaluating' })
+      },
+      {
+        override: true
+      }
+    );
+
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, 0);
+    });
+
+    if (item.isGGUF) {
+      modelFileRef.current?.fetchModelFiles?.();
+    }
+  };
+
+  const handleOnSelectModelAfterEvaluate = (item: any) => {
+    console.log('handleOnSelectModelAfterEvaluate', item);
+    if (item.isGGUF) {
+      return;
+    }
+    const modelInfo = onSelectModel(item, props.source);
+    if (
+      evaluateStateRef.current.state === EvaluateProccess.model &&
+      item.evaluateResult
+    ) {
+      handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
+        ...getDefaultSpec(item),
         ...modelInfo,
         categories: getCategory(item)
       });
-    }
-
-    if (!item.isGGUF) {
-      setIsGGUF(false);
-      const modelInfo = onSelectModel(item, props.source);
-      if (
-        evaluateStateRef.current.state === EvaluateProccess.model &&
-        item.evaluateResult
-      ) {
-        handleShowCompatibleAlert(item.evaluateResult);
-        form.current?.setFieldsValue?.({
-          ...getDefaultSpec(item),
-          ...modelInfo,
-          categories: getCategory(item)
-        });
-      }
     }
   };
 
@@ -298,14 +310,6 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const handleSetIsGGUF = async (flag: boolean) => {
     setIsGGUF(flag);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 0);
-    });
-    if (flag) {
-      modelFileRef.current?.fetchModelFiles?.();
-    }
   };
 
   const handleBackendChange = async (backend: string) => {
@@ -446,6 +450,9 @@ const AddModal: FC<AddModalProps> = (props) => {
                     hasLinuxWorker={hasLinuxWorker}
                     modelSource={props.source}
                     onSelectModel={handleOnSelectModel}
+                    onSelectModelAfterEvaluate={
+                      handleOnSelectModelAfterEvaluate
+                    }
                     displayEvaluateStatus={displayEvaluateStatus}
                     unlockWarningStatus={unlockWarningStatus}
                     gpuOptions={props.gpuOptions}

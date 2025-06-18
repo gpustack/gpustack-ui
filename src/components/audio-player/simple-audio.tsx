@@ -50,13 +50,12 @@ const useStyles = createStyles(({ css, token }) => {
   return {
     wrapper: css`
       position: relative;
-      min-width: 320px;
-      width: 320px;
+      min-width: 300px;
       height: 54px;
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      padding: 6px 10px;
+      padding: 8px 10px;
       background-color: ${isDarkMode
         ? 'var(--ant-color-fill-secondary)'
         : '#F1F3F4'};
@@ -351,12 +350,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
             !playOn ? (
               <IconFont
                 type="icon-playcircle-fill"
-                style={{ fontSize: '22px' }}
+                style={{ fontSize: '24px' }}
               ></IconFont>
             ) : (
               <IconFont
                 type="icon-stopcircle-fill"
-                style={{ fontSize: '22px' }}
+                style={{ fontSize: '24px' }}
               ></IconFont>
             )
           }
@@ -364,7 +363,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = forwardRef((props, ref) => {
 
         <div className="slider">
           <div className="flex-center flex-between file-name">
-            <AutoTooltip ghost maxWidth={220}>
+            <AutoTooltip ghost maxWidth={200}>
               <span>{name}</span>
             </AutoTooltip>
           </div>

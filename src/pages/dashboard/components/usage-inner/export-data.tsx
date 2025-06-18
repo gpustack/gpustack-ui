@@ -70,7 +70,7 @@ const ExportData: React.FC<{
         ></ModalFooter>
       }
     >
-      <Space>
+      <Space size={12}>
         <DatePicker.RangePicker
           style={{ width: 240 }}
           defaultValue={[dayjs().add(-30, 'd'), dayjs()]}

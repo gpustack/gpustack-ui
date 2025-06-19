@@ -124,8 +124,12 @@ const AddModal: FC<AddModalProps> = (props) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const modelFileRef = useRef<any>(null);
-  const evaluateStateRef = useRef<{ state: EvaluateProccessType }>({
-    state: 'form'
+  const evaluateStateRef = useRef<{
+    state: EvaluateProccessType;
+    requestModelId: number;
+  }>({
+    state: 'form',
+    requestModelId: 0
   });
   const requestModelIdRef = useRef<number>(0);
 
@@ -143,8 +147,20 @@ const AddModal: FC<AddModalProps> = (props) => {
    * @param state target to distinguish the evaluate state, current evaluate state
    *              can be 'model', 'file' or 'form'.
    */
-  const setEvaluteState = (state: EvaluateProccessType) => {
-    evaluateStateRef.current.state = state;
+  const setEvaluteState = (state: {
+    state: EvaluateProccessType;
+    requestModelId: number;
+  }) => {
+    evaluateStateRef.current = state;
+  };
+
+  const updateEvaluateState = (state: EvaluateProccessType) => {
+    const currentRequestModelId = evaluateStateRef.current.requestModelId;
+    setEvaluteState({
+      ...evaluateStateRef.current,
+      state
+    });
+    return currentRequestModelId;
   };
 
   const handleOnValuesChange = (data: {
@@ -152,7 +168,10 @@ const AddModal: FC<AddModalProps> = (props) => {
     allValues: any;
     source: SourceType;
   }) => {
-    setEvaluteState(EvaluateProccess.form);
+    setEvaluteState({
+      state: EvaluateProccess.form,
+      requestModelId: updateRequestModelId()
+    });
     handleOnValuesChangeBefore(data);
   };
 
@@ -172,7 +191,13 @@ const AddModal: FC<AddModalProps> = (props) => {
     return categories || null;
   };
 
-  const handleSelectModelFile = async (item: any) => {
+  const handleSelectModelFile = async (item: any, requestModelId: number) => {
+    if (
+      evaluateStateRef.current.state !== EvaluateProccess.file ||
+      requestModelId !== evaluateStateRef.current.requestModelId
+    ) {
+      return;
+    }
     form.current?.form?.resetFields(resetFieldsByFile);
     const modelInfo = onSelectModel(selectedModel, props.source);
 
@@ -193,19 +218,12 @@ const AddModal: FC<AddModalProps> = (props) => {
     // evaluate the form data when select a model file
     if (item.fakeName) {
       unlockWarningStatus();
-      const currentModelId = updateRequestModelId();
-      setEvaluteState(EvaluateProccess.file);
 
       const evaluateRes = await handleOnValuesChangeBefore?.({
         changedValues: {},
         allValues: form.current?.form?.getFieldsValue?.(),
         source: props.source
       });
-
-      if (currentModelId !== requestModelIdRef.current) {
-        // if the request model id has changed, do not update the form
-        return;
-      }
 
       const defaultSpec = getDefaultSpec({
         evaluateResult: evaluateRes
@@ -233,6 +251,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleOnSelectModel = async (item: any) => {
     // If the item is empty or the same as the selected model, do nothing
     console.log('handleOnSelectModel', item, selectedModel);
+    modelFileRef.current?.cancelRequest();
     if (
       _.isEmpty(item) ||
       (item.isGGUF === selectedModel.isGGUF && item.name === selectedModel.name)
@@ -242,7 +261,10 @@ const AddModal: FC<AddModalProps> = (props) => {
     setIsGGUF(item.isGGUF);
     clearCahceFormValues();
     unlockWarningStatus();
-    setEvaluteState(EvaluateProccess.model);
+    setEvaluteState({
+      state: EvaluateProccess.model,
+      requestModelId: updateRequestModelId()
+    });
     setSelectedModel(item);
 
     form.current?.form?.resetFields(resetFieldsByModel);
@@ -278,7 +300,13 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleOnSelectModelAfterEvaluate = (item: any) => {
     setIsGGUF(item.isGGUF);
     setSelectedModel(item);
+    setEvaluteState({
+      state: EvaluateProccess.model,
+      requestModelId: updateRequestModelId()
+    });
+    modelFileRef.current?.cancelRequest();
     const modelInfo = onSelectModel(item, props.source);
+
     if (
       evaluateStateRef.current.state === EvaluateProccess.model &&
       item.evaluateResult
@@ -473,6 +501,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                       selectedModel={selectedModel}
                       modelSource={props.source}
                       onSelectFile={handleSelectModelFile}
+                      updateEvaluteState={updateEvaluateState}
                       collapsed={collapsed}
                       gpuOptions={props.gpuOptions}
                     ></HFModelFile>

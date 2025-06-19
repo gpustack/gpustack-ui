@@ -41,7 +41,8 @@ interface HFModelFileProps {
   modelSource: string;
   ref: any;
   gpuOptions?: any[];
-  onSelectFile?: (file: any) => void;
+  onSelectFile?: (file: any, flagId: number) => void;
+  updateEvaluteState: (state: 'model' | 'form' | 'file') => number;
   onSelectFileAfterEvaluate?: (file: any) => void;
 }
 
@@ -52,8 +53,13 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const { collapsed, modelSource, isDownload, onSelectFileAfterEvaluate } =
-    props;
+  const {
+    collapsed,
+    modelSource,
+    isDownload,
+    updateEvaluteState,
+    onSelectFileAfterEvaluate
+  } = props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({
@@ -76,9 +82,10 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
   const timer = useRef<any>(null);
+  const parentRequestModelId = useRef<number>(0);
 
   const handleSelectModelFile = (item: any) => {
-    props.onSelectFile?.(item);
+    props.onSelectFile?.(item, parentRequestModelId.current);
     setCurrent(item.path);
     currentPathRef.current = item.path;
   };
@@ -276,6 +283,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       handleSelectModelFile({});
       return;
     }
+    parentRequestModelId.current = updateEvaluteState?.('file');
     checkTokenRef.current?.cancel?.();
     axiosTokenRef.current?.abort?.();
     axiosTokenRef.current = new AbortController();
@@ -311,8 +319,17 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     setDataSource({ ...dataSource, fileList: list });
   };
 
+  const cancelRequest = () => {
+    axiosTokenRef.current?.abort?.();
+    checkTokenRef.current?.cancel?.();
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+  };
+
   useImperativeHandle(ref, () => ({
-    fetchModelFiles: handleFetchModelFiles
+    fetchModelFiles: handleFetchModelFiles,
+    cancelRequest: cancelRequest
   }));
 
   useEffect(() => {
@@ -324,11 +341,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     return () => {
-      axiosTokenRef.current?.abort?.();
-      checkTokenRef.current?.cancel?.();
-      if (timer.current) {
-        clearTimeout(timer.current);
-      }
+      cancelRequest();
     };
   }, []);
 

@@ -607,7 +607,7 @@ export const useCheckCompatibility = () => {
     unlockWarningStatus,
     cancelEvaluate,
     handleBackendChangeBefore,
-    handleOnValuesChange: debounceHandleValuesChange,
+    handleOnValuesChange: handleOnValuesChange,
     handleEvaluateOnChange: handleOnValuesChange,
     clearCahceFormValues,
     warningStatus,

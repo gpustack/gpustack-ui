@@ -35,6 +35,7 @@ const audioTypeMap: Record<string, string> = {
 };
 
 const AudioWrapper = styled.div`
+  padding-block: 10px;
   audio {
     padding-top: 10px;
   }
@@ -297,17 +298,19 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       try {
         const base64Audio = await convertFileToBase64(data.file);
         const audioData = await readAudioFile(data.file);
-        console.log('audioData====', audioData);
-        setMessage({
-          ...message,
-          audio: [
-            {
-              uid: updateUidCount(),
-              format: audioTypeMap[data.file.type] as AudioFormat,
-              base64: base64Audio.split(',')[1],
-              data: _.pick(audioData, ['url', 'name', 'duration'])
-            }
-          ]
+        console.log('audioData====', message.imgs);
+        setMessage((pre) => {
+          return {
+            ...pre,
+            audio: [
+              {
+                uid: updateUidCount(),
+                format: audioTypeMap[data.file.type] as AudioFormat,
+                base64: base64Audio.split(',')[1],
+                data: _.pick(audioData, ['url', 'name', 'duration'])
+              }
+            ]
+          };
         });
       } catch (error) {
         console.error('Error converting audio to Base64:', error);

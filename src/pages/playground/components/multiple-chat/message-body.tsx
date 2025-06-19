@@ -16,7 +16,6 @@ import ThumbImg from '../thumb-img';
 import ThinkContent from './think-content';
 
 const AudioWrapper = styled.div`
-  padding-left: 10px;
   padding-top: 10px;
 `;
 
@@ -207,7 +206,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
               data.imgs?.length || (data.audio && data.audio?.length > 0)
           })}
         >
-          <div className="justify-start">
+          <div className="justify-start ">
             <ThumbImg
               editable={editable}
               dataList={data.imgs || []}
@@ -238,14 +237,14 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
           })}
           onClick={handleClickWrapper}
         >
-          <div className="justify-start">
+          <div className="justify-start ">
             <ThumbImg
               editable={editable}
               dataList={data.imgs || []}
               onDelete={handleDeleteImg}
             />
             {data.audio && data.audio.length > 0 && (
-              <AudioWrapper>
+              <AudioWrapper className={data.imgs?.length ? '' : 'm-l-10'}>
                 <SimpleAudio
                   url={data.audio?.[0]?.data.url}
                   name={data.audio?.[0]?.data.name}

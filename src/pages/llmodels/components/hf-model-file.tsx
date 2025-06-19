@@ -335,7 +335,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   useEffect(() => {
     if (!props.selectedModel.name) {
       setDataSource({ fileList: [], loading: false });
-      handleSelectModelFile({});
     }
   }, [props.selectedModel?.name]);
 

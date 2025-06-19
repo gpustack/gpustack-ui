@@ -79,7 +79,6 @@ const ModelFileItem: React.FC<ModelFileItemProps> = (props) => {
       className={classNames('hf-model-file', {
         active: active
       })}
-      tabIndex={0}
       onClick={() => handleSelectModelFile(item)}
     >
       <div className="title">{item.path}</div>

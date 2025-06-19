@@ -29,7 +29,6 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
 
   return (
     <div
-      tabIndex={0}
       className={classNames('hf-model-item', {
         active: props.active
       })}

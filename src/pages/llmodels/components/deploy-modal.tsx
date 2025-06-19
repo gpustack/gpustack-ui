@@ -1,6 +1,7 @@
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
+import useDeferredRequest from '@/hooks/use-deferred-request';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
@@ -111,7 +112,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     cancelEvaluate,
     unlockWarningStatus,
     handleOnValuesChange: handleOnValuesChangeBefore,
-    handleEvaluateOnChange,
     clearCahceFormValues,
     warningStatus,
     submitAnyway
@@ -132,6 +132,11 @@ const AddModal: FC<AddModalProps> = (props) => {
     requestModelId: 0
   });
   const requestModelIdRef = useRef<number>(0);
+
+  const { run: fetchModelFiles } = useDeferredRequest(
+    () => modelFileRef.current?.fetchModelFiles?.(),
+    100
+  );
 
   /**
    * Update the request model id to distinguish
@@ -191,32 +196,8 @@ const AddModal: FC<AddModalProps> = (props) => {
     return categories || null;
   };
 
-  const handleSelectModelFile = async (item: any, requestModelId: number) => {
-    if (
-      evaluateStateRef.current.state !== EvaluateProccess.file ||
-      requestModelId !== evaluateStateRef.current.requestModelId
-    ) {
-      return;
-    }
-    form.current?.form?.resetFields(resetFieldsByFile);
-    const modelInfo = onSelectModel(selectedModel, props.source);
-
-    form.current?.setFieldsValue?.({
-      ..._.omit(modelInfo, ['name']),
-      file_name: item.fakeName,
-      categories: getCategory(item)
-    });
-
-    console.log('handleSelectModelFile', item);
-
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 0);
-    });
-
-    // evaluate the form data when select a model file
-    if (item.fakeName) {
+  const { run: onSelectFile } = useDeferredRequest(
+    async (item: any, modelInfo: any) => {
       unlockWarningStatus();
 
       const evaluateRes = await handleOnValuesChangeBefore?.({
@@ -245,6 +226,31 @@ const AddModal: FC<AddModalProps> = (props) => {
             : defaultSpec.backend_parameters || [],
         categories: getCategory(item)
       });
+    },
+    100
+  );
+
+  const handleSelectModelFile = async (item: any, requestModelId: number) => {
+    if (
+      evaluateStateRef.current.state !== EvaluateProccess.file ||
+      requestModelId !== evaluateStateRef.current.requestModelId
+    ) {
+      return;
+    }
+    form.current?.form?.resetFields(resetFieldsByFile);
+    const modelInfo = onSelectModel(selectedModel, props.source);
+
+    form.current?.setFieldsValue?.({
+      ..._.omit(modelInfo, ['name']),
+      file_name: item.fakeName,
+      categories: getCategory(item)
+    });
+
+    console.log('handleSelectModelFile', item);
+
+    // evaluate the form data when select a model file
+    if (item.fakeName) {
+      onSelectFile(item, modelInfo);
     }
   };
 
@@ -286,14 +292,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       }
     );
 
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 0);
-    });
-
     if (item.isGGUF) {
-      modelFileRef.current?.fetchModelFiles?.();
+      fetchModelFiles();
     }
   };
 

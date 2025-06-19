@@ -142,7 +142,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const handleOnSelectModel = (model: any) => {
     const item = model || {};
-    if (item.evaluateResult && !item.isGGUF) {
+    if (item.evaluated && !item.isGGUF) {
       onSelectModelAfterEvaluate(item);
     } else {
       onSelectModel(item);
@@ -326,6 +326,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const resultList = list.map((item, index) => {
         return {
           ...item,
+          evaluated: true,
           evaluateResult: evaluations[index] || null
         };
       });

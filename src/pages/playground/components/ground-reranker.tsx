@@ -240,15 +240,16 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 
+      const filledList = textList.filter((item) => item.text);
+
+      setTextList(filledList);
+
       const result: any = await rerankerQuery(
         {
           model: parameters.model,
           top_n: parameters.top_n,
           query: query,
-          documents: [
-            ...textList.map((item) => item.text),
-            ...fileList.map((item) => item.text)
-          ]
+          documents: filledList.map((item) => item.text)
         },
         {
           token: requestToken.current.token
@@ -266,14 +267,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       const minValue = sortList[0].relevance_score;
 
       // reset state
-      let newTextList = textList.map((item) => {
+      let newTextList = filledList.map((item) => {
         item.percent = undefined;
         item.score = undefined;
         item.rank = undefined;
         return item;
       });
-
-      let sortMap: number[] = [];
 
       result.results?.forEach((item: any, sIndex: number) => {
         newTextList[item.index] = {

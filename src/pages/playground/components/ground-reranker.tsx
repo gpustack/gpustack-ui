@@ -9,7 +9,16 @@ import {
   SendOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Form, Input, Spin, Tag, Tooltip } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Spin,
+  Tag,
+  Tooltip,
+  Typography
+} from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -22,6 +31,7 @@ import React, {
   useRef,
   useState
 } from 'react';
+import styled from 'styled-components';
 import { rerankerQuery } from '../apis';
 import { extractErrorMessage } from '../config';
 import { ParamsSchema } from '../config/types';
@@ -35,6 +45,19 @@ import DynamicParams from './dynamic-params';
 import InputList from './input-list';
 import TokenUsage from './token-usage';
 import ViewCommonCode from './view-common-code';
+
+const { Text } = Typography;
+
+const SearchInputWrapper = styled.div`
+  margin: 16px 32px 10px;
+  position: relative;
+`;
+
+const ValidText = styled(Text)`
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+`;
 
 interface MessageProps {
   modelList: Global.BaseOption<string>[];
@@ -89,6 +112,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       rank?: number;
     }[]
   >([]);
+  const [isEmptyQuery, setIsEmptyQuery] = useState<boolean>(false);
 
   const [textList, setTextList] = useState<
     {
@@ -223,8 +247,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const submitMessage = async (query: string) => {
     try {
+      setIsEmptyQuery(!queryValue);
       await formRef.current?.form.validateFields();
-      if (!parameters.model) return;
+
+      if (!parameters.model || !queryValue) return;
       const documentList: any[] = [...textList, ...fileList];
 
       const validDocus = documentList.filter((item) => item.text);
@@ -310,6 +336,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleQueryChange = (e: any) => {
     setQueryValue(e.target.value);
+    setIsEmptyQuery(!e.target.value);
   };
 
   const handleCloseViewCode = () => {
@@ -430,7 +457,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           >
             <span>{intl.formatMessage({ id: 'playground.rerank.query' })}</span>
           </h3>
-          <div style={{ margin: '16px 32px 10px' }}>
+          <SearchInputWrapper>
             <Input.Search
               allowClear
               onSearch={handleSearch}
@@ -452,7 +479,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
                 id: 'playground.rerank.query.holder'
               })}
             ></Input.Search>
-          </div>
+            {isEmptyQuery && (
+              <ValidText type="danger">
+                {intl.formatMessage({ id: 'playground.rerank.query.validate' })}
+              </ValidText>
+            )}
+          </SearchInputWrapper>
         </div>
         <div className="center" ref={scroller}>
           <div className="documents">

@@ -60,4 +60,4 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
   );
 };
 
-export default React.memo(TableHeader);
+export default TableHeader;

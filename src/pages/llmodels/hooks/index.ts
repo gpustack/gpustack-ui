@@ -298,6 +298,7 @@ export const useCheckCompatibility = () => {
     options?: WarningStausOptions
   ) => {
     const { lockAfterUpdate = false, override = false } = options || {};
+    console.log('updateWarningStatus', params, options);
 
     setWarningStatus((prev: MessageStatus) => {
       if (isLockWarningStatus.current && !override) {
@@ -348,6 +349,7 @@ export const useCheckCompatibility = () => {
   const handleCheckCompatibility = (
     evaluateResult: EvaluateResult | null
   ): MessageStatus => {
+    console.log('handleCheckCompatibility', evaluateResult);
     if (!evaluateResult) {
       return {
         show: false,
@@ -586,14 +588,16 @@ export const useCheckCompatibility = () => {
   );
 
   const cancelEvaluate = () => {
+    // update the requestId to cancel the current evaluation
+    updateRequestId();
     checkTokenRef.current?.cancel();
     checkTokenRef.current = null;
-    cacheFormValuesRef.current = {};
   };
 
   useEffect(() => {
     return () => {
       cancelEvaluate();
+      clearCahceFormValues();
     };
   }, []);
 

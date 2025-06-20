@@ -249,7 +249,8 @@ export default {
   'common.page.refresh.tips':
     'Oops! Something went wrong. Try refreshing the page.',
   'common.tips.escape.disable':
-    'Click Cancel or the X at the top right to close.'
+    'Click Cancel or the X at the top right to close.',
+  'common.button.clearSelection': 'Clear Selection'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -266,4 +267,5 @@ export default {
 // 11. 'common.page.wentwrong': 'Something went wrong.',
 // 12. 'common.page.refresh.tips': 'Oops! Something went wrong. Try refreshing the page.'
 // 13. 'common.tips.escape.disable': 'Click Cancel or the X at the top right to close.'
+// 14. 'common.button.clearSelection': 'Clear Selection'
 // ========== End of To-Do List ==========

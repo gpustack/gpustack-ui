@@ -281,4 +281,4 @@ const TableRow: React.FC<
   );
 };
 
-export default React.memo(TableRow);
+export default TableRow;

@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
-import { RightOutlined } from '@ant-design/icons';
-import { Button, Checkbox } from 'antd';
+import { ClearOutlined, RightOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
+import { Button, Checkbox, Tooltip } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 
@@ -29,8 +30,18 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
     disabled
   } = props;
 
+  const intl = useIntl();
+
   const handleToggleExpand = () => {
     onExpandAll?.(!expandAll);
+  };
+
+  const handleUnCheckAll = () => {
+    onSelectAll?.({
+      target: {
+        checked: false
+      }
+    });
   };
 
   if (!hasColumns) {
@@ -66,12 +77,36 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
             expandable
           )}
         </span>
-        <Checkbox
-          onChange={onSelectAll}
-          indeterminate={indeterminate}
-          checked={selectAll}
-          disabled={disabled}
-        ></Checkbox>
+        <Tooltip
+          destroyTooltipOnHide
+          fresh={true}
+          defaultOpen={false}
+          title={
+            indeterminate && (
+              <Button
+                size="small"
+                type="text"
+                variant="filled"
+                color="default"
+                icon={<ClearOutlined />}
+                onClick={handleUnCheckAll}
+              >
+                {intl.formatMessage({ id: 'common.button.clearSelection' })}
+              </Button>
+            )
+          }
+          overlayClassName="light-downloading-tooltip"
+          overlayInnerStyle={{
+            backgroundColor: 'var(--color-spotlight-bg)'
+          }}
+        >
+          <Checkbox
+            onChange={onSelectAll}
+            indeterminate={indeterminate}
+            checked={selectAll}
+            disabled={disabled}
+          ></Checkbox>
+        </Tooltip>
       </div>
     );
   }
@@ -98,4 +133,4 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
   return null;
 };
 
-export default React.memo(HeaderPrefix);
+export default HeaderPrefix;

@@ -206,6 +206,11 @@ const AddModal: FC<AddModalProps> = (props) => {
         source: props.source
       });
 
+      // for cancel evaluate request case
+      if (!evaluateRes) {
+        return;
+      }
+
       const defaultSpec = getDefaultSpec({
         evaluateResult: evaluateRes
       });
@@ -254,10 +259,14 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
+  const handleCancelFiles = () => {
+    cancelEvaluate();
+    modelFileRef.current?.cancelRequest();
+  };
   const handleOnSelectModel = async (item: any) => {
     // If the item is empty or the same as the selected model, do nothing
     console.log('handleOnSelectModel', item, selectedModel);
-    modelFileRef.current?.cancelRequest();
+    handleCancelFiles();
     if (
       _.isEmpty(item) ||
       (item.isGGUF === selectedModel.isGGUF && item.name === selectedModel.name)
@@ -304,12 +313,18 @@ const AddModal: FC<AddModalProps> = (props) => {
       state: EvaluateProccess.model,
       requestModelId: updateRequestModelId()
     });
-    modelFileRef.current?.cancelRequest();
+    handleCancelFiles();
     const modelInfo = onSelectModel(item, props.source);
+
+    console.log(
+      'handleOnSelectModelAfterEvaluate',
+      item,
+      evaluateStateRef.current
+    );
 
     if (
       evaluateStateRef.current.state === EvaluateProccess.model &&
-      item.evaluateResult
+      item.evaluated
     ) {
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
@@ -425,6 +440,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       handleOnOpen();
     } else {
       cancelEvaluate();
+      clearCahceFormValues();
     }
     return () => {
       setSelectedModel({});

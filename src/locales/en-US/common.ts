@@ -249,5 +249,6 @@ export default {
   'common.page.refresh.tips':
     'Oops! Something went wrong. Try refreshing the page.',
   'common.tips.escape.disable':
-    'Click Cancel or the X at the top right to close.'
+    'Click Cancel or the X at the top right to close.',
+  'common.button.clearSelection': 'Clear Selection'
 };

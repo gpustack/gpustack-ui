@@ -101,9 +101,15 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     });
   }, [messageList, systemMessage, parameters]);
 
+  const generateValidMessage = (message: Omit<MessageItem, 'uid'>) => {
+    if (!message.content && !message.imgs?.length && !message.audio?.length) {
+      return undefined;
+    }
+    return message;
+  };
+
   const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
-    const currentMessage =
-      message.content || message.imgs?.length ? message : undefined;
+    const currentMessage = generateValidMessage(message);
     submitMessage({
       system: systemMessage
         ? { role: Roles.System, content: systemMessage }

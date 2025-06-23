@@ -6,5 +6,5 @@ export const colorPrimary = '#007BFF';
 export default {
   light,
   dark,
-  colorPrimary: '#007BFF'
+  colorPrimary: colorPrimary
 };

@@ -248,6 +248,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const submitMessage = async (query: string) => {
     try {
       setIsEmptyQuery(!queryValue);
+      setTokenResult(null);
       await formRef.current?.form.validateFields();
 
       if (!parameters.model || !queryValue) return;
@@ -262,7 +263,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
       setIsEmptyText(false);
       setLoading(true);
       setMessageId();
-      setTokenResult(null);
+
       requestToken.current?.cancel?.();
       requestToken.current = requestSource();
 

@@ -20,12 +20,10 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
     return false;
   };
 
-  const handleOnChange = React.useCallback(
-    (data: { file: any; fileList: any }) => {
-      props.onChange?.(data);
-    },
-    []
-  );
+  const handleOnChange = (data: { file: any; fileList: any }) => {
+    props.onChange?.(data);
+  };
+
   return (
     <Tooltip
       overlayInnerStyle={{ maxWidth: 290, width: 'max-content' }}

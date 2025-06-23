@@ -152,5 +152,5 @@ export default {
     '1. After selection, no further masking can be drawn; therefore, you should draw the mask first and then check the option.\n 2. Once a mask image is uploaded, no further masks can be generated.',
   'playground.model.noavailable.tips2':
     'If the expected model isn’t showing up, make sure it’s running and correctly categorized. If the category is incorrect, you can manually adjust it in the model’s settings.',
-  'playground.rerank.query.validate': 'Please enter something to search.'
+  'playground.rerank.query.validate': 'The query is required.'
 };

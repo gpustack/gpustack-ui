@@ -187,14 +187,12 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   };
 
   const handleBeforeGpuSelectorChange = (gpuIds: any[]) => {
-    if (backend !== backendOptionsMap.ascendMindie || !gpuIds?.length) {
-      return;
-    }
-    const lastGroupName = gpuIds[gpuIds.length - 1][0];
-
-    const lastGroupItems = gpuIds.filter((item) => item[0] === lastGroupName);
-
-    form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
+    // if (backend !== backendOptionsMap.ascendMindie || !gpuIds?.length) {
+    //   return;
+    // }
+    // const lastGroupName = gpuIds[gpuIds.length - 1][0];
+    // const lastGroupItems = gpuIds.filter((item) => item[0] === lastGroupName);
+    // form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
   };
 
   const handleGpuSelectorChange = (value: any[]) => {

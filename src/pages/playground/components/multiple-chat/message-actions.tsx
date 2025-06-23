@@ -9,7 +9,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
 import _ from 'lodash';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Roles } from '../../config';
 import {
   AudioFormat,
@@ -43,18 +43,17 @@ const MessageActions: React.FC<MessageActionsProps> = ({
 }) => {
   const intl = useIntl();
 
-  const handleUpdateImgList = useCallback(
-    (list: { uid: number | string; dataUrl: string }[]) => {
-      updateMessage?.({
-        role: data.role,
-        content: data.content,
-        uid: data.uid,
-        audio: data.audio || [],
-        imgs: [...(data.imgs || []), ...list]
-      });
-    },
-    [data, updateMessage]
-  );
+  const handleUpdateImgList = (
+    list: { uid: number | string; dataUrl: string }[]
+  ) => {
+    updateMessage?.({
+      role: data.role,
+      content: data.content,
+      uid: data.uid,
+      audio: data.audio || [],
+      imgs: [...(data.imgs || []), ...list]
+    });
+  };
 
   const handleUploadAudioChange = async (audio: {
     file: any;

@@ -155,9 +155,9 @@ export default {
     '1. 選択後は追加のマスクを描画できません。そのため、最初にマスクを描画してからオプションを選択してください。\n 2. マスク画像をアップロードすると、追加のマスクを生成することはできません。',
   'playground.model.noavailable.tips2':
     '期待するモデルが表示されない場合は、モデルが実行中で正しく分類されていることを確認してください。カテゴリが間違っている場合は、モデルの設定で手動で調整できます。',
-  'playground.rerank.query.validate': 'Please enter something to search.'
+  'playground.rerank.query.validate': 'The query is required.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'playground.rerank.query.validate': 'Please enter something to search.'
+// 1. 'playground.rerank.query.validate': 'The query is required.'
 // ========== End of To-Do List ==========

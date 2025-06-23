@@ -1,7 +1,7 @@
 import IconFont from '@/components/icon-font';
-import { ClearOutlined, RightOutlined } from '@ant-design/icons';
+import { RightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Tooltip } from 'antd';
+import { Button, Checkbox } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 
@@ -77,36 +77,12 @@ const HeaderPrefix: React.FC<HeaderPrefixProps> = (props) => {
             expandable
           )}
         </span>
-        <Tooltip
-          destroyTooltipOnHide
-          fresh={true}
-          defaultOpen={false}
-          title={
-            indeterminate && (
-              <Button
-                size="small"
-                type="text"
-                variant="filled"
-                color="default"
-                icon={<ClearOutlined />}
-                onClick={handleUnCheckAll}
-              >
-                {intl.formatMessage({ id: 'common.button.clearSelection' })}
-              </Button>
-            )
-          }
-          overlayClassName="light-downloading-tooltip"
-          overlayInnerStyle={{
-            backgroundColor: 'var(--color-spotlight-bg)'
-          }}
-        >
-          <Checkbox
-            onChange={onSelectAll}
-            indeterminate={indeterminate}
-            checked={selectAll}
-            disabled={disabled}
-          ></Checkbox>
-        </Tooltip>
+        <Checkbox
+          onChange={onSelectAll}
+          indeterminate={indeterminate}
+          checked={selectAll}
+          disabled={disabled}
+        ></Checkbox>
       </div>
     );
   }

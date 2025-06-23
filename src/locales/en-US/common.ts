@@ -105,7 +105,7 @@ export default {
   'common.button.addfile': 'Add File',
   'common.logout.msg': 'Log out succeeded',
   'common.button.logout': 'Log out',
-  'common.form.rule.select': 'please select {name}',
+  'common.form.rule.select': 'Please select a {name}',
   'common.form.rule.input': '{name} is required',
   'common.form.key': 'the same key exists',
   'common.date.utc': 'UTC time',

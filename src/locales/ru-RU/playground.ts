@@ -149,9 +149,9 @@ export default {
     '1. После выделения области создание маски станет недоступным; поэтому сначала нарисуйте маску, а затем активируйте опцию. \n 2. После загрузки изображения маски создание новых масок невозможно.',
   'playground.model.noavailable.tips2':
     'Если нужная модель не отображается, убедитесь, что она запущена и ей присвоена правильная категория. Если категория указана неверно, её можно изменить вручную в настройках модели.',
-  'playground.rerank.query.validate': 'Please enter something to search.'
+  'playground.rerank.query.validate': 'The query is required.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'playground.rerank.query.validate': 'Please enter something to search.'
+// 1. 'playground.rerank.query.validate': 'The query is required.'
 // ========== End of To-Do List ==========

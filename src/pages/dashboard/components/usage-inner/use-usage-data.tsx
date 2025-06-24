@@ -2,14 +2,18 @@ import useSelectRender from '@/components/seal-form/hooks/use-select-render';
 import { queryModelsList } from '@/pages/llmodels/apis';
 import { ListItem as ModelListItem } from '@/pages/llmodels/config/types';
 import { queryUsersList } from '@/pages/users/apis';
-import { ExportOutlined } from '@ant-design/icons';
+import { DownloadOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, DatePicker, Select, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { queryDashboardUsageData } from '../../apis';
+import {
+  DASHBOARD_STATS_API,
+  DASHBOARD_USAGE_API,
+  queryDashboardUsageData
+} from '../../apis';
 import { baseColorMap } from '../../config';
 import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
 
@@ -87,11 +91,11 @@ const generateData = (dateRage: string[], valueMap: Map<string, number>) => {
   });
 };
 
-export default function useUseageData<T>(config?: {
-  raw?: boolean;
+export default function useUseageData<T>(config: {
+  url: string;
   defaultData?: T;
 }) {
-  const { raw = false, defaultData } = config || {};
+  const { url, defaultData } = config || {};
   const intl = useIntl();
   const { TagRender } = useSelectRender({
     maxTagWidth: 100
@@ -115,9 +119,7 @@ export default function useUseageData<T>(config?: {
     end_date: string;
     model_ids: number[];
     user_ids: number[];
-    raw: boolean;
   }>({
-    raw: raw,
     start_date: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
     end_date: dayjs().format('YYYY-MM-DD'),
     model_ids: [],
@@ -131,7 +133,7 @@ export default function useUseageData<T>(config?: {
   const usageData = useMemo<{
     requestTokenData: RequestTokenData;
   }>(() => {
-    if (raw) {
+    if (url === DASHBOARD_USAGE_API) {
       return {
         requestTokenData: {
           requestData: [],
@@ -203,7 +205,7 @@ export default function useUseageData<T>(config?: {
         xAxisData: dateRange
       }
     };
-  }, [result, raw]);
+  }, [result, url]);
 
   const fetchModelsList = async () => {
     try {
@@ -248,7 +250,9 @@ export default function useUseageData<T>(config?: {
   const fetchUsageData = async (queryParams: any) => {
     try {
       setLoading(true);
-      const response = await queryDashboardUsageData<T>(queryParams);
+      const response = await queryDashboardUsageData<T>(queryParams, {
+        url: url
+      });
       setResult({
         start_date: queryParams.start_date,
         end_date: queryParams.end_date,
@@ -352,9 +356,12 @@ export default function useUseageData<T>(config?: {
             style={{ maxWidth: 200, minWidth: 160 }}
             onChange={handleModelsChange}
           ></Select>
-          {!raw && (
+          {url === DASHBOARD_STATS_API && (
             <Tooltip title={intl.formatMessage({ id: 'common.button.export' })}>
-              <Button icon={<ExportOutlined />} onClick={handleExport}></Button>
+              <Button
+                icon={<DownloadOutlined />}
+                onClick={handleExport}
+              ></Button>
             </Tooltip>
           )}
         </div>
@@ -370,6 +377,7 @@ export default function useUseageData<T>(config?: {
     userList,
     modelList,
     query,
+    setQuery,
     init,
     setResult,
     FilterBar,

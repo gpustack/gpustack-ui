@@ -4,7 +4,9 @@ import ScrollerModal from '@/components/scroller-modal';
 import { exportJsonToExcel } from '@/utils/excel-reader';
 import { useIntl } from '@umijs/max';
 import { Table, TableColumnType } from 'antd';
+import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
+import { DASHBOARD_USAGE_API } from '../../apis';
 import { TableRow } from '../../config/types';
 import useUsageData from './use-usage-data';
 
@@ -14,17 +16,26 @@ const ExportData: React.FC<{
 }> = (props) => {
   const { open, onCancel } = props || {};
   const intl = useIntl();
-  const { FilterBar, loading, init, result, userList, modelList, query } =
-    useUsageData<{
-      items: TableRow[];
-    }>({
-      raw: true
-    });
+  const {
+    FilterBar,
+    init,
+    setResult,
+    loading,
+    result,
+    userList,
+    modelList,
+    query,
+    setQuery
+  } = useUsageData<{
+    items: TableRow[];
+  }>({
+    url: DASHBOARD_USAGE_API
+  });
 
   const exportTableColumns: TableColumnType[] = [
     {
       title: intl.formatMessage({ id: 'resources.table.index' }),
-      width: 60,
+      width: 80,
       render(text: any, row: any, index: number) {
         return index + 1;
       }
@@ -105,6 +116,18 @@ const ExportData: React.FC<{
   useEffect(() => {
     if (open) {
       init();
+    } else {
+      setQuery({
+        start_date: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
+        end_date: dayjs().format('YYYY-MM-DD'),
+        model_ids: [],
+        user_ids: []
+      });
+      setResult({
+        start_date: '',
+        end_date: '',
+        data: { items: [] }
+      });
     }
   }, [open]);
 

@@ -2,6 +2,7 @@ import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import { FC, useContext, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { DASHBOARD_STATS_API } from '../../apis';
 import { baseColorMap } from '../../config';
 import { DashboardContext } from '../../config/dashboard-context';
 import { DashboardUsageData } from '../../config/types';
@@ -22,7 +23,7 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
 
   const { usageData, handleOnCancel, handleExport, FilterBar, init, open } =
     useUsageData<DashboardUsageData>({
-      raw: false,
+      url: DASHBOARD_STATS_API,
       defaultData: {
         api_request_history: [],
         completion_token_history: [],

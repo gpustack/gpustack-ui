@@ -44,3 +44,20 @@ export interface DashboardProps {
   };
   active_models: any[];
 }
+
+export interface DashboardUsageData {
+  api_request_history: any[];
+  completion_token_history: any[];
+  prompt_token_history: any[];
+}
+
+export interface TableRow {
+  id: number;
+  prompt_token_count: number;
+  completion_token_count: number;
+  operation: string;
+  model_id: number;
+  date: string;
+  user_id: number;
+  request_count: number;
+}

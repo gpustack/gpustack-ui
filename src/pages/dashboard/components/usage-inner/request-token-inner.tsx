@@ -1,10 +1,10 @@
 import CardWrapper from '@/components/card-wrapper';
 import { SimpleCard } from '@/components/card-wrapper/simple-card';
 import MixLineBar from '@/components/echarts/mix-line-bar';
-import { useIntl } from '@umijs/max';
+import { formatLargeNumber } from '@/utils';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { baseColorMap } from '../../config';
 
@@ -38,6 +38,11 @@ interface RequestTokenInnerProps {
     data: { time: string; value: number }[];
   }[];
   xAxisData: string[];
+  overViewData?: {
+    requestCount: number;
+    completionCount: number;
+    promptCount: number;
+  };
 }
 
 const labelFormatter = (v: any) => {
@@ -46,20 +51,23 @@ const labelFormatter = (v: any) => {
 
 const dataList = [
   {
-    label: '100M',
+    label: '0',
     value: 'Completion Tokens',
+    key: 'completionCount',
     iconType: 'roundRect',
     color: baseColorMap.base
   },
   {
-    label: '50M',
+    label: '0',
     value: 'Prompt Tokens',
+    key: 'promptCount',
     iconType: 'roundRect',
     color: baseColorMap.baseR3
   },
   {
-    label: '120K',
+    label: '0',
     value: 'API Requests',
+    key: 'requestCount',
     iconType: 'circle',
     color: baseColorMap.baseR1
   }
@@ -73,20 +81,27 @@ const legendData = [
 
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   const { requestData, tokenData, xAxisData, onExport } = props;
-  const intl = useIntl();
+
+  const totalData = useMemo(() => {
+    const data: Record<string, number> = {
+      requestCount:
+        requestData[0]?.data.reduce((sum, item) => sum + item.value, 0) || 0,
+      completionCount:
+        tokenData[0]?.data.reduce((sum, item) => sum + item.value, 0) || 0,
+      promptCount:
+        tokenData[1]?.data.reduce((sum, item) => sum + item.value, 0) || 0
+    };
+
+    return dataList.map((item) => ({
+      ...item,
+      label: formatLargeNumber(data[item.key] || 0) as string
+    }));
+  }, [requestData, tokenData]);
 
   return (
     <CardWrapperBox>
       <CardWrapper style={{ width: '100%', position: 'relative' }}>
-        {/* <DownloadButton
-          type="link"
-          icon={<ExportOutlined />}
-          size="small"
-          onClick={onExport}
-        >
-          {intl.formatMessage({ id: 'common.button.export' })}
-        </DownloadButton> */}
-        <SimpleCard dataList={dataList} height={80}></SimpleCard>
+        <SimpleCard dataList={totalData} height={80}></SimpleCard>
         <MixLineBar
           chartData={{
             line: requestData,
@@ -95,7 +110,7 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
           seriesData={[]}
           xAxisData={xAxisData}
           height={360}
-          smooth={true}
+          smooth={false}
           legendData={legendData}
           labelFormatter={labelFormatter}
         ></MixLineBar>
@@ -104,4 +119,4 @@ const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
   );
 };
 
-export default React.memo(RequestTokenInner);
+export default RequestTokenInner;

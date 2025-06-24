@@ -1,27 +1,14 @@
-import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, DatePicker, Row, Select, Tooltip } from 'antd';
-import dayjs from 'dayjs';
-import { FC, memo, useContext, useState } from 'react';
+import { Col, Row } from 'antd';
+import { FC, useContext, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { baseColorMap } from '../../config';
 import { DashboardContext } from '../../config/dashboard-context';
-import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
+import { DashboardUsageData } from '../../config/types';
 import ExportData from './export-data';
 import RequestTokenInner from './request-token-inner';
 import TopUser from './top-user';
 import useUsageData from './use-usage-data';
-
-const FilterWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0px;
-  .selection {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-`;
 
 const TitleWrapper = styled.div`
   margin: 26px 0px;
@@ -29,37 +16,55 @@ const TitleWrapper = styled.div`
   font-weight: 700;
 `;
 
-const dataList = [
-  { label: '100M', value: 'Completion Tokens' },
-  { label: '50M', value: 'Prompt Tokens' },
-  { label: '120K', value: 'API Requests' }
-];
-
 const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
   const intl = useIntl();
-
-  const [query, setQuery] = useState({
-    startDate: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
-    endDate: dayjs().format('YYYY-MM-DD'),
-    user: [],
-    model: []
-  });
-
-  const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
-    range: 60
-  });
   const { model_usage } = useContext(DashboardContext);
-  const [open, setOpen] = useState(false);
 
-  const { requestTokenData, topUserData } = useUsageData(model_usage || {});
+  const { usageData, handleOnCancel, handleExport, FilterBar, init, open } =
+    useUsageData<DashboardUsageData>({
+      raw: false,
+      defaultData: {
+        api_request_history: [],
+        completion_token_history: [],
+        prompt_token_history: []
+      }
+    });
 
-  const handleOnCancel = () => {
-    setOpen(false);
-  };
+  const topUserData = useMemo(() => {
+    const topUsers = model_usage?.top_users || [];
 
-  const handleExport = () => {
-    setOpen(true);
-  };
+    const topUserPrompt: any = {
+      name: 'Prompt tokens',
+      color: baseColorMap.baseR3,
+      data: [] as { name: string; value: number }[]
+    };
+    const topUserCompletion: any = {
+      name: 'Completion tokens',
+      color: baseColorMap.base,
+      data: [] as { name: string; value: number }[]
+    };
+
+    const topUserNames = topUsers.map((item: any) => {
+      topUserPrompt.data.push({
+        name: item.username,
+        value: item.prompt_token_count
+      });
+      topUserCompletion.data.push({
+        name: item.username,
+        value: item.completion_token_count
+      });
+      return item.username;
+    });
+
+    return {
+      userData: [topUserCompletion, topUserPrompt],
+      topUserList: [...new Set(topUserNames)] as string[]
+    };
+  }, [model_usage?.top_users]);
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <div>
@@ -83,47 +88,13 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
             <TitleWrapper>
               {intl.formatMessage({ id: 'dashboard.usage' })}
             </TitleWrapper>
-            <FilterWrapper>
-              <div className="selection">
-                <DatePicker.RangePicker
-                  defaultValue={[dayjs().add(-30, 'd'), dayjs()]}
-                  disabledDate={disabledRangeDaysDate}
-                  presets={rangePresets}
-                  allowClear={false}
-                  style={{ width: 240 }}
-                ></DatePicker.RangePicker>
-                <Select
-                  mode="multiple"
-                  maxTagCount={1}
-                  placeholder={intl.formatMessage({
-                    id: 'dashboard.usage.selectuser'
-                  })}
-                  style={{ width: 160 }}
-                ></Select>
-                <Select
-                  mode="multiple"
-                  maxTagCount={1}
-                  placeholder={intl.formatMessage({
-                    id: 'dashboard.usage.selectmodel'
-                  })}
-                  style={{ width: 160 }}
-                ></Select>
-                <Tooltip
-                  title={intl.formatMessage({ id: 'common.button.export' })}
-                >
-                  <Button
-                    icon={<ExportOutlined />}
-                    onClick={handleExport}
-                  ></Button>
-                </Tooltip>
-              </div>
-            </FilterWrapper>
+            <FilterBar></FilterBar>
           </div>
           <RequestTokenInner
             onExport={handleExport}
-            requestData={requestTokenData.requestData}
-            xAxisData={requestTokenData.xAxisData}
-            tokenData={requestTokenData.tokenData}
+            requestData={usageData?.requestTokenData.requestData}
+            xAxisData={usageData?.requestTokenData.xAxisData}
+            tokenData={usageData?.requestTokenData.tokenData}
           ></RequestTokenInner>
         </Col>
         <Col xs={24} sm={24} md={24} lg={24} xl={8} style={{ marginTop: 12 }}>
@@ -141,4 +112,4 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
   );
 };
 
-export default memo(UsageInner);
+export default UsageInner;

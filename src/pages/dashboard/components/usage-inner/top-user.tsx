@@ -1,6 +1,5 @@
 import CardWrapper from '@/components/card-wrapper';
 import HBar from '@/components/echarts/h-bar';
-import { useIntl } from '@umijs/max';
 import React from 'react';
 
 interface TopUserProps {
@@ -9,7 +8,6 @@ interface TopUserProps {
 }
 const TopUser: React.FC<TopUserProps> = (props) => {
   const { userData, topUserList } = props;
-  const intl = useIntl();
 
   return (
     <CardWrapper>
@@ -18,4 +16,4 @@ const TopUser: React.FC<TopUserProps> = (props) => {
   );
 };
 
-export default React.memo(TopUser);
+export default TopUser;

@@ -27,7 +27,10 @@ export default {
   'dashboard.usage.export': 'Export Data',
   'dashboard.usage.export.user': 'User',
   'dashboard.usage.export.model': 'Model',
-  'dashboard.usage.export.date': 'Date'
+  'dashboard.usage.export.date': 'Date',
+  'dashboard.usage.datePicker.last7days': 'Last 7 Days',
+  'dashboard.usage.datePicker.last30days': 'Last 30 Days',
+  'dashboard.usage.datePicker.last60days': 'Last 60 Days'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -36,5 +39,8 @@ export default {
 // 3. 'dashboard.usage.export': 'Export Data',
 // 4. 'dashboard.usage.export.user': 'User',
 // 5. 'dashboard.usage.export.model': 'Model',
-// 6. 'dashboard.usage.export.date': 'Date'
+// 6. 'dashboard.usage.export.date': 'Date',
+// 7. 'dashboard.usage.datePicker.last7days': 'Last 7 Days',
+// 8.'dashboard.usage.datePicker.last30days': 'Last 30 Days',
+// 9. 'dashboard.usage.datePicker.last60days': 'Last 60 Days'
 // ========== End of To-Do List ==========

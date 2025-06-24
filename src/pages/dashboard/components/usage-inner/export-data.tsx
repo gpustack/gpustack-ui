@@ -1,40 +1,112 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
-import useTableFetch from '@/hooks/use-table-fetch';
+import { exportJsonToExcel } from '@/utils/excel-reader';
 import { useIntl } from '@umijs/max';
-import { DatePicker, Select, Space, Table } from 'antd';
-import dayjs from 'dayjs';
-import React from 'react';
-import { queryDashboardUsageData } from '../../apis';
-import { exportTableColumns } from '../../config';
-import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
+import { Table, TableColumnType } from 'antd';
+import React, { useEffect } from 'react';
+import { TableRow } from '../../config/types';
+import useUsageData from './use-usage-data';
 
 const ExportData: React.FC<{
   open: boolean;
   onCancel: () => void;
 }> = (props) => {
-  const {
-    dataSource,
-    rowSelection,
-    queryParams,
-    modalRef,
-    handleDelete,
-    handleDeleteBatch,
-    fetchData,
-    handlePageChange,
-    handleTableChange,
-    handleSearch,
-    handleNameChange
-  } = useTableFetch({
-    fetchAPI: queryDashboardUsageData
-  });
   const { open, onCancel } = props || {};
   const intl = useIntl();
-  const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
-    range: 60
-  });
+  const { FilterBar, loading, init, result, userList, modelList, query } =
+    useUsageData<{
+      items: TableRow[];
+    }>({
+      raw: true
+    });
 
-  const handleSubmit = () => {};
+  const exportTableColumns: TableColumnType[] = [
+    {
+      title: intl.formatMessage({ id: 'resources.table.index' }),
+      width: 60,
+      render(text: any, row: any, index: number) {
+        return index + 1;
+      }
+    },
+    {
+      title: intl.formatMessage({ id: 'dashboard.usage.export.date' }),
+      dataIndex: 'date'
+    },
+    {
+      title: intl.formatMessage({ id: 'dashboard.usage.export.user' }),
+      dataIndex: 'user_id',
+      render: (text: string) => {
+        return (
+          <AutoTooltip ghost>
+            {userList.find((item) => item.value === text)?.label}
+          </AutoTooltip>
+        );
+      }
+    },
+    {
+      title: intl.formatMessage({ id: 'dashboard.usage.export.model' }),
+      dataIndex: 'model_id',
+      render: (text: string) => {
+        return (
+          <AutoTooltip ghost>
+            {modelList.find((item) => item.value === text)?.label || text}
+          </AutoTooltip>
+        );
+      }
+    },
+
+    {
+      title: 'Completion Tokens',
+      dataIndex: 'completion_token_count',
+      width: 170,
+      align: 'right'
+    },
+    {
+      title: 'Prompt Tokens',
+      dataIndex: 'prompt_token_count',
+      align: 'right',
+      width: 150
+    },
+    {
+      title: 'API Requests',
+      dataIndex: 'request_count',
+      align: 'right',
+      width: 150
+    }
+  ];
+  const handleSubmit = () => {
+    const fileName = `usage-data_${query.start_date || ''}_${query.end_date || ''}.xlsx`;
+    exportJsonToExcel({
+      jsonData: result.data?.items || [],
+      fileName: fileName,
+      fields: exportTableColumns
+        .map((col) => col.dataIndex)
+        .filter(Boolean) as string[],
+      fieldLabels: {
+        user_id: 'User',
+        model_id: 'Model',
+        date: 'Date',
+        prompt_token_count: 'Prompt Tokens',
+        completion_token_count: 'Completion Tokens',
+        request_count: 'API Requests'
+      },
+      formatMap: {
+        user_id: (value: string) => {
+          return userList.find((item) => item.value === value)?.label || value;
+        },
+        model_id: (value: string) => {
+          return modelList.find((item) => item.value === value)?.label || value;
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (open) {
+      init();
+    }
+  }, [open]);
 
   return (
     <ScrollerModal
@@ -46,7 +118,10 @@ const ExportData: React.FC<{
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={800}
+      width={1000}
+      style={{
+        top: '10%'
+      }}
       styles={{
         content: {
           padding: '0px'
@@ -70,53 +145,18 @@ const ExportData: React.FC<{
         ></ModalFooter>
       }
     >
-      <Space size={12}>
-        <DatePicker.RangePicker
-          style={{ width: 240 }}
-          defaultValue={[dayjs().add(-30, 'd'), dayjs()]}
-          disabledDate={disabledRangeDaysDate}
-          presets={rangePresets}
-          allowClear={false}
-          onChange={(dates) => {
-            handleSearch();
-          }}
-        ></DatePicker.RangePicker>
-        <Select
-          mode="multiple"
-          maxTagCount={1}
-          placeholder={intl.formatMessage({
-            id: 'dashboard.usage.selectuser'
-          })}
-          style={{ width: 160 }}
-        ></Select>
-        <Select
-          mode="multiple"
-          maxTagCount={1}
-          placeholder={intl.formatMessage({
-            id: 'dashboard.usage.selectmodel'
-          })}
-          style={{ width: 160 }}
-        ></Select>
-      </Space>
+      <FilterBar></FilterBar>
       <Table
         columns={exportTableColumns}
-        tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
+        tableLayout={'auto'}
         style={{ width: '100%', marginTop: '16px' }}
-        dataSource={dataSource.dataList}
-        loading={dataSource.loading}
+        dataSource={result.data?.items || []}
+        loading={loading}
         rowKey="id"
-        onChange={handleTableChange}
-        pagination={{
-          showSizeChanger: true,
-          pageSize: queryParams.perPage,
-          current: queryParams.page,
-          total: dataSource.total,
-          hideOnSinglePage: queryParams.perPage === 10,
-          onChange: handlePageChange
-        }}
-      >
-        {' '}
-      </Table>
+        virtual
+        scroll={{ y: 400 }}
+        pagination={false}
+      ></Table>
     </ScrollerModal>
   );
 };

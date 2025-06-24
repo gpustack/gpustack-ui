@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import { DatePickerProps } from 'antd';
 import dayjs, { type Dayjs } from 'dayjs';
 
@@ -14,6 +15,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   range: number;
 } {
   const { range = 60 } = options || {};
+  const intl = useIntl();
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
 
@@ -43,7 +45,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
           );
 
         default:
-          return Math.abs(current.diff(from, 'days')) >= range;
+          return Math.abs(current.diff(from, 'days')) > range;
       }
     }
 
@@ -54,9 +56,22 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
     label: React.ReactNode;
     value: [Dayjs, Dayjs] | (() => [Dayjs, Dayjs]);
   }[] = [
-    { label: 'Last 7 Days', value: [dayjs().add(-7, 'd'), dayjs()] },
-    { label: 'Last 30 Days', value: [dayjs().add(-30, 'd'), dayjs()] },
-    { label: 'Last 60 Days', value: [dayjs().add(-60, 'd'), dayjs()] }
+    {
+      label: intl.formatMessage({ id: 'dashboard.usage.datePicker.last7days' }),
+      value: [dayjs().add(-7, 'd'), dayjs()]
+    },
+    {
+      label: intl.formatMessage({
+        id: 'dashboard.usage.datePicker.last30days'
+      }),
+      value: [dayjs().add(-30, 'd'), dayjs()]
+    },
+    {
+      label: intl.formatMessage({
+        id: 'dashboard.usage.datePicker.last60days'
+      }),
+      value: [dayjs().add(-60, 'd'), dayjs()]
+    }
   ];
 
   return {

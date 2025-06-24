@@ -27,9 +27,14 @@ export default {
   'dashboard.usage.export': 'Экспорт данных',
   'dashboard.usage.export.user': 'Пользователь',
   'dashboard.usage.export.model': 'Модель',
-  'dashboard.usage.export.date': 'Дата'
+  'dashboard.usage.export.date': 'Дата',
+  'dashboard.usage.datePicker.last7days': 'Last 7 Days',
+  'dashboard.usage.datePicker.last30days': 'Last 30 Days',
+  'dashboard.usage.datePicker.last60days': 'Last 60 Days'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+//  1. 'dashboard.usage.datePicker.last7days': 'Last 7 Days',
+//  2. 'dashboard.usage.datePicker.last30days': 'Last 30 Days',
+//  3. 'dashboard.usage.datePicker.last60days': 'Last 60 Days'
 // ========== End of To-Do List ==========

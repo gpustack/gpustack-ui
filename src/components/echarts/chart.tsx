@@ -54,6 +54,13 @@ const Chart: React.FC<{
 
       const currentChart = chart.current;
       const optionsYAxis = currentChart.getOption()?.yAxis;
+
+      console.log(
+        'chart finished',
+        finished.current,
+        optionsYAxis,
+        chart.current
+      );
       if (
         !optionsYAxis ||
         !Array.isArray(optionsYAxis) ||
@@ -80,10 +87,6 @@ const Chart: React.FC<{
 
       const newMax0 = intervals[0] * (unifiedCount - 1);
       const newMax1 = intervals[1] * (unifiedCount - 1);
-
-      // get yaxis max value
-      const maxValue0 = Math.max();
-      const maxValue1 = yAxisModels[1].get('max');
 
       // if newMax0 equal to maxValue0, and newMax1 equal to maxValue1, do not update yAxis
       if (counts[0] === counts[1]) return;
@@ -127,7 +130,7 @@ const Chart: React.FC<{
     resize();
     setOption(options);
     resizeable.current = true;
-  }, [options]);
+  }, [setOption]);
 
   useEffect(() => {
     const handleResize = throttle(() => {

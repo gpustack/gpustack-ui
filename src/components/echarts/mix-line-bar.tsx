@@ -2,7 +2,7 @@ import Chart from '@/components/echarts/chart';
 import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import React, { memo, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ChartProps } from './types';
 
 const MixLineBarChart: React.FC<
@@ -147,4 +147,4 @@ const MixLineBarChart: React.FC<
   );
 };
 
-export default memo(MixLineBarChart);
+export default MixLineBarChart;

@@ -41,7 +41,7 @@ export async function queryModelsInstances(
 }
 export async function queryModelsList(
   params: Global.SearchParams,
-  options?: any
+  options?: Record<string, any>
 ) {
   return request<Global.PageResponse<ListItem>>(
     `${MODELS_API}?${qs.stringify(params)}`,

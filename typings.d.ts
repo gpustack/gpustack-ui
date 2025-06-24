@@ -25,5 +25,6 @@ declare module 'colorthief';
 declare module 'vibrant';
 declare module 'node-vibrant';
 declare module 'lamejs';
+declare module 'file-saver';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;

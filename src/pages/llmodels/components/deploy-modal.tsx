@@ -1,3 +1,4 @@
+import { getRequestId } from '@/atoms/models';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
@@ -116,7 +117,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
-
   const { onSelectModel } = useSelectModel({ gpuOptions: props.gpuOptions });
   const form = useRef<any>({});
   const intl = useIntl();
@@ -132,11 +132,17 @@ const AddModal: FC<AddModalProps> = (props) => {
     requestModelId: 0
   });
   const requestModelIdRef = useRef<number>(0);
+  const currentSelectedModel = useRef<any>({});
 
   const { run: fetchModelFiles } = useDeferredRequest(
     () => modelFileRef.current?.fetchModelFiles?.(),
     100
   );
+
+  const updateSelectedModel = (model: any) => {
+    currentSelectedModel.current = model;
+    setSelectedModel(model);
+  };
 
   /**
    * Update the request model id to distinguish
@@ -236,10 +242,14 @@ const AddModal: FC<AddModalProps> = (props) => {
   );
 
   const handleSelectModelFile = async (item: any, requestModelId: number) => {
-    if (
-      evaluateStateRef.current.state !== EvaluateProccess.file ||
-      requestModelId !== evaluateStateRef.current.requestModelId
-    ) {
+    console.log(
+      'handleSelectModelFile:',
+      item,
+      requestModelId,
+      getRequestId(),
+      evaluateStateRef.current
+    );
+    if (requestModelId !== getRequestId()) {
       return;
     }
     form.current?.form?.resetFields(resetFieldsByFile);
@@ -251,7 +261,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    console.log('handleSelectModelFile', item);
+    console.log('handleSelectModelFile>>>>>>>>>>>>', item);
 
     // evaluate the form data when select a model file
     if (item.fakeName) {
@@ -265,7 +275,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
   const handleOnSelectModel = async (item: any) => {
     // If the item is empty or the same as the selected model, do nothing
-    console.log('handleOnSelectModel', item, selectedModel);
+
     handleCancelFiles();
     if (
       _.isEmpty(item) ||
@@ -273,6 +283,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     ) {
       return;
     }
+    console.log('handleOnSelectModel:', item, selectedModel);
     setIsGGUF(item.isGGUF);
     clearCahceFormValues();
     unlockWarningStatus();
@@ -280,7 +291,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       state: EvaluateProccess.model,
       requestModelId: updateRequestModelId()
     });
-    setSelectedModel(item);
+    updateSelectedModel(item);
 
     form.current?.form?.resetFields(resetFieldsByModel);
     const modelInfo = onSelectModel(item, props.source);
@@ -306,21 +317,33 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
+  const currentModelDuringEvaluate = (item: any) => {
+    return (
+      evaluateStateRef.current.state === EvaluateProccess.form &&
+      item.name === currentSelectedModel.current.name
+    );
+  };
+
   const handleOnSelectModelAfterEvaluate = (item: any) => {
+    console.log(
+      'handleOnSelectModelAfterEvaluate:',
+      item.name,
+      currentSelectedModel.current.name,
+      warningStatus.type,
+      currentModelDuringEvaluate(item)
+    );
+    if (currentModelDuringEvaluate(item)) {
+      return;
+    }
+    // If the item is empty
     setIsGGUF(item.isGGUF);
-    setSelectedModel(item);
+    updateSelectedModel(item);
     setEvaluteState({
       state: EvaluateProccess.model,
       requestModelId: updateRequestModelId()
     });
     handleCancelFiles();
     const modelInfo = onSelectModel(item, props.source);
-
-    console.log(
-      'handleOnSelectModelAfterEvaluate',
-      item,
-      evaluateStateRef.current
-    );
 
     if (
       evaluateStateRef.current.state === EvaluateProccess.model &&
@@ -329,7 +352,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
         ...getDefaultSpec(item),
-        ...modelInfo,
+        ...(item.name === currentSelectedModel.current.name
+          ? _.omit(modelInfo, ['name'])
+          : modelInfo),
         categories: getCategory(item)
       });
     }

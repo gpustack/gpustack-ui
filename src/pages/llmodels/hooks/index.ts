@@ -502,7 +502,10 @@ export const useCheckCompatibility = () => {
     };
   };
 
-  const handleDoEvalute = async (formData: FormData) => {
+  const handleDoEvalute = async (
+    formData: FormData,
+    evaluateProccess?: 'model' | 'file' | 'form'
+  ) => {
     const currentRequestId = updateRequestId();
     const evalutionData = await handleEvaluate(formData);
 

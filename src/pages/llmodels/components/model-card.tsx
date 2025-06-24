@@ -9,6 +9,7 @@ import {
   RightOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { useBoolean } from 'ahooks';
 import { Button, Empty, Spin, Tooltip } from 'antd';
 import { some } from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -72,6 +73,7 @@ const ModelCard: React.FC<{
   loadingModel?: boolean;
   modelSource: string;
 }> = (props) => {
+  const [hideMd, { toggle }] = useBoolean();
   const { onCollapse, setIsGGUF, collapsed, modelSource } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
@@ -397,9 +399,20 @@ const ModelCard: React.FC<{
             {readmeText && (
               <>
                 <TitleWrapper>
-                  <div className="title">README.md</div>
+                  <div className="flex-center gap-8">
+                    <span className="title">README.md</span>
+                    {/* <Button
+                      onClick={toggle}
+                      size="small"
+                      type="text"
+                      icon={hideMd ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                    ></Button> */}
+                  </div>
                 </TitleWrapper>
-                <div className="card-wrapper">
+                <div
+                  className="card-wrapper"
+                  style={{ width: hideMd ? 0 : 'auto', overflow: 'hidden' }}
+                >
                   <MarkdownViewer
                     generateImgLink={generateModeScopeImgLink}
                     content={readmeText}

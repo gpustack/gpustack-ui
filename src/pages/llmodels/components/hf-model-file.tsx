@@ -1,3 +1,4 @@
+import { getRequestId } from '@/atoms/models';
 import SimpleOverlay from '@/components/simple-overlay';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
@@ -283,7 +284,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       handleSelectModelFile({});
       return;
     }
-    parentRequestModelId.current = updateEvaluteState?.('file');
+    parentRequestModelId.current = getRequestId();
     checkTokenRef.current?.cancel?.();
     axiosTokenRef.current?.abort?.();
     axiosTokenRef.current = new AbortController();
@@ -292,10 +293,15 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     setCurrent('');
     try {
       let list = [];
+      const currentParentRequestId = getRequestId();
       if (modelSourceMap.huggingface_value === modelSource) {
         list = await getHuggingfaceFiles();
       } else if (modelSourceMap.modelscope_value === modelSource) {
         list = await getModelScopeFiles();
+      }
+
+      if (currentParentRequestId !== getRequestId()) {
+        return;
       }
 
       const newList = generateGroupByFilename(list);

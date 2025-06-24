@@ -1,3 +1,4 @@
+import { getRequestId, setRquestId } from '@/atoms/models';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -68,6 +69,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     displayEvaluateStatus,
     unlockWarningStatus
   } = props;
+
   const [dataSource, setDataSource] = useState<{
     repoOptions: any[];
     loading: boolean;
@@ -95,7 +97,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const filterTaskRef = useRef<string>('');
   const timer = useRef<any>(null);
   const requestIdRef = useRef<number>(0);
-  const searchIdRef = useRef<number>(0);
+  const searchRepoRequestIdRef = useRef<number>(0);
   const [query, setQuery] = useState({
     page: 1,
     perPage: 10,
@@ -120,9 +122,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   ]);
 
-  const updateSearchId = () => {
-    searchIdRef.current += 1;
-    return searchIdRef.current;
+  const updateSearchRepoRequestId = () => {
+    searchRepoRequestIdRef.current += 1;
+    return searchRepoRequestIdRef.current;
   };
 
   const updateRequestId = () => {
@@ -153,43 +155,32 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   // huggeface
   const getModelsFromHuggingface = async (sort: string) => {
-    const currentSearchId = updateSearchId();
-    try {
-      const task: any = searchInputRef.current ? '' : 'text-generation';
-      const params = {
-        search: {
-          query: searchInputRef.current || '',
-          sort: sort,
-          tags: filterGGUFRef.current ? ['gguf'] : [],
-          task: HuggingFaceTaskMap[filterTaskRef.current] || task
-        }
-      };
-      const data = await queryHuggingfaceModels(params, {
-        signal: axiosTokenRef.current.signal
-      });
-      if (searchIdRef.current !== currentSearchId) {
-        return {
-          notSameRequest: true
-        };
+    const currentSearchId = setRquestId();
+    const task: any = searchInputRef.current ? '' : 'text-generation';
+    const params = {
+      search: {
+        query: searchInputRef.current || '',
+        sort: sort,
+        tags: filterGGUFRef.current ? ['gguf'] : [],
+        task: HuggingFaceTaskMap[filterTaskRef.current] || task
       }
-      let list = _.map(data || [], (item: any) => {
-        return {
-          ...item,
-          value: item.name,
-          label: item.name,
-          isGGUF: checkIsGGUF(item),
-          source: modelSource
-        };
-      });
-      return list;
-    } catch (error) {
-      if (searchIdRef.current !== currentSearchId) {
-        return {
-          notSameRequest: true
-        };
-      }
-      return [];
+    };
+    const data = await queryHuggingfaceModels(params, {
+      signal: axiosTokenRef.current.signal
+    });
+    if (getRequestId() !== currentSearchId) {
+      throw 'new request has been sent';
     }
+    let list = _.map(data || [], (item: any) => {
+      return {
+        ...item,
+        value: item.name,
+        label: item.name,
+        isGGUF: checkIsGGUF(item),
+        source: modelSource
+      };
+    });
+    return list;
   };
 
   // modelscope, only modelscope has page and perPage
@@ -198,7 +189,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     page: number;
     perPage?: number;
   }) => {
-    const currentSearchId = updateSearchId();
+    const currentSearchId = setRquestId();
     try {
       const params = {
         Name: `${searchInputRef.current}`,
@@ -213,11 +204,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       const data = await queryModelScopeModels(params, {
         signal: axiosTokenRef.current.signal
       });
-      if (searchIdRef.current !== currentSearchId) {
-        return {
-          notSameRequest: true
-        };
+
+      if (getRequestId() !== currentSearchId) {
+        throw 'new request has been sent';
       }
+
       let list = _.map(_.get(data, 'Data.Model.Models') || [], (item: any) => {
         return {
           path: item.Path,
@@ -249,38 +240,28 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       });
       return list;
     } catch (error) {
-      if (searchIdRef.current !== currentSearchId) {
-        return {
-          notSameRequest: true
-        };
-      }
       setQuery((prev) => {
         return {
           ...prev,
-          page: queryParams.page,
-          total: 0
+          page: queryParams.page
         };
       });
-      return [];
+      throw error;
     }
   };
 
   const getEvaluateResults = async (repoList: any[]) => {
-    try {
-      checkTokenRef.current?.cancel?.();
-      checkTokenRef.current = createAxiosToken();
-      const evaluations = await evaluationsModelSpec(
-        {
-          model_specs: repoList
-        },
-        {
-          token: checkTokenRef.current?.token
-        }
-      );
-      return evaluations.results;
-    } catch (error) {
-      return [];
-    }
+    checkTokenRef.current?.cancel?.();
+    checkTokenRef.current = createAxiosToken();
+    const evaluations = await evaluationsModelSpec(
+      {
+        model_specs: repoList
+      },
+      {
+        token: checkTokenRef.current?.token
+      }
+    );
+    return evaluations.results;
   };
 
   const handleEvaluate = async (list: any[]) => {
@@ -288,6 +269,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       return;
     }
     const currentRequestId = updateRequestId();
+    const currentSearchId = getRequestId();
     try {
       const repoList = list.map((item) => {
         const res = handleRecognizeAudioModel(item, modelSource);
@@ -320,7 +302,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
       setIsEvaluating(true);
       const evaluations = await getEvaluateResults(repoList);
-      if (requestIdRef.current !== currentRequestId) {
+      // bind the requestId to the current request and searchId
+      if (
+        requestIdRef.current !== currentRequestId &&
+        currentSearchId !== getRequestId()
+      ) {
         return;
       }
       const resultList = list.map((item, index) => {
@@ -349,6 +335,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         onSelectModelAfterEvaluate(currentItem);
       }
     } catch (error) {
+      // cancel the corrponding request
       if (requestIdRef.current === currentRequestId) {
         setIsEvaluating(false);
       }
@@ -369,7 +356,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (!SUPPORTEDSOURCE.includes(modelSource)) {
       return;
     }
-    axiosTokenRef.current?.abort?.('new request');
+    const currentSearchId = updateSearchRepoRequestId();
+    axiosTokenRef.current?.abort?.('cancel previous request');
     axiosTokenRef.current = new AbortController();
     checkTokenRef.current?.cancel?.();
     if (timer.current) {
@@ -386,9 +374,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {
         const resultList = await getModelsFromHuggingface(sort);
-        if (resultList?.notSameRequest) {
-          return;
-        }
+
         cacheRepoOptions.current = resultList;
 
         // hf has no page and perPage, so we need to slice the resultList
@@ -402,9 +388,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         });
       } else if (modelSource === modelSourceMap.modelscope_value) {
         list = await getModelsFromModelscope(params);
-        if (list?.notSameRequest) {
-          return;
-        }
+        console.log('list:', list);
         cacheRepoOptions.current = list;
       }
 
@@ -423,12 +407,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       console.log('error:', error);
       setDataSource({
         repoOptions: [],
-        loading: false,
+        loading: currentSearchId !== searchRepoRequestIdRef.current,
         sortType: sort,
         networkError: error?.message === 'Failed to fetch'
       });
 
-      setLoadingModel?.(false);
+      setLoadingModel?.(currentSearchId !== searchRepoRequestIdRef.current);
       displayEvaluateStatus?.({
         show: false,
         message: ''

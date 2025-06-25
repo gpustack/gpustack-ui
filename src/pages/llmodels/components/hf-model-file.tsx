@@ -385,7 +385,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           {dataSource.loading ? (
             <ItemFileWrapper>
               {_.times(5, (index: number) => {
-                return <FileSkeleton key={index}></FileSkeleton>;
+                return <FileSkeleton key={index} counts={3}></FileSkeleton>;
               })}
             </ItemFileWrapper>
           ) : dataSource.fileList.length ? (

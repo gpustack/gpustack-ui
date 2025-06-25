@@ -2,11 +2,14 @@ import IconFont from '@/components/icon-font';
 import SimpleOverlay from '@/components/simple-overlay';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Col, Empty, Row, Spin } from 'antd';
+import { Button, Empty, Spin } from 'antd';
+import _ from 'lodash';
 import React, { useMemo } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
+import styled from 'styled-components';
 import { modelSourceMap } from '../config';
 import '../style/search-result.less';
+import FileSkeleton from './file-skeleton';
 import HFModelItem from './hf-model-item';
 
 interface SearchResultProps {
@@ -19,6 +22,25 @@ interface SearchResultProps {
   networkError?: boolean;
   isEvaluating?: boolean;
 }
+
+const ItemFileWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  gap: 24px;
+`;
+
+const SpinWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+`;
 
 const SearchResult: React.FC<SearchResultProps> = (props) => {
   const { resultList, onSelect, isEvaluating, source, networkError } = props;
@@ -94,32 +116,43 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
         <Spin spinning={props.loading}>
           <div style={{ minHeight: 200 }}>
             {resultList.length ? (
-              <Row gutter={[16, 24]}>
+              <ItemFileWrapper>
                 {resultList.map((item, index) => (
-                  <Col span={24} key={item.name}>
-                    <div
-                      onClick={(e) => handleSelect(e, item)}
-                      onKeyDown={(e) => handleOnEnter(e, item)}
-                    >
-                      <HFModelItem
-                        source={source}
-                        tags={item.tags}
-                        key={index}
-                        title={item.name}
-                        downloads={item.downloads}
-                        likes={item.likes}
-                        task={item.task}
-                        updatedAt={item.updatedAt}
-                        evaluateResult={item.evaluateResult}
-                        active={item.id === props.current}
-                        isEvaluating={isEvaluating}
-                      />
-                    </div>
-                  </Col>
+                  <div
+                    key={item.name}
+                    onClick={(e) => handleSelect(e, item)}
+                    onKeyDown={(e) => handleOnEnter(e, item)}
+                  >
+                    <HFModelItem
+                      source={source}
+                      tags={item.tags}
+                      key={index}
+                      title={item.name}
+                      downloads={item.downloads}
+                      likes={item.likes}
+                      task={item.task}
+                      updatedAt={item.updatedAt}
+                      evaluateResult={item.evaluateResult}
+                      active={item.id === props.current}
+                      isEvaluating={isEvaluating}
+                    />
+                  </div>
                 ))}
-              </Row>
+              </ItemFileWrapper>
+            ) : props.loading ? (
+              <ItemFileWrapper>
+                {_.times(10, (index: number) => {
+                  return (
+                    <FileSkeleton
+                      key={index}
+                      counts={3}
+                      itemHeight={82}
+                    ></FileSkeleton>
+                  );
+                })}
+              </ItemFileWrapper>
             ) : (
-              !props.loading && renderEmpty
+              renderEmpty
             )}
           </div>
         </Spin>

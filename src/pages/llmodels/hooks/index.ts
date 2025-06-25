@@ -502,13 +502,9 @@ export const useCheckCompatibility = () => {
     };
   };
 
-  const handleDoEvalute = async (
-    formData: FormData,
-    evaluateProccess?: 'model' | 'file' | 'form'
-  ) => {
+  const handleDoEvalute = async (formData: FormData) => {
     const currentRequestId = updateRequestId();
     const evalutionData = await handleEvaluate(formData);
-
     if (currentRequestId === requestIdRef.current) {
       handleShowCompatibleAlert?.(evalutionData);
       return evalutionData;
@@ -550,14 +546,6 @@ export const useCheckCompatibility = () => {
       return;
     }
 
-    if (checkRequiredValue(allValues)) {
-      setWarningStatus({
-        show: false,
-        title: '',
-        message: ''
-      });
-      return;
-    }
     cacheFormValuesRef.current = allValues;
     const data = getSourceRepoConfigValue(source, allValues);
     const gpuSelector = generateGPUIds(data.values);

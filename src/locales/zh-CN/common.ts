@@ -185,15 +185,15 @@ export default {
   'common.table.user': '用户',
   'common.settings.instructions': '操作指引',
   'common.settings.language': '语言',
-  'common.delete.confirm': '删除选中的{type}，确定吗？',
+  'common.delete.confirm': '确定删除选中的{type}吗？',
   'common.delete.single.confirm':
-    '删除 <span style="font-size: 13px;font-weight: 700">{name}</span>，确定吗？',
-  'common.stop.confirm': '停止选中的{type}，确定吗？',
+    '确定删除以下内容？\n <span style="font-size: 13px;font-weight: 700">{name}</span>',
+  'common.stop.confirm': '确定停止选中的{type}吗？',
   'common.stop.single.confirm':
-    '停止 <span style="font-size: 13px;font-weight: 700">{name}</span>，确定吗？',
-  'common.start.confirm': '启动选中的{type}，确定吗？',
+    '确定停止 <span style="font-size: 13px;font-weight: 700">{name}？</span>',
+  'common.start.confirm': '确定启动选中的{type}吗？',
   'common.start.single.confirm':
-    '启动 <span style="font-size: 13px;font-weight: 700">{name}</span>，确定吗？',
+    '确定启动 <span style="font-size: 13px;font-weight: 700">{name}？</span>',
   'common.filter.name': '名称查询',
   'common.form.password': '密码',
   'common.form.username': '用户名',

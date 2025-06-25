@@ -194,13 +194,13 @@ export default {
   'common.delete.confirm':
     'Are you sure you want to delete the selected {type}?',
   'common.delete.single.confirm':
-    'Are you sure you want to delete <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+    'Are you sure you want to delete? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'common.stop.confirm': 'Are you sure you want to stop the selected {type}?',
   'common.stop.single.confirm':
-    'Are you sure you want to stop <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+    'Are you sure you want to stop? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'common.start.confirm': 'Are you sure you want to start the selected {type}?',
   'common.start.single.confirm':
-    'Are you sure you want to start <span style="font-size: 13px;font-weight: 700">{name}</span>?',
+    'Are you sure you want to start? \n <span style="font-size: 13px;font-weight: 700">{name}</span>',
   'common.filter.name': 'Filter by name',
   'common.form.password': 'Password',
   'common.form.username': 'Username',

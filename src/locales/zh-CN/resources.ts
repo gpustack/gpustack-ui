@@ -68,7 +68,7 @@ export default {
   'resources.modelfiles.storagePath.holder': '等待下载完成...',
   'resources.filter.worker': '按 Worker 筛选',
   'resources.filter.source': '按来源筛选',
-  'resources.modelfiles.delete.tips': '同时从磁盘删除文件！',
+  'resources.modelfiles.delete.tips': '同时从磁盘删除文件',
   'resources.modelfiles.copy.tips': '复制完整路径',
   'resources.filter.path': '路径查询'
 };

@@ -1,5 +1,4 @@
 import AutoTooltip from '@/components/auto-tooltip';
-import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
@@ -55,7 +54,7 @@ const Users: React.FC = () => {
     rowSelection,
     queryParams,
     sortOrder,
-    modalRef,
+    DeleteModal,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -321,7 +320,7 @@ const Users: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>
-      <DeleteModal ref={modalRef}></DeleteModal>
+      <DeleteModal></DeleteModal>
     </>
   );
 };

@@ -1,5 +1,4 @@
 import AutoTooltip from '@/components/auto-tooltip';
-import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { FilterBar } from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
@@ -94,7 +93,7 @@ const Workers: React.FC = () => {
     dataSource,
     rowSelection,
     queryParams,
-    modalRef,
+    DeleteModal,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -447,7 +446,7 @@ const Workers: React.FC = () => {
           />
         </Table>
       </ConfigProvider>
-      <DeleteModal ref={modalRef}></DeleteModal>
+      <DeleteModal></DeleteModal>
       <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
       <UpdateLabels
         open={updateLabelsData.open}

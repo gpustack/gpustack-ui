@@ -471,10 +471,24 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     );
   };
 
-  const renderDistributionInfo = (severList: any[]) => {
+  const renderDistributionInfo = (distributed_servers: Record<string, any>) => {
+    const { rpc_servers, ray_actors, subordinate_workers } =
+      distributed_servers;
+
+    let severList: any[] = [];
+
+    if (rpc_servers?.length > 0) {
+      severList = rpc_servers;
+    } else if (ray_actors?.length > 0) {
+      severList = ray_actors;
+    } else if (subordinate_workers?.length > 0) {
+      severList = subordinate_workers;
+    }
+
     if (!severList.length) {
       return null;
     }
+
     return (
       <TooltipOverlayScroller
         toolTipProps={{
@@ -612,12 +626,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 className="flex align-center"
               >
                 {renderOffloadInfo}
-                {renderDistributionInfo(
-                  instanceData.distributed_servers?.rpc_servers ||
-                    instanceData.distributed_servers?.ray_actors ||
-                    instanceData.distributed_servers?.subordinate_workers ||
-                    []
-                )}
+                {renderDistributionInfo(instanceData.distributed_servers || {})}
               </span>
             </Col>
             <Col span={4}>

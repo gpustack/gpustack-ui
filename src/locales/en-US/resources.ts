@@ -70,7 +70,7 @@ export default {
     'Waiting for the download to complete...',
   'resources.filter.worker': 'Filter by worker',
   'resources.filter.source': 'Filter by Source',
-  'resources.modelfiles.delete.tips': 'Also delete the file from disk!',
+  'resources.modelfiles.delete.tips': 'Also delete the file from disk',
   'resources.modelfiles.copy.tips': 'Copy Full Path',
   'resources.filter.path': 'Filter by path'
 };

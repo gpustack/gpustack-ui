@@ -69,7 +69,7 @@ export default {
   'resources.modelfiles.storagePath.holder': 'Ожидание завершения загрузки...',
   'resources.filter.worker': 'Фильтровать по узлу',
   'resources.filter.source': 'Фильтровать по источнику',
-  'resources.modelfiles.delete.tips': 'Также удалить файл с диска!',
+  'resources.modelfiles.delete.tips': 'Также удалить файл с диска',
   'resources.modelfiles.copy.tips': 'Скопировать полный путь',
   'resources.filter.path': 'Фильтрация по пути'
 };

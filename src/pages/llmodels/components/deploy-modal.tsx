@@ -211,6 +211,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         allValues: form.current?.form?.getFieldsValue?.(),
         source: props.source
       });
+      console.log('onSelectFile:', item, modelInfo, evaluateRes);
 
       // for cancel evaluate request case
       if (!evaluateRes) {
@@ -245,6 +246,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (requestModelId !== getRequestId()) {
       return;
     }
+    console.log('handleSelectModelFile:', item, selectedModel);
     form.current?.form?.resetFields(resetFieldsByFile);
     const modelInfo = onSelectModel(selectedModel, props.source);
 

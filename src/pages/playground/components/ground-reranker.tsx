@@ -88,7 +88,6 @@ const fieldConfig: ParamsSchema[] = [
 const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
 
-  const messageId = useRef<number>(0);
   const intl = useIntl();
   const requestSource = useRequestToken();
   const [show, setShow] = useState(false);
@@ -236,8 +235,8 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const setMessageId = () => {
-    messageId.current = messageId.current + 1;
-    return messageId.current;
+    const uid = inputListRef.current?.setMessageId();
+    return uid;
   };
 
   const handleStopConversation = () => {
@@ -414,12 +413,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     setTextList([
       {
         text: '',
-        uid: -1,
+        uid: setMessageId(),
         name: ''
       },
       {
         text: '',
-        uid: -2,
+        uid: setMessageId(),
         name: ''
       }
     ]);
@@ -530,7 +529,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             </div>
             <div className="docs-wrapper">
               <InputList
-                key={messageId.current}
                 ref={inputListRef}
                 textList={textList}
                 showLabel={false}

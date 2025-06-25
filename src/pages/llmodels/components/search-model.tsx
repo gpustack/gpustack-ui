@@ -47,9 +47,8 @@ interface SearchInputProps {
   gpuOptions?: any[];
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
-  onSelectModel: (model: any) => void;
-  onSelectModelAfterEvaluate: (model: any) => void;
-  unlockWarningStatus?: () => void;
+  onSelectModel: (model: any, manul?: boolean) => void;
+  onSelectModelAfterEvaluate: (model: any, manual?: boolean) => void;
   displayEvaluateStatus?: (
     data: MessageStatus,
     options?: WarningStausOptions
@@ -66,8 +65,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     setLoadingModel,
     onSelectModel,
     onSelectModelAfterEvaluate,
-    displayEvaluateStatus,
-    unlockWarningStatus
+    displayEvaluateStatus
   } = props;
 
   const [dataSource, setDataSource] = useState<{
@@ -142,12 +140,12 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     return isGGUF || isGGUFFromMs;
   };
 
-  const handleOnSelectModel = (model: any) => {
+  const handleOnSelectModel = (model: any, manual?: boolean) => {
     const item = model || {};
     if (item.evaluated && !item.isGGUF) {
-      onSelectModelAfterEvaluate(item);
+      onSelectModelAfterEvaluate(item, manual);
     } else {
-      onSelectModel(item);
+      onSelectModel(item, manual);
     }
     setCurrent(item.id);
     currentRef.current = item.id;
@@ -497,6 +495,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     }
   };
 
+  const handleSelectModelManually = (model: any) => {
+    handleOnSelectModel(model, true);
+  };
+
   const renderGGUFTips = useMemo(() => {
     return (
       <Tooltip
@@ -596,7 +598,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         current={current}
         source={modelSource}
         isEvaluating={isEvaluating}
-        onSelect={handleOnSelectModel}
+        onSelect={handleSelectModelManually}
       ></SearchResult>
     </div>
   );

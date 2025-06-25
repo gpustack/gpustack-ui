@@ -9,7 +9,6 @@ import {
   RightOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { useBoolean } from 'ahooks';
 import { Button, Empty, Spin, Tooltip } from 'antd';
 import { some } from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -73,7 +72,6 @@ const ModelCard: React.FC<{
   loadingModel?: boolean;
   modelSource: string;
 }> = (props) => {
-  const [hideMd, { toggle }] = useBoolean();
   const { onCollapse, setIsGGUF, collapsed, modelSource } = props;
   const intl = useIntl();
   const requestSource = useRequestToken();
@@ -324,7 +322,7 @@ const ModelCard: React.FC<{
       <div className="card-wrapper">
         {modelData ? (
           <div className="model-card-wrap">
-            <div className="flex-center">
+            <div className="flex-center flex-wrap gap-8">
               {modelType && (
                 <ThemeTag className="tag-item" color="gold" opacity={0.65}>
                   <span className="m-r-5">
@@ -399,20 +397,9 @@ const ModelCard: React.FC<{
             {readmeText && (
               <>
                 <TitleWrapper>
-                  <div className="flex-center gap-8">
-                    <span className="title">README.md</span>
-                    {/* <Button
-                      onClick={toggle}
-                      size="small"
-                      type="text"
-                      icon={hideMd ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                    ></Button> */}
-                  </div>
+                  <span className="title">README.md</span>
                 </TitleWrapper>
-                <div
-                  className="card-wrapper"
-                  style={{ width: hideMd ? 0 : 'auto', overflow: 'hidden' }}
-                >
+                <div className="card-wrapper">
                   <MarkdownViewer
                     generateImgLink={generateModeScopeImgLink}
                     content={readmeText}
@@ -428,4 +415,4 @@ const ModelCard: React.FC<{
   );
 };
 
-export default React.memo(ModelCard);
+export default ModelCard;

@@ -242,13 +242,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   );
 
   const handleSelectModelFile = async (item: any, requestModelId: number) => {
-    console.log(
-      'handleSelectModelFile:',
-      item,
-      requestModelId,
-      getRequestId(),
-      evaluateStateRef.current
-    );
     if (requestModelId !== getRequestId()) {
       return;
     }
@@ -261,8 +254,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    console.log('handleSelectModelFile>>>>>>>>>>>>', item);
-
     // evaluate the form data when select a model file
     if (item.fakeName) {
       onSelectFile(item, modelInfo);
@@ -273,7 +264,19 @@ const AddModal: FC<AddModalProps> = (props) => {
     cancelEvaluate();
     modelFileRef.current?.cancelRequest();
   };
-  const handleOnSelectModel = async (item: any) => {
+
+  const generateNameValue = (
+    item: any,
+    modelName: string,
+    manual?: boolean
+  ) => {
+    if (item.name === currentSelectedModel.current.name) {
+      return manual ? modelName : form.current?.getFieldValue?.('name');
+    }
+    return modelName;
+  };
+
+  const handleOnSelectModel = async (item: any, manual?: boolean) => {
     // If the item is empty or the same as the selected model, do nothing
 
     handleCancelFiles();
@@ -324,7 +327,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     );
   };
 
-  const handleOnSelectModelAfterEvaluate = (item: any) => {
+  const handleOnSelectModelAfterEvaluate = (item: any, manual?: boolean) => {
     console.log(
       'handleOnSelectModelAfterEvaluate:',
       item.name,
@@ -352,9 +355,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       handleShowCompatibleAlert(item.evaluateResult);
       form.current?.setFieldsValue?.({
         ...getDefaultSpec(item),
-        ...(item.name === currentSelectedModel.current.name
-          ? _.omit(modelInfo, ['name'])
-          : modelInfo),
+        ...modelInfo,
+        name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
       });
     }
@@ -521,7 +523,6 @@ const AddModal: FC<AddModalProps> = (props) => {
                       handleOnSelectModelAfterEvaluate
                     }
                     displayEvaluateStatus={displayEvaluateStatus}
-                    unlockWarningStatus={unlockWarningStatus}
                     gpuOptions={props.gpuOptions}
                   ></SearchModel>
                 </ColumnWrapper>

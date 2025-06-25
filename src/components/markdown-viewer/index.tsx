@@ -1,6 +1,7 @@
 import { EyeOutlined } from '@ant-design/icons';
 import { sanitizeUrl } from '@braintree/sanitize-url';
 import { Checkbox, Image, Typography } from 'antd';
+import DOMPurify from 'dompurify';
 import { unescape } from 'lodash';
 import { TokensList, marked } from 'marked';
 import React, { Fragment, useCallback, useEffect } from 'react';
@@ -15,6 +16,15 @@ interface MarkdownViewerProps {
   theme?: 'light' | 'dark';
   generateImgLink?: (src: string) => string;
 }
+
+const dompurifyOptions = {
+  FORBID_TAGS: ['meta', 'style', 'script', 'iframe'],
+  FORBID_ATTR: ['onerror', 'onclick', 'onload', 'style']
+};
+
+const cleanHtml = (html: string): string => {
+  return DOMPurify.sanitize(html, dompurifyOptions);
+};
 
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   content,
@@ -68,11 +78,14 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
 
   const renderItem = useCallback(
     (token: any, render: any) => {
+      if (token.type === 'script' || token.type === 'style') {
+        return null;
+      }
       if (!reDefineTypes.includes(token.type)) {
         return (
           <span
             dangerouslySetInnerHTML={{
-              __html: marked.parser([token], { renderer })
+              __html: cleanHtml(marked.parser([token], { renderer }))
             }}
           ></span>
         );
@@ -89,7 +102,13 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       }
 
       if (token.type === 'html') {
-        htmlstr = <div dangerouslySetInnerHTML={{ __html: token.text }} />;
+        htmlstr = (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: cleanHtml(token.text)
+            }}
+          />
+        );
       }
       if (token.type === 'list') {
         htmlstr = token.order ? (
@@ -158,7 +177,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       if (token.type === 'link') {
         htmlstr = (
           <Link
-            href={token.href}
+            href={sanitizeUrl(token.href || '')}
             title={token.title || ''}
             target="_blank"
             rel="noopener noreferrer"

@@ -9,9 +9,35 @@ import {
   message,
   type ModalFuncProps
 } from 'antd';
-import { FC, forwardRef, useImperativeHandle, useState } from 'react';
+import { createStyles } from 'antd-style';
+import { useState } from 'react';
 import styled from 'styled-components';
-import Styles from './index.less';
+
+const useStyles = createStyles(({ css }) => ({
+  'delete-modal-content': css`
+    display: flex;
+    font-size: var(--font-size-middle);
+    .anticon {
+      font-size: 20px;
+      margin-right: 10px;
+      color: var(--ant-color-warning);
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      font-weight: var(--font-weight-500);
+    }
+  `,
+  content: css`
+    padding-top: 15px;
+    padding-left: 30px;
+    color: var(--ant-color-text-secondary);
+    white-space: pre-line;
+    span {
+      color: var(--ant-color-text);
+    }
+  `
+}));
 
 const CheckboxWrapper = styled.div`
   margin-top: 20px;
@@ -25,12 +51,8 @@ const CheckboxWrapper = styled.div`
   }
 `;
 
-interface DeleteModalProps {
-  ref: any;
-}
-
 interface DataOptions {
-  content: string;
+  content?: string;
   selection?: boolean;
   name?: string;
   okText?: string;
@@ -43,28 +65,33 @@ interface DataOptions {
   };
 }
 
-const DeleteModal: FC<DeleteModalProps> = forwardRef((props, ref) => {
+interface Configuration {
+  checked: boolean;
+}
+
+export default function useDeleteModel() {
   const intl = useIntl();
+  const { styles } = useStyles();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [visible, setVisible] = useState(false);
-  const [checked, setChecked] = useState(false);
+  const [configuration, setConfiguration] = useState<Configuration>({
+    checked: false
+  });
   const [config, setConfig] = useState<ModalFuncProps & DataOptions>({} as any);
 
-  useImperativeHandle(ref, () => ({
-    show: (data: ModalFuncProps & DataOptions) => {
-      saveScrollHeight();
-      setConfig(data);
-      setChecked(data.checkConfig?.defautlChecked || false);
-      setVisible(true);
-    },
-    hide: () => {
-      setVisible(false);
-      restoreScrollHeight();
-    },
-    configuration: {
-      checked: checked
-    }
-  }));
+  const show = (data: ModalFuncProps & DataOptions) => {
+    saveScrollHeight();
+    setConfig(data);
+    setConfiguration({
+      checked: data.checkConfig?.defautlChecked || false
+    });
+    setVisible(true);
+  };
+
+  const hide = () => {
+    setVisible(false);
+    restoreScrollHeight();
+  };
 
   const handleCancel = () => {
     setVisible(false);
@@ -94,75 +121,89 @@ const DeleteModal: FC<DeleteModalProps> = forwardRef((props, ref) => {
     }
   };
 
-  return (
-    <Modal
-      style={{
-        top: '20%'
-      }}
-      open={visible}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      destroyOnClose={true}
-      closeIcon={false}
-      maskClosable={false}
-      keyboard={false}
-      width={460}
-      styles={{}}
-      footer={
-        <Space size={20}>
-          <Button onClick={handleCancel} size="middle">
-            {config.cancelText
-              ? intl.formatMessage({ id: config.cancelText })
-              : intl.formatMessage({ id: 'common.button.cancel' })}
-          </Button>
-          <Button type="primary" onClick={handleOk} size="middle">
-            {config.okText
-              ? intl.formatMessage({ id: config.okText })
-              : intl.formatMessage({ id: 'common.button.delete' })}
-          </Button>
-        </Space>
-      }
-    >
-      <div className={Styles['delete-modal-content']}>
-        <span className="title">
-          <ExclamationCircleFilled />
-          <span>
-            {config.title
-              ? intl.formatMessage({ id: config.title })
-              : intl.formatMessage({ id: 'common.title.delete.confirm' })}
-          </span>
-        </span>
-      </div>
-      <div
-        className={Styles['content']}
-        dangerouslySetInnerHTML={{
-          __html:
-            config.content &&
-            intl.formatMessage(
-              {
-                id: config.operation || ''
-              },
-              {
-                type: intl.formatMessage({ id: config.content }),
-                name: config.name
-              }
-            )
+  const DeleteModal = () => {
+    return (
+      <Modal
+        style={{
+          top: '20%'
         }}
-      ></div>
-      {config.checkConfig && (
-        <CheckboxWrapper>
-          <Checkbox
-            checked={checked}
-            onChange={(e) => setChecked(e.target.checked)}
-          >
-            <span className="check-text">
-              {intl.formatMessage({ id: config.checkConfig?.checkText })}
+        open={visible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        destroyOnClose={false}
+        closeIcon={false}
+        maskClosable={false}
+        keyboard={false}
+        width={460}
+        styles={{
+          footer: {
+            marginTop: '20px'
+          }
+        }}
+        footer={
+          <Space size={20}>
+            <Button onClick={handleCancel} size="middle">
+              {config.cancelText
+                ? intl.formatMessage({ id: config.cancelText })
+                : intl.formatMessage({ id: 'common.button.cancel' })}
+            </Button>
+            <Button type="primary" onClick={handleOk} size="middle">
+              {config.okText
+                ? intl.formatMessage({ id: config.okText })
+                : intl.formatMessage({ id: 'common.button.delete' })}
+            </Button>
+          </Space>
+        }
+      >
+        <div className={styles['delete-modal-content']}>
+          <span className="title">
+            <ExclamationCircleFilled />
+            <span>
+              {config.title
+                ? intl.formatMessage({ id: config.title })
+                : intl.formatMessage({ id: 'common.title.delete.confirm' })}
             </span>
-          </Checkbox>
-        </CheckboxWrapper>
-      )}
-    </Modal>
-  );
-});
-
-export default DeleteModal;
+          </span>
+        </div>
+        <div
+          className={styles['content']}
+          dangerouslySetInnerHTML={{
+            __html: config.content
+              ? intl.formatMessage(
+                  {
+                    id: config.operation || ''
+                  },
+                  {
+                    type: intl.formatMessage({ id: config.content }),
+                    name: config.name
+                  }
+                )
+              : ''
+          }}
+        ></div>
+        {config.checkConfig && (
+          <CheckboxWrapper>
+            <Checkbox
+              checked={configuration.checked}
+              onChange={(e) =>
+                setConfiguration({
+                  checked: e.target.checked
+                })
+              }
+            >
+              <span className="check-text">
+                {intl.formatMessage({ id: config.checkConfig?.checkText })}
+              </span>
+            </Checkbox>
+          </CheckboxWrapper>
+        )}
+      </Modal>
+    );
+  };
+  return {
+    DeleteModal,
+    show,
+    hide,
+    configuration
+  };
+}

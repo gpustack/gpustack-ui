@@ -71,7 +71,7 @@ export default {
     'ダウンロード完了を待っています...',
   'resources.filter.worker': 'ワーカーでフィルタ',
   'resources.filter.source': 'ソースでフィルタ',
-  'resources.modelfiles.delete.tips': 'ディスクからファイルも削除します！',
+  'resources.modelfiles.delete.tips': 'ディスクからファイルも削除します',
   'resources.modelfiles.copy.tips': 'フルパスをコピー',
   'resources.filter.path': 'パスでフィルタ'
 };

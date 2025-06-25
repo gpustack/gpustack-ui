@@ -615,6 +615,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 {renderDistributionInfo(
                   instanceData.distributed_servers?.rpc_servers ||
                     instanceData.distributed_servers?.ray_actors ||
+                    instanceData.distributed_servers?.subordinate_workers ||
                     []
                 )}
               </span>

@@ -23,7 +23,7 @@ const dompurifyOptions = {
 };
 
 const cleanHtml = (html: string): string => {
-  return DOMPurify.sanitize(html, dompurifyOptions);
+  return DOMPurify?.sanitize?.(html, dompurifyOptions);
 };
 
 const MarkdownViewer: React.FC<MarkdownViewerProps> = ({

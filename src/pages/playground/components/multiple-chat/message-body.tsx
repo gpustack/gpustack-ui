@@ -17,6 +17,8 @@ import ThinkContent from './think-content';
 
 const AudioWrapper = styled.div`
   padding-top: 10px;
+  height: max-content;
+  margin-right: 10px;
 `;
 
 interface MessageBodyProps {

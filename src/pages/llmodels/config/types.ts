@@ -90,6 +90,7 @@ export interface ModelInstanceListItem {
   distributed_servers?: {
     rpc_servers: DistributedServerItem[];
     ray_actors: DistributedServerItem[];
+    subordinate_workers: DistributedServerItem[];
   };
   computed_resource_claim?: ComputedResourceClaim;
   s3_address: string;

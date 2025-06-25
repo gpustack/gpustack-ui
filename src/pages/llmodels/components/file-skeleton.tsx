@@ -8,13 +8,24 @@ const Wrapper = styled(Flex)`
   background-color: var(--ant-color-bg-container);
 `;
 
-const FileSkeleton = () => {
+const FileSkeleton: React.FC<{ counts: number; itemHeight?: number }> = ({
+  counts = 2,
+  itemHeight
+}) => {
   return (
-    <Wrapper vertical justify={'space-between'}>
+    <Wrapper
+      vertical
+      justify={'space-between'}
+      style={{ height: itemHeight || 'auto' }}
+    >
       <Skeleton paragraph={{ rows: 1, width: '100%' }} title={false}></Skeleton>
       <Space>
-        <Skeleton.Node style={{ width: 60, height: 22 }}></Skeleton.Node>
-        <Skeleton.Node style={{ width: 60, height: 22 }}></Skeleton.Node>
+        {Array.from({ length: counts }).map((_, index) => (
+          <Skeleton.Node
+            style={{ width: 60, height: 22 }}
+            key={index}
+          ></Skeleton.Node>
+        ))}
       </Space>
     </Wrapper>
   );

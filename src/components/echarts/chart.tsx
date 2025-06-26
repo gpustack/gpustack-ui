@@ -1,7 +1,6 @@
 import { throttle } from 'lodash';
 import React, {
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useRef
@@ -26,27 +25,24 @@ const Chart: React.FC<{
     };
   });
 
-  const init = useCallback(() => {
+  const init = () => {
     if (container.current) {
       chart.current?.clear();
       chart.current = echarts.init(container.current);
     }
-  }, []);
+  };
 
-  const resize = useCallback(() => {
-    chart.current?.resize();
-  }, []);
-
-  const setOption = useCallback(
-    (options: ECOption) => {
-      chart.current?.clear();
-      chart.current?.setOption(options, {
-        notMerge: true,
-        lazyUpdate: true
-      });
-    },
-    [options]
-  );
+  const setOption = (options: ECOption) => {
+    console.log('setOption', options);
+    chart.current?.clear();
+    chart.current?.setOption(options, {
+      notMerge: true,
+      lazyUpdate: true
+    });
+    if (Array.isArray(options.yAxis) && options.yAxis.length > 1) {
+      chart.current?.resize();
+    }
+  };
 
   useEffect(() => {
     const handleOnFinished = () => {
@@ -55,12 +51,6 @@ const Chart: React.FC<{
       const currentChart = chart.current;
       const optionsYAxis = currentChart.getOption()?.yAxis;
 
-      console.log(
-        'chart finished',
-        finished.current,
-        optionsYAxis,
-        chart.current
-      );
       if (
         !optionsYAxis ||
         !Array.isArray(optionsYAxis) ||
@@ -106,11 +96,9 @@ const Chart: React.FC<{
       }
       finished.current = true;
 
-      setTimeout(() => {
-        currentChart.setOption({
-          yAxis: yAxis
-        });
-      }, 0);
+      currentChart.setOption({
+        yAxis: yAxis
+      });
     };
 
     if (container.current) {
@@ -122,15 +110,14 @@ const Chart: React.FC<{
       chart.current?.dispose();
       chart.current?.off('finished', handleOnFinished);
     };
-  }, [init]);
+  }, []);
 
   useEffect(() => {
     resizeable.current = false;
     finished.current = false;
-    resize();
     setOption(options);
     resizeable.current = true;
-  }, [setOption]);
+  }, [options]);
 
   useEffect(() => {
     const handleResize = throttle(() => {

@@ -7,17 +7,12 @@ const Usage = () => {
   const {
     size: { width }
   } = useWindowResize();
-  const [paddingRight, setPaddingRight] = useState<string>('20px');
-
+  const [maxWdith, setMaxWidth] = useState<number>(breakpoints.xl);
   useEffect(() => {
-    if (width < breakpoints.xl) {
-      setPaddingRight('0');
-    } else {
-      setPaddingRight('20px');
-    }
+    setMaxWidth(width);
   }, [width]);
 
-  return <UserInner paddingRight={paddingRight}></UserInner>;
+  return <UserInner maxWidth={maxWdith}></UserInner>;
 };
 
 export default Usage;

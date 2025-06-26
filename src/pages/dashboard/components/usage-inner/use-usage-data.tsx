@@ -336,7 +336,7 @@ export default function useUseageData<T>(config: {
             disabledDate={disabledRangeDaysDate}
             presets={rangePresets}
             allowClear={false}
-            style={{ width: 240 }}
+            style={{ width: 220 }}
             value={[dayjs(query.start_date), dayjs(query.end_date)]}
             onChange={handleDateChange}
           ></DatePicker.RangePicker>

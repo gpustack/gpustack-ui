@@ -27,6 +27,9 @@ const FilterWrapper = styled.div`
     align-items: center;
     gap: 12px;
   }
+  .ant-select-selection-overflow-item > span {
+    height: 24px;
+  }
 `;
 
 interface RequestTokenData {
@@ -99,7 +102,12 @@ export default function useUseageData<T>(config: {
   const { url, defaultData, disabledDate = false } = config || {};
   const intl = useIntl();
   const { TagRender } = useSelectRender({
-    maxTagWidth: 100
+    maxTagWidth: 100,
+    filled: true,
+    style: {
+      height: 24,
+      lineHeight: '24px'
+    }
   });
   const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
     range: DefaultDateConfig.maxRange,
@@ -332,7 +340,10 @@ export default function useUseageData<T>(config: {
         <div className="selection">
           <DatePicker.RangePicker
             maxDate={dayjs()}
-            defaultValue={[dayjs().add(-29, 'd'), dayjs()]}
+            defaultValue={[
+              dayjs().add(-DefaultDateConfig.defaultRange, 'd'),
+              dayjs()
+            ]}
             disabledDate={disabledRangeDaysDate}
             presets={rangePresets}
             allowClear={false}

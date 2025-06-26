@@ -114,11 +114,15 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
     handleDeleteModel(instanceId);
   };
 
+  const generateValidMessage = (message: Omit<MessageItem, 'uid'>) => {
+    if (!message.content && !message.imgs?.length && !message.audio?.length) {
+      return undefined;
+    }
+    return message;
+  };
+
   const handleSubmit = (currentMessage: Omit<MessageItem, 'uid'>) => {
-    const currentMsg =
-      currentMessage.content || currentMessage.imgs?.length
-        ? currentMessage
-        : undefined;
+    const currentMsg = generateValidMessage(currentMessage);
 
     submitMessage({
       system: systemMessage
@@ -289,11 +293,11 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
           </Dropdown>
           <Popover
             autoAdjustOverflow={true}
-            overlayInnerStyle={{ width: 384, paddingInline: 0 }}
+            overlayInnerStyle={{ width: 375, paddingInline: 0 }}
             content={
               <OverlayScroller
                 maxHeight={500}
-                style={{ paddingInline: '16px' }}
+                style={{ paddingInline: '24px' }}
                 oppositeTheme={true}
               >
                 <DynamicParams
@@ -302,21 +306,25 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
                   paramsConfig={paramsConfig}
                   initialValues={initialValues}
                   showModelSelector={false}
+                  parametersTitle={
+                    <div className="flex-center flex-between">
+                      <span>
+                        {intl.formatMessage({ id: 'playground.parameters' })}
+                      </span>
+                      <Checkbox onChange={handleApplyToAllModels}>
+                        {intl.formatMessage({
+                          id: 'playground.compare.applytoall'
+                        })}
+                      </Checkbox>
+                    </div>
+                  }
                 />
               </OverlayScroller>
             }
             trigger={['click']}
             arrow={false}
             fresh={true}
-            title={
-              <div style={{ paddingInline: '16px' }}>
-                <Checkbox onChange={handleApplyToAllModels}>
-                  {intl.formatMessage({
-                    id: 'playground.compare.applytoall'
-                  })}
-                </Checkbox>
-              </div>
-            }
+            title={false}
           >
             <Button
               type="text"

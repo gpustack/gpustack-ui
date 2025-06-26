@@ -11,7 +11,7 @@ import SelectWrapper from './wrapper/select';
 
 const tag = (props: any) => {
   if (props.isMaxTag) {
-    return props.label;
+    return props.label?.slice(0, -3);
   }
   const parent = _.split(props.value, '__RC_CASCADER_SPLIT__')?.[0];
   return `${parent} / ${props?.label}`;
@@ -24,6 +24,7 @@ const renderTag = (props: any) => {
       closable={props.closable}
       onClose={props.onClose}
       maxWidth={240}
+      filled
     >
       {tag(props)}
     </AutoTooltip>

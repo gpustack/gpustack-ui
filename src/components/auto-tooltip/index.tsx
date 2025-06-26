@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState
 } from 'react';
+import styled from 'styled-components';
 import { TooltipOverlayScroller } from '../overlay-scroller';
 
 // type TagProps = React.ComponentProps<typeof Tag>;
@@ -22,8 +23,17 @@ interface AutoTooltipProps extends Omit<TagProps, 'title'> {
   title?: React.ReactNode;
   showTitle?: boolean;
   closable?: boolean;
+  radius?: number | string;
+  filled?: boolean;
   tooltipProps?: React.ComponentProps<typeof Tooltip>;
 }
+
+const StyledTag = styled(Tag)`
+  &.tag-filled {
+    border: none;
+    background-color: var(--ant-color-fill-secondary);
+  }
+`;
 
 const AutoTooltip: React.FC<AutoTooltipProps> = ({
   children,
@@ -33,6 +43,8 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   title,
   showTitle = false,
   tooltipProps,
+  radius = 12,
+  filled = false,
   ...tagProps
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -103,13 +115,14 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
           {children}
         </div>
       ) : (
-        <Tag
+        <StyledTag
           {...tagProps}
+          className={`${tagProps.className || ''} ${filled ? 'tag-filled' : ''}`}
           ref={contentRef}
           style={{
             ...tagStyle,
             paddingInline: tagProps.closable ? '8px 22px' : 8,
-            borderRadius: 12
+            borderRadius: radius
           }}
           closeIcon={
             tagProps.closable ? (
@@ -117,7 +130,8 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
                 style={{
                   position: 'absolute',
                   right: 8,
-                  top: 6
+                  top: '50%',
+                  transform: 'translateY(-50%)'
                 }}
               />
             ) : (
@@ -126,7 +140,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
           }
         >
           {children}
-        </Tag>
+        </StyledTag>
       )}
     </TooltipOverlayScroller>
   );

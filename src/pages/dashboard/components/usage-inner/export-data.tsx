@@ -29,7 +29,8 @@ const ExportData: React.FC<{
   } = useUsageData<{
     items: TableRow[];
   }>({
-    url: DASHBOARD_USAGE_API
+    url: DASHBOARD_USAGE_API,
+    disabledDate: false
   });
 
   const exportTableColumns: TableColumnType[] = [

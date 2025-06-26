@@ -80,7 +80,7 @@ const legendData = [
 ];
 
 const RequestTokenInner: React.FC<RequestTokenInnerProps> = (props) => {
-  const { requestData, tokenData, xAxisData, onExport } = props;
+  const { requestData, tokenData, xAxisData } = props;
 
   const totalData = useMemo(() => {
     const data: Record<string, number> = {

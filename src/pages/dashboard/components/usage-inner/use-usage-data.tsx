@@ -42,10 +42,10 @@ interface RequestTokenData {
   xAxisData: string[];
 }
 
-interface TopUserData {
-  userData: { name: string; value: number }[];
-  topUserList: string[];
-}
+const DefaultDateConfig = {
+  maxRange: 60,
+  defaultRange: 30
+};
 
 const getLast30Days = () => {
   const dates: string[] = [];
@@ -94,14 +94,16 @@ const generateData = (dateRage: string[], valueMap: Map<string, number>) => {
 export default function useUseageData<T>(config: {
   url: string;
   defaultData?: T;
+  disabledDate?: boolean;
 }) {
-  const { url, defaultData } = config || {};
+  const { url, defaultData, disabledDate = false } = config || {};
   const intl = useIntl();
   const { TagRender } = useSelectRender({
     maxTagWidth: 100
   });
   const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
-    range: 60
+    range: DefaultDateConfig.maxRange,
+    disabledDate: disabledDate
   });
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState<{
@@ -109,7 +111,9 @@ export default function useUseageData<T>(config: {
     end_date?: string;
     data: T;
   }>({
-    start_date: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
+    start_date: dayjs()
+      .subtract(DefaultDateConfig.defaultRange, 'days')
+      .format('YYYY-MM-DD'),
     end_date: dayjs().format('YYYY-MM-DD'),
     data: defaultData as T
   });
@@ -120,7 +124,9 @@ export default function useUseageData<T>(config: {
     model_ids: number[];
     user_ids: number[];
   }>({
-    start_date: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
+    start_date: dayjs()
+      .subtract(DefaultDateConfig.defaultRange, 'days')
+      .format('YYYY-MM-DD'),
     end_date: dayjs().format('YYYY-MM-DD'),
     model_ids: [],
     user_ids: []
@@ -318,11 +324,15 @@ export default function useUseageData<T>(config: {
   };
 
   const FilterBar = () => {
+    const filterOptions = (inputValue: any, option: any) => {
+      return option.label?.toLowerCase().includes(inputValue.toLowerCase());
+    };
     return (
       <FilterWrapper>
         <div className="selection">
           <DatePicker.RangePicker
-            defaultValue={[dayjs().add(-30, 'd'), dayjs()]}
+            maxDate={dayjs()}
+            defaultValue={[dayjs().add(-29, 'd'), dayjs()]}
             disabledDate={disabledRangeDaysDate}
             presets={rangePresets}
             allowClear={false}
@@ -332,9 +342,11 @@ export default function useUseageData<T>(config: {
           ></DatePicker.RangePicker>
           <Select
             allowClear
+            showSearch
             mode="multiple"
             options={userList}
             maxTagCount={1}
+            filterOption={filterOptions}
             tagRender={TagRender}
             placeholder={intl.formatMessage({
               id: 'dashboard.usage.selectuser'
@@ -345,10 +357,12 @@ export default function useUseageData<T>(config: {
           ></Select>
           <Select
             allowClear
+            showSearch
             mode="multiple"
             options={modelList}
             maxTagCount={1}
             tagRender={TagRender}
+            filterOption={filterOptions}
             placeholder={intl.formatMessage({
               id: 'dashboard.usage.selectmodel'
             })}

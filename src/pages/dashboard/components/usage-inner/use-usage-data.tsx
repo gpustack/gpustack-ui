@@ -44,7 +44,7 @@ interface RequestTokenData {
 
 const DefaultDateConfig = {
   maxRange: 60,
-  defaultRange: 30
+  defaultRange: 29
 };
 
 const getLast30Days = () => {

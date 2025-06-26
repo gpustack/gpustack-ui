@@ -35,6 +35,8 @@ const useStyles = createStyles(({ css }) => ({
     white-space: pre-line;
     span {
       color: var(--ant-color-text);
+      display: flex;
+      margin-top: 8px;
     }
   `
 }));

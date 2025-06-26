@@ -24,6 +24,7 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
   const { usageData, handleOnCancel, handleExport, FilterBar, init, open } =
     useUsageData<DashboardUsageData>({
       url: DASHBOARD_STATS_API,
+      disabledDate: true,
       defaultData: {
         api_request_history: [],
         completion_token_history: [],

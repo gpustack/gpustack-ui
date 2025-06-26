@@ -4,6 +4,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 
 interface RangePickerPreset {
   range: number;
+  disabledDate?: boolean;
 }
 
 export default function useRangePickerPreset(options?: RangePickerPreset): {
@@ -14,7 +15,7 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   }[];
   range: number;
 } {
-  const { range = 60 } = options || {};
+  const { range = 60, disabledDate } = options || {};
   const intl = useIntl();
 
   const getYearMonth = (date: Dayjs) => date.year() * 12 + date.month();
@@ -23,9 +24,8 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
     current,
     { from, type }
   ) => {
-    // before 2025 is not allowed
-    if (current.year() < 2025) {
-      return true;
+    if (!disabledDate) {
+      return false;
     }
 
     if (from) {
@@ -45,10 +45,9 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
           );
 
         default:
-          return Math.abs(current.diff(from, 'days')) > range;
+          return current.isBefore(minDate) || current.isAfter(maxDate);
       }
     }
-
     return false;
   };
 
@@ -58,19 +57,19 @@ export default function useRangePickerPreset(options?: RangePickerPreset): {
   }[] = [
     {
       label: intl.formatMessage({ id: 'dashboard.usage.datePicker.last7days' }),
-      value: [dayjs().add(-7, 'd'), dayjs()]
+      value: [dayjs().add(-6, 'd'), dayjs()]
     },
     {
       label: intl.formatMessage({
         id: 'dashboard.usage.datePicker.last30days'
       }),
-      value: [dayjs().add(-30, 'd'), dayjs()]
+      value: [dayjs().add(-29, 'd'), dayjs()]
     },
     {
       label: intl.formatMessage({
         id: 'dashboard.usage.datePicker.last60days'
       }),
-      value: [dayjs().add(-60, 'd'), dayjs()]
+      value: [dayjs().add(-59, 'd'), dayjs()]
     }
   ];
 

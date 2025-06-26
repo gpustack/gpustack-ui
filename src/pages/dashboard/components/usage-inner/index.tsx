@@ -1,3 +1,4 @@
+import breakpoints from '@/config/breakpoints';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import { FC, useContext, useEffect, useMemo } from 'react';
@@ -12,12 +13,11 @@ import TopUser from './top-user';
 import useUsageData from './use-usage-data';
 
 const TitleWrapper = styled.div`
-  margin: 26px 0px;
-  margin-bottom: 38px;
+  margin: 0;
   font-weight: 700;
 `;
 
-const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
+const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
   const intl = useIntl();
   const { model_usage } = useContext(DashboardContext);
 
@@ -70,21 +70,26 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
 
   return (
     <div>
-      <Row style={{ width: '100%' }} gutter={[0, 20]}>
+      <Row
+        style={{ width: '100%' }}
+        gutter={maxWidth < breakpoints.xl ? [0, 0] : [0, 20]}
+      >
         <Col
           xs={24}
           sm={24}
           md={24}
           lg={24}
           xl={16}
-          style={{ paddingRight: paddingRight, marginTop: 12 }}
+          style={{
+            paddingRight: maxWidth < breakpoints.xl ? 0 : 20
+          }}
         >
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: 0
+              margin: '20px 0 '
             }}
           >
             <TitleWrapper>
@@ -99,10 +104,14 @@ const UsageInner: FC<{ paddingRight: string }> = ({ paddingRight }) => {
             tokenData={usageData?.requestTokenData.tokenData}
           ></RequestTokenInner>
         </Col>
-        <Col xs={24} sm={24} md={24} lg={24} xl={8} style={{ marginTop: 12 }}>
-          <TitleWrapper>
-            {intl.formatMessage({ id: 'dashboard.topusers' })}
-          </TitleWrapper>
+        <Col xs={24} sm={24} md={24} lg={24} xl={8} style={{ margin: 0 }}>
+          <div
+            style={{ margin: maxWidth < breakpoints.xl ? '26px 0' : '32px 0' }}
+          >
+            <TitleWrapper>
+              {intl.formatMessage({ id: 'dashboard.topusers' })}
+            </TitleWrapper>
+          </div>
           <TopUser
             userData={topUserData.userData}
             topUserList={topUserData.topUserList}

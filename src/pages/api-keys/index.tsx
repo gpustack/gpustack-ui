@@ -1,4 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
+import DeleteModal from '@/components/delete-modal';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
@@ -31,7 +32,7 @@ const APIKeys: React.FC = () => {
     rowSelection,
     queryParams,
     sortOrder,
-    DeleteModal,
+    modalRef,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -260,7 +261,7 @@ const APIKeys: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>
-      <DeleteModal></DeleteModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
 };

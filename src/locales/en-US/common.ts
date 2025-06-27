@@ -210,7 +210,7 @@ export default {
   'common.button.feedback': 'Feedback',
   'common.button.docs': 'Documentation',
   'common.button.version': 'Version',
-  'common.title.delete.confirm': 'Confirm delete',
+  'common.title.delete.confirm': 'Confirm deletion',
   'common.title.stop.confirm': 'Confirm stop',
   'common.title.start.confirm': 'Confirm start',
   'common.title.recreate.confirm': 'Confirm recreate',

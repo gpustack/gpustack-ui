@@ -1,4 +1,3 @@
-import useDeleteModel from '@/components/delete-modal';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
@@ -56,7 +55,6 @@ export default function useTableFetch<ListItem>(
     perPage: 10,
     search: ''
   });
-  const { DeleteModal, show, hide, configuration } = useDeleteModel();
   const { setChunkRequest } = useSetChunkRequest();
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     events: ['UPDATE', 'DELETE', 'INSERT'],
@@ -204,7 +202,7 @@ export default function useTableFetch<ListItem>(
     row: ListItem & { name: string; id: number },
     options?: any
   ) => {
-    show({
+    modalRef.current?.show({
       content: contentForDelete,
       operation: 'common.delete.single.confirm',
       name: row.name,
@@ -212,7 +210,7 @@ export default function useTableFetch<ListItem>(
       async onOk() {
         console.log('OK');
         await deleteAPI?.(row.id, {
-          ...configuration
+          ...modalRef.current?.configuration
         });
         fetchData();
       }
@@ -220,7 +218,7 @@ export default function useTableFetch<ListItem>(
   };
 
   const handleDeleteBatch = (options = {}) => {
-    show({
+    modalRef.current?.show({
       content: contentForDelete,
       operation: 'common.delete.confirm',
       selection: true,
@@ -232,7 +230,7 @@ export default function useTableFetch<ListItem>(
           rowSelection.selectedRowKeys,
           async (id: any) => {
             await deleteAPI(id, {
-              configuration
+              ...modalRef.current?.configuration
             });
             successIds.push(id);
           }
@@ -275,7 +273,6 @@ export default function useTableFetch<ListItem>(
     sortOrder,
     queryParams,
     modalRef,
-    DeleteModal,
     setQueryParams,
     handleDelete,
     handleDeleteBatch,

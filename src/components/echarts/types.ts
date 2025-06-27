@@ -4,7 +4,7 @@ export interface ChartProps {
   showEmpty?: boolean;
   xAxisData: string[];
   legendData?: LegendComponentOption['data'];
-  labelFormatter?: (val?: any) => string;
+  labelFormatter?: (val?: any, index?: number) => string;
   tooltipValueFormatter?: (val: any) => string;
   height: string | number;
   width?: string | number;

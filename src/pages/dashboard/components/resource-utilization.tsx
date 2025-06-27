@@ -41,6 +41,7 @@ const UtilizationOvertime: React.FC = () => {
   const tooltipValueFormatter = (value: any) => {
     return !value ? value : `${value}%`;
   };
+
   const generateData = useMemo(() => {
     const legendData: string[] = [];
     const xAxisData: string[] = [];

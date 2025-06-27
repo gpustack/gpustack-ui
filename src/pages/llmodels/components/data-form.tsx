@@ -21,7 +21,6 @@ import { FormData, SourceType } from '../config/types';
 import CatalogFrom from '../forms/catalog';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
-import OllamaForm from '../forms/ollama_library';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
@@ -253,7 +252,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         }}
       >
         <HuggingFaceForm></HuggingFaceForm>
-        <OllamaForm></OllamaForm>
         <LocalPathForm></LocalPathForm>
       </FormInnerContext.Provider>
       <Form.Item name="backend" rules={[{ required: true }]}>

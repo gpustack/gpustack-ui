@@ -142,10 +142,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
   const handleOnSelectModel = (model: any, manual?: boolean) => {
     const item = model || {};
-    if (item.evaluated && !item.isGGUF) {
-      onSelectModelAfterEvaluate(item, manual);
-    } else {
+    if (!item.evaluated || item.isGGUF) {
       onSelectModel(item, manual);
+    } else {
+      onSelectModelAfterEvaluate(item, manual);
     }
     setCurrent(item.id);
     currentRef.current = item.id;

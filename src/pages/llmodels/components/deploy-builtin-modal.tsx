@@ -25,6 +25,8 @@ import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 
+const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
+
 type AddModalProps = {
   title: string;
   action: PageActionType;
@@ -202,7 +204,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
     selectSpecRef.current = spec;
     return {
-      ..._.omit(spec, ['name']),
+      ..._.pick(spec, pickFieldsFromSpec),
       categories: _.get(current, 'categories.0', null)
     };
   };

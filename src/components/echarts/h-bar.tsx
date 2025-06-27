@@ -5,7 +5,7 @@ import _ from 'lodash';
 import React, { memo, useMemo } from 'react';
 import { ChartProps } from './types';
 
-const BarChart: React.FC<ChartProps> = (props) => {
+const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
   const {
     seriesData,
     xAxisData,
@@ -13,6 +13,7 @@ const BarChart: React.FC<ChartProps> = (props) => {
     width,
     labelFormatter,
     legendData,
+    maxItems,
     title
   } = props;
   const {
@@ -30,7 +31,13 @@ const BarChart: React.FC<ChartProps> = (props) => {
         ...titleConfig,
         left: 'start'
       },
-      grid,
+      grid: {
+        ...grid,
+        top: 0,
+        bottom: maxItems
+          ? `${(1 / maxItems) * (maxItems - xAxisData.length) * 100}%`
+          : 0
+      },
       tooltip: {
         ...tooltip
       },

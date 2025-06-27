@@ -28,6 +28,16 @@ const LineChart: React.FC<ChartProps> = (props) => {
     yAxis
   } = useChartConfig();
 
+  const axisLabelFormatter = (value: string, index: number) => {
+    if (labelFormatter) {
+      return labelFormatter(value, index);
+    }
+    if (index === xAxisData.length - 1) {
+      return '';
+    }
+    return value;
+  };
+
   const options = {
     title: {
       text: ''
@@ -45,7 +55,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
       ...xAxis,
       axisLabel: {
         ...xAxis.axisLabel,
-        formatter: labelFormatter
+        formatter: axisLabelFormatter
       }
     },
     yAxis,

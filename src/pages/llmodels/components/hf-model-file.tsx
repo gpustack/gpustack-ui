@@ -42,7 +42,10 @@ interface HFModelFileProps {
   modelSource: string;
   ref: any;
   gpuOptions?: any[];
-  onSelectFile?: (file: any, flagId: number) => void;
+  onSelectFile?: (
+    file: any,
+    options: { requestModelId: number; manual?: boolean }
+  ) => void;
   updateEvaluteState: (state: 'model' | 'form' | 'file') => number;
   onSelectFileAfterEvaluate?: (file: any) => void;
 }
@@ -85,8 +88,11 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   const timer = useRef<any>(null);
   const parentRequestModelId = useRef<number>(0);
 
-  const handleSelectModelFile = (item: any) => {
-    props.onSelectFile?.(item, parentRequestModelId.current);
+  const handleSelectModelFile = (item: any, manual?: boolean) => {
+    props.onSelectFile?.(item, {
+      requestModelId: parentRequestModelId.current,
+      manual: manual
+    });
     setCurrent(item.path);
     currentPathRef.current = item.path;
   };
@@ -397,7 +403,9 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
                     data={item}
                     isEvaluating={isEvaluating}
                     active={item.path === current}
-                    handleSelectModelFile={handleSelectModelFile}
+                    handleSelectModelFile={(data) =>
+                      handleSelectModelFile(data, true)
+                    }
                   ></ModelFileItem>
                 );
               })}

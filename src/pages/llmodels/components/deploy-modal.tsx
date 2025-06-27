@@ -33,13 +33,9 @@ import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
 
-const resetFieldsByModel = [
-  'cpu_offloading',
-  'distributed_inference_across_workers',
-  'backend_version',
-  'backend_parameters',
-  'env'
-];
+const resetFieldsByModel = ['backend_version', 'backend_parameters', 'env'];
+const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
+const dropFieldsFromForm = ['name', 'file_name', 'repo_id', 'backend'];
 
 const resetFieldsByFile = [
   'cpu_offloading',
@@ -187,11 +183,10 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const getDefaultSpec = (item: any) => {
-    const defaultSpec = _.get(item.evaluateResult?.default_spec, [
-      'backend_version',
-      'backend_parameters',
-      'env'
-    ]);
+    const defaultSpec = _.pick(
+      item.evaluateResult?.default_spec,
+      pickFieldsFromSpec
+    );
 
     return defaultSpec;
   };
@@ -205,7 +200,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const { run: onSelectFile } = useDeferredRequest(
-    async (item: any, modelInfo: any) => {
+    async (item: any, modelInfo: any, manual?: boolean) => {
       unlockWarningStatus();
 
       const evaluateRes = await handleOnValuesChangeBefore?.({
@@ -227,29 +222,34 @@ const AddModal: FC<AddModalProps> = (props) => {
       /**
        * do not reset backend_parameters when select a model file
        */
-      const formBackendParameters =
-        form.current?.getFieldValue?.('backend_parameters') || [];
+      const formValues = form.current?.getFieldsValue?.(pickFieldsFromSpec);
 
       form.current?.setFieldsValue?.({
-        ...defaultSpec,
         ..._.omit(modelInfo, ['name']),
         file_name: item.fakeName,
         backend_parameters:
-          formBackendParameters.length > 0
-            ? formBackendParameters
+          formValues.backend_parameters?.length > 0
+            ? formValues.backend_parameters
             : defaultSpec.backend_parameters || [],
+        backend_version:
+          formValues.backend_version || defaultSpec.backend_version,
+        env: formValues.env || defaultSpec.env,
         categories: getCategory(item)
       });
     },
     100
   );
 
-  const handleSelectModelFile = async (item: any, requestModelId: number) => {
+  const handleSelectModelFile = async (
+    item: any,
+    options: { requestModelId: number; manual?: boolean }
+  ) => {
+    const { requestModelId, manual } = options || {};
     if (requestModelId !== getRequestId()) {
       return;
     }
     console.log('handleSelectModelFile:', item, selectedModel);
-    form.current?.form?.resetFields(resetFieldsByFile);
+
     const modelInfo = onSelectModel(selectedModel, props.source);
 
     form.current?.setFieldsValue?.({
@@ -260,7 +260,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
     // evaluate the form data when select a model file
     if (item.fakeName) {
-      onSelectFile(item, modelInfo);
+      onSelectFile(item, modelInfo, manual);
     }
   };
 
@@ -304,6 +304,10 @@ const AddModal: FC<AddModalProps> = (props) => {
     const modelInfo = onSelectModel(item, props.source);
     form.current?.setFieldsValue?.({
       ...modelInfo,
+      ..._.omit(form.current?.form?.getFieldsValue?.(), [
+        ...dropFieldsFromForm,
+        ...pickFieldsFromSpec
+      ]),
       categories: getCategory(item)
     });
 
@@ -332,13 +336,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnSelectModelAfterEvaluate = (item: any, manual?: boolean) => {
-    console.log(
-      'handleOnSelectModelAfterEvaluate:',
-      item.name,
-      currentSelectedModel.current.name,
-      warningStatus.type,
-      currentModelDuringEvaluate(item)
-    );
     if (currentModelDuringEvaluate(item)) {
       return;
     }
@@ -357,11 +354,23 @@ const AddModal: FC<AddModalProps> = (props) => {
       item.evaluated
     ) {
       handleShowCompatibleAlert(item.evaluateResult);
-      form.current?.setFieldsValue?.({
+      const newFormValues = {
         ...getDefaultSpec(item),
         ...modelInfo,
+        ..._.omit(form.current?.form?.getFieldsValue?.(), [
+          ...dropFieldsFromForm,
+          ...pickFieldsFromSpec
+        ]),
         name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
+      };
+
+      form.current?.setFieldsValue?.(newFormValues);
+
+      handleOnValuesChangeBefore({
+        changedValues: {},
+        allValues: newFormValues,
+        source: props.source
       });
     }
   };

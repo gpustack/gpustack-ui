@@ -286,7 +286,13 @@ export const getRightRenderContent = (opts: {
             {!collapsed && (
               <span
                 className="m-l-8 font-size-14"
-                style={{ fontWeight: 'var(--font-weight-normal)' }}
+                style={{
+                  fontWeight: 'var(--font-weight-normal)',
+                  maxWidth: 100,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
               >
                 {opts.initialState?.currentUser?.username}
               </span>

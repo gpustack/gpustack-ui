@@ -33,7 +33,8 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
     });
 
   const topUserData = useMemo(() => {
-    const topUsers = model_usage?.top_users || [];
+    // top 10 users
+    const topUsers = model_usage?.top_users?.slice(0, 10) || [];
 
     const topUserPrompt: any = {
       name: 'Prompt tokens',

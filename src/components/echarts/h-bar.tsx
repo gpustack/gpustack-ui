@@ -45,12 +45,9 @@ const BarChart: React.FC<ChartProps> = (props) => {
         ...yAxis,
         axisLabel: {
           ...yAxis.axisLabel,
-          formatter(value: string) {
-            if (value.length > 10) {
-              return `${value.slice(0, 10)}...`;
-            }
-            return value;
-          }
+          overflow: 'truncate',
+          width: 60,
+          ellipsis: '...'
         }
       },
       legend: {

@@ -106,4 +106,4 @@ const LogsPagination: React.FC<LogsPaginationProps> = (props) => {
   );
 };
 
-export default React.memo(LogsPagination);
+export default LogsPagination;

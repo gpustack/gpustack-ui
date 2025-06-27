@@ -1,6 +1,6 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
-import useDeleteModel from '@/components/delete-modal';
+import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { PageSize } from '@/components/logs-viewer/config';
@@ -146,7 +146,6 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
-  const { DeleteModal, show } = useDeleteModel();
   const { getGPUList, generateFormValues, gpuDeviceList } =
     useGenerateFormEditInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
@@ -328,7 +327,7 @@ const Models: React.FC<ModelsProps> = ({
   }, [onCancelViewLogs]);
 
   const handleDelete = async (row: any) => {
-    show({
+    modalRef.current?.show({
       content: 'models.table.models',
       operation: 'common.delete.single.confirm',
       name: row.name,
@@ -343,7 +342,7 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleDeleteBatch = () => {
-    show({
+    modalRef.current?.show({
       content: 'models.table.models',
       operation: 'common.delete.confirm',
       selection: true,
@@ -407,7 +406,7 @@ const Models: React.FC<ModelsProps> = ({
   );
   const handleDeleteInstace = useCallback(
     (row: any) => {
-      show({
+      modalRef.current?.show({
         content: 'models.instances',
         okText: 'common.button.delrecreate',
         operation: 'common.delete.single.confirm',
@@ -488,7 +487,7 @@ const Models: React.FC<ModelsProps> = ({
         }
 
         if (val === 'stop') {
-          show({
+          modalRef.current?.show({
             content: 'models.instances',
             title: 'common.title.stop.confirm',
             okText: 'common.button.stop',
@@ -563,7 +562,7 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleStartBatch = async () => {
-    show({
+    modalRef.current?.show({
       content: 'models.table.models',
       title: 'common.title.start.confirm',
       okText: 'common.button.start',
@@ -576,7 +575,7 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleStopBatch = async () => {
-    show({
+    modalRef.current?.show({
       content: 'models.table.models',
       title: 'common.title.stop.confirm',
       okText: 'common.button.stop',
@@ -885,7 +884,7 @@ const Models: React.FC<ModelsProps> = ({
         open={openLogModal}
         onCancel={handleLogModalCancel}
       ></ViewLogsModal>
-      <DeleteModal></DeleteModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
       <APIAccessInfoModal
         open={apiAccessInfo.show}
         data={apiAccessInfo.data}

@@ -11,7 +11,6 @@ import React, {
   useRef,
   useState
 } from 'react';
-import styled from 'styled-components';
 import LogsList from './logs-list';
 import LogsPagination from './logs-pagination';
 import './styles/index.less';
@@ -27,12 +26,6 @@ interface LogsViewerProps {
   enableScorllLoad?: boolean;
   diffHeight?: number;
 }
-
-const PaginationWrapper = styled.div`
-  position: absolute;
-  right: 50px;
-  top: 30px;
-`;
 
 const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   const { diffHeight, url, tail: defaultTail, enableScorllLoad = true } = props;
@@ -302,16 +295,6 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
 
   return (
     <div className="logs-viewer-wrap-w2">
-      {/* <PaginationWrapper>
-        <Pagination
-          simple={{ readOnly: true }}
-          total={totalPage}
-          current={page}
-          pageSize={pageSize}
-          showSizeChanger={false}
-          hideOnSinglePage={false}
-        ></Pagination>
-      </PaginationWrapper> */}
       <div className="wrap">
         <div>
           <LogsList
@@ -331,7 +314,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
           <div className="pg">
             <div
               className={classNames('pg-inner', {
-                'at-top': isAtTop
+                'at-top': true
               })}
             >
               <LogsPagination

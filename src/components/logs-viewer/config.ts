@@ -1,7 +1,7 @@
 export const controlSeqRegex = /\x1b\[(\d*);?(\d*)?([A-DJKHfm])/g;
 export const replaceLineRegex = /\r\n/g;
 
-export const PageSize = 500;
+export const PageSize = 1000;
 
 export const throttle = <T extends (...args: any[]) => void>(
   func: T,

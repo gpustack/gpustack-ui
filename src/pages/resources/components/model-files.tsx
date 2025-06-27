@@ -1,5 +1,6 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import AutoTooltip from '@/components/auto-tooltip';
+import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import { FilterBar } from '@/components/page-tools';
@@ -293,7 +294,7 @@ const ModelFiles = () => {
     dataSource,
     rowSelection,
     queryParams,
-    DeleteModal,
+    modalRef,
     fetchData,
     handleDelete,
     handleDeleteBatch,
@@ -682,7 +683,7 @@ const ModelFiles = () => {
           }}
         ></Table>
       </ConfigProvider>
-      <DeleteModal></DeleteModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
       <DownloadModal
         onCancel={handleDownloadCancel}
         onOk={handleDownload}

@@ -187,11 +187,13 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const getDefaultSpec = (item: any) => {
-    const defaultSpec = item.evaluateResult?.default_spec || {};
-    return _.omit(defaultSpec, [
-      'cpu_offloading',
-      'distributed_inference_across_workers'
+    const defaultSpec = _.get(item.evaluateResult?.default_spec, [
+      'backend_version',
+      'backend_parameters',
+      'env'
     ]);
+
+    return defaultSpec;
   };
 
   const getCategory = (item: any) => {

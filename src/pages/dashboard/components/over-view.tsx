@@ -52,7 +52,7 @@ const Overview: React.FC = () => {
   };
   return (
     <div>
-      <Row gutter={[24, 20]} className={styles.row}>
+      <Row gutter={[20, 20]} className={styles.row}>
         {overviewConfigs.map((config, index) => (
           <Col
             xs={{ flex: '100%' }}

@@ -18,7 +18,17 @@ import ThinkContent from './think-content';
 const AudioWrapper = styled.div`
   padding-top: 10px;
   height: max-content;
-  margin-right: 10px;
+  width: max-content;
+  margin-inline: 10px;
+`;
+
+const ThumbImgWrapper = styled.div.attrs({
+  className: 'custom-scrollbar-horizontal'
+})`
+  display: flex;
+  justify-content: flex-start;
+  overflow-x: auto;
+  flex-direction: column;
 `;
 
 interface MessageBodyProps {
@@ -239,8 +249,9 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
           })}
           onClick={handleClickWrapper}
         >
-          <div className="justify-start ">
+          <ThumbImgWrapper>
             <ThumbImg
+              style={{ paddingBlockEnd: 0 }}
               editable={editable}
               dataList={data.imgs || []}
               onDelete={handleDeleteImg}
@@ -255,7 +266,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
                 ></SimpleAudio>
               </AudioWrapper>
             )}
-          </div>
+          </ThumbImgWrapper>
           <>
             {data.role === Roles.User ? (
               <Input.TextArea

@@ -50,7 +50,7 @@ const useStyles = createStyles(({ css, token }) => {
   return {
     wrapper: css`
       position: relative;
-      min-width: 300px;
+      min-width: 360px;
       height: 54px;
       display: flex;
       align-items: center;

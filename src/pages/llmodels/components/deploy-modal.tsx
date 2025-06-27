@@ -280,9 +280,19 @@ const AddModal: FC<AddModalProps> = (props) => {
     return modelName;
   };
 
+  const currentModelDuringEvaluate = (item: any) => {
+    return (
+      evaluateStateRef.current.state === EvaluateProccess.form &&
+      item.name === currentSelectedModel.current.name
+    );
+  };
+
   const handleOnSelectModel = async (item: any, manual?: boolean) => {
     // If the item is empty or the same as the selected model, do nothing
 
+    if (currentModelDuringEvaluate(item)) {
+      return;
+    }
     handleCancelFiles();
     if (
       _.isEmpty(item) ||
@@ -328,16 +338,13 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
   };
 
-  const currentModelDuringEvaluate = (item: any) => {
-    return (
-      evaluateStateRef.current.state === EvaluateProccess.form &&
-      item.name === currentSelectedModel.current.name
-    );
-  };
-
   const handleOnSelectModelAfterEvaluate = (item: any, manual?: boolean) => {
     if (currentModelDuringEvaluate(item)) {
       return;
+    }
+
+    if (manual) {
+      form.current?.form?.resetFields(resetFieldsByModel);
     }
     // If the item is empty
     setIsGGUF(item.isGGUF);
@@ -364,6 +371,8 @@ const AddModal: FC<AddModalProps> = (props) => {
         name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
       };
+
+      console.log('newFormValues:', newFormValues);
 
       form.current?.setFieldsValue?.(newFormValues);
 

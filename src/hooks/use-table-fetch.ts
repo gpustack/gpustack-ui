@@ -7,6 +7,8 @@ import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
 
+type EventsType = 'CREATE' | 'UPDATE' | 'DELETE' | 'INSERT';
+
 type WatchConfig =
   | { watch?: false | undefined; API?: string; polling?: boolean }
   | { watch: true; API: string; polling?: false | undefined }
@@ -18,6 +20,7 @@ export default function useTableFetch<ListItem>(
     deleteAPI?: (id: number, params?: any) => Promise<any>;
     contentForDelete?: string;
     defaultData?: any[];
+    events?: EventsType[];
   } & WatchConfig
 ) {
   const {
@@ -27,7 +30,8 @@ export default function useTableFetch<ListItem>(
     API,
     polling = false,
     watch,
-    defaultData = []
+    defaultData = [],
+    events = ['UPDATE', 'DELETE', 'INSERT']
   } = options;
   const pollingRef = useRef<any>(null);
   const chunkRequedtRef = useRef<any>(null);
@@ -57,7 +61,7 @@ export default function useTableFetch<ListItem>(
   });
   const { setChunkRequest } = useSetChunkRequest();
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
-    events: ['UPDATE', 'DELETE', 'INSERT'],
+    events: events,
     dataList: dataSource.dataList,
     setDataList(list, opts?: any) {
       setDataSource((pre) => {

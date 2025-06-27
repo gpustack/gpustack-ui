@@ -36,9 +36,20 @@ const audioTypeMap: Record<string, string> = {
 
 const AudioWrapper = styled.div`
   padding-block: 10px;
+  height: max-content;
+  width: max-content;
   audio {
     padding-top: 10px;
   }
+`;
+
+const ImgsWrapper = styled.div.attrs({
+  className: 'custom-scrollbar-horizontal'
+})`
+  display: flex;
+  overflow-x: auto;
+  width: 100%;
+  flex-direction: column;
 `;
 
 type CurrentMessage = Omit<MessageItem, 'uid'>;
@@ -505,8 +516,9 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             )}
           </div>
         </div>
-        <div className="flex">
+        <ImgsWrapper>
           <ThumbImg
+            style={{ paddingBlockEnd: 0 }}
             dataList={message.imgs || []}
             onDelete={handleDeleteImg}
             editable={true}
@@ -521,7 +533,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
               ></SimpleAudio>
             </AudioWrapper>
           )}
-        </div>
+        </ImgsWrapper>
         <div className="input-box">
           {actions.includes('paste') ? (
             <TextArea

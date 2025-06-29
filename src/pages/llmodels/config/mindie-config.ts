@@ -153,10 +153,6 @@ const options = [
     value: '--tensor-parallel-size'
   },
   {
-    label: '--enable-expert-parallel',
-    value: '--enable-expert-parallel'
-  },
-  {
     label: '--data-parallel-size',
     value: '--data-parallel-size'
   },
@@ -171,6 +167,22 @@ const options = [
   {
     label: '--decode-expected-time-ms',
     value: '--decode-expected-time-ms'
+  },
+  {
+    label: '--pipeline-parallel-size',
+    value: '--pipeline-parallel-size'
+  },
+  {
+    label: '--sequence-parallel-size',
+    value: '--sequence-parallel-size'
+  },
+  {
+    label: '--moe-expert-parallel-size',
+    value: '--moe-expert-parallel-size'
+  },
+  {
+    label: '--moe-tensor-parallel-size',
+    value: '--moe-tensor-parallel-size'
   }
 ];
 

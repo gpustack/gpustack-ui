@@ -145,6 +145,7 @@ const useSetChunkFetch = () => {
       try {
         const chunk = decoder.decode(value, { stream: true });
         bufferManager.add(chunk);
+        bufferManager.updateSpeed(chunk.length);
         throttledCallback();
       } catch (error) {
         // handle error

@@ -1,3 +1,4 @@
+import { convertFileSize } from '@/utils';
 import { throttle } from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef } from 'react';
@@ -42,13 +43,19 @@ const useSetChunkFetch = () => {
   const readTextEventStreamData = async (
     response: Response,
     callback: HandlerFunction,
-    delay = 200
+    delay = 100
   ) => {
     class BufferManager {
       private buffer: any[] = [];
       private contentLength: number | null = null;
       private progress: number = 0;
       private percent: number = 0;
+      private speedHistory: number[] = [];
+      private maxHistory = 5;
+      private lastTime: number = performance.now();
+      private lastBytes: number = 0;
+      private totalBytes: number = 0;
+      private avgSpeed: number = 0;
 
       constructor(private options: { contentLength?: string | null }) {
         this.contentLength = options.contentLength
@@ -60,6 +67,28 @@ const useSetChunkFetch = () => {
         if (this.contentLength) {
           this.progress += new TextEncoder().encode(data).length;
           this.percent = Math.floor((this.progress / this.contentLength) * 100);
+        }
+      }
+
+      private logSpeed(speedBps: number) {
+        this.speedHistory.push(speedBps);
+        if (this.speedHistory.length > this.maxHistory) {
+          this.speedHistory.shift();
+        }
+        this.avgSpeed =
+          this.speedHistory.reduce((a, b) => a + b, 0) /
+          this.speedHistory.length;
+        console.log(`瞬时均值: ${convertFileSize(this.avgSpeed)}/s`);
+      }
+
+      public updateSpeed(bytes: number) {
+        const now = performance.now();
+        const elapsed = (now - this.lastTime) / 1000;
+        if (elapsed > 0.3) {
+          const speed = (this.totalBytes + bytes - this.lastBytes) / elapsed;
+          this.logSpeed(speed);
+          this.lastTime = now;
+          this.lastBytes = this.totalBytes + bytes;
         }
       }
 

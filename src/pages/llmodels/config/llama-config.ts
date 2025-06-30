@@ -604,6 +604,10 @@ const options = [
   {
     label: '--no-enable-reasoning',
     value: '--no-enable-reasoning'
+  },
+  {
+    label: '--override-tensor',
+    value: '--override-tensor'
   }
 ];
 

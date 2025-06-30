@@ -183,6 +183,14 @@ const options = [
   {
     label: '--moe-tensor-parallel-size',
     value: '--moe-tensor-parallel-size'
+  },
+  {
+    label: '--enable-multi-token-prediction',
+    value: '--enable-multi-token-prediction'
+  },
+  {
+    label: '--multi-token-prediction-tokens',
+    value: '--multi-token-prediction-tokens'
   }
 ];
 

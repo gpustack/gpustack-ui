@@ -50,11 +50,19 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
     const topUserNames = topUsers.map((item: any) => {
       topUserPrompt.data.push({
         name: item.username,
-        value: item.prompt_token_count
+        value: item.prompt_token_count,
+        itemStyle: {
+          borderRadius: !item.completion_token_count
+            ? [2, 2, 2, 2]
+            : [0, 2, 2, 0]
+        }
       });
       topUserCompletion.data.push({
         name: item.username,
-        value: item.completion_token_count
+        value: item.completion_token_count,
+        itemStyle: {
+          borderRadius: !item.prompt_token_count ? [2, 2, 2, 2] : [2, 0, 0, 2]
+        }
       });
       return item.username;
     });

@@ -119,7 +119,7 @@ const ExportData: React.FC<{
       init();
     } else {
       setQuery({
-        start_date: dayjs().subtract(30, 'days').format('YYYY-MM-DD'),
+        start_date: dayjs().subtract(29, 'days').format('YYYY-MM-DD'),
         end_date: dayjs().format('YYYY-MM-DD'),
         model_ids: [],
         user_ids: []

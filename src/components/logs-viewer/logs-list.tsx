@@ -72,7 +72,7 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
 
       const isBottom = scrollTop + clientHeight + 150 >= scrollHeight;
       // is scroll to top
-      if (scrollTop === 0) {
+      if (scrollTop <= 10) {
         onScroll?.({
           isTop: true,
           isBottom: false

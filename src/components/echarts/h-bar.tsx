@@ -53,7 +53,7 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
         axisLabel: {
           ...yAxis.axisLabel,
           overflow: 'truncate',
-          width: 60,
+          width: 75,
           ellipsis: '...'
         }
       },

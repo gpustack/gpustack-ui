@@ -101,6 +101,7 @@ const MixLineBarChart: React.FC<
         stack: 'total',
         yAxisIndex: 0,
         itemStyle: {
+          ...item.itemStyle,
           color: item.color
         }
       };

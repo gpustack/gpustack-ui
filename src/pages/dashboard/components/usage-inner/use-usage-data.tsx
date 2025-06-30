@@ -85,7 +85,7 @@ const generateValueMap = (list: { timestamp: number; value: number }[]) => {
 };
 
 const generateData = (dateRage: string[], valueMap: Map<string, number>) => {
-  return dateRage.map((date) => {
+  return dateRage.map((date, index) => {
     const value = valueMap.get(date) || 0;
     return {
       time: date,
@@ -201,15 +201,40 @@ export default function useUseageData<T>(config: {
     };
 
     // =========== token usage data ==============
+    const completionDataList = generateData(
+      dateRange,
+      generateValueMap(completionTokenHistory)
+    );
+    const promptDataList = generateData(
+      dateRange,
+      generateValueMap(promptTokenHistory)
+    );
+
     const completionData: any = {
       name: 'Completion tokens',
       color: baseColorMap.base,
-      data: generateData(dateRange, generateValueMap(completionTokenHistory))
+      data: completionDataList.map((item, index) => {
+        return {
+          ...item,
+          itemStyle: {
+            borderRadius: !promptDataList[index].value
+              ? [2, 2, 0, 0]
+              : [0, 0, 0, 0]
+          }
+        };
+      })
     };
     const promptData: any = {
       name: 'Prompt tokens',
       color: baseColorMap.baseR3,
-      data: generateData(dateRange, generateValueMap(promptTokenHistory))
+      data: promptDataList.map((item, index) => {
+        return {
+          ...item,
+          itemStyle: {
+            borderRadius: [2, 2, 0, 0]
+          }
+        };
+      })
     };
 
     return {

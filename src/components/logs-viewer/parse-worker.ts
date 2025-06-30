@@ -30,6 +30,8 @@ class AnsiParser {
   private percent: number = 0;
   private isComplete: boolean = false;
   private chunked: boolean = true; // true: send data in chunks, false: send all data at once
+  private reminder: string = '';
+  private lines: string[] = [];
   private pageSize: number = 500;
   private colorMap = {
     '30': 'black',
@@ -52,6 +54,8 @@ class AnsiParser {
     this.screen = [['']];
     this.rawDataRows = 0;
     this.uid = this.uid + 1;
+    this.lines = [];
+    this.reminder = '';
     this.page = 1;
   }
 
@@ -109,7 +113,6 @@ class AnsiParser {
     const n = parseInt(match[1] || '1', 10);
     const m = parseInt(match[2] || '1', 10);
     const command = match[3];
-
     switch (command) {
       case 'A':
         this.cursorRow = Math.max(0, this.cursorRow - n);
@@ -183,6 +186,28 @@ class AnsiParser {
     return result;
   }
 
+  private processInputByLine(input: string): {
+    data: string[];
+    lines: number;
+    remainder: string;
+  } {
+    const lines = input?.split(/\r?\n/) || [];
+    const remainder = lines.pop() || '';
+
+    // const data = lines.join('\n');
+    this.rawDataRows += lines.length;
+    this.lines.push(...lines);
+    return {
+      data: this.lines,
+      lines: this.rawDataRows,
+      remainder
+    };
+  }
+
+  private getAllLines() {
+    return this.lines.join('\n');
+  }
+
   private async processQueue(): Promise<void> {
     if (this.isProcessing) {
       return;
@@ -191,11 +216,12 @@ class AnsiParser {
     this.isProcessing = true;
 
     while (this.taskQueue.length > 0) {
-      const input = this.taskQueue.shift();
+      const input = this.reminder + this.taskQueue.shift();
 
       if (input) {
         try {
-          const result = this.processInput(input);
+          const result = this.processInputByLine(input);
+          this.reminder = result.remainder;
           if (this.chunked) {
             self.postMessage({ result: result.data, lines: result.lines });
           } else if (!this.isComplete) {
@@ -220,7 +246,7 @@ class AnsiParser {
       this.processQueue();
     } else if (this.isComplete && !this.chunked) {
       self.postMessage({
-        result: this.getScreenText(),
+        result: this.getAllLines(),
         percent: this.percent,
         isComplete: true
       });

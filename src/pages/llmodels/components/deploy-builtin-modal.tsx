@@ -25,7 +25,13 @@ import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 
-const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
+const pickFieldsFromSpec = [
+  'backend_version',
+  'backend_parameters',
+  'env',
+  'size',
+  'quantization'
+];
 
 type AddModalProps = {
   title: string;

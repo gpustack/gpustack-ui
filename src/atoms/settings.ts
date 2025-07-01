@@ -7,13 +7,15 @@ type UserSettings = {
   mode: 'light' | 'realDark' | 'auto';
   colorPrimary: string;
   isDarkTheme: boolean;
+  collapsed: boolean;
 };
 
 const defaultSettings: UserSettings = {
   theme: 'light',
   mode: 'auto',
   isDarkTheme: false,
-  colorPrimary: colorPrimary
+  colorPrimary: colorPrimary,
+  collapsed: false
 };
 
 export const getStorageUserSettings = () => {

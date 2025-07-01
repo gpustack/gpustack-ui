@@ -12,7 +12,7 @@ export const checkDefaultPage = async (userInfo: any, replace: boolean) => {
   if (isFirstLogin === null && isOnline()) {
     writeState(IS_FIRST_LOGIN, true);
     const pathname =
-      userInfo && userInfo?.is_admin ? '/models/list' : '/playground';
+      userInfo && userInfo?.is_admin ? '/models/deployment' : '/playground';
     history.push(pathname);
     return;
   }

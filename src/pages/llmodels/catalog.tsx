@@ -172,7 +172,7 @@ const Catalog: React.FC = () => {
         });
         message.success(intl.formatMessage({ id: 'common.message.success' }));
         setModelsExpandKeys([modelData.id]);
-        navigate('/models/list');
+        navigate('/models/deployment');
       } catch (error) {}
     },
     [openDeployModal]

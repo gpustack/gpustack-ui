@@ -33,7 +33,7 @@ export default {
       iconMarginInlineEnd: 12,
       itemBorderRadius: 4,
       itemSelectedColor: '#007BFF',
-      itemHeight: 36,
+      itemHeight: 32,
       groupTitleColor: 'rgba(0,0,0,1)',
       itemHoverColor: 'rgba(0,0,0,1)',
       itemColor: 'rgba(0,0,0,1)',

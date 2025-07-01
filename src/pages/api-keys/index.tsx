@@ -100,7 +100,8 @@ const APIKeys: React.FC = () => {
           title: intl.formatMessage({ id: 'apikeys.title' }),
           style: {
             paddingInline: 'var(--layout-content-header-inlinepadding)'
-          }
+          },
+          breadcrumb: {}
         }}
         extra={[]}
       >

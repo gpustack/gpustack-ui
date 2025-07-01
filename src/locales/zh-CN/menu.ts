@@ -2,7 +2,7 @@ export default {
   'menu.dashboard': '概览',
   'menu.playground': '试验场',
   'menu.playground.rerank': '重排',
-  'menu.playground.embedding': '文本嵌入',
+  'menu.playground.embedding': '嵌入',
   'menu.playground.chat': '对话',
   'menu.playground.speech': '语音',
   'menu.playground.text2images': '图像',
@@ -10,6 +10,7 @@ export default {
   'menu.models': '模型',
   'menu.models.modelList': '部署与管理',
   'menu.models.modelCatalog': '模型库',
+  'menu.models.deployment': '部署',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
   'menu.resources': '资源',
@@ -18,5 +19,11 @@ export default {
   'menu.profile': '个人信息',
   'menu.login': '登录',
   'menu.usage': '使用量',
-  'menu.404': '404'
+  'menu.404': '404',
+  'menu.resources.workers': 'Workers',
+  'menu.resources.gpus': 'GPUs',
+  'menu.resources.modelfiles': '模型文件',
+  'menu.accessControl': '访问控制',
+  'menu.accessControl.apikeys': 'API 密钥',
+  'menu.accessControl.users': '用户'
 };

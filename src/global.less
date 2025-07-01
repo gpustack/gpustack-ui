@@ -252,7 +252,8 @@ body {
     }
 
     .ant-pro-sider .ant-layout-sider-children {
-      background-color: var(--color-fill-sider);
+      // background-color: var(--color-fill-sider);
+      border-right: 1px solid var(--ant-color-split);
     }
   }
 
@@ -290,6 +291,10 @@ body {
     .anticon {
       font-size: 16px;
     }
+  }
+
+  .ant-pro-sider-actions-list-collapsed {
+    margin-block-end: 0;
   }
 
   .ant-pro-page-container-children-container {
@@ -333,6 +338,10 @@ body {
       .ant-menu-item.ant-menu-item-selected {
         // color: var(--ant-color-primary) !important;
         font-weight: 400;
+      }
+
+      .ant-menu-item-group-title.hide-submenu + .ant-menu-item-group-list {
+        display: none;
       }
     }
   }

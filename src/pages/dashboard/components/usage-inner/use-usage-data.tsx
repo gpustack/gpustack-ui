@@ -1,36 +1,11 @@
-import useSelectRender from '@/components/seal-form/hooks/use-select-render';
 import { queryModelsList } from '@/pages/llmodels/apis';
 import { ListItem as ModelListItem } from '@/pages/llmodels/config/types';
 import { queryUsersList } from '@/pages/users/apis';
-import { DownloadOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
-import { Button, DatePicker, Select, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo, useState } from 'react';
-import styled from 'styled-components';
-import {
-  DASHBOARD_STATS_API,
-  DASHBOARD_USAGE_API,
-  queryDashboardUsageData
-} from '../../apis';
+import { DASHBOARD_USAGE_API, queryDashboardUsageData } from '../../apis';
 import { baseColorMap } from '../../config';
-import useRangePickerPreset from '../../hooks/use-rangepicker-preset';
-
-const FilterWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0px;
-  .selection {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .ant-select-selection-overflow-item > span {
-    height: 24px;
-  }
-`;
 
 interface RequestTokenData {
   requestData: {
@@ -99,20 +74,8 @@ export default function useUseageData<T>(config: {
   defaultData?: T;
   disabledDate?: boolean;
 }) {
-  const { url, defaultData, disabledDate = false } = config || {};
-  const intl = useIntl();
-  const { TagRender } = useSelectRender({
-    maxTagWidth: 100,
-    filled: true,
-    style: {
-      height: 24,
-      lineHeight: '24px'
-    }
-  });
-  const { disabledRangeDaysDate, rangePresets } = useRangePickerPreset({
-    range: DefaultDateConfig.maxRange,
-    disabledDate: disabledDate
-  });
+  const { url, defaultData } = config || {};
+
   const [open, setOpen] = useState(false);
   const [result, setResult] = useState<{
     start_date?: string;
@@ -356,69 +319,6 @@ export default function useUseageData<T>(config: {
     fetchUsersList();
   };
 
-  const FilterBar = () => {
-    const filterOptions = (inputValue: any, option: any) => {
-      return option.label?.toLowerCase().includes(inputValue.toLowerCase());
-    };
-    return (
-      <FilterWrapper>
-        <div className="selection">
-          <DatePicker.RangePicker
-            maxDate={dayjs()}
-            defaultValue={[
-              dayjs().add(-DefaultDateConfig.defaultRange, 'd'),
-              dayjs()
-            ]}
-            disabledDate={disabledRangeDaysDate}
-            presets={rangePresets}
-            allowClear={false}
-            style={{ width: 220 }}
-            value={[dayjs(query.start_date), dayjs(query.end_date)]}
-            onChange={handleDateChange}
-          ></DatePicker.RangePicker>
-          <Select
-            allowClear
-            showSearch
-            mode="multiple"
-            options={userList}
-            maxTagCount={1}
-            filterOption={filterOptions}
-            tagRender={TagRender}
-            placeholder={intl.formatMessage({
-              id: 'dashboard.usage.selectuser'
-            })}
-            style={{ maxWidth: 200, minWidth: 160 }}
-            value={query.user_ids}
-            onChange={handleUsersChange}
-          ></Select>
-          <Select
-            allowClear
-            showSearch
-            mode="multiple"
-            options={modelList}
-            maxTagCount={1}
-            tagRender={TagRender}
-            filterOption={filterOptions}
-            placeholder={intl.formatMessage({
-              id: 'dashboard.usage.selectmodel'
-            })}
-            value={query.model_ids}
-            style={{ maxWidth: 200, minWidth: 160 }}
-            onChange={handleModelsChange}
-          ></Select>
-          {url === DASHBOARD_STATS_API && (
-            <Tooltip title={intl.formatMessage({ id: 'common.button.export' })}>
-              <Button
-                icon={<DownloadOutlined />}
-                onClick={handleExport}
-              ></Button>
-            </Tooltip>
-          )}
-        </div>
-      </FilterWrapper>
-    );
-  };
-
   return {
     usageData,
     result,
@@ -430,8 +330,10 @@ export default function useUseageData<T>(config: {
     setQuery,
     init,
     setResult,
-    FilterBar,
     handleOnCancel,
-    handleExport
+    handleExport,
+    handleDateChange,
+    handleUsersChange,
+    handleModelsChange
   };
 }

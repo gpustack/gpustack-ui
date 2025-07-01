@@ -8,6 +8,7 @@ import { baseColorMap } from '../../config';
 import { DashboardContext } from '../../config/dashboard-context';
 import { DashboardUsageData } from '../../config/types';
 import ExportData from './export-data';
+import FilterBar from './filter-bar';
 import RequestTokenInner from './request-token-inner';
 import TopUser from './top-user';
 import useUsageData from './use-usage-data';
@@ -21,16 +22,27 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
   const intl = useIntl();
   const { model_usage } = useContext(DashboardContext);
 
-  const { usageData, handleOnCancel, handleExport, FilterBar, init, open } =
-    useUsageData<DashboardUsageData>({
-      url: DASHBOARD_STATS_API,
-      disabledDate: true,
-      defaultData: {
-        api_request_history: [],
-        completion_token_history: [],
-        prompt_token_history: []
-      }
-    });
+  const {
+    usageData,
+    query,
+    userList,
+    modelList,
+    handleOnCancel,
+    init,
+    handleExport,
+    handleDateChange,
+    handleUsersChange,
+    handleModelsChange,
+    open
+  } = useUsageData<DashboardUsageData>({
+    url: DASHBOARD_STATS_API,
+    disabledDate: true,
+    defaultData: {
+      api_request_history: [],
+      completion_token_history: [],
+      prompt_token_history: []
+    }
+  });
 
   const topUserData = useMemo(() => {
     // top 10 users
@@ -104,10 +116,19 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
             <TitleWrapper>
               {intl.formatMessage({ id: 'dashboard.usage' })}
             </TitleWrapper>
-            <FilterBar></FilterBar>
+            <FilterBar
+              url={DASHBOARD_STATS_API}
+              query={query}
+              userList={userList}
+              modelList={modelList}
+              disabledDate={true}
+              handleDateChange={handleDateChange}
+              handleUsersChange={handleUsersChange}
+              handleModelsChange={handleModelsChange}
+              handleExport={handleExport}
+            ></FilterBar>
           </div>
           <RequestTokenInner
-            onExport={handleExport}
             requestData={usageData?.requestTokenData.requestData}
             xAxisData={usageData?.requestTokenData.xAxisData}
             tokenData={usageData?.requestTokenData.tokenData}

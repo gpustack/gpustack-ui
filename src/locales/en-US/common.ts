@@ -97,7 +97,7 @@ export default {
   'common.form.field.input.required': 'required',
   'common.form.field.select.required': 'required',
   'common.select.option': 'All',
-  'common.checbox.all': 'All',
+  'common.checbox.all': 'Select all',
   'common.select.all': 'All {type}',
   'common.data.unkonwn': 'Unknown',
   'common.data.none': 'No Data',
@@ -250,5 +250,6 @@ export default {
     'Oops! Something went wrong. Try refreshing the page.',
   'common.tips.escape.disable':
     'Click Cancel or the X at the top right to close.',
-  'common.button.clearSelection': 'Clear Selection'
+  'common.button.clearSelection': 'Clear Selection',
+  'common.select.count': '{count} selected'
 };

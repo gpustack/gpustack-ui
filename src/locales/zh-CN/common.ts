@@ -243,5 +243,6 @@ export default {
   'common.page.wentwrong': '哎呀，出了点问题',
   'common.page.refresh.tips': '出了点问题，试试刷新页面吧！',
   'common.tips.escape.disable': '请点击「取消」按钮或右上角 X 关闭窗口',
-  'common.button.clearSelection': '清除选择'
+  'common.button.clearSelection': '清除选择',
+  'common.select.count': '已选 {count} 项'
 };

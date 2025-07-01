@@ -551,7 +551,8 @@ export const useCheckCompatibility = () => {
     const gpuSelector = generateGPUIds(data.values);
     return await handleDoEvalute({
       ...data.values,
-      ...gpuSelector
+      ...gpuSelector,
+      replicas: allValues.replicas || 0
     });
   };
 

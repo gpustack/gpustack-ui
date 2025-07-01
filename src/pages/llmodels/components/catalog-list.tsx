@@ -16,7 +16,7 @@ const SpinWrapper = styled.div`
   justify-content: center;
   top: 0;
   left: 0;
-  height: 400px;
+  max-height: 400px;
   right: 0;
 `;
 

@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
 import { DASHBOARD_USAGE_API } from '../../apis';
 import { TableRow } from '../../config/types';
+import FilterBar from './filter-bar';
 import useUsageData from './use-usage-data';
 
 const ExportData: React.FC<{
@@ -17,7 +18,6 @@ const ExportData: React.FC<{
   const { open, onCancel } = props || {};
   const intl = useIntl();
   const {
-    FilterBar,
     init,
     setResult,
     loading,
@@ -25,7 +25,11 @@ const ExportData: React.FC<{
     userList,
     modelList,
     query,
-    setQuery
+    setQuery,
+    handleExport,
+    handleDateChange,
+    handleUsersChange,
+    handleModelsChange
   } = useUsageData<{
     items: TableRow[];
   }>({
@@ -169,7 +173,16 @@ const ExportData: React.FC<{
         ></ModalFooter>
       }
     >
-      <FilterBar></FilterBar>
+      <FilterBar
+        disabledDate={false}
+        url={DASHBOARD_USAGE_API}
+        query={query}
+        userList={userList}
+        modelList={modelList}
+        handleDateChange={handleDateChange}
+        handleUsersChange={handleUsersChange}
+        handleModelsChange={handleModelsChange}
+      ></FilterBar>
       <Table
         columns={exportTableColumns}
         tableLayout={'auto'}

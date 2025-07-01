@@ -249,9 +249,11 @@ export default {
     'Упс! Что-то пошло не так. Попробуйте обновить страницу.',
   'common.tips.escape.disable':
     'Чтобы закрыть, нажмите "Отмена" или крестик (X) в правом верхнем углу.',
-  'common.button.clearSelection': 'Clear Selection'
+  'common.button.clearSelection': 'Clear Selection',
+  'common.select.count': '{count} selected'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'common.button.clearSelection': 'Clear Selection'
+// 2. 'common.select.count': '{count} selected'
 // ========== End of To-Do List ==========

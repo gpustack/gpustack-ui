@@ -27,7 +27,6 @@ const CardWrapperBox = styled.div`
 `;
 
 interface RequestTokenInnerProps {
-  onExport?: () => void;
   requestData: {
     name: string;
     color: string;

@@ -37,7 +37,7 @@ export const rerankerSamples: Record<
   }
 > = {
   'zh-CN': {
-    query: '如何提高睡眠质量?',
+    query: '如何提高睡眠质量？',
     documents: [
       '保持规律的作息时间，晚上避免使用电子产品。',
       '参加更多社交活动有助于提高情绪。',

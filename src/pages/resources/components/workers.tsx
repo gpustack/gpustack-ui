@@ -13,6 +13,7 @@ import {
   EditOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
+import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { ConfigProvider, Empty, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
@@ -202,263 +203,279 @@ const Workers: React.FC = () => {
 
   return (
     <>
-      <FilterBar
-        buttonText={intl.formatMessage({ id: 'resources.button.create' })}
-        handleDeleteByBatch={handleDeleteBatch}
-        handleSearch={handleSearch}
-        handleClickPrimary={handleAddWorker}
-        handleInputChange={handleNameChange}
-        rowSelection={rowSelection}
-        width={{ input: 300 }}
-      ></FilterBar>
-      <ConfigProvider renderEmpty={renderEmpty}>
-        <Table
-          tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
-          style={{ width: '100%' }}
-          dataSource={dataSource.dataList}
-          loading={dataSource.loading}
-          rowKey="id"
-          onChange={handleTableChange}
+      <PageContainer
+        ghost
+        header={{
+          title: 'Workers',
+          style: {
+            paddingInline: 'var(--layout-content-header-inlinepadding)'
+          },
+          breadcrumb: {}
+        }}
+        extra={[]}
+      >
+        <FilterBar
+          marginBottom={22}
+          buttonText={intl.formatMessage({ id: 'resources.button.create' })}
+          handleDeleteByBatch={handleDeleteBatch}
+          handleSearch={handleSearch}
+          handleClickPrimary={handleAddWorker}
+          handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          pagination={{
-            showSizeChanger: true,
-            pageSize: queryParams.perPage,
-            current: queryParams.page,
-            total: dataSource.total,
-            hideOnSinglePage: queryParams.perPage === 10,
-            onChange: handlePageChange
-          }}
-        >
-          <Column
-            title={intl.formatMessage({ id: 'common.table.name' })}
-            dataIndex="name"
-            key="name"
-            width={100}
-            render={(text, record: ListItem) => {
-              return (
-                <AutoTooltip ghost maxWidth={240}>
-                  <span>{record.name}</span>
-                </AutoTooltip>
-              );
+          width={{ input: 300 }}
+        ></FilterBar>
+        <ConfigProvider renderEmpty={renderEmpty}>
+          <Table
+            tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
+            style={{ width: '100%' }}
+            dataSource={dataSource.dataList}
+            loading={dataSource.loading}
+            rowKey="id"
+            onChange={handleTableChange}
+            rowSelection={rowSelection}
+            pagination={{
+              showSizeChanger: true,
+              pageSize: queryParams.perPage,
+              current: queryParams.page,
+              total: dataSource.total,
+              hideOnSinglePage: queryParams.perPage === 10,
+              onChange: handlePageChange
             }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'resources.table.labels' })}
-            dataIndex="labels"
-            key="labels"
-            width={200}
-            render={(text, record: ListItem) => {
-              return (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 6
-                  }}
-                >
-                  {_.map(record.labels, (value: any, key: string) => {
-                    return (
-                      <AutoTooltip
-                        key={key}
-                        className="m-r-0"
-                        maxWidth={155}
-                        style={{
-                          paddingInline: 8,
-                          borderRadius: 12
-                        }}
-                      >
-                        <span>{key}</span>
-                        <span>:{value}</span>
-                      </AutoTooltip>
-                    );
-                  })}
-                </div>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.status' })}
-            dataIndex="state"
-            key="state"
-            render={(text, record: ListItem) => {
-              return (
-                <StatusTag
-                  maxTooltipWidth={400}
-                  statusValue={{
-                    status: status[record.state] as any,
-                    text: WorkerStatusMapValue[record.state],
-                    message: record.state_message
-                  }}
-                ></StatusTag>
-              );
-            }}
-          />
-          <Column title="IP" dataIndex="ip" key="address" />
-          <Column
-            title="CPU"
-            dataIndex="CPU"
-            key="CPU"
-            render={(text, record: ListItem) => {
-              return (
-                <ProgressBar
-                  percent={_.round(record?.status?.cpu?.utilization_rate, 0)}
-                ></ProgressBar>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'resources.table.memory' })}
-            dataIndex="memory"
-            key="Memory"
-            render={(text, record: ListItem) => {
-              return (
-                <ProgressBar
-                  percent={formateUtilazation(
-                    record?.status?.memory?.used,
-                    record?.status?.memory?.total
-                  )}
-                  label={
-                    <InfoColumn
-                      fieldList={fieldList}
-                      data={record.status.memory}
-                    ></InfoColumn>
-                  }
-                ></ProgressBar>
-              );
-            }}
-          />
-          <Column
-            title="GPU"
-            dataIndex="GPU"
-            key="GPU"
-            render={(text, record: ListItem) => {
-              return (
-                <span className="flex-column flex-gap-2">
-                  {_.map(
-                    _.sortBy(record?.status?.gpu_devices || [], ['index']),
-                    (item: GPUDeviceItem, index: string) => {
+          >
+            <Column
+              title={intl.formatMessage({ id: 'common.table.name' })}
+              dataIndex="name"
+              key="name"
+              width={100}
+              render={(text, record: ListItem) => {
+                return (
+                  <AutoTooltip ghost maxWidth={240}>
+                    <span>{record.name}</span>
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'resources.table.labels' })}
+              dataIndex="labels"
+              key="labels"
+              width={200}
+              render={(text, record: ListItem) => {
+                return (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 6
+                    }}
+                  >
+                    {_.map(record.labels, (value: any, key: string) => {
                       return (
-                        <span className="flex-center" key={index}>
-                          <span
-                            className="m-r-5"
-                            style={{ display: 'flex', width: 25 }}
-                          >
-                            [{item.index}]
-                          </span>
-                          {item.core ? (
-                            <ProgressBar
-                              key={index}
-                              percent={_.round(item.core?.utilization_rate, 0)}
-                            ></ProgressBar>
-                          ) : (
-                            '-'
-                          )}
-                        </span>
+                        <AutoTooltip
+                          key={key}
+                          className="m-r-0"
+                          maxWidth={155}
+                          style={{
+                            paddingInline: 8,
+                            borderRadius: 12
+                          }}
+                        >
+                          <span>{key}</span>
+                          <span>:{value}</span>
+                        </AutoTooltip>
                       );
+                    })}
+                  </div>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.status' })}
+              dataIndex="state"
+              key="state"
+              render={(text, record: ListItem) => {
+                return (
+                  <StatusTag
+                    maxTooltipWidth={400}
+                    statusValue={{
+                      status: status[record.state] as any,
+                      text: WorkerStatusMapValue[record.state],
+                      message: record.state_message
+                    }}
+                  ></StatusTag>
+                );
+              }}
+            />
+            <Column title="IP" dataIndex="ip" key="address" />
+            <Column
+              title="CPU"
+              dataIndex="CPU"
+              key="CPU"
+              render={(text, record: ListItem) => {
+                return (
+                  <ProgressBar
+                    percent={_.round(record?.status?.cpu?.utilization_rate, 0)}
+                  ></ProgressBar>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'resources.table.memory' })}
+              dataIndex="memory"
+              key="Memory"
+              render={(text, record: ListItem) => {
+                return (
+                  <ProgressBar
+                    percent={formateUtilazation(
+                      record?.status?.memory?.used,
+                      record?.status?.memory?.total
+                    )}
+                    label={
+                      <InfoColumn
+                        fieldList={fieldList}
+                        data={record.status.memory}
+                      ></InfoColumn>
                     }
-                  )}
-                </span>
-              );
-            }}
-          />
-
-          <Column
-            title={intl.formatMessage({ id: 'resources.table.vram' })}
-            dataIndex="VRAM"
-            key="VRAM"
-            render={(text, record: ListItem) => {
-              return (
-                <span className="flex-column flex-gap-2">
-                  {_.map(
-                    _.sortBy(record?.status?.gpu_devices || [], ['index']),
-                    (item: GPUDeviceItem, index: string) => {
-                      return (
-                        <span key={index}>
-                          <span className="flex-center">
+                  ></ProgressBar>
+                );
+              }}
+            />
+            <Column
+              title="GPU"
+              dataIndex="GPU"
+              key="GPU"
+              render={(text, record: ListItem) => {
+                return (
+                  <span className="flex-column flex-gap-2">
+                    {_.map(
+                      _.sortBy(record?.status?.gpu_devices || [], ['index']),
+                      (item: GPUDeviceItem, index: string) => {
+                        return (
+                          <span className="flex-center" key={index}>
                             <span
                               className="m-r-5"
                               style={{ display: 'flex', width: 25 }}
                             >
                               [{item.index}]
                             </span>
-                            <ProgressBar
-                              key={index}
-                              percent={
-                                item.memory?.used
-                                  ? _.round(item.memory?.utilization_rate, 0)
-                                  : _.round(
-                                      (item.memory?.allocated /
-                                        item.memory?.total) *
-                                        100,
-                                      0
-                                    )
-                              }
-                              label={
-                                <InfoColumn
-                                  fieldList={fieldList}
-                                  data={item.memory}
-                                ></InfoColumn>
-                              }
-                            ></ProgressBar>
-                            {item.memory.is_unified_memory && (
-                              <Tooltip
-                                title={intl.formatMessage({
-                                  id: 'resources.table.unified'
-                                })}
-                              >
-                                <InfoCircleOutlined
-                                  className="m-l-5"
-                                  style={{ color: 'var(--ant-blue-5)' }}
-                                />
-                              </Tooltip>
+                            {item.core ? (
+                              <ProgressBar
+                                key={index}
+                                percent={_.round(
+                                  item.core?.utilization_rate,
+                                  0
+                                )}
+                              ></ProgressBar>
+                            ) : (
+                              '-'
                             )}
                           </span>
-                        </span>
-                      );
-                    }
-                  )}
-                </span>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'resources.table.disk' })}
-            dataIndex="storage"
-            key="storage"
-            render={(text, record: ListItem) => {
-              return (
-                <ProgressBar
-                  percent={calcStorage(record.status?.filesystem)}
-                  label={renderStorageTooltip(record.status.filesystem)}
-                ></ProgressBar>
-              );
-            }}
-          />
-          <Column
-            title={intl.formatMessage({ id: 'common.table.operation' })}
-            key="operation"
-            render={(text, record: ListItem) => {
-              return (
-                <DropdownButtons
-                  items={ActionList}
-                  onSelect={(val) => handleSelect(val, record)}
-                ></DropdownButtons>
-              );
-            }}
-          />
-        </Table>
-      </ConfigProvider>
-      <DeleteModal ref={modalRef}></DeleteModal>
-      <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
-      <UpdateLabels
-        open={updateLabelsData.open}
-        onOk={handleUpdateLabelsOk}
-        onCancel={handleCancelUpdateLabels}
-        data={{
-          name: updateLabelsData.data.name,
-          labels: updateLabelsData.data.labels
-        }}
-      ></UpdateLabels>
+                        );
+                      }
+                    )}
+                  </span>
+                );
+              }}
+            />
+
+            <Column
+              title={intl.formatMessage({ id: 'resources.table.vram' })}
+              dataIndex="VRAM"
+              key="VRAM"
+              render={(text, record: ListItem) => {
+                return (
+                  <span className="flex-column flex-gap-2">
+                    {_.map(
+                      _.sortBy(record?.status?.gpu_devices || [], ['index']),
+                      (item: GPUDeviceItem, index: string) => {
+                        return (
+                          <span key={index}>
+                            <span className="flex-center">
+                              <span
+                                className="m-r-5"
+                                style={{ display: 'flex', width: 25 }}
+                              >
+                                [{item.index}]
+                              </span>
+                              <ProgressBar
+                                key={index}
+                                percent={
+                                  item.memory?.used
+                                    ? _.round(item.memory?.utilization_rate, 0)
+                                    : _.round(
+                                        (item.memory?.allocated /
+                                          item.memory?.total) *
+                                          100,
+                                        0
+                                      )
+                                }
+                                label={
+                                  <InfoColumn
+                                    fieldList={fieldList}
+                                    data={item.memory}
+                                  ></InfoColumn>
+                                }
+                              ></ProgressBar>
+                              {item.memory.is_unified_memory && (
+                                <Tooltip
+                                  title={intl.formatMessage({
+                                    id: 'resources.table.unified'
+                                  })}
+                                >
+                                  <InfoCircleOutlined
+                                    className="m-l-5"
+                                    style={{ color: 'var(--ant-blue-5)' }}
+                                  />
+                                </Tooltip>
+                              )}
+                            </span>
+                          </span>
+                        );
+                      }
+                    )}
+                  </span>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'resources.table.disk' })}
+              dataIndex="storage"
+              key="storage"
+              render={(text, record: ListItem) => {
+                return (
+                  <ProgressBar
+                    percent={calcStorage(record.status?.filesystem)}
+                    label={renderStorageTooltip(record.status.filesystem)}
+                  ></ProgressBar>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.operation' })}
+              key="operation"
+              render={(text, record: ListItem) => {
+                return (
+                  <DropdownButtons
+                    items={ActionList}
+                    onSelect={(val) => handleSelect(val, record)}
+                  ></DropdownButtons>
+                );
+              }}
+            />
+          </Table>
+        </ConfigProvider>
+        <DeleteModal ref={modalRef}></DeleteModal>
+        <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
+        <UpdateLabels
+          open={updateLabelsData.open}
+          onOk={handleUpdateLabelsOk}
+          onCancel={handleCancelUpdateLabels}
+          data={{
+            name: updateLabelsData.data.name,
+            labels: updateLabelsData.data.labels
+          }}
+        ></UpdateLabels>
+      </PageContainer>
     </>
   );
 };

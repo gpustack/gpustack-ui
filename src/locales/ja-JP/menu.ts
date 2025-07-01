@@ -11,6 +11,7 @@ export default {
   'menu.models.modelList': 'デプロイと管理',
   'menu.models.modelCatalog': 'カタログ',
   'menu.models.catalog': 'モデルカタログ',
+  'menu.models.deployment': 'Deployment',
   'menu.modelCatalog': 'カタログ',
   'menu.resources': 'リソース',
   'menu.apikeys': 'APIキー',
@@ -18,5 +19,21 @@ export default {
   'menu.profile': 'プロフィール',
   'menu.login': 'ログイン',
   'menu.usage': '使用状況',
-  'menu.404': '404'
+  'menu.404': '404',
+  'menu.resources.workers': 'Workers',
+  'menu.resources.gpus': 'GPUs',
+  'menu.resources.modelfiles': 'Model Files',
+  'menu.accessControl': 'Access Control',
+  'menu.accessControl.apikeys': 'API Keys',
+  'menu.accessControl.users': 'Users'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1.   'menu.models.deployment': 'Deployment',
+// 2. 'menu.resources.workers': 'Workers',
+// 3. 'menu.resources.gpus': 'GPUs',
+// 4. 'menu.resources.modelfiles': 'Model Files',
+// 5. 'menu.accessControl': 'Access Control',
+// 6. 'menu.accessControl.apikeys': 'API Keys',
+// 7. 'menu.accessControl.users': 'Users',
+// ========== End of To-Do List ==========

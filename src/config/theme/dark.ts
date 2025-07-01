@@ -32,7 +32,7 @@ export default {
       iconSize: 16,
       iconMarginInlineEnd: 12,
       itemBorderRadius: 4,
-      itemHeight: 36,
+      itemHeight: 32,
       itemSelectedColor: '#007BFF',
       darkItemSelectedBg: '#141414',
       darkItemHoverBg: 'rgba(255, 255, 255, 0.03)',

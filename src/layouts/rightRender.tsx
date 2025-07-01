@@ -20,23 +20,14 @@ import { Avatar, Menu, Spin } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 
-const themeConfig = [
-  {
-    key: 'realDark',
-    label: 'common.appearance.dark',
-    icon: <MoonOutlined />
-  },
-  {
-    key: 'light',
-    label: 'common.appearance.light',
-    icon: <SunOutlined />
-  }
-  // {
-  //   key: 'auto',
-  //   label: 'common.appearance.system',
-  //   icon: <IconFont type="icon-theme-auto" />
-  // }
-];
+const getMenuStyle = (
+  collapsed: boolean,
+  siderWidth: number,
+  extraStyle: React.CSSProperties = {}
+) => ({
+  width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`,
+  ...extraStyle
+});
 
 export const getRightRenderContent = (opts: {
   runtimeConfig: any;
@@ -301,6 +292,20 @@ export const getRightRenderContent = (opts: {
         ),
         children: [
           {
+            key: 'apikeys',
+            label: (
+              <span className="flex flex-center">
+                <IconFont type="icon-key" />
+                <span className="m-l-8" style={{ marginLeft: 8 }}>
+                  {intl?.formatMessage?.({ id: 'menu.apikeys' })}
+                </span>
+              </span>
+            ),
+            onClick: () => {
+              history.push('/api-keys');
+            }
+          },
+          {
             key: 'settings',
             label: (
               <span className="flex flex-center">
@@ -333,23 +338,17 @@ export const getRightRenderContent = (opts: {
     ]
   };
 
-  const getMenuStyle = (
-    collapsed: boolean,
-    siderWidth: number,
-    extraStyle: React.CSSProperties = {}
-  ) => ({
-    width: collapsed ? 40 : `calc(${siderWidth}px - 16px)`,
-    ...extraStyle
-  });
-
   return (
-    <div>
+    <>
       <Menu {...helpMenu} style={getMenuStyle(collapsed, siderWidth)} />
-      <Menu {...langMenu} style={getMenuStyle(collapsed, siderWidth)} />
+      {/* <Menu {...langMenu} style={getMenuStyle(collapsed, siderWidth)} /> */}
       <Menu
         {...userMenu}
-        style={getMenuStyle(collapsed, siderWidth, { marginTop: 20 })}
+        style={getMenuStyle(collapsed, siderWidth, {
+          marginTop: 8,
+          marginBottom: 0
+        })}
       />
-    </div>
+    </>
   );
 };

@@ -1,7 +1,9 @@
 import useUserSettings from '@/hooks/use-user-settings';
+import langConfigMap from '@/locales/lang-config-map';
 import { MoonOutlined, SunOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
+import { getAllLocales, setLocale, useIntl } from '@umijs/max';
 import { Select } from 'antd';
+import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -10,20 +12,18 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 16px;
   padding: 16px 0;
-  .theme {
+`;
+
+const SettingsItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 300px;
+  .label {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    max-width: 300px;
-  }
-  .theme-label {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: var(--font-weight-500);
-  }
-  .tips {
-    color: var(--ant-color-text-secondary);
   }
 `;
 
@@ -33,6 +33,7 @@ const Appearance: React.FC = () => {
   console.log('userSettings', userSettings);
 
   const intl = useIntl();
+  const allLocals = getAllLocales();
 
   const ThemeOptions = [
     {
@@ -56,10 +57,17 @@ const Appearance: React.FC = () => {
     setTheme(value);
   };
 
+  console.log('allLocals', allLocals);
+
+  const languageOptions = allLocals.map((locale) => ({
+    value: locale,
+    label: _.get(langConfigMap, [locale, 'label'])
+  }));
+
   return (
     <Wrapper>
-      <div className="theme">
-        <span className="theme-label">
+      <SettingsItem>
+        <span className="label">
           <span>{intl.formatMessage({ id: 'common.appearance.theme' })}</span>
         </span>
         <Select
@@ -68,7 +76,20 @@ const Appearance: React.FC = () => {
           onChange={handleOnChange}
           style={{ width: 200 }}
         ></Select>
-      </div>
+      </SettingsItem>
+      <SettingsItem>
+        <span className="label">
+          <span>{intl.formatMessage({ id: 'common.settings.language' })}</span>
+        </span>
+        <Select
+          value={intl.locale}
+          options={languageOptions}
+          onChange={(value) => {
+            setLocale(value, false);
+          }}
+          style={{ width: 200 }}
+        ></Select>
+      </SettingsItem>
     </Wrapper>
   );
 };

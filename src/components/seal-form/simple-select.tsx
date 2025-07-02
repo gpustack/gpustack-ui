@@ -53,7 +53,6 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
     checked: false,
     indeterminate: false
   });
-  const [searchValue, setSearchValue] = React.useState<string>('');
   const [optionsList, setOptionsList] = React.useState<any[]>(options || []);
   const selectRef = React.useRef<any>(null);
 
@@ -78,8 +77,6 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
   const handleOnCheckboxChange = (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
     const allValues = optionsList?.map((opt: any) => opt.value) || [];
-
-    console.log('isChecked', isChecked, allValues);
 
     setAllSelection({
       checked: isChecked,
@@ -162,8 +159,6 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
     const isSomeSelected = allValues.some((val: any) =>
       selectedValues.has(val)
     );
-
-    console.log('isAllSelected', isAllSelected, selectedValues, allValues);
 
     setAllSelection({
       checked: isAllSelected,

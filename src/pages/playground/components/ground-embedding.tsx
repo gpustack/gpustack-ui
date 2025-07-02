@@ -29,6 +29,7 @@ import React, {
 } from 'react';
 import { EMBEDDING_API, handleEmbedding } from '../apis';
 import { extractErrorMessage } from '../config';
+import { embeddingSamples } from '../config/samples';
 import { LLM_METAKEYS } from '../hooks/config';
 import useEmbeddingWorker from '../hooks/use-embedding-worker';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
@@ -49,7 +50,6 @@ interface MessageProps {
 
 const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
-  const messageId = useRef<number>(0);
 
   const intl = useIntl();
   const { workerRef, createWorker, postMessage, terminateWorker } =
@@ -158,7 +158,7 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
   }, [textList, fileList]);
 
   const setMessageId = () => {
-    messageId.current = messageId.current + 1;
+    return inputListRef.current?.setMessageId?.();
   };
 
   const handleStopConversation = () => {
@@ -424,6 +424,22 @@ const GroundEmbedding: React.FC<MessageProps> = forwardRef((props, ref) => {
     }
     messageListLengthCache.current = textList.length + fileList.length;
   }, [textList.length, fileList.length]);
+
+  useEffect(() => {
+    if (intl.locale || 'en-US') {
+      const sample = embeddingSamples[intl.locale];
+
+      if (sample) {
+        setTextList(
+          sample.map((item: string, index: number) => ({
+            text: item,
+            uid: setMessageId(),
+            name: `Document ${index + 1}`
+          }))
+        );
+      }
+    }
+  }, []);
 
   return (
     <div className="ground-left-wrapper rerank">

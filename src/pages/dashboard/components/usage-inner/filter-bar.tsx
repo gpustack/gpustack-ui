@@ -60,10 +60,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
 
   const intl = useIntl();
 
-  const filterOptions = (inputValue: any, option: any) => {
-    return option.label?.toLowerCase().includes(inputValue.toLowerCase());
-  };
-
   return (
     <FilterWrapper>
       <div className="selection">
@@ -86,7 +82,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           mode="multiple"
           options={userList}
           maxTagCount={0}
-          filterOption={filterOptions}
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectuser'
           })}
@@ -100,7 +95,6 @@ const FilterBar: React.FC<FilterBarProps> = (props) => {
           mode="multiple"
           options={modelList}
           maxTagCount={0}
-          filterOption={filterOptions}
           placeholder={intl.formatMessage({
             id: 'dashboard.usage.selectmodel'
           })}

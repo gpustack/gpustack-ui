@@ -491,6 +491,20 @@ export const formFields = [
   'restart_on_error'
 ];
 
+export const defaultFormValues = {
+  replicas: 1,
+  description: '',
+  categories: null,
+  env: {},
+  scheduleType: 'auto',
+  placement_strategy: 'spread',
+  gpu_ids: null,
+  gpu_selector: {},
+  worker_selector: {},
+  backend_parameters: [],
+  backend_version: ''
+};
+
 export const getBackendParamsTips = (backend: string) => {
   if (backend === backendOptionsMap.llamaBox) {
     return {

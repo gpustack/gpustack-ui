@@ -34,6 +34,7 @@ import React, {
 import styled from 'styled-components';
 import { rerankerQuery } from '../apis';
 import { extractErrorMessage } from '../config';
+import { rerankerSamples } from '../config/samples';
 import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
@@ -174,6 +175,30 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     };
   });
 
+  const setMessageId = () => {
+    const uid = inputListRef.current?.setMessageId();
+    return uid;
+  };
+
+  useEffect(() => {
+    if (intl.locale || 'en-US') {
+      const sample = rerankerSamples[intl.locale];
+      if (sample) {
+        setTextList(
+          sample.documents.map((item: string, index: number) => ({
+            text: item,
+            uid: setMessageId(),
+            name: `Document ${index + 1}`,
+            percent: undefined,
+            score: undefined,
+            rank: undefined
+          }))
+        );
+        setQueryValue(sample.query);
+      }
+    }
+  }, []);
+
   const viewCodeContent = useMemo(() => {
     return generateRerankCode({
       api: '/v1/rerank',
@@ -232,11 +257,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
         </span>
       </div>
     );
-  };
-
-  const setMessageId = () => {
-    const uid = inputListRef.current?.setMessageId();
-    return uid;
   };
 
   const handleStopConversation = () => {
@@ -460,6 +480,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           <SearchInputWrapper>
             <Input.Search
               allowClear
+              value={queryValue}
               onSearch={handleSearch}
               onChange={handleQueryChange}
               enterButton={

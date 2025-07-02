@@ -487,6 +487,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                       <div
                         style={{
                           height: 125,
+                          width: 125,
                           maxHeight: 125
                         }}
                         key={item.uid}
@@ -494,6 +495,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
                         <SingleImage
                           {...item}
                           height={125}
+                          width={125}
                           maxHeight={125}
                           preview={item.preview}
                           loading={item.loading}

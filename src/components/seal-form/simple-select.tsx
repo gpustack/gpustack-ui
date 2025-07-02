@@ -2,7 +2,7 @@ import { useIntl } from '@umijs/max';
 import type { SelectProps } from 'antd';
 import { Checkbox, Select, Tag } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import AutoTooltip from '../auto-tooltip';
 
@@ -44,7 +44,7 @@ const TagWrapper = styled(Tag)`
 
 const SimpleSelect: React.FC<SelectProps> = (props) => {
   const intl = useIntl();
-  const { options, ...restProps } = props;
+  const { options = [], ...restProps } = props;
 
   const [allSelection, setAllSelection] = React.useState<{
     checked: boolean;
@@ -53,6 +53,13 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
     checked: false,
     indeterminate: false
   });
+  const [searchValue, setSearchValue] = React.useState<string>('');
+  const [optionsList, setOptionsList] = React.useState<any[]>(options || []);
+  const selectRef = React.useRef<any>(null);
+
+  useEffect(() => {
+    setOptionsList(options || []);
+  }, [options]);
 
   const optionRender = (option: any, info: any) => {
     const { value, label } = option;
@@ -70,13 +77,30 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
 
   const handleOnCheckboxChange = (e: CheckboxChangeEvent) => {
     const isChecked = e.target.checked;
-    const allValues = options?.map((opt: any) => opt.value) || [];
+    const allValues = optionsList?.map((opt: any) => opt.value) || [];
+
+    console.log('isChecked', isChecked, allValues);
+
     setAllSelection({
       checked: isChecked,
       indeterminate: false
     });
 
-    restProps.onChange?.(isChecked ? allValues : [], options || []);
+    let allSelectedValues = [...(restProps.value || [])];
+
+    if (isChecked) {
+      // Select all options
+      allSelectedValues = Array.from(
+        new Set([...allSelectedValues, ...allValues])
+      );
+    } else {
+      // Deselect all options
+      allSelectedValues = allSelectedValues.filter(
+        (value) => !allValues.includes(value)
+      );
+    }
+
+    restProps.onChange?.(allSelectedValues, optionsList || []);
   };
 
   const dropdownRender = (originPanel: React.ReactNode) => {
@@ -100,7 +124,7 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
 
   const handleOnChange = (value: any, option: any) => {
     const selectedValues = Array.isArray(value) ? value : [value];
-    const allSelected = options?.map((opt: any) => opt.value) || [];
+    const allSelected = optionsList?.map((opt: any) => opt.value) || [];
     const isAllSelected = selectedValues.length === allSelected?.length;
 
     setAllSelection({
@@ -109,6 +133,42 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
     });
 
     restProps.onChange?.(selectedValues, option);
+  };
+
+  const filterOption = (inputValue: string, option: any) => {
+    if (!option || !option.label) return false;
+    return option.label.toLowerCase().includes(inputValue.toLowerCase());
+  };
+
+  const checkAllSelection = (list: Global.BaseOption<string | number>[]) => {
+    if (
+      !restProps.value ||
+      !Array.isArray(restProps.value) ||
+      list.length === 0
+    ) {
+      setAllSelection({
+        checked: false,
+        indeterminate: false
+      });
+      return;
+    }
+    const selectedValues = new Set(restProps.value);
+    const allValues = list?.map((opt: any) => opt.value) || [];
+
+    const isAllSelected = allValues.every((val: any) =>
+      selectedValues.has(val)
+    );
+
+    const isSomeSelected = allValues.some((val: any) =>
+      selectedValues.has(val)
+    );
+
+    console.log('isAllSelected', isAllSelected, selectedValues, allValues);
+
+    setAllSelection({
+      checked: isAllSelected,
+      indeterminate: isSomeSelected && !isAllSelected
+    });
   };
 
   const TagRender = (props: any) => {
@@ -130,17 +190,74 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
     );
   };
 
+  const handleOnSearch = (value: string) => {
+    if (restProps.onSearch) {
+      restProps.onSearch(value);
+    } else {
+      const filteredOptions = options?.filter((option: any) =>
+        option.label.toLowerCase().includes(value.toLowerCase())
+      ) as Global.BaseOption<string | number>[];
+      setOptionsList(filteredOptions || []);
+      checkAllSelection(filteredOptions || []);
+    }
+  };
+
+  const handleOnBlur = (e: any) => {
+    restProps.onBlur?.(e);
+  };
+
+  const handleOnFocus = (e: any) => {
+    restProps.onFocus?.(e);
+  };
+
+  const handleOnOpenChange = (open: boolean) => {
+    if (!open) {
+      checkAllSelection(options as Global.BaseOption<string | number>[]);
+      setOptionsList(options || []);
+    }
+  };
+
+  useEffect(() => {
+    const input = selectRef.current?.querySelector?.('input');
+
+    if (!input) return;
+
+    const handler = (event: KeyboardEvent) => {
+      if (
+        event.key === 'Backspace' &&
+        (input as HTMLInputElement).value === ''
+      ) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    };
+
+    input.addEventListener('keydown', handler);
+
+    return () => {
+      input.removeEventListener('keydown', handler);
+    };
+  }, [selectRef.current]);
+
   return (
-    <Select
-      {...restProps}
-      options={options}
-      maxTagCount={0}
-      dropdownRender={dropdownRender}
-      optionRender={optionRender}
-      menuItemSelectedIcon={false}
-      onChange={handleOnChange}
-      tagRender={TagRender}
-    ></Select>
+    <div ref={selectRef}>
+      <Select
+        {...restProps}
+        options={optionsList}
+        maxTagCount={0}
+        defaultActiveFirstOption={false}
+        dropdownRender={dropdownRender}
+        optionRender={optionRender}
+        menuItemSelectedIcon={false}
+        onChange={handleOnChange}
+        tagRender={TagRender}
+        onBlur={handleOnBlur}
+        onFocus={handleOnFocus}
+        onSearch={handleOnSearch}
+        filterOption={filterOption}
+        onDropdownVisibleChange={handleOnOpenChange}
+      ></Select>
+    </div>
   );
 };
 

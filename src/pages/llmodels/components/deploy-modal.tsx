@@ -11,6 +11,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   backendOptionsMap,
+  defaultFormValues,
   getSourceRepoConfigValue,
   modelSourceMap
 } from '../config';
@@ -310,7 +311,8 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
     updateSelectedModel(item);
 
-    form.current?.form?.resetFields(resetFieldsByModel);
+    // TODO
+    form.current?.form?.setFieldsValue(defaultFormValues);
     const modelInfo = onSelectModel(item, props.source);
     form.current?.setFieldsValue?.({
       ...modelInfo,

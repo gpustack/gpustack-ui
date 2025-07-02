@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
   backendOptionsMap,
+  defaultFormValues,
   modelCategoriesMap,
   sourceOptions
 } from '../config';
@@ -130,22 +131,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   // use for size change and quantization change
   const pickSomeFieldsValue = (defaultSpec: CatalogSpec) => {
     const formData = form.current?.getFieldsValue();
-    const currentData = _.pick(formData, [
-      'worker_selector',
-      'gpu_selector',
-      'env',
-      'backend_version',
-      'backend_parameters'
-    ]);
+    const currentData = _.pick(formData, Object.keys(defaultFormValues));
 
     // if the backend_parameters is empty, use the defaultSpec.backend_parameters
-    return {
-      ...currentData,
-      backend_parameters:
-        currentData.backend_parameters?.length > 0
-          ? currentData.backend_parameters
-          : defaultSpec.backend_parameters || []
-    };
+    return currentData;
   };
 
   const generateSubmitData = (formData: FormData) => {
@@ -365,6 +354,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
 
     form.current.setFieldsValue({
+      ...defaultFormValues,
       ...data
     });
     handleCheckFormData();
@@ -449,6 +439,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleOnSizeChange = (val: number) => {
+    // TODO
+    form.current.setFieldValue(defaultFormValues);
     const list = handleSetQuantizationOptions({
       backend: form.current.getFieldValue('backend'),
       size: val
@@ -464,8 +456,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
     // set form data
     form.current.setFieldsValue({
-      ...data,
-      ...pickSomeFieldsValue(data)
+      ...defaultFormValues,
+      ...data
     });
     handleCheckFormData();
   };

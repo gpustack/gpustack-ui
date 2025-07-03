@@ -97,6 +97,13 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     currentPathRef.current = item.path;
   };
 
+  const handleSelectModelFileManually = (data: any) => {
+    if (data.path === currentPathRef.current) {
+      return;
+    }
+    handleSelectModelFile(data, true);
+  };
+
   const parseFilename = (filename: string) => {
     const match = filename.match(pattern);
 
@@ -403,9 +410,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
                     data={item}
                     isEvaluating={isEvaluating}
                     active={item.path === current}
-                    handleSelectModelFile={(data) =>
-                      handleSelectModelFile(data, true)
-                    }
+                    handleSelectModelFile={handleSelectModelFileManually}
                   ></ModelFileItem>
                 );
               })}

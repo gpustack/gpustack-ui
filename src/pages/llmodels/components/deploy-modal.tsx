@@ -291,9 +291,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleOnSelectModel = async (item: any, manual?: boolean) => {
     // If the item is empty or the same as the selected model, do nothing
 
-    if (currentModelDuringEvaluate(item)) {
-      return;
-    }
     handleCancelFiles();
     if (
       _.isEmpty(item) ||

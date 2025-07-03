@@ -496,6 +496,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   const handleSelectModelManually = (model: any) => {
+    if (model.id === currentRef.current) {
+      return;
+    }
     handleOnSelectModel(model, true);
   };
 

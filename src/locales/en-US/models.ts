@@ -85,7 +85,7 @@ export default {
   'models.form.backend.llamabox':
     'For GGUF format models, supports Linux, macOS, and Windows.',
   'models.form.backend.vllm':
-    'For non-GGUF format models, supported only on Linux (amd64/x86_64).',
+    'For non-GGUF format models, supported only on Linux.',
   'models.form.backend.voxbox':
     'For non-GGUF format audio models, supported only on NVIDIA GPUs and CPUs.',
   'models.form.backend.mindie':

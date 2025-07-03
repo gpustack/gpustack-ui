@@ -186,6 +186,27 @@ export const addWorkerGuide: Record<string, any> = {
     --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
     }
   },
+  corex: {
+    registerWorker(params: {
+      server: string;
+      tag: string;
+      token: string;
+      workerip: string;
+    }) {
+      return `docker run -d --name gpustack \\
+    -v /lib/modules:/lib/modules \\
+    -v /dev:/dev \\
+    --privileged \\
+    --cap-add=ALL \\
+    --pid=host \\
+    --restart=unless-stopped \\
+    --network=host \\
+    --ipc=host \\
+    -v gpustack-data:/var/lib/gpustack \\
+    gpustack/gpustack:${params.tag} \\
+     --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    }
+  },
   container: {
     getToken:
       'docker exec -it ${gpustack_container_id} cat /var/lib/gpustack/token'
@@ -198,6 +219,7 @@ export const containerInstallOptions = [
   { label: 'Ascend CANN', value: 'npu' },
   { label: 'Hygon DTK', value: 'dcu' },
   { label: 'Moore Threads MUSA', value: 'musa' },
+  { label: 'Iluvatar Corex', value: 'corex' },
   { label: 'CPU', value: 'cpu' }
 ];
 

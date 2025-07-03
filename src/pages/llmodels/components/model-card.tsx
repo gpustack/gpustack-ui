@@ -5,7 +5,7 @@ import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import useRequestToken from '@/hooks/use-request-token';
 import {
   DownOutlined,
-  FileTextOutlined,
+  FileMarkdownOutlined,
   RightOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -49,7 +49,7 @@ const MarkDownTitle: React.FC<{
   return (
     <MkdTitle onClick={onCollapse}>
       <span>
-        <FileTextOutlined className="m-r-2 text-tertiary" /> README.md
+        <FileMarkdownOutlined className="m-r-2 text-tertiary" /> README.md
       </span>
       <span>
         {collapsed ? (

@@ -6,8 +6,6 @@ import { Empty, Select, Spin } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
-  memo,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -119,7 +117,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     }
   };
 
-  const generateGroupByFilename = useCallback((list: any[]) => {
+  const generateGroupByFilename = (list: any[]) => {
     // general file
     const generalFileList = _.filter(list, (item: any) => {
       const parsed = parseFilename(item.path);
@@ -163,7 +161,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     );
 
     return [...shardFileListResult, ...newGeneralFileList];
-  }, []);
+  };
 
   const hfFileFilter = (file: any) => {
     return filterRegGGUF.test(file.path) || _.includes(file.path, '.gguf');
@@ -228,7 +226,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     }
   };
 
-  const getEvaluateResults = useCallback(async (repoList: any[]) => {
+  const getEvaluateResults = async (repoList: any[]) => {
     try {
       checkTokenRef.current?.cancel?.();
       checkTokenRef.current = createAxiosToken();
@@ -244,7 +242,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     } catch (error) {
       return [];
     }
-  }, []);
+  };
 
   const handleEvaluate = async (list: any[]) => {
     if (isDownload) {
@@ -430,4 +428,4 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(HFModelFile);
+export default HFModelFile;

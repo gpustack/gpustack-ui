@@ -83,8 +83,7 @@ export default {
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows。',
-  'models.form.backend.vllm':
-    '用于非 GGUF 格式模型，仅支持 x86 Linux（amd64/x86_64）。',
+  'models.form.backend.vllm': '用于非 GGUF 格式模型，仅支持 Linux。',
   'models.form.backend.voxbox':
     '用于非 GGUF 格式的语音模型，仅支持 NVIDIA GPU 与 CPU。',
   'models.form.backend.mindie':

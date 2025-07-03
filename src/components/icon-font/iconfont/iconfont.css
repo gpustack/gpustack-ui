@@ -1,8 +1,8 @@
 @font-face {
   font-family: iconfont; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1750854031026') format('woff2'),
-       url('iconfont.woff?t=1750854031026') format('woff'),
-       url('iconfont.ttf?t=1750854031026') format('truetype');
+  src: url('iconfont.woff2?t=1751513598665') format('woff2'),
+       url('iconfont.woff?t=1751513598665') format('woff'),
+       url('iconfont.ttf?t=1751513598665') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,86 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-huggingface1::before {
+  content: "\e605";
+}
+
+.icon-modelscope_light::before {
+  content: "\e696";
+}
+
+.icon-catalog1::before {
+  content: "\e691";
+}
+
+.icon-chat-filled::before {
+  content: "\e692";
+}
+
+.icon-chat::before {
+  content: "\e693";
+}
+
+.icon-files-filled::before {
+  content: "\e694";
+}
+
+.icon-files::before {
+  content: "\e695";
+}
+
+.icon-models-filled::before {
+  content: "\e682";
+}
+
+.icon-image-filled::before {
+  content: "\e683";
+}
+
+.icon-audio1::before {
+  content: "\e684";
+}
+
+.icon-image1::before {
+  content: "\e685";
+}
+
+.icon-audio-filled::before {
+  content: "\e686";
+}
+
+.icon-reranker-filled::before {
+  content: "\e687";
+}
+
+.icon-embedding-filled::before {
+  content: "\e68a";
+}
+
+.icon-models::before {
+  content: "\e68b";
+}
+
+.icon-reranker::before {
+  content: "\e68c";
+}
+
+.icon-embedding::before {
+  content: "\e68d";
+}
+
+.icon-gpu-filled::before {
+  content: "\e68e";
+}
+
+.icon-catalog-filled::before {
+  content: "\e68f";
+}
+
+.icon-gpu1::before {
+  content: "\e690";
 }
 
 .icon-language::before {

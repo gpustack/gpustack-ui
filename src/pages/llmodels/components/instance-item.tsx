@@ -26,7 +26,11 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
-import { ModelInstanceListItem } from '../config/types';
+import {
+  DistributedServerItem,
+  DistributedServers,
+  ModelInstanceListItem
+} from '../config/types';
 import '../style/instance-item.less';
 
 const fieldList = [
@@ -146,14 +150,24 @@ const RenderRayactorDownloading = (props: {
 };
 
 const RenderWorkerDownloading = (props: {
-  rayActors: any[];
+  distributed_servers?: DistributedServers;
   workerList: WorkerListItem[];
   instanceData: ModelInstanceListItem;
 }) => {
-  const { rayActors, workerList, instanceData } = props;
+  const { distributed_servers, workerList, instanceData } = props;
+  const { ray_actors = [], subordinate_workers = [] } =
+    distributed_servers || {};
+
+  let severList: DistributedServerItem[] = [];
+  if (ray_actors.length > 0) {
+    severList = ray_actors;
+  } else if (subordinate_workers.length > 0) {
+    severList = subordinate_workers;
+  }
+
   if (
     instanceData.state !== InstanceStatusMap.Downloading ||
-    !rayActors.length
+    !severList.length
   ) {
     return null;
   }
@@ -167,7 +181,7 @@ const RenderWorkerDownloading = (props: {
       overlayClassName="light-downloading-tooltip"
       title={
         <RenderRayactorDownloading
-          severList={rayActors}
+          severList={severList}
           workerList={workerList}
           instanceData={instanceData}
         ></RenderRayactorDownloading>
@@ -179,7 +193,7 @@ const RenderWorkerDownloading = (props: {
         size={16}
         strokeColor="var(--ant-color-success)"
         percent={
-          _.find(rayActors, (item: any) => item.download_progress < 100)
+          _.find(severList, (item: any) => item.download_progress < 100)
             ?.download_progress || 0
         }
       />
@@ -471,11 +485,14 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     );
   };
 
-  const renderDistributionInfo = (distributed_servers: Record<string, any>) => {
-    const { rpc_servers, ray_actors, subordinate_workers } =
-      distributed_servers;
+  const renderDistributionInfo = (distributed_servers: DistributedServers) => {
+    const {
+      rpc_servers = [],
+      ray_actors = [],
+      subordinate_workers = []
+    } = distributed_servers || {};
 
-    let severList: any[] = [];
+    let severList: DistributedServerItem[] = [];
 
     if (rpc_servers?.length > 0) {
       severList = rpc_servers;
@@ -626,7 +643,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 className="flex align-center"
               >
                 {renderOffloadInfo}
-                {renderDistributionInfo(instanceData.distributed_servers || {})}
+                {renderDistributionInfo(
+                  instanceData.distributed_servers || ({} as DistributedServers)
+                )}
               </span>
             </Col>
             <Col span={4}>
@@ -639,7 +658,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                   handleChildSelect={handleChildSelect}
                 />
                 <RenderWorkerDownloading
-                  rayActors={instanceData.distributed_servers?.ray_actors || []}
+                  distributed_servers={instanceData.distributed_servers}
                   workerList={workerList}
                   instanceData={instanceData}
                 ></RenderWorkerDownloading>

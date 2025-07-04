@@ -159,9 +159,9 @@ const RenderWorkerDownloading = (props: {
     distributed_servers || {};
 
   let severList: DistributedServerItem[] = [];
-  if (ray_actors.length > 0) {
+  if (ray_actors?.length > 0) {
     severList = ray_actors;
-  } else if (subordinate_workers.length > 0) {
+  } else if (subordinate_workers?.length > 0) {
     severList = subordinate_workers;
   }
 

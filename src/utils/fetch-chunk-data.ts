@@ -193,7 +193,11 @@ export const readStreamData = async (
 };
 
 // Process the remainder of the buffer
-const processBuffer = async (buffer: string, callback: (data: any) => void) => {
+const processBuffer = async (
+  buffer: string,
+  callback: (data: any, done?: boolean) => void,
+  done?: boolean
+) => {
   if (!buffer) return;
 
   const lines = buffer.split('\n');
@@ -205,7 +209,7 @@ const processBuffer = async (buffer: string, callback: (data: any) => void) => {
       try {
         if (jsonStr !== '[DONE]') {
           const jsonData = JSON.parse(jsonStr);
-          callback(jsonData);
+          callback(jsonData, done);
         }
       } catch (e) {
         console.error('Failed to parse JSON from line:', jsonStr, e);
@@ -214,7 +218,7 @@ const processBuffer = async (buffer: string, callback: (data: any) => void) => {
       const errorStr = trimmedLine.slice(7).trim();
       try {
         const jsonData = JSON.parse(errorStr);
-        callback({ error: jsonData });
+        callback({ error: jsonData, done });
       } catch (e) {
         console.error('Failed to parse error JSON from line:', errorStr, e);
       }
@@ -225,7 +229,7 @@ const processBuffer = async (buffer: string, callback: (data: any) => void) => {
 export const readLargeStreamData = async (
   reader: any,
   decoder: TextDecoder,
-  callback: (data: any) => void,
+  callback: (data: any, done?: boolean) => void,
   throttleDelay = 200
 ) => {
   let buffer = ''; // cache incomplete line
@@ -234,9 +238,9 @@ export const readLargeStreamData = async (
     private buffer: any[] = [];
     private failed: boolean = false;
     private isFlushing: boolean = false;
-    private callback: (data: any) => void;
+    private callback: (data: any, done?: boolean) => void;
 
-    constructor(callback: (data: any) => void) {
+    constructor(callback: (data: any, done?: boolean) => void) {
       this.callback = callback;
     }
 
@@ -244,7 +248,12 @@ export const readLargeStreamData = async (
       this.buffer.push(data);
     }
 
-    public async flush() {
+    public async flush(done?: boolean) {
+      if (this.buffer.length === 0 && done) {
+        // If buffer is empty and done is true, we can call the callback with an empty object
+        this.callback({}, done);
+        return;
+      }
       if (this.buffer.length === 0 || this.isFlushing) {
         return;
       }
@@ -255,13 +264,17 @@ export const readLargeStreamData = async (
         const data = this.buffer.shift();
 
         try {
-          processBuffer(data, this.callback);
+          processBuffer(data, this.callback, done);
         } catch (error) {
           console.error('Error processing buffer:', error);
           this.failed = true;
           this.buffer.unshift(data);
           break;
         }
+      }
+      if (done) {
+        // If done is true, we should call the callback with an empty object
+        this.callback({}, done);
       }
       this.isFlushing = false;
     }
@@ -282,13 +295,15 @@ export const readLargeStreamData = async (
   while (true) {
     const { done, value } = await reader?.read?.();
 
+    console.log('done:', done, 'value:', value);
+
     if (done) {
       isReading = false;
       // Process remaining buffered data
       if (buffer) {
         bufferManager.add(buffer);
       }
-      bufferManager.flush();
+      bufferManager.flush(done);
       break;
     }
 

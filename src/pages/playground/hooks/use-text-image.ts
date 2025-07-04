@@ -5,6 +5,7 @@ import {
   fetchChunkedDataPostFormData,
   readLargeStreamData as readStreamData
 } from '@/utils/fetch-chunk-data';
+import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { CREAT_IMAGE_API, EDIT_IMAGE_API } from '../apis';
@@ -12,6 +13,7 @@ import { CREAT_IMAGE_API, EDIT_IMAGE_API } from '../apis';
 const ODD_STRING = 'AAAABJRU5ErkJgg===';
 
 export default function useTextImage(props: any) {
+  const intl = useIntl();
   const { scroller, paramsRef, chunkFields, API } = props;
   const [loading, setLoading] = useState(false);
   const [tokenResult, setTokenResult] = useState<any>(null);
@@ -34,6 +36,8 @@ export default function useTextImage(props: any) {
   const requestToken = useRef<any>(null);
   const { initialize } = useOverlayScroller();
   const { initialize: innitializeParams } = useOverlayScroller();
+  const streamReaderRef = useRef<any>(null);
+  const requestIdRef = useRef<number>(0);
 
   useEffect(() => {
     if (scroller.current) {
@@ -45,6 +49,11 @@ export default function useTextImage(props: any) {
       innitializeParams(paramsRef.current);
     }
   }, [innitializeParams]);
+
+  const updateRequestId = () => {
+    requestIdRef.current = requestIdRef.current + 1;
+    return requestIdRef.current;
+  };
 
   const removeBase64Suffix = (str: string, suffix: string) => {
     return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
@@ -78,9 +87,18 @@ export default function useTextImage(props: any) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
+  const stopDebounce = _.debounce(() => {
+    setImageList([]);
+    setLoading(false);
+  }, 200);
+
   const submitMessage = async (parameters: any) => {
     try {
       if (!parameters.model) return;
+
+      requestToken.current?.abort?.('cancel');
+      requestToken.current = new AbortController();
+      const currentRequestId = updateRequestId();
       const size: any = setImageSize(parameters);
       setLoading(true);
       setMessageId();
@@ -107,9 +125,6 @@ export default function useTextImage(props: any) {
         });
       setImageList(newImageList);
 
-      requestToken.current?.abort?.('cancel');
-      requestToken.current = new AbortController();
-
       let result: any = {};
       if (API === CREAT_IMAGE_API) {
         result = await fetchChunkedData({
@@ -135,10 +150,15 @@ export default function useTextImage(props: any) {
         setImageList([]);
         return;
       }
-
+      console.log('result:', result);
       const { reader, decoder } = result;
-
-      await readStreamData(reader, decoder, (chunk: any) => {
+      streamReaderRef.current = reader;
+      await readStreamData(reader, decoder, (chunk: any, done?: boolean) => {
+        console.log('chunk done:', chunk, done);
+        if (requestIdRef.current !== currentRequestId) {
+          // If the request ID has changed, ignore this chunk
+          return;
+        }
         if (chunk?.error) {
           setTokenResult({
             error: true,
@@ -168,12 +188,25 @@ export default function useTextImage(props: any) {
             progress: progress
           };
         });
+        if (
+          done &&
+          !chunk?.error &&
+          newImageList.some((item) => item.progress < 100)
+        ) {
+          setTokenResult({
+            error: true,
+            errorMessage: intl.formatMessage({
+              id: 'playground.image.generate.error'
+            })
+          });
+        }
         setImageList([...newImageList]);
       });
     } catch (error) {
       console.log('error:', error);
+      updateRequestId();
+      stopDebounce();
       requestToken.current?.abort?.('cancel');
-      setImageList([]);
     } finally {
       setLoading(false);
     }
@@ -187,8 +220,6 @@ export default function useTextImage(props: any) {
 
   const handleStopConversation = () => {
     requestToken.current?.abort?.('stop');
-    setImageList([]);
-    setLoading(false);
   };
 
   useEffect(() => {

@@ -107,7 +107,6 @@ export default function useZoom(props: {
     if (isLoadingMaskRef.current) {
       return;
     }
-    event.preventDefault();
     // stop
     handleZoom(event);
     updateCursorSize();

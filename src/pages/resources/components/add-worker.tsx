@@ -23,9 +23,22 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     },
     {
       key: 'container',
-      label: intl.formatMessage({ id: 'resources.worker.container.install' }),
+      label: 'Linux',
+      // icon: <LinuxOutlined />,
       children: <ContainerInstall token={token} />
     }
+    // {
+    //   key: 'macos',
+    //   label: 'macOS',
+    //   icon: <AppleOutlined />,
+    //   children: <MacOS token={token} />
+    // },
+    // {
+    //   key: 'windows',
+    //   label: 'Windows',
+    //   icon: <WindowsOutlined />,
+    //   children: <Windows token={token} />
+    // }
   ];
 
   return (

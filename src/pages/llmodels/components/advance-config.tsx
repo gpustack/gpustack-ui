@@ -452,28 +452,25 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </div>
         )}
-        {scheduleType === 'auto' &&
-          [backendOptionsMap.llamaBox, backendOptionsMap.vllm].includes(
-            backend
-          ) && (
-            <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
-              <Form.Item<FormData>
-                name="distributed_inference_across_workers"
-                valuePropName="checked"
-                style={{ padding: '0 10px', marginBottom: 0 }}
-                noStyle
-              >
-                <CheckboxField
-                  title={intl.formatMessage({
-                    id: 'models.form.distribution.tips'
-                  })}
-                  label={intl.formatMessage({
-                    id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                  })}
-                ></CheckboxField>
-              </Form.Item>
-            </div>
-          )}
+        {scheduleType === 'auto' && (
+          <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
+            <Form.Item<FormData>
+              name="distributed_inference_across_workers"
+              valuePropName="checked"
+              style={{ padding: '0 10px', marginBottom: 0 }}
+              noStyle
+            >
+              <CheckboxField
+                title={intl.formatMessage({
+                  id: 'models.form.distribution.tips'
+                })}
+                label={intl.formatMessage({
+                  id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+                })}
+              ></CheckboxField>
+            </Form.Item>
+          </div>
+        )}
         <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
           <Form.Item<FormData>
             name="restart_on_error"

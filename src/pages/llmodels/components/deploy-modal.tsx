@@ -343,7 +343,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
 
     if (manual) {
-      form.current?.form?.resetFields(resetFieldsByModel);
+      form.current?.form?.setFieldsValue(defaultFormValues);
     }
     // If the item is empty
     setIsGGUF(item.isGGUF);

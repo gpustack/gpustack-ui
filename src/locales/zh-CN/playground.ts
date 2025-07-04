@@ -146,5 +146,6 @@ export default {
     '1. 选择后，将不可再绘制遮罩；因此，你应该先绘制遮罩然后再勾选.\n 2. 当上传了遮罩图片，将不可再生成遮罩',
   'playground.model.noavailable.tips2':
     '若预期的模型未显示，请检查模型是否已正常运行并被正确分类。如分类不正确，请编辑模型并手动调整其类别。',
-  'playground.rerank.query.validate': '查询内容不能为空'
+  'playground.rerank.query.validate': '查询内容不能为空',
+  'playground.image.generate.error': '出了一点问题，图片未能生成。'
 };

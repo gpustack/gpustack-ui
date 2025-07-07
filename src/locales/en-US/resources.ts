@@ -72,5 +72,21 @@ export default {
   'resources.filter.source': 'Filter by Source',
   'resources.modelfiles.delete.tips': 'Also delete the file from disk',
   'resources.modelfiles.copy.tips': 'Copy Full Path',
-  'resources.filter.path': 'Filter by path'
+  'resources.filter.path': 'Filter by path',
+  'resources.register.worker.step1':
+    'Click the <span class="bold-text">Copy the token</span> menu.',
+  'resources.register.worker.step2':
+    'Click the <span class="bold-text">Quick Config</span> menu.',
+  'resources.register.worker.step3':
+    'Click the <span class="bold-text">General</span> tab.',
+  'resources.register.worker.step4':
+    'Select <span class="bold-text">Worker</span> as the service role.',
+  'resources.register.worker.step5':
+    'Enter the <span="bold-text">Server URL</span>.',
+  'resources.register.worker.step6':
+    'Paste the <span class="bold-text">Token</span>.',
+  'resources.register.worker.step7':
+    'Click <span class="bold-text">Restart</span> to apply the settings.',
+  'resources.register.install.title': 'Install GPUStack',
+  'resources.register.download': '<a>Download the package</a> and install it.'
 };

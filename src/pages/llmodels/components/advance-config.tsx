@@ -186,14 +186,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     }
   };
 
-  const handleBeforeGpuSelectorChange = (gpuIds: any[]) => {
-    // if (backend !== backendOptionsMap.ascendMindie || !gpuIds?.length) {
-    //   return;
-    // }
-    // const lastGroupName = gpuIds[gpuIds.length - 1][0];
-    // const lastGroupItems = gpuIds.filter((item) => item[0] === lastGroupName);
-    // form.setFieldValue(['gpu_selector', 'gpu_ids'], lastGroupItems);
-  };
+  const handleBeforeGpuSelectorChange = (gpuIds: any[]) => {};
 
   const handleGpuSelectorChange = (value: any[]) => {
     handleBeforeGpuSelectorChange(value);
@@ -548,4 +541,4 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   );
 };
 
-export default React.memo(AdvanceConfig);
+export default AdvanceConfig;

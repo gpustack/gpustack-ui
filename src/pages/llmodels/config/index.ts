@@ -429,7 +429,6 @@ export const excludeFields = [
   'repo_id',
   'file_name',
   'replicas',
-  'categories',
   'name',
   'description',
   'env',

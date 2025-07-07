@@ -37,6 +37,7 @@ import TitleWrapper from './title-wrapper';
 const resetFieldsByModel = ['backend_version', 'backend_parameters', 'env'];
 const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
 const dropFieldsFromForm = ['name', 'file_name', 'repo_id', 'backend'];
+const resetFields = ['worker_selector', 'env'];
 
 const resetFieldsByFile = [
   'cpu_offloading',
@@ -309,14 +310,11 @@ const AddModal: FC<AddModalProps> = (props) => {
     updateSelectedModel(item);
 
     // TODO
-    form.current?.form?.setFieldsValue(defaultFormValues);
+    form.current?.resetFields(resetFields);
     const modelInfo = onSelectModel(item, props.source);
     form.current?.setFieldsValue?.({
+      ...defaultFormValues,
       ...modelInfo,
-      ..._.omit(form.current?.form?.getFieldsValue?.(), [
-        ...dropFieldsFromForm,
-        ...pickFieldsFromSpec
-      ]),
       categories: getCategory(item)
     });
 
@@ -343,7 +341,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
 
     if (manual) {
-      form.current?.form?.setFieldsValue(defaultFormValues);
+      form.current?.resetFields(resetFields);
     }
     // If the item is empty
     setIsGGUF(item.isGGUF);
@@ -360,20 +358,22 @@ const AddModal: FC<AddModalProps> = (props) => {
       item.evaluated
     ) {
       handleShowCompatibleAlert(item.evaluateResult);
+
       const newFormValues = {
+        ...(manual
+          ? { ...defaultFormValues }
+          : _.omit(form.current?.form?.getFieldsValue?.(), [
+              ...dropFieldsFromForm
+            ])),
         ...getDefaultSpec(item),
         ...modelInfo,
-        ..._.omit(form.current?.form?.getFieldsValue?.(), [
-          ...dropFieldsFromForm,
-          ...pickFieldsFromSpec
-        ]),
         name: generateNameValue(item, modelInfo.name, manual),
         categories: getCategory(item)
       };
 
       console.log('newFormValues:', newFormValues);
 
-      form.current?.setFieldsValue?.(newFormValues);
+      form.current?.form?.setFieldsValue?.(newFormValues);
 
       handleOnValuesChangeBefore({
         changedValues: {},

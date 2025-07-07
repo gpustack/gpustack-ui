@@ -1,18 +1,22 @@
+import CopyToken from '@/assets/images/copy-token.png';
+import QuickConfig from '@/assets/images/quick-config.png';
 import { useIntl } from '@umijs/max';
-import { Space, Typography } from 'antd';
+import { Image, Space, Typography } from 'antd';
 import React, { useMemo } from 'react';
+
+const { Text } = Typography;
 
 interface AddWorkerMacOSProps {
   token?: string;
 }
 
 const registerWorkerSteps = [
-  'Open the quick configuration file.',
-  `Select the "General" option.`,
-  `Select "Worker" as the service role.`,
-  'Enter the Server URL.',
-  'Paste the Token.',
-  `Click "Restart".`
+  'resources.register.worker.step2',
+  `resources.register.worker.step3`,
+  `resources.register.worker.step4`,
+  'resources.register.worker.step5',
+  'resources.register.worker.step6',
+  `resources.register.worker.step7`
 ];
 
 const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
@@ -29,18 +33,35 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
   );
   return (
     <div className="script-install">
-      <h3 className="font-size-14 font-600">1. Install GPUStack</h3>
+      <h3 className="font-size-14 font-600">
+        1. {intl.formatMessage({ id: 'resources.register.install.title' })}
+      </h3>
       <Typography.Paragraph type="secondary" style={{ paddingLeft: 14 }}>
-        <Typography.Link>Download Package</Typography.Link> and install it on
-        your macOS machine.
+        <span
+          dangerouslySetInnerHTML={{
+            __html: intl.formatMessage({ id: 'resources.register.download' })
+          }}
+        ></span>
       </Typography.Paragraph>
       <h3 className="font-size-14 font-600">
         2. <span dangerouslySetInnerHTML={{ __html: labels.step1 }}></span>
       </h3>
       <Typography.Paragraph style={{ paddingLeft: 14 }}>
-        <Typography.Text type="secondary">
-          Click <span className="font-600">Copy the token</span>
-        </Typography.Text>
+        <div className="flex">
+          <Typography.Text
+            type="secondary"
+            style={{ width: 320, marginRight: 20 }}
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({
+                  id: 'resources.register.worker.step1'
+                })
+              }}
+            ></span>
+          </Typography.Text>
+          <Image src={CopyToken} style={{ width: 160 }}></Image>
+        </div>
       </Typography.Paragraph>
       <h3 className="m-t-10 font-size-14 font-600">
         3. {labels.step2}{' '}
@@ -53,13 +74,21 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
         ></span>
       </h3>
       <Typography.Paragraph style={{ paddingLeft: 14 }}>
-        <Space direction="vertical">
-          {registerWorkerSteps.map((step, index) => (
-            <Typography.Text key={index} type="secondary">
-              {index + 1}. {step}
-            </Typography.Text>
-          ))}
-        </Space>
+        <div className="flex">
+          <Space direction="vertical" style={{ width: 320, marginRight: 20 }}>
+            {registerWorkerSteps.map((step, index) => (
+              <Typography.Text key={index} type="secondary">
+                {index + 1}.{' '}
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: intl.formatMessage({ id: step })
+                  }}
+                ></span>
+              </Typography.Text>
+            ))}
+          </Space>
+          <Image src={QuickConfig} style={{ width: 160 }}></Image>
+        </div>
       </Typography.Paragraph>
       <h3 className="m-b-0 m-t-10 font-size-14 font-600">4. {labels.step3}</h3>
     </div>

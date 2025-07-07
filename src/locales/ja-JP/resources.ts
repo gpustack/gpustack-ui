@@ -73,5 +73,33 @@ export default {
   'resources.filter.source': 'ソースでフィルタ',
   'resources.modelfiles.delete.tips': 'ディスクからファイルも削除します',
   'resources.modelfiles.copy.tips': 'フルパスをコピー',
-  'resources.filter.path': 'パスでフィルタ'
+  'resources.filter.path': 'パスでフィルタ',
+  'resources.register.worker.step1':
+    'Click the <span class="bold-text">Copy the token</span> menu.',
+  'resources.register.worker.step2':
+    'Click the <span class="bold-text">Quick Config</span> menu.',
+  'resources.register.worker.step3':
+    'Click the <span class="bold-text">General</span> tab.',
+  'resources.register.worker.step4':
+    'Select <span class="bold-text">Worker</span> as the service role.',
+  'resources.register.worker.step5':
+    'Enter the <span="bold-text">Server URL</span>.',
+  'resources.register.worker.step6':
+    'Paste the <span class="bold-text">Token</span>.',
+  'resources.register.worker.step7':
+    'Click <span class="bold-text">Restart</span> to apply the settings.',
+  'resources.register.install.title': 'Install GPUStack',
+  'resources.register.download': '<a>Download the package</a> and install it.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'resources.register.worker.step1': 'Click the <span class="bold-text">Copy the token</span> menu.',
+// 2. 'resources.register.worker.step2': 'Click the <span class="bold-text">Quick Config</span> menu.',
+// 3. 'resources.register.worker.step3': 'Click the <span class="bold-text">General</span> tab.',
+// 4. 'resources.register.worker.step4':  'Select <span class="bold-text">Worker</span> as the service role.',
+// 5. 'resources.register.worker.step5': 'Enter the <span="bold-text">Server URL</span>.',
+// 6. 'resources.register.worker.step6': 'Paste the <span class="bold-text">Token</span>.',
+// 7. 'resources.register.worker.step7': 'Click <span class="bold-text">Restart</span> to apply the settings.',
+// 8. 'resources.register.install.title': 'Install GPUStack',
+// 9. 'resources.register.download': '<a>Download the package</a> and install it.'
+// ========== End of To-Do List ==========

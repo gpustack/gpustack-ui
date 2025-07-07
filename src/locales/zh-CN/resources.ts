@@ -70,5 +70,21 @@ export default {
   'resources.filter.source': '按来源筛选',
   'resources.modelfiles.delete.tips': '同时从磁盘删除文件',
   'resources.modelfiles.copy.tips': '复制完整路径',
-  'resources.filter.path': '路径查询'
+  'resources.filter.path': '路径查询',
+  'resources.register.worker.step1':
+    '点击菜单 <span class="bold-text">Copy token</span>。',
+  'resources.register.worker.step2':
+    '点击菜单 <span class="bold-text">Quick Config</span>。',
+  'resources.register.worker.step3':
+    '点击页签 <span class="bold-text">General</span>。',
+  'resources.register.worker.step4':
+    '选择 <span class="bold-text">Worker</span> 作为服务角色。',
+  'resources.register.worker.step5':
+    '输入 <span class="bold-text">Server URL</span>。',
+  'resources.register.worker.step6':
+    '粘贴 <span class="bold-text">Token</span>.',
+  'resources.register.worker.step7':
+    '点击 <span class="bold-text">Restart</span> 应用设置。',
+  'resources.register.install.title': '安装 GPUStack',
+  'resources.register.download': '<a>下载安装包</a> 并且安装。'
 };

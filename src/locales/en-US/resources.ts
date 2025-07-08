@@ -74,7 +74,7 @@ export default {
   'resources.modelfiles.copy.tips': 'Copy Full Path',
   'resources.filter.path': 'Filter by path',
   'resources.register.worker.step1':
-    'Click the <span class="bold-text">Copy the token</span> menu.',
+    'Click the <span class="bold-text">Copy token</span> menu.',
   'resources.register.worker.step2':
     'Click the <span class="bold-text">Quick Config</span> menu.',
   'resources.register.worker.step3':
@@ -82,7 +82,7 @@ export default {
   'resources.register.worker.step4':
     'Select <span class="bold-text">Worker</span> as the service role.',
   'resources.register.worker.step5':
-    'Enter the <span="bold-text">Server URL</span>.',
+    'Enter the <span class="bold-text">Server URL</span>.',
   'resources.register.worker.step6':
     'Paste the <span class="bold-text">Token</span>.',
   'resources.register.worker.step7':

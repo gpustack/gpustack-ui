@@ -75,7 +75,7 @@ export default {
   'resources.modelfiles.copy.tips': 'フルパスをコピー',
   'resources.filter.path': 'パスでフィルタ',
   'resources.register.worker.step1':
-    'Click the <span class="bold-text">Copy the token</span> menu.',
+    'Click the <span class="bold-text">Copy token</span> menu.',
   'resources.register.worker.step2':
     'Click the <span class="bold-text">Quick Config</span> menu.',
   'resources.register.worker.step3':
@@ -83,7 +83,7 @@ export default {
   'resources.register.worker.step4':
     'Select <span class="bold-text">Worker</span> as the service role.',
   'resources.register.worker.step5':
-    'Enter the <span="bold-text">Server URL</span>.',
+    'Enter the <span class="bold-text">Server URL</span>.',
   'resources.register.worker.step6':
     'Paste the <span class="bold-text">Token</span>.',
   'resources.register.worker.step7':
@@ -93,11 +93,11 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.register.worker.step1': 'Click the <span class="bold-text">Copy the token</span> menu.',
+// 1. 'resources.register.worker.step1': 'Click the <span class="bold-text">Copy token</span> menu.',
 // 2. 'resources.register.worker.step2': 'Click the <span class="bold-text">Quick Config</span> menu.',
 // 3. 'resources.register.worker.step3': 'Click the <span class="bold-text">General</span> tab.',
 // 4. 'resources.register.worker.step4':  'Select <span class="bold-text">Worker</span> as the service role.',
-// 5. 'resources.register.worker.step5': 'Enter the <span="bold-text">Server URL</span>.',
+// 5. 'resources.register.worker.step5': 'Enter the <span class="bold-text">Server URL</span>.',
 // 6. 'resources.register.worker.step6': 'Paste the <span class="bold-text">Token</span>.',
 // 7. 'resources.register.worker.step7': 'Click <span class="bold-text">Restart</span> to apply the settings.',
 // 8. 'resources.register.install.title': 'Install GPUStack',

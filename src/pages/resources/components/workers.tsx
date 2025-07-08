@@ -283,6 +283,7 @@ const Workers: React.FC = () => {
             render={(text, record: ListItem) => {
               return (
                 <StatusTag
+                  maxTooltipWidth={400}
                   statusValue={{
                     status: status[record.state] as any,
                     text: WorkerStatusMapValue[record.state],

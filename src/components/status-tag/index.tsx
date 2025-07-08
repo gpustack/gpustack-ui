@@ -29,6 +29,7 @@ type StatusTagProps = {
   download?: {
     percent: number;
   };
+  maxTooltipWidth?: number;
   extra?: React.ReactNode;
   actions?: {
     label: string;
@@ -44,6 +45,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
   download,
   extra,
   actions = [],
+  maxTooltipWidth = 250,
   type = 'tag'
 }) => {
   const { text, status } = statusValue;
@@ -118,7 +120,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
         <div
           style={{
             width: 'max-content',
-            maxWidth: 250,
+            maxWidth: maxTooltipWidth,
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word'
           }}

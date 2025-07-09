@@ -299,6 +299,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     ) {
       return;
     }
+    console.log('isgguf==================> select 1', item.isGGUF);
     console.log('handleOnSelectModel:', item, selectedModel);
     setIsGGUF(item.isGGUF);
     clearCahceFormValues();
@@ -343,6 +344,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (manual) {
       form.current?.resetFields(resetFields);
     }
+    console.log('isgguf==================> select 2', item.isGGUF);
     // If the item is empty
     setIsGGUF(item.isGGUF);
     updateSelectedModel(item);
@@ -398,6 +400,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleSetIsGGUF = async (flag: boolean) => {
+    console.log('isgguf==================>', flag);
     setIsGGUF(flag);
   };
 

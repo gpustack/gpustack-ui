@@ -1,7 +1,5 @@
-import CopyToken from '@/assets/images/copy-token.png';
-import QuickConfig from '@/assets/images/quick-config.png';
 import { useIntl } from '@umijs/max';
-import { Image, Space, Typography } from 'antd';
+import { Space, Typography } from 'antd';
 import React, { useMemo } from 'react';
 
 const { Text } = Typography;
@@ -12,7 +10,7 @@ interface AddWorkerMacOSProps {
 
 const registerWorkerSteps = [
   'resources.register.worker.step2',
-  `resources.register.worker.step3`,
+  // `resources.register.worker.step3`,
   `resources.register.worker.step4`,
   'resources.register.worker.step5',
   'resources.register.worker.step6',
@@ -48,10 +46,7 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
       </h3>
       <Typography.Paragraph style={{ paddingLeft: 14 }}>
         <div className="flex">
-          <Typography.Text
-            type="secondary"
-            style={{ width: 320, marginRight: 20 }}
-          >
+          <Typography.Text type="secondary">
             <span
               dangerouslySetInnerHTML={{
                 __html: intl.formatMessage({
@@ -60,7 +55,6 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
               }}
             ></span>
           </Typography.Text>
-          <Image src={CopyToken} style={{ width: 160 }}></Image>
         </div>
       </Typography.Paragraph>
       <h3 className="m-t-10 font-size-14 font-600">
@@ -75,7 +69,7 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
       </h3>
       <Typography.Paragraph style={{ paddingLeft: 14 }}>
         <div className="flex">
-          <Space direction="vertical" style={{ width: 320, marginRight: 20 }}>
+          <Space direction="vertical">
             {registerWorkerSteps.map((step, index) => (
               <Typography.Text key={index} type="secondary">
                 {index + 1}.{' '}
@@ -87,7 +81,6 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
               </Typography.Text>
             ))}
           </Space>
-          <Image src={QuickConfig} style={{ width: 160 }}></Image>
         </div>
       </Typography.Paragraph>
       <h3 className="m-b-0 m-t-10 font-size-14 font-600">4. {labels.step3}</h3>

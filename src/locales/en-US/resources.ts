@@ -74,7 +74,7 @@ export default {
   'resources.modelfiles.copy.tips': 'Copy Full Path',
   'resources.filter.path': 'Filter by path',
   'resources.register.worker.step1':
-    'Click the <span class="bold-text">Copy token</span> menu.',
+    'Click the <span class="bold-text">Copy Token</span> menu.',
   'resources.register.worker.step2':
     'Click the <span class="bold-text">Quick Config</span> menu.',
   'resources.register.worker.step3':

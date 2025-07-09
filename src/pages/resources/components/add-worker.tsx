@@ -30,13 +30,13 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     },
     {
       key: 'macos',
-      label: 'macOS(M series 14+)',
+      label: 'macOS',
       icon: <AppleOutlined />,
       children: <MacOS token={token} />
     },
     {
       key: 'windows',
-      label: 'Windows(win 10, win 11)',
+      label: 'Windows',
       icon: <WindowsOutlined />,
       children: <Windows token={token} />
     }
@@ -46,16 +46,19 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     <Modal
       title={intl.formatMessage({ id: 'resources.button.create' })}
       open={open}
-      centered={true}
+      centered={false}
       onCancel={onCancel}
       destroyOnClose={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
       width={700}
+      style={{
+        top: 100
+      }}
       styles={{
         body: {
-          height: 650
+          minHeight: 450
         }
       }}
       footer={null}

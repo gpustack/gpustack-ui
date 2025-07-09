@@ -200,7 +200,7 @@ const resultList = options.map((option) => {
     value: option.value,
     opts: option.options?.map((opt) => {
       return {
-        label: opt,
+        label: `${opt}`,
         value: opt
       };
     })

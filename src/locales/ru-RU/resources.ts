@@ -73,36 +73,26 @@ export default {
   'resources.modelfiles.copy.tips': 'Скопировать полный путь',
   'resources.filter.path': 'Фильтрация по пути',
   'resources.register.worker.step1':
-    'Click the <span class="bold-text">Copy Token</span> menu.',
+    'В меню выберите <span class="bold-text">Скопировать токен</span>.',
   'resources.register.worker.step2':
-    'Click the <span class="bold-text">Quick Config</span> menu.',
+    'В меню выберите <span class="bold-text">Быстрая настройка</span>.',
   'resources.register.worker.step3':
-    'Click the <span class="bold-text">General</span> tab.',
+    'Перейдите на вкладку <span class="bold-text">Общие</span>.',
   'resources.register.worker.step4':
-    'Select <span class="bold-text">Worker</span> as the service role.',
+    'Выберите роль сервиса: <span class="bold-text">Воркер</span>.',
   'resources.register.worker.step5':
-    'Enter the <span class="bold-text">Server URL</span>.',
+    'Введите <span class="bold-text">URL сервера</span>.',
   'resources.register.worker.step6':
-    'Paste the <span class="bold-text">Token</span>.',
+    'Вставьте <span class="bold-text">Токен</span>.',
   'resources.register.worker.step7':
-    'Click <span class="bold-text">Restart</span> to apply the settings.',
-  'resources.register.install.title': 'Install GPUStack on {os}',
+    'Нажмите <span class="bold-text">Перезапуск</span> для применения настроек.',
+  'resources.register.install.title': 'Установка GPUStack на {os}',
   'resources.register.download':
-    'Download and install the <a>installer</a>. Currently supported: {versions}.',
-  'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
-  'resource.register.windows.support': 'win 10, win 11'
+    'Скачайте и установите <a>инсталлятор</a>. Поддерживаемые версии: {versions}.',
+  'resource.register.maos.support': 'Apple Silicon (серия M), macOS 14+',
+  'resource.register.windows.support': 'Windows 10, Windows 11'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.register.worker.step1': 'Click the <span class="bold-text">Copy Token</span> menu.',
-// 2. 'resources.register.worker.step2': 'Click the <span class="bold-text">Quick Config</span> menu.',
-// 3. 'resources.register.worker.step3': 'Click the <span class="bold-text">General</span> tab.',
-// 4. 'resources.register.worker.step4':  'Select <span class="bold-text">Worker</span> as the service role.',
-// 5. 'resources.register.worker.step5': 'Enter the <span class="bold-text">Server URL</span>.',
-// 6. 'resources.register.worker.step6': 'Paste the <span class="bold-text">Token</span>.',
-// 7. 'resources.register.worker.step7': 'Click <span class="bold-text">Restart</span> to apply the settings.',
-// 8. 'resources.register.install.title': 'Install GPUStack on {os}',
-// 9. 'resources.register.download':'Download and install the <a>installer</a>. Currently supported: {versions}.',
-// 10. 'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
-// 11. 'resource.register.windows.support': 'win 10, win 11'
+
 // ========== End of To-Do List ==========

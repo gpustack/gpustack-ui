@@ -7,7 +7,6 @@ import { useIntl } from '@umijs/max';
 import { Modal, Tabs, TabsProps } from 'antd';
 import React from 'react';
 import MacOS from './add-worker-macos';
-import Windows from './add-worker-windows';
 import ContainerInstall from './container-install';
 
 type ViewModalProps = {
@@ -32,13 +31,29 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       key: 'macos',
       label: 'macOS',
       icon: <AppleOutlined />,
-      children: <MacOS token={token} />
+      children: (
+        <MacOS
+          token={token}
+          platform={{
+            os: 'macOS',
+            supportVersions: 'resource.register.maos.support'
+          }}
+        />
+      )
     },
     {
       key: 'windows',
       label: 'Windows',
       icon: <WindowsOutlined />,
-      children: <Windows token={token} />
+      children: (
+        <MacOS
+          token={token}
+          platform={{
+            os: 'Windows',
+            supportVersions: 'resource.register.windows.support'
+          }}
+        />
+      )
     }
   ];
 

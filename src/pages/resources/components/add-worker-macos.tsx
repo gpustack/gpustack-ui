@@ -6,18 +6,21 @@ const { Text } = Typography;
 
 interface AddWorkerMacOSProps {
   token?: string;
+  platform: {
+    os: string;
+    supportVersions: string;
+  };
 }
 
 const registerWorkerSteps = [
   'resources.register.worker.step2',
-  // `resources.register.worker.step3`,
   `resources.register.worker.step4`,
   'resources.register.worker.step5',
   'resources.register.worker.step6',
   `resources.register.worker.step7`
 ];
 
-const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
+const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = ({ platform }) => {
   const intl = useIntl();
   const labels = useMemo(
     () => ({
@@ -32,12 +35,23 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = () => {
   return (
     <div className="script-install">
       <h3 className="font-size-14 font-600">
-        1. {intl.formatMessage({ id: 'resources.register.install.title' })}
+        1.{' '}
+        {intl.formatMessage(
+          { id: 'resources.register.install.title' },
+          { os: platform.os }
+        )}
       </h3>
       <Typography.Paragraph type="secondary" style={{ paddingLeft: 14 }}>
         <span
           dangerouslySetInnerHTML={{
-            __html: intl.formatMessage({ id: 'resources.register.download' })
+            __html: intl.formatMessage(
+              { id: 'resources.register.download' },
+              {
+                versions: intl.formatMessage({
+                  id: platform.supportVersions
+                })
+              }
+            )
           }}
         ></span>
       </Typography.Paragraph>

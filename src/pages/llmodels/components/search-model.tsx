@@ -40,6 +40,14 @@ const PaginationMain = styled(Pagination)`
   }
 `;
 
+const IconFontWrapper = styled.div`
+  .ant-pagination-item-link {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+`;
+
 interface SearchInputProps {
   hasLinuxWorker?: boolean;
   modelSource: string;
@@ -499,6 +507,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (model.id === currentRef.current) {
       return;
     }
+    setRquestId();
     handleOnSelectModel(model, true);
   };
 

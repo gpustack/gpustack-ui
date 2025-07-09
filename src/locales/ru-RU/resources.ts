@@ -73,7 +73,7 @@ export default {
   'resources.modelfiles.copy.tips': 'Скопировать полный путь',
   'resources.filter.path': 'Фильтрация по пути',
   'resources.register.worker.step1':
-    'Click the <span class="bold-text">Copy token</span> menu.',
+    'Click the <span class="bold-text">Copy Token</span> menu.',
   'resources.register.worker.step2':
     'Click the <span class="bold-text">Quick Config</span> menu.',
   'resources.register.worker.step3':
@@ -91,7 +91,7 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.register.worker.step1': 'Click the <span class="bold-text">Copy token</span> menu.',
+// 1. 'resources.register.worker.step1': 'Click the <span class="bold-text">Copy Token</span> menu.',
 // 2. 'resources.register.worker.step2': 'Click the <span class="bold-text">Quick Config</span> menu.',
 // 3. 'resources.register.worker.step3': 'Click the <span class="bold-text">General</span> tab.',
 // 4. 'resources.register.worker.step4':  'Select <span class="bold-text">Worker</span> as the service role.',

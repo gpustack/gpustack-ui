@@ -33,6 +33,7 @@ const useStyles = createStyles(({ css }) => ({
     padding-left: 30px;
     color: var(--ant-color-text-secondary);
     white-space: pre-line;
+    word-break: break-all;
     span {
       color: var(--ant-color-text);
       display: flex;

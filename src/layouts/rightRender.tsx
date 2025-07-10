@@ -341,7 +341,6 @@ export const getRightRenderContent = (opts: {
   return (
     <>
       <Menu {...helpMenu} style={getMenuStyle(collapsed, siderWidth)} />
-      {/* <Menu {...langMenu} style={getMenuStyle(collapsed, siderWidth)} /> */}
       <Menu
         {...userMenu}
         style={getMenuStyle(collapsed, siderWidth, {

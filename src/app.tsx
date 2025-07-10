@@ -23,7 +23,7 @@ const checkDefaultPage = async (userInfo: any) => {
   if (isFirstLogin === null && isOnline()) {
     writeState(IS_FIRST_LOGIN, true);
     if (userInfo && userInfo?.is_admin) {
-      history.push('/models/deployment');
+      history.push('/models/deployments');
     }
   }
 };

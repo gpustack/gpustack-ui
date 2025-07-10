@@ -542,7 +542,7 @@ const ModelFiles = () => {
       });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
       setModelsExpandKeys([modelData.id]);
-      navigate('/models/deployment');
+      navigate('/models/deployments');
     } catch (error) {
       // console.log('error', error);
     }

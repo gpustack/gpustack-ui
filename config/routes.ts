@@ -80,6 +80,7 @@ export default [
     name: 'models',
     path: '/models',
     key: 'models',
+    access: 'canSeeAdmin',
     routes: [
       {
         path: '/models',
@@ -146,20 +147,11 @@ export default [
       }
     ]
   },
-  // {
-  //   name: 'users',
-  //   path: '/users',
-  //   key: 'users',
-  //   icon: 'icon-users',
-  //   selectedIcon: 'icon-users-filled',
-  //   defaultIcon: 'icon-users',
-  //   access: 'canSeeAdmin',
-  //   component: './users'
-  // },
   {
     name: 'accessControl',
     path: '/access-control',
     key: 'accessControl',
+    access: 'canSeeAdmin',
     routes: [
       {
         path: '/access-control',

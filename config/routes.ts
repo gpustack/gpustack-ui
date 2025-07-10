@@ -35,26 +35,6 @@ export default [
         component: './playground/index'
       },
       {
-        name: 'text2images',
-        title: 'Text2Images',
-        path: keepAliveRoutes.text2images,
-        key: 'text2images',
-        icon: 'icon-image1',
-        selectedIcon: 'icon-image-filled',
-        defaultIcon: 'icon-image1',
-        component: './playground/images'
-      },
-      {
-        name: 'speech',
-        title: 'Speech',
-        path: keepAliveRoutes.speech,
-        key: 'speech',
-        icon: 'icon-audio1',
-        selectedIcon: 'icon-audio-filled',
-        defaultIcon: 'icon-audio1',
-        component: './playground/speech'
-      },
-      {
         name: 'embedding',
         title: 'embedding',
         path: '/playground/embedding',
@@ -73,6 +53,26 @@ export default [
         selectedIcon: 'icon-reranker-filled',
         defaultIcon: 'icon-reranker',
         component: './playground/rerank'
+      },
+      {
+        name: 'text2images',
+        title: 'Text2Images',
+        path: keepAliveRoutes.text2images,
+        key: 'text2images',
+        icon: 'icon-image1',
+        selectedIcon: 'icon-image-filled',
+        defaultIcon: 'icon-image1',
+        component: './playground/images'
+      },
+      {
+        name: 'speech',
+        title: 'Speech',
+        path: keepAliveRoutes.speech,
+        key: 'speech',
+        icon: 'icon-audio1',
+        selectedIcon: 'icon-audio-filled',
+        defaultIcon: 'icon-audio1',
+        component: './playground/speech'
       }
     ]
   },

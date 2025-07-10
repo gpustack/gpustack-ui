@@ -82,14 +82,14 @@ export default {
   'resources.register.worker.step4':
     'Select <span class="bold-text">Worker</span> as the service role.',
   'resources.register.worker.step5':
-    'Enter the <span class="bold-text">Server URL</span>.',
+    'Enter the <span class="bold-text">Server URL</span>: {url}.',
   'resources.register.worker.step6':
     'Paste the <span class="bold-text">Token</span>.',
   'resources.register.worker.step7':
     'Click <span class="bold-text">Restart</span> to apply the settings.',
   'resources.register.install.title': 'Install GPUStack on {os}',
   'resources.register.download':
-    'Download and install the <a>installer</a>. Currently supported: {versions}.',
+    'Download and install the <a>installer</a>. Only supported: {versions}.',
   'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
   'resource.register.windows.support': 'win 10, win 11'
 };

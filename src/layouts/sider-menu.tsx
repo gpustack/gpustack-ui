@@ -39,6 +39,7 @@ const useStyles = createStyles(({ css, token }) => {
       align-items: center;
       gap: 8px;
       cursor: pointer;
+      white-space: nowrap;
       padding: var(--ant-padding-xs) var(--ant-padding);
       font-size: 12px;
       padding-bottom: 4px;
@@ -82,6 +83,7 @@ const useStyles = createStyles(({ css, token }) => {
       padding-inline: calc(var(--ant-font-size) * 2) var(--ant-padding);
       padding-left: 16px;
       overflow: hidden;
+      white-space: nowrap;
       height: ${Menu.itemHeight}px;
       line-height: ${Menu.itemHeight}px;
       color: var(--ant-color-text-secondary);

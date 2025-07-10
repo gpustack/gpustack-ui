@@ -753,7 +753,7 @@ const Models: React.FC<ModelsProps> = ({
         className="models-page-container"
         ghost
         header={{
-          title: intl.formatMessage({ id: 'models.title' }),
+          title: intl.formatMessage({ id: 'menu.models.deployment' }),
           style: {
             paddingInline: 'var(--layout-content-header-inlinepadding)'
           },

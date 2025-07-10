@@ -11,7 +11,7 @@ export default {
   'menu.models.modelList': 'Deploy & Manage',
   'menu.models.modelCatalog': 'Catalog',
   'menu.models.catalog': 'Model Catalog',
-  'menu.models.deployment': 'Deployment',
+  'menu.models.deployment': 'Deployments',
   'menu.modelCatalog': 'Catalog',
   'menu.resources': 'Resources',
   'menu.apikeys': 'API Keys',

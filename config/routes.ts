@@ -14,9 +14,9 @@ export default [
   },
   {
     name: 'playground',
-    // icon: 'icon-experiment',
-    // selectedIcon: 'icon-experiment-filled',
-    // defaultIcon: 'icon-experiment',
+    icon: 'icon-experiment',
+    selectedIcon: 'icon-experiment-filled',
+    defaultIcon: 'icon-experiment',
     path: '/playground',
     key: 'playground',
     routes: [
@@ -84,7 +84,7 @@ export default [
     routes: [
       {
         path: '/models',
-        redirect: '/models/deployment'
+        redirect: '/models/deployments'
       },
       {
         name: 'modelCatalog',
@@ -98,7 +98,7 @@ export default [
       },
       {
         name: 'deployment',
-        path: '/models/deployment',
+        path: '/models/deployments',
         key: 'modelDeployments',
         icon: 'icon-model',
         selectedIcon: 'icon-model-filled',
@@ -164,7 +164,6 @@ export default [
         icon: 'icon-users',
         selectedIcon: 'icon-users-filled',
         defaultIcon: 'icon-users',
-        access: 'canSeeAdmin',
         component: './users'
       }
     ]

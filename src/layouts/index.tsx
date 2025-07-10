@@ -326,14 +326,8 @@ export default (props: any) => {
     setCollapseKeys(new Set(collapseKeys));
   };
 
-  const onMenuItemClick = (menuItem) => {
-    navigate(menuItem.path);
-  };
-
   const menuContentRender = (menuProps, defaultDom) => {
-    return (
-      <SiderMenu {...menuProps} onMenuItemClick={onMenuItemClick}></SiderMenu>
-    );
+    return <SiderMenu {...menuProps}></SiderMenu>;
   };
 
   const actionRender = (layoutProps) => {
@@ -531,8 +525,6 @@ export default (props: any) => {
         splitMenus={true}
         logo={collapsed ? SLogoIcon : LogoIcon}
         menuContentRender={menuContentRender}
-        menuItemRender={menuItemRender}
-        menuDataRender={menuDataRender}
         disableContentMargin
         fixSiderbar
         fixedHeader

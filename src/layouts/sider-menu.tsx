@@ -1,6 +1,6 @@
 import IconFont from '@/components/icon-font';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { useLocation } from '@umijs/max';
+import { Link, useLocation } from '@umijs/max';
 import { Divider, Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useMemo, useState } from 'react';
@@ -17,7 +17,6 @@ interface MenuItem {
 interface SiderMenuProps {
   menuData: MenuItem[];
   collapsed?: boolean;
-  onMenuItemClick: (item: MenuItem) => void;
 }
 
 const useStyles = createStyles(({ css, token }) => {
@@ -45,7 +44,6 @@ const useStyles = createStyles(({ css, token }) => {
       padding-bottom: 4px;
       overflow: hidden;
       height: 30px;
-      transtion: all var(--ant-motion-duration-slow);
       &:hover {
         .group-title-text {
           color: var(--ant-color-text);
@@ -76,6 +74,8 @@ const useStyles = createStyles(({ css, token }) => {
     `,
     menuItemWrapper: css`
       display: flex;
+      align-items: center;
+      justify-content: flex-start;
       gap: 12px;
       cursor: pointer;
       position: relative;
@@ -92,6 +92,9 @@ const useStyles = createStyles(({ css, token }) => {
       &.menu-item-selected {
         background-color: ${Menu.itemSelectedBg};
         color: ${Menu.itemSelectedColor};
+        .anticon {
+          color: ${Menu.itemSelectedColor};
+        }
       }
       &:active {
         background-color: ${Menu.itemActiveBg};
@@ -117,7 +120,7 @@ const useStyles = createStyles(({ css, token }) => {
 });
 
 const SiderMenu: React.FC<SiderMenuProps> = (props) => {
-  const { menuData, collapsed, onMenuItemClick } = props;
+  const { menuData, collapsed } = props;
   const { styles, cx } = useStyles();
   const location = useLocation();
   const [collapseKeys, setCollapseKeys] = useState<Set<string>>(new Set());
@@ -156,8 +159,9 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
         className={cx(styles.menuItemContent, 'menu-item-content')}
         key={key}
       >
-        <div
-          onClick={() => onMenuItemClick(menuItem)}
+        <Link
+          to={menuItem.path.replace('/*', '')}
+          target={menuItem.target}
           className={cx(styles.menuItemWrapper, 'menu-item', {
             'menu-item-selected': location.pathname === menuItem.path
           })}
@@ -176,11 +180,17 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
             </Tooltip>
           ) : (
             <>
-              {menuItem.icon}
+              <IconFont
+                type={
+                  location.pathname === menuItem.path
+                    ? menuItem.selectedIcon || ''
+                    : menuItem.defaultIcon || ''
+                }
+              ></IconFont>
               <span>{menuItem.name}</span>
             </>
           )}
-        </div>
+        </Link>
       </div>
     );
   };
@@ -195,25 +205,23 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
         <div key={item.key}>
           {item.children && item.children.length > 0 ? (
             <>
-              {
-                <div
-                  className={cx(styles.groupTitle, {
-                    'menu-item-group-title-collapsed': collapsed
-                  })}
-                  onClick={(e) => handleToggleGroup(e, item)}
-                >
-                  {!collapsed ? (
-                    <span className="group-title-text">
-                      <span>{item.name}</span>
-                      <CaretDownOutlined
-                        rotate={collapseKeys.has(item.key) ? -90 : 0}
-                      ></CaretDownOutlined>
-                    </span>
-                  ) : (
-                    <Divider style={dividerStyles} />
-                  )}
-                </div>
-              }
+              <div
+                className={cx(styles.groupTitle, {
+                  'menu-item-group-title-collapsed': collapsed
+                })}
+                onClick={(e) => handleToggleGroup(e, item)}
+              >
+                {!collapsed ? (
+                  <span className="group-title-text">
+                    <span>{item.name}</span>
+                    <CaretDownOutlined
+                      rotate={collapseKeys.has(item.key) ? -90 : 0}
+                    ></CaretDownOutlined>
+                  </span>
+                ) : (
+                  <Divider style={dividerStyles} />
+                )}
+              </div>
               <div
                 className={cx(styles.menuItemGroup, {
                   'menu-item-group-collapsed': collapsed,
@@ -227,7 +235,7 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
               </div>
             </>
           ) : (
-            <>{menuItemRender(item, item.key)}</>
+            menuItemRender(item, item.key)
           )}
         </div>
       ))}

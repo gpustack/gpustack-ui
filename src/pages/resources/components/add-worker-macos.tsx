@@ -89,7 +89,10 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = ({ platform }) => {
                 {index + 1}.{' '}
                 <span
                   dangerouslySetInnerHTML={{
-                    __html: intl.formatMessage({ id: step })
+                    __html: intl.formatMessage(
+                      { id: step },
+                      { url: window.location.origin }
+                    )
                   }}
                 ></span>
               </Typography.Text>

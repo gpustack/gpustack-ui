@@ -80,14 +80,13 @@ export default {
   'resources.register.worker.step4':
     '选择服务角色 <span class="bold-text">Worker</span>。',
   'resources.register.worker.step5':
-    '输入 <span class="bold-text">Server URL</span>。',
+    '输入 <span class="bold-text">Server URL</span>：{url}。',
   'resources.register.worker.step6':
-    '粘贴 <span class="bold-text">Token</span>.',
+    '粘贴 <span class="bold-text">Token</span>。',
   'resources.register.worker.step7':
-    '点击<span class="bold-text">重启</span>应用设置。',
+    '点击<span class="bold-text">重启</span>，应用设置。',
   'resources.register.install.title': '在 {os} 上安装 GPUStack',
-  'resources.register.download':
-    '下载并安装<a>安装包</a>，目前仅支持 {versions}。',
+  'resources.register.download': '下载并安装<a>安装包</a>，仅支持 {versions}。',
   'resource.register.maos.support': 'M 芯片，macOS 14+',
   'resource.register.windows.support': 'win 10, win 11'
 };

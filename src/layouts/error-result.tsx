@@ -26,7 +26,7 @@ const ErrorResult: React.FC<ErrorResultProps> = ({ extra }) => {
   const intl = useIntl();
   return (
     <Result
-      status="error"
+      status="warning"
       title={
         isChunkLoadError(extra)
           ? intl.formatMessage({ id: 'common.page.refresh.tips' })

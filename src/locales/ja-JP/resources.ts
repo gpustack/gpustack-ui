@@ -83,14 +83,14 @@ export default {
   'resources.register.worker.step4':
     'Select <span class="bold-text">Worker</span> as the service role.',
   'resources.register.worker.step5':
-    'Enter the <span class="bold-text">Server URL</span>.',
+    'Enter the <span class="bold-text">Server URL</span>: {url}.',
   'resources.register.worker.step6':
     'Paste the <span class="bold-text">Token</span>.',
   'resources.register.worker.step7':
     'Click <span class="bold-text">Restart</span> to apply the settings.',
   'resources.register.install.title': 'Install GPUStack on {os}',
   'resources.register.download':
-    'Download and install the <a>installer</a>. Currently supported: {versions}.',
+    'Download and install the <a>installer</a>. Only supported: {versions}.',
   'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
   'resource.register.windows.support': 'win 10, win 11'
 };
@@ -100,11 +100,11 @@ export default {
 // 2. 'resources.register.worker.step2': 'Click the <span class="bold-text">Quick Config</span> menu.',
 // 3. 'resources.register.worker.step3': 'Click the <span class="bold-text">General</span> tab.',
 // 4. 'resources.register.worker.step4':  'Select <span class="bold-text">Worker</span> as the service role.',
-// 5. 'resources.register.worker.step5': 'Enter the <span class="bold-text">Server URL</span>.',
+// 5. 'resources.register.worker.step5': 'Enter the <span class="bold-text">Server URL</span>: {url}.',
 // 6. 'resources.register.worker.step6': 'Paste the <span class="bold-text">Token</span>.',
 // 7. 'resources.register.worker.step7': 'Click <span class="bold-text">Restart</span> to apply the settings.',
 // 8. 'resources.register.install.title': 'Install GPUStack on {os}',
-// 9. 'resources.register.download':'Download and install the <a>installer</a>. Currently supported: {versions}.',
+// 9. 'resources.register.download':'Download and install the <a>installer</a>. Only supported: {versions}.',
 // 10. 'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
 // 11. 'resource.register.windows.support': 'win 10, win 11'
 // ========== End of To-Do List ==========

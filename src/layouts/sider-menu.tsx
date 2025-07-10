@@ -41,10 +41,8 @@ const useStyles = createStyles(({ css, token }) => {
       gap: 8px;
       cursor: pointer;
       padding: var(--ant-padding-xs) var(--ant-padding);
-      line-height: var(--ant-menu-group-title-line-height);
       font-size: 12px;
       padding-bottom: 4px;
-      color: var(--ant-color-text-secondary);
       overflow: hidden;
       height: 30px;
       transtion: all var(--ant-motion-duration-slow);
@@ -61,7 +59,7 @@ const useStyles = createStyles(({ css, token }) => {
         align-items: center;
         gap: 4px;
         font-size: 12px;
-        color: var(--ant-color-text-secondary);
+        color: var(--ant-color-text-tertiary);
         font-weight: 400;
       }
 

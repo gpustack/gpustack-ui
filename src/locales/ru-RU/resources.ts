@@ -81,7 +81,7 @@ export default {
   'resources.register.worker.step4':
     'Выберите роль сервиса: <span class="bold-text">Воркер</span>.',
   'resources.register.worker.step5':
-    'Введите <span class="bold-text">URL сервера</span>.',
+    'Введите <span class="bold-text">URL сервера</span>: {url}.',
   'resources.register.worker.step6':
     'Вставьте <span class="bold-text">Токен</span>.',
   'resources.register.worker.step7':

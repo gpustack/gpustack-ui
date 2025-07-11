@@ -662,6 +662,7 @@ const ModelFiles = () => {
       >
         <FilterBar
           marginBottom={22}
+          marginTop={30}
           actionType="dropdown"
           selectHolder="resources.filter.worker"
           inputHolder="resources.filter.path"

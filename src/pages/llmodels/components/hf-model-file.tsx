@@ -44,7 +44,6 @@ interface HFModelFileProps {
     file: any,
     options: { requestModelId: number; manual?: boolean }
   ) => void;
-  updateEvaluteState: (state: 'model' | 'form' | 'file') => number;
   onSelectFileAfterEvaluate?: (file: any) => void;
 }
 
@@ -55,13 +54,8 @@ const includeReg = /\.(safetensors|gguf)$/i;
 const filterRegGGUF = /\.(gguf)$/i;
 
 const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
-  const {
-    collapsed,
-    modelSource,
-    isDownload,
-    updateEvaluteState,
-    onSelectFileAfterEvaluate
-  } = props;
+  const { collapsed, modelSource, isDownload, onSelectFileAfterEvaluate } =
+    props;
   const intl = useIntl();
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [dataSource, setDataSource] = useState<any>({

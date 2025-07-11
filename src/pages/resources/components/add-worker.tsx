@@ -1,10 +1,11 @@
+import ScrollerModal from '@/components/scroller-modal';
 import {
   AppleOutlined,
   LinuxOutlined,
   WindowsOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Modal, Tabs, TabsProps } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import React from 'react';
 import MacOS from './add-worker-macos';
 import ContainerInstall from './container-install';
@@ -58,7 +59,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
   ];
 
   return (
-    <Modal
+    <ScrollerModal
       title={intl.formatMessage({ id: 'resources.button.create' })}
       open={open}
       centered={false}
@@ -85,8 +86,8 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         type="card"
         onChange={(key) => setActiveKey(key)}
       ></Tabs>
-    </Modal>
+    </ScrollerModal>
   );
 };
 
-export default React.memo(AddWorker);
+export default AddWorker;

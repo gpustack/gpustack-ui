@@ -216,6 +216,7 @@ const Workers: React.FC = () => {
       >
         <FilterBar
           marginBottom={22}
+          marginTop={30}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}

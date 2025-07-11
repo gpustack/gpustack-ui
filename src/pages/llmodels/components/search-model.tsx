@@ -56,7 +56,7 @@ interface SearchInputProps {
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any, manul?: boolean) => void;
-  onSelectModelAfterEvaluate: (model: any, manual?: boolean) => void;
+  onSelectModelAfterEvaluate?: (model: any, manual?: boolean) => void;
   displayEvaluateStatus?: (
     data: MessageStatus,
     options?: WarningStausOptions
@@ -153,7 +153,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (!item.evaluated || item.isGGUF) {
       onSelectModel(item, manual);
     } else {
-      onSelectModelAfterEvaluate(item, manual);
+      onSelectModelAfterEvaluate?.(item, manual);
     }
     setCurrent(item.id);
     currentRef.current = item.id;
@@ -338,7 +338,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
       // if it is gguf, would trigger a evaluation after select a model file
       if (currentItem && !currentItem.isGGUF) {
-        onSelectModelAfterEvaluate(currentItem);
+        onSelectModelAfterEvaluate?.(currentItem);
       }
     } catch (error) {
       // cancel the corrponding request

@@ -54,7 +54,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     if (source === modelSourceMap.huggingface_value) {
       const huggingFaceModel = {
         huggingface_repo_id: selectedModel.name,
-        huggingface_filename: fileName
+        huggingface_filename: fileName || null
       };
       return huggingFaceModel;
     }
@@ -62,7 +62,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     if (source === modelSourceMap.modelscope_value) {
       const modelScopeModel = {
         model_scope_model_id: selectedModel.name,
-        model_scope_file_path: fileName
+        model_scope_file_path: fileName || null
       };
       return modelScopeModel;
     }

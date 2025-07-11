@@ -72,9 +72,9 @@ export default {
   'resources.modelfiles.copy.tips': '复制完整路径',
   'resources.filter.path': '路径查询',
   'resources.register.worker.step1':
-    '点击菜单<span class="bold-text">复制 Token</span>。',
+    '点击应用菜单<span class="bold-text">复制 Token</span>。',
   'resources.register.worker.step2':
-    '点击菜单<span class="bold-text">快速配置</span>。',
+    '点击应用菜单<span class="bold-text">快速配置</span>。',
   'resources.register.worker.step3':
     '点击页签<span class="bold-text">通用</span>。',
   'resources.register.worker.step4':

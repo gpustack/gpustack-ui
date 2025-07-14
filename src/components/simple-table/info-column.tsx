@@ -22,7 +22,7 @@ const InfoColumn: React.FC<InfoColumnProps> = (props) => {
     <span className="flex" style={style}>
       {fieldList.map((item, index) => {
         return (
-          <>
+          <span key={item.key || index} className="flex-center">
             <span className="flex-column flex-center">
               <span>
                 {' '}
@@ -46,7 +46,7 @@ const InfoColumn: React.FC<InfoColumnProps> = (props) => {
                 }}
               ></Divider>
             ) : null}
-          </>
+          </span>
         );
       })}
     </span>

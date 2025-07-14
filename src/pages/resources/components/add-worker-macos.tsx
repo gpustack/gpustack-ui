@@ -8,6 +8,7 @@ interface AddWorkerMacOSProps {
   token?: string;
   platform: {
     os: string;
+    downloadurl: string;
     supportVersions: string;
   };
 }
@@ -49,7 +50,8 @@ const AddWorkerMacOS: React.FC<AddWorkerMacOSProps> = ({ platform }) => {
               {
                 versions: intl.formatMessage({
                   id: platform.supportVersions
-                })
+                }),
+                url: platform.downloadurl
               }
             )
           }}

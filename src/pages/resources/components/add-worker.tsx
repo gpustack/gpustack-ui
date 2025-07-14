@@ -37,6 +37,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           token={token}
           platform={{
             os: 'macOS',
+            downloadurl: 'https://gpustack.ai/',
             supportVersions: 'resource.register.maos.support'
           }}
         />
@@ -51,6 +52,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
           token={token}
           platform={{
             os: 'Windows',
+            downloadurl: 'https://gpustack.ai/',
             supportVersions: 'resource.register.windows.support'
           }}
         />

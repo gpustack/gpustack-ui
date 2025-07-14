@@ -88,7 +88,7 @@ export default {
     'Нажмите <span class="bold-text">Перезапуск</span> для применения настроек.',
   'resources.register.install.title': 'Установка GPUStack на {os}',
   'resources.register.download':
-    'Скачайте и установите <a>инсталлятор</a>. Поддерживаемые версии: {versions}.',
+    'Скачайте и установите <a href={url} target="_blank">инсталлятор</a>. Поддерживаемые версии: {versions}.',
   'resource.register.maos.support': 'Apple Silicon (серия M), macOS 14+',
   'resource.register.windows.support': 'Windows 10, Windows 11'
 };

@@ -2,7 +2,7 @@ const options = [
   {
     label: '--log-level',
     value: '--log-level',
-    options: ['Info', 'Warn', 'Error', 'Debug']
+    options: ['Info', 'Verbose', 'Warning', 'Warn', 'Error', 'Debug']
   },
   {
     label: '--max-seq-len',

@@ -31,7 +31,7 @@ export default function useTableFetch<ListItem>(
     polling = false,
     watch,
     defaultData = [],
-    events = ['UPDATE', 'DELETE', 'INSERT']
+    events = ['UPDATE', 'DELETE']
   } = options;
   const pollingRef = useRef<any>(null);
   const chunkRequedtRef = useRef<any>(null);

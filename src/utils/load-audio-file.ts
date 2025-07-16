@@ -1,4 +1,12 @@
+import { message } from 'antd';
 import { convertFileSize } from './index';
+
+export const audioTypeMap: Record<string, string> = {
+  'audio/wav': 'wav',
+  'audio/mp3': 'mp3',
+  'audio/mpeg': 'mp3',
+  'audio/x-wav': 'wav'
+};
 
 export const convertFileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -41,6 +49,12 @@ export const loadAudioData = async (
 
       audio.addEventListener('ended', () => {
         URL.revokeObjectURL(audio.src);
+      });
+
+      audio.addEventListener('error', () => {
+        URL.revokeObjectURL(url);
+        message.error('Failed to load audio metadata invalid file');
+        reject(new Error('Failed to load audio metadata invalid file'));
       });
     } catch (error) {
       console.log('error====', error);

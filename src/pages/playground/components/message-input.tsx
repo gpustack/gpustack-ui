@@ -2,7 +2,11 @@ import SimpleAudio from '@/components/audio-player/simple-audio';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
-import { convertFileToBase64, readAudioFile } from '@/utils/load-audio-file';
+import {
+  audioTypeMap,
+  convertFileToBase64,
+  readAudioFile
+} from '@/utils/load-audio-file';
 import {
   ClearOutlined,
   CustomerServiceOutlined,
@@ -27,12 +31,6 @@ import { AudioFormat, MessageItem } from '../config/types';
 import '../style/message-input.less';
 import ThumbImg from './thumb-img';
 import UploadImg from './upload-img';
-
-const audioTypeMap: Record<string, string> = {
-  'audio/wav': 'wav',
-  'audio/mp3': 'mp3',
-  'audio/mpeg': 'mp3'
-};
 
 const AudioWrapper = styled.div`
   padding-block: 10px;
@@ -303,7 +301,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       try {
         const base64Audio = await convertFileToBase64(data.file);
         const audioData = await readAudioFile(data.file);
-        console.log('audioData====', message.imgs);
+        console.log('audioData====', audioData, message.imgs);
         setMessage((pre) => {
           return {
             ...pre,
@@ -421,6 +419,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             )}
             {actions.includes('upload') && message.role === Roles.User && (
               <UploadAudio
+                maxFileSize={1024 * 1024}
                 type="text"
                 accept={'.mp3,.wav'}
                 size="middle"

@@ -28,12 +28,14 @@ export const convertFileSize = (
 ): string | number => {
   if (!sizeInBytes) return allowEmpty ? '' : 0;
 
+  const fmt = 1024;
+
   const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
   let size = sizeInBytes;
   let unitIndex = 0;
 
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
+  while (size >= fmt && unitIndex < units.length - 1) {
+    size /= fmt;
     unitIndex++;
   }
 

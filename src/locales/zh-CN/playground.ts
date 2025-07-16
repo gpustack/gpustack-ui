@@ -147,5 +147,6 @@ export default {
   'playground.model.noavailable.tips2':
     '若预期的模型未显示，请检查模型是否已正常运行并被正确分类。如分类不正确，请编辑模型并手动调整其类别。',
   'playground.rerank.query.validate': '查询内容不能为空',
-  'playground.image.generate.error': '出了一点问题，图片未能生成。'
+  'playground.image.generate.error': '出了一点问题，图片未能生成。',
+  'playground.uploadfile.sizeError': '上传的文件大小超过限制，最大允许 {size}'
 };

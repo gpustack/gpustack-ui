@@ -1,6 +1,10 @@
 import CopyButton from '@/components/copy-button';
 import UploadAudio from '@/components/upload-audio';
-import { convertFileToBase64, readAudioFile } from '@/utils/load-audio-file';
+import {
+  audioTypeMap,
+  convertFileToBase64,
+  readAudioFile
+} from '@/utils/load-audio-file';
 import {
   CustomerServiceOutlined,
   EditOutlined,
@@ -17,12 +21,6 @@ import {
   MessageItemAction
 } from '../../config/types';
 import UploadImg from '../upload-img';
-
-const audioTypeMap: Record<string, string> = {
-  'audio/wav': 'wav',
-  'audio/mp3': 'mp3',
-  'audio/mpeg': 'mp3'
-};
 
 interface MessageActionsProps {
   data: MessageItem;
@@ -88,6 +86,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
             {actions.includes('upload') && data.role === Roles.User && (
               <UploadAudio
                 type="text"
+                maxFileSize={1024 * 1024}
                 accept={'.mp3,.wav'}
                 size="small"
                 shape="default"

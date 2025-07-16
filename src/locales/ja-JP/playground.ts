@@ -157,10 +157,13 @@ export default {
     '期待するモデルが表示されない場合は、モデルが実行中で正しく分類されていることを確認してください。カテゴリが間違っている場合は、モデルの設定で手動で調整できます。',
   'playground.rerank.query.validate': 'The query is required.',
   'playground.image.generate.error':
-    'Something went wrong. The image could not be generated.'
+    'Something went wrong. The image could not be generated.',
+  'playground.uploadfile.sizeError':
+    'File size exceeds the limit. Maximum allowed: {size}.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'playground.rerank.query.validate': 'The query is required.'
-// 2.  'playground.image.generate.error': 'Something went wrong. The image could not be generated.'
+// 2.  'playground.image.generate.error': 'Something went wrong. The image could not be generated.',
+// 3. 'playground.uploadfile.sizeError': 'File size exceeds the limit. Maximum allowed: {size}.'
 // ========== End of To-Do List ==========

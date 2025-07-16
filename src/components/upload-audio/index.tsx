@@ -1,7 +1,8 @@
 import { UploadOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Tooltip, Upload } from 'antd';
+import { Button, Tooltip, Upload, message } from 'antd';
 import React from 'react';
+import { convertFileSize } from '../../utils';
 
 interface UploadAudioProps {
   accept?: string;
@@ -10,17 +11,36 @@ interface UploadAudioProps {
   icon?: React.ReactNode;
   size?: 'small' | 'middle' | 'large';
   shape?: 'circle' | 'round' | 'default';
+  maxFileSize?: number; // in bytes
   onChange?: (data: { file: any; fileList: any[] }) => void;
 }
 
 const UploadAudio: React.FC<UploadAudioProps> = (props) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const { icon, accept, type, size = 'large', shape = 'circle' } = props;
   const intl = useIntl();
   const beforeUpload = (file: any) => {
     return false;
   };
 
+  const isFileSizeValid = (file: File) => {
+    if (props.maxFileSize && file.size > props.maxFileSize) {
+      messageApi.open({
+        type: 'warning',
+        content: intl.formatMessage(
+          { id: 'playground.uploadfile.sizeError' },
+          { size: `${convertFileSize(props.maxFileSize)}` } // Convert bytes to MB
+        )
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleOnChange = (data: { file: any; fileList: any }) => {
+    if (!isFileSizeValid(data.file)) {
+      return;
+    }
     props.onChange?.(data);
   };
 
@@ -57,6 +77,7 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
           ></Button>
         </div>
       </Upload>
+      {contextHolder}
     </Tooltip>
   );
 };

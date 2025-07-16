@@ -151,10 +151,13 @@ export default {
     'Если нужная модель не отображается, убедитесь, что она запущена и ей присвоена правильная категория. Если категория указана неверно, её можно изменить вручную в настройках модели.',
   'playground.rerank.query.validate': 'The query is required.',
   'playground.image.generate.error':
-    'Something went wrong. The image could not be generated.'
+    'Something went wrong. The image could not be generated.',
+  'playground.uploadfile.sizeError':
+    'File size exceeds the limit. Maximum allowed: {size}.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'playground.rerank.query.validate': 'The query is required.'
-// 2.  'playground.image.generate.error': 'Something went wrong. The image could not be generated.'
+// 2.  'playground.image.generate.error': 'Something went wrong. The image could not be generated.',
+// 3. 'playground.uploadfile.sizeError': 'File size exceeds the limit. Maximum allowed: {size}.'
 // ========== End of To-Do List ==========

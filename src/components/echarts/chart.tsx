@@ -1,4 +1,4 @@
-import { throttle } from 'lodash';
+import _, { throttle } from 'lodash';
 import React, {
   forwardRef,
   useEffect,
@@ -84,13 +84,13 @@ const Chart: React.FC<{
       const yAxis: any[] = [{}, {}];
 
       if (counts[0] < unifiedCount) {
-        yAxis[0].max = newMax0;
+        yAxis[0].max = _.round(newMax0, 2);
         yAxis[0].interval = intervals[0];
         yAxis[0].splitNumber = unifiedCount;
       }
 
       if (counts[1] < unifiedCount) {
-        yAxis[1].max = newMax1;
+        yAxis[1].max = _.round(newMax1, 2);
         yAxis[1].interval = intervals[1];
         yAxis[1].splitNumber = unifiedCount;
       }

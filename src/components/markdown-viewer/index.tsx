@@ -19,7 +19,7 @@ interface MarkdownViewerProps {
 
 const dompurifyOptions = {
   FORBID_TAGS: ['meta', 'style', 'script', 'iframe'],
-  FORBID_ATTR: ['onerror', 'onclick', 'onload', 'style']
+  FORBID_ATTR: ['onerror', 'onclick', 'onload', 'style', 'autoplay']
 };
 
 const cleanHtml = (html: string): string => {
@@ -81,6 +81,7 @@ const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
       if (token.type === 'script' || token.type === 'style') {
         return null;
       }
+
       if (!reDefineTypes.includes(token.type)) {
         return (
           <span

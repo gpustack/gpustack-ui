@@ -250,11 +250,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
               minRows: 5,
               maxRows: 5
             }}
-            title={
-              <span className="font-600">
-                {intl.formatMessage({ id: 'playground.image.prompt' })}
-              </span>
-            }
+            title={intl.formatMessage({ id: 'playground.image.prompt' })}
             loading={loading}
             disabled={!parameters.model}
             isEmpty={!imageList.length}

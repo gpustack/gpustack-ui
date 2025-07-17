@@ -18,7 +18,7 @@ const ApiAccessInfoWrapper = styled.div`
   justify-items: start;
   align-items: center;
   .label {
-    font-weight: 600;
+    font-weight: 500;
   }
   .value {
     margin-left: 20px;

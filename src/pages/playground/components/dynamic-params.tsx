@@ -151,7 +151,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
         <div>
           {
             <>
-              <h3 className="m-b-20  font-size-14 line-24 font-600">
+              <h3 className="m-b-20  font-size-14 line-24 font-500">
                 {parametersTitle || (
                   <span>
                     {intl.formatMessage({ id: 'playground.parameters' })}

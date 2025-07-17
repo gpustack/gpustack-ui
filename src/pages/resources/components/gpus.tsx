@@ -44,6 +44,7 @@ const GPUList: React.FC = () => {
   const {
     dataSource,
     queryParams,
+    extraStatus,
     handlePageChange,
     handleTableChange,
     handleSearch,
@@ -184,9 +185,12 @@ const GPUList: React.FC = () => {
               })}
               dataIndex="VRAM"
               key="VRAM"
-              render={(text, record: GPUDeviceItem) => {
+              render={(text, record: GPUDeviceItem, index: number) => {
                 return (
                   <ProgressBar
+                    open={
+                      index === 0 && dataSource.loadend && extraStatus.firstLoad
+                    }
                     percent={
                       record.memory?.used
                         ? _.round(record.memory?.utilization_rate, 0)

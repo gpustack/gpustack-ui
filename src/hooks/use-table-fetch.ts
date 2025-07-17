@@ -40,6 +40,9 @@ export default function useTableFetch<ListItem>(
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+  const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
+    firstLoad: true
+  });
 
   const [dataSource, setDataSource] = useState<{
     dataList: ListItem[];
@@ -59,6 +62,7 @@ export default function useTableFetch<ListItem>(
     perPage: 10,
     search: ''
   });
+
   const { setChunkRequest } = useSetChunkRequest();
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
     events: events,
@@ -76,6 +80,8 @@ export default function useTableFetch<ListItem>(
       });
     }
   });
+
+  const debounceSetExtraStatus = _.debounce(setExtraStatus, 3000);
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
@@ -147,6 +153,10 @@ export default function useTableFetch<ListItem>(
         loadend: true,
         total: dataSource.total,
         totalPage: dataSource.totalPage
+      });
+    } finally {
+      debounceSetExtraStatus({
+        firstLoad: false
       });
     }
   };
@@ -277,6 +287,7 @@ export default function useTableFetch<ListItem>(
     sortOrder,
     queryParams,
     modalRef,
+    extraStatus,
     setQueryParams,
     handleDelete,
     handleDeleteBatch,

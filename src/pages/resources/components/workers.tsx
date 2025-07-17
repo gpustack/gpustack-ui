@@ -96,6 +96,7 @@ const Workers: React.FC = () => {
     rowSelection,
     queryParams,
     modalRef,
+    extraStatus,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -383,12 +384,12 @@ const Workers: React.FC = () => {
               title={intl.formatMessage({ id: 'resources.table.vram' })}
               dataIndex="VRAM"
               key="VRAM"
-              render={(text, record: ListItem) => {
+              render={(text, record: ListItem, rIndex) => {
                 return (
                   <span className="flex-column flex-gap-2">
                     {_.map(
                       _.sortBy(record?.status?.gpu_devices || [], ['index']),
-                      (item: GPUDeviceItem, index: string) => {
+                      (item: GPUDeviceItem, index: number) => {
                         return (
                           <span key={index}>
                             <span className="flex-center">
@@ -399,6 +400,12 @@ const Workers: React.FC = () => {
                                 [{item.index}]
                               </span>
                               <ProgressBar
+                                open={
+                                  rIndex === 0 &&
+                                  index === 0 &&
+                                  dataSource.loadend &&
+                                  extraStatus.firstLoad
+                                }
                                 key={index}
                                 percent={
                                   item.memory?.used
@@ -442,7 +449,7 @@ const Workers: React.FC = () => {
               title={intl.formatMessage({ id: 'resources.table.disk' })}
               dataIndex="storage"
               key="storage"
-              render={(text, record: ListItem) => {
+              render={(text, record: ListItem, index) => {
                 return (
                   <ProgressBar
                     percent={calcStorage(record.status?.filesystem)}

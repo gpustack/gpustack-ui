@@ -367,11 +367,7 @@ const GroundTTS: React.FC<MessageProps> = forwardRef((props, ref) => {
               minRows: 5,
               maxRows: 5
             }}
-            title={
-              <span className="font-600">
-                {intl.formatMessage({ id: 'playground.audio.textinput' })}
-              </span>
-            }
+            title={intl.formatMessage({ id: 'playground.audio.textinput' })}
             onCheck={handleOnCheckChange}
             loading={loading}
             disabled={!parameters.model}

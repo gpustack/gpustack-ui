@@ -390,7 +390,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       <div className="messageInput" style={{ ...style }}>
         <div className="tool-bar">
           <div className="actions">
-            {title}
+            {title && <span className="font-500">{title}</span>}
             {actions.includes('role') && (
               <>
                 <Button

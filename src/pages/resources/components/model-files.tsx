@@ -584,7 +584,7 @@ const ModelFiles = () => {
     {
       title: intl.formatMessage({ id: 'common.table.status' }),
       dataIndex: 'state',
-      width: 120,
+      width: 132,
       render: (text: string, record: ListItem) => {
         return <InstanceStatusTag data={record} />;
       }

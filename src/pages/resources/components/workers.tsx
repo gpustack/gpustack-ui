@@ -400,7 +400,7 @@ const Workers: React.FC = () => {
                                 [{item.index}]
                               </span>
                               <ProgressBar
-                                open={
+                                defaultOpen={
                                   rIndex === 0 &&
                                   index === 0 &&
                                   dataSource.loadend &&

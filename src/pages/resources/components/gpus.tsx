@@ -188,7 +188,7 @@ const GPUList: React.FC = () => {
               render={(text, record: GPUDeviceItem, index: number) => {
                 return (
                   <ProgressBar
-                    open={
+                    defaultOpen={
                       index === 0 && dataSource.loadend && extraStatus.firstLoad
                     }
                     percent={

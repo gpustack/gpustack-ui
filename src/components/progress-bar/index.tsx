@@ -1,9 +1,9 @@
 import { Progress, Tooltip } from 'antd';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo } from 'react';
 
 const RenderProgress = memo(
   (props: {
-    open?: boolean;
+    defaultOpen?: boolean;
     percent: number;
     steps?: number;
     download?: boolean;
@@ -11,7 +11,8 @@ const RenderProgress = memo(
     successPercent?: number;
     successColor?: string;
   }) => {
-    const { open, percent, download, label, successPercent } = props;
+    const { defaultOpen, percent, download, label, successPercent } = props;
+    const [open, setOpen] = React.useState(false);
 
     const strokeColor = useMemo(() => {
       if (download) {
@@ -26,6 +27,10 @@ const RenderProgress = memo(
       }
       return 'var(--ant-color-error)';
     }, [percent]);
+
+    useEffect(() => {
+      setOpen(defaultOpen || false);
+    }, [defaultOpen]);
 
     const renderProgress = useMemo(() => {
       return (
@@ -59,6 +64,7 @@ const RenderProgress = memo(
           <Tooltip
             title={label}
             open={open}
+            onOpenChange={setOpen}
             overlayInnerStyle={{ paddingInline: 12 }}
           >
             {renderProgress}

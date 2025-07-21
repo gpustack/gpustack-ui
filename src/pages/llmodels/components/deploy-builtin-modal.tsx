@@ -408,17 +408,20 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         backend: defaultSpec.backend
       });
       initFormDataBySource(defaultSpec);
-      form.current.setFieldValue(
-        'name',
-        _.toLower(current.name).replace(/\s/g, '-') || ''
-      );
+
+      const name = _.toLower(current.name).replace(/\s/g, '-') || '';
+      form.current.setFieldValue('name', name);
 
       if (defaultSpec.backend === backendOptionsMap.llamaBox) {
         setIsGGUF(true);
       } else {
         setIsGGUF(false);
       }
-      const allValues = generateSubmitData(defaultSpec);
+      const allValues = generateSubmitData({
+        ...defaultSpec,
+        categories: _.get(current, 'categories.0', null),
+        name
+      });
       handleCheckCompatibility(allValues);
     } catch (error) {
       // ignore

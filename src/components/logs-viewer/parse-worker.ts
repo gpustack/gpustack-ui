@@ -196,7 +196,10 @@ class AnsiParser {
 
     // const data = lines.join('\n');
     this.rawDataRows += lines.length;
-    this.lines.push(...lines);
+    lines.forEach((line) => {
+      this.lines.push(line);
+    });
+
     return {
       data: this.lines,
       lines: this.rawDataRows,

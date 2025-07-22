@@ -25,7 +25,12 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
-import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
+import {
+  InstanceStatusMap,
+  InstanceStatusMapValue,
+  backendOptionsMap,
+  status
+} from '../config';
 import {
   DistributedServerItem,
   DistributedServers,
@@ -153,21 +158,17 @@ const RenderWorkerDownloading = (props: {
   distributed_servers?: DistributedServers;
   workerList: WorkerListItem[];
   instanceData: ModelInstanceListItem;
+  backend?: string;
 }) => {
-  const { distributed_servers, workerList, instanceData } = props;
-  const { ray_actors = [], subordinate_workers = [] } =
-    distributed_servers || {};
+  const { distributed_servers, workerList, instanceData, backend } = props;
 
-  let severList: DistributedServerItem[] = [];
-  if (ray_actors?.length > 0) {
-    severList = ray_actors;
-  } else if (subordinate_workers?.length > 0) {
-    severList = subordinate_workers;
-  }
+  const severList: DistributedServerItem[] =
+    distributed_servers?.subordinate_workers || [];
 
   if (
     instanceData.state !== InstanceStatusMap.Downloading ||
-    !severList.length
+    !severList.length ||
+    backend === backendOptionsMap.llamaBox
   ) {
     return null;
   }
@@ -486,21 +487,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   };
 
   const renderDistributionInfo = (distributed_servers: DistributedServers) => {
-    const {
-      rpc_servers = [],
-      ray_actors = [],
-      subordinate_workers = []
-    } = distributed_servers || {};
-
-    let severList: DistributedServerItem[] = [];
-
-    if (rpc_servers?.length > 0) {
-      severList = rpc_servers;
-    } else if (ray_actors?.length > 0) {
-      severList = ray_actors;
-    } else if (subordinate_workers?.length > 0) {
-      severList = subordinate_workers;
-    }
+    const severList: DistributedServerItem[] =
+      distributed_servers?.subordinate_workers || [];
 
     if (!severList.length) {
       return null;
@@ -658,6 +646,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                   handleChildSelect={handleChildSelect}
                 />
                 <RenderWorkerDownloading
+                  backend={modelData?.backend}
                   distributed_servers={instanceData.distributed_servers}
                   workerList={workerList}
                   instanceData={instanceData}

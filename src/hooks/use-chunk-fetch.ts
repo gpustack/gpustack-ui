@@ -99,17 +99,16 @@ const useSetChunkFetch = () => {
 
       public flush(done?: boolean) {
         if (this.buffer.length > 0) {
-          const currentBuffer = [...this.buffer];
-          this.buffer = [];
-          currentBuffer.forEach((item, i) => {
-            const isComplete = i === currentBuffer.length - 1 && done;
+          while (this.buffer.length > 0) {
+            const item = this.buffer.shift()!;
+            const isComplete = this.buffer.length === 0 && done;
             callback(item, {
               isComplete: isComplete || this.percent === 100,
               percent: this.percent,
               progress: this.progress,
               contentLength: this.contentLength
             });
-          });
+          }
         }
       }
 
@@ -145,7 +144,7 @@ const useSetChunkFetch = () => {
       try {
         const chunk = decoder.decode(value, { stream: true });
         bufferManager.add(chunk);
-        bufferManager.updateSpeed(chunk.length);
+        // bufferManager.updateSpeed(chunk.length);
         throttledCallback();
       } catch (error) {
         // handle error

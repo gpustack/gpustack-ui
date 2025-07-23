@@ -29,7 +29,6 @@ import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 import HFModelFile from './hf-model-file';
 import ModelCard from './model-card';
-import OllamaTips from './ollama-tips';
 import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
@@ -458,11 +457,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         ? backendOptionsMap.ascendMindie
         : backendOptionsMap.vllm;
 
-      if (source === modelSourceMap.ollama_library_value) {
-        backend = backendOptionsMap.llamaBox;
-      }
       form.current?.setFieldValue?.('backend', backend);
-      setIsGGUF(source === modelSourceMap.ollama_library_value);
     }
   };
 
@@ -567,7 +562,6 @@ const AddModal: FC<AddModalProps> = (props) => {
                       selectedModel={selectedModel}
                       modelSource={props.source}
                       onSelectFile={handleSelectModelFile}
-                      updateEvaluteState={updateEvaluateState}
                       collapsed={collapsed}
                       gpuOptions={props.gpuOptions}
                     ></HFModelFile>
@@ -621,9 +615,6 @@ const AddModal: FC<AddModalProps> = (props) => {
               }
             >
               <>
-                {source === modelSourceMap.ollama_library_value && (
-                  <OllamaTips></OllamaTips>
-                )}
                 {SEARCH_SOURCE.includes(source) &&
                   deploymentType === 'modelList' && (
                     <TitleWrapper>

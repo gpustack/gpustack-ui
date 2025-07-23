@@ -133,9 +133,11 @@ export default {
   'models.form.check.params': 'Checking configuration...',
   'models.form.check.passed': 'Compatibility Check Passed',
   'models.form.check.claims':
-    'The model requires approximately {vram} VRAM and {ram} RAM.',
-  'models.form.check.claims2': 'The model requires approximately {vram} VRAM.',
-  'models.form.check.claims3': 'The model requires approximately {ram} RAM.',
+    'The model will consume approximately {vram} VRAM and {ram} RAM.',
+  'models.form.check.claims2':
+    'The model will consume approximately {vram} VRAM.',
+  'models.form.check.claims3':
+    'The model will consume approximately {ram} RAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.',
   'models.table.download.progress': 'Download Progress',

@@ -11,6 +11,7 @@ export default {
   'menu.models.modelList': '部署与管理',
   'menu.models.modelCatalog': '模型库',
   'menu.models.deployment': '部署',
+  'menu.models.userModels': '我的模型',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
   'menu.resources': '资源',
@@ -25,5 +26,8 @@ export default {
   'menu.resources.modelfiles': '模型文件',
   'menu.accessControl': '访问控制',
   'menu.accessControl.apikeys': 'API 密钥',
-  'menu.accessControl.users': '用户'
+  'menu.accessControl.users': '用户',
+  'menu.clusterManagement': '集群管理',
+  'menu.clusterManagement.clusters': '集群',
+  'menu.clusterManagement.credentials': '凭据'
 };

@@ -25,9 +25,23 @@ export default {
   'menu.resources.modelfiles': 'Файлы модлей',
   'menu.accessControl': 'Управление доступом',
   'menu.accessControl.apikeys': 'API Ключи',
-  'menu.accessControl.users': 'Пользователи'
+  'menu.accessControl.users': 'Пользователи',
+  'menu.clusterManagement': 'Cluster Management',
+  'menu.clusterManagement.clusters': 'Clusters',
+  'menu.clusterManagement.credentials': 'Credentials',
+  'menu.models.userModels': 'My Models'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1.   'menu.models.deployment': 'Deployment',
+// 2. 'menu.resources.workers': 'Workers',
+// 3. 'menu.resources.gpus': 'GPUs',
+// 4. 'menu.resources.modelfiles': 'Model Files',
+// 5. 'menu.accessControl': 'Access Control',
+// 6. 'menu.accessControl.apikeys': 'API Keys',
+// 7. 'menu.accessControl.users': 'Users',
+// 8. 'menu.clusterManagement': 'Cluster Management',
+// 9. 'menu.clusterManagement.clusters': 'Clusters',
+// 10. 'menu.clusterManagement.credentials': 'Credentials',
+// 11. 'menu.models.userModels': 'My Models'
 // ========== End of To-Do List ==========

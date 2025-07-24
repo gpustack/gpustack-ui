@@ -12,6 +12,7 @@ export default {
   'menu.models.modelCatalog': 'Catalog',
   'menu.models.catalog': 'Model Catalog',
   'menu.models.deployment': 'Deployments',
+  'menu.models.userModels': 'My Models',
   'menu.modelCatalog': 'Catalog',
   'menu.resources': 'Resources',
   'menu.apikeys': 'API Keys',
@@ -25,5 +26,8 @@ export default {
   'menu.profile': 'Profile',
   'menu.login': 'Login',
   'menu.usage': 'Usage',
-  'menu.404': '404'
+  'menu.404': '404',
+  'menu.clusterManagement': 'Cluster Management',
+  'menu.clusterManagement.clusters': 'Clusters',
+  'menu.clusterManagement.credentials': 'Credentials'
 };

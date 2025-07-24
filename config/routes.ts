@@ -54,16 +54,16 @@ export default [
         defaultIcon: 'icon-reranker',
         component: './playground/rerank'
       },
-      {
-        name: 'text2images',
-        title: 'Text2Images',
-        path: keepAliveRoutes.text2images,
-        key: 'text2images',
-        icon: 'icon-image1',
-        selectedIcon: 'icon-image-filled',
-        defaultIcon: 'icon-image1',
-        component: './playground/images'
-      },
+      // {
+      //   name: 'text2images',
+      //   title: 'Text2Images',
+      //   path: keepAliveRoutes.text2images,
+      //   key: 'text2images',
+      //   icon: 'icon-image1',
+      //   selectedIcon: 'icon-image-filled',
+      //   defaultIcon: 'icon-image1',
+      //   component: './playground/images'
+      // },
       {
         name: 'speech',
         title: 'Speech',
@@ -105,6 +105,16 @@ export default [
         defaultIcon: 'icon-rocket-launch1',
         access: 'canSeeAdmin',
         component: './llmodels/index'
+      },
+      {
+        name: 'userModels',
+        path: '/models/user-models',
+        key: 'userModels',
+        icon: 'icon-models',
+        selectedIcon: 'icon-models-filled',
+        defaultIcon: 'icon-models',
+        access: 'canSeeAdmin',
+        component: './llmodels/user-models'
       }
     ]
   },
@@ -144,6 +154,36 @@ export default [
         selectedIcon: 'icon-files-filled',
         defaultIcon: 'icon-files',
         component: './resources/components/model-files'
+      }
+    ]
+  },
+  {
+    name: 'clusterManagement',
+    path: '/cluster-management',
+    key: 'clusterManagement',
+    access: 'canSeeAdmin',
+    routes: [
+      {
+        path: '/cluster-management',
+        redirect: '/cluster-management/clusters'
+      },
+      {
+        name: 'clusters',
+        path: '/cluster-management/clusters',
+        key: 'clusters',
+        icon: 'icon-k8s-outline',
+        selectedIcon: 'icon-k8s-filled',
+        defaultIcon: 'icon-k8s-outline',
+        component: './cluster-management/clusters'
+      },
+      {
+        name: 'credentials',
+        path: '/cluster-management/credentials',
+        key: 'credentials',
+        icon: 'icon-credential-outline',
+        selectedIcon: 'icon-credential-filled',
+        defaultIcon: 'icon-credential-outline',
+        component: './cluster-management/credentials'
       }
     ]
   },

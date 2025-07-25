@@ -12,6 +12,7 @@ import useDownloadStream from '@/hooks/use-download-stream';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import {
+  CodeOutlined,
   DeleteOutlined,
   DownloadOutlined,
   HddFilled,
@@ -269,6 +270,12 @@ const childActionList = [
       InstanceStatusMap.Downloading
     ],
     icon: <IconFont type="icon-logs" />
+  },
+  {
+    label: 'Terminal',
+    locale: false,
+    key: 'terminal',
+    icon: <CodeOutlined />
   },
   {
     label: 'common.button.downloadLog',

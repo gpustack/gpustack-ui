@@ -4,6 +4,7 @@ import React from 'react';
 interface FormContextProps {
   isGGUF?: boolean;
   byBuiltIn?: boolean;
+  source?: string;
   pageAction: PageActionType;
   sizeOptions?: Global.BaseOption<number>[];
   quantizationOptions?: Global.BaseOption<string>[];

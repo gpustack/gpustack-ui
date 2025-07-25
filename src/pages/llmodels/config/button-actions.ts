@@ -47,6 +47,11 @@ export const ActionList: ActionItem[] = [
     icon: icons.EditOutlined
   },
   {
+    label: 'common.button.detail',
+    key: 'details',
+    icon: icons.FileTextOutlined
+  },
+  {
     label: 'models.openinplayground',
     key: 'chat',
     icon: icons.ExperimentOutlined

@@ -5,6 +5,7 @@ import {
   DownloadOutlined,
   EditOutlined,
   ExperimentOutlined,
+  FileTextOutlined,
   RetweetOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
@@ -17,6 +18,7 @@ const icons = {
   ThunderboltOutlined: React.createElement(ThunderboltOutlined),
   RetweetOutlined: React.createElement(RetweetOutlined),
   DownloadOutlined: React.createElement(DownloadOutlined),
+  FileTextOutlined: React.createElement(FileTextOutlined),
   ApiOutlined: React.createElement(ApiOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),

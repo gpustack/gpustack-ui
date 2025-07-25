@@ -45,13 +45,13 @@ const HuggingFaceForm: React.FC = () => {
         ]}
       >
         <SealInput.Input
-          label={intl.formatMessage({ id: 'models.form.repoid' })}
+          label="Base Model"
           required
           disabled={pageAction === PageAction.CREATE}
           onBlur={handleOnBlur}
         ></SealInput.Input>
       </Form.Item>
-      {isGGUF && (
+      {/* {isGGUF && (
         <Form.Item<FormData>
           name="file_name"
           key="file_name"
@@ -69,7 +69,7 @@ const HuggingFaceForm: React.FC = () => {
             onBlur={handleOnBlur}
           ></SealInput.Input>
         </Form.Item>
-      )}
+      )} */}
     </>
   );
 };

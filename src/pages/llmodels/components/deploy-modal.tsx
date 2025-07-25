@@ -27,7 +27,7 @@ import {
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
-import HFModelFile from './hf-model-file';
+import GGUFResult from './gguf-result';
 import ModelCard from './model-card';
 import SearchModel from './search-model';
 import Separator from './separator';
@@ -556,16 +556,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                     modelSource={props.source}
                     setIsGGUF={handleSetIsGGUF}
                   ></ModelCard>
-                  {isGGUF && (
-                    <HFModelFile
-                      ref={modelFileRef}
-                      selectedModel={selectedModel}
-                      modelSource={props.source}
-                      onSelectFile={handleSelectModelFile}
-                      collapsed={collapsed}
-                      gpuOptions={props.gpuOptions}
-                    ></HFModelFile>
-                  )}
+                  {isGGUF && <GGUFResult></GGUFResult>}
                 </ColumnWrapper>
                 <Separator></Separator>
               </ColWrapper>

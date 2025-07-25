@@ -5,6 +5,7 @@ import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -24,8 +25,10 @@ import {
   backendLabelMap,
   backendOptionsMap,
   backendParamsHolderTips,
+  backendTipsList,
   getBackendParamsTips,
   modelCategories,
+  modelSourceMap,
   placementStrategyOptions
 } from '../config';
 import { useFormContext } from '../config/form-context';
@@ -35,6 +38,8 @@ import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
 import GPUCard from './gpu-card';
+import Performance from './performance';
+import Scaling from './scaling';
 
 interface AdvanceConfigProps {
   isGGUF: boolean;
@@ -42,6 +47,8 @@ interface AdvanceConfigProps {
   gpuOptions: Array<any>;
   action: PageActionType;
   source: string;
+  backendOptions?: Global.BaseOption<string>[];
+  handleBackendChange?: (value: string) => void;
 }
 
 const placementStrategyTips = [
@@ -92,7 +99,7 @@ const CheckboxField: React.FC<{
 };
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, isGGUF, gpuOptions, source } = props;
+  const { form, isGGUF, gpuOptions, source, backendOptions, action } = props;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
@@ -205,7 +212,56 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={modelCategories}
           ></SealSelect>
         </Form.Item>
-        <Form.Item name="scheduleType">
+        <Form.Item name="backend" rules={[{ required: true }]}>
+          <SealSelect
+            required
+            onChange={props.handleBackendChange}
+            label={intl.formatMessage({ id: 'models.form.backend' })}
+            description={<TooltipList list={backendTipsList}></TooltipList>}
+            options={
+              backendOptions ?? [
+                {
+                  label: backendLabelMap[backendOptionsMap.llamaBox],
+                  value: backendOptionsMap.llamaBox,
+                  disabled:
+                    props.source === modelSourceMap.local_path_value
+                      ? false
+                      : !isGGUF
+                },
+                {
+                  label: backendLabelMap[backendOptionsMap.vllm],
+                  value: backendOptionsMap.vllm,
+                  disabled:
+                    props.source === modelSourceMap.local_path_value
+                      ? false
+                      : isGGUF
+                },
+                {
+                  label: backendLabelMap[backendOptionsMap.ascendMindie],
+                  value: backendOptionsMap.ascendMindie,
+                  disabled:
+                    props.source === modelSourceMap.local_path_value
+                      ? false
+                      : isGGUF
+                },
+                {
+                  label: backendLabelMap[backendOptionsMap.voxBox],
+                  value: backendOptionsMap.voxBox,
+                  disabled:
+                    props.source === modelSourceMap.local_path_value
+                      ? false
+                      : props.source === modelSourceMap.ollama_library_value ||
+                        isGGUF
+                }
+              ]
+            }
+            disabled={
+              action === PageAction.EDIT &&
+              props.source !== modelSourceMap.local_path_value
+            }
+          ></SealSelect>
+        </Form.Item>
+        {/* <Form.Item name="scheduleType">
           <SealSelect
             onChange={handleScheduleTypeChange}
             label={intl.formatMessage({ id: 'models.form.scheduletype' })}
@@ -225,7 +281,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               }
             ]}
           ></SealSelect>
-        </Form.Item>
+        </Form.Item> */}
         {scheduleType === 'auto' && (
           <>
             <Form.Item<FormData> name="placement_strategy">
@@ -490,6 +546,32 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
     );
     return [
       {
+        key: '2',
+        label: (
+          <span
+            style={{ fontWeight: 'var(--font-weight-medium)' }}
+            className="font-size-14"
+          >
+            Performance
+          </span>
+        ),
+        forceRender: true,
+        children: <Performance></Performance>
+      },
+      {
+        key: '3',
+        label: (
+          <span
+            style={{ fontWeight: 'var(--font-weight-medium)' }}
+            className="font-size-14"
+          >
+            Scaling
+          </span>
+        ),
+        forceRender: true,
+        children: <Scaling></Scaling>
+      },
+      {
         key: '1',
         label: (
           <span
@@ -527,6 +609,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       expandIconPosition="start"
       bordered={false}
       ghost
+      accordion
       destroyInactivePanel={false}
       className={dataformStyles['advanced-collapse']}
       expandIcon={({ isActive }) => (

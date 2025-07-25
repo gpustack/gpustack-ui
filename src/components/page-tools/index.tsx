@@ -94,7 +94,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     marginBottom = 10,
     marginTop = 10,
     inputHolder = 'common.filter.name',
-    selectHolder,
+    selectHolder = '',
     showPrimaryButton = true,
     showDeleteButton = true,
     width
@@ -107,43 +107,47 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     }
     return (
       <Space size={20}>
-        {actionType === 'dropdown' ? (
-          <DropDownActions
-            menu={{
-              items: actionItems,
-              onClick: handleClickPrimary
-            }}
-          >
+        {showPrimaryButton ? (
+          actionType === 'dropdown' ? (
+            <DropDownActions
+              menu={{
+                items: actionItems,
+                onClick: handleClickPrimary
+              }}
+            >
+              <Button
+                icon={<DownOutlined></DownOutlined>}
+                type="primary"
+                iconPosition="end"
+              >
+                {buttonText}
+              </Button>
+            </DropDownActions>
+          ) : (
             <Button
-              icon={<DownOutlined></DownOutlined>}
+              icon={buttonIcon ?? <PlusOutlined></PlusOutlined>}
               type="primary"
-              iconPosition="end"
+              onClick={handleClickPrimary}
             >
               {buttonText}
             </Button>
-          </DropDownActions>
-        ) : (
+          )
+        ) : null}
+        {showDeleteButton && (
           <Button
-            icon={buttonIcon ?? <PlusOutlined></PlusOutlined>}
-            type="primary"
-            onClick={handleClickPrimary}
+            icon={<DeleteOutlined />}
+            danger
+            onClick={handleDeleteByBatch}
+            disabled={!rowSelection.selectedRowKeys.length}
           >
-            {buttonText}
+            <span>
+              {intl?.formatMessage?.({ id: 'common.button.delete' })}
+              {rowSelection.selectedRowKeys.length > 0 && (
+                <span>({rowSelection.selectedRowKeys?.length})</span>
+              )}
+            </span>
           </Button>
         )}
-        <Button
-          icon={<DeleteOutlined />}
-          danger
-          onClick={handleDeleteByBatch}
-          disabled={!rowSelection.selectedRowKeys.length}
-        >
-          <span>
-            {intl?.formatMessage?.({ id: 'common.button.delete' })}
-            {rowSelection.selectedRowKeys.length > 0 && (
-              <span>({rowSelection.selectedRowKeys?.length})</span>
-            )}
-          </span>
-        </Button>
       </Space>
     );
   }, [

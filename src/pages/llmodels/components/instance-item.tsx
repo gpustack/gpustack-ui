@@ -347,7 +347,7 @@ const renderMessage = (title: string) => {
   return (
     <div
       style={{
-        width: 300,
+        width: 280,
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         overflow: 'hidden'

@@ -97,16 +97,20 @@ const useSetChunkFetch = () => {
         this.updateProgress(data);
       }
 
-      public flush(done?: boolean) {
+      public async flush(done?: boolean) {
         if (this.buffer.length > 0) {
           while (this.buffer.length > 0) {
             const item = this.buffer.shift()!;
             const isComplete = this.buffer.length === 0 && done;
-            callback(item, {
-              isComplete: isComplete || this.percent === 100,
-              percent: this.percent,
-              progress: this.progress,
-              contentLength: this.contentLength
+
+            await new Promise<void>((resolve) => {
+              callback(item, {
+                isComplete: isComplete || this.percent === 100,
+                percent: this.percent,
+                progress: this.progress,
+                contentLength: this.contentLength
+              });
+              resolve();
             });
           }
         }
@@ -126,8 +130,8 @@ const useSetChunkFetch = () => {
       contentLength: contentLength
     });
 
-    const throttledCallback = throttle(() => {
-      bufferManager.flush();
+    const throttledCallback = throttle(async () => {
+      await bufferManager.flush();
     }, delay);
 
     let isReading = true;
@@ -135,19 +139,20 @@ const useSetChunkFetch = () => {
     while (isReading) {
       const { done, value } = await reader.read();
 
-      if (done) {
-        isReading = false;
-        bufferManager.flush(done);
-        break;
-      }
-
       try {
         const chunk = decoder.decode(value, { stream: true });
         bufferManager.add(chunk);
-        // bufferManager.updateSpeed(chunk.length);
         throttledCallback();
       } catch (error) {
         // handle error
+      }
+
+      if (done) {
+        isReading = false;
+        await bufferManager.flush(done);
+        throttledCallback.cancel();
+        reader.releaseLock();
+        break;
       }
     }
   };

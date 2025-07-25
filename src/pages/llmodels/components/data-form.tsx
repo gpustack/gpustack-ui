@@ -1,7 +1,5 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
-import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
@@ -9,9 +7,7 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import {
-  backendLabelMap,
   backendOptionsMap,
-  backendTipsList,
   excludeFields,
   modelSourceMap,
   sourceOptions
@@ -254,7 +250,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         <HuggingFaceForm></HuggingFaceForm>
         <LocalPathForm></LocalPathForm>
       </FormInnerContext.Provider>
-      <Form.Item name="backend" rules={[{ required: true }]}>
+      {/* <Form.Item name="backend" rules={[{ required: true }]}>
         <SealSelect
           required
           onChange={handleBackendChange}
@@ -302,9 +298,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             props.source !== modelSourceMap.local_path_value
           }
         ></SealSelect>
-      </Form.Item>
+      </Form.Item> */}
       <CatalogFrom></CatalogFrom>
-      <Form.Item<FormData>
+      {/* <Form.Item<FormData>
         name="replicas"
         rules={[
           {
@@ -325,7 +321,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           )}
           min={0}
         ></SealInput.Number>
-      </Form.Item>
+      </Form.Item> */}
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           scaleSize={true}
@@ -340,6 +336,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         isGGUF={isGGUF}
         action={action}
         source={props.source}
+        backendOptions={backendOptions}
+        handleBackendChange={handleBackendChange}
       ></AdvanceConfig>
     </Form>
   );

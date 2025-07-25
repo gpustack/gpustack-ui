@@ -1,14 +1,15 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
-import Hotkeys from '@/config/hotkeys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { convertFileSize } from '@/utils';
 import {
+  CodeOutlined,
   DeleteOutlined,
   EditOutlined,
   InfoCircleOutlined
@@ -18,7 +19,6 @@ import { useIntl } from '@umijs/max';
 import { ConfigProvider, Empty, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import {
   WORKERS_API,
   deleteWorker,
@@ -64,6 +64,18 @@ const ActionList = [
     label: 'common.button.edit',
     key: 'edit',
     icon: <EditOutlined />
+  },
+  {
+    label: 'common.button.logs',
+    locale: false,
+    key: 'logs',
+    icon: <IconFont type="icon-logs" />
+  },
+  {
+    label: 'Terminal',
+    locale: false,
+    key: 'terminal',
+    icon: <CodeOutlined />
   },
   {
     label: 'common.button.delete',
@@ -198,10 +210,6 @@ const Workers: React.FC = () => {
     );
   };
 
-  useHotkeys(Hotkeys.CREATE.join(','), handleAddWorker, {
-    enabled: !open
-  });
-
   return (
     <>
       <PageContainer
@@ -216,6 +224,9 @@ const Workers: React.FC = () => {
         extra={[]}
       >
         <FilterBar
+          showSelect={true}
+          showPrimaryButton={false}
+          selectHolder="Filter by cluster"
           marginBottom={22}
           marginTop={30}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
@@ -224,7 +235,7 @@ const Workers: React.FC = () => {
           handleClickPrimary={handleAddWorker}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          width={{ input: 300 }}
+          width={{ input: 200 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

@@ -2,7 +2,7 @@ import { getRequestId, setRquestId } from '@/atoms/models';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Pagination, Select, Tooltip } from 'antd';
+import { Pagination, Select, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -167,7 +167,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       search: {
         query: searchInputRef.current || '',
         sort: sort,
-        tags: filterGGUFRef.current ? ['gguf'] : [],
+        tags: [],
         task: HuggingFaceTaskMap[filterTaskRef.current] || task
       }
     };
@@ -199,7 +199,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     try {
       const params = {
         Name: `${searchInputRef.current}`,
-        tags: filterGGUFRef.current ? ['gguf'] : [],
+        tags: [],
         tasks: filterTaskRef.current
           ? ([ModelscopeTaskMap[filterTaskRef.current]] as string[])
           : [],
@@ -562,13 +562,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               size="middle"
               style={{ width: '150px' }}
             ></Select>
-            <Checkbox
+            {/* <Checkbox
               onChange={handleFilterGGUFChange}
               className="m-l-8"
               checked={filterGGUFRef.current}
             >
               {renderGGUFTips}
-            </Checkbox>
+            </Checkbox> */}
           </span>
           <PaginationMain
             simple={{ readOnly: true }}

@@ -606,7 +606,7 @@ const Models: React.FC<ModelsProps> = ({
         dataIndex: 'name',
         key: 'name',
         width: 400,
-        span: 6,
+        span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
             <AutoTooltip ghost>
@@ -617,10 +617,21 @@ const Models: React.FC<ModelsProps> = ({
         )
       },
       {
+        title: 'Cluster',
+        dataIndex: 'cluster',
+        key: 'cluster',
+        span: 4,
+        render: (text: string, record: ListItem) => (
+          <span className="flex flex-column" style={{ width: '100%' }}>
+            Custom
+          </span>
+        )
+      },
+      {
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
         key: 'source',
-        span: 7,
+        span: 4,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
             <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
@@ -767,7 +778,7 @@ const Models: React.FC<ModelsProps> = ({
             <Space>
               <Input
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 230 }}
+                style={{ width: 200 }}
                 size="large"
                 allowClear
                 onChange={handleNameChange}
@@ -783,6 +794,15 @@ const Models: React.FC<ModelsProps> = ({
                 maxTagCount={1}
                 onChange={handleCategoryChange}
                 options={modelCategories.filter((item) => item.value)}
+              ></Select>
+              <Select
+                allowClear
+                showSearch={false}
+                placeholder="Filter by worker"
+                style={{ width: 180 }}
+                size="large"
+                maxTagCount={1}
+                options={[]}
               ></Select>
               <Button
                 type="text"

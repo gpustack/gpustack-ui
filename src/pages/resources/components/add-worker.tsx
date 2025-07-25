@@ -5,7 +5,7 @@ import {
   WindowsOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tabs, TabsProps } from 'antd';
+import { TabsProps } from 'antd';
 import React from 'react';
 import MacOS from './add-worker-macos';
 import ContainerInstall from './container-install';
@@ -81,13 +81,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       }}
       footer={null}
     >
-      <Tabs
-        size="small"
-        items={items}
-        activeKey={activeKey}
-        type="card"
-        onChange={(key) => setActiveKey(key)}
-      ></Tabs>
+      <ContainerInstall token={token} />
     </ScrollerModal>
   );
 };

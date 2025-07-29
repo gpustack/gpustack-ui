@@ -22,6 +22,7 @@ import { flushSync } from 'react-dom';
 import { login } from '../apis';
 import { checkDefaultPage } from '../utils';
 
+const authConfig = await fetchAuthConfig('/get_config'); // get authentication configuration
 const useStyles = createStyles(({ token, css }) => ({
   header: css`
     display: flex;
@@ -40,6 +41,17 @@ const useStyles = createStyles(({ token, css }) => ({
     }
   `
 }));
+// function authentication configuration method
+async function fetchAuthConfig(url) {
+  try {
+    const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+  } catch (error) {
+    console.error('OIDC config error:', error);
+    throw error;
+  }
+};
 
 const LoginForm = () => {
   const { styles } = useStyles();
@@ -122,7 +134,37 @@ const LoginForm = () => {
       form.setFieldsValue({ username, password, autoLogin: true });
     }
   };
-
+  // OIDC certification
+  const handleOidcLogin = async () => {
+    const authUrl = `${authConfig.base_entrypoint}auth?response_type=code&client_id=${authConfig.CLIENT_ID}&redirect_uri=${authConfig.redirect_uri}&scope=openid profile email&state=random_state_string`;
+    window.location.href = authUrl;};
+  // SAML certification
+  const handleSamlLogin = async () => {
+      window.location.href = "/auth/saml/login";}
+  // Handling certification callbacks
+  useEffect(()  => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code'); // OIDC callback information
+    console.log(code)
+    const samlResponse = params.get('SAMLResponse'); // SAML callback information
+    const allParams = Object.fromEntries(params.entries());
+    history.replaceState({}, '', window.location.pathname);
+    if (code) { login({
+        code: code
+      }).then(async () => {
+      const userInfo = await fetchUserInfo();
+      await setUserInfo(userInfo);
+      gotoDefaultPage(userInfo);
+    });
+    };
+    if (samlResponse) { login({
+        SAMLResponse: decodeURIComponent(samlResponse)
+      }).then(async () => {
+      const userInfo = await fetchUserInfo();
+      await setUserInfo(userInfo);
+      gotoDefaultPage(userInfo);
+    })};
+  }, []);
   const handleLogin = async (values: any) => {
     try {
       await login({
@@ -222,14 +264,28 @@ const LoginForm = () => {
               {intl.formatMessage({ id: 'common.button.forgotpassword' })}
             </Button>
           </div>
+          <Button onClick={handleOidcLogin}
+                type="primary"
+                block
+                style={{ height: '48px', fontSize: '14px', display: authConfig?.is_oidc ? 'block': 'none'}}
+                >
+                  {intl.formatMessage({ id: 'common.button.oidclogin' })}
+                </Button>
+          <Button onClick={handleSamlLogin}
+                type="primary"
+                block
+                style={{ height: '48px', fontSize: '14px', display: authConfig?.is_saml ? 'block': 'none'}}
+                >
+                  {intl.formatMessage({ id: 'common.button.samllogin' })}
+                </Button>
           <Button
-            htmlType="submit"
-            type="primary"
-            block
-            style={{ height: '48px', fontSize: '14px' }}
-          >
-            {intl.formatMessage({ id: 'common.button.login' })}
-          </Button>
+                htmlType="submit"
+                type="link"
+                block
+                style={{ height: '48px', fontSize: '14px' }}
+              >
+                {intl.formatMessage({ id: 'common.button.login' })}
+              </Button>
         </Form>
       </div>
     </div>

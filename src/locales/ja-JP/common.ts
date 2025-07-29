@@ -6,6 +6,8 @@ export default {
   'common.button.shortcut': 'キーボードショートカット',
   'common.button.add': '追加',
   'common.button.login': 'ログイン',
+  'common.button.oidclogin': 'OIDCでログイン',
+  'common.button.samllogin': 'SAMLでログイン',
   'common.button.select': '選択',
   'common.button.selected': '選択済み',
   'common.button.continue': '続行',

@@ -6,6 +6,7 @@ export default {
   'users.table.username': 'User Name',
   'users.table.role': 'Role',
   'users.form.fullname': 'Full Name',
+  'users.form.source': 'Source',
   'users.table.user': 'users',
   'users.form.admin': 'Admin',
   'users.form.user': 'User',

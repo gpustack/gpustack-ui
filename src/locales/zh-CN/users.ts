@@ -6,6 +6,7 @@ export default {
   'users.table.username': '用户名',
   'users.table.role': '角色',
   'users.form.fullname': '全名',
+  'users.form.source': '来源',
   'users.table.user': '用户',
   'users.form.admin': '管理员',
   'users.form.user': '普通用户',

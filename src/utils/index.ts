@@ -22,7 +22,7 @@ export const handleBatchRequest = async (
 };
 
 export const convertFileSize = (
-  sizeInBytes?: number,
+  sizeInBytes: number,
   prec = 1,
   allowEmpty = false
 ): string | number => {
@@ -31,6 +31,7 @@ export const convertFileSize = (
   const fmt = 1024;
 
   const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+  const precs = [0, 1, 1, 2, 2]; // precision for each unit
   let size = sizeInBytes;
   let unitIndex = 0;
 
@@ -39,7 +40,7 @@ export const convertFileSize = (
     unitIndex++;
   }
 
-  return `${_.round(size, prec)} ${units[unitIndex]}`;
+  return `${_.round(size, precs[unitIndex])} ${units[unitIndex]}`;
 };
 
 export const platformCall = () => {

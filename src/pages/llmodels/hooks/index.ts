@@ -535,13 +535,22 @@ export const useCheckCompatibility = () => {
     cacheFormValuesRef.current = {};
   };
 
+  const noLocalPathValue = (allValues: any) => {
+    return (
+      allValues.source === modelSourceMap.local_path_value &&
+      !allValues.local_path
+    );
+  };
   const handleOnValuesChange = async (params: {
     changedValues: any;
     allValues: any;
     source: string;
   }) => {
     const { allValues, source } = params;
-    if (_.isEqual(cacheFormValuesRef.current, allValues)) {
+    if (
+      _.isEqual(cacheFormValuesRef.current, allValues) ||
+      noLocalPathValue(allValues)
+    ) {
       console.log('No changes detected, skipping evaluation.');
       return;
     }

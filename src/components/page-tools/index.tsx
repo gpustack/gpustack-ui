@@ -138,12 +138,12 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
             icon={<DeleteOutlined />}
             danger
             onClick={handleDeleteByBatch}
-            disabled={!rowSelection.selectedRowKeys.length}
+            disabled={!rowSelection?.selectedRowKeys?.length}
           >
             <span>
               {intl?.formatMessage?.({ id: 'common.button.delete' })}
-              {rowSelection.selectedRowKeys.length > 0 && (
-                <span>({rowSelection.selectedRowKeys?.length})</span>
+              {rowSelection?.selectedRowKeys?.length > 0 && (
+                <span>({rowSelection?.selectedRowKeys?.length})</span>
               )}
             </span>
           </Button>

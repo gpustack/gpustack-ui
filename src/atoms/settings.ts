@@ -33,10 +33,9 @@ export const getStorageUserSettings = () => {
   }
 };
 
-export const userSettingsAtom = atomWithStorage<UserSettings>(
-  'userSettings',
-  defaultSettings
-);
+export const userSettingsAtom = atomWithStorage<UserSettings>('userSettings', {
+  ...getStorageUserSettings()
+});
 
 export const userSettingsHelperAtom = atom(
   (get) => get(userSettingsAtom),

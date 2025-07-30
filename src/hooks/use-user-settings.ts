@@ -53,6 +53,7 @@ export default function useUserSettings() {
   useEffect(() => {
     if (userSettings.mode !== 'auto') return;
 
+    setTheme('auto');
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
       setTheme('auto');

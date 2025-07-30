@@ -150,7 +150,7 @@ export default {
   'models.table.apiAccessInfo.gotoCreate': 'Перейти к созданию',
   'models.search.parts': '{n} частей',
   'models.search.evaluate.error': 'Возникла ошибка при вычислении: ',
-  'models.ollama.deprecated.title': 'Deprecation Notice',
+  'models.ollama.deprecated.title': 'Объявление об устаревании',
   'models.ollama.deprecated.current':
     '<span class="bold-text">Текущая версия (v0.6.1): </span>Модели Ollama в настоящее время доступны для использования.',
   'models.ollama.deprecated.upcoming':
@@ -159,13 +159,11 @@ export default {
     '<span class="bold-text">После обновления до версии (v0.7.0),</span> все ранее развёрнутые модели продолжат работать в обычном режиме.',
   'models.ollama.deprecated.issue':
     'См. связанную проблему: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
-  'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`,
+  'models.ollama.deprecated.notice': `Источник моделей Ollama объявлен устаревшим начиная с версии v0.6.1. Подробности см. в  <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">соответствующем issue на GitHub</a>.`,
   'models.backend.mindie.310p':
-    'Ascend 310P only supports FP16, so you need to set --dtype=float16.'
+    'Ascend 310P поддерживает только FP16, поэтому необходимо установить --dtype=float16.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.ollama.deprecated.title': 'Deprecation Notice',
-// 2. 'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
-// 3. 'models.backend.mindie.310p':'Ascend 310P only supports FP16, so you need to set --dtype=float16.'
+
 // ========== End of To-Do List ==========

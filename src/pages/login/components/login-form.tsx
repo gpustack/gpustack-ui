@@ -12,17 +12,16 @@ import {
   removeRememberMe
 } from '@/utils/localstore/index';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { useIntl, useModel } from '@umijs/max';
+import { history, useIntl, useModel } from '@umijs/max';
 import { Button, Checkbox, Form } from 'antd';
 import { createStyles } from 'antd-style';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { login } from '../apis';
 import { checkDefaultPage } from '../utils';
 
-const authConfig = await fetchAuthConfig('/get_config'); // get authentication configuration
 const useStyles = createStyles(({ token, css }) => ({
   header: css`
     display: flex;
@@ -42,25 +41,37 @@ const useStyles = createStyles(({ token, css }) => ({
   `
 }));
 // function authentication configuration method
-async function fetchAuthConfig(url) {
+async function fetchAuthConfig(url: string) {
   try {
     const response = await fetch(url);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
   } catch (error) {
     console.error('OIDC config error:', error);
     throw error;
   }
-};
+}
 
 const LoginForm = () => {
+  type LoginOption = {
+    saml?: boolean;
+    oidc?: boolean;
+  };
+
+  const [err, setErr] = useState<Error | null>(null);
+  const [loginOption, setLoginOption] = useState<LoginOption>({
+    saml: false,
+    oidc: false
+  });
   const { styles } = useStyles();
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
   const intl = useIntl();
   const [form] = Form.useForm();
-
+  const { location } = history;
+  const params = new URLSearchParams(location.search);
+  const sso = params.get('sso'); // OIDC callback information
   const renderWelCome = useMemo(() => {
     return (
       <div
@@ -83,7 +94,6 @@ const LoginForm = () => {
       </div>
     );
   }, [intl]);
-
   const gotoDefaultPage = async (userInfo: any) => {
     checkDefaultPage(userInfo, true);
   };
@@ -134,36 +144,46 @@ const LoginForm = () => {
       form.setFieldsValue({ username, password, autoLogin: true });
     }
   };
+
   // OIDC certification
   const handleOidcLogin = async () => {
-    const authUrl = `${authConfig.base_entrypoint}auth?response_type=code&client_id=${authConfig.CLIENT_ID}&redirect_uri=${authConfig.redirect_uri}&scope=openid profile email&state=random_state_string`;
-    window.location.href = authUrl;};
+    window.location.href = '/auth/oidc/login';
+  };
   // SAML certification
   const handleSamlLogin = async () => {
-      window.location.href = "/auth/saml/login";}
-  // Handling certification callbacks
-  useEffect(()  => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code'); // OIDC callback information
-    console.log(code)
-    const samlResponse = params.get('SAMLResponse'); // SAML callback information
-    const allParams = Object.fromEntries(params.entries());
-    history.replaceState({}, '', window.location.pathname);
-    if (code) { login({
-        code: code
-      }).then(async () => {
-      const userInfo = await fetchUserInfo();
-      await setUserInfo(userInfo);
-      gotoDefaultPage(userInfo);
-    });
-    };
-    if (samlResponse) { login({
-        SAMLResponse: decodeURIComponent(samlResponse)
-      }).then(async () => {
-      const userInfo = await fetchUserInfo();
-      await setUserInfo(userInfo);
-      gotoDefaultPage(userInfo);
-    })};
+    window.location.href = '/auth/saml/login';
+  };
+
+  // Handling SSO callbacks
+  useEffect(() => {
+    fetchAuthConfig('/get_config')
+      .then((authConfig) => {
+        if (authConfig.is_oidc) {
+          setLoginOption({
+            oidc: true
+          });
+        } else if (authConfig.is_saml) {
+          if (authConfig.is_saml) {
+            setLoginOption({
+              saml: true
+            });
+          }
+        }
+      })
+      .catch((error) => {
+        setLoginOption({ oidc: false, saml: false });
+      });
+    if (sso) {
+      fetchUserInfo()
+        .then((userInfo) => {
+          setUserInfo(userInfo);
+          gotoDefaultPage({});
+        })
+        .catch((error) => {
+          console.log(error);
+          setErr(error);
+        });
+    }
   }, []);
   const handleLogin = async (values: any) => {
     try {
@@ -193,103 +213,125 @@ const LoginForm = () => {
     callGetRememberMe();
   }, []);
 
-  return (
-    <div>
-      <div className={styles.header}>
-        <ThemeDropActions></ThemeDropActions>
-        <LangSelect />
-      </div>
+  if (sso && !err) {
+    return <div>Handle SSO callback...</div>;
+  } else if (err) {
+    return (
+      <div style={{ color: 'red' }}>Error to log in by SSO: {err.message}</div>
+    );
+  } else {
+    return (
       <div>
-        <Form
-          form={form}
-          style={{ width: '360px', margin: '0 auto' }}
-          onFinish={handleLogin}
-        >
-          {renderWelCome}
-          <Form.Item
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  { id: 'common.form.rule.input' },
-                  { name: intl.formatMessage({ id: 'common.form.username' }) }
-                )
-              }
-            ]}
+        <div className={styles.header}>
+          <ThemeDropActions></ThemeDropActions>
+          <LangSelect />
+        </div>
+        <div>
+          <Form
+            form={form}
+            style={{ width: '360px', margin: '0 auto' }}
+            onFinish={handleLogin}
           >
-            <SealInput.Input
-              label={intl.formatMessage({ id: 'common.form.username' })}
-              prefix={<UserOutlined />}
-            />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: intl.formatMessage(
-                  { id: 'common.form.rule.input' },
-                  { name: intl.formatMessage({ id: 'common.form.password' }) }
-                )
-              }
-            ]}
-          >
-            <SealInput.Password
-              prefix={<LockOutlined />}
-              label={intl.formatMessage({ id: 'common.form.password' })}
-            />
-          </Form.Item>
-          <div
-            className="flex-center flex-between"
-            style={{
-              marginBottom: 24
-            }}
-          >
-            <Form.Item noStyle name="autoLogin" valuePropName="checked">
-              <Checkbox style={{ marginLeft: 5 }}>
-                <span style={{ color: 'var(--ant-color-text-secondary)' }}>
-                  {intl.formatMessage({ id: 'common.login.rember' })}
-                </span>
-              </Checkbox>
-            </Form.Item>
-            <Button
-              type="link"
-              size="small"
-              href={externalLinks.resetPassword}
-              target="_blank"
-              style={{ padding: 0 }}
+            {renderWelCome}
+            <Form.Item
+              name="username"
+              rules={[
+                {
+                  required: true,
+                  message: intl.formatMessage(
+                    { id: 'common.form.rule.input' },
+                    { name: intl.formatMessage({ id: 'common.form.username' }) }
+                  )
+                }
+              ]}
             >
-              {intl.formatMessage({ id: 'common.button.forgotpassword' })}
-            </Button>
-          </div>
-          <Button onClick={handleOidcLogin}
-                type="primary"
-                block
-                style={{ height: '48px', fontSize: '14px', display: authConfig?.is_oidc ? 'block': 'none'}}
-                >
-                  {intl.formatMessage({ id: 'common.button.oidclogin' })}
-                </Button>
-          <Button onClick={handleSamlLogin}
-                type="primary"
-                block
-                style={{ height: '48px', fontSize: '14px', display: authConfig?.is_saml ? 'block': 'none'}}
-                >
-                  {intl.formatMessage({ id: 'common.button.samllogin' })}
-                </Button>
-          <Button
-                htmlType="submit"
+              <SealInput.Input
+                label={intl.formatMessage({ id: 'common.form.username' })}
+                prefix={<UserOutlined />}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: intl.formatMessage(
+                    { id: 'common.form.rule.input' },
+                    { name: intl.formatMessage({ id: 'common.form.password' }) }
+                  )
+                }
+              ]}
+            >
+              <SealInput.Password
+                prefix={<LockOutlined />}
+                label={intl.formatMessage({ id: 'common.form.password' })}
+              />
+            </Form.Item>
+            <div
+              className="flex-center flex-between"
+              style={{
+                marginBottom: 24
+              }}
+            >
+              <Form.Item noStyle name="autoLogin" valuePropName="checked">
+                <Checkbox style={{ marginLeft: 5 }}>
+                  <span style={{ color: 'var(--ant-color-text-secondary)' }}>
+                    {intl.formatMessage({ id: 'common.login.rember' })}
+                  </span>
+                </Checkbox>
+              </Form.Item>
+              <Button
                 type="link"
-                block
-                style={{ height: '48px', fontSize: '14px' }}
+                size="small"
+                href={externalLinks.resetPassword}
+                target="_blank"
+                style={{ padding: 0 }}
               >
-                {intl.formatMessage({ id: 'common.button.login' })}
+                {intl.formatMessage({ id: 'common.button.forgotpassword' })}
               </Button>
-        </Form>
+            </div>
+            <Button
+              onClick={handleOidcLogin}
+              type="primary"
+              block
+              style={{
+                height: '48px',
+                fontSize: '14px',
+                display: loginOption.oidc ? 'block' : 'none'
+              }}
+            >
+              {intl.formatMessage({ id: 'common.button.oidclogin' })}
+            </Button>
+            <Button
+              onClick={handleSamlLogin}
+              type="primary"
+              block
+              style={{
+                height: '48px',
+                fontSize: '14px',
+                display: loginOption.saml ? 'block' : 'none'
+              }}
+            >
+              {intl.formatMessage({ id: 'common.button.samllogin' })}
+            </Button>
+            <Button
+              htmlType="submit"
+              type={
+                loginOption.oidc === false && loginOption.saml === false
+                  ? 'primary'
+                  : 'link'
+              }
+              block
+              style={{ height: '48px', fontSize: '14px' }}
+            >
+              {intl.formatMessage({ id: 'common.button.login' })}
+            </Button>
+          </Form>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default LoginForm;

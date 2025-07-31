@@ -6,6 +6,8 @@ export default {
   'common.button.shortcut': 'Сочетания клавиш',
   'common.button.add': 'Добавить',
   'common.button.login': 'Войти',
+  'common.button.oidclogin': 'Войти с OIDC',
+  'common.button.samllogin': 'Войти с SAML',
   'common.button.select': 'Выбрать',
   'common.button.selected': 'Выбрано',
   'common.button.continue': 'Продолжить',

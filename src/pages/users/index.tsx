@@ -278,6 +278,21 @@ const Users: React.FC = () => {
               }}
             />
             <Column
+              title={intl.formatMessage({ id: 'users.form.source' })}
+              dataIndex="source"
+              key="source"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
               title={intl.formatMessage({ id: 'common.table.createTime' })}
               dataIndex="created_at"
               key="createTime"

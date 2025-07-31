@@ -6,6 +6,7 @@ export default {
   'users.table.username': 'ユーザー名',
   'users.table.role': '役割',
   'users.form.fullname': 'フルネーム',
+  'users.form.source': 'ソース',
   'users.table.user': 'ユーザー',
   'users.form.admin': '管理者',
   'users.form.user': '一般ユーザー',

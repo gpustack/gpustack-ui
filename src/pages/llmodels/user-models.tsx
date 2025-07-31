@@ -2,6 +2,7 @@ import { FilterBar } from '@/components/page-tools';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import React from 'react';
+import ModelItem from './components/model-item';
 
 const UserModels: React.FC = () => {
   const intl = useIntl();
@@ -11,6 +12,15 @@ const UserModels: React.FC = () => {
   };
 
   const handleInputChange = () => {};
+
+  const handleOnDeploy = (model: any) => {
+    // Implement deploy functionality here
+    console.log('Deploying model:', model);
+  };
+
+  const renderCard = (data: any) => {
+    return <ModelItem model={data} onDeploy={handleOnDeploy} />;
+  };
 
   return (
     <PageContainer
@@ -36,6 +46,15 @@ const UserModels: React.FC = () => {
         handleSearch={handleSearch}
         width={{ input: 200 }}
       ></FilterBar>
+      {/* <CardList
+        dataList={dataSource.dataList}
+        loading={dataSource.loading}
+        onDeploy={handleOnDeploy}
+        activeId={-1}
+        isFirst={isFirst}
+        Skeleton={CatalogSkelton}
+        renderItem={renderCard}
+      ></CardList> */}
     </PageContainer>
   );
 };

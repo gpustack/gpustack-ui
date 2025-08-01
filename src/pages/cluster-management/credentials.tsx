@@ -2,16 +2,16 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import {
-  CloudOutlined,
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
-  KeyOutlined,
+  KubernetesOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
@@ -55,18 +55,18 @@ const ActionList = [
 
 const addActions = [
   {
-    label: 'Cloud Credential',
+    label: 'Digital Ocean',
     locale: false,
-    value: 'cloud_credential',
-    key: 'cloud_credential',
-    icon: <CloudOutlined />
+    value: 'digital_ocean',
+    key: 'digital_ocean',
+    icon: <IconFont type="icon-digitalocean" />
   },
   {
-    label: 'SSH Key',
+    label: 'Kubernetes',
     locale: false,
-    value: 'ssh_key',
-    key: 'ssh_key',
-    icon: <KeyOutlined />
+    value: 'kubernetes',
+    key: 'kubernetes',
+    icon: <KubernetesOutlined className="size-16" />
   }
 ];
 
@@ -91,18 +91,32 @@ const Credentials: React.FC = () => {
   });
 
   const intl = useIntl();
-  const [openAddModal, setOpenAddModal] = useState(false);
-
-  const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
-  const [title, setTitle] = useState<string>('');
+  const [openModalStatus, setOpenModalStatus] = useState<{
+    provider: string;
+    open: boolean;
+    action: PageActionType;
+    title: string;
+  }>({
+    provider: '',
+    open: false,
+    action: PageAction.CREATE,
+    title: ''
+  });
   const [currentData, setCurrentData] = useState<ListItem | undefined>(
     undefined
   );
 
-  const handleAddUser = () => {
-    setOpenAddModal(true);
-    setAction(PageAction.CREATE);
-    setTitle('Add Credential');
+  const handleAddCredential = (value: string) => {
+    const title =
+      value === 'digital_ocean'
+        ? 'Add Digital Ocean Credential'
+        : 'Add Kubernetes Credential';
+    setOpenModalStatus({
+      provider: value,
+      open: true,
+      action: PageAction.CREATE,
+      title: title
+    });
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -110,7 +124,7 @@ const Credentials: React.FC = () => {
       ...data
     };
     try {
-      if (action === PageAction.EDIT) {
+      if (openModalStatus.action === PageAction.EDIT) {
         await updateCredential({
           data: {
             ...params,
@@ -121,23 +135,26 @@ const Credentials: React.FC = () => {
         await createCredential({ data: params });
       }
       fetchData();
-      setOpenAddModal(false);
+      setOpenModalStatus({ ...openModalStatus, open: false });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
-      setOpenAddModal(false);
+      setOpenModalStatus({ ...openModalStatus, open: false });
     }
   };
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
-    setOpenAddModal(false);
+    setOpenModalStatus({ ...openModalStatus, open: false });
   };
 
   const handleEditUser = (row: ListItem) => {
     setCurrentData(row);
-    setOpenAddModal(true);
-    setAction(PageAction.EDIT);
-    setTitle('Edit Credential');
+    setOpenModalStatus({
+      provider: row.provider,
+      open: true,
+      action: PageAction.EDIT,
+      title: `Edit ${row.provider} Credential`
+    });
   };
 
   const handleSelect = (val: any, row: ListItem) => {
@@ -161,7 +178,8 @@ const Credentials: React.FC = () => {
   };
 
   const handleClickDropdown = (e: any) => {
-    handleAddUser();
+    const value = e.key;
+    handleAddCredential(value);
   };
 
   return (
@@ -330,9 +348,10 @@ const Credentials: React.FC = () => {
         </ConfigProvider>
       </PageContainer>
       <AddModal
-        open={openAddModal}
-        action={action}
-        title={title}
+        provider={openModalStatus.provider}
+        open={openModalStatus.open}
+        action={openModalStatus.action}
+        title={openModalStatus.title}
         data={currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}

@@ -303,6 +303,18 @@ const Workers: React.FC = () => {
               }}
             />
             <Column
+              title="Cluster"
+              dataIndex="cluster"
+              key="cluster"
+              render={(text, record: ListItem) => {
+                return (
+                  <AutoTooltip ghost maxWidth={240}>
+                    <span>digital-ocean-cluster</span>
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
               title={intl.formatMessage({ id: 'common.table.status' })}
               dataIndex="state"
               key="state"

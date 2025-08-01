@@ -2,6 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
@@ -13,7 +14,6 @@ import {
   EditOutlined,
   KubernetesOutlined,
   ProfileOutlined,
-  SnippetsOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
@@ -36,6 +36,7 @@ import {
   updateCredential
 } from './apis';
 import AddCluster from './components/add-cluster';
+import AddPool from './components/add-pool';
 import { ClusterDataList } from './config';
 import {
   ClusterFormData as FormData,
@@ -49,14 +50,21 @@ const addActions = [
     locale: false,
     value: 'custom',
     key: 'custom',
-    icon: <SnippetsOutlined />
+    icon: <IconFont type="icon-docker" className="size-16" />
   },
   {
     label: 'Kubernetes',
     locale: false,
     value: 'kubernetes',
     key: 'kubernetes',
-    icon: <KubernetesOutlined />
+    icon: <KubernetesOutlined className="size-16" />
+  },
+  {
+    label: 'Digital Ocean',
+    locale: false,
+    value: 'digitalocean',
+    key: 'digitalocean',
+    icon: <IconFont type="icon-digitalocean" />
   }
 ];
 
@@ -105,10 +113,17 @@ const ActionList = [
     locale: false,
     icon: <EditOutlined></EditOutlined>
   },
+
   {
     key: 'terminal',
     label: 'common.button.detail',
     icon: <ProfileOutlined />
+  },
+  {
+    key: 'addPool',
+    label: 'Add Node Pool',
+    locale: false,
+    icon: <IconFont type="icon-catalog1" />
   },
   {
     key: 'delete',
@@ -143,23 +158,50 @@ const Credentials: React.FC = () => {
   const intl = useIntl();
   const [open, setOpen] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [clusterType, setClusterType] = useState<string>('custom');
+  const [provider, setProvider] = useState<string>('custom');
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
   const [title, setTitle] = useState<string>('');
+  const [addPoolStatus, setAddPoolStatus] = useState<{
+    open: boolean;
+    action: PageActionType;
+    title: string;
+    provider: string;
+  }>({
+    open: false,
+    action: PageAction.CREATE,
+    title: '',
+    provider: 'digitalocean'
+  });
   const [currentData, setCurrentData] = useState<ListItem | undefined>(
     undefined
   );
 
-  const handleAddUser = (value: string) => {
+  const setActions = (row: ListItem) => {
+    if (row.provider !== 'custom') {
+      return ActionList.filter((item) => item.key !== 'add');
+    }
+    return ActionList;
+  };
+
+  const handleAddCluster = (value: string) => {
     setOpenAddModal(true);
     setAction(PageAction.CREATE);
-    setClusterType(value);
-    setTitle('Add Cluster');
+    setProvider(value);
+    const label = addActions.find((item) => item.value === value)?.label;
+    setTitle(`Add ${label} Cluster`);
+  };
+
+  const handleAddPool = (value: string) => {
+    setAddPoolStatus({
+      open: true,
+      action: PageAction.CREATE,
+      title: `Add Node Pool`,
+      provider: value
+    });
   };
 
   const handleClickDropdown = (item: any) => {
-    console.log('handleClickDropdown', item);
-    handleAddUser(item.key);
+    handleAddCluster(item.key);
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -194,7 +236,7 @@ const Credentials: React.FC = () => {
     setCurrentData(row);
     setOpenAddModal(true);
     setAction(PageAction.EDIT);
-    setTitle('Edit Cluster');
+    setTitle(`Edit ${row.name} Cluster`);
   };
 
   const handleSelect = (val: any, row: ListItem) => {
@@ -205,6 +247,8 @@ const Credentials: React.FC = () => {
     } else if (val === 'add') {
       setOpen(true);
       setCurrentData(row);
+    } else if (val === 'addPool') {
+      handleAddPool(row.provider);
     }
   };
 
@@ -260,7 +304,7 @@ const Credentials: React.FC = () => {
                   items: addActions,
                   onClick: handleClickDropdown
                 }}
-                trigger={['hover']}
+                trigger={['click']}
                 placement="bottomRight"
               >
                 <Button
@@ -328,7 +372,8 @@ const Credentials: React.FC = () => {
               render={(text, record) => {
                 return (
                   <AutoTooltip ghost minWidth={20}>
-                    {text}
+                    {addActions.find((item) => item.value === record.provider)
+                      ?.label || 'N/A'}
                   </AutoTooltip>
                 );
               }}
@@ -387,33 +432,6 @@ const Credentials: React.FC = () => {
               }}
             />
             <Column
-              title="Replicas"
-              dataIndex="replicas"
-              key="replicas"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <WorkerWrapper>
-                    <span className="worker">
-                      <span className="dot ready"></span>
-                      <span className="value">3</span>
-                    </span>
-                    <span className="worker">
-                      <span className="dot error"></span>
-                      <span className="value">1</span>
-                    </span>
-                    <span className="worker">
-                      <span className="dot transition"></span>
-                      <span className="value">1</span>
-                    </span>
-                  </WorkerWrapper>
-                );
-              }}
-            />
-
-            <Column
               title={intl.formatMessage({ id: 'common.table.operation' })}
               key="operation"
               ellipsis={{
@@ -422,7 +440,7 @@ const Credentials: React.FC = () => {
               render={(text, record: ListItem) => {
                 return (
                   <DropdownButtons
-                    items={ActionList}
+                    items={setActions(record)}
                     onSelect={(val) => handleSelect(val, record)}
                   ></DropdownButtons>
                 );
@@ -432,7 +450,7 @@ const Credentials: React.FC = () => {
         </ConfigProvider>
       </PageContainer>
       <AddCluster
-        clusterType={clusterType}
+        provider={provider}
         open={openAddModal}
         action={action}
         title={title}
@@ -440,6 +458,28 @@ const Credentials: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddCluster>
+      <AddPool
+        provider={addPoolStatus.provider}
+        open={addPoolStatus.open}
+        action={addPoolStatus.action}
+        title={addPoolStatus.title}
+        onCancel={() => {
+          setAddPoolStatus({
+            open: false,
+            action: PageAction.CREATE,
+            title: '',
+            provider: 'digitalocean'
+          });
+        }}
+        onOk={() => {
+          setAddPoolStatus({
+            open: false,
+            action: PageAction.CREATE,
+            title: '',
+            provider: 'digitalocean'
+          });
+        }}
+      ></AddPool>
       <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>

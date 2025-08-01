@@ -1,8 +1,17 @@
 export const ClusterDataList = [
   {
+    id: 3,
+    name: 'Custom-cluster',
+    provider: 'custom',
+    clusterType: 'Custom',
+    workers: 4,
+    gpus: 8,
+    deployments: 3
+  },
+  {
     id: 1,
-    name: 'custom-cluster',
-    provider: 'Custom',
+    name: 'kubernetes-cluster',
+    provider: 'kubernetes',
     clusterType: 'Kubernetes',
     workers: 2,
     gpus: 4,
@@ -11,19 +20,9 @@ export const ClusterDataList = [
   {
     id: 2,
     name: 'Digital-Ocean-cluster',
-    provider: 'Digital Ocean',
-    clusterType: 'Custom',
+    provider: 'digitalocean',
     workers: 3,
     gpus: 6,
     deployments: 2
-  },
-  {
-    id: 3,
-    name: 'AutoDL-cluster',
-    provider: 'AutoDL',
-    clusterType: 'Custom',
-    workers: 4,
-    gpus: 8,
-    deployments: 3
   }
 ];

@@ -1,7 +1,6 @@
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
@@ -16,6 +15,7 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   data?: ListItem;
   onCancel: () => void;
+  provider: string; // 'kubernetes'  | 'digitalocean';
 };
 const AddModal: React.FC<AddModalProps> = ({
   title,
@@ -23,6 +23,7 @@ const AddModal: React.FC<AddModalProps> = ({
   open,
   onOk,
   data,
+  provider,
   onCancel
 }) => {
   const [form] = Form.useForm();
@@ -69,7 +70,7 @@ const AddModal: React.FC<AddModalProps> = ({
             required
           ></SealInput.Input>
         </Form.Item>
-        <Form.Item<FormData>
+        {/* <Form.Item<FormData>
           name="provider"
           rules={[
             {
@@ -86,42 +87,55 @@ const AddModal: React.FC<AddModalProps> = ({
           <SealSelect
             label="Provider"
             required
-            options={['Digital Ocean', 'AutoDL', 'Custom'].map((item) => ({
+            options={['Digital Ocean', 'Kubernetes', 'Custom'].map((item) => ({
               label: item,
               value: item
             }))}
           ></SealSelect>
-        </Form.Item>
-        <Form.Item<FormData>
-          name="access_key"
-          rules={[
-            {
-              required: action === PageAction.CREATE,
-              pattern: PasswordReg,
-              message: intl.formatMessage({ id: 'users.form.rule.password' })
-            }
-          ]}
-        >
-          <SealInput.Password
-            label="Access Key"
-            required={action === PageAction.CREATE}
-          ></SealInput.Password>
-        </Form.Item>
-        <Form.Item<FormData>
-          name="secret_key"
-          rules={[
-            {
-              required: action === PageAction.CREATE,
-              pattern: PasswordReg,
-              message: intl.formatMessage({ id: 'users.form.rule.password' })
-            }
-          ]}
-        >
-          <SealInput.Password
-            label="Secret Key"
-            required={action === PageAction.CREATE}
-          ></SealInput.Password>
-        </Form.Item>
+        </Form.Item> */}
+        {provider === 'digital_ocean' && (
+          <>
+            <Form.Item<FormData>
+              name="access_key"
+              rules={[
+                {
+                  required: action === PageAction.CREATE,
+                  pattern: PasswordReg,
+                  message: intl.formatMessage({
+                    id: 'users.form.rule.password'
+                  })
+                }
+              ]}
+            >
+              <SealInput.Password
+                label="Access Key"
+                required={action === PageAction.CREATE}
+              ></SealInput.Password>
+            </Form.Item>
+            <Form.Item<FormData>
+              name="secret_key"
+              rules={[
+                {
+                  required: action === PageAction.CREATE,
+                  pattern: PasswordReg,
+                  message: intl.formatMessage({
+                    id: 'users.form.rule.password'
+                  })
+                }
+              ]}
+            >
+              <SealInput.Password
+                label="Secret Key"
+                required={action === PageAction.CREATE}
+              ></SealInput.Password>
+            </Form.Item>
+          </>
+        )}
+        {provider === 'kubernetes' && (
+          <Form.Item<FormData> name="kubeconfig" rules={[{ required: false }]}>
+            <SealInput.TextArea label="Kubeconfig"></SealInput.TextArea>
+          </Form.Item>
+        )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <SealInput.TextArea
             label={intl.formatMessage({ id: 'common.table.description' })}

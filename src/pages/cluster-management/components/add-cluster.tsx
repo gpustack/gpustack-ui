@@ -1,21 +1,23 @@
 import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import ScrollerModal from '@/components/scroller-modal/index';
 import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
+import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Button, Form } from 'antd';
 import React from 'react';
 import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
 } from '../config/types';
+import CloudProvider from './cloud-provider-form';
+import K8SProvider from './k8s-provider-form';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
-  clusterType: string; // 'kubernetes' | 'custom'
+  provider: string; // 'kubernetes' | 'custom' | 'digitalocean';
   onOk: (values: FormData) => void;
   data?: ListItem;
   onCancel: () => void;
@@ -24,7 +26,7 @@ const AddCluster: React.FC<AddModalProps> = ({
   title,
   action,
   open,
-  clusterType,
+  provider,
   onOk,
   data,
   onCancel
@@ -36,9 +38,21 @@ const AddCluster: React.FC<AddModalProps> = ({
     form.submit();
   };
 
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
+  };
+
   return (
-    <GSDrawer
-      title={title}
+    <ScrollerModal
+      title={
+        <div className="flex-between flex-center">
+          <span>{title}</span>
+          <Button type="text" size="small" onClick={handleCancel}>
+            <CloseOutlined></CloseOutlined>
+          </Button>
+        </div>
+      }
       open={open}
       onClose={onCancel}
       destroyOnClose={true}
@@ -53,7 +67,7 @@ const AddCluster: React.FC<AddModalProps> = ({
     >
       <Form form={form} onFinish={onOk} preserve={false}>
         <Form.Item<FormData>
-          name="name"
+          name="display_name"
           rules={[
             {
               required: true,
@@ -71,104 +85,15 @@ const AddCluster: React.FC<AddModalProps> = ({
             required
           ></SealInput.Input>
         </Form.Item>
-        {clusterType === 'kubernetes' && (
-          <>
-            {' '}
-            <Form.Item<FormData>
-              name="provider"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    { id: 'common.form.rule.input' },
-                    {
-                      name: 'Provider'
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealSelect
-                label="Provider"
-                required
-                options={['Digital Ocean', 'AutoDL', 'Custom'].map((item) => ({
-                  label: item,
-                  value: item
-                }))}
-              ></SealSelect>
-            </Form.Item>
-            <Form.Item<FormData>
-              name="region"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    { id: 'common.form.rule.input' },
-                    {
-                      name: 'Region'
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealSelect
-                label="Region"
-                required
-                options={['Hangzhou', 'Guangzhou', 'Shenzhen'].map((item) => ({
-                  label: item,
-                  value: item
-                }))}
-              ></SealSelect>
-            </Form.Item>
-          </>
-        )}
-        <Form.Item<FormData>
-          name="gpuPlan"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: 'GPU Plan'
-                }
-              )
-            }
-          ]}
-        >
-          <SealSelect
-            label="GPU Plan"
-            required
-            options={['A100', 'V100', 'T4'].map((item) => ({
-              label: item,
-              value: item
-            }))}
-          ></SealSelect>
-        </Form.Item>
-        <Form.Item<FormData>
-          name="workers"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: 'Workers'
-                }
-              )
-            }
-          ]}
-        >
-          <SealInput.Number label="Worker Number" required></SealInput.Number>
-        </Form.Item>
-
+        {provider === 'digitalocean' && <CloudProvider></CloudProvider>}
+        {provider === 'kubernetes' && <K8SProvider></K8SProvider>}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <SealInput.TextArea
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealInput.TextArea>
         </Form.Item>
       </Form>
-    </GSDrawer>
+    </ScrollerModal>
   );
 };
 

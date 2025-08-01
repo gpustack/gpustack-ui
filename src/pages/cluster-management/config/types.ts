@@ -29,12 +29,29 @@ export interface ClusterListItem {
 }
 
 export interface ClusterFormData {
-  name: string;
+  display_name: string;
+  description: string;
   provider: string;
-  credential: string;
+  credential_id: number;
+  zone: string;
   region: string;
-  workers: number;
-  gpuPlan: string;
-  description?: string;
-  id?: number;
+}
+
+export interface NodePoolListItem {
+  id: number;
+  instance_type: string;
+  replicas: number;
+  batch_size: number;
+  labels: Record<string, string>;
+  cloud_options: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NodePoolFormData {
+  instance_type: string;
+  replicas: number;
+  batch_size: number;
+  labels: Record<string, string>;
+  cloud_options: Record<string, any>;
 }

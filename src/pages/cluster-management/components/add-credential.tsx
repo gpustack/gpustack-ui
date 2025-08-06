@@ -4,7 +4,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Button, Form } from 'antd';
 import React from 'react';
 import { FormData, ListItem } from '../config/types';
 
@@ -47,7 +47,11 @@ const AddModal: React.FC<AddModalProps> = ({
       width={600}
       styles={{}}
       footer={
-        <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
+        <ModalFooter
+          onOk={handleSumit}
+          onCancel={onCancel}
+          description={<Button>Validation Test</Button>}
+        ></ModalFooter>
       }
     >
       <Form form={form} onFinish={onOk} preserve={false}>
@@ -70,29 +74,6 @@ const AddModal: React.FC<AddModalProps> = ({
             required
           ></SealInput.Input>
         </Form.Item>
-        {/* <Form.Item<FormData>
-          name="provider"
-          rules={[
-            {
-              required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: 'Provider'
-                }
-              )
-            }
-          ]}
-        >
-          <SealSelect
-            label="Provider"
-            required
-            options={['Digital Ocean', 'Kubernetes', 'Custom'].map((item) => ({
-              label: item,
-              value: item
-            }))}
-          ></SealSelect>
-        </Form.Item> */}
         {provider === 'digital_ocean' && (
           <>
             <Form.Item<FormData>

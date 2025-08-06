@@ -46,7 +46,8 @@ export default {
   'models.form.categories': '模型类别',
   'models.form.scheduletype': '调度方式',
   'models.form.scheduletype.auto': '自动',
-  'models.form.scheduletype.manual': '手动',
+  'models.form.scheduletype.manual': '指定 GPU',
+  'models.form.scheduletype.gpuType': '指定 GPU 类型',
   'models.form.scheduletype.auto.tips':
     '自动根据当前资源情况部署模型实例到合适的 GPU/Worker。',
   'models.form.scheduletype.manual.tips':
@@ -152,5 +153,9 @@ export default {
     '参见 GitHub 上的问题 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979</a>。',
   'models.ollama.deprecated.notice': `Ollama 模型来源自 v0.6.1 起已被弃用。更多信息请参见相关的 <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">GitHub 问题</a>。`,
   'models.backend.mindie.310p':
-    'Ascend 310P 仅支持 FP16，需要设置 --dtype=float16。'
+    'Ascend 310P 仅支持 FP16，需要设置 --dtype=float16。',
+  'models.form.gpuCount': '每副本 GPU 数量',
+  'models.form.gpuType': 'GPU 类型',
+  'models.form.optimizeLongPrompt': '优化长提示',
+  'models.form.enableSpeculativeDecoding': '启用推测解码'
 };

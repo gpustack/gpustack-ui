@@ -1,3 +1,4 @@
+import CatalogSkelton from '@/components/templates/card-skelton';
 import breakpoints from '@/config/breakpoints';
 import { Col, FloatButton, Row, Spin } from 'antd';
 import _ from 'lodash';
@@ -6,7 +7,6 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { CatalogItem as CatalogItemType } from '../config/types';
 import CatalogItem from './catalog-item';
-import CatalogSkelton from './catalog-skelton';
 
 const SpinWrapper = styled.div`
   width: 100%;

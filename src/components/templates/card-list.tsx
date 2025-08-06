@@ -15,14 +15,18 @@ const SpinWrapper = styled.div`
   left: 0;
   max-height: 400px;
   right: 0;
+  .skelton-wrapper {
+    width: 100%;
+  }
 `;
 
 interface CatalogListProps {
+  defaultSpan?: number;
+  resizable?: boolean;
   dataList: any[];
   loading: boolean;
   activeId: number;
   isFirst: boolean;
-  onDeploy: (data: any) => void;
   renderItem: (data: any) => React.ReactNode;
   Skeleton: React.ComponentType<{ span: number }>;
 }
@@ -60,8 +64,16 @@ const ListSkeleton: React.FC<{
 };
 
 const CardList: React.FC<CatalogListProps> = (props) => {
-  const { dataList, loading, isFirst, Skeleton, renderItem } = props;
-  const [span, setSpan] = React.useState(8);
+  const {
+    dataList,
+    loading,
+    isFirst,
+    defaultSpan = 8,
+    resizable = true,
+    Skeleton,
+    renderItem
+  } = props;
+  const [span, setSpan] = React.useState(defaultSpan);
 
   const getSpanByWidth = (width: number) => {
     if (width < breakpoints.md) return 24;
@@ -78,8 +90,8 @@ const CardList: React.FC<CatalogListProps> = (props) => {
 
   return (
     <div className="relative" style={{ width: '100%' }}>
-      <ResizeObserver onResize={handleResize}>
-        <div>
+      <ResizeObserver onResize={handleResize} disabled={!resizable}>
+        <div style={{ width: '100%' }}>
           <Row gutter={[16, 16]}>
             {dataList.map((item: any, index) => {
               return (

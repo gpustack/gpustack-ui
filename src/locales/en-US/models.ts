@@ -45,7 +45,8 @@ export default {
   'models.form.scheduletype': 'Schedule Type',
   'models.form.categories': 'Model Category',
   'models.form.scheduletype.auto': 'Auto',
-  'models.form.scheduletype.manual': 'Manual',
+  'models.form.scheduletype.manual': 'Specify GPU',
+  'models.form.scheduletype.gpuType': 'Specify GPU Type',
   'models.form.scheduletype.auto.tips':
     'Automatically deploys model instances to appropriate GPUs/Workers based on current resource conditions.',
   'models.form.scheduletype.manual.tips':
@@ -162,5 +163,9 @@ export default {
     'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
   'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`,
   'models.backend.mindie.310p':
-    'Ascend 310P only supports FP16, so you need to set --dtype=float16.'
+    'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
+  'models.form.gpuCount': 'GPUs per Replica',
+  'models.form.gpuType': 'GPU Type',
+  'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
+  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding'
 };

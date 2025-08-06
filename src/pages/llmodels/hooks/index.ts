@@ -104,8 +104,10 @@ export const useGenerateFormEditInitialValues = () => {
       queryWorkersList({ page: 1, perPage: 100 })
     ]);
     const gpuList = generateCascaderOptions(gpuData.items, workerData.items);
+
     gpuDeviceList.current = gpuList;
     workerList.current = workerData.items;
+
     return gpuList;
   };
 

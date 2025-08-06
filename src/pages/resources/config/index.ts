@@ -41,14 +41,11 @@ export const addWorkerGuide: Record<string, any> = {
       token: string;
       workerip: string;
     }) {
-      return `docker run -d --name gpustack \\
-    --restart=unless-stopped \\
-    --gpus all \\
-    --network=host \\
-    --ipc=host \\
-    -v gpustack-data:/var/lib/gpustack \\
-    gpustack/gpustack:${params.tag} \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+      return `docker run -d \\
+       --net=host \\
+       -v /var/lib/gpustack:/var/lib/gpustack \\
+       --privileged gpustack/gpustack:xxxx \\
+       --registration ${params.token}`;
     }
   },
   npu: {

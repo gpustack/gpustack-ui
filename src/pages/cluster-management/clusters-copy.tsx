@@ -1,21 +1,32 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
+import DropDownActions from '@/components/drop-down-actions';
+import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
-import { FilterBar } from '@/components/page-tools';
-import CardList from '@/components/templates/card-list';
-import CardSkeleton from '@/components/templates/card-skelton';
+import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import AddWorker from '@/pages/resources/components/add-worker';
 import {
   DeleteOutlined,
+  DownOutlined,
   EditOutlined,
   KubernetesOutlined,
-  ProfileOutlined
+  ProfileOutlined,
+  SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Empty, Table, message } from 'antd';
+import {
+  Button,
+  ConfigProvider,
+  Empty,
+  Input,
+  Space,
+  Table,
+  message
+} from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -26,7 +37,6 @@ import {
 } from './apis';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
-import ClusterItem from './components/cluster-item';
 import { ClusterDataList } from './config';
 import {
   ClusterFormData as FormData,
@@ -234,16 +244,12 @@ const Credentials: React.FC = () => {
       handleEditUser(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
-    } else if (val === 'add_worker') {
+    } else if (val === 'add') {
       setOpen(true);
       setCurrentData(row);
     } else if (val === 'addPool') {
       handleAddPool(row.provider);
     }
-  };
-
-  const renderCard = (item: ListItem) => {
-    return <ClusterItem data={item} onSelect={handleSelect}></ClusterItem>;
   };
 
   const renderEmpty = (type?: string) => {
@@ -273,31 +279,175 @@ const Credentials: React.FC = () => {
         }}
         extra={[]}
       >
-        <FilterBar
-          showSelect={false}
-          showPrimaryButton={true}
-          showDeleteButton={true}
-          selectHolder="Filter by name"
+        <PageTools
           marginBottom={22}
-          marginTop={30}
-          handleInputChange={handleNameChange}
-          handleSearch={handleSearch}
-          width={{ input: 200 }}
-          buttonText="Add Cluster"
-          actionType="dropdown"
-          actionItems={addActions}
-          handleClickPrimary={handleClickDropdown}
-        ></FilterBar>
-        <CardList
-          dataList={ClusterDataList}
-          loading={dataSource.loading}
-          activeId={-1}
-          isFirst={!dataSource.loadend}
-          Skeleton={CardSkeleton}
-          resizable={false}
-          defaultSpan={24}
-          renderItem={renderCard}
-        ></CardList>
+          left={
+            <Space>
+              <Input
+                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
+                style={{ width: 300 }}
+                allowClear
+                onChange={handleNameChange}
+              ></Input>
+              <Button
+                type="text"
+                style={{ color: 'var(--ant-color-text-tertiary)' }}
+                onClick={handleSearch}
+                icon={<SyncOutlined></SyncOutlined>}
+              ></Button>
+            </Space>
+          }
+          right={
+            <Space size={20}>
+              <DropDownActions
+                menu={{
+                  items: addActions,
+                  onClick: handleClickDropdown
+                }}
+                trigger={['click']}
+                placement="bottomRight"
+              >
+                <Button
+                  icon={<DownOutlined></DownOutlined>}
+                  type="primary"
+                  iconPosition="end"
+                >
+                  Add Cluster
+                </Button>
+              </DropDownActions>
+              <Button
+                icon={<DeleteOutlined />}
+                danger
+                onClick={handleDeleteBatch}
+                disabled={!rowSelection.selectedRowKeys.length}
+              >
+                <span>
+                  {intl?.formatMessage?.({ id: 'common.button.delete' })}
+                  {rowSelection.selectedRowKeys.length > 0 && (
+                    <span>({rowSelection.selectedRowKeys?.length})</span>
+                  )}
+                </span>
+              </Button>
+            </Space>
+          }
+        ></PageTools>
+        <ConfigProvider renderEmpty={renderEmpty}>
+          <Table
+            dataSource={ClusterDataList}
+            rowSelection={rowSelection}
+            loading={dataSource.loading}
+            rowKey="id"
+            onChange={handleTableChange}
+            pagination={{
+              showSizeChanger: true,
+              pageSize: queryParams.perPage,
+              current: queryParams.page,
+              total: dataSource.total,
+              hideOnSinglePage: queryParams.perPage === 10,
+              onChange: handlePageChange
+            }}
+          >
+            <Column
+              title="Name"
+              dataIndex="name"
+              key="name"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title="Provider"
+              dataIndex="provider"
+              key="provider"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {addActions.find((item) => item.value === record.provider)
+                      ?.label || 'N/A'}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title="Workers"
+              dataIndex="workers"
+              key="workers"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <WorkerWrapper>
+                    <span className="worker">
+                      <span className="dot ready"></span>
+                      <span className="value">3</span>
+                    </span>
+                    <span className="worker">
+                      <span className="dot error"></span>
+                      <span className="value">1</span>
+                    </span>
+                  </WorkerWrapper>
+                );
+              }}
+            />
+            <Column
+              title="GPUs"
+              dataIndex="gpus"
+              key="gpus"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
+
+            <Column
+              title="Deployments"
+              dataIndex="deployments"
+              key="deployments"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
+              title={intl.formatMessage({ id: 'common.table.operation' })}
+              key="operation"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record: ListItem) => {
+                return (
+                  <DropdownButtons
+                    items={setActions(record)}
+                    onSelect={(val) => handleSelect(val, record)}
+                  ></DropdownButtons>
+                );
+              }}
+            />
+          </Table>
+        </ConfigProvider>
       </PageContainer>
       <AddCluster
         provider={provider}

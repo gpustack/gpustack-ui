@@ -23,7 +23,6 @@ import { FormContext, FormInnerContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
-import OllamaForm from '../forms/ollama_library';
 import { useCheckCompatibility } from '../hooks';
 import AdvanceConfig from './advance-config';
 import ColumnWrapper from './column-wrapper';
@@ -396,7 +395,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               }}
             >
               <HuggingFaceForm></HuggingFaceForm>
-              <OllamaForm></OllamaForm>
               <LocalPathForm></LocalPathForm>
             </FormInnerContext.Provider>
             <Form.Item name="backend" rules={[{ required: true }]}>
@@ -446,30 +444,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   !isVllmOrAscend
                 }
               ></SealSelect>
-            </Form.Item>
-            <Form.Item<FormData>
-              name="replicas"
-              rules={[
-                {
-                  required: true,
-                  message: getRuleMessage('input', 'models.form.replicas')
-                }
-              ]}
-            >
-              <SealInput.Number
-                style={{ width: '100%' }}
-                label={intl.formatMessage({
-                  id: 'models.form.replicas'
-                })}
-                required
-                description={intl.formatMessage(
-                  {
-                    id: 'models.form.replicas.tips'
-                  },
-                  { api: `${window.location.origin}/v1` }
-                )}
-                min={0}
-              ></SealInput.Number>
             </Form.Item>
             <Form.Item<FormData> name="description">
               <SealInput.TextArea

@@ -4,6 +4,16 @@ import EmptyData from '@/components/empty-data';
 import React, { memo } from 'react';
 import { ChartProps } from './types';
 
+const strokeColorFunc = (percent: number) => {
+  if (percent <= 50 || percent === undefined) {
+    return 'rgb(84, 204, 152, 80%)';
+  }
+  if (percent <= 80) {
+    return 'rgba(250, 173, 20, 80%)';
+  }
+  return 'rgba(255, 77, 79, 80%)';
+};
+
 const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
   props
 ) => {
@@ -18,6 +28,7 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
   }
 
   const setDataOptions = () => {
+    const colorValue = color || strokeColorFunc(value);
     return {
       title: {
         ...titleConfig,
@@ -33,7 +44,7 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
             lineStyle: {
               ...gaugeItemConfig.axisLine.lineStyle,
               color: [
-                [value / 100, color],
+                [value / 100, colorValue],
                 [1, chartColorMap.gaugeBgColor]
               ]
             }

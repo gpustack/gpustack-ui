@@ -5,7 +5,7 @@ interface CatalogSkeltonProps {
   span: number;
 }
 
-const CatalogSkelton: React.FC<CatalogSkeltonProps> = (props) => {
+const CardSkelton: React.FC<CatalogSkeltonProps> = (props) => {
   return (
     <Row gutter={[16, 16]}>
       {Array(6)
@@ -31,4 +31,4 @@ const CatalogSkelton: React.FC<CatalogSkeltonProps> = (props) => {
   );
 };
 
-export default React.memo(CatalogSkelton);
+export default React.memo(CardSkelton);

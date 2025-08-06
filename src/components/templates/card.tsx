@@ -6,6 +6,9 @@ interface CardProps {
   height?: string | number;
   className?: string;
   children?: React.ReactNode;
+  clickable?: boolean;
+  ghost?: boolean;
+  onClick?: () => void;
 }
 
 const CardWrapper = styled.div`
@@ -17,24 +20,43 @@ const CardWrapper = styled.div`
   align-items: flex-start;
   border: 1px solid var(--ant-color-border);
   border-radius: var(--border-radius-base);
-  cursor: pointer;
+  cursor: default;
   width: 100%;
   &:hover {
     background-color: var(--ant-color-fill-tertiary);
+    transition: background-color 0.2s ease;
+  }
+
+  &.ghost {
+    background-color: transparent;
   }
 
   &.active {
     background-color: var(--ant-color-fill-tertiary);
   }
+  &.clickable {
+    cursor: pointer;
+  }
 `;
 
 const Card: React.FC<CardProps> = (props) => {
-  const { className, height, children } = props;
+  const {
+    className,
+    height,
+    children,
+    clickable = true,
+    ghost = false,
+    onClick
+  } = props;
 
   return (
     <CardWrapper
-      className={classNames('card-wrapper', className)}
+      className={classNames(className, {
+        clickable: clickable,
+        ghost: ghost
+      })}
       style={{ height: height || '180px' }}
+      onClick={onClick}
     >
       {children}
     </CardWrapper>

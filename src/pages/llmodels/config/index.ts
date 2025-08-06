@@ -84,10 +84,6 @@ export const ollamaModelOptions = [
 
 export const backendTipsList = [
   {
-    title: 'llama-box',
-    tips: 'models.form.backend.llamabox'
-  },
-  {
     title: 'vLLM',
     tips: 'models.form.backend.vllm'
   },
@@ -537,3 +533,20 @@ export const getBackendParamsTips = (backend: string) => {
     version: 'v0.0.13'
   };
 };
+
+export const scheduleTypeTips = [
+  {
+    title: {
+      text: 'models.form.scheduletype.auto',
+      locale: true
+    },
+    tips: 'models.form.scheduletype.auto.tips'
+  },
+  {
+    title: {
+      text: 'models.form.scheduletype.manual',
+      locale: true
+    },
+    tips: 'models.form.scheduletype.manual.tips'
+  }
+];

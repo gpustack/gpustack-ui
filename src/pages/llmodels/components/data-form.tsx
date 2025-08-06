@@ -259,14 +259,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           options={
             backendOptions ?? [
               {
-                label: backendLabelMap[backendOptionsMap.llamaBox],
-                value: backendOptionsMap.llamaBox,
-                disabled:
-                  props.source === modelSourceMap.local_path_value
-                    ? false
-                    : !isGGUF
-              },
-              {
                 label: backendLabelMap[backendOptionsMap.vllm],
                 value: backendOptionsMap.vllm,
                 disabled:
@@ -300,28 +292,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         ></SealSelect>
       </Form.Item> */}
       <CatalogFrom></CatalogFrom>
-      {/* <Form.Item<FormData>
-        name="replicas"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('input', 'models.form.replicas')
-          }
-        ]}
-      >
-        <SealInput.Number
-          style={{ width: '100%' }}
-          label={intl.formatMessage({
-            id: 'models.form.replicas'
-          })}
-          required
-          description={intl.formatMessage(
-            { id: 'models.form.replicas.tips' },
-            { api: `${window.location.origin}/v1` }
-          )}
-          min={0}
-        ></SealInput.Number>
-      </Form.Item> */}
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           scaleSize={true}
@@ -343,4 +313,4 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   );
 });
 
-export default React.memo(DataForm);
+export default DataForm;

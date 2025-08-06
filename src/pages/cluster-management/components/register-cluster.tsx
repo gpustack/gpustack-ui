@@ -11,6 +11,7 @@ import {
   ClusterListItem as ListItem
 } from '../config/types';
 import CloudProvider from './cloud-provider-form';
+import K8SProvider from './k8s-provider-form';
 
 type AddModalProps = {
   title: string;
@@ -86,6 +87,9 @@ const AddCluster: React.FC<AddModalProps> = ({
         </Form.Item>
         {provider === 'digitalocean' && (
           <CloudProvider provider={provider}></CloudProvider>
+        )}
+        {provider === 'kubernetes' && (
+          <K8SProvider provider={provider}></K8SProvider>
         )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <SealInput.TextArea

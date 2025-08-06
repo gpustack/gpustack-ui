@@ -1,4 +1,4 @@
-export interface FormData {
+export interface CredentialFormData {
   name: string;
   provider: string;
   access_key: string;
@@ -7,7 +7,7 @@ export interface FormData {
   id?: number;
 }
 
-export interface ListItem {
+export interface CredentialListItem {
   id: number;
   name: string;
   provider: string;

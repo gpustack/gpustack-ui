@@ -1,12 +1,11 @@
 import LabelSelector from '@/components/label-selector';
 import ModalFooter from '@/components/modal-footer';
-import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import ScrollerModal from '@/components/scroller-modal';
 import SealInputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
-import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Form } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import React from 'react';
 import {
@@ -45,23 +44,15 @@ const AddCluster: React.FC<AddModalProps> = ({
   };
 
   return (
-    <GSDrawer
-      title={
-        <div className="flex-between flex-center">
-          <span>{title}</span>
-          <Button type="text" size="small" onClick={handleCancel}>
-            <CloseOutlined></CloseOutlined>
-          </Button>
-        </div>
-      }
+    <ScrollerModal
+      title={title}
       open={open}
-      onClose={onCancel}
+      onCancel={handleCancel}
       destroyOnClose={true}
-      closeIcon={false}
+      closeIcon={true}
       maskClosable={false}
       keyboard={false}
       width={600}
-      styles={{}}
       footer={
         <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
       }
@@ -179,7 +170,7 @@ const AddCluster: React.FC<AddModalProps> = ({
           ></LabelSelector>
         </Form.Item>
       </Form>
-    </GSDrawer>
+    </ScrollerModal>
   );
 };
 

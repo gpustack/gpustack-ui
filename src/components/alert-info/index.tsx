@@ -28,6 +28,8 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
                 }
           }
           style={{
+            fontWeight: 400,
+            whiteSpace: 'pre-line',
             textAlign: 'center',
             padding: '2px 5px',
             borderRadius: 'var(--border-radius-base)',

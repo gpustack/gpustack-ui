@@ -13,6 +13,12 @@ export interface ChartProps {
   smooth?: boolean;
   color?: string;
   yAxisName?: string;
+  gaugeConfig?: {
+    radius?: string;
+    center?: string[];
+    startAngle?: number;
+    endAngle?: number;
+  };
 }
 
 export interface AreaChartItemProps {

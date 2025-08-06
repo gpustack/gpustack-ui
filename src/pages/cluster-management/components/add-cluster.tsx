@@ -59,7 +59,6 @@ const AddCluster: React.FC<AddModalProps> = ({
       maskClosable={false}
       keyboard={false}
       width={600}
-      styles={{}}
       footer={
         <ModalFooter onOk={handleSubmit} onCancel={onCancel}></ModalFooter>
       }

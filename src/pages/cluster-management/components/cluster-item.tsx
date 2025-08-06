@@ -17,7 +17,7 @@ import {
   ProviderLabelMap,
   ProviderValueMap
 } from '../config';
-import { ClusterListItem as ListItem } from '../config/types';
+import { ClusterListItem as ListItem, NodePoolListItem } from '../config/types';
 import WorkerPools from './worker-pools';
 
 const CollapseTitle = styled.div`
@@ -43,6 +43,7 @@ const Content = styled.div`
 const CardWrapper = styled(ACard)`
   text-align: center;
   box-shadow: none;
+  flex: 1;
   .ant-card {
     box-shadow: none;
   }
@@ -62,6 +63,12 @@ const CardWrapper = styled(ACard)`
     font-weight: 500;
     color: var(--ant-color-text);
   }
+`;
+
+const CardBox = styled.div`
+  display: flex;
+  gap: 16px;
+  flex: 0.5;
 `;
 
 const actionItems = [
@@ -137,14 +144,35 @@ interface CardProps {
   onSelect?: (key: string, row: ListItem) => void;
 }
 
+const gaugeConfig = {
+  radius: '100%',
+  progress: {
+    show: true,
+    roundCap: false,
+    width: 8
+  },
+  axisLine: {
+    roundCap: false,
+    lineStyle: {
+      width: 8,
+      color: [
+        [0.5, 'rgba(84, 204, 152, 80%)'],
+        [0.8, 'rgba(250, 173, 20, 80%)'],
+        [1, 'rgba(255, 77, 79, 80%)']
+      ]
+    }
+  }
+};
+
 const CardItem: React.FC<CardProps> = (props) => {
   const { data, onSelect } = props;
   const [show, setShow] = React.useState(false);
 
   const handleOnSelect = (key: string) => {
-    console.log('Selected action:', key);
     onSelect?.(key, data);
   };
+
+  const handleOnAction = (action: string, record: NodePoolListItem) => {};
 
   const actions = useMemo(() => {
     return actionItems.filter((item) => {
@@ -179,7 +207,7 @@ const CardItem: React.FC<CardProps> = (props) => {
           </span>
         </div>
         <Content>
-          <div className="flex gap-16">
+          <CardBox>
             <CardWrapper bordered={false}>
               <div className="label">Workers</div>
               <div className="value">1</div>
@@ -192,20 +220,40 @@ const CardItem: React.FC<CardProps> = (props) => {
               <div className="label">Deployments</div>
               <div className="value">2</div>
             </CardWrapper>
-          </div>
+          </CardBox>
           <div className="chart-wrapper">
             <Row gutter={16} style={{ width: '100%' }}>
               <Col span={6}>
-                <GaugeChart title="GPU Utilization" value={85} height={160} />
+                <GaugeChart
+                  title="GPU Utilization"
+                  value={85}
+                  height={160}
+                  gaugeConfig={gaugeConfig}
+                />
               </Col>
               <Col span={6}>
-                <GaugeChart title="CPU Utilization" value={50} height={160} />
+                <GaugeChart
+                  title="CPU Utilization"
+                  value={50}
+                  height={160}
+                  gaugeConfig={gaugeConfig}
+                />
               </Col>
               <Col span={6}>
-                <GaugeChart title="RAM Utilization" value={70} height={160} />
+                <GaugeChart
+                  title="RAM Utilization"
+                  value={70}
+                  height={160}
+                  gaugeConfig={gaugeConfig}
+                />
               </Col>
               <Col span={6}>
-                <GaugeChart title="VRAM Utilization" value={60} height={160} />
+                <GaugeChart
+                  title="VRAM Utilization"
+                  value={60}
+                  height={160}
+                  gaugeConfig={gaugeConfig}
+                />
               </Col>
             </Row>
           </div>
@@ -224,8 +272,9 @@ const CardItem: React.FC<CardProps> = (props) => {
             </CollapseTitle>
             <WorkerPools
               provider={data.provider}
-              dataSource={data.worker_pools}
+              workerPools={data.worker_pools}
               height={show ? 'auto' : 0}
+              onAction={handleOnAction}
             />
           </>
         )}

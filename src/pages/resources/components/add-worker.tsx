@@ -74,11 +74,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       style={{
         top: 100
       }}
-      styles={{
-        body: {
-          minHeight: 450
-        }
-      }}
+      maxContentHeight={450}
       footer={null}
     >
       <ContainerInstall token={token} />

@@ -22,13 +22,18 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
     title: titleConfig,
     chartColorMap
   } = useChartConfig();
-  const { value, height, width, labelFormatter, title, color } = props;
+  const { value, height, width, labelFormatter, title, color, gaugeConfig } =
+    props;
   if (!value && value !== 0) {
     return <EmptyData height={height} title={title}></EmptyData>;
   }
 
   const setDataOptions = () => {
     const colorValue = color || strokeColorFunc(value);
+    const combineGaugeConfig = {
+      ...gaugeItemConfig,
+      ...gaugeConfig
+    };
     return {
       title: {
         ...titleConfig,
@@ -38,11 +43,11 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
       },
       series: [
         {
-          ...gaugeItemConfig,
+          ...combineGaugeConfig,
           axisLine: {
-            ...gaugeItemConfig.axisLine,
+            ...combineGaugeConfig.axisLine,
             lineStyle: {
-              ...gaugeItemConfig.axisLine.lineStyle,
+              ...combineGaugeConfig.axisLine.lineStyle,
               color: [
                 [value / 100, colorValue],
                 [1, chartColorMap.gaugeBgColor]

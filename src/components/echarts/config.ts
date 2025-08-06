@@ -151,7 +151,7 @@ export default function useChartConfig() {
     progress: {
       show: true,
       roundCap: false,
-      width: 12
+      width: 10
     },
     pointer: {
       length: '80%',
@@ -163,7 +163,7 @@ export default function useChartConfig() {
     axisLine: {
       roundCap: false,
       lineStyle: {
-        width: 12,
+        width: 10,
         color: [
           [0.5, 'rgba(84, 204, 152, 80%)'],
           [0.8, 'rgba(250, 173, 20, 80%)'],

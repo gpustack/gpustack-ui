@@ -1,6 +1,11 @@
+import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
+import useTableFetch from '@/hooks/use-table-fetch';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Table } from 'antd';
+import { useMemo } from 'react';
+import { WORKER_POOLS_API, deleteWorkerPool, queryWorkerPools } from '../apis';
+import { NodePoolListItem as ListItem } from '../config/types';
 
 const actionItems = [
   {
@@ -20,21 +25,50 @@ const actionItems = [
 ];
 
 interface WorkerPoolsProps {
-  dataSource: any[];
+  workerPools: ListItem[];
   loading?: boolean;
   provider: string;
   height?: string | number;
-  onAction?: (action: string, record: any) => void;
+  onAction?: (action: string, record: ListItem) => void;
 }
 
 const WorkerPools: React.FC<WorkerPoolsProps> = ({
-  dataSource,
+  workerPools,
   loading = false,
   provider,
   height = 'auto',
   onAction
 }) => {
-  // dataindex: type, replicas, Batchsize, GPU, Memory, CPU, Storage, CreateTime, Operations
+  const {
+    dataSource,
+    rowSelection,
+    queryParams,
+    modalRef,
+    fetchData,
+    handleDelete,
+    handleDeleteBatch,
+    handlePageChange,
+    handleTableChange,
+    handleSearch,
+    handleNameChange,
+    handleQueryChange
+  } = useTableFetch<ListItem>({
+    fetchAPI: queryWorkerPools,
+    deleteAPI: deleteWorkerPool,
+    API: WORKER_POOLS_API,
+    watch: false,
+    contentForDelete: 'resources.modelfiles.modelfile'
+  });
+
+  const onSelect = (key: string, record: ListItem) => {
+    if (key === 'delete') {
+      handleDelete({ ...record, name: record.instance_type });
+    }
+    if (key === 'edit') {
+      onAction?.(key, record);
+    }
+  };
+
   const columns = [
     {
       title: 'Type',
@@ -79,10 +113,10 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     {
       title: 'Operations',
       key: 'operations',
-      render: (_, record) => (
+      render: (text: string, record: ListItem) => (
         <DropdownButtons
           items={actionItems}
-          onSelect={(key) => onAction?.(key, record)}
+          onSelect={(key) => onSelect?.(key, record)}
         />
       )
     }
@@ -90,6 +124,7 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
 
   // mock dataSource
   const mockData = Array.from({ length: 3 }, (_, index) => ({
+    id: index + 1,
     key: index,
     type: `Type ${index + 1}`,
     replicas: Math.floor(Math.random() * 10) + 1,
@@ -101,15 +136,26 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     createTime: new Date().toLocaleDateString()
   }));
 
+  const dataList = useMemo(() => {
+    if (workerPools && workerPools.length > 0) {
+      return workerPools;
+    }
+    if (dataSource.dataList && dataSource.dataList.length > 0) {
+      return dataSource.dataList;
+    }
+    return mockData;
+  }, [workerPools, dataSource.dataList]);
+
   return (
     <div style={{ height: height, overflow: 'hidden' }}>
       <Table
-        dataSource={dataSource || mockData}
+        dataSource={dataList}
         columns={columns}
         loading={loading}
         pagination={false}
         rowKey="id"
       />
+      <DeleteModal ref={modalRef}></DeleteModal>
     </div>
   );
 };

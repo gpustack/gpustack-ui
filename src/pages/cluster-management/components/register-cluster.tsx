@@ -2,9 +2,8 @@ import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal/index';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
-import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Form } from 'antd';
+import { Form } from 'antd';
 import React from 'react';
 import {
   ClusterFormData as FormData,
@@ -45,22 +44,14 @@ const AddCluster: React.FC<AddModalProps> = ({
 
   return (
     <ScrollerModal
-      title={
-        <div className="flex-between flex-center">
-          <span>{title}</span>
-          <Button type="text" size="small" onClick={handleCancel}>
-            <CloseOutlined></CloseOutlined>
-          </Button>
-        </div>
-      }
+      title={title}
       open={open}
-      onClose={onCancel}
+      onCancel={handleCancel}
       destroyOnClose={true}
-      closeIcon={false}
+      closeIcon={true}
       maskClosable={false}
       keyboard={false}
       width={600}
-      styles={{}}
       footer={
         <ModalFooter onOk={handleSubmit} onCancel={onCancel}></ModalFooter>
       }

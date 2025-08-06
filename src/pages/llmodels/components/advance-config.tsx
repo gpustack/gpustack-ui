@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
+import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
@@ -8,17 +9,8 @@ import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import {
-  Checkbox,
-  Collapse,
-  Form,
-  FormInstance,
-  Tooltip,
-  Typography
-} from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { Collapse, Form, FormInstance, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -32,7 +24,6 @@ import {
   placementStrategyOptions
 } from '../config';
 import { useFormContext } from '../config/form-context';
-import llamaConfig from '../config/llama-config';
 import mindieConfig from '../config/mindie-config';
 import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
@@ -62,42 +53,6 @@ const placementStrategyTips = [
   }
 ];
 
-const scheduleTypeTips = [
-  {
-    title: {
-      text: 'models.form.scheduletype.auto',
-      locale: true
-    },
-    tips: 'models.form.scheduletype.auto.tips'
-  },
-  {
-    title: {
-      text: 'models.form.scheduletype.manual',
-      locale: true
-    },
-    tips: 'models.form.scheduletype.manual.tips'
-  }
-];
-
-const CheckboxField: React.FC<{
-  title: string;
-  label: string;
-  checked?: boolean;
-  onChange?: (e: CheckboxChangeEvent) => void;
-}> = ({ title, label, checked, onChange }) => {
-  return (
-    <Checkbox className="p-l-6" checked={checked} onChange={onChange}>
-      <Tooltip title={title}>
-        <span style={{ color: 'var(--ant-color-text-tertiary)' }}>{label}</span>
-        <QuestionCircleOutlined
-          className="m-l-4"
-          style={{ color: 'var(--ant-color-text-tertiary)' }}
-        />
-      </Tooltip>
-    </Checkbox>
-  );
-};
-
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const { form, isGGUF, gpuOptions, source, backendOptions, action } = props;
   const { getRuleMessage } = useAppUtils();
@@ -115,9 +70,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const { onValuesChange } = useFormContext();
 
   const paramsConfig = useMemo(() => {
-    if (backend === backendOptionsMap.llamaBox) {
-      return llamaConfig;
-    }
     if (backend === backendOptionsMap.vllm) {
       return vllmConfig;
     }
@@ -221,14 +173,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={
               backendOptions ?? [
                 {
-                  label: backendLabelMap[backendOptionsMap.llamaBox],
-                  value: backendOptionsMap.llamaBox,
-                  disabled:
-                    props.source === modelSourceMap.local_path_value
-                      ? false
-                      : !isGGUF
-                },
-                {
                   label: backendLabelMap[backendOptionsMap.vllm],
                   value: backendOptionsMap.vllm,
                   disabled:
@@ -261,27 +205,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             }
           ></SealSelect>
         </Form.Item>
-        {/* <Form.Item name="scheduleType">
-          <SealSelect
-            onChange={handleScheduleTypeChange}
-            label={intl.formatMessage({ id: 'models.form.scheduletype' })}
-            description={<TooltipList list={scheduleTypeTips}></TooltipList>}
-            options={[
-              {
-                label: intl.formatMessage({
-                  id: 'models.form.scheduletype.auto'
-                }),
-                value: 'auto'
-              },
-              {
-                label: intl.formatMessage({
-                  id: 'models.form.scheduletype.manual'
-                }),
-                value: 'manual'
-              }
-            ]}
-          ></SealSelect>
-        </Form.Item> */}
         {scheduleType === 'auto' && (
           <>
             <Form.Item<FormData> name="placement_strategy">
@@ -482,31 +405,10 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           ></LabelSelector>
         </Form.Item>
 
-        {backend === backendOptionsMap.llamaBox && (
-          <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
-            <Form.Item<FormData>
-              name="cpu_offloading"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-              noStyle
-            >
-              <CheckboxField
-                title={intl.formatMessage({
-                  id: 'models.form.partialoffload.tips'
-                })}
-                label={intl.formatMessage({
-                  id: 'resources.form.enablePartialOffload'
-                })}
-              ></CheckboxField>
-            </Form.Item>
-          </div>
-        )}
         {scheduleType === 'auto' &&
-          [
-            backendOptionsMap.llamaBox,
-            backendOptionsMap.vllm,
-            backendOptionsMap.ascendMindie
-          ].includes(backend) && (
+          [backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
+            backend
+          ) && (
             <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
               <Form.Item<FormData>
                 name="distributed_inference_across_workers"
@@ -515,7 +417,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 noStyle
               >
                 <CheckboxField
-                  title={intl.formatMessage({
+                  description={intl.formatMessage({
                     id: 'models.form.distribution.tips'
                   })}
                   label={intl.formatMessage({
@@ -533,7 +435,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             noStyle
           >
             <CheckboxField
-              title={intl.formatMessage({
+              description={intl.formatMessage({
                 id: 'models.form.restart.onerror.tips'
               })}
               label={intl.formatMessage({

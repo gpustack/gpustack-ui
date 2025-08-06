@@ -111,6 +111,36 @@ interface ModelsProps {
   total: number;
 }
 
+const clusterList = [
+  {
+    label: 'Custom',
+    value: 'custom'
+  },
+  {
+    label: 'Kubernetes',
+    value: 'kubernetes'
+  },
+  {
+    label: 'Digital Ocean',
+    value: 'digital_ocean'
+  }
+];
+
+const statusList = [
+  {
+    label: 'Running',
+    value: 'running'
+  },
+  {
+    label: 'Stopped',
+    value: 'stopped'
+  },
+  {
+    label: 'Error',
+    value: 'error'
+  }
+];
+
 const getFormattedData = (record: any, extraData = {}) => ({
   id: record.id,
   data: {
@@ -605,7 +635,6 @@ const Models: React.FC<ModelsProps> = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
-        width: 400,
         span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
@@ -620,10 +649,10 @@ const Models: React.FC<ModelsProps> = ({
         title: 'Cluster',
         dataIndex: 'cluster',
         key: 'cluster',
-        span: 4,
+        span: 3,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
-            Custom
+            {['Custom', 'Kubernetes', 'Digital Ocean'][record.id] || 'Custom'}
           </span>
         )
       },
@@ -631,7 +660,7 @@ const Models: React.FC<ModelsProps> = ({
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
         key: 'source',
-        span: 4,
+        span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
             <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
@@ -778,7 +807,7 @@ const Models: React.FC<ModelsProps> = ({
             <Space>
               <Input
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 200 }}
+                style={{ width: 160 }}
                 size="large"
                 allowClear
                 onChange={handleNameChange}
@@ -789,7 +818,7 @@ const Models: React.FC<ModelsProps> = ({
                 placeholder={intl.formatMessage({
                   id: 'models.filter.category'
                 })}
-                style={{ width: 180 }}
+                style={{ width: 160 }}
                 size="large"
                 maxTagCount={1}
                 onChange={handleCategoryChange}
@@ -798,11 +827,20 @@ const Models: React.FC<ModelsProps> = ({
               <Select
                 allowClear
                 showSearch={false}
-                placeholder="Filter by worker"
-                style={{ width: 180 }}
+                placeholder="Filter by cluster"
+                style={{ width: 160 }}
                 size="large"
                 maxTagCount={1}
-                options={[]}
+                options={clusterList}
+              ></Select>
+              <Select
+                allowClear
+                showSearch={false}
+                placeholder="Running Replicas"
+                style={{ width: 140 }}
+                size="large"
+                maxTagCount={1}
+                options={statusList}
               ></Select>
               <Button
                 type="text"

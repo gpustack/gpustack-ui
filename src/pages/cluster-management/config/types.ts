@@ -18,16 +18,6 @@ export interface ListItem {
   updated_at: string;
 }
 
-export interface ClusterListItem {
-  name: string;
-  provider: string;
-  workers: number;
-  created_at: string;
-  gpus: number;
-  deployments: number;
-  id: number;
-}
-
 export interface ClusterFormData {
   display_name: string;
   description: string;
@@ -54,4 +44,20 @@ export interface NodePoolFormData {
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;
+}
+
+export interface ClusterListItem {
+  name: string;
+  display_name: string;
+  description: string;
+  provider: string;
+  credential_id: number;
+  zone: string;
+  region: string;
+  gpus: number;
+  deployments: number;
+  id: number;
+  status: string;
+  state_message: string;
+  worker_pools: NodePoolListItem[];
 }

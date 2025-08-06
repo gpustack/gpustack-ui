@@ -10,16 +10,6 @@ import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DashboardContext } from '../config/dashboard-context';
 import ResourceUtilization from './resource-utilization';
 
-const strokeColorFunc = (percent: number) => {
-  if (percent <= 50 || percent === undefined) {
-    return 'rgb(84, 204, 152, 80%)';
-  }
-  if (percent <= 80) {
-    return 'rgba(250, 173, 20, 80%)';
-  }
-  return 'rgba(255, 77, 79, 80%)';
-};
-
 const SystemLoad = () => {
   const intl = useIntl();
   const data = useContext(DashboardContext)?.system_load?.current || {};
@@ -33,23 +23,21 @@ const SystemLoad = () => {
   const chartData = useMemo(() => {
     return {
       gpu: {
-        data: _.round(data.gpu || 0, 1),
-        color: strokeColorFunc(data.gpu)
+        data: _.round(data.gpu || 0, 1)
       },
       vram: {
-        data: _.round(data.vram || 0, 1),
-        color: strokeColorFunc(data.vram)
+        data: _.round(data.vram || 0, 1)
       },
       cpu: {
-        data: _.round(data.cpu || 0, 1),
-        color: strokeColorFunc(data.cpu)
+        data: _.round(data.cpu || 0, 1)
       },
       ram: {
-        data: _.round(data.ram || 0, 1),
-        color: strokeColorFunc(data.ram)
+        data: _.round(data.ram || 0, 1)
       }
     };
   }, [data]);
+
+  console.log('SystemLoad data:', chartData);
 
   useEffect(() => {
     if (size.width < breakpoints.xl) {
@@ -90,7 +78,6 @@ const SystemLoad = () => {
                   <GaugeChart
                     height={smallChartHeight}
                     value={chartData.gpu.data}
-                    color={chartData.gpu.color}
                     title={intl.formatMessage({
                       id: 'dashboard.gpuutilization'
                     })}
@@ -102,7 +89,6 @@ const SystemLoad = () => {
                       id: 'dashboard.vramutilization'
                     })}
                     height={smallChartHeight}
-                    color={chartData.vram.color}
                     value={chartData.vram.data}
                   ></GaugeChart>
                 </Col>
@@ -112,7 +98,6 @@ const SystemLoad = () => {
                       id: 'dashboard.cpuutilization'
                     })}
                     height={smallChartHeight}
-                    color={chartData.cpu.color}
                     value={chartData.cpu.data}
                   ></GaugeChart>
                 </Col>
@@ -122,7 +107,6 @@ const SystemLoad = () => {
                       id: 'dashboard.memoryutilization'
                     })}
                     height={smallChartHeight}
-                    color={chartData.ram.color}
                     value={chartData.ram.data}
                   ></GaugeChart>
                 </Col>

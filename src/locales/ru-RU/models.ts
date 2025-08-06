@@ -45,7 +45,8 @@ export default {
   'models.form.scheduletype': 'Тип планирования',
   'models.form.categories': 'Категория модели',
   'models.form.scheduletype.auto': 'Авто',
-  'models.form.scheduletype.manual': 'Вручную',
+  'models.form.scheduletype.manual': 'Указать GPU',
+  'models.form.scheduletype.gpuType': 'Указать тип GPU',
   'models.form.scheduletype.auto.tips':
     'Автоматическое развертывание инстансов модели на подходящие GPU/воркеры в зависимости от текущих ресурсов.',
   'models.form.scheduletype.manual.tips':
@@ -161,9 +162,19 @@ export default {
     'См. связанную проблему: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
   'models.ollama.deprecated.notice': `Источник моделей Ollama объявлен устаревшим начиная с версии v0.6.1. Подробности см. в  <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">соответствующем issue на GitHub</a>.`,
   'models.backend.mindie.310p':
-    'Ascend 310P поддерживает только FP16, поэтому необходимо установить --dtype=float16.'
+    'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
+  'models.form.gpuCount': 'GPUs per Replica',
+  'models.form.gpuType': 'GPU Type',
+  'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
+  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.ollama.deprecated.title': 'Deprecation Notice',
+// 2. 'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
+// 3. 'models.backend.mindie.310p':'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
+// 4. 'models.form.gpuCount': 'GPUs per Replica',
+// 5. 'models.form.gpuType': 'GPU Type',
+// 6. 'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
+// 7. 'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding'
 // ========== End of To-Do List ==========

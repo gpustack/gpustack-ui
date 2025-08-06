@@ -1,12 +1,15 @@
+import CheckboxField from '@/components/seal-form/checkbox-field';
+import SealCascader from '@/components/seal-form/seal-cascader';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Form, Tooltip } from 'antd';
-import { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { Form } from 'antd';
 import React from 'react';
+import { backendOptionsMap } from '../config';
 import { useFormContext } from '../config/form-context';
+import { FormData } from '../config/types';
+import GPUCard from './gpu-card';
 
 const scheduleTypeTips = [
   {
@@ -25,29 +28,15 @@ const scheduleTypeTips = [
   }
 ];
 
-const CheckboxField: React.FC<{
-  title: string;
-  label: string;
-  checked?: boolean;
-  onChange?: (e: CheckboxChangeEvent) => void;
-}> = ({ title, label, checked, onChange }) => {
-  return (
-    <Checkbox className="p-l-6" checked={checked} onChange={onChange}>
-      <Tooltip title={title}>
-        <span style={{ color: 'var(--ant-color-text-tertiary)' }}>{label}</span>
-        <QuestionCircleOutlined
-          className="m-l-4"
-          style={{ color: 'var(--ant-color-text-tertiary)' }}
-        />
-      </Tooltip>
-    </Checkbox>
-  );
-};
-
 const Performance: React.FC = () => {
   const intl = useIntl();
-  const { onValuesChange, onQuantizationChange, source, quantizationOptions } =
-    useFormContext();
+  const {
+    onValuesChange,
+    onQuantizationChange,
+    gpuOptions,
+    source,
+    quantizationOptions
+  } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
 
@@ -60,6 +49,8 @@ const Performance: React.FC = () => {
   const handleOnQuantizationChange = (val: any) => {
     onQuantizationChange?.(val);
   };
+
+  const handleGpuSelectorChange = (value: any) => {};
 
   return (
     <>
@@ -80,30 +71,102 @@ const Performance: React.FC = () => {
                 id: 'models.form.scheduletype.manual'
               }),
               value: 'manual'
+            },
+            {
+              label: intl.formatMessage({
+                id: 'models.form.scheduletype.gpuType'
+              }),
+              value: 'specific_gpu_type'
             }
           ]}
         ></SealSelect>
       </Form.Item>
-      <Form.Item<FormData>
-        name="quantization"
-        key="quantization"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('select', 'quantization', false)
-          }
-        ]}
-      >
-        <SealSelect
-          filterOption
-          defaultActiveFirstOption
-          disabled={false}
-          options={quantizationOptions}
-          onChange={handleOnQuantizationChange}
-          label="Quantization"
-          required
-        ></SealSelect>
-      </Form.Item>
+      {form.getFieldValue('scheduleType') === 'specific_gpu_type' && (
+        <>
+          <Form.Item name={['gpu_selector', 'gpu_type']}>
+            <SealSelect
+              label={intl.formatMessage({ id: 'models.form.gpuType' })}
+              options={[
+                {
+                  label: 'NVIDIA 4090',
+                  value: 'nvidia-4090'
+                },
+                {
+                  label: 'NVIDIA A100',
+                  value: 'nvidia-a100'
+                },
+                {
+                  label: 'NVIDIA H100',
+                  value: 'nvidia-h100'
+                },
+                {
+                  label: 'Huawei 910B',
+                  value: 'huawei-910b'
+                },
+                {
+                  label: 'Huawei 910C',
+                  value: 'huawei-910c'
+                }
+              ]}
+            ></SealSelect>
+          </Form.Item>
+          <Form.Item name={['gpu_selector', 'gpu_count']}>
+            <SealSelect
+              label={intl.formatMessage({ id: 'models.form.gpuCount' })}
+              options={[
+                {
+                  label: 'Auto',
+                  value: 'auto'
+                },
+                {
+                  label: '1',
+                  value: 1
+                },
+                {
+                  label: '2',
+                  value: 2
+                },
+                {
+                  label: '4',
+                  value: 4
+                }
+              ]}
+            ></SealSelect>
+          </Form.Item>
+        </>
+      )}
+      {form.getFieldValue('scheduleType') === 'manual' &&
+        !form.getFieldValue('fix_gpu_type') && (
+          <>
+            <Form.Item
+              name={['gpu_selector', 'gpu_ids']}
+              rules={[
+                {
+                  required: true,
+                  message: getRuleMessage('select', 'models.form.gpuselector')
+                }
+              ]}
+            >
+              <SealCascader
+                required
+                showSearch
+                expandTrigger="hover"
+                multiple={
+                  form.getFieldValue('backend') !== backendOptionsMap.voxBox
+                }
+                popupClassName="cascader-popup-wrapper gpu-selector"
+                maxTagCount={1}
+                label={intl.formatMessage({ id: 'models.form.gpuselector' })}
+                options={gpuOptions}
+                showCheckedStrategy="SHOW_CHILD"
+                value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
+                optionNode={GPUCard}
+                getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                onChange={handleGpuSelectorChange}
+              ></SealCascader>
+            </Form.Item>
+          </>
+        )}
       <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
         <Form.Item<FormData>
           name="optimize_long_prompt"
@@ -112,8 +175,7 @@ const Performance: React.FC = () => {
           noStyle
         >
           <CheckboxField
-            title="Optimize long prompt tips"
-            label="Optimize Long Prompt"
+            label={intl.formatMessage({ id: 'models.form.optimizeLongPrompt' })}
           ></CheckboxField>
         </Form.Item>
       </div>
@@ -125,8 +187,9 @@ const Performance: React.FC = () => {
           noStyle
         >
           <CheckboxField
-            title="Enable speculative decoding tips"
-            label="Enable Speculative Decoding"
+            label={intl.formatMessage({
+              id: 'models.form.enableSpeculativeDecoding'
+            })}
           ></CheckboxField>
         </Form.Item>
       </div>

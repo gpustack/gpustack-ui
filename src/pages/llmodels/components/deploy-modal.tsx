@@ -568,6 +568,7 @@ const AddModal: FC<AddModalProps> = (props) => {
             isGGUF: isGGUF,
             pageAction: action,
             modelFileOptions: props.modelFileOptions,
+            gpuOptions: props.gpuOptions,
             onValuesChange: onValuesChange
           }}
         >

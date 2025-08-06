@@ -33,7 +33,7 @@ export const StatusColorMap: Record<
   }
 };
 
-export const StatusMaps = {
+export const StatusMaps: Record<string, StatusType> = {
   error: 'error',
   warning: 'warning',
   transitioning: 'transitioning',

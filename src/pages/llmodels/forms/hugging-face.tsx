@@ -51,25 +51,6 @@ const HuggingFaceForm: React.FC = () => {
           onBlur={handleOnBlur}
         ></SealInput.Input>
       </Form.Item>
-      {/* {isGGUF && (
-        <Form.Item<FormData>
-          name="file_name"
-          key="file_name"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'models.form.filename')
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({ id: 'models.form.filename' })}
-            required
-            disabled={pageAction === PageAction.CREATE}
-            onBlur={handleOnBlur}
-          ></SealInput.Input>
-        </Form.Item>
-      )} */}
     </>
   );
 };

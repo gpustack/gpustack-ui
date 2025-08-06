@@ -47,7 +47,8 @@ export default {
   'models.form.scheduletype': 'スケジュールタイプ',
   'models.form.categories': 'モデルカテゴリ',
   'models.form.scheduletype.auto': '自動',
-  'models.form.scheduletype.manual': '手動',
+  'models.form.scheduletype.manual': 'GPUを指定',
+  'models.form.scheduletype.gpuType': 'GPUタイプを指定',
   'models.form.scheduletype.auto.tips':
     '現在のリソース状況に基づいて、モデルインスタンスを適切なGPU/ワーカーに自動的にデプロイします。',
   'models.form.scheduletype.manual.tips':
@@ -159,7 +160,11 @@ export default {
     'See the related issue: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
   'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`,
   'models.backend.mindie.310p':
-    'Ascend 310P only supports FP16, so you need to set --dtype=float16.'
+    'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
+  'models.form.gpuCount': '各レプリカのGPU数',
+  'models.form.gpuType': 'GPU タイプ',
+  'models.form.optimizeLongPrompt': '長いプロンプトを最適化',
+  'models.form.enableSpeculativeDecoding': '推測デコーディングを有効にする'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

@@ -56,7 +56,9 @@ export interface FormData {
   model_scope_model_id?: string;
   model_scope_file_path?: string;
   gpu_selector?: {
-    gpu_ids: string[];
+    gpu_ids?: string[];
+    gpu_type?: string;
+    gpu_count?: number;
   };
   placement_strategy?: string;
   cpu_offloading?: boolean;
@@ -65,6 +67,8 @@ export interface FormData {
   name: string;
   replicas: number;
   description: string;
+  optimize_long_prompt: boolean;
+  enable_speculative_decoding: boolean;
 }
 
 interface ComputedResourceClaim {

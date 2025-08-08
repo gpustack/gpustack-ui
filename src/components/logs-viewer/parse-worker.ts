@@ -16,6 +16,7 @@ interface MessageProps {
   chunked?: boolean;
   progress?: number;
   percent?: number;
+  isDownloading?: boolean;
 }
 class AnsiParser {
   private cursorRow: number = 0;
@@ -32,6 +33,7 @@ class AnsiParser {
   private chunked: boolean = true; // true: send data in chunks, false: send all data at once
   private reminder: string = '';
   private lines: string[] = [];
+  isDownloading: boolean = false;
   private pageSize: number = 500;
   private colorMap = {
     '30': 'black',
@@ -77,6 +79,10 @@ class AnsiParser {
 
   public setChunked(chunked: boolean) {
     this.chunked = chunked ?? true;
+  }
+
+  public setIsDownloading(isDownloading: boolean) {
+    this.isDownloading = isDownloading;
   }
 
   private setId() {
@@ -168,14 +174,18 @@ class AnsiParser {
     const remainingText = input.slice(lastIndex);
     this.handleText(remainingText);
 
-    const result = this.screen.map((row, index) => ({
-      content: removeBracketsFromLine(row.join('')),
-      uid: `${this.page}-${index}`
-    }));
+    // const result = this.screen.map((row, index) => ({
+    //   content: removeBracketsFromLine(row.join('')),
+    //   uid: `${this.page}-${index}`
+    // }));
+    const result = this.screen.map((row, index) =>
+      removeBracketsFromLine(row.join(''))
+    );
 
     return {
       data: result,
-      lines: this.rawDataRows
+      lines: this.rawDataRows,
+      remainder: ''
     };
   }
 
@@ -219,12 +229,23 @@ class AnsiParser {
     this.isProcessing = true;
 
     while (this.taskQueue.length > 0) {
-      const input = this.reminder + this.taskQueue.shift();
+      let input = '';
+
+      if (this.isDownloading) {
+        input = this.taskQueue.shift() || '';
+      } else {
+        input = this.reminder + this.taskQueue.shift();
+      }
 
       if (input) {
         try {
-          const result = this.processInputByLine(input);
-          this.reminder = result.remainder;
+          const result = this.isDownloading
+            ? this.processInput(input)
+            : this.processInputByLine(input);
+          if (!this.isDownloading) {
+            this.reminder = result.remainder;
+          }
+
           if (this.chunked) {
             self.postMessage({ result: result.data, lines: result.lines });
           } else if (!this.isComplete) {
@@ -273,9 +294,11 @@ self.onmessage = function (event: MessageEvent<MessageProps>) {
     page,
     isComplete = false,
     chunked = true,
-    percent = 0
+    percent = 0,
+    isDownloading = false
   } = event.data;
 
+  parser.setIsDownloading(isDownloading);
   parser.setPage(page);
   parser.setIsCompelete(isComplete);
   parser.setChunked(chunked);

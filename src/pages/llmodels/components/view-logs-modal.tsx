@@ -4,7 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Modal } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { MODELS_API } from '../apis';
-import { InstanceRealtimeLogStatus } from '../config';
+import { InstanceRealtimeLogStatus, InstanceStatusMap } from '../config';
 
 type ViewModalProps = {
   open: boolean;
@@ -20,6 +20,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const { setChunkRequest } = useSetChunkRequest();
   const { open, url, onCancel, tail } = props || {};
   const [enableScorllLoad, setEnableScorllLoad] = useState(true);
+  const [instanceState, setInstanceState] = useState<string>('');
   const logsViewerRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>(null);
   const contentRef = React.useRef<any>(null);
@@ -33,6 +34,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     const data = list?.find((item: any) => item.data?.id === props.id);
     // state in InstanceRealtimeLogStatus will not enable scorll load, because it is in the trasisition state
     if (data) {
+      setInstanceState(data?.data?.state);
       setEnableScorllLoad(
         () => !InstanceRealtimeLogStatus.includes(data?.data?.state)
       );
@@ -111,6 +113,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           url={url}
           tail={tail}
           enableScorllLoad={enableScorllLoad}
+          isDownloading={instanceState !== InstanceStatusMap.Downloading}
           params={{
             follow: true
           }}

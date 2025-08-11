@@ -199,6 +199,12 @@ export default function useOverlayScroller(data?: {
     [initialize, instance]
   );
 
+  const destroyInstance = () => {
+    instanceRef.current?.destroy?.();
+    removeWheelEvent();
+    instanceRef.current = null;
+  };
+
   useEffect(() => {
     return () => {
       instanceRef.current?.destroy?.();
@@ -212,6 +218,7 @@ export default function useOverlayScroller(data?: {
     scrollEventElement: scrollEventElement.current,
     initialized: initialized.current,
     generateInstance,
+    destroyInstance: destroyInstance,
     updateScrollerPosition: throttledUpdateScrollerPosition,
     updateScrollerPositionToTop: updateScrollerPositionToTop
   };

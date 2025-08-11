@@ -12,7 +12,7 @@ const GGUFResult: React.FC = () => {
         />
       }
       title={false}
-      subTitle="GGUF model is not supported yet."
+      subTitle="GGUF model is not supported."
     />
   );
 };

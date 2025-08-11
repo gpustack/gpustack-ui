@@ -20,8 +20,8 @@ const renderCardItem = (data: {
       className={styles['card-body']}
     >
       <div className={styles.content}>
-        <div className="label font-500">{label}</div>
-        <div className="value font-500">{value}</div>
+        <div className="label text-secondary">{label}</div>
+        <div className="value font-600 font-size-16">{value}</div>
       </div>
     </Card>
   );

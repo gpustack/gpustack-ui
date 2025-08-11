@@ -44,8 +44,7 @@ export default {
   'resources.worker.add.step1':
     '获取 Token<span class="note-text">（在 Server 上运行）</span>',
   'resources.worker.add.step2': '注册 Worker',
-  'resources.worker.add.step2.tips':
-    '（在需要添加的 Worker 上运行，<span class="bold-text">token</span> 为第一步获取到的值。）',
+  'resources.worker.add.step2.tips': '（在需要添加的 Worker 上运行。）',
   'resources.worker.add.step3': '成功后，刷新 Worker 列表即可看到新的 Worker',
   'resources.worker.container.supported': '不支持 macOS 和 Windows',
   'resources.worker.current.version': '当前版本为 {version}',

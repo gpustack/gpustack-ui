@@ -42,7 +42,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     return commandCode?.registerWorker({
       server: origin,
       tag: tag,
-      token: '${token}',
+      token: props.token || '${token}',
       workerip: '${workerip}'
     });
   }, [versionInfo, activeKey, props.token, npuKey]);
@@ -53,38 +53,8 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
 
   return (
     <div className="container-install">
-      <ul className="notes">
-        <li>
-          {intl.formatMessage(
-            { id: 'resources.worker.current.version' },
-            { version: versionInfo.version }
-          )}
-        </li>
-        <li>
-          <span
-            dangerouslySetInnerHTML={{
-              __html: intl.formatMessage({
-                id: 'resources.worker.driver.install'
-              })
-            }}
-          ></span>
-        </li>
-      </ul>
-      <h3 className="font-size-14 font-600">
-        1.{' '}
-        <span
-          dangerouslySetInnerHTML={{
-            __html: intl.formatMessage({ id: 'resources.worker.add.step1' })
-          }}
-        ></span>
-      </h3>
-      <HighlightCode
-        code={addWorkerGuide.container.getToken}
-        theme="dark"
-        lang="bash"
-      ></HighlightCode>
       <h3 className="m-t-10 font-size-14 font-600">
-        2. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
+        1. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
         <span
           className="font-size-12"
           style={{ color: 'var(--ant-color-text-tertiary)' }}
@@ -146,7 +116,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         ></HighlightCode>
       )}
       <h3 className="m-b-0 m-t-10 font-size-14 font-600">
-        3. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
+        2. {intl.formatMessage({ id: 'resources.worker.add.step3' })}
       </h3>
     </div>
   );

@@ -24,6 +24,8 @@ export default function useChartConfig() {
       splitLineColor: token.colorBorder,
       tickLineColor: token.colorSplit,
       axislabelColor: token.colorTextTertiary,
+      colorSecondary: token.colorTextSecondary,
+      colorTertiary: token.colorTextTertiary,
       gaugeBgColor: token.colorFillSecondary,
       gaugeSplitLineColor: isDarkTheme
         ? 'rgba(255,255,255,.3)'
@@ -172,8 +174,8 @@ export default function useChartConfig() {
       }
     },
     axisTick: {
-      distance: -11,
-      length: 6,
+      distance: -10,
+      length: 5,
       splitNumber: 5,
       lineStyle: {
         width: 1.5,
@@ -206,13 +208,13 @@ export default function useChartConfig() {
       rich: {
         value: {
           fontSize: 16,
-          fontWeight: '500',
+          fontWeight: '600',
           color: chartColorMap.titleColor
         },
         unit: {
           fontSize: 14,
           color: chartColorMap.titleColor,
-          fontWeight: '500',
+          fontWeight: '600',
           padding: [0, 0, 0, 2]
         }
       }

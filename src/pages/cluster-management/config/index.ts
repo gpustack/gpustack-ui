@@ -59,3 +59,12 @@ export const ProviderLabelMap = {
   [ProviderValueMap.DigitalOcean]: 'Digital Ocean',
   [ProviderValueMap.Custom]: 'Custom'
 };
+
+export const generateRegisterCommand = (params: {
+  server: string;
+  clusterId: number;
+  registrationToken: string;
+}) => {
+  return `curl -k -L '${params.server}/v2/clusters/${params.clusterId}/manifests' \\
+--header 'Authorization: Bearer ${params.registrationToken}'`;
+};

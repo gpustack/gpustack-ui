@@ -55,5 +55,9 @@ export default function useBodyScroll() {
     };
   }, []);
 
-  return { saveScrollHeight, restoreScrollHeight };
+  return {
+    saveScrollHeight,
+    restoreScrollHeight,
+    bodyScroller: bodyScroller.current
+  };
 }

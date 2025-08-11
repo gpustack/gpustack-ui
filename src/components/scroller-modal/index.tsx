@@ -1,10 +1,20 @@
-import OverlayScroller from '@/components/overlay-scroller';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { Modal, type ModalProps } from 'antd';
 import React from 'react';
+import styled from 'styled-components';
+
+const Wrapper = styled.div<{ $maxHeight?: number }>`
+  max-height: ${({ $maxHeight }) =>
+    typeof $maxHeight === 'number' ? `${$maxHeight}px` : $maxHeight};
+  overflow-y: auto;
+  width: 100%;
+`;
 
 const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
+  const scroller = React.useRef<any>(null);
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
+  const { initialize, destroyInstance } = useOverlayScroller();
 
   React.useEffect(() => {
     if (props.open) {
@@ -13,6 +23,24 @@ const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
       restoreScrollHeight();
     }
   }, [props.open]);
+
+  // init scroller, delay to ensure modal is fully open
+  React.useEffect(() => {
+    let timeout = null;
+    if (props.open) {
+      timeout = setTimeout(() => {
+        if (scroller.current) {
+          initialize(scroller.current);
+        }
+      }, 100);
+    }
+    return () => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      destroyInstance();
+    };
+  }, [props.open, initialize]);
 
   return (
     <Modal
@@ -34,12 +62,16 @@ const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
         }
       }}
     >
-      <OverlayScroller
-        style={{ paddingInline: 24, paddingBlockEnd: props.footer ? 0 : 32 }}
-        maxHeight={props.maxContentHeight || 500}
+      <Wrapper
+        ref={scroller}
+        data-overlayscrollbars-initialize
+        className="overlay-scroller-wrapper"
+        $maxHeight={props.maxContentHeight || 500}
+        hidden={false}
+        style={{ paddingInline: 24, paddingBlockEnd: props.footer ? 0 : 24 }}
       >
         {props.children}
-      </OverlayScroller>
+      </Wrapper>
     </Modal>
   );
 };

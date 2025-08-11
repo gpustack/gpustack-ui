@@ -22,14 +22,14 @@ export const addWorkerGuide: Record<string, any> = {
   mac: {
     getToken: 'cat /var/lib/gpustack/token',
     registerWorker(params: { server: string; token: string }) {
-      return `curl -sfL https://get.gpustack.ai | sh -s - --server-url ${params.server} --token ${params.token}`;
+      return `curl -sfL https://get.gpustack.ai | sh -s - --server-url ${params.server} --registration ${params.token}`;
     }
   },
   win: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
     registerWorker(params: { server: string; token: string }) {
-      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri 'https://get.gpustack.ai' -UseBasicParsing).Content) } --server-url '${params.server}' --token '${params.token}'"`;
+      return `Invoke-Expression "& { $((Invoke-WebRequest -Uri 'https://get.gpustack.ai' -UseBasicParsing).Content) } --server-url '${params.server}' --registration '${params.token}'"`;
     }
   },
   cuda: {
@@ -41,11 +41,14 @@ export const addWorkerGuide: Record<string, any> = {
       token: string;
       workerip: string;
     }) {
-      return `docker run -d \\
-       --net=host \\
-       -v /var/lib/gpustack:/var/lib/gpustack \\
-       --privileged gpustack/gpustack:xxxx \\
-       --registration ${params.token}`;
+      return `docker run -d --name gpustack \\
+    --restart=unless-stopped \\
+    --gpus all \\
+    --network=host \\
+    --ipc=host \\
+    -v gpustack-data:/var/lib/gpustack \\
+    gpustack/gpustack:${params.tag} \\
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   npu: {
@@ -73,7 +76,7 @@ export const addWorkerGuide: Record<string, any> = {
     --ipc=host \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag} \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   npu310p: {
@@ -101,7 +104,7 @@ export const addWorkerGuide: Record<string, any> = {
     --ipc=host \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag}-310p \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   musa: {
@@ -119,7 +122,7 @@ export const addWorkerGuide: Record<string, any> = {
     --ipc=host \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag} \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   cpu: {
@@ -136,7 +139,7 @@ export const addWorkerGuide: Record<string, any> = {
     --network=host \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag} \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   rocm: {
@@ -157,7 +160,7 @@ export const addWorkerGuide: Record<string, any> = {
     --security-opt seccomp=unconfined \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag} \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   dcu: {
@@ -180,7 +183,7 @@ export const addWorkerGuide: Record<string, any> = {
     --security-opt seccomp=unconfined \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag} \\
-    --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+    --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   corex: {
@@ -201,7 +204,7 @@ export const addWorkerGuide: Record<string, any> = {
     --ipc=host \\
     -v gpustack-data:/var/lib/gpustack \\
     gpustack/gpustack:${params.tag} \\
-     --server-url ${params.server} --token ${params.token} --worker-ip ${params.workerip}`;
+     --server-url ${params.server} --registration ${params.token} --worker-ip ${params.workerip}`;
     }
   },
   container: {
@@ -216,8 +219,8 @@ export const containerInstallOptions = [
   { label: 'Ascend CANN', value: 'npu' },
   { label: 'Hygon DTK', value: 'dcu' },
   { label: 'Moore Threads MUSA', value: 'musa' },
-  { label: 'Iluvatar Corex', value: 'corex' },
-  { label: 'CPU', value: 'cpu' }
+  { label: 'Iluvatar Corex', value: 'corex' }
+  // { label: 'CPU', value: 'cpu' }
 ];
 
 export const ModelfileStateMap = {

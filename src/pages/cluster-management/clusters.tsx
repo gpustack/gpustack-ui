@@ -25,7 +25,6 @@ import {
   updateCredential
 } from './apis';
 import AddCluster from './components/add-cluster';
-import AddPool from './components/add-pool';
 import ClusterItem from './components/cluster-item';
 import { ClusterDataList } from './config';
 import {
@@ -146,7 +145,10 @@ const Credentials: React.FC = () => {
   });
 
   const intl = useIntl();
-  const [open, setOpen] = useState(false);
+  const [openAddWorker, setOpenAddWorker] = useState({
+    open: false,
+    token: ''
+  });
   const [openAddModal, setOpenAddModal] = useState(false);
   const [provider, setProvider] = useState<string>('custom');
   const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
@@ -222,7 +224,7 @@ const Credentials: React.FC = () => {
     setOpenAddModal(false);
   };
 
-  const handleEditUser = (row: ListItem) => {
+  const handleEditCluster = (row: ListItem) => {
     setCurrentData(row);
     setOpenAddModal(true);
     setAction(PageAction.EDIT);
@@ -231,11 +233,14 @@ const Credentials: React.FC = () => {
 
   const handleSelect = (val: any, row: ListItem) => {
     if (val === 'edit') {
-      handleEditUser(row);
+      handleEditCluster(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
     } else if (val === 'add_worker') {
-      setOpen(true);
+      setOpenAddWorker({
+        open: true,
+        token: '${token}'
+      });
       setCurrentData(row);
     } else if (val === 'addPool') {
       handleAddPool(row.provider);
@@ -308,29 +313,11 @@ const Credentials: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddCluster>
-      <AddPool
-        provider={addPoolStatus.provider}
-        open={addPoolStatus.open}
-        action={addPoolStatus.action}
-        title={addPoolStatus.title}
-        onCancel={() => {
-          setAddPoolStatus({
-            open: false,
-            action: PageAction.CREATE,
-            title: '',
-            provider: 'digitalocean'
-          });
-        }}
-        onOk={() => {
-          setAddPoolStatus({
-            open: false,
-            action: PageAction.CREATE,
-            title: '',
-            provider: 'digitalocean'
-          });
-        }}
-      ></AddPool>
-      <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
+      <AddWorker
+        open={openAddWorker.open}
+        onCancel={() => setOpenAddWorker({ open: false, token: '' })}
+        token={openAddWorker.token}
+      ></AddWorker>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

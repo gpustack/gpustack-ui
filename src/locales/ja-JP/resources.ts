@@ -44,8 +44,7 @@ export default {
   'resources.worker.add.step1':
     'トークンを取得 <span class="note-text">（サーバーで実行）</span>',
   'resources.worker.add.step2': 'ワーカーを登録',
-  'resources.worker.add.step2.tips':
-    '（追加するワーカーで実行し、<span class="bold-text">トークン</span> は最初のステップで取得した値です。）',
+  'resources.worker.add.step2.tips': '（追加するワーカーで実行し。）',
   'resources.worker.add.step3':
     '成功後、ワーカーリストを更新して新しいワーカーを確認してください。',
   'resources.worker.container.supported':

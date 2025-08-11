@@ -2,13 +2,15 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import GaugeChart from '@/components/echarts/gauge';
 import IconFont from '@/components/icon-font';
 import StatusTag from '@/components/status-tag';
+import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
+import { PageAction } from '@/config';
 import {
   DeleteOutlined,
   EditOutlined,
   KubernetesOutlined
 } from '@ant-design/icons';
-import { Card as ACard, Button, Col, Row, Tag } from 'antd';
+import { Card as ACard, Col, Collapse, Row } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import {
@@ -18,63 +20,19 @@ import {
   ProviderValueMap
 } from '../config';
 import { ClusterListItem as ListItem, NodePoolListItem } from '../config/types';
+import AddPool from './add-pool';
+import RegisterCluster from './register-cluster';
 import WorkerPools from './worker-pools';
-
-const CollapseTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--font-size-middle);
-  font-weight: 500;
-  color: var(--ant-color-text);
-  height: 32px;
-  cursor: pointer;
-`;
-
-const Content = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  .chart-wrapper {
-    flex: 1;
-  }
-`;
-
-const CardWrapper = styled(ACard)`
-  text-align: center;
-  box-shadow: none;
-  flex: 1;
-  .ant-card {
-    box-shadow: none;
-  }
-  .ant-card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .label {
-    font-weight: 500;
-    font-size: var(--font-size-middle);
-  }
-  .value {
-    font-weight: 500;
-    color: var(--ant-color-text);
-  }
-`;
-
-const CardBox = styled.div`
-  display: flex;
-  gap: 16px;
-  flex: 0.5;
-`;
 
 const actionItems = [
   {
     key: 'edit',
     label: 'common.button.edit',
+    icon: <EditOutlined />
+  },
+  {
+    key: 'view',
+    label: 'common.button.view',
     icon: <EditOutlined />
   },
   {
@@ -108,6 +66,60 @@ const actionItems = [
   }
 ];
 
+const CollapseTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-middle);
+  font-weight: 500;
+  color: var(--ant-color-text);
+  height: 32px;
+  cursor: pointer;
+`;
+
+const Content = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .chart-wrapper {
+    flex: 1;
+  }
+`;
+
+const CardWrapper = styled(ACard)`
+  text-align: center;
+  box-shadow: none !important;
+  flex: 1;
+  .ant-card {
+    box-shadow: none;
+  }
+  .ant-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 6px 10px;
+  }
+
+  .label {
+    font-weight: 400;
+    margin-bottom: 12px;
+    font-size: var(--font-size-middle);
+    color: var(--ant-color-text-secondary);
+  }
+  .value {
+    font-weight: 600;
+    color: var(--ant-color-text);
+    font-size: var(--font-size-large);
+  }
+`;
+
+const CardBox = styled.div`
+  display: flex;
+  gap: 16px;
+  flex: 1;
+`;
+
 const Inner = styled.div`
   display: flex;
   flex-direction: column;
@@ -116,7 +128,7 @@ const Inner = styled.div`
   cursor: default;
 
   .title {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -137,6 +149,38 @@ const Inner = styled.div`
     justify-content: space-between;
     flex: 1;
   }
+`;
+
+const CollapseWrapper = styled(Collapse)`
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--ant-color-split);
+  background-color: var(--ant-color-fill-quaternary);
+  .ant-collapse-content {
+    border-top: 1px solid var(--ant-color-split);
+  }
+  .ant-collapse-header {
+    font-size: var(--font-size-middle);
+    padding-block: 10px !important;
+    .ant-collapse-expand-icon {
+      margin-left: 0 !important;
+    }
+  }
+  table .ant-table-thead tr {
+    background-color: transparent !important;
+    th {
+      border-bottom: 1px solid var(--ant-color-split) !important;
+      font-weight: 500 !important;
+    }
+  }
+`;
+
+const SubTitle = styled.div`
+  font-size: var(--font-size-middle);
+  font-weight: 500;
+  color: var(--ant-color-text);
+  margin-block: 24px 16px;
 `;
 
 interface CardProps {
@@ -165,14 +209,51 @@ const gaugeConfig = {
 };
 
 const CardItem: React.FC<CardProps> = (props) => {
+  const chartHeight = 160;
   const { data, onSelect } = props;
   const [show, setShow] = React.useState(false);
+  const [addPoolStatus, setAddPoolStatus] = React.useState({
+    open: false,
+    action: PageAction.CREATE,
+    title: '',
+    provider: 'digitalocean'
+  });
+  const [registerClusterStatus, setRegisterClusterStatus] = React.useState({
+    open: false
+  });
 
+  // cluster action handler
   const handleOnSelect = (key: string) => {
+    if (key === 'addPool') {
+      setAddPoolStatus({
+        open: true,
+        action: PageAction.CREATE,
+        title: 'Add Worker Pool',
+        provider: data.provider
+      });
+      return;
+    }
+
+    if (key === 'register_cluster') {
+      setRegisterClusterStatus({
+        open: true
+      });
+      return;
+    }
     onSelect?.(key, data);
   };
 
-  const handleOnAction = (action: string, record: NodePoolListItem) => {};
+  // pool action handler
+  const handleOnAction = (action: string, record: NodePoolListItem) => {
+    if (action === 'edit') {
+      setAddPoolStatus({
+        open: true,
+        action: PageAction.CREATE,
+        title: 'Edit Worker Pool',
+        provider: data.provider
+      });
+    }
+  };
 
   const actions = useMemo(() => {
     return actionItems.filter((item) => {
@@ -184,14 +265,82 @@ const CardItem: React.FC<CardProps> = (props) => {
   }, [data.provider]);
 
   return (
-    <Card height={'auto'} clickable={false} ghost>
+    <Card
+      height={'auto'}
+      clickable={false}
+      ghost
+      footer={
+        <CollapseWrapper
+          onChange={() => setShow(!show)}
+          expandIconPosition="end"
+          expandIcon={({ isActive }) => (
+            <IconFont type="icon-down" rotate={isActive ? 0 : -90} />
+          )}
+          items={[
+            {
+              key: '1',
+              label: 'More Information',
+              children: (
+                <>
+                  <div className="chart-wrapper">
+                    <Row gutter={16} style={{ width: '100%' }}>
+                      <Col span={6}>
+                        <GaugeChart
+                          title="GPU Utilization"
+                          value={85}
+                          height={chartHeight}
+                          gaugeConfig={gaugeConfig}
+                        />
+                      </Col>
+                      <Col span={6}>
+                        <GaugeChart
+                          title="CPU Utilization"
+                          value={50}
+                          height={chartHeight}
+                          gaugeConfig={gaugeConfig}
+                        />
+                      </Col>
+                      <Col span={6}>
+                        <GaugeChart
+                          title="RAM Utilization"
+                          value={70}
+                          height={chartHeight}
+                          gaugeConfig={gaugeConfig}
+                        />
+                      </Col>
+                      <Col span={6}>
+                        <GaugeChart
+                          title="VRAM Utilization"
+                          value={60}
+                          height={chartHeight}
+                          gaugeConfig={gaugeConfig}
+                        />
+                      </Col>
+                    </Row>
+                  </div>
+                  {data.provider === ProviderValueMap.DigitalOcean && (
+                    <>
+                      <SubTitle>Worker Pools</SubTitle>
+                      <WorkerPools
+                        provider={data.provider}
+                        workerPools={data.worker_pools}
+                        height={show ? 'auto' : 0}
+                        onAction={handleOnAction}
+                      />
+                    </>
+                  )}
+                </>
+              )
+            }
+          ]}
+        ></CollapseWrapper>
+      }
+    >
       <Inner>
         <div className="title">
           <span className="flex-center gap-8">
             <span className="text">{data.name}</span>
-            <Tag style={{ borderRadius: 4 }}>
-              {ProviderLabelMap[data.provider]}
-            </Tag>
+            <ThemeTag>{ProviderLabelMap[data.provider]}</ThemeTag>
             <StatusTag
               statusValue={{
                 status: ClusterStatus[data.status],
@@ -210,7 +359,7 @@ const CardItem: React.FC<CardProps> = (props) => {
           <CardBox>
             <CardWrapper bordered={false}>
               <div className="label">Workers</div>
-              <div className="value">1</div>
+              <div className="value">1/1</div>
             </CardWrapper>
             <CardWrapper bordered={false}>
               <div className="label">GPUs</div>
@@ -221,64 +370,40 @@ const CardItem: React.FC<CardProps> = (props) => {
               <div className="value">2</div>
             </CardWrapper>
           </CardBox>
-          <div className="chart-wrapper">
-            <Row gutter={16} style={{ width: '100%' }}>
-              <Col span={6}>
-                <GaugeChart
-                  title="GPU Utilization"
-                  value={85}
-                  height={160}
-                  gaugeConfig={gaugeConfig}
-                />
-              </Col>
-              <Col span={6}>
-                <GaugeChart
-                  title="CPU Utilization"
-                  value={50}
-                  height={160}
-                  gaugeConfig={gaugeConfig}
-                />
-              </Col>
-              <Col span={6}>
-                <GaugeChart
-                  title="RAM Utilization"
-                  value={70}
-                  height={160}
-                  gaugeConfig={gaugeConfig}
-                />
-              </Col>
-              <Col span={6}>
-                <GaugeChart
-                  title="VRAM Utilization"
-                  value={60}
-                  height={160}
-                  gaugeConfig={gaugeConfig}
-                />
-              </Col>
-            </Row>
-          </div>
         </Content>
-        {data.provider === ProviderValueMap.DigitalOcean && (
-          <>
-            <CollapseTitle>
-              <Button
-                type="text"
-                size="small"
-                icon={<IconFont type="icon-down" rotate={show ? 0 : -90} />}
-                onClick={() => setShow(!show)}
-              >
-                Worker Pools
-              </Button>
-            </CollapseTitle>
-            <WorkerPools
-              provider={data.provider}
-              workerPools={data.worker_pools}
-              height={show ? 'auto' : 0}
-              onAction={handleOnAction}
-            />
-          </>
-        )}
       </Inner>
+      <AddPool
+        provider={addPoolStatus.provider}
+        open={addPoolStatus.open}
+        action={addPoolStatus.action}
+        title={addPoolStatus.title}
+        onCancel={() => {
+          setAddPoolStatus({
+            open: false,
+            action: PageAction.CREATE,
+            title: '',
+            provider: 'digitalocean'
+          });
+        }}
+        onOk={() => {
+          setAddPoolStatus({
+            open: false,
+            action: addPoolStatus.action,
+            title: '',
+            provider: 'digitalocean'
+          });
+        }}
+      ></AddPool>
+      <RegisterCluster
+        title="Register Cluster"
+        open={registerClusterStatus.open}
+        data={data}
+        onCancel={() => {
+          setRegisterClusterStatus({
+            open: false
+          });
+        }}
+      ></RegisterCluster>
     </Card>
   );
 };

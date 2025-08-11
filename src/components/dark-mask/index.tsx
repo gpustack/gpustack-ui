@@ -15,7 +15,7 @@ const fadeOut = keyframes`
   }
 `;
 
-const Mask = styled.div<{ isHiding: boolean }>`
+const Mask = styled.div<{ $isHiding: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,7 +26,7 @@ const Mask = styled.div<{ isHiding: boolean }>`
   height: 100vh;
   background-color: rgba(59, 59, 59, 1);
   z-index: 9999;
-  animation: ${({ isHiding }) => (isHiding ? fadeOut : 'none')} ${duration}s
+  animation: ${({ $isHiding }) => ($isHiding ? fadeOut : 'none')} ${duration}s
     ease forwards;
 `;
 
@@ -79,7 +79,7 @@ const DarkModeMask = () => {
     return () => el.removeEventListener('animationend', handleAnimationEnd);
   }, [visible]);
 
-  return visible ? <Mask ref={maskRef} isHiding={isHiding}></Mask> : null;
+  return visible ? <Mask ref={maskRef} $isHiding={isHiding}></Mask> : null;
 };
 
 export default DarkModeMask;

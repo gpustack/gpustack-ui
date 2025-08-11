@@ -11,7 +11,7 @@ export default {
   'menu.models.modelList': 'Развертывание и управление',
   'menu.models.modelCatalog': 'Каталог',
   'menu.models.catalog': 'Каталог моделей',
-  'menu.models.deployment': 'Развертывание',
+  'menu.models.deployment': 'Запуск',
   'menu.modelCatalog': 'Каталог',
   'menu.resources': 'Ресурсы',
   'menu.apikeys': 'API-ключи',

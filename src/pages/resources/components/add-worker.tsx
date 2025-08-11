@@ -1,64 +1,17 @@
 import ScrollerModal from '@/components/scroller-modal';
-import {
-  AppleOutlined,
-  LinuxOutlined,
-  WindowsOutlined
-} from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { TabsProps } from 'antd';
 import React from 'react';
-import MacOS from './add-worker-macos';
 import ContainerInstall from './container-install';
 
 type ViewModalProps = {
   open: boolean;
+  token: string;
   onCancel: () => void;
 };
 
 const AddWorker: React.FC<ViewModalProps> = (props) => {
-  const { open, onCancel } = props || {};
+  const { open, onCancel, token = '${token}' } = props || {};
   const intl = useIntl();
-  const [token, setToken] = React.useState('');
-  const [activeKey, setActiveKey] = React.useState('container');
-
-  const items: TabsProps['items'] = [
-    {
-      key: 'container',
-      label: 'Linux',
-      icon: <LinuxOutlined />,
-      children: <ContainerInstall token={token} />
-    },
-    {
-      key: 'macos',
-      label: 'macOS',
-      icon: <AppleOutlined />,
-      children: (
-        <MacOS
-          token={token}
-          platform={{
-            os: 'macOS',
-            downloadurl: 'https://gpustack.ai/',
-            supportVersions: 'resource.register.maos.support'
-          }}
-        />
-      )
-    },
-    {
-      key: 'windows',
-      label: 'Windows',
-      icon: <WindowsOutlined />,
-      children: (
-        <MacOS
-          token={token}
-          platform={{
-            os: 'Windows',
-            downloadurl: 'https://gpustack.ai/',
-            supportVersions: 'resource.register.windows.support'
-          }}
-        />
-      )
-    }
-  ];
 
   return (
     <ScrollerModal

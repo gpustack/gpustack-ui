@@ -44,8 +44,7 @@ export default {
   'resources.worker.add.step1':
     'Get Token <span class="note-text">(Run on the server)</span>',
   'resources.worker.add.step2': 'Register Worker',
-  'resources.worker.add.step2.tips':
-    '(Run on the worker to be added, <span class="bold-text">token</span> is the value obtained in the first step.)',
+  'resources.worker.add.step2.tips': '(Run on the worker to be added.)',
   'resources.worker.add.step3':
     'After success, refresh the workers list to view the new worker.',
   'resources.worker.container.supported': 'Do not support macOS or Windows.',

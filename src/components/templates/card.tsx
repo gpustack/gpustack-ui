@@ -8,13 +8,14 @@ interface CardProps {
   children?: React.ReactNode;
   clickable?: boolean;
   ghost?: boolean;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
   onClick?: () => void;
 }
 
 const CardWrapper = styled.div`
   overflow: hidden;
   display: flex;
-  padding: 16px 20px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -39,6 +40,12 @@ const CardWrapper = styled.div`
   }
 `;
 
+const CardContent = styled.div`
+  padding: 16px 20px;
+  width: 100%;
+  flex: 1;
+`;
+
 const Card: React.FC<CardProps> = (props) => {
   const {
     className,
@@ -46,6 +53,8 @@ const Card: React.FC<CardProps> = (props) => {
     children,
     clickable = true,
     ghost = false,
+    header,
+    footer,
     onClick
   } = props;
 
@@ -58,7 +67,9 @@ const Card: React.FC<CardProps> = (props) => {
       style={{ height: height || '180px' }}
       onClick={onClick}
     >
-      {children}
+      {header}
+      <CardContent>{children}</CardContent>
+      {footer}
     </CardWrapper>
   );
 };

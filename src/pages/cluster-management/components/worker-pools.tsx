@@ -71,9 +71,9 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
 
   const columns = [
     {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type'
+      title: 'Instance Type',
+      dataIndex: 'instance_type',
+      key: 'instance_type'
     },
     {
       title: 'Replicas',
@@ -126,7 +126,7 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
   const mockData = Array.from({ length: 3 }, (_, index) => ({
     id: index + 1,
     key: index,
-    type: `Type ${index + 1}`,
+    instance_type: `Type ${index + 1}`,
     replicas: Math.floor(Math.random() * 10) + 1,
     batchSize: Math.floor(Math.random() * 100) + 1,
     gpu: `NVIDIA 4090`,

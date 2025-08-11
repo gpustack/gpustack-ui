@@ -1,7 +1,7 @@
 import Chart from '@/components/echarts/chart';
 import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
-import React, { memo } from 'react';
+import React from 'react';
 import { ChartProps } from './types';
 
 const strokeColorFunc = (percent: number) => {
@@ -34,10 +34,19 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
       ...gaugeItemConfig,
       ...gaugeConfig
     };
+
+    combineGaugeConfig.detail.rich.value.color = colorValue;
+    combineGaugeConfig.detail.rich.unit.color = colorValue;
+
     return {
       title: {
         ...titleConfig,
         text: title,
+        textStyle: {
+          fontSize: 12,
+          color: chartColorMap.colorSecondary,
+          fontWeight: 400
+        },
         top: '0',
         left: 'center'
       },
@@ -58,7 +67,7 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
             color: 'transparent'
           },
           detail: {
-            ...gaugeItemConfig.detail,
+            ...combineGaugeConfig.detail,
             formatter: labelFormatter || gaugeItemConfig.detail.formatter
           },
           data: [{ value }]
@@ -78,4 +87,4 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
   );
 };
 
-export default memo(GaugeChart);
+export default GaugeChart;

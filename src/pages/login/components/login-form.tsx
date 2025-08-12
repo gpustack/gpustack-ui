@@ -156,7 +156,7 @@ const LoginForm = () => {
 
   // Handling SSO callbacks
   useEffect(() => {
-    fetchAuthConfig('/get_config')
+    fetchAuthConfig('/auth_config')
       .then((authConfig) => {
         if (authConfig.is_oidc) {
           setLoginOption({

@@ -6,9 +6,6 @@ export default {
   'common.button.shortcut': 'Сочетания клавиш',
   'common.button.add': 'Добавить',
   'common.button.login': 'Войти',
-  'common.button.login.local': 'Войти с локальным пользователем',
-  'common.button.oidclogin': 'Войти с OIDC',
-  'common.button.samllogin': 'Войти с SAML',
   'common.button.select': 'Выбрать',
   'common.button.selected': 'Выбрано',
   'common.button.continue': 'Продолжить',
@@ -256,9 +253,11 @@ export default {
   'common.select.count': '{count} Выбрано',
   'common.login.auth': 'Аутентификация...',
   'common.login.auth.failed': 'Ошибка аутентификации',
-  'common.login.thirdparty': 'or login with'
+  'common.login.password': 'Log in with Password',
+  'common.external.login': 'Log in with {type}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.login.thirdparty': 'or login with'
+// 1. 'common.external.login': 'Log in with {type}'
+// 2. 'common.login.password': 'Log in with Password'
 // ========== End of To-Do List ==========

@@ -6,9 +6,6 @@ export default {
   'common.button.shortcut': 'キーボードショートカット',
   'common.button.add': '追加',
   'common.button.login': 'ログイン',
-  'common.button.login.local': 'ローカルユーザーでログイン',
-  'common.button.oidclogin': 'OIDC でログイン',
-  'common.button.samllogin': 'SAML でログイン',
   'common.button.select': '選択',
   'common.button.selected': '選択済み',
   'common.button.continue': '続行',
@@ -257,7 +254,8 @@ export default {
   'common.select.count': '{count} selected',
   'common.login.auth': 'Authenticating...',
   'common.login.auth.failed': 'Authentication failed',
-  'common.login.thirdparty': 'or login with'
+  'common.login.password': 'Log in with Password',
+  'common.external.login': 'Log in with {type}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -277,6 +275,7 @@ export default {
 // 14. 'common.button.clearSelection': 'Clear Selection',
 // 15. 'common.select.count': '{count} selected',
 // 16. 'common.login.auth': 'Authenticating...',
-// 17. 'common.login.auth.failed': 'Authentication failed'
-// 18. 'common.login.thirdparty': 'or login with'
+// 17. 'common.login.auth.failed': 'Authentication failed',
+// 18. 'common.external.login': 'Log in with {type}'
+// 19. 'common.login.password': 'Log in with Password',
 // ========== End of To-Do List ==========

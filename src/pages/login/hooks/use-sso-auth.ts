@@ -45,27 +45,27 @@ export function useSSOAuth({
     window.location.href = '/auth/saml/login';
   };
 
-  useEffect(() => {
-    fetchAuthConfig('/auth_config')
-      .then((authConfig) => {
-        setLoginOption({
-          oidc: !!authConfig.is_oidc,
-          saml: !!authConfig.is_saml
-        });
-      })
-      .catch(() => {
-        setLoginOption({ oidc: false, saml: false });
+  const init = async () => {
+    try {
+      const authConfig = await fetchAuthConfig('/auth_config');
+      setLoginOption({
+        oidc: !!authConfig.is_oidc,
+        saml: !!authConfig.is_saml
       });
-
-    if (sso) {
-      fetchUserInfo()
-        .then((userInfo) => {
-          onSuccess?.(userInfo);
-        })
-        .catch((error) => {
-          onError?.(error);
-        });
+      if (sso) {
+        if (authConfig.is_oidc) {
+          oidcLogin();
+        } else if (authConfig.is_saml) {
+          samlLogin();
+        }
+      }
+    } catch {
+      setLoginOption({ oidc: false, saml: false });
     }
+  };
+
+  useEffect(() => {
+    init();
   }, []);
 
   return {

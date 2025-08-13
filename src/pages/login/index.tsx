@@ -30,7 +30,7 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
 `;
 
 const Box = styled.div`
-  padding-top: 10%;
+  padding-top: 8%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -43,6 +43,8 @@ const FormWrapper = styled.div`
   border-radius: var(--border-radius-modal);
   width: max-content;
   height: max-content;
+  max-width: 800px;
+  max-height: 600px;
   padding: 40px;
   background-color: var(--color-modal-content-bg);
   box-shadow: var(--color-modal-box-shadow);

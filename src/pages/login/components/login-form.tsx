@@ -1,26 +1,46 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
-import { initialPasswordAtom, userAtom } from '@/atoms/user';
+import OIDCIcon from '@/assets/images/oidc.svg';
+import SAMLIcon from '@/assets/images/saml.svg';
+import { userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
 import SealInput from '@/components/seal-form/seal-input';
 import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import externalLinks from '@/constants/external-links';
-import {
-  CRYPT_TEXT,
-  REMEMBER_ME_KEY,
-  getRememberMe,
-  rememberMe,
-  removeRememberMe
-} from '@/utils/localstore/index';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { history, useIntl, useModel } from '@umijs/max';
-import { Button, Checkbox, Form } from 'antd';
+import { useIntl, useModel } from '@umijs/max';
+import { Button, Checkbox, Divider, Form, Spin, Tooltip, message } from 'antd';
 import { createStyles } from 'antd-style';
-import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { login } from '../apis';
+import styled from 'styled-components';
+import { useLocalAuth } from '../hooks/use-local-auth';
+import { useSSOAuth } from '../hooks/use-sso-auth';
 import { checkDefaultPage } from '../utils';
+
+const Buttons = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+`;
+
+const ButtonWrapper = styled(Button).attrs({
+  shape: 'circle',
+  size: 'large',
+  color: 'default',
+  variant: 'filled'
+})`
+  height: 42px;
+  width: 42px;
+`;
+
+const DividerWrapper = styled(Divider)`
+  margin-block: 24px !important;
+  .ant-divider-inner-text {
+    color: var(--ant-color-text-secondary);
+  }
+`;
 
 const useStyles = createStyles(({ token, css }) => ({
   header: css`
@@ -38,40 +58,28 @@ const useStyles = createStyles(({ token, css }) => ({
     .anticon:hover {
       color: ${token.colorTextTertiary};
     }
+  `,
+  errorMessage: css`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    color: ${token.colorText};
+    .title {
+      font-weight: bold;
+    }
   `
 }));
-// function authentication configuration method
-async function fetchAuthConfig(url: string) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return response.json();
-  } catch (error) {
-    console.error('OIDC config error:', error);
-    throw error;
-  }
-}
 
 const LoginForm = () => {
-  type LoginOption = {
-    saml?: boolean;
-    oidc?: boolean;
-  };
-
-  const [err, setErr] = useState<Error | null>(null);
-  const [loginOption, setLoginOption] = useState<LoginOption>({
-    saml: false,
-    oidc: false
-  });
+  const [messageApi, contextHolder] = message.useMessage();
   const { styles } = useStyles();
   const [userInfo, setUserInfo] = useAtom(userAtom);
-  const [initialPassword, setInitialPassword] = useAtom(initialPasswordAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
+  const [authError, setAuthError] = useState<Error | null>(null);
   const intl = useIntl();
   const [form] = Form.useForm();
-  const { location } = history;
-  const params = new URLSearchParams(location.search);
-  const sso = params.get('sso'); // OIDC callback information
+
   const renderWelCome = useMemo(() => {
     return (
       <div
@@ -94,6 +102,7 @@ const LoginForm = () => {
       </div>
     );
   }, [intl]);
+
   const gotoDefaultPage = async (userInfo: any) => {
     checkDefaultPage(userInfo, true);
   };
@@ -112,121 +121,97 @@ const LoginForm = () => {
     return userInfo;
   };
 
-  const encryptPassword = (password: string) => {
-    const psw = CryptoJS.AES?.encrypt?.(password, CRYPT_TEXT).toString();
-    return psw;
-  };
-  const decryptPassword = (password: string) => {
-    const bytes = CryptoJS.AES?.decrypt?.(password, CRYPT_TEXT);
-    const res = bytes.toString(CryptoJS.enc.Utf8);
-    return res;
-  };
-
-  const callRememberMe = async (values: any) => {
-    const { autoLogin } = values;
-    if (autoLogin) {
-      await rememberMe(REMEMBER_ME_KEY, {
-        um: encryptPassword(values.username),
-        pw: encryptPassword(values.password),
-        f: true
-      });
-    } else {
-      await removeRememberMe(REMEMBER_ME_KEY);
-    }
+  // error handling for authentication
+  const handleOnError = (error: Error) => {
+    setAuthError(error);
+    messageApi.error({
+      duration: 5,
+      content: (
+        <div className={styles.errorMessage}>
+          <div className="title">
+            {intl.formatMessage({ id: 'common.login.auth.failed' })}
+          </div>
+          <div className="message">{error?.message || 'Unknown error'}</div>
+        </div>
+      )
+    });
   };
 
-  const callGetRememberMe = async () => {
-    const rememberMe = await getRememberMe(REMEMBER_ME_KEY);
-
-    if (rememberMe?.f) {
-      const username = decryptPassword(rememberMe?.um);
-      const password = decryptPassword(rememberMe?.pw);
-      form.setFieldsValue({ username, password, autoLogin: true });
-    }
-  };
-
-  // OIDC certification
-  const handleOidcLogin = async () => {
-    window.location.href = '/auth/oidc/login';
-  };
-  // SAML certification
-  const handleSamlLogin = async () => {
-    window.location.href = '/auth/saml/login';
-  };
-
-  // Handling SSO callbacks
-  useEffect(() => {
-    fetchAuthConfig('/auth_config')
-      .then((authConfig) => {
-        if (authConfig.is_oidc) {
-          setLoginOption({
-            oidc: true
-          });
-        } else if (authConfig.is_saml) {
-          if (authConfig.is_saml) {
-            setLoginOption({
-              saml: true
-            });
-          }
-        }
-      })
-      .catch((error) => {
-        setLoginOption({ oidc: false, saml: false });
-      });
-    if (sso) {
-      fetchUserInfo()
-        .then((userInfo) => {
-          setUserInfo(userInfo);
-          gotoDefaultPage({});
-        })
-        .catch((error) => {
-          console.log(error);
-          setErr(error);
-        });
-    }
-  }, []);
-  const handleLogin = async (values: any) => {
-    try {
-      await login({
-        username: values.username,
-        password: values.password
-      });
-
-      const userInfo = await fetchUserInfo();
+  // local user authentication
+  const { handleLogin } = useLocalAuth({
+    fetchUserInfo,
+    form,
+    onSuccess: async (userInfo) => {
       setUserInfo(userInfo);
-      if (values.autoLogin) {
-        await callRememberMe(values);
-      } else {
-        await removeRememberMe(REMEMBER_ME_KEY);
-      }
       if (!userInfo?.require_password_change) {
         gotoDefaultPage(userInfo);
-      } else {
-        setInitialPassword(encryptPassword(values.password));
       }
-    } catch (error) {
-      // to do something
+    },
+    onError: (error) => {
+      // gpustack handle in the interceptor
     }
+  });
+
+  // SSO hook
+  const SSOAuth = useSSOAuth({
+    fetchUserInfo,
+    onSuccess: (userInfo) => {
+      setUserInfo(userInfo);
+      gotoDefaultPage({});
+    },
+    onError: handleOnError
+  });
+
+  const hasThirdPartyLogin = useMemo(() => {
+    return SSOAuth.options.oidc || SSOAuth.options.saml;
+  }, [SSOAuth.options]);
+
+  const renderThirdPartyLoginButtons = () => {
+    if (!hasThirdPartyLogin) return null;
+    return (
+      <>
+        <DividerWrapper plain>
+          {intl.formatMessage({ id: 'common.login.thirdparty' })}
+        </DividerWrapper>
+        <Buttons>
+          {SSOAuth.options.oidc && (
+            <Tooltip title="OIDC">
+              <ButtonWrapper onClick={SSOAuth.loginWithOIDC}>
+                <img src={OIDCIcon} alt="" height={32} width={32} />
+              </ButtonWrapper>
+            </Tooltip>
+          )}
+          {SSOAuth.options.saml && (
+            <Tooltip title="SAML">
+              <ButtonWrapper onClick={SSOAuth.loginWithSAML}>
+                <img src={SAMLIcon} alt="" height={32} width={32} />
+              </ButtonWrapper>
+            </Tooltip>
+          )}
+        </Buttons>
+      </>
+    );
   };
 
-  useEffect(() => {
-    callGetRememberMe();
-  }, []);
+  const isThirdPartyAuthHandling = useMemo(() => {
+    return SSOAuth.isSSOLogin && !authError;
+  }, [SSOAuth.isSSOLogin, authError]);
 
-  if (sso && !err) {
-    return <div>Handle SSO callback...</div>;
-  } else if (err) {
-    return (
-      <div style={{ color: 'red' }}>Error to log in by SSO: {err.message}</div>
-    );
-  } else {
-    return (
+  return (
+    <div>
+      {contextHolder}
+      <div className={styles.header}>
+        <ThemeDropActions></ThemeDropActions>
+        <LangSelect />
+      </div>
       <div>
-        <div className={styles.header}>
-          <ThemeDropActions></ThemeDropActions>
-          <LangSelect />
-        </div>
-        <div>
+        {isThirdPartyAuthHandling ? (
+          <Spin>
+            <span style={{ color: 'var(--ant-color-text)' }}>
+              {intl.formatMessage({ id: 'common.login.auth' })}
+            </span>
+          </Spin>
+        ) : (
           <Form
             form={form}
             style={{ width: '360px', margin: '0 auto' }}
@@ -240,7 +225,9 @@ const LoginForm = () => {
                   required: true,
                   message: intl.formatMessage(
                     { id: 'common.form.rule.input' },
-                    { name: intl.formatMessage({ id: 'common.form.username' }) }
+                    {
+                      name: intl.formatMessage({ id: 'common.form.username' })
+                    }
                   )
                 }
               ]}
@@ -258,7 +245,9 @@ const LoginForm = () => {
                   required: true,
                   message: intl.formatMessage(
                     { id: 'common.form.rule.input' },
-                    { name: intl.formatMessage({ id: 'common.form.password' }) }
+                    {
+                      name: intl.formatMessage({ id: 'common.form.password' })
+                    }
                   )
                 }
               ]}
@@ -292,46 +281,19 @@ const LoginForm = () => {
               </Button>
             </div>
             <Button
-              onClick={handleOidcLogin}
-              type="primary"
-              block
-              style={{
-                height: '48px',
-                fontSize: '14px',
-                display: loginOption.oidc ? 'block' : 'none'
-              }}
-            >
-              {intl.formatMessage({ id: 'common.button.oidclogin' })}
-            </Button>
-            <Button
-              onClick={handleSamlLogin}
-              type="primary"
-              block
-              style={{
-                height: '48px',
-                fontSize: '14px',
-                display: loginOption.saml ? 'block' : 'none'
-              }}
-            >
-              {intl.formatMessage({ id: 'common.button.samllogin' })}
-            </Button>
-            <Button
               htmlType="submit"
-              type={
-                loginOption.oidc === false && loginOption.saml === false
-                  ? 'primary'
-                  : 'link'
-              }
+              type="primary"
               block
               style={{ height: '48px', fontSize: '14px' }}
             >
               {intl.formatMessage({ id: 'common.button.login' })}
             </Button>
+            {renderThirdPartyLoginButtons()}
           </Form>
-        </div>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 };
 
 export default LoginForm;

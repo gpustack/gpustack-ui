@@ -1,10 +1,10 @@
 import { WarningFilled } from '@ant-design/icons';
 import { Typography } from 'antd';
+import { createStyles } from 'antd-style';
 import classNames from 'classnames';
 import React from 'react';
 import styled from 'styled-components';
 import OverlayScroller, { OverlayScrollerOptions } from '../overlay-scroller';
-import './block.less';
 interface AlertInfoProps {
   type: Global.MessageType;
   message: React.ReactNode;
@@ -17,6 +17,81 @@ interface AlertInfoProps {
   maxHeight?: number;
   overlayScrollerProps?: OverlayScrollerOptions;
 }
+
+const useStyles = createStyles(({ token, css }) => {
+  return {
+    alertBlockInfo: css`
+      padding-block: 6px;
+      padding-inline: 10px 16px;
+      position: relative;
+      padding-left: 32px;
+      text-align: left;
+      border-radius: ${token.borderRadius}px;
+      margin: 0;
+      border: 1px solid transparent;
+      .ant-typography {
+        margin-bottom: 0;
+      }
+
+      &.danger {
+        border-color: ${token.colorErrorBorder};
+        background-color: ${token.colorErrorBg};
+      }
+
+      &.warning {
+        border-color: ${token.colorWarningBorder};
+        background-color: ${token.colorWarningBg};
+      }
+
+      &.transition {
+        color: ${token.geekblue7};
+        background: ${token.geekblue1};
+        border-color: ${token.geekblue3};
+      }
+
+      &.success {
+        border: 1px solid ${token.colorSuccess};
+        color: ${token.colorSuccessText};
+        background: ${token.colorSuccessBg};
+
+        .content.success {
+          font-weight: var(--font-weight-normal);
+        }
+      }
+      .title {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: flex;
+        height: 32px;
+        padding: 5px 10px;
+        border-radius: ${token.borderRadius}px ${token.borderRadius}px 0 0;
+
+        .info-icon {
+          &.danger {
+            color: ${token.colorErrorText};
+          }
+
+          &.warning {
+            color: ${token.colorWarningText};
+          }
+
+          &.transition {
+            color: ${token.geekblue7};
+          }
+
+          &.success {
+            color: ${token.colorSuccessText};
+          }
+        }
+
+        .text {
+          font-weight: var(--font-weight-bold);
+        }
+      }
+    `
+  };
+});
 
 const TitleWrapper = styled.div`
   font-weight: 700;
@@ -46,12 +121,12 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
     maxHeight = 86,
     overlayScrollerProps = {}
   } = props;
-
+  const { styles } = useStyles();
   return (
     <>
       {message ? (
         <div
-          className={classNames('alert-info-block', type)}
+          className={classNames(styles.alertBlockInfo, type)}
           style={{ ...style }}
         >
           <Typography.Paragraph

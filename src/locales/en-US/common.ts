@@ -5,9 +5,10 @@ export default {
   'common.button.editmode': 'Edit mode',
   'common.button.shortcut': 'Keyboard Shortcut',
   'common.button.add': 'Add',
-  'common.button.login': 'Use a local user',
-  'common.button.oidclogin': 'Log In With OIDC',
-  'common.button.samllogin': 'Log In With SAML',
+  'common.button.login': 'Log in',
+  'common.button.login.local': 'Log in with local user',
+  'common.button.oidclogin': 'Log in with OIDC',
+  'common.button.samllogin': 'Log in with SAML',
   'common.button.select': 'Select',
   'common.button.selected': 'Selected',
   'common.button.continue': 'Continue',
@@ -253,5 +254,8 @@ export default {
   'common.tips.escape.disable':
     'Click Cancel or the X at the top right to close.',
   'common.button.clearSelection': 'Clear Selection',
-  'common.select.count': '{count} selected'
+  'common.select.count': '{count} selected',
+  'common.login.auth': 'Authenticating...',
+  'common.login.auth.failed': 'Authentication failed',
+  'common.login.thirdparty': 'or login with'
 };

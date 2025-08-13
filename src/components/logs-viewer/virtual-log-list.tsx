@@ -255,7 +255,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     return () => {
       chunkRequedtRef.current?.current?.abort?.();
     };
-  }, [url]);
+  }, [url, isDownloading]);
 
   useEffect(() => {
     debouncedScroll();
@@ -357,4 +357,4 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   );
 });
 
-export default React.memo(LogsViewer);
+export default LogsViewer;

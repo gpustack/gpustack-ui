@@ -877,6 +877,7 @@ const Models: React.FC<ModelsProps> = ({
         onOk={handleCreateModel}
       ></DeployModal>
       <ViewLogsModal
+        status={currentInstance.status}
         url={currentInstance.url}
         tail={currentInstance.tail}
         id={currentInstance.id}

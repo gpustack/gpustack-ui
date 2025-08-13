@@ -20,6 +20,7 @@ declare namespace Global {
     full_name: string;
     require_password_change: boolean;
     id: number;
+    source: string;
   }
 
   interface BaseListItem<T> {

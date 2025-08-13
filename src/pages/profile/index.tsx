@@ -1,9 +1,7 @@
-import { userAtom } from '@/atoms/user';
 import useTabActive from '@/hooks/use-tab-active';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { TabsProps } from 'antd';
-import { useAtom } from 'jotai';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Appearance from './components/appearance';
@@ -17,14 +15,16 @@ const Wrapper = styled.div`
 
 const Profile: React.FC = () => {
   const intl = useIntl();
-  const [userInfo, setUserInfo] = useAtom(userAtom);
+  const { initialState, setInitialState } = useModel('@@initialState') || {};
   const { setTabActive, getTabActive, tabsMap } = useTabActive();
   const [activeKey, setActiveKey] = useState(
-    userInfo?.source === 'Local' ? 'modify-password' : 'appearance'
+    initialState?.currentUser?.source === 'Local'
+      ? 'modify-password'
+      : 'appearance'
   );
 
   const items: TabsProps['items'] = useMemo(() => {
-    if (userInfo?.source !== 'Local') {
+    if (initialState?.currentUser?.source !== 'Local') {
       return [
         {
           key: 'appearance',
@@ -45,7 +45,7 @@ const Profile: React.FC = () => {
         children: <Appearance />
       }
     ];
-  }, [userInfo?.source]);
+  }, [initialState?.currentUser?.source]);
 
   const handleChangeTab = useCallback((key: string) => {
     setActiveKey(key);

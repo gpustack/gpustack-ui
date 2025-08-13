@@ -6,9 +6,6 @@ export default {
   'common.button.shortcut': 'Keyboard Shortcut',
   'common.button.add': 'Add',
   'common.button.login': 'Log in',
-  'common.button.login.local': 'Log in with local user',
-  'common.button.oidclogin': 'Log in with OIDC',
-  'common.button.samllogin': 'Log in with SAML',
   'common.button.select': 'Select',
   'common.button.selected': 'Selected',
   'common.button.continue': 'Continue',
@@ -257,5 +254,6 @@ export default {
   'common.select.count': '{count} selected',
   'common.login.auth': 'Authenticating...',
   'common.login.auth.failed': 'Authentication failed',
-  'common.login.thirdparty': 'or login with'
+  'common.login.password': 'Log in with Password',
+  'common.external.login': 'Log in with {type}'
 };

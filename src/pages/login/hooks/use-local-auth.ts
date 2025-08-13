@@ -83,7 +83,7 @@ export const useLocalAuth = ({
       }
 
       onSuccess?.(userInfo);
-    } catch (error) {
+    } catch (error: any) {
       onError?.(error);
     }
   };

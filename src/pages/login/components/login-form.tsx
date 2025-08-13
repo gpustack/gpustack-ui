@@ -3,12 +3,9 @@ import OIDCIcon from '@/assets/images/oidc.svg';
 import SAMLIcon from '@/assets/images/saml.svg';
 import { userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
-import SealInput from '@/components/seal-form/seal-input';
 import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
-import externalLinks from '@/constants/external-links';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useIntl, useModel } from '@umijs/max';
-import { Button, Checkbox, Divider, Form, Spin, Tooltip, message } from 'antd';
+import { Button, Divider, Form, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
 import { useAtom } from 'jotai';
 import { useMemo, useState } from 'react';
@@ -17,22 +14,34 @@ import styled from 'styled-components';
 import { useLocalAuth } from '../hooks/use-local-auth';
 import { useSSOAuth } from '../hooks/use-sso-auth';
 import { checkDefaultPage } from '../utils';
+import LocalUserForm from './local-user-form';
 
 const Buttons = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 32px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 24px;
+  width: 360px;
+`;
+
+const BackButton = styled(Button).attrs({
+  type: 'link',
+  size: 'small',
+  block: true
+})`
+  margin-top: 20px;
 `;
 
 const ButtonWrapper = styled(Button).attrs({
-  shape: 'circle',
-  size: 'large',
-  color: 'default',
-  variant: 'filled'
-})`
-  height: 42px;
-  width: 42px;
+  shape: 'round',
+  block: true
+})``;
+
+const ButtonText = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const DividerWrapper = styled(Divider)`
@@ -68,6 +77,16 @@ const useStyles = createStyles(({ token, css }) => ({
     .title {
       font-weight: bold;
     }
+  `,
+  welcome: css`
+    display: flex;
+    margin-bottom: 32px;
+    font-size: 20px;
+    justify-content: center;
+    align-items: center;
+    .text {
+      color: ${token.colorText};
+    }
   `
 }));
 
@@ -79,20 +98,15 @@ const LoginForm = () => {
   const [authError, setAuthError] = useState<Error | null>(null);
   const intl = useIntl();
   const [form] = Form.useForm();
+  const [isPassword, setIsPassword] = useState(false);
 
-  const renderWelCome = useMemo(() => {
+  const renderWelCome = () => {
     return (
-      <div
-        style={{
-          display: 'flex',
-          marginBottom: 32,
-          fontSize: 20,
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
+      <div className={styles.welcome}>
         <div className="flex-center">
-          <span>{intl?.formatMessage({ id: 'users.login.title' })}</span>
+          <span className="text">
+            {intl?.formatMessage({ id: 'users.login.title' })}
+          </span>
           <img
             src={LogoIcon}
             alt="logo"
@@ -101,7 +115,7 @@ const LoginForm = () => {
         </div>
       </div>
     );
-  }, [intl]);
+  };
 
   const gotoDefaultPage = async (userInfo: any) => {
     checkDefaultPage(userInfo, true);
@@ -162,34 +176,56 @@ const LoginForm = () => {
     onError: handleOnError
   });
 
+  const handleLoginWithPassword = () => {
+    setIsPassword(true);
+  };
+
+  const handleLoginWithThirdParty = () => {
+    if (SSOAuth.options.oidc) {
+      SSOAuth.loginWithOIDC();
+    } else if (SSOAuth.options.saml) {
+      SSOAuth.loginWithSAML();
+    }
+  };
+
   const hasThirdPartyLogin = useMemo(() => {
     return SSOAuth.options.oidc || SSOAuth.options.saml;
   }, [SSOAuth.options]);
 
-  const renderThirdPartyLoginButtons = () => {
-    if (!hasThirdPartyLogin) return null;
+  const renderLoginButtons = () => {
+    // do not render login buttons if using password login or no third-party login
+    if (!hasThirdPartyLogin || isPassword) return null;
+
     return (
-      <>
-        <DividerWrapper plain>
-          {intl.formatMessage({ id: 'common.login.thirdparty' })}
-        </DividerWrapper>
-        <Buttons>
-          {SSOAuth.options.oidc && (
-            <Tooltip title="OIDC">
-              <ButtonWrapper onClick={SSOAuth.loginWithOIDC}>
-                <img src={OIDCIcon} alt="" height={32} width={32} />
-              </ButtonWrapper>
-            </Tooltip>
-          )}
-          {SSOAuth.options.saml && (
-            <Tooltip title="SAML">
-              <ButtonWrapper onClick={SSOAuth.loginWithSAML}>
-                <img src={SAMLIcon} alt="" height={32} width={32} />
-              </ButtonWrapper>
-            </Tooltip>
-          )}
-        </Buttons>
-      </>
+      <Buttons>
+        {SSOAuth.options.oidc && (
+          <ButtonWrapper onClick={SSOAuth.loginWithOIDC}>
+            <ButtonText>
+              <img src={OIDCIcon} alt="" height={24} width={24} />
+              {intl.formatMessage(
+                { id: 'common.external.login' },
+                { type: 'OIDC' }
+              )}
+            </ButtonText>
+          </ButtonWrapper>
+        )}
+        {SSOAuth.options.saml && (
+          <ButtonWrapper onClick={SSOAuth.loginWithSAML}>
+            <ButtonText>
+              <img src={SAMLIcon} alt="" height={24} width={24} />
+              {intl.formatMessage(
+                { id: 'common.external.login' },
+                { type: 'SAML' }
+              )}
+            </ButtonText>
+          </ButtonWrapper>
+        )}
+        <Button type="link" block onClick={handleLoginWithPassword}>
+          <ButtonText>
+            {intl.formatMessage({ id: 'common.login.password' })}
+          </ButtonText>
+        </Button>
+      </Buttons>
     );
   };
 
@@ -212,84 +248,21 @@ const LoginForm = () => {
             </span>
           </Spin>
         ) : (
-          <Form
-            form={form}
-            style={{ width: '360px', margin: '0 auto' }}
-            onFinish={handleLogin}
-          >
-            {renderWelCome}
-            <Form.Item
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    { id: 'common.form.rule.input' },
-                    {
-                      name: intl.formatMessage({ id: 'common.form.username' })
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealInput.Input
-                label={intl.formatMessage({ id: 'common.form.username' })}
-                prefix={<UserOutlined />}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    { id: 'common.form.rule.input' },
-                    {
-                      name: intl.formatMessage({ id: 'common.form.password' })
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealInput.Password
-                prefix={<LockOutlined />}
-                label={intl.formatMessage({ id: 'common.form.password' })}
-              />
-            </Form.Item>
-            <div
-              className="flex-center flex-between"
-              style={{
-                marginBottom: 24
-              }}
-            >
-              <Form.Item noStyle name="autoLogin" valuePropName="checked">
-                <Checkbox style={{ marginLeft: 5 }}>
-                  <span style={{ color: 'var(--ant-color-text-secondary)' }}>
-                    {intl.formatMessage({ id: 'common.login.rember' })}
-                  </span>
-                </Checkbox>
-              </Form.Item>
-              <Button
-                type="link"
-                size="small"
-                href={externalLinks.resetPassword}
-                target="_blank"
-                style={{ padding: 0 }}
-              >
-                {intl.formatMessage({ id: 'common.button.forgotpassword' })}
-              </Button>
-            </div>
-            <Button
-              htmlType="submit"
-              type="primary"
-              block
-              style={{ height: '48px', fontSize: '14px' }}
-            >
-              {intl.formatMessage({ id: 'common.button.login' })}
-            </Button>
-            {renderThirdPartyLoginButtons()}
-          </Form>
+          <>
+            {renderWelCome()}
+            {renderLoginButtons()}
+            {(!hasThirdPartyLogin || isPassword) && (
+              <LocalUserForm handleLogin={handleLogin} form={form} />
+            )}
+            {hasThirdPartyLogin && isPassword && (
+              <BackButton onClick={handleLoginWithThirdParty}>
+                {intl.formatMessage(
+                  { id: 'common.external.login' },
+                  { type: SSOAuth.options.oidc ? 'OIDC' : 'SAML' }
+                )}
+              </BackButton>
+            )}
+          </>
         )}
       </div>
     </div>

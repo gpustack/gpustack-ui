@@ -6,9 +6,6 @@ export default {
   'common.button.shortcut': '快捷键',
   'common.button.add': '添加',
   'common.button.login': '登录',
-  'common.button.login.local': '本地用户登录',
-  'common.button.oidclogin': '使用 OIDC 登录',
-  'common.button.samllogin': '使用 SAML 登录',
   'common.button.select': '选择',
   'common.button.selected': '已选择',
   'common.button.continue': '继续',
@@ -250,5 +247,6 @@ export default {
   'common.select.count': '已选 {count} 项',
   'common.login.auth': '认证中...',
   'common.login.auth.failed': '认证失败',
-  'common.login.thirdparty': '或使用以下方式登录'
+  'common.login.password': '使用密码登录',
+  'common.external.login': '使用 {type} 登录'
 };

@@ -12,15 +12,18 @@ type ViewModalProps = {
   id?: number | string;
   modelId?: number | string;
   tail?: number;
+  status?: string;
   onCancel: () => void;
 };
 
 const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const intl = useIntl();
   const { setChunkRequest } = useSetChunkRequest();
-  const { open, url, onCancel, tail } = props || {};
+  const { open, url, onCancel, tail, status } = props || {};
   const [enableScorllLoad, setEnableScorllLoad] = useState(true);
-  const [instanceState, setInstanceState] = useState<string>('');
+  const [isDownloading, setIsDownloading] = useState<boolean>(
+    status === InstanceStatusMap.Downloading
+  );
   const logsViewerRef = React.useRef<any>(null);
   const requestRef = React.useRef<any>(null);
   const contentRef = React.useRef<any>(null);
@@ -33,8 +36,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
   const updateHandler = (list: any) => {
     const data = list?.find((item: any) => item.data?.id === props.id);
     // state in InstanceRealtimeLogStatus will not enable scorll load, because it is in the trasisition state
+
     if (data) {
-      setInstanceState(data?.data?.state);
+      setIsDownloading(data?.data?.state === InstanceStatusMap.Downloading);
       setEnableScorllLoad(
         () => !InstanceRealtimeLogStatus.includes(data?.data?.state)
       );
@@ -72,6 +76,9 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
       });
+    } else {
+      logsViewerRef.current?.abort();
+      requestRef.current?.current?.cancel?.();
     }
 
     return () => {
@@ -113,7 +120,7 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
           url={url}
           tail={tail}
           enableScorllLoad={enableScorllLoad}
-          isDownloading={instanceState !== InstanceStatusMap.Downloading}
+          isDownloading={isDownloading}
           params={{
             follow: true
           }}

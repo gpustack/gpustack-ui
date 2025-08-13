@@ -165,6 +165,9 @@ dependencies:
   rehype-katex:
     specifier: ^7.0.1
     version: 7.0.1
+  remark-breaks:
+    specifier: ^4.0.0
+    version: 4.0.0
   remark-gfm:
     specifier: ^4.0.1
     version: 4.0.1
@@ -13121,6 +13124,13 @@ packages:
       - supports-color
     dev: false
 
+  /mdast-util-newline-to-break@2.0.0:
+    resolution: {integrity: sha512-MbgeFca0hLYIEx/2zGsszCSEJJ1JSCdiY5xQxRcLDDGa8EPvlLPupJ4DSajbMPAnC0je8jfb9TiUATnxxrHUog==, tarball: https://registry.npmjs.org/mdast-util-newline-to-break/-/mdast-util-newline-to-break-2.0.0.tgz}
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-find-and-replace: 3.0.2
+    dev: false
+
   /mdast-util-phrasing@4.1.0:
     resolution: {integrity: sha512-TqICwyvJJpBwvGAMZjj4J2n0X8QWp21b9l0o7eXyVJ25YNWYbJDVIyD1bZXE6WtV6RmKJVYmQAKWa0zWOABz2w==, tarball: https://registry.npmjs.org/mdast-util-phrasing/-/mdast-util-phrasing-4.1.0.tgz}
     dependencies:
@@ -17454,6 +17464,14 @@ packages:
   /relateurl@0.2.7:
     resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==, tarball: https://registry.npmjs.org/relateurl/-/relateurl-0.2.7.tgz}
     engines: {node: '>= 0.10'}
+    dev: false
+
+  /remark-breaks@4.0.0:
+    resolution: {integrity: sha512-IjEjJOkH4FuJvHZVIW0QCDWxcG96kCq7An/KVH2NfJe6rKZU2AsHeB3OEjPNRxi4QC34Xdx7I2KGYn6IpT7gxQ==, tarball: https://registry.npmjs.org/remark-breaks/-/remark-breaks-4.0.0.tgz}
+    dependencies:
+      '@types/mdast': 4.0.4
+      mdast-util-newline-to-break: 2.0.0
+      unified: 11.0.5
     dev: false
 
   /remark-gfm@4.0.1:

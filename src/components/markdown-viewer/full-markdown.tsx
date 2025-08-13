@@ -3,6 +3,7 @@ import 'katex/dist/katex.min.css';
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
+import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import styled from 'styled-components';
@@ -17,9 +18,7 @@ interface FullMarkdownProps {
 
 const Wrapper = styled.div.attrs(() => ({
   className: 'markdown-viewer'
-}))`
-  line-height: 2;
-`;
+}))``;
 
 const CodeViewer = (props: any) => {
   const { children, className, node, theme, ...rest } = props;
@@ -41,7 +40,7 @@ const FullMarkdown: React.FC<FullMarkdownProps> = ({ content, theme }) => {
   return (
     <Wrapper>
       <ReactMarkdown
-        remarkPlugins={[[remarkMath], remarkGfm]}
+        remarkPlugins={[[remarkMath], remarkGfm, remarkBreaks]}
         rehypePlugins={[rehypeKatex]}
         components={{
           code(props) {

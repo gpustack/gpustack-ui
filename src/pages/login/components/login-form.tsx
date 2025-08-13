@@ -1,6 +1,4 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
-import OIDCIcon from '@/assets/images/oidc.svg';
-import SAMLIcon from '@/assets/images/saml.svg';
 import { userAtom } from '@/atoms/user';
 import LangSelect from '@/components/lang-select';
 import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
@@ -34,9 +32,11 @@ const BackButton = styled(Button).attrs({
 `;
 
 const ButtonWrapper = styled(Button).attrs({
-  shape: 'round',
+  type: 'primary',
   block: true
-})``;
+})`
+  height: 48px;
+`;
 
 const ButtonText = styled.span`
   display: flex;
@@ -201,7 +201,6 @@ const LoginForm = () => {
         {SSOAuth.options.oidc && (
           <ButtonWrapper onClick={SSOAuth.loginWithOIDC}>
             <ButtonText>
-              <img src={OIDCIcon} alt="" height={24} width={24} />
               {intl.formatMessage(
                 { id: 'common.external.login' },
                 { type: 'OIDC' }
@@ -212,7 +211,6 @@ const LoginForm = () => {
         {SSOAuth.options.saml && (
           <ButtonWrapper onClick={SSOAuth.loginWithSAML}>
             <ButtonText>
-              <img src={SAMLIcon} alt="" height={24} width={24} />
               {intl.formatMessage(
                 { id: 'common.external.login' },
                 { type: 'SAML' }

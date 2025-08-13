@@ -30,7 +30,7 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
 `;
 
 const Box = styled.div`
-  padding-top: 8%;
+  padding-top: 10%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

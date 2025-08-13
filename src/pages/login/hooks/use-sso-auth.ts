@@ -57,10 +57,13 @@ export function useSSOAuth({
           oidcLogin();
         } else if (authConfig.is_saml) {
           samlLogin();
+        } else {
+          onError?.(new Error('No SSO configuration found'));
         }
       }
-    } catch {
+    } catch (error: any) {
       setLoginOption({ oidc: false, saml: false });
+      onError?.(error);
     }
   };
 

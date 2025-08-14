@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 
 export async function queryCurrentUserState(opts?: Record<string, any>) {
-  return request(`/users/me`, {
+  return request<Global.UserInfo>(`/users/me`, {
     method: 'GET',
     ...opts
   });

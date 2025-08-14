@@ -192,7 +192,7 @@ const LoginForm = () => {
             <ButtonText>
               {intl.formatMessage(
                 { id: 'common.external.login' },
-                { type: 'OIDC' }
+                { type: 'SSO' }
               )}
             </ButtonText>
           </ButtonWrapper>
@@ -202,7 +202,7 @@ const LoginForm = () => {
             <ButtonText>
               {intl.formatMessage(
                 { id: 'common.external.login' },
-                { type: 'SAML' }
+                { type: 'SSO' }
               )}
             </ButtonText>
           </ButtonWrapper>
@@ -239,7 +239,7 @@ const LoginForm = () => {
               <BackButton onClick={handleLoginWithThirdParty}>
                 {intl.formatMessage(
                   { id: 'common.external.login' },
-                  { type: SSOAuth.options.oidc ? 'OIDC' : 'SAML' }
+                  { type: 'SSO' }
                 )}
               </BackButton>
             )}

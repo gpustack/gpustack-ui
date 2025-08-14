@@ -6,6 +6,83 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "45240470",
+      "name": "admin-user",
+      "font_class": "admin-user",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "45240469",
+      "name": "user",
+      "font_class": "user",
+      "unicode": "e69e",
+      "unicode_decimal": 59038
+    },
+    {
+      "icon_id": "45221182",
+      "name": "quick_reference_24dp_1F1F1F_FILL0_wght300_GRAD0_op",
+      "font_class": "quick_reference_24dp_1F1F1F_FILL0_wght300_GRAD0_op",
+      "unicode": "e69b",
+      "unicode_decimal": 59035
+    },
+    {
+      "icon_id": "45102077",
+      "name": "Docker",
+      "font_class": "docker",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "15378290",
+      "name": "digitalocean",
+      "font_class": "digitalocean",
+      "unicode": "eb79",
+      "unicode_decimal": 60281
+    },
+    {
+      "icon_id": "45040302",
+      "name": "rocket-launch",
+      "font_class": "rocket-launch1",
+      "unicode": "e699",
+      "unicode_decimal": 59033
+    },
+    {
+      "icon_id": "45040301",
+      "name": "rocket-launch-fill",
+      "font_class": "rocket-launch-fill",
+      "unicode": "e69a",
+      "unicode_decimal": 59034
+    },
+    {
+      "icon_id": "45028316",
+      "name": "credential",
+      "font_class": "credential-filled",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "45028315",
+      "name": "credential",
+      "font_class": "credential-outline",
+      "unicode": "e698",
+      "unicode_decimal": 59032
+    },
+    {
+      "icon_id": "37601405",
+      "name": "k8s",
+      "font_class": "k8s-filled",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "41673174",
+      "name": "k8s",
+      "font_class": "k8s-outline",
+      "unicode": "e64b",
+      "unicode_decimal": 58955
+    },
+    {
       "icon_id": "40865292",
       "name": "huggingface",
       "font_class": "huggingface1",

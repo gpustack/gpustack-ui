@@ -255,5 +255,7 @@ export default {
   'common.login.auth': 'Authenticating...',
   'common.login.auth.failed': 'Authentication failed',
   'common.login.password': 'Log in with Password',
-  'common.external.login': 'Log in with {type}'
+  'common.external.login': 'Log in with {type}',
+  'common.sso.noConfig':
+    'Single sign-on is not enabled on this system. Please contact your administrator.'
 };

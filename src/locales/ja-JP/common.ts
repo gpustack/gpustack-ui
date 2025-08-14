@@ -255,7 +255,9 @@ export default {
   'common.login.auth': 'Authenticating...',
   'common.login.auth.failed': 'Authentication failed',
   'common.login.password': 'Log in with Password',
-  'common.external.login': 'Log in with {type}'
+  'common.external.login': 'Log in with {type}',
+  'common.sso.noConfig':
+    'Single sign-on is not enabled on this system. Please contact your administrator.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -278,4 +280,5 @@ export default {
 // 17. 'common.login.auth.failed': 'Authentication failed',
 // 18. 'common.external.login': 'Log in with {type}'
 // 19. 'common.login.password': 'Log in with Password',
+// 20. 'common.sso.noConfig': 'Single sign-on is not enabled on this system. Please contact your administrator.'
 // ========== End of To-Do List ==========

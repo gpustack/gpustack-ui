@@ -15,9 +15,13 @@ const useStyles = createStyles(({ token, css }) => ({
     padding: 0 8px;
     &:hover {
       color: ${token.colorTextTertiary};
+      .anticon {
+        color: ${token.colorTextTertiary};
+      }
     }
     .anticon {
       font-size: 16px;
+      color: ${token.colorText};
     }
     .icon-auto {
       font-size: 20px;

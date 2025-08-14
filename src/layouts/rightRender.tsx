@@ -267,6 +267,7 @@ export const getRightRenderContent = (opts: {
           <span className="avatar-container">
             <Avatar
               size={28}
+              src={opts.initialState?.currentUser?.avatar_url}
               style={{
                 color: 'var(--ant-color-text)',
                 fontSize: 16

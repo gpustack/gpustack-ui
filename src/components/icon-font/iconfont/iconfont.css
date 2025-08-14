@@ -1,8 +1,8 @@
 @font-face {
   font-family: iconfont; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1752112673765') format('woff2'),
-       url('iconfont.woff?t=1752112673765') format('woff'),
-       url('iconfont.ttf?t=1752112673765') format('truetype');
+  src: url('iconfont.woff2?t=1755160439217') format('woff2'),
+       url('iconfont.woff?t=1755160439217') format('woff'),
+       url('iconfont.ttf?t=1755160439217') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,50 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-admin-user::before {
+  content: "\e69d";
+}
+
+.icon-user::before {
+  content: "\e69e";
+}
+
+.icon-quick_reference_24dp_1F1F1F_FILL0_wght300_GRAD0_op::before {
+  content: "\e69b";
+}
+
+.icon-docker::before {
+  content: "\e69c";
+}
+
+.icon-digitalocean::before {
+  content: "\eb79";
+}
+
+.icon-rocket-launch1::before {
+  content: "\e699";
+}
+
+.icon-rocket-launch-fill::before {
+  content: "\e69a";
+}
+
+.icon-credential-filled::before {
+  content: "\e697";
+}
+
+.icon-credential-outline::before {
+  content: "\e698";
+}
+
+.icon-k8s-filled::before {
+  content: "\e63e";
+}
+
+.icon-k8s-outline::before {
+  content: "\e64b";
 }
 
 .icon-huggingface1::before {

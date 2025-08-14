@@ -3,6 +3,8 @@ export interface ListItem {
   is_admin: boolean;
   full_name: string;
   id: number;
+  source: string;
+  avatar_url: string;
   username: string;
   created_at: string;
   updated_at: string;

@@ -21,6 +21,7 @@ declare namespace Global {
     require_password_change: boolean;
     id: number;
     source: string;
+    avatar_url?: string;
   }
 
   interface BaseListItem<T> {

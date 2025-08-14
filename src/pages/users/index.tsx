@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
@@ -10,13 +11,12 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
-  SyncOutlined,
-  UserOutlined,
-  UserSwitchOutlined
+  SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import {
+  Avatar,
   Button,
   ConfigProvider,
   Empty,
@@ -231,9 +231,14 @@ const Users: React.FC = () => {
               }}
               render={(text, record) => {
                 return (
-                  <AutoTooltip ghost minWidth={20}>
-                    {text}
-                  </AutoTooltip>
+                  <span className="flex flex-center gap-8">
+                    {record.avatar_url && (
+                      <Avatar src={record.avatar_url} alt={text} size="small" />
+                    )}
+                    <AutoTooltip ghost minWidth={20}>
+                      {text}
+                    </AutoTooltip>
+                  </span>
                 );
               }}
             />
@@ -247,14 +252,17 @@ const Users: React.FC = () => {
               render={(text, record: ListItem) => {
                 return record.is_admin ? (
                   <AutoTooltip ghost minWidth={50}>
-                    <UserSwitchOutlined className="size-16" />
+                    <IconFont
+                      type="icon-admin-user"
+                      className="size-16"
+                    ></IconFont>
                     <span className="m-l-5">
                       {intl.formatMessage({ id: 'users.form.admin' })}
                     </span>
                   </AutoTooltip>
                 ) : (
                   <AutoTooltip ghost minWidth={50}>
-                    <UserOutlined className="size-16" />
+                    <IconFont type="icon-user" className="size-16"></IconFont>
                     <span className="m-l-5">
                       {intl.formatMessage({ id: 'users.form.user' })}
                     </span>

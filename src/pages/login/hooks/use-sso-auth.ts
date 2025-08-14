@@ -51,7 +51,7 @@ export function useSSOAuth({
 
   const init = async () => {
     try {
-      const authConfig = await fetchAuthConfig('/auth_config');
+      const authConfig = await fetchAuthConfig('/auth-config');
       setLoginOption({
         oidc: !!authConfig.is_oidc,
         saml: !!authConfig.is_saml

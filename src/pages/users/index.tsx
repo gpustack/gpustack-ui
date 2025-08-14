@@ -16,7 +16,6 @@ import {
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import {
-  Avatar,
   Button,
   ConfigProvider,
   Empty,
@@ -86,6 +85,7 @@ const Users: React.FC = () => {
 
   const handleModalOk = async (data: FormData) => {
     const params = {
+      ...currentData,
       ...data,
       is_admin: data.is_admin === 'admin'
     };
@@ -231,14 +231,9 @@ const Users: React.FC = () => {
               }}
               render={(text, record) => {
                 return (
-                  <span className="flex flex-center gap-8">
-                    {record.avatar_url && (
-                      <Avatar src={record.avatar_url} alt={text} size="small" />
-                    )}
-                    <AutoTooltip ghost minWidth={20}>
-                      {text}
-                    </AutoTooltip>
-                  </span>
+                  <AutoTooltip ghost minWidth={20}>
+                    {text}
+                  </AutoTooltip>
                 );
               }}
             />

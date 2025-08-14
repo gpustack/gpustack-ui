@@ -1,7 +1,5 @@
 import LogoIcon from '@/assets/images/gpustack-logo.png';
 import { userAtom } from '@/atoms/user';
-import LangSelect from '@/components/lang-select';
-import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import { useIntl, useModel } from '@umijs/max';
 import { Button, Divider, Form, Spin, message } from 'antd';
 import { createStyles } from 'antd-style';
@@ -52,22 +50,6 @@ const DividerWrapper = styled(Divider)`
 `;
 
 const useStyles = createStyles(({ token, css }) => ({
-  header: css`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: fixed;
-    right: 0;
-    top: 0;
-    height: 60px;
-    padding: 20px;
-    .anticon-global {
-      color: ${token.colorText};
-    }
-    .anticon:hover {
-      color: ${token.colorTextTertiary};
-    }
-  `,
   errorMessage: css`
     display: flex;
     flex-direction: column;
@@ -99,6 +81,7 @@ const LoginForm = () => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const [isPassword, setIsPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const renderWelCome = () => {
     return (
@@ -161,6 +144,7 @@ const LoginForm = () => {
         gotoDefaultPage(userInfo);
       }
     },
+
     onError: (error) => {
       // gpustack handle in the interceptor
     }
@@ -172,6 +156,9 @@ const LoginForm = () => {
     onSuccess: (userInfo) => {
       setUserInfo(userInfo);
       gotoDefaultPage({});
+    },
+    onLoading: (loading) => {
+      setLoading(loading);
     },
     onError: handleOnError
   });
@@ -186,6 +173,8 @@ const LoginForm = () => {
     } else if (SSOAuth.options.saml) {
       SSOAuth.loginWithSAML();
     }
+    setLoading(true);
+    setAuthError(null);
   };
 
   const hasThirdPartyLogin = useMemo(() => {
@@ -228,22 +217,16 @@ const LoginForm = () => {
   };
 
   const isThirdPartyAuthHandling = useMemo(() => {
-    return SSOAuth.isSSOLogin && !authError;
-  }, [SSOAuth.isSSOLogin, authError]);
+    return loading && !authError;
+  }, [loading, authError]);
 
   return (
     <div>
       {contextHolder}
-      <div className={styles.header}>
-        <ThemeDropActions></ThemeDropActions>
-        <LangSelect />
-      </div>
       <div>
         {isThirdPartyAuthHandling ? (
-          <Spin>
-            <span style={{ color: 'var(--ant-color-text)' }}>
-              {intl.formatMessage({ id: 'common.login.auth' })}
-            </span>
+          <Spin tip={intl.formatMessage({ id: 'common.login.auth' })}>
+            <div style={{ width: 300 }}></div>
           </Spin>
         ) : (
           <>

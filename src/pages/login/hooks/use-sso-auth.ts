@@ -1,5 +1,5 @@
 // hooks/useSSOAuth.ts
-import { history } from '@umijs/max';
+import { history, useIntl } from '@umijs/max';
 import { useEffect, useState } from 'react';
 
 type LoginOption = {
@@ -22,16 +22,20 @@ async function fetchAuthConfig(url: string) {
 export function useSSOAuth({
   fetchUserInfo,
   onSuccess,
+  onLoading,
   onError
 }: {
   fetchUserInfo: () => Promise<any>;
   onSuccess?: (userInfo: any) => void;
   onError?: (err: Error) => void;
+  onLoading?: (loading: boolean) => void;
 }) {
   const [loginOption, setLoginOption] = useState<LoginOption>({
     saml: false,
     oidc: false
   });
+
+  const intl = useIntl();
 
   const { location } = history;
   const params = new URLSearchParams(location.search);
@@ -53,17 +57,21 @@ export function useSSOAuth({
         saml: !!authConfig.is_saml
       });
       if (sso) {
+        onLoading?.(true);
         if (authConfig.is_oidc) {
           oidcLogin();
         } else if (authConfig.is_saml) {
           samlLogin();
         } else {
-          onError?.(new Error('No SSO configuration found'));
+          onError?.(
+            new Error(intl.formatMessage({ id: 'common.sso.noConfig' }))
+          );
         }
       }
     } catch (error: any) {
       setLoginOption({ oidc: false, saml: false });
       onError?.(error);
+      onLoading?.(false);
     }
   };
 

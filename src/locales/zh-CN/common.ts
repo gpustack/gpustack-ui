@@ -248,5 +248,6 @@ export default {
   'common.login.auth': '认证中...',
   'common.login.auth.failed': '认证失败',
   'common.login.password': '使用密码登录',
-  'common.external.login': '使用 {type} 登录'
+  'common.external.login': '使用 {type} 登录',
+  'common.sso.noConfig': '该系统未启用单点登录，请联系管理员。'
 };

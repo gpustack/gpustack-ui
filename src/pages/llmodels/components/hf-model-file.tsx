@@ -161,6 +161,11 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     return filterRegGGUF.test(file.path) || _.includes(file.path, '.gguf');
   };
 
+  const isNormalGGUFModelFile = (filename: string) => {
+    const file = filename?.toLowerCase() ?? '';
+    return file.indexOf('mmproj') === -1 && file.indexOf('imatrix') === -1;
+  };
+
   // hugging face files
   const getHuggingfaceFiles = async () => {
     try {
@@ -175,7 +180,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       });
 
       const list = _.filter(fileList, (file: any) => {
-        return hfFileFilter(file) && file.path.indexOf('mmproj') === -1;
+        return hfFileFilter(file) && isNormalGGUFModelFile(file.path);
       });
 
       return list;
@@ -188,7 +193,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     return (
       filterRegGGUF.test(file.Path) &&
       file.Type === 'blob' &&
-      file.Path.indexOf('mmproj') === -1
+      isNormalGGUFModelFile(file.Path)
     );
   };
 

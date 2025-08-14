@@ -2,15 +2,41 @@ import Bg2 from '@/assets/images/bg-2.png';
 import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
 import Footer from '@/components/footer';
+import LangSelect from '@/components/lang-select';
+import ThemeDropActions from '@/components/theme-toggle/theme-drop-actions';
 import useUserSettings from '@/hooks/use-user-settings';
 import { useModel } from '@umijs/max';
 import { ConfigProvider, theme } from 'antd';
+import { createStyles } from 'antd-style';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import LoginForm from './components/login-form';
 import PasswordForm from './components/password-form';
 import { checkDefaultPage } from './utils';
+
+const useStyles = createStyles(({ token, css }) => ({
+  header: css`
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 60px;
+    padding: 20px;
+    .anticon-global {
+      color: ${token.colorText};
+    }
+    .anticon:hover {
+      color: ${token.colorTextTertiary};
+    }
+  `,
+  formContainer: css`
+    height: calc(100vh - 64px);
+    width: 100%;
+  `
+}));
 
 const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
   position: fixed;
@@ -30,7 +56,6 @@ const Wrapper = styled.div<{ $isDarkTheme: boolean }>`
 `;
 
 const Box = styled.div`
-  padding-top: 10%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -40,6 +65,7 @@ const Box = styled.div`
 const FormWrapper = styled.div`
   position: relative;
   margin: 0 auto;
+  z-index: 999;
   border-radius: var(--border-radius-modal);
   width: max-content;
   height: max-content;
@@ -48,6 +74,8 @@ const FormWrapper = styled.div`
   padding: 40px;
   background-color: var(--color-modal-content-bg);
   box-shadow: var(--color-modal-box-shadow);
+  margin-top: 50vh;
+  transform: translateY(-50%);
   .field-wrapper {
     background-color: transparent !important;
   }
@@ -58,6 +86,7 @@ const FormWrapper = styled.div`
 `;
 
 const Login = () => {
+  const { styles } = useStyles();
   const { themeData, userSettings, isDarkTheme } = useUserSettings();
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
@@ -95,10 +124,14 @@ const Login = () => {
         ...themeData
       }}
     >
-      <div>
-        <DarkMask></DarkMask>
-        <Wrapper $isDarkTheme={isDarkTheme}></Wrapper>
-        <Box>
+      <div className={styles.header}>
+        <ThemeDropActions></ThemeDropActions>
+        <LangSelect />
+      </div>
+      <DarkMask></DarkMask>
+      <Wrapper $isDarkTheme={isDarkTheme}></Wrapper>
+      <Box>
+        <div className={styles.formContainer}>
           <FormWrapper>
             {userInfo?.require_password_change ? (
               <PasswordForm />
@@ -106,9 +139,9 @@ const Login = () => {
               <LoginForm />
             )}
           </FormWrapper>
-          <Footer />
-        </Box>
-      </div>
+        </div>
+        <Footer />
+      </Box>
     </ConfigProvider>
   );
 };

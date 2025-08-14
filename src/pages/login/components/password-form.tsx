@@ -2,8 +2,8 @@ import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
 import { CRYPT_TEXT } from '@/utils/localstore/index';
-import { GlobalOutlined, LockOutlined } from '@ant-design/icons';
-import { SelectLang, useIntl } from '@umijs/max';
+import { LockOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
 import CryptoJS from 'crypto-js';
 import { useAtom } from 'jotai';
@@ -47,9 +47,6 @@ const PasswordForm: React.FC = () => {
 
   return (
     <div>
-      <div style={{ position: 'fixed', right: 0, top: 0, padding: '0 20px' }}>
-        <SelectLang icon={<GlobalOutlined />} reload={false} />
-      </div>
       <Form
         form={form}
         style={{ width: '360px', margin: '0 auto' }}

@@ -168,11 +168,11 @@ export default function useChatCompletion(
         if (chunk?.error) {
           setTokenResult({
             error: true,
-            errorMessage: extractErrorMessage(chunk)
+            errorMessage: extractErrorMessage(chunk.error)
           });
-          return;
+        } else {
+          joinMessage(chunk);
         }
-        joinMessage(chunk);
       });
     } catch (error) {
       console.log('error:', error);

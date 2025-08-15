@@ -28,7 +28,8 @@ const icons = {
   ModelScope: React.createElement(IconFont, { type: 'icon-tu2' }),
   LocalPath: React.createElement(IconFont, { type: 'icon-hard-disk' }),
   Launch: React.createElement(IconFont, { type: 'icon-rocket-launch' }),
-  Deployment: React.createElement(IconFont, { type: 'icon-rocket-launch1' })
+  Deployment: React.createElement(IconFont, { type: 'icon-rocket-launch1' }),
+  Docker: React.createElement(IconFont, { type: 'icon-docker' })
 };
 
 export default icons;

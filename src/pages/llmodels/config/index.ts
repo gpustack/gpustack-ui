@@ -330,14 +330,17 @@ export const modelCategoriesMap = {
   llm: 'llm'
 };
 
+export const categoryOptions = [
+  { label: 'LLM', value: modelCategoriesMap.llm },
+  { label: 'Embedding', value: modelCategoriesMap.embedding },
+  { label: 'Reranker', value: modelCategoriesMap.reranker },
+  { label: 'Text-to-Speech', value: modelCategoriesMap.text_to_speech },
+  { label: 'Speech-to-Text', value: modelCategoriesMap.speech_to_text }
+];
+
 export const modelCategories = [
   { label: 'common.options.auto', value: null, locale: true },
-  { label: 'LLM', value: modelCategoriesMap.llm },
-  { label: 'Image', value: modelCategoriesMap.image },
-  { label: 'Text-to-Speech', value: modelCategoriesMap.text_to_speech },
-  { label: 'Speech-to-Text', value: modelCategoriesMap.speech_to_text },
-  { label: 'Embedding', value: modelCategoriesMap.embedding },
-  { label: 'Reranker', value: modelCategoriesMap.reranker }
+  ...categoryOptions
 ];
 
 export const sourceRepoConfig = {

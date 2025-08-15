@@ -5,19 +5,28 @@ import CardSkeleton from '@/components/templates/card-skelton';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Select, Space } from 'antd';
 import React from 'react';
 import { MODELS_API, queryModelsList } from './apis';
 import ModelItem from './components/model-item';
+import { categoryOptions, modelCategoriesMap } from './config';
+import { categoryToPathMap } from './config/button-actions';
 
 const UserModels: React.FC = () => {
-  const { dataSource, queryParams, fetchData, handleSearch, handleNameChange } =
-    useTableFetch<any>({
-      fetchAPI: queryModelsList,
-      API: MODELS_API,
-      watch: false
-    });
+  const navigate = useNavigate();
+  const {
+    dataSource,
+    queryParams,
+    fetchData,
+    handleSearch,
+    handleQueryChange,
+    handleNameChange
+  } = useTableFetch<any>({
+    fetchAPI: queryModelsList,
+    API: MODELS_API,
+    watch: false
+  });
   const intl = useIntl();
 
   const loadMore = () => {
@@ -27,8 +36,30 @@ const UserModels: React.FC = () => {
     });
   };
 
+  const handleCategoryChange = (value: string) => {
+    handleQueryChange({
+      categories: value
+    });
+  };
+
   const handleOnClick = (model: any) => {
-    console.log('Deploying model:', model);
+    for (const [category, path] of Object.entries(categoryToPathMap)) {
+      if (
+        model.categories?.includes(category) &&
+        [
+          modelCategoriesMap.text_to_speech,
+          modelCategoriesMap.speech_to_text
+        ].includes(category)
+      ) {
+        navigate(`${path}&model=${model.name}`);
+        return;
+      }
+      if (model.categories?.includes(category)) {
+        navigate(`${path}?model=${model.name}`);
+        return;
+      }
+    }
+    navigate(`/playground/chat?model=${model.name}`);
   };
 
   const renderCard = (data: any) => {
@@ -72,7 +103,8 @@ const UserModels: React.FC = () => {
               style={{ width: 180 }}
               size="large"
               maxTagCount={1}
-              options={[]}
+              options={categoryOptions}
+              onChange={handleCategoryChange}
             ></Select>
             <Button
               type="text"

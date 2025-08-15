@@ -86,8 +86,6 @@ export interface DistributedServerItem {
 }
 
 export interface DistributedServers {
-  rpc_servers: DistributedServerItem[];
-  ray_actors: DistributedServerItem[];
   subordinate_workers: DistributedServerItem[];
 }
 export interface ModelInstanceListItem {

@@ -193,7 +193,6 @@ export const modelFileActions = [
 
 export const categoryToPathMap: Record<string, string> = {
   [modelCategoriesMap.llm]: '/playground/chat',
-  [modelCategoriesMap.image]: '/playground/text-to-image',
   [modelCategoriesMap.text_to_speech]: '/playground/speech?type=tts',
   [modelCategoriesMap.speech_to_text]: '/playground/speech?type=stt',
   [modelCategoriesMap.reranker]: '/playground/rerank',

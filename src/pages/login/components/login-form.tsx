@@ -19,6 +19,7 @@ const Buttons = styled.div`
   align-items: flex-start;
   gap: 24px;
   width: 360px;
+  margin-top: 52px;
 `;
 
 const BackButton = styled(Button).attrs({

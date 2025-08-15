@@ -1,23 +1,16 @@
 // hooks/useSSOAuth.ts
 import { history, useIntl } from '@umijs/max';
 import { useEffect, useState } from 'react';
+import {
+  AUTH_OIDC_LOGIN_API,
+  AUTH_SAML_LOGIN_API,
+  fetchAuthConfig
+} from '../apis';
 
 type LoginOption = {
   saml: boolean;
   oidc: boolean;
 };
-
-// sso configuration
-async function fetchAuthConfig(url: string) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return response.json();
-  } catch (error) {
-    console.error('OIDC config error:', error);
-    throw error;
-  }
-}
 
 export function useSSOAuth({
   fetchUserInfo,
@@ -42,16 +35,16 @@ export function useSSOAuth({
   const sso = params.get('sso');
 
   const oidcLogin = () => {
-    window.location.href = '/auth/oidc/login';
+    window.location.href = AUTH_OIDC_LOGIN_API;
   };
 
   const samlLogin = () => {
-    window.location.href = '/auth/saml/login';
+    window.location.href = AUTH_SAML_LOGIN_API;
   };
 
   const init = async () => {
     try {
-      const authConfig = await fetchAuthConfig('/auth-config');
+      const authConfig = await fetchAuthConfig();
       setLoginOption({
         oidc: !!authConfig.is_oidc,
         saml: !!authConfig.is_saml
@@ -70,7 +63,7 @@ export function useSSOAuth({
       }
     } catch (error: any) {
       setLoginOption({ oidc: false, saml: false });
-      onError?.(error);
+      onError?.(new Error(error));
       onLoading?.(false);
     }
   };

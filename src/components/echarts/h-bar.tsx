@@ -129,9 +129,15 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
     legend
   ]);
 
+  const isEmpty = useMemo(() => {
+    return seriesData?.every?.((item: any) => {
+      return !item?.data?.length;
+    });
+  }, [seriesData]);
+
   return (
     <>
-      {!seriesData.length ? (
+      {isEmpty ? (
         <EmptyData height={height} title={title}></EmptyData>
       ) : (
         <Chart

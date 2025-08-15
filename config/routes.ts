@@ -100,9 +100,9 @@ export default [
         name: 'deployment',
         path: '/models/deployments',
         key: 'modelDeployments',
-        icon: 'icon-model',
-        selectedIcon: 'icon-model-filled',
-        defaultIcon: 'icon-model',
+        icon: 'icon-rocket-launch1',
+        selectedIcon: 'icon-rocket-launch-fill',
+        defaultIcon: 'icon-rocket-launch1',
         access: 'canSeeAdmin',
         component: './llmodels/index'
       }

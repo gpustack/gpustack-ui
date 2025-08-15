@@ -166,12 +166,6 @@ export const readStreamData = async (
   while (isReading) {
     const { done, value } = await reader.read();
 
-    if (done) {
-      isReading = false;
-      bufferManager.flush();
-      break;
-    }
-
     try {
       const chunk = decoder.decode(value, { stream: true });
 
@@ -188,6 +182,12 @@ export const readStreamData = async (
       throttledCallback();
     } catch (error) {
       bufferManager.add({ error });
+    }
+
+    if (done) {
+      isReading = false;
+      bufferManager.flush();
+      break;
     }
   }
 };

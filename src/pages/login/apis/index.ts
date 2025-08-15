@@ -5,6 +5,11 @@ import qs from 'query-string';
 
 export const AUTH_API = '/auth';
 
+export const AUTH_CONFIG_API = '/auth-config';
+
+export const AUTH_OIDC_LOGIN_API = '/auth/oidc/login';
+export const AUTH_SAML_LOGIN_API = '/auth/saml/login';
+
 export const login = async (
   params: { username: string; password: string },
   options?: any
@@ -37,4 +42,8 @@ export const updatePassword = async (params: any) => {
     method: 'POST',
     data: params
   });
+};
+
+export const fetchAuthConfig = async () => {
+  return request(AUTH_CONFIG_API);
 };

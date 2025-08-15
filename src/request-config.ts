@@ -3,6 +3,7 @@ import { clearAtomStorage } from '@/atoms/utils';
 import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 
+// no base URL APIs
 const NoBaseURLAPIs = ['/auth', '/v1-openai', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {

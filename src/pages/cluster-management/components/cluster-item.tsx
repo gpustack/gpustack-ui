@@ -31,9 +31,9 @@ const actionItems = [
     icon: <EditOutlined />
   },
   {
-    key: 'view',
+    key: 'details',
     label: 'common.button.view',
-    icon: <EditOutlined />
+    icon: <IconFont type="icon-detail-info" className="font-size-16" />
   },
   {
     key: 'add_worker',

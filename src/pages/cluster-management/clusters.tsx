@@ -15,16 +15,16 @@ import {
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Empty, Table, message } from 'antd';
+import { Table, message } from 'antd';
 import { useState } from 'react';
-import styled from 'styled-components';
 import {
-  createCredential,
-  deleteCredential,
-  queryCredentialList,
-  updateCredential
+  createCluster,
+  deleteCluster,
+  queryClusterList,
+  updateCluster
 } from './apis';
 import AddCluster from './components/add-cluster';
+import ClusterDetailModal from './components/cluster-detail-modal';
 import ClusterItem from './components/cluster-item';
 import { ClusterDataList } from './config';
 import {
@@ -56,39 +56,6 @@ const addActions = [
     icon: <IconFont type="icon-digitalocean" />
   }
 ];
-
-const WorkerWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-  .worker {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    .value {
-      line-height: 1em;
-      color: var(--ant-color-text-secondary);
-    }
-  }
-  .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 4px;
-    &.ready {
-      background-color: var(--ant-color-success);
-    }
-    &.error {
-      background-color: var(--ant-color-error);
-    }
-
-    &.transition {
-      background-color: var(--ant-blue-5);
-    }
-  }
-`;
 
 const ActionList = [
   {
@@ -139,13 +106,23 @@ const Credentials: React.FC = () => {
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
-    fetchAPI: queryCredentialList,
-    deleteAPI: deleteCredential,
+    fetchAPI: queryClusterList,
+    deleteAPI: deleteCluster,
     contentForDelete: 'users.table.user'
   });
 
   const intl = useIntl();
-  const [openAddWorker, setOpenAddWorker] = useState({
+  const [openClusterDetail, setOpenClusterDetail] = useState<{
+    open: boolean;
+    id: number;
+  }>({
+    open: false,
+    id: 0
+  });
+  const [openAddWorker, setOpenAddWorker] = useState<{
+    open: boolean;
+    token: string;
+  }>({
     open: false,
     token: ''
   });
@@ -202,14 +179,12 @@ const Credentials: React.FC = () => {
     };
     try {
       if (action === PageAction.EDIT) {
-        await updateCredential({
-          data: {
-            ...params,
-            id: currentData?.id
-          }
+        await updateCluster({
+          data: params,
+          id: currentData!.id
         });
       } else {
-        await createCredential({ data: params });
+        await createCluster({ data: params });
       }
       fetchData();
       setOpenAddModal(false);
@@ -244,23 +219,16 @@ const Credentials: React.FC = () => {
       setCurrentData(row);
     } else if (val === 'addPool') {
       handleAddPool(row.provider);
+    } else if (val === 'details') {
+      setOpenClusterDetail({
+        open: true,
+        id: row.id
+      });
     }
   };
 
   const renderCard = (item: ListItem) => {
     return <ClusterItem data={item} onSelect={handleSelect}></ClusterItem>;
-  };
-
-  const renderEmpty = (type?: string) => {
-    if (type !== 'Table') return;
-    if (
-      !dataSource.loading &&
-      dataSource.loadend &&
-      !dataSource.dataList.length
-    ) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
-    }
-    return <div></div>;
   };
 
   return (
@@ -318,6 +286,11 @@ const Credentials: React.FC = () => {
         onCancel={() => setOpenAddWorker({ open: false, token: '' })}
         token={openAddWorker.token}
       ></AddWorker>
+      <ClusterDetailModal
+        open={openClusterDetail.open}
+        id={openClusterDetail.id}
+        onClose={() => setOpenClusterDetail({ open: false, id: 0 })}
+      ></ClusterDetailModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

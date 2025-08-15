@@ -3,7 +3,6 @@ import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import useDeferredRequest from '@/hooks/use-deferred-request';
-import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
@@ -500,14 +499,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   return (
     <GSDrawer
-      title={
-        <div className="flex-between flex-center">
-          <span>{title}</span>
-          <Button type="text" size="small" onClick={handleCancel}>
-            <CloseOutlined></CloseOutlined>
-          </Button>
-        </div>
-      }
+      title={title}
       open={open}
       onClose={handleCancel}
       destroyOnClose={true}

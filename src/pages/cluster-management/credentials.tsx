@@ -34,7 +34,10 @@ import {
   updateCredential
 } from './apis';
 import AddModal from './components/add-credential';
-import { FormData, ListItem } from './config/types';
+import {
+  CredentialFormData as FormData,
+  CredentialListItem as ListItem
+} from './config/types';
 const { Column } = Table;
 
 const ActionList = [
@@ -127,9 +130,9 @@ const Credentials: React.FC = () => {
       if (openModalStatus.action === PageAction.EDIT) {
         await updateCredential({
           data: {
-            ...params,
-            id: currentData?.id
-          }
+            ...params
+          },
+          id: currentData!.id
         });
       } else {
         await createCredential({ data: params });

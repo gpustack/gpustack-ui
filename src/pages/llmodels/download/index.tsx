@@ -1,8 +1,6 @@
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
-import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ColumnWrapper from '../components/column-wrapper';
@@ -127,22 +125,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
 
   return (
     <GSDrawer
-      title={
-        <div className="flex-between flex-center">
-          <span
-            style={{
-              color: 'var(--ant-color-text)',
-              fontWeight: 'var(--font-weight-medium)',
-              fontSize: 'var(--font-size-middle)'
-            }}
-          >
-            {title}
-          </span>
-          <Button type="text" size="small" onClick={handleCancel}>
-            <CloseOutlined></CloseOutlined>
-          </Button>
-        </div>
-      }
+      title={title}
       open={open}
       onClose={handleCancel}
       destroyOnClose={true}

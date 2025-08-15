@@ -16,9 +16,7 @@ const SubTitle = styled.div`
 `;
 
 interface ClusterDetailProps {
-  provider: string;
   data: ClusterListItem;
-  show: boolean;
 }
 
 const gaugeConfig = {
@@ -41,8 +39,9 @@ const gaugeConfig = {
   }
 };
 
-const ClusterDetail: React.FC<ClusterDetailProps> = ({ data, show }) => {
+const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
   const chartHeight = 160;
+  const [show, setShow] = React.useState(false);
   const [addPoolStatus, setAddPoolStatus] = React.useState({
     open: false,
     action: PageAction.CREATE,

@@ -17,6 +17,7 @@ interface MenuItem {
 interface SiderMenuProps {
   menuData: MenuItem[];
   collapsed?: boolean;
+  initialState: Global.InitialState;
 }
 
 const useStyles = createStyles(({ css, token }) => {
@@ -122,7 +123,8 @@ const useStyles = createStyles(({ css, token }) => {
 });
 
 const SiderMenu: React.FC<SiderMenuProps> = (props) => {
-  const { menuData, collapsed } = props;
+  const { menuData, collapsed, initialState } = props;
+  const is_admin = initialState?.currentUser?.is_admin || false;
   const { styles, cx } = useStyles();
   const location = useLocation();
   const [collapseKeys, setCollapseKeys] = useState<Set<string>>(new Set());
@@ -220,9 +222,9 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
                       rotate={collapseKeys.has(item.key) ? -90 : 0}
                     ></CaretDownOutlined>
                   </span>
-                ) : (
+                ) : is_admin ? (
                   <Divider style={dividerStyles} />
-                )}
+                ) : null}
               </div>
               <div
                 className={cx(styles.menuItemGroup, {

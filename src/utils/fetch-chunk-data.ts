@@ -1,7 +1,7 @@
 import { throttle } from 'lodash';
 import qs from 'query-string';
 
-const extractStreamRegx = /data:\s*({.*?})(?=\n|$)/g;
+const extractStreamRegx = /(data|error):\s*({.*?})(?=\n|$)/g;
 
 const extractJSON = (dataStr: string) => {
   let match;
@@ -12,11 +12,16 @@ const extractJSON = (dataStr: string) => {
   }
   while ((match = extractStreamRegx.exec(dataStr)) !== null) {
     try {
-      const jsonData = JSON.parse(match[1]);
-      results.push(jsonData);
-    } catch (error) {
-      console.error('JSON parse error:', error, 'for match:', match[1]);
-
+      const type = match[1]; // "data" or "error"
+      console.log('type========', type);
+      const jsonData = JSON.parse(match[2]);
+      if (type === 'error') {
+        results.push({ error: jsonData });
+      } else {
+        results.push(jsonData);
+      }
+    } catch (err) {
+      console.error('JSON parse error:', err, 'for match:', match[2]);
       continue;
     }
   }
@@ -162,21 +167,24 @@ export const readStreamData = async (
   }, throttleDelay);
 
   let isReading = true;
+  let textBuffer = ''; // cache incomplete line
 
   while (isReading) {
     const { done, value } = await reader.read();
 
     try {
-      const chunk = decoder.decode(value, { stream: true });
+      textBuffer += decoder.decode(value, { stream: true });
 
-      if (chunk.startsWith('error:')) {
-        const errorStr = chunk.slice(7).trim();
+      if (textBuffer.startsWith('error:')) {
+        const errorStr = textBuffer.slice(7).trim();
         const jsonData = JSON.parse(errorStr);
         bufferManager.add({ error: jsonData });
+        textBuffer = ''; // Clear buffer after processing error
       } else {
-        extractJSON(chunk).forEach((data) => {
+        extractJSON(textBuffer).forEach((data) => {
           bufferManager.add(data);
         });
+        textBuffer = ''; // Clear buffer after processing
       }
 
       throttledCallback();
@@ -185,6 +193,10 @@ export const readStreamData = async (
     }
 
     if (done) {
+      textBuffer += decoder.decode();
+      if (textBuffer) {
+        extractJSON(textBuffer).forEach((data) => bufferManager.add(data));
+      }
       isReading = false;
       bufferManager.flush();
       break;

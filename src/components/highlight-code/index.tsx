@@ -56,4 +56,4 @@ const HighlightCode: React.FC<{
   );
 };
 
-export default React.memo(HighlightCode);
+export default HighlightCode;

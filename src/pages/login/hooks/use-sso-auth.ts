@@ -63,7 +63,6 @@ export function useSSOAuth({
       }
     } catch (error: any) {
       setLoginOption({ oidc: false, saml: false });
-      onError?.(new Error(error));
       onLoading?.(false);
     }
   };

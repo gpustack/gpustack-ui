@@ -14,14 +14,13 @@ const ClusterDetailModal: React.FC<ClusterDetailModalProps> = ({
   id: clusterId
 }) => {
   const [data, setData] = React.useState<any>({
-    id: 1,
-    name: 'kubernetes-cluster',
-    provider: 'kubernetes',
-    clusterType: 'Kubernetes',
-    workers: 2,
-    gpus: 4,
-    status: 'ready',
-    deployments: 1
+    id: 2,
+    name: 'Digital-Ocean-cluster',
+    provider: 'digitalocean',
+    workers: 3,
+    gpus: 6,
+    status: 'error',
+    deployments: 2
   });
   const handleOnClose = () => {
     onClose?.();
@@ -29,7 +28,7 @@ const ClusterDetailModal: React.FC<ClusterDetailModalProps> = ({
 
   return (
     <GSDrawer
-      width={800}
+      width={'80vw'}
       title={`Cluster Detail - ${clusterId}`}
       open={open}
       onClose={handleOnClose}

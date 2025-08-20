@@ -113,15 +113,25 @@ const options = [
     label: '--tool-call-parser',
     value: '--tool-call-parser',
     options: [
-      'mistral',
-      'hermes',
-      'internlm',
-      'jamba',
-      'llama3_json',
-      'granite-20b-fc',
       'phi4_mini_json',
+      'llama3_json',
+      'llama4_json',
+      'pythonic',
+      'jamba',
+      'xlam',
+      'llama4_pythonic',
+      'hunyuan_a13b',
+      'mistral',
+      'deepseek_v3',
+      'kimi_k2',
+      'step3',
+      'qwen3_coder',
+      'hermes',
+      'glm45',
       'granite',
-      'pythonic'
+      'minimax',
+      'granite-20b-fc',
+      'internlm'
     ]
   },
   {
@@ -229,7 +239,16 @@ const options = [
   {
     label: '--reasoning-parser',
     value: '--reasoning-parser',
-    options: ['deepseek_r1']
+    options: [
+      'deepseek_r1',
+      'glm45',
+      'GptOss',
+      'granite',
+      'hunyuan_a13b',
+      'mistral',
+      'qwen3',
+      'step3'
+    ]
   },
   {
     label: '--config-format',

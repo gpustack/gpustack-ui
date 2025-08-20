@@ -517,7 +517,7 @@ export const getBackendParamsTips = (backend: string) => {
     return {
       backend: 'vLLM',
       releases: 'https://github.com/vllm-project/vllm/releases',
-      link: 'https://docs.vllm.ai/en/latest/configuration/engine_args.html',
+      link: 'https://docs.vllm.ai/en/stable/cli/serve.html',
       version: 'v0.8.5'
     };
   }

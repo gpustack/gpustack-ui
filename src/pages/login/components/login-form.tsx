@@ -12,6 +12,18 @@ import { useSSOAuth } from '../hooks/use-sso-auth';
 import { checkDefaultPage } from '../utils';
 import LocalUserForm from './local-user-form';
 
+const SpinContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  .spin {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`;
+
 const Buttons = styled.div`
   display: flex;
   flex-direction: column;
@@ -226,9 +238,14 @@ const LoginForm = () => {
       {contextHolder}
       <div>
         {isThirdPartyAuthHandling ? (
-          <Spin tip={intl.formatMessage({ id: 'common.login.auth' })}>
-            <div style={{ width: 300 }}></div>
-          </Spin>
+          <SpinContainer>
+            {renderWelCome()}
+            <div className="spin">
+              <Spin tip={intl.formatMessage({ id: 'common.login.auth' })}>
+                <div style={{ width: 300 }}></div>
+              </Spin>
+            </div>
+          </SpinContainer>
         ) : (
           <>
             {renderWelCome()}

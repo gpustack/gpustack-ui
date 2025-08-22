@@ -1,11 +1,13 @@
 export interface CredentialFormData {
   name: string;
   provider: string;
-  access_key: string;
-  secret_key: string;
+  key: string;
+  secret: string;
   description?: string;
   id?: number;
 }
+
+export type ClusterStatusType = 0 | 1 | 3;
 
 export interface CredentialListItem {
   id: number;
@@ -19,7 +21,7 @@ export interface CredentialListItem {
 }
 
 export interface ClusterFormData {
-  display_name: string;
+  name: string;
   description: string;
   provider: string;
   credential_id: number;
@@ -55,9 +57,11 @@ export interface ClusterListItem {
   zone: string;
   region: string;
   gpus: number;
-  deployments: number;
+  models: number;
+  workers: number;
+  ready_workers: number;
   id: number;
-  status: string;
+  state: ClusterStatusType;
   state_message: string;
   worker_pools: NodePoolListItem[];
 }

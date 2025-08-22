@@ -52,9 +52,11 @@ export async function queryModelsList(
   );
 }
 
-export async function queryGPUList(params?: Global.SearchParams) {
+export async function queryGPUList<T extends Record<string, any>>(
+  params?: Global.SearchParams & T
+) {
   return request<Global.PageResponse<GPUListItem>>(`/gpu-devices`, {
-    methos: 'GET',
+    method: 'GET',
     params
   });
 }
@@ -172,7 +174,7 @@ export async function queryModelScopeModels(
   config?: any
 ) {
   const tagsCriterion = params.tags?.map((tag: string) => {
-    return { category: 'libraries', predicate: 'contains', values: [tag] };
+    return { category: 'tags', predicate: 'contains', values: [tag] };
   });
   const tasksCriterion = params.tasks?.map((task: string) => {
     return { category: 'tasks', predicate: 'contains', values: [task] };

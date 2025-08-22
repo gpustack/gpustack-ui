@@ -1,19 +1,23 @@
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
-import { PageAction, PasswordReg } from '@/config';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React from 'react';
-import { FormData, ListItem } from '../config/types';
+import { ProviderValueMap } from '../config';
+import {
+  CredentialFormData as FormData,
+  CredentialListItem as ListItem
+} from '../config/types';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
   onOk: (values: FormData) => void;
-  data?: ListItem;
+  currentData?: ListItem;
   onCancel: () => void;
   provider: string; // 'kubernetes'  | 'digitalocean';
 };
@@ -22,7 +26,7 @@ const AddModal: React.FC<AddModalProps> = ({
   action,
   open,
   onOk,
-  data,
+  currentData,
   provider,
   onCancel
 }) => {
@@ -31,6 +35,10 @@ const AddModal: React.FC<AddModalProps> = ({
 
   const handleSumit = () => {
     form.submit();
+  };
+
+  const handleOk = async (data: FormData) => {
+    onOk(data);
   };
 
   return (
@@ -53,7 +61,12 @@ const AddModal: React.FC<AddModalProps> = ({
         ></ModalFooter>
       }
     >
-      <Form form={form} onFinish={onOk} preserve={false}>
+      <Form
+        form={form}
+        onFinish={handleOk}
+        preserve={false}
+        initialValues={currentData}
+      >
         <Form.Item<FormData>
           name="name"
           rules={[
@@ -73,14 +86,13 @@ const AddModal: React.FC<AddModalProps> = ({
             required
           ></SealInput.Input>
         </Form.Item>
-        {provider === 'digital_ocean' && (
+        {provider === ProviderValueMap.DigitalOcean && (
           <>
             <Form.Item<FormData>
-              name="access_key"
+              name="key"
               rules={[
                 {
                   required: action === PageAction.CREATE,
-                  pattern: PasswordReg,
                   message: intl.formatMessage({
                     id: 'users.form.rule.password'
                   })
@@ -93,11 +105,10 @@ const AddModal: React.FC<AddModalProps> = ({
               ></SealInput.Password>
             </Form.Item>
             <Form.Item<FormData>
-              name="secret_key"
+              name="secret"
               rules={[
                 {
                   required: action === PageAction.CREATE,
-                  pattern: PasswordReg,
                   message: intl.formatMessage({
                     id: 'users.form.rule.password'
                   })
@@ -105,16 +116,11 @@ const AddModal: React.FC<AddModalProps> = ({
               ]}
             >
               <SealInput.Password
-                label="Secret Key"
+                label="Access Secret"
                 required={action === PageAction.CREATE}
               ></SealInput.Password>
             </Form.Item>
           </>
-        )}
-        {provider === 'kubernetes' && (
-          <Form.Item<FormData> name="kubeconfig" rules={[{ required: false }]}>
-            <SealInput.TextArea label="Kubeconfig"></SealInput.TextArea>
-          </Form.Item>
         )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <SealInput.TextArea

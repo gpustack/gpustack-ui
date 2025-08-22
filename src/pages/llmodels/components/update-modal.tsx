@@ -1,7 +1,6 @@
 import ModalFooter from '@/components/modal-footer';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -10,9 +9,7 @@ import { Button, Form, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
-  backendLabelMap,
   backendOptionsMap,
-  backendTipsList,
   updateExcludeFields as excludeFields,
   getSourceRepoConfigValue,
   modelSourceMap,
@@ -24,6 +21,7 @@ import { FormData, ListItem } from '../config/types';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
 import { useCheckCompatibility } from '../hooks';
+import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import AdvanceConfig from './advance-config';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
@@ -34,9 +32,12 @@ type AddModalProps = {
   open: boolean;
   updateFormInitials: {
     data?: ListItem;
-    gpuOptions: any[];
     isGGUF: boolean;
   };
+  clusterList: Global.BaseOption<
+    number,
+    { provider: string; state: string | number }
+  >[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -48,7 +49,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     open,
     onOk,
     onCancel,
-    updateFormInitials: { gpuOptions, isGGUF, data: formData }
+    clusterList,
+    updateFormInitials: { isGGUF, data: formData }
   } = props || {};
   const intl = useIntl();
   const {
@@ -58,11 +60,16 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     checkTokenRef,
     warningStatus
   } = useCheckCompatibility();
+  const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
 
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const submitAnyway = useRef<boolean>(false);
   const originFormData = useRef<any>(null);
+
+  const handleClusterChange = (value: number) => {
+    getGPUOptionList({ clusterId: value });
+  };
 
   const setOriginalFormData = () => {
     if (!originFormData.current) {
@@ -336,48 +343,53 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             onValuesChange: handleManulOnValuesChange
           }}
         >
-          <Form
-            name="updateModalForm"
-            form={form}
-            onFinish={handleOk}
-            onValuesChange={onValuesChange}
-            scrollToFirstError={true}
-            preserve={false}
-            clearOnDestroy={true}
-            initialValues={{
-              ...formData
-            }}
-            style={{
-              padding: 'var(--ant-modal-content-padding)',
-              paddingBlock: 0
+          <FormInnerContext.Provider
+            value={{
+              onBackendChange: handleBackendChange,
+              gpuOptions: gpuOptions
             }}
           >
-            <Form.Item<FormData>
-              name="name"
-              rules={[
-                {
-                  required: true,
-                  message: getRuleMessage('input', 'common.table.name')
-                }
-              ]}
+            <Form
+              name="updateModalForm"
+              form={form}
+              onFinish={handleOk}
+              onValuesChange={onValuesChange}
+              scrollToFirstError={true}
+              preserve={false}
+              clearOnDestroy={true}
+              initialValues={{
+                ...formData
+              }}
+              style={{
+                padding: 'var(--ant-modal-content-padding)',
+                paddingBlock: 0
+              }}
             >
-              <SealInput.Input
-                label={intl.formatMessage({
-                  id: 'common.table.name'
-                })}
-                required
-              ></SealInput.Input>
-            </Form.Item>
-            <Form.Item<FormData>
-              name="source"
-              rules={[
-                {
-                  required: true,
-                  message: getRuleMessage('select', 'models.form.source')
-                }
-              ]}
-            >
-              {action === PageAction.EDIT && (
+              <Form.Item<FormData>
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: getRuleMessage('input', 'common.table.name')
+                  }
+                ]}
+              >
+                <SealInput.Input
+                  label={intl.formatMessage({
+                    id: 'common.table.name'
+                  })}
+                  required
+                ></SealInput.Input>
+              </Form.Item>
+              <Form.Item<FormData>
+                name="source"
+                rules={[
+                  {
+                    required: true,
+                    message: getRuleMessage('select', 'models.form.source')
+                  }
+                ]}
+              >
                 <SealSelect
                   disabled={true}
                   label={intl.formatMessage({
@@ -386,82 +398,46 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
                   options={sourceOptions}
                   required
                 ></SealSelect>
-              )}
-            </Form.Item>
-            <FormInnerContext.Provider
-              value={{
-                onBackendChange: handleBackendChange,
-                gpuOptions: gpuOptions
-              }}
-            >
+              </Form.Item>
+
               <HuggingFaceForm></HuggingFaceForm>
               <LocalPathForm></LocalPathForm>
-            </FormInnerContext.Provider>
-            <Form.Item name="backend" rules={[{ required: true }]}>
-              <SealSelect
-                required
-                onChange={handleAsyncBackendChange}
-                label={intl.formatMessage({ id: 'models.form.backend' })}
-                description={<TooltipList list={backendTipsList}></TooltipList>}
-                options={[
+              <Form.Item<FormData>
+                name="cluster_id"
+                rules={[
                   {
-                    label: backendLabelMap[backendOptionsMap.llamaBox],
-                    value: backendOptionsMap.llamaBox,
-                    disabled:
-                      formData?.source === modelSourceMap.local_path_value
-                        ? false
-                        : !isGGUF
-                  },
-                  {
-                    label: backendLabelMap[backendOptionsMap.vllm],
-                    value: backendOptionsMap.vllm,
-                    disabled:
-                      formData?.source === modelSourceMap.local_path_value ||
-                      isVllmOrAscend
-                        ? false
-                        : isGGUF
-                  },
-                  {
-                    label: backendLabelMap[backendOptionsMap.ascendMindie],
-                    value: backendOptionsMap.ascendMindie,
-                    disabled:
-                      formData?.source === modelSourceMap.local_path_value ||
-                      isVllmOrAscend
-                        ? false
-                        : isGGUF
-                  },
-                  {
-                    label: backendLabelMap[backendOptionsMap.voxBox],
-                    value: backendOptionsMap.voxBox,
-                    disabled:
-                      formData?.source !== modelSourceMap.local_path_value ||
-                      !isVllmOrAscend
+                    required: true,
+                    message: getRuleMessage('select', 'Cluster', false)
                   }
                 ]}
-                disabled={
-                  action === PageAction.EDIT &&
-                  formData?.source !== modelSourceMap.local_path_value &&
-                  !isVllmOrAscend
+              >
+                {
+                  <SealSelect
+                    onChange={handleClusterChange}
+                    label="Cluster"
+                    options={clusterList}
+                    required
+                  ></SealSelect>
                 }
-              ></SealSelect>
-            </Form.Item>
-            <Form.Item<FormData> name="description">
-              <SealInput.TextArea
-                scaleSize={true}
-                label={intl.formatMessage({
-                  id: 'common.table.description'
-                })}
-              ></SealInput.TextArea>
-            </Form.Item>
+              </Form.Item>
+              <Form.Item<FormData> name="description">
+                <SealInput.TextArea
+                  scaleSize={true}
+                  label={intl.formatMessage({
+                    id: 'common.table.description'
+                  })}
+                ></SealInput.TextArea>
+              </Form.Item>
 
-            <AdvanceConfig
-              form={form}
-              gpuOptions={gpuOptions}
-              action={PageAction.EDIT}
-              source={formData?.source || ''}
-              isGGUF={formData?.backend === backendOptionsMap.llamaBox}
-            ></AdvanceConfig>
-          </Form>
+              <AdvanceConfig
+                form={form}
+                gpuOptions={gpuOptions}
+                action={PageAction.EDIT}
+                source={formData?.source || ''}
+                isGGUF={formData?.backend === backendOptionsMap.llamaBox}
+              ></AdvanceConfig>
+            </Form>
+          </FormInnerContext.Provider>
         </FormContext.Provider>
       </ColumnWrapper>
     </Modal>

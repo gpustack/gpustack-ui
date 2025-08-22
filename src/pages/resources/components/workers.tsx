@@ -7,6 +7,7 @@ import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import useTableFetch from '@/hooks/use-table-fetch';
+import { queryClusterList } from '@/pages/cluster-management/apis';
 import { convertFileSize } from '@/utils';
 import {
   CodeOutlined,
@@ -18,7 +19,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { ConfigProvider, Empty, Table, Tooltip, message } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   WORKERS_API,
   deleteWorker,
@@ -27,7 +28,6 @@ import {
 } from '../apis';
 import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
-import AddWorker from './add-worker';
 import UpdateLabels from './update-labels';
 
 const { Column } = Table;
@@ -115,6 +115,7 @@ const Workers: React.FC = () => {
     handlePageChange,
     handleTableChange,
     handleSearch,
+    handleQueryChange,
     handleNameChange
   } = useTableFetch<ListItem>({
     fetchAPI: queryWorkersList,
@@ -125,7 +126,6 @@ const Workers: React.FC = () => {
   });
 
   const intl = useIntl();
-  const [open, setOpen] = useState(false);
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
     data: ListItem;
@@ -133,35 +133,65 @@ const Workers: React.FC = () => {
     open: false,
     data: {} as ListItem
   });
+  const [clusterData, setClusterData] = useState<{
+    list: Global.BaseOption<number>[];
+    data: Record<number, string>;
+  }>({
+    list: [],
+    data: {}
+  });
 
-  const handleAddWorker = () => {
-    setOpen(true);
+  const getClusterList = async () => {
+    try {
+      const params = {
+        page: 1,
+        perPage: 100
+      };
+      const res = await queryClusterList(params);
+      const clusterMap = res?.items?.reduce(
+        (acc: Record<number, string>, item: any) => {
+          acc[item.id] = item.name;
+          return acc;
+        },
+        {}
+      );
+      const list = res?.items?.map((item: any) => ({
+        label: item.name,
+        value: item.id
+      }));
+      setClusterData({
+        list,
+        data: clusterMap
+      });
+    } catch (error) {
+      setClusterData({
+        list: [],
+        data: {}
+      });
+    }
   };
 
-  const handleUpdateLabelsOk = useCallback(
-    async (values: Record<string, any>) => {
-      try {
-        console.log('updateLabelsData.data', updateLabelsData.data);
-        await updateWorker(updateLabelsData.data.id, {
-          ...updateLabelsData.data,
-          labels: values.labels
-        });
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
-        fetchData();
-        setUpdateLabelsData({ open: false, data: {} as ListItem });
-      } catch (error) {
-        console.log('error', error);
-      }
-    },
-    [updateLabelsData, fetchData]
-  );
+  const handleUpdateLabelsOk = async (values: Record<string, any>) => {
+    try {
+      console.log('updateLabelsData.data', updateLabelsData.data);
+      await updateWorker(updateLabelsData.data.id, {
+        ...updateLabelsData.data,
+        labels: values.labels
+      });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+      fetchData();
+      setUpdateLabelsData({ open: false, data: {} as ListItem });
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
-  const handleCancelUpdateLabels = useCallback(() => {
+  const handleCancelUpdateLabels = () => {
     setUpdateLabelsData({
       ...updateLabelsData,
       open: false
     });
-  }, []);
+  };
 
   const handleUpdateLabels = (record: ListItem) => {
     console.log('record', record);
@@ -210,6 +240,17 @@ const Workers: React.FC = () => {
     );
   };
 
+  const handleClusterChange = (value: number) => {
+    handleQueryChange({
+      page: 1,
+      cluster_id: value
+    });
+  };
+
+  useEffect(() => {
+    getClusterList();
+  }, []);
+
   return (
     <>
       <PageContainer
@@ -232,9 +273,10 @@ const Workers: React.FC = () => {
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}
-          handleClickPrimary={handleAddWorker}
+          handleSelectChange={handleClusterChange}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
+          selectOptions={clusterData.list}
           width={{ input: 200 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
@@ -309,7 +351,7 @@ const Workers: React.FC = () => {
               render={(text, record: ListItem) => {
                 return (
                   <AutoTooltip ghost maxWidth={240}>
-                    <span>digital-ocean-cluster</span>
+                    <span>{clusterData.data[record.cluster_id]}</span>
                   </AutoTooltip>
                 );
               }}
@@ -496,7 +538,6 @@ const Workers: React.FC = () => {
           </Table>
         </ConfigProvider>
         <DeleteModal ref={modalRef}></DeleteModal>
-        <AddWorker open={open} onCancel={() => setOpen(false)}></AddWorker>
         <UpdateLabels
           open={updateLabelsData.open}
           onOk={handleUpdateLabelsOk}

@@ -30,9 +30,9 @@ const CloudProvider: React.FC<CloudProviderProps> = () => {
           label="Credential"
           required
           options={['credential1', 'credential2', 'credential3'].map(
-            (item) => ({
+            (item, i) => ({
               label: item,
-              value: item
+              value: i
             })
           )}
         ></SealSelect>

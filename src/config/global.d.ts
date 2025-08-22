@@ -24,18 +24,18 @@ declare namespace Global {
     avatar_url?: string;
   }
 
-  interface BaseListItem<T> {
+  type BaseListItem<T, U extends Record<string, any>> = {
     key: string;
     locale?: boolean;
     value: T;
-  }
+  } & U;
 
-  interface BaseOption<T> {
+  type BaseOption<T, U extends Record<string, any>> = {
     label: string;
     locale?: boolean;
     value: T;
     meta?: Record<string, any>;
-  }
+  } & U;
 
   interface HintOptions {
     label: string;

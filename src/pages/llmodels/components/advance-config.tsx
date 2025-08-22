@@ -30,7 +30,6 @@ import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
 import GPUCard from './gpu-card';
 import Performance from './performance';
-import Scaling from './scaling';
 
 interface AdvanceConfigProps {
   isGGUF: boolean;
@@ -460,19 +459,19 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         forceRender: true,
         children: <Performance></Performance>
       },
-      {
-        key: '3',
-        label: (
-          <span
-            style={{ fontWeight: 'var(--font-weight-medium)' }}
-            className="font-size-14"
-          >
-            Scaling
-          </span>
-        ),
-        forceRender: true,
-        children: <Scaling></Scaling>
-      },
+      // {
+      //   key: '3',
+      //   label: (
+      //     <span
+      //       style={{ fontWeight: 'var(--font-weight-medium)' }}
+      //       className="font-size-14"
+      //     >
+      //       Scaling
+      //     </span>
+      //   ),
+      //   forceRender: true,
+      //   children: <Scaling></Scaling>
+      // },
       {
         key: '1',
         label: (

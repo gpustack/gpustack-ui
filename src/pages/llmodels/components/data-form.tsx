@@ -6,17 +6,13 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import {
-  backendOptionsMap,
-  excludeFields,
-  modelSourceMap,
-  sourceOptions
-} from '../config';
+import { backendOptionsMap, excludeFields, sourceOptions } from '../config';
 import { FormInnerContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
 import CatalogFrom from '../forms/catalog';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
+import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import AdvanceConfig from './advance-config';
 
 interface DataFormProps {
@@ -29,19 +25,13 @@ interface DataFormProps {
   sourceDisable?: boolean;
   backendOptions?: Global.BaseOption<string>[];
   sourceList?: Global.BaseOption<string>[];
-  gpuOptions: any[];
-  modelFileOptions?: any[];
+  clusterList: Global.BaseOption<number>[];
   fields?: string[];
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
 }
-
-const SEARCH_SOURCE = [
-  modelSourceMap.huggingface_value,
-  modelSourceMap.modelscope_value
-];
 
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const {
@@ -51,13 +41,13 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sourceDisable = true,
     backendOptions,
     sourceList,
-    gpuOptions = [],
-    modelFileOptions = [],
+    clusterList = [],
     fields = ['source'],
     onSourceChange,
     onValuesChange,
     onOk
   } = props;
+  const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
@@ -143,6 +133,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onSourceChange?.(val);
   };
 
+  const handleClusterChange = (value: number) => {
+    getGPUOptionList({ clusterId: value });
+  };
+
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
     const fieldName = Object.keys(changedValues)[0];
 
@@ -172,6 +166,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         },
         getFieldsValue: () => {
           return form.getFieldsValue();
+        },
+        getGPUOptionList(params: { clusterId: number }) {
+          getGPUOptionList(params);
         }
       };
     },
@@ -179,78 +176,96 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   );
 
   return (
-    <Form
-      name="deployModel"
-      form={form}
-      onFinish={handleOk}
-      preserve={false}
-      style={{ padding: '16px 24px' }}
-      clearOnDestroy={true}
-      onValuesChange={handleOnValuesChange}
-      scrollToFirstError={true}
-      initialValues={{
-        replicas: 1,
-        source: props.source,
-        placement_strategy: 'spread',
-        cpu_offloading: true,
-        scheduleType: 'auto',
-        categories: null,
-        restart_on_error: true,
-        distributed_inference_across_workers: true,
-        ...initialValues
+    <FormInnerContext.Provider
+      value={{
+        onBackendChange: handleBackendChange,
+        onValuesChange: onValuesChange,
+        gpuOptions: gpuOptions
       }}
     >
-      <Form.Item<FormData>
-        name="name"
-        rules={[
-          {
-            required: true,
-            message: getRuleMessage('input', 'common.table.name')
-          }
-        ]}
+      <Form
+        name="deployModel"
+        form={form}
+        onFinish={handleOk}
+        preserve={false}
+        style={{ padding: '16px 24px' }}
+        clearOnDestroy={true}
+        onValuesChange={handleOnValuesChange}
+        scrollToFirstError={true}
+        initialValues={{
+          replicas: 1,
+          source: props.source,
+          placement_strategy: 'spread',
+          cpu_offloading: true,
+          scheduleType: 'auto',
+          categories: null,
+          restart_on_error: true,
+          distributed_inference_across_workers: true,
+          ...initialValues
+        }}
       >
-        <SealInput.Input
-          label={intl.formatMessage({
-            id: 'common.table.name'
-          })}
-          required
-        ></SealInput.Input>
-      </Form.Item>
-      {fields.includes('source') && (
         <Form.Item<FormData>
-          name="source"
+          name="name"
           rules={[
             {
               required: true,
-              message: getRuleMessage('select', 'models.form.source')
+              message: getRuleMessage('input', 'common.table.name')
+            }
+          ]}
+        >
+          <SealInput.Input
+            label={intl.formatMessage({
+              id: 'common.table.name'
+            })}
+            required
+          ></SealInput.Input>
+        </Form.Item>
+        {fields.includes('source') && (
+          <Form.Item<FormData>
+            name="source"
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('select', 'models.form.source')
+              }
+            ]}
+          >
+            {
+              <SealSelect
+                onChange={handleOnSourceChange}
+                disabled={sourceDisable}
+                label={intl.formatMessage({
+                  id: 'models.form.source'
+                })}
+                options={sourceList ?? sourceOptions}
+                required
+              ></SealSelect>
+            }
+          </Form.Item>
+        )}
+
+        <HuggingFaceForm></HuggingFaceForm>
+        <LocalPathForm></LocalPathForm>
+
+        <Form.Item<FormData>
+          name="cluster_id"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('select', 'Cluster', false)
             }
           ]}
         >
           {
             <SealSelect
-              onChange={handleOnSourceChange}
-              disabled={sourceDisable}
-              label={intl.formatMessage({
-                id: 'models.form.source'
-              })}
-              options={sourceList ?? sourceOptions}
+              onChange={handleClusterChange}
+              label="Cluster"
+              options={clusterList}
               required
             ></SealSelect>
           }
         </Form.Item>
-      )}
-
-      <FormInnerContext.Provider
-        value={{
-          onBackendChange: handleBackendChange,
-          onValuesChange: onValuesChange,
-          gpuOptions: gpuOptions
-        }}
-      >
-        <HuggingFaceForm></HuggingFaceForm>
-        <LocalPathForm></LocalPathForm>
-      </FormInnerContext.Provider>
-      {/* <Form.Item name="backend" rules={[{ required: true }]}>
+        {/* <Form.Item name="backend" rules={[{ required: true }]}>
         <SealSelect
           required
           onChange={handleBackendChange}
@@ -291,25 +306,26 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           }
         ></SealSelect>
       </Form.Item> */}
-      <CatalogFrom></CatalogFrom>
-      <Form.Item<FormData> name="description">
-        <SealInput.TextArea
-          scaleSize={true}
-          label={intl.formatMessage({
-            id: 'common.table.description'
-          })}
-        ></SealInput.TextArea>
-      </Form.Item>
-      <AdvanceConfig
-        form={form}
-        gpuOptions={gpuOptions}
-        isGGUF={isGGUF}
-        action={action}
-        source={props.source}
-        backendOptions={backendOptions}
-        handleBackendChange={handleBackendChange}
-      ></AdvanceConfig>
-    </Form>
+        <CatalogFrom></CatalogFrom>
+        <Form.Item<FormData> name="description">
+          <SealInput.TextArea
+            scaleSize={true}
+            label={intl.formatMessage({
+              id: 'common.table.description'
+            })}
+          ></SealInput.TextArea>
+        </Form.Item>
+        <AdvanceConfig
+          form={form}
+          gpuOptions={gpuOptions}
+          isGGUF={isGGUF}
+          action={action}
+          source={props.source}
+          backendOptions={backendOptions}
+          handleBackendChange={handleBackendChange}
+        ></AdvanceConfig>
+      </Form>
+    </FormInnerContext.Provider>
   );
 });
 

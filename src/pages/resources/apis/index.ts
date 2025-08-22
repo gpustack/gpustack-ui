@@ -5,9 +5,11 @@ export const WORKERS_API = '/workers';
 export const GPU_DEVICES_API = '/gpu-devices';
 export const MODEL_FILES_API = '/model-files';
 
-export async function queryWorkersList(params: Global.SearchParams) {
+export async function queryWorkersList<T extends Record<string, any>>(
+  params: Global.SearchParams & T
+) {
   return request<Global.PageResponse<ListItem>>(`${WORKERS_API}`, {
-    methos: 'GET',
+    method: 'GET',
     params
   });
 }

@@ -20,6 +20,7 @@ import {
 } from '@/pages/llmodels/config/button-actions';
 import { SourceType } from '@/pages/llmodels/config/types';
 import DownloadModal from '@/pages/llmodels/download';
+import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
 import { convertFileSize } from '@/utils';
 import {
   CheckCircleFilled,
@@ -32,19 +33,14 @@ import { ConfigProvider, Empty, Table, Tag, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import {
-  checkCurrentbackend,
-  useGenerateFormEditInitialValues,
-  useGenerateModelFileOptions
-} from '../../llmodels/hooks';
+import { checkCurrentbackend } from '../../llmodels/hooks';
 import {
   MODEL_FILES_API,
   deleteModelFile,
   downloadModelFile,
   queryModelFilesList,
-  queryWorkersList,
   retryDownloadModelFile
 } from '../apis';
 import {
@@ -53,10 +49,7 @@ import {
   ModelfileStateMapValue,
   WorkerStatusMap
 } from '../config';
-import {
-  ModelFile as ListItem,
-  ListItem as WorkerListItem
-} from '../config/types';
+import { ModelFile as ListItem } from '../config/types';
 
 const { Paragraph } = Typography;
 
@@ -287,7 +280,8 @@ const ResolvedPathColumn = (props: { record: ListItem }) => {
 };
 
 const ModelFiles = () => {
-  const { getGPUList } = useGenerateFormEditInitialValues();
+  const { getWorkerOptionList, workerOptions, clusterList, workersList } =
+    useGenerateWorkerOptions();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const navigate = useNavigate();
@@ -311,63 +305,36 @@ const ModelFiles = () => {
     watch: true,
     contentForDelete: 'resources.modelfiles.modelfile'
   });
-  const { getModelFileList, generateModelFileOptions } =
-    useGenerateModelFileOptions();
+
   const intl = useIntl();
   const { showSuccess } = useAppUtils();
-  const [workersList, setWorkersList] = useState<any[]>([]);
   const [downloadModalStatus, setDownlaodMoalStatus] = useState<{
     show: boolean;
     width: number | string;
     source: string;
     hasLinuxWorker: boolean;
-    gpuOptions: any[];
   }>({
     show: false,
     width: 600,
     hasLinuxWorker: false,
-    source: modelSourceMap.huggingface_value,
-    gpuOptions: []
+    source: modelSourceMap.huggingface_value
   });
   const [openDeployModal, setOpenDeployModal] = useState<{
     show: boolean;
     width: number | string;
     source: SourceType;
-    gpuOptions: any[];
-    modelFileOptions?: any[];
     initialValues: any;
     isGGUF?: boolean;
   }>({
     show: false,
     width: 600,
     source: modelSourceMap.local_path_value as SourceType,
-    gpuOptions: [],
-    modelFileOptions: [],
     initialValues: {},
     isGGUF: false
   });
 
   useEffect(() => {
-    const fetchWorkerList = async () => {
-      try {
-        const res = await queryWorkersList({
-          page: 1,
-          perPage: 100
-        });
-
-        const list = res.items?.map((item: WorkerListItem) => {
-          return {
-            ...item,
-            value: item.id,
-            label: item.name
-          };
-        });
-        setWorkersList(list);
-      } catch (error) {
-        // console.log('error', error);
-      }
-    };
-    fetchWorkerList();
+    getWorkerOptionList();
   }, []);
 
   const extractFileName = (name: string) => {
@@ -440,16 +407,10 @@ const ModelFiles = () => {
         showSuccess();
       } else if (val === 'deploy') {
         saveScrollHeight();
-        const [modelFileList, gpuList] = await Promise.all([
-          getModelFileList(),
-          getGPUList()
-        ]);
-        const dataList = generateModelFileOptions(modelFileList, workersList);
-        const initialValues = generateInitialValues(record, gpuList);
+
+        const initialValues = generateInitialValues(record, []);
         setOpenDeployModal({
           ...openDeployModal,
-          modelFileOptions: dataList,
-          gpuOptions: gpuList,
           initialValues: initialValues,
           isGGUF: initialValues.isGGUF,
           show: true
@@ -472,18 +433,15 @@ const ModelFiles = () => {
     return <div></div>;
   };
 
-  const handleClickDropdown = useCallback(
-    (item: any) => {
-      const config = modalConfig[item.key];
-      const hasLinuxWorker = workersList.some(
-        (worker) => _.toLower(worker.labels?.os) === 'linux'
-      );
-      if (config) {
-        setDownlaodMoalStatus({ ...config, hasLinuxWorker, gpuOptions: [] });
-      }
-    },
-    [workersList]
-  );
+  const handleClickDropdown = (item: any) => {
+    const config = modalConfig[item.key];
+    const hasLinuxWorker = workersList.some(
+      (worker) => _.toLower(worker.labels?.os) === 'linux'
+    );
+    if (config) {
+      setDownlaodMoalStatus({ ...config, hasLinuxWorker });
+    }
+  };
 
   const handleDownloadCancel = () => {
     setDownlaodMoalStatus({
@@ -709,6 +667,7 @@ const ModelFiles = () => {
           width={downloadModalStatus.width}
           hasLinuxWorker={downloadModalStatus.hasLinuxWorker}
           workersList={readyWorkers}
+          workerOptions={workerOptions}
         ></DownloadModal>
         <DeployModal
           deploymentType="modelFiles"
@@ -719,10 +678,9 @@ const ModelFiles = () => {
           action={PageAction.CREATE}
           source={openDeployModal.source}
           width={openDeployModal.width}
-          gpuOptions={openDeployModal.gpuOptions}
-          modelFileOptions={openDeployModal.modelFileOptions || []}
           initialValues={openDeployModal.initialValues}
           isGGUF={openDeployModal.isGGUF}
+          clusterList={clusterList}
         ></DeployModal>
       </PageContainer>
     </>

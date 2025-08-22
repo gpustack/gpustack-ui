@@ -199,7 +199,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     try {
       const params = {
         Name: `${searchInputRef.current}`,
-        tags: [],
+        tags: ['gptq'],
         tasks: filterTaskRef.current
           ? ([ModelscopeTaskMap[filterTaskRef.current]] as string[])
           : [],

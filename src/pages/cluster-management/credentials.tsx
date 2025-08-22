@@ -1,30 +1,19 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
-import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
-import PageTools from '@/components/page-tools';
+import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import {
   DeleteOutlined,
-  DownOutlined,
   EditOutlined,
-  KubernetesOutlined,
-  SyncOutlined
+  KubernetesOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  ConfigProvider,
-  Empty,
-  Input,
-  Space,
-  Table,
-  message
-} from 'antd';
+import { ConfigProvider, Empty, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import {
@@ -34,6 +23,7 @@ import {
   updateCredential
 } from './apis';
 import AddModal from './components/add-credential';
+import { ProviderValueMap } from './config';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
@@ -99,26 +89,22 @@ const Credentials: React.FC = () => {
     open: boolean;
     action: PageActionType;
     title: string;
+    currentData: ListItem | undefined;
   }>({
     provider: '',
     open: false,
     action: PageAction.CREATE,
-    title: ''
+    title: '',
+    currentData: undefined
   });
-  const [currentData, setCurrentData] = useState<ListItem | undefined>(
-    undefined
-  );
 
-  const handleAddCredential = (value: string) => {
-    const title =
-      value === 'digital_ocean'
-        ? 'Add Digital Ocean Credential'
-        : 'Add Kubernetes Credential';
+  const handleAddCredential = () => {
     setOpenModalStatus({
-      provider: value,
+      provider: ProviderValueMap.DigitalOcean,
       open: true,
       action: PageAction.CREATE,
-      title: title
+      title: 'Add Cloud Credential',
+      currentData: undefined
     });
   };
 
@@ -132,7 +118,7 @@ const Credentials: React.FC = () => {
           data: {
             ...params
           },
-          id: currentData!.id
+          id: openModalStatus.currentData!.id
         });
       } else {
         await createCredential({ data: params });
@@ -151,12 +137,12 @@ const Credentials: React.FC = () => {
   };
 
   const handleEditUser = (row: ListItem) => {
-    setCurrentData(row);
     setOpenModalStatus({
       provider: row.provider,
       open: true,
       action: PageAction.EDIT,
-      title: `Edit ${row.provider} Credential`
+      title: `Edit ${row.name} Credential`,
+      currentData: row
     });
   };
 
@@ -180,11 +166,6 @@ const Credentials: React.FC = () => {
     return <div></div>;
   };
 
-  const handleClickDropdown = (e: any) => {
-    const value = e.key;
-    handleAddCredential(value);
-  };
-
   return (
     <>
       <PageContainer
@@ -200,58 +181,20 @@ const Credentials: React.FC = () => {
         }}
         extra={[]}
       >
-        <PageTools
+        <FilterBar
+          showSelect={false}
+          showPrimaryButton={true}
           marginBottom={22}
-          left={
-            <Space>
-              <Input
-                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 300 }}
-                allowClear
-                onChange={handleNameChange}
-              ></Input>
-              <Button
-                type="text"
-                style={{ color: 'var(--ant-color-text-tertiary)' }}
-                onClick={handleSearch}
-                icon={<SyncOutlined></SyncOutlined>}
-              ></Button>
-            </Space>
-          }
-          right={
-            <Space size={20}>
-              <DropDownActions
-                menu={{
-                  items: addActions,
-                  onClick: handleClickDropdown
-                }}
-                trigger={['hover']}
-                placement="bottomRight"
-              >
-                <Button
-                  icon={<DownOutlined></DownOutlined>}
-                  type="primary"
-                  iconPosition="end"
-                >
-                  Add Credential
-                </Button>
-              </DropDownActions>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={handleDeleteBatch}
-                disabled={!rowSelection.selectedRowKeys.length}
-              >
-                <span>
-                  {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                  {rowSelection.selectedRowKeys.length > 0 && (
-                    <span>({rowSelection.selectedRowKeys?.length})</span>
-                  )}
-                </span>
-              </Button>
-            </Space>
-          }
-        ></PageTools>
+          marginTop={30}
+          buttonText={'Add Cloud Credential'}
+          handleDeleteByBatch={handleDeleteBatch}
+          handleSearch={handleSearch}
+          handleInputChange={handleNameChange}
+          handleClickPrimary={handleAddCredential}
+          rowSelection={rowSelection}
+          width={{ input: 300 }}
+        ></FilterBar>
+
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             dataSource={dataSource.dataList}
@@ -355,7 +298,7 @@ const Credentials: React.FC = () => {
         open={openModalStatus.open}
         action={openModalStatus.action}
         title={openModalStatus.title}
-        data={currentData}
+        currentData={openModalStatus.currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddModal>

@@ -3,26 +3,19 @@ import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { queryWorkersList } from '@/pages/resources/apis';
 import { ListItem as WokerListItem } from '@/pages/resources/config/types';
-import { IS_FIRST_LOGIN, readState } from '@/utils/localstore';
 import _ from 'lodash';
 import qs from 'query-string';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
-  queryCatalogItemSpec,
-  queryCatalogList,
   queryModelsInstances,
   queryModelsList
 } from './apis';
 import TableList from './components/table-list';
-import { backendOptionsMap } from './config';
 import { ListItem } from './config/types';
-import { useGenerateModelFileOptions } from './hooks';
 
 const Models: React.FC = () => {
-  const { getModelFileList, generateModelFileOptions } =
-    useGenerateModelFileOptions();
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
@@ -41,9 +34,7 @@ const Models: React.FC = () => {
     total: 0
   });
 
-  const [catalogList, setCatalogList] = useState<any[]>([]);
   const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
-  const [modelFileOptions, setModelFileOptions] = useState<any[]>([]);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
   const isPageHidden = useRef(false);
@@ -168,19 +159,19 @@ const Models: React.FC = () => {
     [queryParams]
   );
 
+  const handleQueryChange = (params: any) => {
+    setQueryParams({
+      ...queryParams,
+      ...params
+    });
+    fetchData({ query: { ...queryParams, ...params } });
+  };
+
   const handlePageChange = useCallback(
     (page: number, pageSize: number | undefined) => {
-      setQueryParams({
-        ...queryParams,
+      handleQueryChange({
         page: page,
         perPage: pageSize || 10
-      });
-      fetchData({
-        query: {
-          ...queryParams,
-          page: page,
-          perPage: pageSize || 10
-        }
       });
     },
     [queryParams]
@@ -269,17 +260,9 @@ const Models: React.FC = () => {
   );
 
   const debounceUpdateFilter = _.debounce((e: any) => {
-    setQueryParams({
-      ...queryParams,
+    handleQueryChange({
       page: 1,
       search: e.target.value
-    });
-    fetchData({
-      query: {
-        ...queryParams,
-        page: 1,
-        search: e.target.value
-      }
     });
     createModelsChunkRequest({
       search: e.target.value,
@@ -289,27 +272,27 @@ const Models: React.FC = () => {
 
   const handleNameChange = useCallback(debounceUpdateFilter, [queryParams]);
 
-  const handleCategoryChange = useCallback(
-    async (value: any) => {
-      setQueryParams({
-        ...queryParams,
-        page: 1,
-        categories: value
-      });
-      fetchData({
-        query: {
-          ...queryParams,
-          page: 1,
-          categories: value
-        }
-      });
-      createModelsChunkRequest({
-        search: queryParams.search,
-        categories: value
-      });
-    },
-    [queryParams]
-  );
+  const handleCategoryChange = async (value: any) => {
+    handleQueryChange({
+      page: 1,
+      categories: value
+    });
+    createModelsChunkRequest({
+      search: queryParams.search,
+      categories: value
+    });
+  };
+
+  const handleClusterChange = async (value: any) => {
+    handleQueryChange({
+      page: 1,
+      cluster_id: value
+    });
+    createModelsChunkRequest({
+      search: queryParams.search,
+      cluster_id: value
+    });
+  };
 
   useEffect(() => {
     let timer: any = null;
@@ -345,55 +328,12 @@ const Models: React.FC = () => {
       }
     };
 
-    // get catalog list
-    const getCataLogList = async () => {
-      const isFirstLogin = readState(IS_FIRST_LOGIN);
-      if (!isFirstLogin) {
-        return;
-      }
-      try {
-        const res: any = await queryCatalogList({
-          search: 'DeepSeek R1',
-          page: 1
-        });
-        if (!res?.items?.length) {
-          return [];
-        }
-        const name = _.toLower(res?.items[0]?.name).replace(/\s/g, '-') || '';
-        const catalogSpecs: any = await queryCatalogItemSpec({
-          id: res?.items[0]?.id
-        });
-        const list = catalogSpecs?.items?.map((item: any) => {
-          item.name = name;
-          return item;
-        });
-        const deepseekr1dstill = _.toLower('DeepSeek-R1-Distill-Qwen-1.5B');
-        const resultList = list?.filter((item: any) => {
-          return (
-            item.backend === backendOptionsMap.llamaBox &&
-            (_.toLower(item?.huggingface_repo_id)?.indexOf(deepseekr1dstill) >
-              -1 ||
-              _.toLower(item?.model_scope_model_id)?.indexOf(deepseekr1dstill) >
-                -1)
-          );
-        });
-        return resultList || [];
-      } catch (error) {
-        // ignore
-        return [];
-      }
-    };
-
     const init = async () => {
-      const [modelRes, workerRes, modelFileList] = await Promise.all([
+      const [modelRes, workerRes] = await Promise.all([
         getTableData(),
-        getWorkerList(),
-        getModelFileList()
+        getWorkerList()
       ]);
-      const dataList = generateModelFileOptions(
-        modelFileList,
-        workerRes.items || []
-      );
+
       setDataSource({
         dataList: modelRes.items || [],
         loading: false,
@@ -402,7 +342,6 @@ const Models: React.FC = () => {
         deletedIds: []
       });
       setWorkerList(workerRes.items || []);
-      setModelFileOptions(dataList);
 
       clearTimeout(timer);
       timer = setTimeout(() => {
@@ -464,6 +403,7 @@ const Models: React.FC = () => {
         dataSource={dataSource.dataList}
         handleNameChange={handleNameChange}
         handleCategoryChange={handleCategoryChange}
+        handleClusterChange={handleClusterChange}
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}
@@ -478,8 +418,6 @@ const Models: React.FC = () => {
         total={dataSource.total}
         deleteIds={dataSource.deletedIds}
         workerList={workerList}
-        modelFileOptions={modelFileOptions}
-        catalogList={catalogList}
       ></TableList>
     </TableContext.Provider>
   );

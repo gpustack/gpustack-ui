@@ -1,18 +1,22 @@
 import ScrollerModal from '@/components/scroller-modal/index';
 import React from 'react';
-import { ClusterListItem as ListItem } from '../config/types';
 import RegisterClusterInner from './resiter-cluster-inner';
 
 type AddModalProps = {
   title: string;
   open: boolean;
-  data: ListItem;
+  registrationInfo: {
+    token: string;
+    image: string;
+    server_url: string;
+    cluster_id: number;
+  };
   onCancel: () => void;
 };
 const AddCluster: React.FC<AddModalProps> = ({
   title,
   open,
-  data,
+  registrationInfo,
   onCancel
 }) => {
   const handleCancel = () => {
@@ -31,7 +35,7 @@ const AddCluster: React.FC<AddModalProps> = ({
       width={600}
       footer={false}
     >
-      <RegisterClusterInner data={data} />
+      <RegisterClusterInner registrationInfo={registrationInfo} />
     </ScrollerModal>
   );
 };

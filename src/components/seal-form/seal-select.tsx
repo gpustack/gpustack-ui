@@ -46,7 +46,10 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   }, [options, intl]);
 
   useEffect(() => {
-    if (isNotEmptyValue(props.value) || (allowNull && props.value === null)) {
+    if (
+      isNotEmptyValue(props.value) ||
+      (allowNull && (props.value === null || props.value === undefined))
+    ) {
       setIsFocus(true);
     }
   }, [props.value, allowNull]);

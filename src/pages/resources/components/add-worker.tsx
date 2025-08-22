@@ -5,12 +5,16 @@ import ContainerInstall from './container-install';
 
 type ViewModalProps = {
   open: boolean;
-  token: string;
+  registrationInfo: {
+    token: string;
+    image: string;
+    server_url: string;
+  };
   onCancel: () => void;
 };
 
 const AddWorker: React.FC<ViewModalProps> = (props) => {
-  const { open, onCancel, token = '${token}' } = props || {};
+  const { open, onCancel, registrationInfo } = props || {};
   const intl = useIntl();
 
   return (
@@ -30,7 +34,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       maxContentHeight={450}
       footer={null}
     >
-      <ContainerInstall token={token} />
+      <ContainerInstall registrationInfo={registrationInfo} />
     </ScrollerModal>
   );
 };

@@ -1,30 +1,19 @@
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import { queryModelFilesList, queryWorkersList } from '@/pages/resources/apis';
-import {
-  WorkerStatusMap,
-  WorkerStatusMapValue
-} from '@/pages/resources/config';
+import { queryModelFilesList } from '@/pages/resources/apis';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
-import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { evaluationsModelSpec, queryGPUList } from '../apis';
+import { evaluationsModelSpec } from '../apis';
 import {
   backendOptionsMap,
   getSourceRepoConfigValue,
   modelSourceMap,
-  modelTaskMap,
-  setSourceRepoConfigValue
+  modelTaskMap
 } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
-import {
-  EvaluateResult,
-  FormData,
-  GPUListItem,
-  ListItem
-} from '../config/types';
+import { EvaluateResult, FormData } from '../config/types';
 
 export type MessageStatus = {
   show: boolean;
@@ -39,123 +28,6 @@ export type MessageStatus = {
 export type WarningStausOptions = {
   lockAfterUpdate?: boolean;
   override?: boolean;
-};
-
-export const useGenerateFormEditInitialValues = () => {
-  const gpuDeviceList = useRef<any[]>([]);
-  const workerList = useRef<any[]>([]);
-
-  const generateCascaderOptions = (
-    list: GPUListItem[],
-    workerList: WorkerListItem[]
-  ) => {
-    // pick the worker fields from gpuList
-    const workerFields = new Set(['worker_name', 'worker_id', 'worker_ip']);
-
-    // generate a map for workerList by name to data
-    const workerDataMap = new Map<string, WorkerListItem>();
-    for (const worker of workerList) {
-      workerDataMap.set(worker.name, worker);
-    }
-
-    const workersMap = new Map<string, GPUListItem[]>();
-    for (const gpu of list) {
-      if (!workersMap.has(gpu.worker_name)) {
-        workersMap.set(gpu.worker_name, []);
-      }
-      workersMap.get(gpu.worker_name)!.push(gpu);
-    }
-
-    const gpuSelectorList = Array.from(workersMap.entries()).map(
-      ([workerName, items]) => {
-        const firstItem = items[0];
-        const currentState = workerDataMap.get(workerName)?.state || '';
-        const disDisabled = WorkerStatusMap.ready !== currentState;
-        return {
-          label: disDisabled
-            ? `${workerName} [${WorkerStatusMapValue[currentState]}]`
-            : workerName,
-          value: workerName,
-          parent: true,
-          disabled: disDisabled,
-          children: items
-            .map((item) => ({
-              label: item.name,
-              value: item.id,
-              index: item.index,
-              ...Object.fromEntries(
-                Object.entries(item).filter(([key]) => !workerFields.has(key))
-              )
-            }))
-            .sort((a, b) => a.index - b.index),
-          ...Object.fromEntries(
-            Object.entries(firstItem).filter(([key]) => workerFields.has(key))
-          )
-        };
-      }
-    );
-
-    return gpuSelectorList;
-  };
-
-  const getGPUList = async () => {
-    const [gpuData, workerData] = await Promise.all([
-      queryGPUList({ page: 1, perPage: 100 }),
-      queryWorkersList({ page: 1, perPage: 100 })
-    ]);
-    const gpuList = generateCascaderOptions(gpuData.items, workerData.items);
-
-    gpuDeviceList.current = gpuList;
-    workerList.current = workerData.items;
-
-    return gpuList;
-  };
-
-  const generateGPUSelector = (data: any, gpuOptions: any[]) => {
-    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-    if (gpu_ids.length === 0) {
-      return [];
-    }
-
-    const valueMap = new Map<string, string>();
-    gpuOptions?.forEach((item) => {
-      item.children?.forEach((child: any) => {
-        valueMap.set(child.value, item.value);
-      });
-    });
-
-    const gpuids: string[][] = gpu_ids
-      .map((id: string) => {
-        const parent = valueMap.get(id);
-        return parent ? [parent, id] : null;
-      })
-      .filter(Boolean) as string[][];
-
-    return data.backend === backendOptionsMap.voxBox ? gpuids[0] : gpuids;
-  };
-
-  const generateFormValues = (data: ListItem, gpuOptions: any[]) => {
-    const result = setSourceRepoConfigValue(data?.source || '', data);
-
-    const formData = {
-      ...result.values,
-      categories: data?.categories?.length ? data.categories[0] : null,
-      scheduleType: data?.gpu_selector ? 'manual' : 'auto',
-      gpu_selector: data?.gpu_selector?.gpu_ids?.length
-        ? {
-            gpu_ids: generateGPUSelector(data, gpuOptions)
-          }
-        : null
-    };
-    return formData;
-  };
-
-  return {
-    getGPUList,
-    generateFormValues,
-    gpuDeviceList,
-    workerList
-  };
 };
 
 export const useGenerateModelFileOptions = () => {
@@ -514,25 +386,6 @@ export const useCheckCompatibility = () => {
     return null;
   };
 
-  const checkRequiredValue = (allValues: any) => {
-    const { scheduleType } = allValues;
-    const gpuIds = allValues.gpu_selector?.gpu_ids || [];
-
-    const noLocalValue =
-      allValues.source === modelSourceMap.local_path_value &&
-      !allValues.local_path;
-
-    const noOllamaValue =
-      allValues.source === modelSourceMap.ollama_library_value &&
-      !allValues.ollama_library_model_name;
-
-    if (scheduleType === 'manual') {
-      return !gpuIds.length || noLocalValue || noOllamaValue;
-    }
-
-    return noLocalValue || noOllamaValue;
-  };
-
   const clearCahceFormValues = () => {
     cacheFormValuesRef.current = {};
   };
@@ -584,11 +437,6 @@ export const useCheckCompatibility = () => {
     setWarningStatus?.(res);
     return res;
   };
-
-  const { run: debounceHandleValuesChange } = useDebounceFn(
-    handleOnValuesChange,
-    { wait: 500 }
-  );
 
   const cancelEvaluate = () => {
     // update the requestId to cancel the current evaluation

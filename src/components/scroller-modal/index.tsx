@@ -56,10 +56,12 @@ const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
         body: {
           padding: '0'
         },
-        footer: {
-          padding: '12px 24px 24px',
-          margin: '0'
-        }
+        footer: props.footer
+          ? {
+              padding: '12px 24px 24px',
+              margin: '0'
+            }
+          : {}
       }}
     >
       <Wrapper

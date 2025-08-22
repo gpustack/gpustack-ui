@@ -9,7 +9,11 @@ import { addWorkerGuide, containerInstallOptions } from '../config';
 import './styles/installation.less';
 
 type ViewModalProps = {
-  token: string;
+  registrationInfo: {
+    token: string;
+    image: string;
+    server_url: string;
+  };
 };
 
 const npuOptions = [
@@ -18,6 +22,7 @@ const npuOptions = [
 ];
 
 const AddWorker: React.FC<ViewModalProps> = (props) => {
+  const { registrationInfo } = props || {};
   const intl = useIntl();
 
   const origin = window.location.origin;
@@ -40,12 +45,18 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     const tag = activeKey === 'cuda' ? version : `${version}-${activeKey}`;
 
     return commandCode?.registerWorker({
-      server: origin,
+      server: registrationInfo.server_url || origin,
       tag: tag,
-      token: props.token || '${token}',
+      token: registrationInfo.token || '${token}',
       workerip: '${workerip}'
     });
-  }, [versionInfo, activeKey, props.token, npuKey]);
+  }, [
+    versionInfo,
+    activeKey,
+    registrationInfo.token,
+    registrationInfo.server_url,
+    npuKey
+  ]);
 
   const handleOnChange = (value: string | number) => {
     setNpuKey(value as string);
@@ -53,7 +64,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
 
   return (
     <div className="container-install">
-      <h3 className="m-t-10 font-size-14 font-600">
+      <h3 className="m-t-0 font-size-14 font-600">
         1. {intl.formatMessage({ id: 'resources.worker.add.step2' })}{' '}
         <span
           className="font-size-12"

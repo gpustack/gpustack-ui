@@ -19,6 +19,7 @@ type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
+  currentData?: ListItem; // Used when action is EDIT
   provider: string; // 'kubernetes' | 'custom' | 'digitalocean';
   onOk: (values: FormData) => void;
   onCancel: () => void;
@@ -28,6 +29,7 @@ const AddCluster: React.FC<AddModalProps> = ({
   action,
   open,
   provider,
+  currentData,
   onOk,
   onCancel
 }) => {
@@ -36,10 +38,18 @@ const AddCluster: React.FC<AddModalProps> = ({
   const [submissionStatus, setSubmissionStatus] = React.useState<{
     success: boolean;
     data: ListItem;
-  }>({ success: true, data: {} as ListItem });
+  }>({ success: false, data: {} as ListItem });
 
   const handleSubmit = () => {
     form.submit();
+  };
+
+  const handleOk = async (data: FormData) => {
+    console.log('handleOk===', data);
+    onOk({
+      ...data,
+      provider
+    });
   };
 
   const handleCancel = () => {
@@ -109,9 +119,14 @@ const AddCluster: React.FC<AddModalProps> = ({
       {submissionStatus.success ? (
         renderAddWorkerContent()
       ) : (
-        <Form form={form} onFinish={onOk} preserve={false}>
+        <Form
+          form={form}
+          onFinish={handleOk}
+          preserve={false}
+          initialValues={currentData}
+        >
           <Form.Item<FormData>
-            name="display_name"
+            name="name"
             rules={[
               {
                 required: true,
@@ -129,7 +144,7 @@ const AddCluster: React.FC<AddModalProps> = ({
               required
             ></SealInput.Input>
           </Form.Item>
-          {provider === 'digitalocean' && (
+          {provider === ProviderValueMap.DigitalOcean && (
             <CloudProvider provider={provider}></CloudProvider>
           )}
           <Form.Item<FormData> name="description" rules={[{ required: false }]}>

@@ -1,4 +1,3 @@
-import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -7,8 +6,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { backendOptionsMap } from '../config';
-import { useFormContext } from '../config/form-context';
-import { FormData } from '../config/types';
+import { useFormContext, useFormInnerContext } from '../config/form-context';
 import GPUCard from './gpu-card';
 
 const scheduleTypeTips = [
@@ -30,13 +28,8 @@ const scheduleTypeTips = [
 
 const Performance: React.FC = () => {
   const intl = useIntl();
-  const {
-    onValuesChange,
-    onQuantizationChange,
-    gpuOptions,
-    source,
-    quantizationOptions
-  } = useFormContext();
+  const { gpuOptions } = useFormInnerContext();
+  const { onValuesChange, onQuantizationChange } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
 
@@ -167,7 +160,7 @@ const Performance: React.FC = () => {
             </Form.Item>
           </>
         )}
-      <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
+      {/* <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
         <Form.Item<FormData>
           name="optimize_long_prompt"
           valuePropName="checked"
@@ -192,7 +185,7 @@ const Performance: React.FC = () => {
             })}
           ></CheckboxField>
         </Form.Item>
-      </div>
+      </div> */}
     </>
   );
 };

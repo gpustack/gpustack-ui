@@ -6,6 +6,8 @@ import {
   EditOutlined,
   ExperimentOutlined,
   FileTextOutlined,
+  KubernetesOutlined,
+  ProfileOutlined,
   RetweetOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
@@ -20,6 +22,8 @@ const icons = {
   DownloadOutlined: React.createElement(DownloadOutlined),
   FileTextOutlined: React.createElement(FileTextOutlined),
   ApiOutlined: React.createElement(ApiOutlined),
+  KubernetesOutlined: React.createElement(KubernetesOutlined),
+  ProfileOutlined: React.createElement(ProfileOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),
   Catalog: React.createElement(IconFont, { type: 'icon-catalog' }),
@@ -29,7 +33,9 @@ const icons = {
   LocalPath: React.createElement(IconFont, { type: 'icon-hard-disk' }),
   Launch: React.createElement(IconFont, { type: 'icon-rocket-launch' }),
   Deployment: React.createElement(IconFont, { type: 'icon-rocket-launch1' }),
-  Docker: React.createElement(IconFont, { type: 'icon-docker' })
+  Docker: React.createElement(IconFont, { type: 'icon-docker' }),
+  DigitalOcean: React.createElement(IconFont, { type: 'icon-digitalocean' }),
+  DetailInfo: React.createElement(IconFont, { type: 'icon-detail-info' })
 };
 
 export default icons;

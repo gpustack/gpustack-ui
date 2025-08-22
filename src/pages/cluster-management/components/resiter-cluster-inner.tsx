@@ -1,41 +1,39 @@
 import HighlightCode from '@/components/highlight-code';
-import React, { useEffect } from 'react';
-import { queryClusterToken } from '../apis';
+import React, { useMemo } from 'react';
+import styled from 'styled-components';
 import { generateRegisterCommand } from '../config';
-import { ClusterListItem as ListItem } from '../config/types';
+
+const Title = styled.h3`
+  font-weight: 600;
+  color: var(--ant-color-text);
+  margin-bottom: 12px;
+  margin-top: 12px;
+  font-size: var(--font-size-normal);
+  .ant-tag {
+    color: var(--ant-color-text-secondary);
+    font-weight: 400;
+  }
+`;
 
 type AddModalProps = {
-  data: ListItem;
+  registrationInfo: {
+    token: string;
+    image: string;
+    server_url: string;
+    cluster_id: number;
+  };
 };
-const AddCluster: React.FC<AddModalProps> = ({ data }) => {
-  const [code, setCode] = React.useState<string>('');
-  const getToken = async () => {
-    const res = await queryClusterToken(data?.id);
-    return res.data?.token || '';
-  };
+const AddCluster: React.FC<AddModalProps> = ({ registrationInfo }) => {
+  const code = useMemo(() => {
+    return generateRegisterCommand({
+      server: registrationInfo?.server_url || window.location.origin,
+      clusterId: registrationInfo?.cluster_id,
+      registrationToken: registrationInfo?.token
+    });
+  }, [registrationInfo]);
 
-  const getCode = async () => {
-    try {
-      const token = await getToken();
-      const command = generateRegisterCommand({
-        server: window.location.origin,
-        clusterId: data?.id || 0,
-        registrationToken: token
-      });
-      setCode(command);
-    } catch (error) {
-      setCode(
-        generateRegisterCommand({
-          server: window.location.origin,
-          clusterId: data?.id || 0,
-          registrationToken: '{token}'
-        })
-      );
-    }
-  };
-
-  useEffect(() => {
-    getCode();
+  const applyCommand = useMemo(() => {
+    return `kubectl apply -f manifest.yaml`;
   }, []);
 
   return (

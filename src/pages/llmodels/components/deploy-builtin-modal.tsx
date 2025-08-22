@@ -2,6 +2,7 @@ import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { CloseOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
@@ -17,11 +18,8 @@ import {
 } from '../config';
 import { FormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
-import {
-  checkOnlyAscendNPU,
-  useCheckCompatibility,
-  useGenerateFormEditInitialValues
-} from '../hooks';
+import { useCheckCompatibility } from '../hooks';
+import useFormInitialValues from '../hooks/use-form-initial-values';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
@@ -104,10 +102,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleOnValuesChange,
     warningStatus
   } = useCheckCompatibility();
+  const { getClusterList, clusterList } = useFormInitialValues();
   const intl = useIntl();
-  const { getGPUList } = useGenerateFormEditInitialValues();
   const form = useRef<any>({});
-  const [gpuOptions, setGpuOptions] = useState<any[]>([]);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [sourceList, setSourceList] = useState<any[]>([]);
   const [backendList, setBackendList] = useState<any[]>([]);
@@ -159,15 +156,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       data.category === modelCategoriesMap.reranker
     ) {
       return EmbeddingRerankFirstQuant.includes(_.toUpper(data.quantOption));
-    }
-
-    if (
-      data.backend === backendOptionsMap.llamaBox &&
-      checkOnlyAscendNPU(gpuOptions)
-    ) {
-      return hasF16Ref.current
-        ? AscendNPUQuant_F16.includes(_.toUpper(data.quantOption))
-        : AscendNPUQuant_Q8.includes(_.toUpper(data.quantOption));
     }
 
     return defaultQuant.includes(_.toUpper(data.quantOption));
@@ -360,6 +348,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleCheckFormData();
   };
 
+  const initClusterId = () => {
+    const cluster_id =
+      clusterList?.find((item) => item.provider === ProviderValueMap.Custom)
+        ?.value || clusterList?.[0]?.value;
+
+    console.log('cluster_id:', cluster_id);
+    return cluster_id;
+  };
+
   const fetchSpecData = async () => {
     try {
       axiosToken.current?.cancel?.();
@@ -407,7 +404,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         size: defaultSpec.size,
         backend: defaultSpec.backend
       });
-      initFormDataBySource(defaultSpec);
+      initFormDataBySource({
+        ...defaultSpec,
+        cluster_id: initClusterId()
+      });
 
       const name = _.toLower(current.name).replace(/\s/g, '-') || '';
       form.current.setFieldValue('name', name);
@@ -420,6 +420,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       const allValues = generateSubmitData({
         ...defaultSpec,
         categories: _.get(current, 'categories.0', null),
+        cluster_id: initClusterId(),
         name
       });
       handleCheckCompatibility(allValues);
@@ -484,7 +485,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   useEffect(() => {
     if (open) {
-      fetchSpecData();
+      setTimeout(() => {
+        fetchSpecData();
+      }, 100);
     }
     return () => {
       axiosToken.current?.cancel?.();
@@ -498,9 +501,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, [open, current]);
 
   useEffect(() => {
-    getGPUList().then((data) => {
-      setGpuOptions(data);
-    });
+    getClusterList();
   }, []);
 
   return (
@@ -608,7 +609,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 sourceDisable={false}
                 backendOptions={backendList}
                 sourceList={sourceList}
-                gpuOptions={gpuOptions}
+                clusterList={clusterList}
                 onBackendChange={handleBackendChange}
                 onSourceChange={handleSourceChange}
                 onValuesChange={onValuesChange}

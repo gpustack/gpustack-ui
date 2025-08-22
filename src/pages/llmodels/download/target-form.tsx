@@ -13,11 +13,12 @@ interface TargetFormProps {
   ref?: any;
   workersList: Global.BaseOption<number>[];
   source: string;
+  workerOptions: any[];
   onOk: (values: any) => void;
 }
 
 const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
-  const { onOk, source, workersList } = props;
+  const { onOk, source, workersList, workerOptions } = props;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const [form] = Form.useForm();
@@ -115,13 +116,24 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             }
           ]}
         >
-          {
-            <SealSelect
-              label="Worker"
-              options={workersList}
-              required
-            ></SealSelect>
-          }
+          <SealSelect
+            label="Worker"
+            options={workersList}
+            required
+          ></SealSelect>
+          {/* <SealCascader
+            required
+            showSearch
+            expandTrigger="hover"
+            multiple={false}
+            popupClassName="cascader-popup-wrapper gpu-selector"
+            maxTagCount={1}
+            label="Worker"
+            options={workerOptions}
+            showCheckedStrategy="SHOW_CHILD"
+            value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          ></SealCascader> */}
         </Form.Item>
         {source !== modelSourceMap.local_path_value && (
           <Form.Item<FormData>

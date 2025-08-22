@@ -20,6 +20,7 @@ export interface ListItem {
   name: string;
   description: string;
   id: number;
+  cluster_id: number;
   local_path?: string;
   created_at: string;
   updated_at: string;
@@ -69,6 +70,7 @@ export interface FormData {
   description: string;
   optimize_long_prompt: boolean;
   enable_speculative_decoding: boolean;
+  cluster_id: number;
 }
 
 interface ComputedResourceClaim {

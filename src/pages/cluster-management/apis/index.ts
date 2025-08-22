@@ -8,13 +8,13 @@ import {
   NodePoolListItem
 } from '../config/types';
 
-export const CREDENTIALS_API = '/credentials';
+export const CREDENTIALS_API = '/cloud-credentials';
 
 export const CLUSTERS_API = '/clusters';
 
 export const WORKER_POOLS_API = '/worker-pools';
 
-export const CLUSTER_TOKEN = 'registration_token';
+export const CLUSTER_TOKEN = 'registration-token';
 
 // ===================== Credentials =====================
 
@@ -89,8 +89,8 @@ export async function queryClusterDetail(id: number) {
   });
 }
 
-export async function queryClusterToken(id: number) {
-  return request(`${CLUSTERS_API}/${id}/${CLUSTER_TOKEN}`, {
+export async function queryClusterToken(params: { id: number }) {
+  return request(`${CLUSTERS_API}/${params.id}/${CLUSTER_TOKEN}`, {
     method: 'GET'
   });
 }

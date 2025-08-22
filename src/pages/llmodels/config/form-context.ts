@@ -8,7 +8,6 @@ interface FormContextProps {
   pageAction: PageActionType;
   sizeOptions?: Global.BaseOption<number>[];
   quantizationOptions?: Global.BaseOption<string>[];
-  modelFileOptions?: any[];
   gpuOptions?: any[];
   onSizeChange?: (val: number) => void;
   onQuantizationChange?: (val: string) => void;

@@ -161,9 +161,9 @@ export default [
         name: 'clusters',
         path: '/cluster-management/clusters',
         key: 'clusters',
-        icon: 'icon-k8s-outline',
-        selectedIcon: 'icon-k8s-filled',
-        defaultIcon: 'icon-k8s-outline',
+        icon: 'icon-cluster2-outline',
+        selectedIcon: 'icon-cluster2-filled',
+        defaultIcon: 'icon-cluster2-outline',
         component: './cluster-management/clusters'
       },
       {

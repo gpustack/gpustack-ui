@@ -20,6 +20,7 @@ type AddModalProps = {
   width?: string | number;
   hasLinuxWorker?: boolean;
   workersList: Global.BaseOption<number>[];
+  workerOptions: any[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -33,7 +34,8 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     onCancel,
     hasLinuxWorker,
     source,
-    width = 600
+    width = 600,
+    workerOptions
   } = props || {};
   const SEARCH_SOURCE = [
     modelSourceMap.huggingface_value,
@@ -227,6 +229,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 onOk={handleOk}
                 source={source}
                 workersList={workersList}
+                workerOptions={workerOptions}
               ></TargetForm>
             </>
           </ColumnWrapper>

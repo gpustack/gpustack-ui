@@ -5,77 +5,21 @@ import StatusTag from '@/components/status-tag';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
 import { PageAction } from '@/config';
-import {
-  DeleteOutlined,
-  EditOutlined,
-  KubernetesOutlined
-} from '@ant-design/icons';
 import { Card as ACard, Col, Collapse, Row } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import { queryClusterToken } from '../apis';
 import {
   ClusterStatus,
   ClusterStatusLabelMap,
   ProviderLabelMap,
-  ProviderValueMap
+  ProviderValueMap,
+  poolActionList
 } from '../config';
 import { ClusterListItem as ListItem, NodePoolListItem } from '../config/types';
 import AddPool from './add-pool';
 import RegisterCluster from './register-cluster';
 import WorkerPools from './worker-pools';
-
-const actionItems = [
-  {
-    key: 'edit',
-    label: 'common.button.edit',
-    icon: <EditOutlined />
-  },
-  {
-    key: 'details',
-    label: 'common.button.view',
-    icon: <IconFont type="icon-detail-info" className="font-size-16" />
-  },
-  {
-    key: 'add_worker',
-    label: 'Add Worker',
-    provider: ProviderValueMap.Custom,
-    locale: false,
-    icon: <IconFont type="icon-docker" />
-  },
-  {
-    key: 'register_cluster',
-    label: 'Register Cluster',
-    provider: ProviderValueMap.Kubernetes,
-    locale: false,
-    icon: <KubernetesOutlined />
-  },
-  {
-    key: 'addPool',
-    label: 'Add Node Pool',
-    provider: ProviderValueMap.DigitalOcean,
-    locale: false,
-    icon: <IconFont type="icon-catalog1" />
-  },
-  {
-    key: 'delete',
-    label: 'common.button.delete',
-    icon: <DeleteOutlined />,
-    props: {
-      danger: true
-    }
-  }
-];
-
-const CollapseTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--font-size-middle);
-  font-weight: 500;
-  color: var(--ant-color-text);
-  height: 32px;
-  cursor: pointer;
-`;
 
 const Content = styled.div`
   display: flex;
@@ -216,11 +160,38 @@ const CardItem: React.FC<CardProps> = (props) => {
     open: false,
     action: PageAction.CREATE,
     title: '',
-    provider: 'digitalocean'
+    provider: ProviderValueMap.DigitalOcean
   });
-  const [registerClusterStatus, setRegisterClusterStatus] = React.useState({
-    open: false
+  const [registerClusterStatus, setRegisterClusterStatus] = React.useState<{
+    open: boolean;
+    registrationInfo: {
+      token: string;
+      image: string;
+      server_url: string;
+      cluster_id: number;
+    };
+  }>({
+    open: false,
+    registrationInfo: {
+      token: '',
+      image: '',
+      server_url: '',
+      cluster_id: 0
+    }
   });
+
+  const handleRegisterCluster = async () => {
+    try {
+      const info = await queryClusterToken({ id: data.id });
+      setRegisterClusterStatus({
+        open: true,
+        registrationInfo: {
+          ...info,
+          cluster_id: data.id
+        }
+      });
+    } catch (error) {}
+  };
 
   // cluster action handler
   const handleOnSelect = (key: string) => {
@@ -235,9 +206,7 @@ const CardItem: React.FC<CardProps> = (props) => {
     }
 
     if (key === 'register_cluster') {
-      setRegisterClusterStatus({
-        open: true
-      });
+      handleRegisterCluster();
       return;
     }
     onSelect?.(key, data);
@@ -256,7 +225,7 @@ const CardItem: React.FC<CardProps> = (props) => {
   };
 
   const actions = useMemo(() => {
-    return actionItems.filter((item) => {
+    return poolActionList.filter((item) => {
       if (item.provider) {
         return item.provider === data.provider;
       }
@@ -269,7 +238,7 @@ const CardItem: React.FC<CardProps> = (props) => {
       height={'auto'}
       clickable={false}
       ghost
-      footer={
+      footerHolder={
         <CollapseWrapper
           onChange={() => setShow(!show)}
           expandIconPosition="end"
@@ -340,11 +309,13 @@ const CardItem: React.FC<CardProps> = (props) => {
         <div className="title">
           <span className="flex-center gap-8">
             <span className="text">{data.name}</span>
-            <ThemeTag>{ProviderLabelMap[data.provider]}</ThemeTag>
+            <ThemeTag color="purple">
+              {ProviderLabelMap[data.provider]}
+            </ThemeTag>
             <StatusTag
               statusValue={{
-                status: ClusterStatus[data.status],
-                text: ClusterStatusLabelMap[data.status]
+                status: ClusterStatus[data.state],
+                text: ClusterStatusLabelMap[data.state]
               }}
             />
           </span>
@@ -359,15 +330,17 @@ const CardItem: React.FC<CardProps> = (props) => {
           <CardBox>
             <CardWrapper bordered={false}>
               <div className="label">Workers</div>
-              <div className="value">1/1</div>
+              <div className="value">
+                {data.ready_workers} / {data.workers}
+              </div>
             </CardWrapper>
             <CardWrapper bordered={false}>
               <div className="label">GPUs</div>
-              <div className="value">12</div>
+              <div className="value">{data.gpus}</div>
             </CardWrapper>
             <CardWrapper bordered={false}>
               <div className="label">Deployments</div>
-              <div className="value">2</div>
+              <div className="value">{data.models}</div>
             </CardWrapper>
           </CardBox>
         </Content>
@@ -397,10 +370,16 @@ const CardItem: React.FC<CardProps> = (props) => {
       <RegisterCluster
         title="Register Cluster"
         open={registerClusterStatus.open}
-        data={data}
+        registrationInfo={registerClusterStatus.registrationInfo}
         onCancel={() => {
           setRegisterClusterStatus({
-            open: false
+            open: false,
+            registrationInfo: {
+              token: '',
+              image: '',
+              server_url: '',
+              cluster_id: 0
+            }
           });
         }}
       ></RegisterCluster>

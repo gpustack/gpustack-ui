@@ -1,57 +1,29 @@
+import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
 
-export const ClusterDataList = [
-  {
-    id: 3,
-    name: 'Custom-cluster',
-    provider: 'custom',
-    clusterType: 'Custom',
-    workers: 4,
-    gpus: 8,
-    status: 'ready',
-    deployments: 3
-  },
-  {
-    id: 1,
-    name: 'kubernetes-cluster',
-    provider: 'kubernetes',
-    clusterType: 'Kubernetes',
-    workers: 2,
-    gpus: 4,
-    status: 'ready',
-    deployments: 1
-  },
-  {
-    id: 2,
-    name: 'Digital-Ocean-cluster',
-    provider: 'digitalocean',
-    workers: 3,
-    gpus: 6,
-    status: 'error',
-    deployments: 2
-  }
-];
-
 export const ClusterStatusValueMap = {
-  Ready: 'ready',
-  Error: 'error'
+  Provisioning: 0,
+  Ready: 3,
+  ProvisionedNotReady: 1
 };
 
 export const ClusterStatusLabelMap = {
+  [ClusterStatusValueMap.Provisioning]: 'Provisioning',
   [ClusterStatusValueMap.Ready]: 'Ready',
-  [ClusterStatusValueMap.Error]: 'Error'
+  [ClusterStatusValueMap.ProvisionedNotReady]: 'Provisioned Not Ready'
 };
 
 export const ClusterStatus: Record<string, StatusType> = {
+  [ClusterStatusValueMap.Provisioning]: StatusMaps.transitioning,
   [ClusterStatusValueMap.Ready]: StatusMaps.success,
-  [ClusterStatusValueMap.Error]: StatusMaps.error
+  [ClusterStatusValueMap.ProvisionedNotReady]: StatusMaps.error
 };
 
 export const ProviderValueMap = {
-  Kubernetes: 'kubernetes',
-  DigitalOcean: 'digitalocean',
-  Custom: 'custom'
+  Kubernetes: 'Kubernetes',
+  DigitalOcean: 'DigitalOcean',
+  Custom: 'Custom'
 };
 
 export const ProviderLabelMap = {
@@ -65,6 +37,72 @@ export const generateRegisterCommand = (params: {
   clusterId: number;
   registrationToken: string;
 }) => {
-  return `curl -k -L '${params.server}/v2/clusters/${params.clusterId}/manifests' \\
---header 'Authorization: Bearer ${params.registrationToken}'`;
+  return `curl -k -L '${params.server}/v1/clusters/${params.clusterId}/manifests' \\
+--header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
+
+export const addActions = [
+  {
+    label: 'Custom',
+    locale: false,
+    value: ProviderValueMap.Custom,
+    key: ProviderValueMap.Custom,
+    icon: icons.Docker
+  },
+  {
+    label: 'Kubernetes',
+    locale: false,
+    value: ProviderValueMap.Kubernetes,
+    key: ProviderValueMap.Kubernetes,
+    icon: icons.KubernetesOutlined
+  },
+  {
+    label: 'Digital Ocean',
+    locale: false,
+    value: ProviderValueMap.DigitalOcean,
+    key: ProviderValueMap.DigitalOcean,
+    icon: icons.DigitalOcean
+  }
+];
+
+export const poolActionList = [
+  {
+    key: 'edit',
+    label: 'common.button.edit',
+    icon: icons.EditOutlined
+  },
+  {
+    key: 'details',
+    label: 'common.button.view',
+    icon: icons.DetailInfo
+  },
+  {
+    key: 'add_worker',
+    label: 'Add Worker',
+    provider: ProviderValueMap.Custom,
+    locale: false,
+    icon: icons.Docker
+  },
+  {
+    key: 'register_cluster',
+    label: 'Register Cluster',
+    provider: ProviderValueMap.Kubernetes,
+    locale: false,
+    icon: icons.KubernetesOutlined
+  },
+  {
+    key: 'addPool',
+    label: 'Add Node Pool',
+    provider: ProviderValueMap.DigitalOcean,
+    locale: false,
+    icon: icons.Catalog
+  },
+  {
+    key: 'delete',
+    label: 'common.button.delete',
+    icon: icons.DeleteOutlined,
+    props: {
+      danger: true
+    }
+  }
+];

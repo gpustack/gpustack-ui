@@ -1,8 +1,8 @@
-import { getRequestId } from '@/atoms/models';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import useDeferredRequest from '@/hooks/use-deferred-request';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
@@ -68,10 +68,12 @@ type AddModalProps = {
   source: SourceType;
   isGGUF?: boolean;
   width?: string | number;
-  gpuOptions: any[];
-  modelFileOptions: any[];
   initialValues?: any;
   deploymentType?: 'modelList' | 'modelFiles';
+  clusterList: Global.BaseOption<
+    number,
+    { provider: string; state: string | number }
+  >[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -95,7 +97,8 @@ const AddModal: FC<AddModalProps> = (props) => {
     action,
     width = 600,
     deploymentType = 'modelList',
-    initialValues
+    initialValues,
+    clusterList
   } = props || {};
   const SEARCH_SOURCE = [
     modelSourceMap.huggingface_value,
@@ -113,7 +116,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
-  const { onSelectModel } = useSelectModel({ gpuOptions: props.gpuOptions });
+  const { onSelectModel } = useSelectModel({ gpuOptions: [] });
   const form = useRef<any>({});
   const intl = useIntl();
   const [selectedModel, setSelectedModel] = useState<any>({});
@@ -161,15 +164,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     evaluateStateRef.current = state;
   };
 
-  const updateEvaluateState = (state: EvaluateProccessType) => {
-    const currentRequestModelId = evaluateStateRef.current.requestModelId;
-    setEvaluteState({
-      ...evaluateStateRef.current,
-      state
-    });
-    return currentRequestModelId;
-  };
-
   const handleOnValuesChange = (data: {
     changedValues: any;
     allValues: any;
@@ -197,71 +191,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       return categories?.[0] || null;
     }
     return categories || null;
-  };
-
-  const { run: onSelectFile } = useDeferredRequest(
-    async (item: any, modelInfo: any, manual?: boolean) => {
-      unlockWarningStatus();
-
-      const evaluateRes = await handleOnValuesChangeBefore?.({
-        changedValues: {},
-        allValues: form.current?.form?.getFieldsValue?.(),
-        source: props.source
-      });
-      console.log('onSelectFile:', item, modelInfo, evaluateRes);
-
-      // for cancel evaluate request case
-      if (!evaluateRes) {
-        return;
-      }
-
-      const defaultSpec = getDefaultSpec({
-        evaluateResult: evaluateRes
-      });
-
-      /**
-       * do not reset backend_parameters when select a model file
-       */
-      const formValues = form.current?.getFieldsValue?.(pickFieldsFromSpec);
-
-      form.current?.setFieldsValue?.({
-        ..._.omit(modelInfo, ['name']),
-        file_name: item.fakeName,
-        backend_parameters:
-          formValues.backend_parameters?.length > 0
-            ? formValues.backend_parameters
-            : defaultSpec.backend_parameters || [],
-        backend_version:
-          formValues.backend_version || defaultSpec.backend_version,
-        env: formValues.env || defaultSpec.env,
-        categories: getCategory(item)
-      });
-    },
-    100
-  );
-
-  const handleSelectModelFile = async (
-    item: any,
-    options: { requestModelId: number; manual?: boolean }
-  ) => {
-    const { requestModelId, manual } = options || {};
-    if (requestModelId !== getRequestId()) {
-      return;
-    }
-    console.log('handleSelectModelFile:', item, selectedModel);
-
-    const modelInfo = onSelectModel(selectedModel, props.source);
-
-    form.current?.setFieldsValue?.({
-      ..._.omit(modelInfo, ['name']),
-      file_name: item.fakeName,
-      categories: getCategory(item)
-    });
-
-    // evaluate the form data when select a model file
-    if (item.fakeName) {
-      onSelectFile(item, modelInfo, manual);
-    }
   };
 
   const handleCancelFiles = () => {
@@ -441,22 +370,37 @@ const AddModal: FC<AddModalProps> = (props) => {
     onCancel?.();
   }, [onCancel]);
 
+  const initClusterId = () => {
+    const cluster_id =
+      clusterList?.find((item) => item.provider === ProviderValueMap.Custom)
+        ?.value || clusterList?.[0]?.value;
+
+    return cluster_id;
+  };
+
   const handleOnOpen = () => {
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
-        ...props.initialValues
+        ...props.initialValues,
+        cluster_id: initClusterId()
       });
       handleOnValuesChange?.({
         changedValues: {},
-        allValues: props.initialValues,
+        allValues: {
+          ...props.initialValues,
+          cluster_id: initClusterId()
+        },
         source: source
       });
     } else {
-      let backend = checkOnlyAscendNPU(props.gpuOptions)
+      let backend = checkOnlyAscendNPU([])
         ? backendOptionsMap.ascendMindie
         : backendOptionsMap.vllm;
 
-      form.current?.setFieldValue?.('backend', backend);
+      form.current?.setFieldsValue?.({
+        backend,
+        cluster_id: initClusterId()
+      });
     }
   };
 
@@ -483,6 +427,9 @@ const AddModal: FC<AddModalProps> = (props) => {
   useEffect(() => {
     if (open) {
       handleOnOpen();
+      form.current?.getGPUOptionList?.({
+        clusterId: initClusterId()
+      });
     } else {
       cancelEvaluate();
       clearCahceFormValues();
@@ -495,7 +442,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         message: []
       });
     };
-  }, [open, props.gpuOptions.length]);
+  }, [open, clusterList]);
 
   return (
     <GSDrawer
@@ -534,7 +481,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                       handleOnSelectModelAfterEvaluate
                     }
                     displayEvaluateStatus={displayEvaluateStatus}
-                    gpuOptions={props.gpuOptions}
+                    gpuOptions={[]}
                   ></SearchModel>
                 </ColumnWrapper>
                 <Separator></Separator>
@@ -559,8 +506,6 @@ const AddModal: FC<AddModalProps> = (props) => {
           value={{
             isGGUF: isGGUF,
             pageAction: action,
-            modelFileOptions: props.modelFileOptions,
-            gpuOptions: props.gpuOptions,
             onValuesChange: onValuesChange
           }}
         >
@@ -609,12 +554,11 @@ const AddModal: FC<AddModalProps> = (props) => {
                   initialValues={initialValues}
                   source={source}
                   action={action}
+                  clusterList={clusterList}
                   selectedModel={selectedModel}
                   onOk={handleOnOk}
                   ref={form}
                   isGGUF={isGGUF}
-                  gpuOptions={props.gpuOptions}
-                  modelFileOptions={props.modelFileOptions}
                   onBackendChange={handleBackendChange}
                   onValuesChange={onValuesChange}
                 ></DataForm>

@@ -15,27 +15,13 @@ import useTableSort from '@/hooks/use-table-sort';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import {
-  IS_FIRST_LOGIN,
-  readState,
-  writeState
-} from '@/utils/localstore/index';
-import {
   DownOutlined,
   QuestionCircleOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
-import {
-  Button,
-  Empty,
-  Input,
-  Select,
-  Space,
-  Tooltip,
-  Typography,
-  message
-} from 'antd';
+import { Button, Input, Select, Space, Tooltip, message } from 'antd';
 import dayjs from 'dayjs';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -76,7 +62,7 @@ import {
   ModelInstanceListItem,
   SourceType
 } from '../config/types';
-import { useGenerateFormEditInitialValues } from '../hooks';
+import useFormInitialValues from '../hooks/use-form-initial-values';
 import APIAccessInfoModal from './api-access-info';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
@@ -88,6 +74,7 @@ interface ModelsProps {
   handleNameChange: (e: any) => void;
   handleShowSizeChange?: (page: number, size: number) => void;
   handlePageChange: (page: number, pageSize: number | undefined) => void;
+  handleClusterChange: (value: number) => void;
   handleDeleteSuccess: () => void;
   handleCategoryChange: (val: any) => void;
   onViewLogs: () => void;
@@ -103,28 +90,11 @@ interface ModelsProps {
   };
   deleteIds?: number[];
   workerList: WorkerListItem[];
-  modelFileOptions: any[];
-  catalogList?: any[];
   dataSource: ListItem[];
   loading: boolean;
   loadend: boolean;
   total: number;
 }
-
-const clusterList = [
-  {
-    label: 'Custom',
-    value: 'custom'
-  },
-  {
-    label: 'Kubernetes',
-    value: 'kubernetes'
-  },
-  {
-    label: 'Digital Ocean',
-    value: 'digital_ocean'
-  }
-];
 
 const statusList = [
   {
@@ -164,34 +134,27 @@ const Models: React.FC<ModelsProps> = ({
   onCancelViewLogs,
   handleCategoryChange,
   handleOnToggleExpandAll,
+  handleClusterChange,
   onStop,
   onStart,
-  modelFileOptions,
   deleteIds,
   dataSource,
   workerList,
-  catalogList,
   queryParams,
   loading,
   loadend,
   total
 }) => {
-  const { getGPUList, generateFormValues, gpuDeviceList } =
-    useGenerateFormEditInitialValues();
+  const { getGPUOptionList, generateFormValues, clusterList, getClusterList } =
+    useFormInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [updateFormInitials, setUpdateFormInitials] = useState<{
-    gpuOptions: any[];
-    modelFileOptions?: any[];
     data: any;
     isGGUF: boolean;
   }>({
-    gpuOptions: [],
-    modelFileOptions: [],
     data: {},
     isGGUF: false
   });
-  const [isFirstLogin, setIsFirstLogin] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
   const intl = useIntl();
   const navigate = useNavigate();
@@ -218,17 +181,13 @@ const Models: React.FC<ModelsProps> = ({
     width: number | string;
     hasLinuxWorker?: boolean;
     source: SourceType;
-    gpuOptions: any[];
     isGGUF?: boolean;
-    modelFileOptions?: any[];
   }>({
     show: false,
     hasLinuxWorker: false,
     width: 600,
     isGGUF: false,
-    source: modelSourceMap.huggingface_value as SourceType,
-    gpuOptions: [],
-    modelFileOptions: []
+    source: modelSourceMap.huggingface_value as SourceType
   });
   const currentData = useRef<ListItem>({} as ListItem);
   const [currentInstance, setCurrentInstance] = useState<{
@@ -244,17 +203,6 @@ const Models: React.FC<ModelsProps> = ({
   const modalRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!catalogList?.length) {
-      return;
-    }
-    const getFirstLoginState = async () => {
-      const is_first_login = await readState(IS_FIRST_LOGIN);
-      setIsFirstLogin(is_first_login);
-    };
-    getFirstLoginState();
-  }, [catalogList?.length]);
-
-  useEffect(() => {
     if (deleteIds?.length) {
       rowSelection.removeSelectedKey(deleteIds);
     }
@@ -262,7 +210,9 @@ const Models: React.FC<ModelsProps> = ({
 
   useEffect(() => {
     const getData = async () => {
-      await getGPUList();
+      const res = await getClusterList();
+      const clusterId = res[0]?.value;
+      await getGPUOptionList({ clusterId });
     };
     getData();
     return () => {
@@ -470,10 +420,8 @@ const Models: React.FC<ModelsProps> = ({
   }, []);
 
   const handleEdit = async (row: ListItem) => {
-    const initialValues = generateFormValues(row, gpuDeviceList.current);
+    const initialValues = generateFormValues(row, []);
     setUpdateFormInitials({
-      gpuOptions: gpuDeviceList.current,
-      modelFileOptions: modelFileOptions,
       data: initialValues,
       isGGUF: row.backend === backendOptionsMap.llamaBox
     });
@@ -584,9 +532,7 @@ const Models: React.FC<ModelsProps> = ({
     if (config) {
       setOpenDeployModal({
         ...config,
-        hasLinuxWorker: hasLinuxWorker,
-        gpuOptions: gpuDeviceList.current,
-        modelFileOptions: modelFileOptions
+        hasLinuxWorker: hasLinuxWorker
       });
     }
   };
@@ -652,7 +598,10 @@ const Models: React.FC<ModelsProps> = ({
         span: 3,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
-            {['Custom', 'Kubernetes', 'Digital Ocean'][record.id] || 'Custom'}
+            {
+              clusterList.find((item) => item.value === record.cluster_id)
+                ?.label
+            }
           </span>
         )
       },
@@ -724,31 +673,6 @@ const Models: React.FC<ModelsProps> = ({
     ];
   }, [sortOrder, intl, handleSelect]);
 
-  const handleOnClick = async () => {
-    if (isLoading) {
-      return;
-    }
-
-    const data = catalogList?.[0] || {};
-    try {
-      setIsLoading(true);
-      const modelData = await createModel({
-        data: data
-      });
-      writeState(IS_FIRST_LOGIN, false);
-      setIsFirstLogin(false);
-      setTimeout(() => {
-        updateExpandedRowKeys([modelData.id]);
-      }, 300);
-      message.success(intl.formatMessage({ id: 'common.message.success' }));
-      handleSearch?.();
-    } catch (error) {
-      // ingore
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleToggleExpandAll = useCallback(
     (expanded: boolean) => {
       const keys = dataSource.map((item) => item.id);
@@ -759,33 +683,6 @@ const Models: React.FC<ModelsProps> = ({
     },
     [dataSource]
   );
-
-  const renderEmpty = useMemo(() => {
-    if (dataSource.length || !isFirstLogin || !catalogList?.length) {
-      return null;
-    }
-    return (
-      <div
-        className="flex-column justify-center flex-center"
-        style={{ height: 300 }}
-      >
-        <Empty description=""></Empty>
-        <Typography.Title level={4} style={{ marginBottom: 30 }}>
-          {intl.formatMessage({ id: 'models.table.list.empty' })}
-        </Typography.Title>
-        <div>
-          <Button type="primary" onClick={handleOnClick} loading={isLoading}>
-            <span
-              className="flex-center"
-              dangerouslySetInnerHTML={{
-                __html: intl.formatMessage({ id: 'models.table.list.getStart' })
-              }}
-            ></span>
-          </Button>
-        </div>
-      </div>
-    );
-  }, [dataSource.length, isFirstLogin, isLoading, intl]);
 
   return (
     <>
@@ -831,16 +728,8 @@ const Models: React.FC<ModelsProps> = ({
                 style={{ width: 160 }}
                 size="large"
                 maxTagCount={1}
+                onChange={handleClusterChange}
                 options={clusterList}
-              ></Select>
-              <Select
-                allowClear
-                showSearch={false}
-                placeholder="Running Replicas"
-                style={{ width: 140 }}
-                size="large"
-                maxTagCount={1}
-                options={statusList}
               ></Select>
               <Button
                 type="text"
@@ -918,6 +807,7 @@ const Models: React.FC<ModelsProps> = ({
         action={PageAction.EDIT}
         title={intl.formatMessage({ id: 'models.title.edit' })}
         updateFormInitials={updateFormInitials}
+        clusterList={clusterList}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></UpdateModel>
@@ -929,8 +819,7 @@ const Models: React.FC<ModelsProps> = ({
         width={openDeployModal.width}
         isGGUF={openDeployModal.isGGUF}
         hasLinuxWorker={openDeployModal.hasLinuxWorker}
-        gpuOptions={openDeployModal.gpuOptions}
-        modelFileOptions={openDeployModal.modelFileOptions || []}
+        clusterList={clusterList}
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>

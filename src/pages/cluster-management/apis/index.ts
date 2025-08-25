@@ -1,3 +1,4 @@
+import { DASHBOARD_API } from '@/pages/dashboard/apis';
 import { request } from '@umijs/max';
 import {
   ClusterFormData,
@@ -83,9 +84,10 @@ export async function deleteCluster(id: number) {
   });
 }
 
-export async function queryClusterDetail(id: number) {
-  return request(`${CLUSTERS_API}/${id}`, {
-    method: 'GET'
+export async function queryClusterDetail(params: { cluster_id: number }) {
+  return request(`${DASHBOARD_API}`, {
+    method: 'GET',
+    params
   });
 }
 

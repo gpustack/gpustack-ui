@@ -179,6 +179,7 @@ export default function useTableFetch<ListItem>(
     }, 5000);
   };
 
+  // for selection change
   const handleQueryChange = (params: any) => {
     setQueryParams({
       ...queryParams,

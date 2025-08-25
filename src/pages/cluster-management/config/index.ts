@@ -65,7 +65,7 @@ export const addActions = [
   }
 ];
 
-export const poolActionList = [
+export const clusterActionList = [
   {
     key: 'edit',
     label: 'common.button.edit',

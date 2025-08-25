@@ -1,27 +1,19 @@
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import React from 'react';
+import { ClusterListItem } from '../config/types';
 import ClusterDetailContent from './cluster-detail-content';
 
 interface ClusterDetailModalProps {
   open: boolean;
   onClose?: () => void;
-  id: number;
+  currentData: ClusterListItem | null;
 }
 
 const ClusterDetailModal: React.FC<ClusterDetailModalProps> = ({
   open,
   onClose,
-  id: clusterId
+  currentData = {} as ClusterListItem
 }) => {
-  const [data, setData] = React.useState<any>({
-    id: 2,
-    name: 'Digital-Ocean-cluster',
-    provider: 'digitalocean',
-    workers: 3,
-    gpus: 6,
-    status: 'error',
-    deployments: 2
-  });
   const handleOnClose = () => {
     onClose?.();
   };
@@ -29,11 +21,11 @@ const ClusterDetailModal: React.FC<ClusterDetailModalProps> = ({
   return (
     <GSDrawer
       width={'80vw'}
-      title={`Cluster Detail - ${clusterId}`}
+      title={`Cluster Detail - ${currentData?.name}`}
       open={open}
       onClose={handleOnClose}
     >
-      <ClusterDetailContent data={data} />
+      <ClusterDetailContent data={currentData} />
     </GSDrawer>
   );
 };

@@ -45,7 +45,6 @@ const AddCluster: React.FC<AddModalProps> = ({
   };
 
   const handleOk = async (data: FormData) => {
-    console.log('handleOk===', data);
     onOk({
       ...data,
       provider
@@ -59,17 +58,14 @@ const AddCluster: React.FC<AddModalProps> = ({
 
   const renderAddWorkerContent = () => {
     if (provider === ProviderValueMap.Custom) {
-      return <ContainerInstall token="${token}" />;
+      return <ContainerInstall />;
     }
     if (provider === ProviderValueMap.Kubernetes) {
-      return (
-        <RegisterClusterInner
-          data={submissionStatus.data}
-        ></RegisterClusterInner>
-      );
+      return <RegisterClusterInner></RegisterClusterInner>;
     }
     return null;
   };
+
   const modalTitle = useMemo(() => {
     if (submissionStatus.success) {
       return (

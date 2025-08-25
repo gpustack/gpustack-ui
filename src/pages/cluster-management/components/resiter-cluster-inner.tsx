@@ -1,19 +1,6 @@
 import HighlightCode from '@/components/highlight-code';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { generateRegisterCommand } from '../config';
-
-const Title = styled.h3`
-  font-weight: 600;
-  color: var(--ant-color-text);
-  margin-bottom: 12px;
-  margin-top: 12px;
-  font-size: var(--font-size-normal);
-  .ant-tag {
-    color: var(--ant-color-text-secondary);
-    font-weight: 400;
-  }
-`;
 
 type AddModalProps = {
   registrationInfo: {
@@ -31,10 +18,6 @@ const AddCluster: React.FC<AddModalProps> = ({ registrationInfo }) => {
       registrationToken: registrationInfo?.token
     });
   }, [registrationInfo]);
-
-  const applyCommand = useMemo(() => {
-    return `kubectl apply -f manifest.yaml`;
-  }, []);
 
   return (
     <div>

@@ -1,7 +1,5 @@
 import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
-import CardList from '@/components/templates/card-list';
-import CardSkeleton from '@/components/templates/card-skelton';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -19,20 +17,19 @@ import {
 } from './apis';
 import AddCluster from './components/add-cluster';
 import ClusterDetailModal from './components/cluster-detail-modal';
-import ClusterItem from './components/cluster-item';
+import RegisterCluster from './components/register-cluster';
 import { ProviderLabelMap, ProviderValueMap, addActions } from './config';
 import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
 } from './config/types';
-const { Column } = Table;
+import useClusterColumns from './config/use-cluster-columns';
 
 const Credentials: React.FC = () => {
   const {
     dataSource,
     rowSelection,
     queryParams,
-    sortOrder,
     modalRef,
     handleDelete,
     handleDeleteBatch,
@@ -48,12 +45,29 @@ const Credentials: React.FC = () => {
   });
 
   const intl = useIntl();
-  const [openClusterDetail, setOpenClusterDetail] = useState<{
+  const [registerClusterStatus, setRegisterClusterStatus] = useState<{
     open: boolean;
-    id: number;
+    registrationInfo: {
+      token: string;
+      image: string;
+      server_url: string;
+      cluster_id: number;
+    };
   }>({
     open: false,
-    id: 0
+    registrationInfo: {
+      token: '',
+      image: '',
+      server_url: '',
+      cluster_id: 0
+    }
+  });
+  const [openClusterDetail, setOpenClusterDetail] = useState<{
+    open: boolean;
+    currentData: ListItem | null;
+  }>({
+    open: false,
+    currentData: {} as ListItem
   });
   const [openAddWorker, setOpenAddWorker] = useState<{
     open: boolean;
@@ -187,6 +201,19 @@ const Credentials: React.FC = () => {
     }
   };
 
+  const handleRegisterCluster = async (row: ListItem) => {
+    try {
+      const info = await queryClusterToken({ id: row.id });
+      setRegisterClusterStatus({
+        open: true,
+        registrationInfo: {
+          ...info,
+          cluster_id: row.id
+        }
+      });
+    } catch (error) {}
+  };
+
   const handleSelect = (val: any, row: ListItem) => {
     if (val === 'edit') {
       handleEditCluster(row);
@@ -199,14 +226,14 @@ const Credentials: React.FC = () => {
     } else if (val === 'details') {
       setOpenClusterDetail({
         open: true,
-        id: row.id
+        currentData: row
       });
+    } else if (val === 'register_cluster') {
+      handleRegisterCluster(row);
     }
   };
 
-  const renderCard = (item: ListItem) => {
-    return <ClusterItem data={item} onSelect={handleSelect}></ClusterItem>;
-  };
+  const columns = useClusterColumns(handleSelect);
 
   return (
     <>
@@ -230,24 +257,34 @@ const Credentials: React.FC = () => {
           selectHolder="Filter by name"
           marginBottom={22}
           marginTop={30}
-          handleInputChange={handleNameChange}
-          handleSearch={handleSearch}
           width={{ input: 300 }}
           buttonText="Add Cluster"
           actionType="dropdown"
           actionItems={addActions}
+          rowSelection={rowSelection}
+          handleInputChange={handleNameChange}
+          handleSearch={handleSearch}
+          handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
         ></FilterBar>
-        <CardList
-          dataList={dataSource.dataList}
+        <Table
+          rowKey="id"
+          tableLayout="fixed"
+          style={{ width: '100%' }}
+          onChange={handleTableChange}
+          dataSource={dataSource.dataList}
           loading={dataSource.loading}
-          activeId={-1}
-          isFirst={!dataSource.loadend}
-          Skeleton={CardSkeleton}
-          resizable={false}
-          defaultSpan={24}
-          renderItem={renderCard}
-        ></CardList>
+          rowSelection={rowSelection}
+          columns={columns}
+          pagination={{
+            showSizeChanger: true,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
+            total: dataSource.total,
+            hideOnSinglePage: queryParams.perPage === 10,
+            onChange: handlePageChange
+          }}
+        ></Table>
       </PageContainer>
       <AddCluster
         provider={openAddModal.provider}
@@ -270,9 +307,27 @@ const Credentials: React.FC = () => {
       ></AddWorker>
       <ClusterDetailModal
         open={openClusterDetail.open}
-        id={openClusterDetail.id}
-        onClose={() => setOpenClusterDetail({ open: false, id: 0 })}
+        currentData={openClusterDetail.currentData}
+        onClose={() =>
+          setOpenClusterDetail({ open: false, currentData: {} as ListItem })
+        }
       ></ClusterDetailModal>
+      <RegisterCluster
+        title="Register Cluster"
+        open={registerClusterStatus.open}
+        registrationInfo={registerClusterStatus.registrationInfo}
+        onCancel={() => {
+          setRegisterClusterStatus({
+            open: false,
+            registrationInfo: {
+              token: '',
+              image: '',
+              server_url: '',
+              cluster_id: 0
+            }
+          });
+        }}
+      ></RegisterCluster>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

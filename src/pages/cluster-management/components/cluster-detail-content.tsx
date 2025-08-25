@@ -1,8 +1,9 @@
 import GaugeChart from '@/components/echarts/gauge';
 import { PageAction } from '@/config';
 import { Col, Row } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { queryClusterDetail } from '../apis';
 import { ProviderValueMap } from '../config';
 import { ClusterListItem, NodePoolListItem } from '../config/types';
 import AddPool from './add-pool';
@@ -16,7 +17,7 @@ const SubTitle = styled.div`
 `;
 
 interface ClusterDetailProps {
-  data: ClusterListItem;
+  data: ClusterListItem | null;
 }
 
 const gaugeConfig = {
@@ -46,8 +47,9 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
     open: false,
     action: PageAction.CREATE,
     title: '',
-    provider: 'digitalocean'
+    provider: ProviderValueMap.DigitalOcean
   });
+  const [detailContent, setDetailContent] = useState<Record<string, any>>({});
 
   // pool action handler
   const handleOnAction = (action: string, record: NodePoolListItem) => {
@@ -56,10 +58,31 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
         open: true,
         action: PageAction.CREATE,
         title: 'Edit Worker Pool',
-        provider: data.provider
+        provider: data!.provider
       });
     }
   };
+
+  const getClusterDetail = async () => {
+    if (!data) {
+      return;
+    }
+    try {
+      const response = await queryClusterDetail({
+        cluster_id: data!.id
+      });
+      setDetailContent(response);
+      // handle response
+    } catch (error) {
+      setDetailContent({});
+    }
+  };
+
+  useEffect(() => {
+    if (data?.id) {
+      getClusterDetail();
+    }
+  }, [data?.id]);
 
   return (
     <div>
@@ -99,12 +122,12 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           </Col>
         </Row>
       </div>
-      {data.provider === ProviderValueMap.DigitalOcean && (
+      {data?.provider === ProviderValueMap.DigitalOcean && (
         <>
           <SubTitle>Worker Pools</SubTitle>
           <WorkerPools
-            provider={data.provider}
-            workerPools={data.worker_pools}
+            provider={data?.provider}
+            workerPools={data?.worker_pools}
             height={show ? 'auto' : 0}
             onAction={handleOnAction}
           />

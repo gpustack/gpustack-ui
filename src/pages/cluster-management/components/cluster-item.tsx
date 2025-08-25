@@ -14,7 +14,7 @@ import {
   ClusterStatusLabelMap,
   ProviderLabelMap,
   ProviderValueMap,
-  poolActionList
+  clusterActionList
 } from '../config';
 import { ClusterListItem as ListItem, NodePoolListItem } from '../config/types';
 import AddPool from './add-pool';
@@ -225,7 +225,7 @@ const CardItem: React.FC<CardProps> = (props) => {
   };
 
   const actions = useMemo(() => {
-    return poolActionList.filter((item) => {
+    return clusterActionList.filter((item) => {
       if (item.provider) {
         return item.provider === data.provider;
       }

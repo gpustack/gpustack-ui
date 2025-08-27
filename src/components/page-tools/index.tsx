@@ -93,8 +93,8 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     actionType = 'button',
     marginBottom = 10,
     marginTop = 10,
-    inputHolder = 'common.filter.name',
-    selectHolder = '',
+    inputHolder,
+    selectHolder,
     showPrimaryButton = true,
     showDeleteButton = true,
     width
@@ -165,9 +165,12 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
       left={
         <Space>
           <Input
-            placeholder={intl.formatMessage({
-              id: inputHolder
-            })}
+            placeholder={
+              inputHolder ||
+              intl.formatMessage({
+                id: 'common.filter.name'
+              })
+            }
             style={{ width: width?.input || 230 }}
             allowClear
             onChange={handleInputChange}
@@ -176,9 +179,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
             <Select
               allowClear
               showSearch={false}
-              placeholder={intl.formatMessage({
-                id: selectHolder
-              })}
+              placeholder={selectHolder}
               style={{ width: width?.select || 230 }}
               size="large"
               onChange={handleSelectChange}

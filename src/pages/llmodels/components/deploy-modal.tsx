@@ -246,21 +246,18 @@ const AddModal: FC<AddModalProps> = (props) => {
       categories: getCategory(item)
     });
 
-    setWarningStatus(
-      {
-        show: true,
-        title: '',
-        type: 'transition',
-        message: intl.formatMessage({ id: 'models.form.evaluating' })
-      },
-      {
-        override: true
-      }
-    );
+    let warningStatus: MessageStatus = {
+      show: true,
+      title: '',
+      type: 'transition',
+      message: intl.formatMessage({ id: 'models.form.evaluating' })
+    };
 
     if (item.isGGUF) {
-      fetchModelFiles();
+      warningStatus.type = 'danger';
+      warningStatus.message = 'GGUF model is not supported.';
     }
+    setWarningStatus(warningStatus, { override: true });
   };
 
   const handleOnSelectModelAfterEvaluate = (item: any, manual?: boolean) => {
@@ -531,7 +528,11 @@ const AddModal: FC<AddModalProps> = (props) => {
                     showOkBtn={!showExtraButton}
                     extra={
                       showExtraButton && (
-                        <Button type="primary" onClick={handleSubmitAnyway}>
+                        <Button
+                          type="primary"
+                          onClick={handleSubmitAnyway}
+                          disabled={isGGUF}
+                        >
                           {intl.formatMessage({
                             id: 'models.form.submit.anyway'
                           })}

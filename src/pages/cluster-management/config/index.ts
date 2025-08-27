@@ -43,8 +43,8 @@ export const generateRegisterCommand = (params: {
 
 export const addActions = [
   {
-    label: 'Custom',
-    locale: false,
+    label: 'clusters.provider.custom',
+    locale: true,
     value: ProviderValueMap.Custom,
     key: ProviderValueMap.Custom,
     icon: icons.Docker
@@ -78,23 +78,23 @@ export const clusterActionList = [
   },
   {
     key: 'add_worker',
-    label: 'Add Worker',
+    label: 'resources.button.create',
     provider: ProviderValueMap.Custom,
-    locale: false,
+    locale: true,
     icon: icons.Docker
   },
   {
     key: 'register_cluster',
-    label: 'Register Cluster',
+    label: 'clusters.button.register',
     provider: ProviderValueMap.Kubernetes,
-    locale: false,
+    locale: true,
     icon: icons.KubernetesOutlined
   },
   {
     key: 'addPool',
-    label: 'Add Node Pool',
+    label: 'clusters.button.addNodePool',
     provider: ProviderValueMap.DigitalOcean,
-    locale: false,
+    locale: true,
     icon: icons.Catalog
   },
   {

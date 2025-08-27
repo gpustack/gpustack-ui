@@ -681,4 +681,4 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     </>
   );
 };
-export default React.memo(InstanceItem);
+export default InstanceItem;

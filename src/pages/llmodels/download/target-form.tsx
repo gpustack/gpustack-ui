@@ -1,3 +1,4 @@
+import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -11,14 +12,13 @@ import { localPathTipsList, modelSourceMap, sourceOptions } from '../config';
 
 interface TargetFormProps {
   ref?: any;
-  workersList: Global.BaseOption<number>[];
   source: string;
   workerOptions: any[];
   onOk: (values: any) => void;
 }
 
 const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
-  const { onOk, source, workersList, workerOptions } = props;
+  const { onOk, source, workerOptions } = props;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const [form] = Form.useForm();
@@ -29,7 +29,14 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
 
   const handleOk = (values: any) => {
     const data = _.pickBy(values, (val: string) => val);
-    onOk(data);
+    onOk({
+      ...data,
+      worker_id: data.worker_id?.[1]
+    });
+    console.log('Form Data: ', {
+      ...data,
+      worker_id: data.worker_id?.[1]
+    });
   };
 
   const handleOnLocalPathBlur = (e: any) => {
@@ -116,12 +123,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             }
           ]}
         >
-          <SealSelect
-            label="Worker"
-            options={workersList}
-            required
-          ></SealSelect>
-          {/* <SealCascader
+          <SealCascader
             required
             showSearch
             expandTrigger="hover"
@@ -131,9 +133,8 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             label="Worker"
             options={workerOptions}
             showCheckedStrategy="SHOW_CHILD"
-            value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
-          ></SealCascader> */}
+          ></SealCascader>
         </Form.Item>
         {source !== modelSourceMap.local_path_value && (
           <Form.Item<FormData>

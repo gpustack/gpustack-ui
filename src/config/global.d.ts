@@ -23,19 +23,20 @@ declare namespace Global {
     source: string;
     avatar_url?: string;
   }
+  type EmptyObject = Record<never, never>;
 
-  type BaseListItem<T, U extends Record<string, any>> = {
+  type BaseListItem<T, U extends object = EmptyObject> = {
     key: string;
     locale?: boolean;
     value: T;
-  } & U;
+  } & Partial<U>;
 
-  type BaseOption<T, U extends Record<string, any>> = {
+  type BaseOption<T, U extends object = EmptyObject> = {
     label: string;
     locale?: boolean;
     value: T;
     meta?: Record<string, any>;
-  } & U;
+  } & Partial<U>;
 
   interface HintOptions {
     label: string;

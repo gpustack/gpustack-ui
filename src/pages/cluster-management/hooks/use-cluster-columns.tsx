@@ -2,6 +2,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import StatusTag from '@/components/status-tag';
+import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -10,12 +11,13 @@ import {
   ClusterStatusLabelMap,
   ProviderLabelMap,
   clusterActionList
-} from '.';
-import { ClusterListItem } from './types';
+} from '../config';
+import { ClusterListItem } from '../config/types';
 
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void
 ): ColumnsType<ClusterListItem> => {
+  const intl = useIntl();
   const setActionsItems = (row: ClusterListItem) => {
     return clusterActionList.filter((item) => {
       if (item.provider) {
@@ -28,17 +30,17 @@ const useClusterColumns = (
   return useMemo(() => {
     return [
       {
-        title: 'Name',
+        title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         render: (text: string) => <AutoTooltip ghost>{text}</AutoTooltip>
       },
       {
-        title: 'Provider',
+        title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
         render: (value: string) => <span>{ProviderLabelMap[value]}</span>
       },
       {
-        title: 'Status',
+        title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
         render: (value: number) => (
           <StatusTag
@@ -52,7 +54,11 @@ const useClusterColumns = (
       {
         title: 'Workers',
         dataIndex: 'workers',
-        render: (value: number) => <span>{value}</span>
+        render: (value: number, record: ClusterListItem) => (
+          <span>
+            {record.ready_workers} / {record.workers}
+          </span>
+        )
       },
       {
         title: 'GPUs',
@@ -60,12 +66,12 @@ const useClusterColumns = (
         render: (value: number) => <span>{value}</span>
       },
       {
-        title: 'Deployments',
+        title: intl.formatMessage({ id: 'clusters.table.deployments' }),
         dataIndex: 'models',
         render: (value: number) => <span>{value}</span>
       },
       {
-        title: 'Created',
+        title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         width: 180,
         render: (value: string) => (
@@ -73,7 +79,7 @@ const useClusterColumns = (
         )
       },
       {
-        title: 'Operations',
+        title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',
         render: (value: string, record: ClusterListItem) => (
           <DropdownButtons

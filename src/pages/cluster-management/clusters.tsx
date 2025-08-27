@@ -6,6 +6,7 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import AddWorker from '@/pages/resources/components/add-worker';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Table, message } from 'antd';
 import { useState } from 'react';
 import {
@@ -23,7 +24,7 @@ import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
 } from './config/types';
-import useClusterColumns from './config/use-cluster-columns';
+import useClusterColumns from './hooks/use-cluster-columns';
 
 const Credentials: React.FC = () => {
   const {
@@ -112,12 +113,19 @@ const Credentials: React.FC = () => {
 
   const handleAddCluster = (value: string) => {
     const label = ProviderLabelMap[value];
+    const clusterLabel =
+      value === ProviderValueMap.Custom
+        ? intl.formatMessage({ id: 'clusters.provider.custom' })
+        : label;
 
     setOpenAddModal({
       open: true,
       action: PageAction.CREATE,
       currentData: undefined,
-      title: `Add ${label} Cluster`,
+      title: intl.formatMessage(
+        { id: 'clusters.add.cluster' },
+        { cluster: clusterLabel }
+      ),
       provider: value
     });
   };
@@ -184,7 +192,10 @@ const Credentials: React.FC = () => {
       open: true,
       action: PageAction.EDIT,
       currentData: row,
-      title: `Edit ${row.name} Cluster`,
+      title: intl.formatMessage(
+        { id: 'clusters.edit.cluster' },
+        { cluster: row.name }
+      ),
       provider: row.provider
     });
   };
@@ -214,7 +225,7 @@ const Credentials: React.FC = () => {
     } catch (error) {}
   };
 
-  const handleSelect = (val: any, row: ListItem) => {
+  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'edit') {
       handleEditCluster(row);
     } else if (val === 'delete') {
@@ -231,7 +242,7 @@ const Credentials: React.FC = () => {
     } else if (val === 'register_cluster') {
       handleRegisterCluster(row);
     }
-  };
+  });
 
   const columns = useClusterColumns(handleSelect);
 
@@ -254,11 +265,10 @@ const Credentials: React.FC = () => {
           showSelect={false}
           showPrimaryButton={true}
           showDeleteButton={true}
-          selectHolder="Filter by name"
           marginBottom={22}
           marginTop={30}
           width={{ input: 300 }}
-          buttonText="Add Cluster"
+          buttonText={intl.formatMessage({ id: 'clusters.button.add' })}
           actionType="dropdown"
           actionItems={addActions}
           rowSelection={rowSelection}

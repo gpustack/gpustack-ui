@@ -91,20 +91,8 @@ const UsageInner: FC<{ maxWidth: number }> = ({ maxWidth }) => {
 
   return (
     <div>
-      <Row
-        style={{ width: '100%' }}
-        gutter={maxWidth < breakpoints.xl ? [0, 0] : [0, 20]}
-      >
-        <Col
-          xs={24}
-          sm={24}
-          md={24}
-          lg={24}
-          xl={16}
-          style={{
-            paddingRight: maxWidth < breakpoints.xl ? 0 : 20
-          }}
-        >
+      <Row gutter={maxWidth < breakpoints.xl ? [0, 0] : [20, 20]}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={16}>
           <div
             style={{
               display: 'flex',

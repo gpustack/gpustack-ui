@@ -45,7 +45,7 @@ const Profile: React.FC = () => {
         children: <Appearance />
       }
     ];
-  }, [initialState?.currentUser?.source]);
+  }, [intl, initialState?.currentUser?.source]);
 
   const handleChangeTab = useCallback((key: string) => {
     setActiveKey(key);

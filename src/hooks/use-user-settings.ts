@@ -9,8 +9,6 @@ export default function useUserSettings() {
   const { light, dark, colorPrimary } = themeConfig;
   const [userSettings, setUserSettings] = useAtom(userSettingsHelperAtom);
 
-  console.log('userSettings===', userSettings);
-
   const getCurrentTheme = (mode: Theme): 'light' | 'realDark' => {
     if (mode === 'auto') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches

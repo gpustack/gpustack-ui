@@ -257,5 +257,7 @@ export default {
   'common.login.password': 'Log in with Password',
   'common.external.login': 'Log in with {type}',
   'common.sso.noConfig':
-    'Single sign-on is not enabled on this system. Please contact your administrator.'
+    'Single sign-on is not enabled on this system. Please contact your administrator.',
+  'common.button.edit.item': 'Edit {name}',
+  'common.button.terminal': 'Terminal'
 };

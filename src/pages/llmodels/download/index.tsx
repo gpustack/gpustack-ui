@@ -1,10 +1,11 @@
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ColumnWrapper from '../components/column-wrapper';
-import HFModelFile from '../components/hf-model-file';
+import CompatibilityAlert from '../components/compatible-alert';
 import ModelCard from '../components/model-card';
 import SearchModel from '../components/search-model';
 import Separator from '../components/separator';
@@ -19,7 +20,6 @@ type AddModalProps = {
   source: string;
   width?: string | number;
   hasLinuxWorker?: boolean;
-  workersList: Global.BaseOption<number>[];
   workerOptions: any[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
@@ -28,7 +28,6 @@ type AddModalProps = {
 const DownloadModel: React.FC<AddModalProps> = (props) => {
   const {
     title,
-    workersList,
     open,
     onOk,
     onCancel,
@@ -47,14 +46,13 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
-  const [fileName, setFileName] = useState<string>('');
   const modelFileRef = useRef<any>(null);
 
   const generateModelInfo = () => {
     if (source === modelSourceMap.huggingface_value) {
       const huggingFaceModel = {
         huggingface_repo_id: selectedModel.name,
-        huggingface_filename: fileName || null
+        huggingface_filename: null
       };
       return huggingFaceModel;
     }
@@ -62,15 +60,12 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     if (source === modelSourceMap.modelscope_value) {
       const modelScopeModel = {
         model_scope_model_id: selectedModel.name,
-        model_scope_file_path: fileName || null
+        model_scope_file_path: null
       };
       return modelScopeModel;
     }
     return {};
   };
-  const handleSelectModelFile = useCallback((item: any) => {
-    setFileName(item.fakeName);
-  }, []);
 
   const handleOnSelectModel = (item: any) => {
     setSelectedModel(item);
@@ -103,21 +98,30 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     onCancel?.();
   }, [onCancel]);
 
-  useEffect(() => {
-    handleSelectModelFile({ fakeName: '' });
-  }, [selectedModel]);
+  const initDefaultWorker = () => {
+    if (!workerOptions || workerOptions.length === 0) {
+      form.current?.form?.setFieldValue('worker_id', []);
+      return;
+    }
+    const getWorkerId = (worker: any) => [
+      worker?.value ?? '',
+      worker?.children?.[0]?.value ?? ''
+    ];
+
+    const customWorker = workerOptions.find(
+      (item) => item.provider === ProviderValueMap.Custom
+    );
+
+    const worker_id = getWorkerId(customWorker || workerOptions[0]);
+    form.current?.form?.setFieldValue('worker_id', worker_id);
+  };
 
   useEffect(() => {
     if (!open) {
       setIsGGUF(false);
-    } else if (source === modelSourceMap.ollama_library_value) {
-      setIsGGUF(true);
     }
     if (open) {
-      form.current?.form?.setFieldValue(
-        'worker_id',
-        workersList[0]?.value || ''
-      );
+      initDefaultWorker();
     }
 
     return () => {
@@ -183,16 +187,6 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                   modelSource={props.source}
                   setIsGGUF={handleSetIsGGUF}
                 ></ModelCard>
-                {isGGUF && (
-                  <HFModelFile
-                    ref={modelFileRef}
-                    selectedModel={selectedModel}
-                    modelSource={props.source}
-                    onSelectFile={handleSelectModelFile}
-                    collapsed={collapsed}
-                    isDownload={true}
-                  ></HFModelFile>
-                )}
               </ColumnWrapper>
               <Separator></Separator>
             </div>
@@ -203,9 +197,21 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
             paddingBottom={50}
             footer={
               <>
+                <CompatibilityAlert
+                  showClose={false}
+                  warningStatus={{
+                    show: isGGUF,
+                    type: 'danger',
+                    message: 'GGUF is not supported'
+                  }}
+                  contentStyle={{ paddingInline: 0 }}
+                ></CompatibilityAlert>
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
+                  okBtnProps={{
+                    disabled: isGGUF
+                  }}
                   style={{
                     padding: '16px 24px',
                     display: 'flex',
@@ -228,7 +234,6 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 ref={form}
                 onOk={handleOk}
                 source={source}
-                workersList={workersList}
                 workerOptions={workerOptions}
               ></TargetForm>
             </>

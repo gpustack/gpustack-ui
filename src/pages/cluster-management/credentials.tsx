@@ -103,7 +103,7 @@ const Credentials: React.FC = () => {
       provider: ProviderValueMap.DigitalOcean,
       open: true,
       action: PageAction.CREATE,
-      title: 'Add Cloud Credential',
+      title: intl.formatMessage({ id: 'clusters.button.addCredential' }),
       currentData: undefined
     });
   };
@@ -141,7 +141,10 @@ const Credentials: React.FC = () => {
       provider: row.provider,
       open: true,
       action: PageAction.EDIT,
-      title: `Edit ${row.name} Credential`,
+      title: intl.formatMessage(
+        { id: 'common.buton.edit.item' },
+        { name: row.name }
+      ),
       currentData: row
     });
   };
@@ -186,7 +189,9 @@ const Credentials: React.FC = () => {
           showPrimaryButton={true}
           marginBottom={22}
           marginTop={30}
-          buttonText={'Add Cloud Credential'}
+          buttonText={intl.formatMessage({
+            id: 'clusters.button.addCredential'
+          })}
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
@@ -212,7 +217,7 @@ const Credentials: React.FC = () => {
             }}
           >
             <Column
-              title="Name"
+              title={intl.formatMessage({ id: 'common.table.name' })}
               dataIndex="name"
               key="name"
               ellipsis={{
@@ -227,7 +232,7 @@ const Credentials: React.FC = () => {
               }}
             />
             <Column
-              title="Provider"
+              title={intl.formatMessage({ id: 'clusters.table.provider' })}
               dataIndex="provider"
               key="provider"
               ellipsis={{
@@ -261,7 +266,7 @@ const Credentials: React.FC = () => {
               }}
             />
             <Column
-              title="Description"
+              title={intl.formatMessage({ id: 'common.table.description' })}
               dataIndex="description"
               key="description"
               ellipsis={{

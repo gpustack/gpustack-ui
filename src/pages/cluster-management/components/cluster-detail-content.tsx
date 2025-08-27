@@ -1,17 +1,47 @@
 import GaugeChart from '@/components/echarts/gauge';
+import Card from '@/components/templates/card';
 import { PageAction } from '@/config';
 import { Col, Row } from 'antd';
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { queryClusterDetail } from '../apis';
 import { ProviderValueMap } from '../config';
 import { ClusterListItem, NodePoolListItem } from '../config/types';
 import AddPool from './add-pool';
+import TrendChart from './trend-chart';
 import WorkerPools from './worker-pools';
+
+const metricsMap = {
+  cpu: {
+    label: 'CPU',
+    type: 'CPU',
+    intl: false,
+    color: 'rgba(250, 173, 20,.8)'
+  },
+  ram: {
+    label: 'Used',
+    type: 'Used',
+    intl: false,
+    color: 'rgba(114, 46, 209,.8)'
+  },
+  gpu: {
+    label: 'GPU',
+    type: 'GPU',
+    intl: false,
+    color: 'rgba(84, 204, 152,.8)'
+  },
+  vram: {
+    label: 'Used',
+    type: 'Used',
+    intl: false,
+    color: 'rgba(255, 107, 179, 80%)'
+  }
+};
 
 const SubTitle = styled.div`
   font-size: var(--font-size-middle);
-  font-weight: 500;
+  font-weight: 700;
   color: var(--ant-color-text);
   margin-block: 24px 16px;
 `;
@@ -40,6 +70,12 @@ const gaugeConfig = {
   }
 };
 
+const formatValue = (value: number) => {
+  return _.round(value || 0, 1);
+};
+
+const CardHeight = 336;
+
 const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
   const chartHeight = 160;
   const [show, setShow] = React.useState(false);
@@ -49,7 +85,23 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
     title: '',
     provider: ProviderValueMap.DigitalOcean
   });
-  const [detailContent, setDetailContent] = useState<Record<string, any>>({});
+  const [detailContent, setDetailContent] = useState<{
+    current: {
+      cpu: number;
+      ram: number;
+      gpu: number;
+      vram: number;
+    };
+    history: Record<string, { timestamp: number; value: number }[]>;
+  }>({
+    current: {
+      cpu: 0,
+      ram: 0,
+      gpu: 0,
+      vram: 0
+    },
+    history: {}
+  });
 
   // pool action handler
   const handleOnAction = (action: string, record: NodePoolListItem) => {
@@ -71,10 +123,21 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
       const response = await queryClusterDetail({
         cluster_id: data!.id
       });
-      setDetailContent(response);
+      setDetailContent({
+        current: response.system_load?.current,
+        history: response.system_load?.history
+      });
       // handle response
     } catch (error) {
-      setDetailContent({});
+      setDetailContent({
+        current: {
+          cpu: 0,
+          ram: 0,
+          gpu: 0,
+          vram: 0
+        },
+        history: {}
+      });
     }
   };
 
@@ -91,7 +154,7 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           <Col span={6}>
             <GaugeChart
               title="GPU Utilization"
-              value={85}
+              value={formatValue(detailContent.current.gpu)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
             />
@@ -99,7 +162,7 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           <Col span={6}>
             <GaugeChart
               title="CPU Utilization"
-              value={50}
+              value={formatValue(detailContent.current.cpu)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
             />
@@ -107,7 +170,7 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           <Col span={6}>
             <GaugeChart
               title="RAM Utilization"
-              value={70}
+              value={formatValue(detailContent.current.ram)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
             />
@@ -115,13 +178,44 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           <Col span={6}>
             <GaugeChart
               title="VRAM Utilization"
-              value={60}
+              value={formatValue(detailContent.current.vram)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
             />
           </Col>
         </Row>
       </div>
+      <SubTitle>System Load</SubTitle>
+      <Row style={{ marginBottom: 20 }} gutter={20}>
+        <Col span={12}>
+          <Card height={CardHeight} clickable={false} ghost>
+            <TrendChart
+              data={detailContent?.history}
+              metrics={['vram', 'allocated']}
+              metricsMap={metricsMap}
+              title="VRAM"
+            ></TrendChart>
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card height={CardHeight} clickable={false} ghost>
+            <TrendChart
+              data={detailContent?.history}
+              metrics={['ram', 'allocated']}
+              metricsMap={metricsMap}
+              title="RAM"
+            ></TrendChart>
+          </Card>
+        </Col>
+      </Row>
+      <Card height={CardHeight} clickable={false} ghost>
+        <TrendChart
+          data={detailContent?.history}
+          metrics={['cpu', 'gpu']}
+          metricsMap={metricsMap}
+          title="CPU & GPU"
+        ></TrendChart>
+      </Card>
       {data?.provider === ProviderValueMap.DigitalOcean && (
         <>
           <SubTitle>Worker Pools</SubTitle>
@@ -143,7 +237,7 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
             open: false,
             action: PageAction.CREATE,
             title: '',
-            provider: 'digitalocean'
+            provider: ProviderValueMap.DigitalOcean
           });
         }}
         onOk={() => {
@@ -151,7 +245,7 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
             open: false,
             action: addPoolStatus.action,
             title: '',
-            provider: 'digitalocean'
+            provider: ProviderValueMap.DigitalOcean
           });
         }}
       ></AddPool>

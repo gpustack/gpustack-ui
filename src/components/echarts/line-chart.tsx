@@ -16,7 +16,10 @@ const LineChart: React.FC<ChartProps> = (props) => {
     tooltipValueFormatter = null,
     legendData = [],
     smooth,
-    title
+    title,
+    legendOptions,
+    gridOptions,
+    titleOptions
   } = props;
   const {
     grid,
@@ -42,7 +45,10 @@ const LineChart: React.FC<ChartProps> = (props) => {
     title: {
       text: ''
     },
-    grid,
+    grid: {
+      ...grid,
+      ...gridOptions
+    },
     tooltip: {
       ...tooltip,
       formatter(params: any) {
@@ -61,6 +67,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     yAxis,
     legend: {
       ...legend,
+      ...legendOptions,
       data: legendData.map((item: any) => {
         return {
           name: item,
@@ -93,6 +100,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
       animation: false,
       title: {
         ...titleConfig,
+        ...titleOptions,
         text: title
       },
       yAxis: {
@@ -109,7 +117,16 @@ const LineChart: React.FC<ChartProps> = (props) => {
       },
       series: data
     };
-  }, [seriesData, xAxisData, yAxisName, title, smooth, legendData, options]);
+  }, [
+    seriesData,
+    xAxisData,
+    yAxisName,
+    title,
+    smooth,
+    titleOptions,
+    legendData,
+    options
+  ]);
 
   return (
     <>

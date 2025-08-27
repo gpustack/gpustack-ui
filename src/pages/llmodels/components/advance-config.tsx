@@ -2,7 +2,6 @@ import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -28,7 +27,6 @@ import mindieConfig from '../config/mindie-config';
 import { FormData } from '../config/types';
 import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
-import GPUCard from './gpu-card';
 import Performance from './performance';
 
 interface AdvanceConfigProps {
@@ -265,7 +263,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </>
         )}
-        {scheduleType === 'manual' && (
+        {/* {scheduleType === 'manual' && (
           <>
             <Form.Item
               name={['gpu_selector', 'gpu_ids']}
@@ -293,7 +291,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               ></SealCascader>
             </Form.Item>
           </>
-        )}
+        )} */}
 
         <Form.Item name="backend_version">
           <SealInput.Input

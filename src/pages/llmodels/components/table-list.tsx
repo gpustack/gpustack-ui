@@ -724,7 +724,9 @@ const Models: React.FC<ModelsProps> = ({
               <Select
                 allowClear
                 showSearch={false}
-                placeholder="Filter by cluster"
+                placeholder={intl.formatMessage({
+                  id: 'clusters.filterBy.cluster'
+                })}
                 style={{ width: 160 }}
                 size="large"
                 maxTagCount={1}

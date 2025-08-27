@@ -20,8 +20,8 @@ const ClusterDetailModal: React.FC<ClusterDetailModalProps> = ({
 
   return (
     <GSDrawer
-      width={'80vw'}
-      title={`Cluster Detail - ${currentData?.name}`}
+      width={'calc(100vw - 200px)'}
+      title={`${currentData?.name}`}
       open={open}
       onClose={handleOnClose}
     >

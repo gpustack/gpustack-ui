@@ -174,8 +174,6 @@ const ModelCard: React.FC<{
       setModelData(null);
       setReadmeText(null);
       handleOnCollapse(null);
-      // setIsGGUF(false);
-      // setIsGGUFModel(false);
     }
   };
 
@@ -205,8 +203,6 @@ const ModelCard: React.FC<{
       setModelData(null);
       setReadmeText(null);
       handleOnCollapse(null);
-      // setIsGGUF(false);
-      // setIsGGUFModel(false);
     }
   };
 

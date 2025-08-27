@@ -12,14 +12,16 @@ import { queryGPUList } from '../apis';
 import { backendOptionsMap, setSourceRepoConfigValue } from '../config';
 import { GPUListItem, ListItem } from '../config/types';
 
-interface CascaderOption {
+type EmptyObject = Record<never, never>;
+
+type CascaderOption<T extends object = EmptyObject> = {
   label: string;
   value: string | number;
   parent?: boolean;
   disabled?: boolean;
   index?: number;
-  children?: CascaderOption[];
-}
+  children?: CascaderOption<T>[];
+} & Partial<T>;
 
 export const useGenerateGPUOptions = () => {
   const [gpuOptions, setGpuOptions] = useState<CascaderOption[]>([]);
@@ -102,7 +104,9 @@ export const useGenerateGPUOptions = () => {
 };
 
 export const useGenerateWorkerOptions = () => {
-  const [workerOptions, setWorkerOptions] = useState<CascaderOption[]>([]);
+  const [workerOptions, setWorkerOptions] = useState<
+    CascaderOption<{ state: string }>[]
+  >([]);
   const [clusterList, setClusterList] = useState<
     Global.BaseOption<number, { provider: string; state: string | number }>[]
   >([]);
@@ -117,18 +121,21 @@ export const useGenerateWorkerOptions = () => {
     workerList: WorkerListItem[],
     clusterList: ClusterListItem[]
   ) => {
-    const options = clusterList.map((cluster) => ({
-      label: cluster.name,
-      value: cluster.id,
-      parent: true,
-      children: workerList
-        .filter((worker) => worker.cluster_id === cluster.id)
-        .map((worker) => ({
-          disabled: WorkerStatusMap.ready !== worker.state,
-          label: worker.name,
-          value: worker.id
-        }))
-    }));
+    const options = clusterList
+      .map((cluster) => ({
+        label: cluster.name,
+        value: cluster.id,
+        parent: true,
+        children: workerList
+          .filter((worker) => worker.cluster_id === cluster.id)
+          .map((worker) => ({
+            disabled: WorkerStatusMap.ready !== worker.state,
+            state: worker.state,
+            label: worker.name,
+            value: worker.id
+          }))
+      }))
+      .filter((cluster) => cluster.children.length > 0); // Filter out clusters with no workers
     setWorkerOptions(options);
     return options;
   };

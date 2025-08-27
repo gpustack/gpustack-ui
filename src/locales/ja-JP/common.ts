@@ -257,7 +257,9 @@ export default {
   'common.login.password': 'Log in with Password',
   'common.external.login': 'Log in with {type}',
   'common.sso.noConfig':
-    'Single sign-on is not enabled on this system. Please contact your administrator.'
+    'Single sign-on is not enabled on this system. Please contact your administrator.',
+  'common.button.edit.item': 'Edit {name}',
+  'common.button.terminal': 'Terminal'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -281,4 +283,6 @@ export default {
 // 18. 'common.external.login': 'Log in with {type}'
 // 19. 'common.login.password': 'Log in with Password',
 // 20. 'common.sso.noConfig': 'Single sign-on is not enabled on this system. Please contact your administrator.'
+// 21.  'common.button.edit.item': 'Edit {name}',
+// 22. 'common.button.terminal': 'Terminal'
 // ========== End of To-Do List ==========

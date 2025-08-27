@@ -29,5 +29,5 @@ export default {
   'menu.accessControl.users': '用户',
   'menu.clusterManagement': '集群管理',
   'menu.clusterManagement.clusters': '集群',
-  'menu.clusterManagement.credentials': '凭据'
+  'menu.clusterManagement.credentials': '凭证'
 };

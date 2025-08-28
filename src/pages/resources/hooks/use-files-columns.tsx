@@ -360,7 +360,7 @@ const useFilesColumns = (props: {
         )
       }
     ];
-  }, [workersList, handleSelect]);
+  }, [intl, workersList, handleSelect]);
 };
 
 export default useFilesColumns;

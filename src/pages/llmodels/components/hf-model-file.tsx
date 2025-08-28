@@ -414,7 +414,12 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
             </ItemFileWrapper>
           ) : (
             <Empty
-              imageStyle={{ height: 'auto', marginTop: '20px' }}
+              styles={{
+                image: {
+                  height: 'auto',
+                  marginTop: '20px'
+                }
+              }}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               description={intl.formatMessage({
                 id: 'models.search.nofiles'

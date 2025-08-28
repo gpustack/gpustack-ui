@@ -293,7 +293,12 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
           </Dropdown>
           <Popover
             autoAdjustOverflow={true}
-            overlayInnerStyle={{ width: 375, paddingInline: 0 }}
+            styles={{
+              body: {
+                width: 375,
+                paddingInline: 0
+              }
+            }}
             content={
               <OverlayScroller
                 maxHeight={500}

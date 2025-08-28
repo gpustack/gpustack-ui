@@ -81,7 +81,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
       }}
       title={intl.formatMessage({ id: 'models.table.button.apiAccessInfo' })}
       width={550}
-      destroyOnClose
+      destroyOnHidden
       closable={true}
       maskClosable={false}
       onOk={handleClose}

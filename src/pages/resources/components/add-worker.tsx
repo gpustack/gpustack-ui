@@ -23,7 +23,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       open={open}
       centered={false}
       onCancel={onCancel}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}

@@ -509,7 +509,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
       bordered={false}
       ghost
       accordion
-      destroyInactivePanel={false}
+      destroyOnHidden={false}
       className={dataformStyles['advanced-collapse']}
       expandIcon={({ isActive }) => (
         <IconFont

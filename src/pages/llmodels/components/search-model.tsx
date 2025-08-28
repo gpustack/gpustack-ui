@@ -514,7 +514,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const renderGGUFTips = useMemo(() => {
     return (
       <Tooltip
-        overlayInnerStyle={{ width: 'max-content' }}
+        styles={{
+          body: {
+            width: 'max-content'
+          }
+        }}
         title={
           <UL>
             <li>{intl.formatMessage({ id: 'models.search.gguf.tips' })}</li>

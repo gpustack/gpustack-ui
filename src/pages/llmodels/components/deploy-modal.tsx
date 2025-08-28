@@ -446,7 +446,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       title={title}
       open={open}
       onClose={handleCancel}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       closeIcon={false}
       maskClosable={false}
       keyboard={false}

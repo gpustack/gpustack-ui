@@ -1,17 +1,9 @@
-import useSetChunkRequest, {
-  createAxiosToken
-} from '@/hooks/use-chunk-request';
-import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
+import { createAxiosToken } from '@/hooks/use-chunk-request';
+import { useMemoizedFn } from 'ahooks';
 import { Col, Row, Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import RowContext from '../row-context';
 import TableContext from '../table-context';
 import { RowContextProps, SealTableProps } from '../types';
@@ -43,10 +35,8 @@ const TableRow: React.FC<
     allChildren?: any[];
     setDisableExpand?: (record: any) => boolean;
   }>(TableContext);
-  const { setChunkRequest } = useSetChunkRequest();
   const [childrenData, setChildrenData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [firstLoad, setFirstLoad] = useState(true);
   const pollTimer = useRef<any>(null);
   const chunkRequestRef = useRef<any>(null);
   const childrenDataRef = useRef<any[]>([]);
@@ -54,12 +44,6 @@ const TableRow: React.FC<
   const axiosToken = useRef<any>(null);
   const [updateChild, setUpdateChild] = useState(true);
   const [currentExpand, setCurrentExpand] = useState(false);
-
-  const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
-    dataList: childrenData,
-    limit: 100,
-    setDataList: setChildrenData
-  });
 
   useEffect(() => {
     return () => {
@@ -87,16 +71,6 @@ const TableRow: React.FC<
 
   const renderChildrenData = () => {
     if (childrenData.length === 0) {
-      // return (
-      //   <Empty
-      //     image={loading ? null : Empty.PRESENTED_IMAGE_SIMPLE}
-      //     description={loading ? null : undefined}
-      //     style={{
-      //       marginBlock: 0,
-      //       height: 54
-      //     }}
-      //   ></Empty>
-      // );
       return null;
     }
     return renderChildren?.(childrenData, {
@@ -116,7 +90,7 @@ const TableRow: React.FC<
     }
   };
 
-  const handleLoadChildren = useCallback(async () => {
+  const handleLoadChildren = useMemoizedFn(async () => {
     try {
       axiosToken.current?.cancel?.();
       axiosToken.current = createAxiosToken();
@@ -130,42 +104,14 @@ const TableRow: React.FC<
     } catch (error) {
       setChildrenData([]);
       setLoading(false);
-    } finally {
-      setFirstLoad(false);
     }
-  }, [record, loadChildren]);
+  });
 
   const filterUpdateChildrenHandler = () => {
     const dataList = _.filter(tableContext.allChildren, (data: any) => {
       return _.get(data, [childParentKey]) === _.get(record, [rowKey]);
     });
     setChildrenData(dataList);
-  };
-
-  const updateChildrenHandler = (list: any) => {
-    _.each(list, (data: any) => {
-      updateChunkedList(data);
-    });
-  };
-
-  const createChunkRequest = () => {
-    chunkRequestRef.current?.current?.cancel?.();
-    if (!watchChildren) {
-      return;
-    }
-    const url = loadChildrenAPI?.(record) as string;
-    try {
-      chunkRequestRef.current = setChunkRequest({
-        url,
-        params: {
-          page: 1,
-          perPage: 100
-        },
-        handler: updateChildrenHandler
-      });
-    } catch (error) {
-      // ignore
-    }
   };
 
   const handleRowExpand = async () => {
@@ -216,7 +162,6 @@ const TableRow: React.FC<
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'hidden') {
-        cacheDataListRef.current = [];
         setUpdateChild(false);
       } else {
         setUpdateChild(true);
@@ -237,7 +182,6 @@ const TableRow: React.FC<
     }
     return () => {
       chunkRequestRef.current?.current?.cancel?.();
-      cacheDataListRef.current = [];
     };
   }, [updateChild, tableContext.allChildren]);
 
@@ -259,13 +203,13 @@ const TableRow: React.FC<
             disableExpand={disableExpand}
           ></RowPrefix>
           <Row className="seal-table-row">
-            {columns?.map((columnProps) => {
+            {columns?.map(({ key, ...restProps }) => {
               return (
                 <Col
-                  key={`${columnProps.dataIndex}-${rowIndex}`}
-                  span={columnProps.span}
+                  key={`${restProps.dataIndex}-${rowIndex}`}
+                  span={restProps.span}
                 >
-                  <TableColumn {...columnProps}></TableColumn>
+                  <TableColumn {...restProps}></TableColumn>
                 </Col>
               );
             })}

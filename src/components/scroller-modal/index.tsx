@@ -45,7 +45,7 @@ const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
   return (
     <Modal
       {...props}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       styles={{
         content: {
           padding: 0

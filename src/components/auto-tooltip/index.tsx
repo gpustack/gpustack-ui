@@ -106,7 +106,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
     <TooltipOverlayScroller
       toolTipProps={{
         ...tooltipProps,
-        destroyTooltipOnHide: false
+        destroyOnHidden: false
       }}
       title={isOverflowing || showTitle ? title || children : false}
     >

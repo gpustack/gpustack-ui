@@ -75,12 +75,15 @@ export const TooltipOverlayScroller: React.FC<
   scrollbars,
   oppositeTheme
 }) => {
-  const { overlayInnerStyle, ...rest } = toolTipProps || {};
+  const { styles, ...rest } = toolTipProps || {};
   return (
     <Tooltip
-      overlayInnerStyle={{
-        paddingInline: 0,
-        ...overlayInnerStyle
+      styles={{
+        ...styles,
+        body: {
+          paddingInline: 0,
+          ...styles?.body
+        }
       }}
       title={
         title && (

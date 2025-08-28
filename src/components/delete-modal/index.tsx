@@ -138,7 +138,7 @@ const DeleteModal = forwardRef((props, ref) => {
       open={visible}
       onOk={handleOk}
       onCancel={handleCancel}
-      destroyOnClose={false}
+      destroyOnHidden={false}
       closeIcon={false}
       maskClosable={false}
       keyboard={false}

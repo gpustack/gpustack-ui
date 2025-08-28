@@ -23,7 +23,7 @@ const WorkerDetailModal: React.FC<WorkerDetailModalProps> = ({
       width={'calc(100vw - 200px)'}
       title={`${currentData?.name}`}
       open={open}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       onClose={handleOnClose}
     >
       <WorkerDetailContent worker_id={currentData?.id} />

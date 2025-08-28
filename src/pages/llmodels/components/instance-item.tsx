@@ -107,9 +107,11 @@ const WorkerInfo = (props: {
         open={open}
         onOpenChange={setOpen}
         title={props.title}
-        overlayInnerStyle={{
-          width: 'max-content',
-          maxWidth: '400px'
+        styles={{
+          body: {
+            width: 'max-content',
+            maxWidth: '400px'
+          }
         }}
       >
         <span className="server-info">
@@ -184,11 +186,15 @@ const RenderWorkerDownloading = (props: {
   return (
     <Tooltip
       arrow={true}
-      overlayInnerStyle={{
-        width: 300,
-        backgroundColor: 'var(--color-spotlight-bg)'
+      styles={{
+        body: {
+          width: 300,
+          backgroundColor: 'var(--color-spotlight-bg)'
+        }
       }}
-      overlayClassName="light-downloading-tooltip"
+      classNames={{
+        root: 'light-downloading-tooltip'
+      }}
       title={
         <RenderRayactorDownloading
           severList={severList}
@@ -505,10 +511,12 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
       <TooltipOverlayScroller
         toolTipProps={{
           trigger: 'hover',
-          overlayInnerStyle: {
-            width: 'max-content',
-            maxWidth: '520px',
-            minWidth: '400px'
+          styles: {
+            body: {
+              width: 'max-content',
+              maxWidth: '520px',
+              minWidth: '400px'
+            }
           }
         }}
         title={renderDistributedServer(severList)}
@@ -561,7 +569,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     };
     return (
       <Tooltip
-        overlayInnerStyle={{ paddingInline: 12 }}
+        styles={{
+          body: {
+            paddingInline: 12
+          }
+        }}
         title={
           <InfoColumn fieldList={fieldList} data={offloadData}></InfoColumn>
         }

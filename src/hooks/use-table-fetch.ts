@@ -42,6 +42,8 @@ export default function useTableFetch<T>(
   const { sortOrder, setSortOrder } = useTableSort({
     defaultSortOrder: 'descend'
   });
+
+  // for skeleton loading
   const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
     firstLoad: true
   });

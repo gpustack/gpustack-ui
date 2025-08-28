@@ -48,12 +48,14 @@ const ToolsBar: React.FC<ToolsBarProps> = (props) => {
       <Tooltip
         placement="bottomLeft"
         arrow={false}
-        overlayInnerStyle={{
-          background: 'var(--color-white-1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          width: 160
+        styles={{
+          body: {
+            background: 'var(--color-white-1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            width: 160
+          }
         }}
         title={
           <div className="flex-column" style={{ width: '100%' }}>

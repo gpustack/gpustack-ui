@@ -42,7 +42,7 @@ const Credentials: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryClusterList,
     deleteAPI: deleteCluster,
-    contentForDelete: 'users.table.user'
+    contentForDelete: 'menu.clusterManagement.clusters'
   });
 
   const intl = useIntl();

@@ -38,6 +38,7 @@ const TrendChart: React.FC<TrendChartProps> = ({
         : itemConfig.label;
       legendData.push(name);
       const itemDataList = _.get(data, item, []);
+      console.log('itemConfig:', itemConfig.color);
       return {
         name: name,
         color: itemConfig.color,

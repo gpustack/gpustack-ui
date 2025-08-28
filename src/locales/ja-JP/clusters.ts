@@ -10,7 +10,8 @@ export default {
   'clusters.edit.cluster': 'Edit {cluster}',
   'clusters.provider.custom': 'Custom',
   'clusters.button.register': 'Register Cluster',
-  'clusters.button.addNodePool': 'Add Node Pool'
+  'clusters.button.addNodePool': 'Add Node Pool',
+  'clusters.button.add.credential': 'Add {provider} Credential'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -25,5 +26,6 @@ export default {
 // 9. 'clusters.edit.cluster': 'Edit {cluster}',
 // 10. 'clusters.provider.custom': 'Custom',
 // 11. 'clusters.button.register': 'Register Cluster',
-// 12. 'clusters.button.addNodePool': 'Add Node Pool'
+// 12. 'clusters.button.addNodePool': 'Add Node Pool',
+// 13. 'clusters.button.add.credential': 'Add {provider} Credential'
 // ========== End of To-Do List ==========

@@ -1,10 +1,13 @@
 import Chart from '@/components/echarts/chart';
 import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
+import { genColors } from '@/utils';
 import _ from 'lodash';
 import React, { memo, useMemo } from 'react';
+import echarts from '.';
 import { ChartProps } from './types';
 
+const LinearGradient = echarts.graphic.LinearGradient;
 const LineChart: React.FC<ChartProps> = (props) => {
   const {
     seriesData,
@@ -81,6 +84,11 @@ const LineChart: React.FC<ChartProps> = (props) => {
 
   const dataOptions = useMemo((): any => {
     const data = _.map(seriesData, (item: any) => {
+      const colors = genColors({
+        color: item.color,
+        alpha1: 0.5,
+        alpha2: 0.1
+      });
       return {
         ...item,
         ...lineItemConfig,
@@ -93,6 +101,18 @@ const LineChart: React.FC<ChartProps> = (props) => {
           ...lineItemConfig.lineStyle,
           color: item.color
         }
+        // areaStyle: {
+        //   color: new LinearGradient(0, 0, 0, 1, [
+        //     {
+        //       offset: 0,
+        //       color: colors[0]
+        //     },
+        //     {
+        //       offset: 1,
+        //       color: colors[1]
+        //     }
+        //   ])
+        // }
       };
     });
     return {

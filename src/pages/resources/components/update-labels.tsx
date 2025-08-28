@@ -111,4 +111,4 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
   );
 };
 
-export default React.memo(UpdateLabels);
+export default UpdateLabels;

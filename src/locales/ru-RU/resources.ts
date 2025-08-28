@@ -90,7 +90,8 @@ export default {
   'resources.register.download':
     'Скачайте и установите <a href={url} target="_blank">инсталлятор</a>. Поддерживаемые версии: {versions}.',
   'resource.register.maos.support': 'Apple Silicon (серия M), macOS 14+',
-  'resource.register.windows.support': 'Windows 10, Windows 11'
+  'resource.register.windows.support': 'Windows 10, Windows 11',
+  'resources.model.instance': 'Модель экземпляра'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========

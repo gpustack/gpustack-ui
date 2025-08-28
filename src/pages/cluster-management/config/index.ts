@@ -65,6 +65,22 @@ export const addActions = [
   }
 ];
 
+export const credentialActionList = [
+  {
+    key: 'edit',
+    label: 'common.button.edit',
+    icon: icons.EditOutlined
+  },
+  {
+    key: 'delete',
+    props: {
+      danger: true
+    },
+    label: 'common.button.delete',
+    icon: icons.DeleteOutlined
+  }
+];
+
 export const clusterActionList = [
   {
     key: 'edit',
@@ -74,7 +90,7 @@ export const clusterActionList = [
   {
     key: 'details',
     label: 'common.button.detail',
-    icon: icons.DetailInfo
+    icon: icons.FileTextOutlined
   },
   {
     key: 'add_worker',

@@ -67,4 +67,4 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
   );
 };
 
-export default React.memo(AddWorker);
+export default AddWorker;

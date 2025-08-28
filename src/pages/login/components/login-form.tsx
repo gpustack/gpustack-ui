@@ -194,6 +194,10 @@ const LoginForm = () => {
     return SSOAuth.options.oidc || SSOAuth.options.saml;
   }, [SSOAuth.options]);
 
+  const isThirdPartyAuthHandling = useMemo(() => {
+    return loading && !authError;
+  }, [loading, authError]);
+
   const renderLoginButtons = () => {
     // do not render login buttons if using password login or no third-party login
     if (!hasThirdPartyLogin || isPassword) return null;
@@ -228,10 +232,6 @@ const LoginForm = () => {
       </Buttons>
     );
   };
-
-  const isThirdPartyAuthHandling = useMemo(() => {
-    return loading && !authError;
-  }, [loading, authError]);
 
   return (
     <div>

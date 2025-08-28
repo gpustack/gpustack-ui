@@ -10,5 +10,6 @@ export default {
   'clusters.edit.cluster': '编辑 {cluster}',
   'clusters.provider.custom': '自定义',
   'clusters.button.register': '注册集群',
-  'clusters.button.addNodePool': '添加节点池'
+  'clusters.button.addNodePool': '添加节点池',
+  'clusters.button.add.credential': '添加 {provider} 凭证'
 };

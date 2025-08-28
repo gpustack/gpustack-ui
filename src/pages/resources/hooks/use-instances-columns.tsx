@@ -294,7 +294,7 @@ const useInstanceColumns = (props: {
   return useMemo(() => {
     return [
       {
-        title: intl.formatMessage({ id: 'common.table.name' }),
+        title: intl.formatMessage({ id: 'resources.model.instance' }),
         dataIndex: 'name',
         width: 240,
         render: (text: string, record: ListItem) => (

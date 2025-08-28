@@ -25,6 +25,12 @@ const metricsMap = {
     intl: false,
     color: 'rgba(114, 46, 209,.8)'
   },
+  allocated: {
+    label: 'Allocated',
+    type: 'Allocated',
+    intl: false,
+    color: 'rgba(250, 173, 20,.8)'
+  },
   gpu: {
     label: 'GPU',
     type: 'GPU',
@@ -186,7 +192,7 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
         </Row>
       </div>
       <SubTitle>System Load</SubTitle>
-      <Row style={{ marginBottom: 20 }} gutter={20}>
+      <Row style={{ marginBottom: 16 }} gutter={16}>
         <Col span={12}>
           <Card height={CardHeight} clickable={false} ghost>
             <TrendChart
@@ -208,14 +214,28 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           </Card>
         </Col>
       </Row>
-      <Card height={CardHeight} clickable={false} ghost>
-        <TrendChart
-          data={detailContent?.history}
-          metrics={['cpu', 'gpu']}
-          metricsMap={metricsMap}
-          title="CPU & GPU"
-        ></TrendChart>
-      </Card>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card height={CardHeight} clickable={false} ghost>
+            <TrendChart
+              data={detailContent?.history}
+              metrics={['cpu']}
+              metricsMap={metricsMap}
+              title="CPU"
+            ></TrendChart>
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card height={CardHeight} clickable={false} ghost>
+            <TrendChart
+              data={detailContent?.history}
+              metrics={['gpu']}
+              metricsMap={metricsMap}
+              title="GPU"
+            ></TrendChart>
+          </Card>
+        </Col>
+      </Row>
       {data?.provider === ProviderValueMap.DigitalOcean && (
         <>
           <SubTitle>Worker Pools</SubTitle>

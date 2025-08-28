@@ -13,7 +13,7 @@ import {
   ClusterListItem as ListItem
 } from '../config/types';
 import CloudProvider from './cloud-provider-form';
-import RegisterClusterInner from './resiter-cluster-inner';
+import RegisterClusterInner from './register-cluster-inner';
 
 type AddModalProps = {
   title: string;

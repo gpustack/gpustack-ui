@@ -4,6 +4,7 @@ import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
+import styled from 'styled-components';
 import './index.less';
 
 type Trigger = 'click' | 'hover';
@@ -18,6 +19,17 @@ interface DropdownButtonsProps {
   extra?: React.ReactNode;
   onSelect: (val: any, item?: any) => void;
 }
+
+const DropdownWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: var(--ant-color-bg-elevated);
+  padding: 5px;
+  align-items: flex-start;
+  border-radius: var(--border-radius-base);
+  box-shadow: var(--ant-box-shadow-secondary);
+  min-width: 160px;
+`;
 
 const DropdownButtons: React.FC<DropdownButtonsProps> = ({
   items,
@@ -66,16 +78,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
           type="primary"
           dropdownRender={(menus: any) => {
             return (
-              <div
-                className="flex flex-column "
-                style={{
-                  backgroundColor: 'var(--ant-color-bg-elevated)',
-                  padding: 5,
-                  alignItems: 'flex-start',
-                  borderRadius: 'var(--border-radius-base)',
-                  boxShadow: 'var(--ant-box-shadow-secondary)'
-                }}
-              >
+              <DropdownWrapper>
                 {_.map(_.tail(items), (item: any) => {
                   return (
                     <Button
@@ -86,13 +89,17 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
                       key={item.key}
                       disabled={item.disabled}
                       onClick={() => handleMenuClick(item)}
-                      style={{ width: '100%', justifyContent: 'flex-start' }}
+                      style={{
+                        width: '100%',
+                        justifyContent: 'flex-start',
+                        paddingInline: 10
+                      }}
                     >
                       {intl.formatMessage({ id: item.label })}
                     </Button>
                   );
                 })}
-              </div>
+              </DropdownWrapper>
             );
           }}
           buttonsRender={([leftButton, rightButton]) => [

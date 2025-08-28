@@ -1,20 +1,13 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
-import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import {
-  DeleteOutlined,
-  EditOutlined,
-  KubernetesOutlined
-} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Empty, Table, message } from 'antd';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import {
   createCredential,
@@ -23,43 +16,20 @@ import {
   updateCredential
 } from './apis';
 import AddModal from './components/add-credential';
-import { ProviderValueMap } from './config';
+import { ProviderLabelMap, ProviderValueMap } from './config';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
 } from './config/types';
-const { Column } = Table;
-
-const ActionList = [
-  {
-    key: 'edit',
-    label: 'common.button.edit',
-    icon: <EditOutlined></EditOutlined>
-  },
-  {
-    key: 'delete',
-    props: {
-      danger: true
-    },
-    label: 'common.button.delete',
-    icon: <DeleteOutlined></DeleteOutlined>
-  }
-];
+import useCredentialColumns from './hooks/use-credential-columns';
 
 const addActions = [
   {
     label: 'Digital Ocean',
     locale: false,
-    value: 'digital_ocean',
-    key: 'digital_ocean',
+    key: ProviderValueMap.DigitalOcean,
+    value: ProviderValueMap.DigitalOcean,
     icon: <IconFont type="icon-digitalocean" />
-  },
-  {
-    label: 'Kubernetes',
-    locale: false,
-    value: 'kubernetes',
-    key: 'kubernetes',
-    icon: <KubernetesOutlined className="size-16" />
   }
 ];
 
@@ -80,7 +50,7 @@ const Credentials: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryCredentialList,
     deleteAPI: deleteCredential,
-    contentForDelete: 'users.table.user'
+    contentForDelete: 'menu.clusterManagement.credentials'
   });
 
   const intl = useIntl();
@@ -98,12 +68,17 @@ const Credentials: React.FC = () => {
     currentData: undefined
   });
 
-  const handleAddCredential = () => {
+  const handleAddCredential = (item: { key: string; label: string }) => {
     setOpenModalStatus({
-      provider: ProviderValueMap.DigitalOcean,
+      provider: item.key,
       open: true,
       action: PageAction.CREATE,
-      title: intl.formatMessage({ id: 'clusters.button.addCredential' }),
+      title: intl.formatMessage(
+        { id: 'clusters.button.add.credential' },
+        {
+          provider: ProviderLabelMap[item.key] || item.key
+        }
+      ),
       currentData: undefined
     });
   };
@@ -132,8 +107,11 @@ const Credentials: React.FC = () => {
   };
 
   const handleModalCancel = () => {
-    console.log('handleModalCancel');
-    setOpenModalStatus({ ...openModalStatus, open: false });
+    setOpenModalStatus({
+      ...openModalStatus,
+      open: false,
+      currentData: undefined
+    });
   };
 
   const handleEditUser = (row: ListItem) => {
@@ -142,20 +120,20 @@ const Credentials: React.FC = () => {
       open: true,
       action: PageAction.EDIT,
       title: intl.formatMessage(
-        { id: 'common.buton.edit.item' },
+        { id: 'common.button.edit.item' },
         { name: row.name }
       ),
       currentData: row
     });
   };
 
-  const handleSelect = (val: any, row: ListItem) => {
+  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'edit') {
       handleEditUser(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
     }
-  };
+  });
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
@@ -168,6 +146,8 @@ const Credentials: React.FC = () => {
     }
     return <div></div>;
   };
+
+  const columns = useCredentialColumns(sortOrder, handleSelect);
 
   return (
     <>
@@ -185,6 +165,8 @@ const Credentials: React.FC = () => {
         extra={[]}
       >
         <FilterBar
+          actionItems={addActions}
+          actionType="dropdown"
           showSelect={false}
           showPrimaryButton={true}
           marginBottom={22}
@@ -202,6 +184,8 @@ const Credentials: React.FC = () => {
 
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            tableLayout="fixed"
+            columns={columns}
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
@@ -215,87 +199,7 @@ const Credentials: React.FC = () => {
               hideOnSinglePage: queryParams.perPage === 10,
               onChange: handlePageChange
             }}
-          >
-            <Column
-              title={intl.formatMessage({ id: 'common.table.name' })}
-              dataIndex="name"
-              key="name"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost minWidth={20}>
-                    {text}
-                  </AutoTooltip>
-                );
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'clusters.table.provider' })}
-              dataIndex="provider"
-              key="provider"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost minWidth={20}>
-                    {text}
-                  </AutoTooltip>
-                );
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'common.table.createTime' })}
-              dataIndex="created_at"
-              key="createTime"
-              defaultSortOrder="descend"
-              sortOrder={sortOrder}
-              showSorterTooltip={false}
-              sorter={false}
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost minWidth={20}>
-                    {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-                  </AutoTooltip>
-                );
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'common.table.description' })}
-              dataIndex="description"
-              key="description"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost minWidth={20}>
-                    {text}
-                  </AutoTooltip>
-                );
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'common.table.operation' })}
-              key="operation"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record: ListItem) => {
-                return (
-                  <DropdownButtons
-                    items={ActionList}
-                    onSelect={(val) => handleSelect(val, record)}
-                  ></DropdownButtons>
-                );
-              }}
-            />
-          </Table>
+          ></Table>
         </ConfigProvider>
       </PageContainer>
       <AddModal

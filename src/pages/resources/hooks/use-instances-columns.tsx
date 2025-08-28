@@ -157,10 +157,12 @@ const DistributionInfo: React.FC<{
     <TooltipOverlayScroller
       toolTipProps={{
         trigger: 'hover',
-        overlayInnerStyle: {
-          width: 'max-content',
-          maxWidth: '520px',
-          minWidth: '400px'
+        styles: {
+          body: {
+            width: 'max-content',
+            maxWidth: '520px',
+            minWidth: '400px'
+          }
         }
       }}
       title={renderDistributedServer(severList, instanceData)}
@@ -217,7 +219,11 @@ const OffloadInfo: React.FC<{
   };
   return (
     <Tooltip
-      overlayInnerStyle={{ paddingInline: 12 }}
+      styles={{
+        body: {
+          paddingInline: 12
+        }
+      }}
       title={<InfoColumn fieldList={fieldList} data={offloadData}></InfoColumn>}
     >
       <ThemeTag
@@ -338,7 +344,7 @@ const useInstanceColumns = (props: {
         )
       }
     ];
-  }, [clusterList]);
+  }, [intl, clusterList]);
 };
 
 export default useInstanceColumns;

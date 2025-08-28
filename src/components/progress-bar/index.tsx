@@ -65,7 +65,11 @@ const RenderProgress = memo(
             title={label}
             open={open}
             onOpenChange={setOpen}
-            overlayInnerStyle={{ paddingInline: 12 }}
+            styles={{
+              body: {
+                paddingInline: 12
+              }
+            }}
           >
             {renderProgress}
           </Tooltip>

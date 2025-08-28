@@ -142,7 +142,7 @@ const ExportData: React.FC<{
       open={open}
       centered={false}
       onCancel={onCancel}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}

@@ -42,7 +42,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
       open={open}
       centered={true}
       onCancel={onCancel}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}

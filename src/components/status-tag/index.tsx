@@ -157,7 +157,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
             autoHide: 'never'
           }}
           toolTipProps={{
-            destroyTooltipOnHide: true
+            destroyOnHidden: true
           }}
         >
           <span className="txt err">

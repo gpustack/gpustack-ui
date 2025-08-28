@@ -71,7 +71,7 @@ const useCredentialColumns = (
         )
       }
     ];
-  }, [handleSelect, sortOrder]);
+  }, [intl, handleSelect, sortOrder]);
 };
 
 export default useCredentialColumns;

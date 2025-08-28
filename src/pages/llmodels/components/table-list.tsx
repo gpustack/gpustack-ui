@@ -1,12 +1,10 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
-import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
-import { SealColumnProps } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
@@ -14,15 +12,11 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
-import {
-  DownOutlined,
-  QuestionCircleOutlined,
-  SyncOutlined
-} from '@ant-design/icons';
+import { DownOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
-import { Button, Input, Select, Space, Tooltip, message } from 'antd';
-import dayjs from 'dayjs';
+import { useMemoizedFn } from 'ahooks';
+import { Button, Input, Select, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, {
@@ -51,9 +45,7 @@ import {
 import {
   ButtonList,
   categoryToPathMap,
-  generateSource,
   modalConfig,
-  setModelActionList,
   sourceOptions
 } from '../config/button-actions';
 import {
@@ -63,10 +55,10 @@ import {
   SourceType
 } from '../config/types';
 import useFormInitialValues from '../hooks/use-form-initial-values';
+import useModelsColumns from '../hooks/use-models-columns';
 import APIAccessInfoModal from './api-access-info';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
-import ModelTag from './model-tag';
 import UpdateModel from './update-modal';
 import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
@@ -95,21 +87,6 @@ interface ModelsProps {
   loadend: boolean;
   total: number;
 }
-
-const statusList = [
-  {
-    label: 'Running',
-    value: 'running'
-  },
-  {
-    label: 'Stopped',
-    value: 'stopped'
-  },
-  {
-    label: 'Error',
-    value: 'error'
-  }
-];
 
 const getFormattedData = (record: any, extraData = {}) => ({
   id: record.id,
@@ -441,57 +418,47 @@ const Models: React.FC<ModelsProps> = ({
       }
     });
   }, []);
-  const handleSelect = useCallback(
-    async (val: any, row: ListItem) => {
-      try {
-        if (val === 'edit') {
-          handleEdit(row);
-        }
-        if (val === 'chat') {
-          handleOpenPlayGround(row);
-        }
-        if (val === 'delete') {
-          handleDelete(row);
-        }
-        if (val === 'start') {
-          await handleStartModel(row);
-          message.success(intl.formatMessage({ id: 'common.message.success' }));
-          updateExpandedRowKeys([row.id, ...expandedRowKeys]);
-          onStart?.();
-        }
-
-        if (val === 'api') {
-          handleViewAPIInfo(row);
-        }
-
-        if (val === 'stop') {
-          modalRef.current?.show({
-            content: 'models.instances',
-            title: 'common.title.stop.confirm',
-            okText: 'common.button.stop',
-            operation: 'common.stop.single.confirm',
-            name: row.name,
-            async onOk() {
-              await handleStopModel(row);
-              onStop?.([row.id]);
-            }
-          });
-        }
-      } catch (error) {
-        // ignore
+  const handleSelect = useMemoizedFn(async (val: any, row: ListItem) => {
+    try {
+      if (val === 'edit') {
+        handleEdit(row);
       }
-    },
-    [
-      handleEdit,
-      handleOpenPlayGround,
-      handleDelete,
-      onStop,
-      onStart,
-      expandedRowKeys
-    ]
-  );
+      if (val === 'chat') {
+        handleOpenPlayGround(row);
+      }
+      if (val === 'delete') {
+        handleDelete(row);
+      }
+      if (val === 'start') {
+        await handleStartModel(row);
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+        updateExpandedRowKeys([row.id, ...expandedRowKeys]);
+        onStart?.();
+      }
 
-  const handleChildSelect = useCallback(
+      if (val === 'api') {
+        handleViewAPIInfo(row);
+      }
+
+      if (val === 'stop') {
+        modalRef.current?.show({
+          content: 'models.instances',
+          title: 'common.title.stop.confirm',
+          okText: 'common.button.stop',
+          operation: 'common.stop.single.confirm',
+          name: row.name,
+          async onOk() {
+            await handleStopModel(row);
+            onStop?.([row.id]);
+          }
+        });
+      }
+    } catch (error) {
+      // ignore
+    }
+  });
+
+  const handleChildSelect = useMemoizedFn(
     (val: any, row: ModelInstanceListItem) => {
       if (val === 'delete') {
         handleDeleteInstace(row);
@@ -499,8 +466,7 @@ const Models: React.FC<ModelsProps> = ({
       if (val === 'viewlog') {
         handleViewLogs(row);
       }
-    },
-    [handleViewLogs, handleDeleteInstace]
+    }
   );
 
   const renderChildren = useCallback(
@@ -575,114 +541,23 @@ const Models: React.FC<ModelsProps> = ({
     }
   };
 
-  const columns: SealColumnProps[] = useMemo(() => {
-    return [
-      {
-        title: intl.formatMessage({ id: 'common.table.name' }),
-        dataIndex: 'name',
-        key: 'name',
-        span: 5,
-        render: (text: string, record: ListItem) => (
-          <span className="flex-center" style={{ maxWidth: '100%' }}>
-            <AutoTooltip ghost>
-              <span className="m-r-5">{text}</span>
-            </AutoTooltip>
-            <ModelTag categoryKey={record.categories?.[0] || ''} />
-          </span>
-        )
-      },
-      {
-        title: 'Cluster',
-        dataIndex: 'cluster',
-        key: 'cluster',
-        span: 3,
-        render: (text: string, record: ListItem) => (
-          <span className="flex flex-column" style={{ width: '100%' }}>
-            {
-              clusterList.find((item) => item.value === record.cluster_id)
-                ?.label
-            }
-          </span>
-        )
-      },
-      {
-        title: intl.formatMessage({ id: 'models.form.source' }),
-        dataIndex: 'source',
-        key: 'source',
-        span: 5,
-        render: (text: string, record: ListItem) => (
-          <span className="flex flex-column" style={{ width: '100%' }}>
-            <AutoTooltip ghost>{generateSource(record)}</AutoTooltip>
-          </span>
-        )
-      },
-      {
-        title: (
-          <Tooltip
-            title={intl.formatMessage(
-              { id: 'models.form.replicas.tips' },
-              { api: `${window.location.origin}/v1` }
-            )}
-          >
-            <span style={{ fontWeight: 'var(--font-weight-medium)' }}>
-              {intl.formatMessage({ id: 'models.form.replicas' })}
-            </span>
-            <QuestionCircleOutlined className="m-l-5" />
-          </Tooltip>
-        ),
-        dataIndex: 'replicas',
-        key: 'replicas',
-        align: 'center',
-        span: 4,
-        editable: {
-          valueType: 'number',
-          title: intl.formatMessage({ id: 'models.table.replicas.edit' })
-        },
-        render: (text: number, record: ListItem) => (
-          <span style={{ paddingLeft: 10, minWidth: '33px' }}>
-            {record.ready_replicas} / {record.replicas}
-          </span>
-        )
-      },
-      {
-        title: intl.formatMessage({ id: 'common.table.createTime' }),
-        dataIndex: 'created_at',
-        key: 'created_at',
-        defaultSortOrder: 'descend',
-        sortOrder,
-        sorter: false,
-        span: 4,
-        render: (text: number) => (
-          <AutoTooltip ghost>
-            {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-          </AutoTooltip>
-        )
-      },
-      {
-        title: intl.formatMessage({ id: 'common.table.operation' }),
-        key: 'operation',
-        dataIndex: 'operation',
-        span: 3,
-        render: (text, record) => (
-          <DropdownButtons
-            items={setModelActionList(record)}
-            onSelect={(val) => handleSelect(val, record)}
-          />
-        )
-      }
-    ];
-  }, [sortOrder, intl, handleSelect]);
+  const options = useMemo(() => {
+    return {
+      handleSelect,
+      clusterList,
+      sortOrder
+    };
+  }, [handleSelect, clusterList, sortOrder]);
 
-  const handleToggleExpandAll = useCallback(
-    (expanded: boolean) => {
-      const keys = dataSource.map((item) => item.id);
-      handleExpandAll(expanded, keys);
-      if (expanded) {
-        handleOnToggleExpandAll();
-      }
-    },
-    [dataSource]
-  );
+  const columns = useModelsColumns(options);
+
+  const handleToggleExpandAll = useMemoizedFn((expanded: boolean) => {
+    const keys = dataSource.map((item) => item.id);
+    handleExpandAll(expanded, keys);
+    if (expanded) {
+      handleOnToggleExpandAll();
+    }
+  });
 
   return (
     <>

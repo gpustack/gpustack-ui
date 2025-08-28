@@ -138,7 +138,7 @@ const useGPUColumns = (props: {
         }
       }
     ];
-  }, [clusterList, loadend, firstLoad]);
+  }, [intl, clusterList, loadend, firstLoad]);
 };
 
 export default useGPUColumns;

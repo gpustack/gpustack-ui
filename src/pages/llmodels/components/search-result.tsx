@@ -61,7 +61,12 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     if (networkError) {
       return (
         <Empty
-          imageStyle={{ height: 'auto', marginTop: '20px' }}
+          styles={{
+            image: {
+              height: 'auto',
+              marginTop: '20px'
+            }
+          }}
           image={
             <IconFont
               type="icon-networkerror"
@@ -98,7 +103,12 @@ const SearchResult: React.FC<SearchResultProps> = (props) => {
     }
     return (
       <Empty
-        imageStyle={{ height: 'auto', marginTop: '20px' }}
+        styles={{
+          image: {
+            height: 'auto',
+            marginTop: '20px'
+          }
+        }}
         image={
           <SearchOutlined
             className="font-size-16"

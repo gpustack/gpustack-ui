@@ -273,9 +273,8 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       open={open}
       centered={true}
       onOk={handleSumit}
-      onCancel={onCancel}
-      onClose={handleOnClose}
-      destroyOnClose={true}
+      onCancel={handleOnClose}
+      destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}

@@ -17,7 +17,7 @@ interface MenuItem {
 interface SiderMenuProps {
   menuData: MenuItem[];
   collapsed?: boolean;
-  initialState: Global.InitialState;
+  initialState: Global.InitialStateType;
 }
 
 const useStyles = createStyles(({ css, token }) => {

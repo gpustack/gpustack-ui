@@ -2,20 +2,17 @@
 import avatarImg from '@/assets/images/avatar.png';
 import IconFont from '@/components/icon-font';
 import externalLinks from '@/constants/external-links';
-import langConfigMap from '@/locales/lang-config-map';
 import {
   DiscordOutlined,
   GithubOutlined,
   HomeOutlined,
   InfoCircleOutlined,
   LogoutOutlined,
-  MoonOutlined,
   MoreOutlined,
   ReadOutlined,
-  SettingOutlined,
-  SunOutlined
+  SettingOutlined
 } from '@ant-design/icons';
-import { getAllLocales, history, setLocale } from '@umijs/max';
+import { getAllLocales, history } from '@umijs/max';
 import { Avatar, Menu, Spin } from 'antd';
 import _ from 'lodash';
 import React from 'react';
@@ -187,64 +184,6 @@ export const getRightRenderContent = (opts: {
             }
           }
         }))
-      }
-    ]
-  };
-
-  const langMenu = {
-    selectedKeys: [],
-    className: collapsed
-      ? 'user-menu-container user-menu-collapsed'
-      : 'user-menu-container',
-    mode: 'vertical',
-    expandIcon: false,
-    // inlineCollapsed: collapsed,
-    triggerSubMenuAction: 'hover',
-    items: [
-      {
-        key: 'lang',
-        icon: <IconFont type="icon-language" />,
-        label: (
-          <span className="sub-title">
-            {intl?.formatMessage?.({ id: 'common.settings.language' })}
-          </span>
-        ),
-        children: allLocals.map((key) => ({
-          key,
-          label: (
-            <span className="flex flex-center">
-              <span>{_.get(langConfigMap, [key, 'label'])}</span>
-            </span>
-          ),
-          onClick: () => {
-            setLocale(key, false);
-          }
-        }))
-      }
-    ]
-  };
-
-  const themeMenu = {
-    selectedKeys: [],
-    className: collapsed
-      ? 'user-menu-container user-menu-collapsed'
-      : 'user-menu-container',
-    mode: 'vertical',
-    expandIcon: false,
-    // inlineCollapsed: collapsed,
-    triggerSubMenuAction: 'click',
-    items: [
-      {
-        key: 'theme',
-        icon: isDarkTheme ? <MoonOutlined /> : <SunOutlined />,
-        label: (
-          <span className="sub-title">
-            {intl?.formatMessage?.({ id: 'common.appearance' })}
-          </span>
-        ),
-        onClick: () => {
-          opts.runtimeConfig.toggleTheme();
-        }
       }
     ]
   };

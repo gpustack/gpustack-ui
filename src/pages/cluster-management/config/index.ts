@@ -73,7 +73,7 @@ export const clusterActionList = [
   },
   {
     key: 'details',
-    label: 'common.button.view',
+    label: 'common.button.detail',
     icon: icons.DetailInfo
   },
   {

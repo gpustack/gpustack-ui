@@ -70,6 +70,7 @@ export default {
     'ダウンロード完了を待っています...',
   'resources.filter.worker': 'ワーカーでフィルタ',
   'resources.filter.source': 'ソースでフィルタ',
+  'resources.filter.status': 'Filter by Status',
   'resources.modelfiles.delete.tips': 'ディスクからファイルも削除します',
   'resources.modelfiles.copy.tips': 'フルパスをコピー',
   'resources.filter.path': 'パスでフィルタ',
@@ -105,5 +106,6 @@ export default {
 // 8. 'resources.register.install.title': 'Install GPUStack on {os}',
 // 9. 'resources.register.download':'Download and install the <a>installer</a>. Only supported: {versions}.',
 // 10. 'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
-// 11. 'resource.register.windows.support': 'win 10, win 11'
+// 11. 'resource.register.windows.support': 'win 10, win 11',
+// 12. 'resources.filter.status': 'Filter by Status',
 // ========== End of To-Do List ==========

@@ -39,6 +39,14 @@ import {
 } from '../config/types';
 import '../style/instance-item.less';
 
+interface InstanceItemProps {
+  instanceData: ModelInstanceListItem;
+  workerList: WorkerListItem[];
+  modelData?: any;
+  defaultOpenId: string;
+  handleChildSelect: (val: string, item: ModelInstanceListItem) => void;
+}
+
 const fieldList = [
   {
     label: 'CPU',
@@ -249,14 +257,6 @@ const InstanceStatusTag = (
     </>
   );
 };
-
-interface InstanceItemProps {
-  instanceData: ModelInstanceListItem;
-  workerList: WorkerListItem[];
-  modelData?: any;
-  defaultOpenId: string;
-  handleChildSelect: (val: string, item: ModelInstanceListItem) => void;
-}
 
 const childActionList = [
   {

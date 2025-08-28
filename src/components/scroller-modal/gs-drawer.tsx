@@ -3,7 +3,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { Button, Drawer, type DrawerProps } from 'antd';
 
 const ScrollerModal = (props: DrawerProps) => {
-  const { title, closable = true, ...restProps } = props;
+  const { title, closable = true, maskClosable = false, ...restProps } = props;
   const { EscHint } = useEscHint({
     enabled: !props.keyboard && props.open
   });
@@ -15,6 +15,7 @@ const ScrollerModal = (props: DrawerProps) => {
       <Drawer
         {...restProps}
         closable={false}
+        maskClosable={maskClosable}
         title={
           <div className="flex-between flex-center">
             <span

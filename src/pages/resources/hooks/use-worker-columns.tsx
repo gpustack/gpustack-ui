@@ -17,7 +17,7 @@ import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import { WorkerStatusMapValue, status } from '../config';
+import { WorkerStatusMap, WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 
 const LabelsWrapper = styled.div`
@@ -28,6 +28,11 @@ const LabelsWrapper = styled.div`
 
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
+  {
+    label: 'common.button.detail',
+    key: 'details',
+    icon: <IconFont type="icon-detail-info" />
+  },
   {
     label: 'common.button.logs',
     locale: false,
@@ -42,6 +47,15 @@ const ActionList = [
     icon: <DeleteOutlined />
   }
 ];
+
+const setActions = (row: ListItem) => {
+  return ActionList.filter((action) => {
+    if (action.key === 'details' && row.state === WorkerStatusMap.ready) {
+      return true;
+    }
+    return true;
+  });
+};
 
 const fieldList = [
   {
@@ -115,14 +129,14 @@ const VRAMCell = ({
   devices,
   intl,
   rIndex,
-  dataSource,
-  extraStatus
+  loadend,
+  firstLoad
 }: {
   devices: GPUDeviceItem[];
   intl: any;
   rIndex: number;
-  dataSource: any;
-  extraStatus: any;
+  loadend: boolean;
+  firstLoad: boolean;
 }) => (
   <span className="flex-column flex-gap-2">
     {_.map(
@@ -133,12 +147,7 @@ const VRAMCell = ({
             [{item.index}]
           </span>
           <ProgressBar
-            defaultOpen={
-              rIndex === 0 &&
-              index === 0 &&
-              dataSource.loadend &&
-              extraStatus.firstLoad
-            }
+            defaultOpen={rIndex === 0 && index === 0 && loadend && firstLoad}
             percent={
               item.memory?.used
                 ? _.round(item.memory?.utilization_rate, 0)
@@ -189,16 +198,16 @@ const StorageCell = ({ files }: { files: Filesystem[] }) => {
 
 const useWorkerColumns = ({
   clusterData,
-  dataSource,
-  extraStatus,
+  loadend,
+  firstLoad,
   handleSelect
 }: {
   clusterData: {
     list: Global.BaseOption<number>[];
     data: Record<number, string>;
   };
-  dataSource: any;
-  extraStatus: any;
+  loadend: boolean;
+  firstLoad: boolean;
   handleSelect: (action: string, record: ListItem) => void;
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -290,8 +299,8 @@ const useWorkerColumns = ({
             devices={record?.status?.gpu_devices}
             intl={intl}
             rIndex={rIndex}
-            dataSource={dataSource}
-            extraStatus={extraStatus}
+            loadend={loadend}
+            firstLoad={firstLoad}
           />
         )
       },
@@ -305,13 +314,13 @@ const useWorkerColumns = ({
         key: 'operation',
         render: (_, record) => (
           <DropdownButtons
-            items={ActionList}
+            items={setActions(record)}
             onSelect={(val) => handleSelect(val, record)}
           />
         )
       }
     ],
-    [intl, clusterData, dataSource, extraStatus, handleSelect]
+    [intl, clusterData, loadend, firstLoad, handleSelect]
   );
 };
 

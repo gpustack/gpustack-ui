@@ -44,6 +44,11 @@ declare namespace Global {
     opts?: Array<BaseOption<string | number>>;
   }
 
+  interface InitialStateType {
+    fetchUserInfo: () => Promise<UserInfo>;
+    currentUser?: UserInfo;
+  }
+
   type SearchParams = Pagination & { search?: string };
 
   type MessageType = 'transition' | 'warning' | 'danger' | 'success' | 'info';

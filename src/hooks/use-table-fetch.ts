@@ -21,6 +21,7 @@ export default function useTableFetch<ListItem>(
     contentForDelete?: string;
     defaultData?: any[];
     events?: EventsType[];
+    defaultQueryParams?: Record<string, any>;
   } & WatchConfig
 ) {
   const {
@@ -31,7 +32,8 @@ export default function useTableFetch<ListItem>(
     polling = false,
     watch,
     defaultData = [],
-    events = ['UPDATE', 'DELETE']
+    events = ['UPDATE', 'DELETE'],
+    defaultQueryParams = {}
   } = options;
   const pollingRef = useRef<any>(null);
   const chunkRequedtRef = useRef<any>(null);
@@ -60,7 +62,8 @@ export default function useTableFetch<ListItem>(
   const [queryParams, setQueryParams] = useState<any>({
     page: 1,
     perPage: 10,
-    search: ''
+    search: '',
+    ...defaultQueryParams
   });
 
   const { setChunkRequest } = useSetChunkRequest();

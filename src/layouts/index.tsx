@@ -180,11 +180,6 @@ export default (props: any) => {
     showShortcuts: () => {
       return showShortcuts();
     },
-    setTheme: setTheme,
-    toggleTheme: () => {
-      const newTheme = userSettings.theme === 'realDark' ? 'light' : 'realDark';
-      setTheme(newTheme);
-    },
     notFound: <span>404 not found</span>
   };
 

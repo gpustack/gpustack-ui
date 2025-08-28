@@ -16,6 +16,7 @@ import {
 import { ListItem } from '../config/types';
 import useWorkerColumns from '../hooks/use-worker-columns';
 import UpdateLabels from './update-labels';
+import WorkerDetailModal from './worker-detail-modal';
 
 const Workers: React.FC = () => {
   const {
@@ -54,6 +55,13 @@ const Workers: React.FC = () => {
   }>({
     list: [],
     data: {}
+  });
+  const [workerDetailStatus, setWorkerDetailStatus] = useState<{
+    open: boolean;
+    currentData: ListItem | null;
+  }>({
+    open: false,
+    currentData: null
   });
 
   const getClusterList = async () => {
@@ -118,6 +126,13 @@ const Workers: React.FC = () => {
     });
   };
 
+  const handleViewDetail = (record: ListItem) => {
+    setWorkerDetailStatus({
+      open: true,
+      currentData: record
+    });
+  };
+
   const handleSelect = useMemoizedFn((val: any, record: ListItem) => {
     if (val === 'edit') {
       handleUpdateLabels(record);
@@ -125,6 +140,9 @@ const Workers: React.FC = () => {
     }
     if (val === 'delete') {
       handleDelete(record);
+    }
+    if (val === 'details') {
+      handleViewDetail(record);
     }
   });
 
@@ -149,8 +167,8 @@ const Workers: React.FC = () => {
 
   const columns = useWorkerColumns({
     clusterData,
-    dataSource,
-    extraStatus,
+    loadend: dataSource.loadend,
+    firstLoad: extraStatus.firstLoad,
     handleSelect
   });
 
@@ -216,6 +234,13 @@ const Workers: React.FC = () => {
             labels: updateLabelsData.data.labels
           }}
         ></UpdateLabels>
+        <WorkerDetailModal
+          open={workerDetailStatus.open}
+          currentData={workerDetailStatus.currentData}
+          onClose={() =>
+            setWorkerDetailStatus({ currentData: null, open: false })
+          }
+        />
       </PageContainer>
     </>
   );

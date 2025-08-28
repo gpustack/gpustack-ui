@@ -4,8 +4,8 @@ import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Button, Form } from 'antd';
-import React from 'react';
+import { Form } from 'antd';
+import React, { useEffect } from 'react';
 import { ProviderValueMap } from '../config';
 import {
   CredentialFormData as FormData,
@@ -41,32 +41,32 @@ const AddModal: React.FC<AddModalProps> = ({
     onOk(data);
   };
 
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
+  };
+  useEffect(() => {
+    if (currentData) {
+      form.setFieldsValue(currentData);
+    }
+  }, [currentData]);
+
   return (
     <ScrollerModal
       title={title}
       open={open}
       centered={true}
       onOk={handleSumit}
-      onCancel={onCancel}
       destroyOnClose={true}
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
       width={600}
       footer={
-        <ModalFooter
-          onOk={handleSumit}
-          onCancel={onCancel}
-          description={<Button>Validation Test</Button>}
-        ></ModalFooter>
+        <ModalFooter onOk={handleSumit} onCancel={handleCancel}></ModalFooter>
       }
     >
-      <Form
-        form={form}
-        onFinish={handleOk}
-        preserve={false}
-        initialValues={currentData}
-      >
+      <Form form={form} onFinish={handleOk} preserve={false}>
         <Form.Item<FormData>
           name="name"
           rules={[
@@ -88,7 +88,7 @@ const AddModal: React.FC<AddModalProps> = ({
         </Form.Item>
         {provider === ProviderValueMap.DigitalOcean && (
           <>
-            <Form.Item<FormData>
+            {/* <Form.Item<FormData>
               name="key"
               rules={[
                 {
@@ -103,20 +103,18 @@ const AddModal: React.FC<AddModalProps> = ({
                 label="Access Key"
                 required={action === PageAction.CREATE}
               ></SealInput.Password>
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item<FormData>
               name="secret"
               rules={[
                 {
                   required: action === PageAction.CREATE,
-                  message: intl.formatMessage({
-                    id: 'users.form.rule.password'
-                  })
+                  message: 'Access Token is required'
                 }
               ]}
             >
               <SealInput.Password
-                label="Access Secret"
+                label="Access Token"
                 required={action === PageAction.CREATE}
               ></SealInput.Password>
             </Form.Item>

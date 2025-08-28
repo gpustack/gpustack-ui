@@ -14,9 +14,9 @@ type WatchConfig =
   | { watch: true; API: string; polling?: false | undefined }
   | { polling: true; watch: false | undefined; API?: string };
 
-export default function useTableFetch<ListItem>(
+export default function useTableFetch<T>(
   options: {
-    fetchAPI: (params: any) => Promise<Global.PageResponse<ListItem>>;
+    fetchAPI: (params: any) => Promise<Global.PageResponse<T>>;
     deleteAPI?: (id: number, params?: any) => Promise<any>;
     contentForDelete?: string;
     defaultData?: any[];
@@ -47,7 +47,7 @@ export default function useTableFetch<ListItem>(
   });
 
   const [dataSource, setDataSource] = useState<{
-    dataList: ListItem[];
+    dataList: T[];
     loading: boolean;
     loadend: boolean;
     total: number;
@@ -217,7 +217,7 @@ export default function useTableFetch<ListItem>(
   const handleNameChange = debounceUpdateFilter;
 
   const handleDelete = (
-    row: ListItem & { name: string; id: number },
+    row: T & { name: string; id: number },
     options?: any
   ) => {
     modalRef.current?.show({

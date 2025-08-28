@@ -63,6 +63,9 @@ const useGPUColumns = (props: {
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
+        ellipsis: {
+          showTitle: false
+        },
         render: (text: number, record: GPUDeviceItem) => (
           <AutoTooltip ghost>
             {clusterList.find((item) => item.value === text)?.label}
@@ -70,8 +73,11 @@ const useGPUColumns = (props: {
         )
       },
       {
-        title: intl.formatMessage({ id: 'resources.table.workername' }),
+        title: 'Worker',
         dataIndex: 'worker_name',
+        ellipsis: {
+          showTitle: false
+        },
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>
         )

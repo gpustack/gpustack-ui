@@ -46,11 +46,11 @@ export const ActionList: ActionItem[] = [
     key: 'edit',
     icon: icons.EditOutlined
   },
-  {
-    label: 'common.button.detail',
-    key: 'details',
-    icon: icons.FileTextOutlined
-  },
+  // {
+  //   label: 'common.button.detail',
+  //   key: 'details',
+  //   icon: icons.FileTextOutlined
+  // },
   {
     label: 'models.openinplayground',
     key: 'chat',

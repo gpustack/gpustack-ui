@@ -91,5 +91,6 @@ export default {
   'resources.register.download':
     'Download and install the <a href={url} target="_blank">installer</a>. Only supported: {versions}.',
   'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
-  'resource.register.windows.support': 'win 10, win 11'
+  'resource.register.windows.support': 'win 10, win 11',
+  'resources.model.instance': 'Model Instance'
 };

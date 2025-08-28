@@ -1,6 +1,6 @@
 import ScrollerModal from '@/components/scroller-modal/index';
 import React from 'react';
-import RegisterClusterInner from './resiter-cluster-inner';
+import RegisterClusterInner from './register-cluster-inner';
 
 type AddModalProps = {
   title: string;

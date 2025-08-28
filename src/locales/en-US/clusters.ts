@@ -10,5 +10,6 @@ export default {
   'clusters.edit.cluster': 'Edit {cluster}',
   'clusters.provider.custom': 'Custom',
   'clusters.button.register': 'Register Cluster',
-  'clusters.button.addNodePool': 'Add Node Pool'
+  'clusters.button.addNodePool': 'Add Node Pool',
+  'clusters.button.add.credential': 'Add {provider} Credential'
 };

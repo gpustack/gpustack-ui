@@ -9,6 +9,7 @@ import {
   CodeOutlined,
   DeleteOutlined,
   EditOutlined,
+  FileTextOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -31,7 +32,7 @@ const ActionList = [
   {
     label: 'common.button.detail',
     key: 'details',
-    icon: <IconFont type="icon-detail-info" />
+    icon: <FileTextOutlined></FileTextOutlined>
   },
   {
     label: 'common.button.logs',

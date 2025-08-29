@@ -8,21 +8,25 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Table, message } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   createCluster,
+  createWorkerPool,
   deleteCluster,
   queryClusterList,
   queryClusterToken,
+  queryCredentialList,
   updateCluster
 } from './apis';
 import AddCluster from './components/add-cluster';
+import AddPool from './components/add-pool';
 import ClusterDetailModal from './components/cluster-detail-modal';
 import RegisterCluster from './components/register-cluster';
 import { ProviderLabelMap, ProviderValueMap, addActions } from './config';
 import {
   ClusterFormData as FormData,
-  ClusterListItem as ListItem
+  ClusterListItem as ListItem,
+  NodePoolFormData
 } from './config/types';
 import useClusterColumns from './hooks/use-cluster-columns';
 
@@ -99,16 +103,22 @@ const Credentials: React.FC = () => {
     provider: ''
   });
 
+  const [credentialList, setCredentialList] = useState<
+    Global.BaseOption<number>[]
+  >([]);
+
   const [addPoolStatus, setAddPoolStatus] = useState<{
     open: boolean;
     action: PageActionType;
     title: string;
     provider: string;
+    clusterId: number;
   }>({
     open: false,
     action: PageAction.CREATE,
     title: '',
-    provider: ProviderValueMap.DigitalOcean
+    provider: ProviderValueMap.DigitalOcean,
+    clusterId: 0
   });
 
   const handleAddCluster = (value: string) => {
@@ -130,12 +140,13 @@ const Credentials: React.FC = () => {
     });
   };
 
-  const handleAddPool = (value: string) => {
+  const handleAddPool = (row: ListItem) => {
     setAddPoolStatus({
       open: true,
       action: PageAction.CREATE,
       title: `Add Node Pool`,
-      provider: value
+      provider: row.provider,
+      clusterId: row.id
     });
   };
 
@@ -233,7 +244,7 @@ const Credentials: React.FC = () => {
     } else if (val === 'add_worker') {
       handleAddWorker(row);
     } else if (val === 'addPool') {
-      handleAddPool(row.provider);
+      handleAddPool(row);
     } else if (val === 'details') {
       setOpenClusterDetail({
         open: true,
@@ -243,6 +254,34 @@ const Credentials: React.FC = () => {
       handleRegisterCluster(row);
     }
   });
+
+  const handleSubmitWorkerPool = async (formdata: NodePoolFormData) => {
+    try {
+      await createWorkerPool({
+        data: formdata,
+        clusterId: addPoolStatus.clusterId
+      });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {
+      // error
+    }
+    setAddPoolStatus({
+      ...addPoolStatus,
+      open: false
+    });
+  };
+
+  useEffect(() => {
+    const fetchCredentialList = async () => {
+      const data = await queryCredentialList({ page: 1, perPage: 100 });
+      const list = data?.items?.map((item) => ({
+        label: item.name,
+        value: item.id
+      }));
+      setCredentialList(list);
+    };
+    fetchCredentialList();
+  }, []);
 
   const columns = useClusterColumns(handleSelect);
 
@@ -302,6 +341,7 @@ const Credentials: React.FC = () => {
         action={openAddModal.action}
         title={openAddModal.title}
         currentData={openAddModal.currentData}
+        credentialList={credentialList}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddCluster>
@@ -323,7 +363,7 @@ const Credentials: React.FC = () => {
         }
       ></ClusterDetailModal>
       <RegisterCluster
-        title="Register Cluster"
+        title={intl.formatMessage({ id: 'clusters.button.register' })}
         open={registerClusterStatus.open}
         registrationInfo={registerClusterStatus.registrationInfo}
         onCancel={() => {
@@ -338,6 +378,22 @@ const Credentials: React.FC = () => {
           });
         }}
       ></RegisterCluster>
+      <AddPool
+        provider={addPoolStatus.provider}
+        open={addPoolStatus.open}
+        action={addPoolStatus.action}
+        title={addPoolStatus.title}
+        onCancel={() => {
+          setAddPoolStatus({
+            open: false,
+            action: PageAction.CREATE,
+            title: '',
+            provider: ProviderValueMap.DigitalOcean,
+            clusterId: 0
+          });
+        }}
+        onOk={handleSubmitWorkerPool}
+      ></AddPool>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

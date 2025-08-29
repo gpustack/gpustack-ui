@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import { queryClusterDetail } from '../apis';
 import { ProviderValueMap } from '../config';
 import { ClusterListItem, NodePoolListItem } from '../config/types';
-import AddPool from './add-pool';
 import TrendChart from './trend-chart';
 import WorkerPools from './worker-pools';
 
@@ -89,7 +88,9 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
     open: false,
     action: PageAction.CREATE,
     title: '',
-    provider: ProviderValueMap.DigitalOcean
+    provider: ProviderValueMap.DigitalOcean,
+    currentData: null as NodePoolListItem | null,
+    clusterId: 0
   });
   const [detailContent, setDetailContent] = useState<{
     current: {
@@ -108,18 +109,6 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
     },
     history: {}
   });
-
-  // pool action handler
-  const handleOnAction = (action: string, record: NodePoolListItem) => {
-    if (action === 'edit') {
-      setAddPoolStatus({
-        open: true,
-        action: PageAction.CREATE,
-        title: 'Edit Worker Pool',
-        provider: data!.provider
-      });
-    }
-  };
 
   const getClusterDetail = async () => {
     if (!data) {
@@ -238,37 +227,9 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
       </Row>
       {data?.provider === ProviderValueMap.DigitalOcean && (
         <>
-          <SubTitle>Worker Pools</SubTitle>
-          <WorkerPools
-            provider={data?.provider}
-            workerPools={data?.worker_pools}
-            height={show ? 'auto' : 0}
-            onAction={handleOnAction}
-          />
+          <WorkerPools clusterData={data} height={'auto'} />
         </>
       )}
-      <AddPool
-        provider={addPoolStatus.provider}
-        open={addPoolStatus.open}
-        action={addPoolStatus.action}
-        title={addPoolStatus.title}
-        onCancel={() => {
-          setAddPoolStatus({
-            open: false,
-            action: PageAction.CREATE,
-            title: '',
-            provider: ProviderValueMap.DigitalOcean
-          });
-        }}
-        onOk={() => {
-          setAddPoolStatus({
-            open: false,
-            action: addPoolStatus.action,
-            title: '',
-            provider: ProviderValueMap.DigitalOcean
-          });
-        }}
-      ></AddPool>
     </div>
   );
 };

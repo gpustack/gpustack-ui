@@ -3,19 +3,25 @@ import { StatusMaps } from '@/config';
 export const WorkerStatusMap = {
   ready: 'ready',
   not_ready: 'not_ready',
-  unreachable: 'unreachable'
+  unreachable: 'unreachable',
+  provisioning: 'provisioning',
+  deleting: 'deleting'
 };
 
 export const WorkerStatusMapValue = {
   [WorkerStatusMap.ready]: 'Ready',
   [WorkerStatusMap.not_ready]: 'Not Ready',
-  [WorkerStatusMap.unreachable]: 'Unreachable'
+  [WorkerStatusMap.unreachable]: 'Unreachable',
+  [WorkerStatusMap.provisioning]: 'Provisioning',
+  [WorkerStatusMap.deleting]: 'Deleting'
 };
 
 export const status: any = {
   [WorkerStatusMap.ready]: StatusMaps.success,
   [WorkerStatusMap.not_ready]: StatusMaps.error,
-  [WorkerStatusMap.unreachable]: StatusMaps.error
+  [WorkerStatusMap.unreachable]: StatusMaps.error,
+  [WorkerStatusMap.provisioning]: StatusMaps.transitioning,
+  [WorkerStatusMap.deleting]: StatusMaps.warning
 };
 
 export const addWorkerGuide: Record<string, any> = {

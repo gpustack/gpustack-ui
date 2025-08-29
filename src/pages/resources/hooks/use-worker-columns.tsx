@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
+import LabelsCell from '@/components/label-cell';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
@@ -17,15 +18,8 @@ import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import styled from 'styled-components';
 import { WorkerStatusMap, WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
-
-const LabelsWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-`;
 
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
@@ -89,22 +83,6 @@ const calcStorage = (files: Filesystem[]) => {
   );
   return mountRoot ? formateUtilization(mountRoot.used, mountRoot.total) : 0;
 };
-
-const LabelsCell = ({ labels }: { labels: Record<string, any> }) => (
-  <LabelsWrapper>
-    {_.map(labels, (value: string, key: string) => (
-      <AutoTooltip
-        key={key}
-        className="m-r-0"
-        maxWidth={155}
-        style={{ paddingInline: 8, borderRadius: 12 }}
-      >
-        <span>{key}</span>
-        <span>:{value}</span>
-      </AutoTooltip>
-    ))}
-  </LabelsWrapper>
-);
 
 const GPUCell = ({ devices }: { devices: GPUDeviceItem[] }) => (
   <span className="flex-column flex-gap-2">

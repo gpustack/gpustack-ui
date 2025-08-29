@@ -100,11 +100,10 @@ export async function queryClusterToken(params: { id: number }) {
 // ===================== Worker Pools =====================
 
 export async function queryWorkerPools(
-  clusterId: number,
-  params?: Global.SearchParams
+  params?: Global.SearchParams & { cluster_id: string | number }
 ) {
   return request<Global.PageResponse<NodePoolListItem>>(
-    `${CLUSTERS_API}/${clusterId}/${WORKER_POOLS_API}`,
+    `${WORKER_POOLS_API}?`,
     {
       method: 'GET',
       params
@@ -112,28 +111,28 @@ export async function queryWorkerPools(
   );
 }
 
-export async function createWorkerPool(
-  clusterId: number,
-  params: { data: NodePoolFormData }
-) {
-  return request(`${CLUSTERS_API}/${clusterId}/${WORKER_POOLS_API}`, {
+export async function createWorkerPool(params: {
+  data: NodePoolFormData;
+  clusterId: number;
+}) {
+  return request(`${CLUSTERS_API}/${params.clusterId}${WORKER_POOLS_API}`, {
     method: 'POST',
     data: params.data
   });
 }
 
-export async function updateWorkerPool(
-  clusterId: number,
-  params: { id: number; data: NodePoolFormData }
-) {
-  return request(`/${WORKER_POOLS_API}/${params.id}`, {
+export async function updateWorkerPool(params: {
+  id: number;
+  data: NodePoolFormData;
+}) {
+  return request(`${WORKER_POOLS_API}/${params.id}`, {
     method: 'PUT',
     data: params.data
   });
 }
 
-export async function deleteWorkerPool(clusterId: number, id: number) {
-  return request(`/${WORKER_POOLS_API}/${id}`, {
+export async function deleteWorkerPool(id: number) {
+  return request(`${WORKER_POOLS_API}/${id}`, {
     method: 'DELETE'
   });
 }

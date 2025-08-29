@@ -23,7 +23,6 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
   const intl = useIntl();
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<any>(null);
-  const boxRef = useRef<any>(null);
   let status = '';
 
   // the status can be controlled by Form.Item

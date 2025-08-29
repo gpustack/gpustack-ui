@@ -6,7 +6,7 @@ import ContainerInstall from '@/pages/resources/components/container-install';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ProviderValueMap } from '../config';
 import {
   ClusterFormData as FormData,
@@ -20,7 +20,8 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
-  provider: string; // 'kubernetes' | 'custom' | 'digitalocean';
+  provider: string;
+  credentialList: Global.BaseOption<number>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -30,6 +31,7 @@ const AddCluster: React.FC<AddModalProps> = ({
   open,
   provider,
   currentData,
+  credentialList,
   onOk,
   onCancel
 }) => {
@@ -80,6 +82,12 @@ const AddCluster: React.FC<AddModalProps> = ({
     }
     return title;
   }, [submissionStatus.success, title]);
+
+  useEffect(() => {
+    if (currentData) {
+      form.setFieldsValue(currentData);
+    }
+  }, [currentData]);
 
   const renderFooter = () => {
     if (submissionStatus.success) {
@@ -141,7 +149,10 @@ const AddCluster: React.FC<AddModalProps> = ({
             ></SealInput.Input>
           </Form.Item>
           {provider === ProviderValueMap.DigitalOcean && (
-            <CloudProvider provider={provider}></CloudProvider>
+            <CloudProvider
+              provider={provider}
+              credentialList={credentialList}
+            ></CloudProvider>
           )}
           <Form.Item<FormData> name="description" rules={[{ required: false }]}>
             <SealInput.TextArea

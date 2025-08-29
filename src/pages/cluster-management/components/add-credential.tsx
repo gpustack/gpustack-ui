@@ -88,22 +88,6 @@ const AddModal: React.FC<AddModalProps> = ({
         </Form.Item>
         {provider === ProviderValueMap.DigitalOcean && (
           <>
-            {/* <Form.Item<FormData>
-              name="key"
-              rules={[
-                {
-                  required: action === PageAction.CREATE,
-                  message: intl.formatMessage({
-                    id: 'users.form.rule.password'
-                  })
-                }
-              ]}
-            >
-              <SealInput.Password
-                label="Access Key"
-                required={action === PageAction.CREATE}
-              ></SealInput.Password>
-            </Form.Item> */}
             <Form.Item<FormData>
               name="secret"
               rules={[

@@ -42,10 +42,12 @@ export interface NodePoolListItem {
 
 export interface NodePoolFormData {
   instance_type: string;
+  os_image: string;
   replicas: number;
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;
+  volumes?: Record<string, any>;
 }
 
 export interface ClusterListItem {

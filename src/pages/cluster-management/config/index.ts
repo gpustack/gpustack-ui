@@ -122,3 +122,25 @@ export const clusterActionList = [
     }
   }
 ];
+
+export const regionList: {
+  label: string;
+  datacenter: string;
+  value: string;
+}[] = [
+  { label: 'New York', datacenter: 'Datacenter 1', value: 'nyc1' },
+  { label: 'New York', datacenter: 'Datacenter 2', value: 'nyc2' },
+  { label: 'New York', datacenter: 'Datacenter 3', value: 'nyc3' },
+  { label: 'Toronto', datacenter: 'Datacenter 1', value: 'tor1' },
+  { label: 'San Francisco', datacenter: 'Datacenter 1', value: 'sfo1' },
+  { label: 'San Francisco', datacenter: 'Datacenter 2', value: 'sfo2' },
+  { label: 'San Francisco', datacenter: 'Datacenter 3', value: 'sfo3' },
+  { label: 'Atlanta', datacenter: 'Datacenter 1', value: 'atl1' },
+  { label: 'Singapore', datacenter: 'Datacenter 1', value: 'sgp1' },
+  { label: 'Bangalore', datacenter: 'Datacenter 1', value: 'blr1' },
+  { label: 'London', datacenter: 'Datacenter 1', value: 'lon1' },
+  { label: 'Amsterdam', datacenter: 'Datacenter 2', value: 'ams2' },
+  { label: 'Amsterdam', datacenter: 'Datacenter 3', value: 'ams3' },
+  { label: 'Frankfurt', datacenter: 'Datacenter 1', value: 'fra1' },
+  { label: 'Sydney', datacenter: 'Datacenter 1', value: 'syd1' }
+];

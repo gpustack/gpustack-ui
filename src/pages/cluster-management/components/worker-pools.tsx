@@ -1,11 +1,35 @@
 import DeleteModal from '@/components/delete-modal';
 import DropdownButtons from '@/components/drop-down-buttons';
+import LabelsCell from '@/components/label-cell';
+import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Table } from 'antd';
-import { useMemo } from 'react';
-import { WORKER_POOLS_API, deleteWorkerPool, queryWorkerPools } from '../apis';
-import { NodePoolListItem as ListItem } from '../config/types';
+import { useIntl } from '@umijs/max';
+import { message, Table } from 'antd';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+import styled from 'styled-components';
+import {
+  createWorkerPool,
+  deleteWorkerPool,
+  queryWorkerPools,
+  updateWorkerPool,
+  WORKER_POOLS_API
+} from '../apis';
+import { ProviderValueMap } from '../config';
+import {
+  ClusterListItem,
+  NodePoolListItem as ListItem,
+  NodePoolFormData
+} from '../config/types';
+import AddPool from './add-pool';
+
+const SubTitle = styled.div`
+  font-size: var(--font-size-middle);
+  font-weight: 700;
+  color: var(--ant-color-text);
+  margin-block: 24px 16px;
+`;
 
 const actionItems = [
   {
@@ -25,19 +49,15 @@ const actionItems = [
 ];
 
 interface WorkerPoolsProps {
-  workerPools: ListItem[];
   loading?: boolean;
-  provider: string;
   height?: string | number;
-  onAction?: (action: string, record: ListItem) => void;
+  clusterData: ClusterListItem | null;
 }
 
 const WorkerPools: React.FC<WorkerPoolsProps> = ({
-  workerPools,
   loading = false,
-  provider,
-  height = 'auto',
-  onAction
+  clusterData,
+  height = 'auto'
 }) => {
   const {
     dataSource,
@@ -57,16 +77,67 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     deleteAPI: deleteWorkerPool,
     API: WORKER_POOLS_API,
     watch: false,
-    contentForDelete: 'resources.modelfiles.modelfile'
+    contentForDelete: 'resources.modelfiles.modelfile',
+    defaultQueryParams: {
+      cluster_id: clusterData!.id
+    }
   });
+  const intl = useIntl();
+  const [addPoolStatus, setAddPoolStatus] = useState({
+    open: false,
+    action: PageAction.CREATE,
+    title: '',
+    provider: ProviderValueMap.DigitalOcean,
+    currentData: null as ListItem | null,
+    clusterId: 0
+  });
+
+  // pool action handler
+  const handleEdit = (action: string, record: ListItem) => {
+    if (action === 'edit') {
+      setAddPoolStatus({
+        open: true,
+        action: PageAction.EDIT,
+        title: 'Edit Worker Pool',
+        provider: clusterData!.provider,
+        currentData: record,
+        clusterId: clusterData!.id
+      });
+    }
+  };
 
   const onSelect = (key: string, record: ListItem) => {
     if (key === 'delete') {
       handleDelete({ ...record, name: record.instance_type });
     }
     if (key === 'edit') {
-      onAction?.(key, record);
+      handleEdit(key, record);
     }
+  };
+
+  const handleSubmitWorkerPool = async (formdata: NodePoolFormData) => {
+    try {
+      if (addPoolStatus.action === PageAction.CREATE) {
+        await createWorkerPool({
+          data: formdata,
+          clusterId: clusterData!.id
+        });
+      }
+      if (addPoolStatus.action === PageAction.EDIT) {
+        await updateWorkerPool({
+          data: formdata,
+          id: addPoolStatus.currentData!.id
+        });
+      }
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+      handleSearch();
+    } catch (error) {
+      // error
+    }
+    setAddPoolStatus({
+      ...addPoolStatus,
+      open: false
+    });
   };
 
   const columns = [
@@ -82,33 +153,22 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     },
     {
       title: 'Batch Size',
-      dataIndex: 'batchSize',
-      key: 'batchSize'
+      dataIndex: 'batch_size',
+      key: 'batch_size'
     },
     {
-      title: 'GPU',
-      dataIndex: 'gpu',
-      key: 'gpu'
-    },
-    {
-      title: 'Memory',
-      dataIndex: 'memory',
-      key: 'memory'
-    },
-    {
-      title: 'CPU',
-      dataIndex: 'cpu',
-      key: 'cpu'
-    },
-    {
-      title: 'Storage',
-      dataIndex: 'storage',
-      key: 'storage'
+      title: 'Labels',
+      dataIndex: 'labels',
+      key: 'labels',
+      render: (text: string, record: ListItem) => (
+        <LabelsCell labels={record.labels}></LabelsCell>
+      )
     },
     {
       title: 'Create Time',
-      dataIndex: 'createTime',
-      key: 'createTime'
+      dataIndex: 'create_at',
+      key: 'created_at',
+      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss')
     },
     {
       title: 'Operations',
@@ -122,41 +182,40 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     }
   ];
 
-  // mock dataSource
-  const mockData = Array.from({ length: 3 }, (_, index) => ({
-    id: index + 1,
-    key: index,
-    instance_type: `Type ${index + 1}`,
-    replicas: Math.floor(Math.random() * 10) + 1,
-    batchSize: Math.floor(Math.random() * 100) + 1,
-    gpu: `NVIDIA 4090`,
-    memory: `${Math.floor(Math.random() * 16) + 1} GB`,
-    cpu: `${Math.floor(Math.random() * 8) + 1} Cores`,
-    storage: `${Math.floor(Math.random() * 500) + 50} GB`,
-    createTime: new Date().toLocaleDateString()
-  }));
-
-  const dataList = useMemo(() => {
-    if (workerPools && workerPools.length > 0) {
-      return workerPools;
-    }
-    if (dataSource.dataList && dataSource.dataList.length > 0) {
-      return dataSource.dataList;
-    }
-    return mockData;
-  }, [workerPools, dataSource.dataList]);
-
   return (
-    <div style={{ height: height, overflow: 'hidden' }}>
-      <Table
-        dataSource={dataList}
-        columns={columns}
-        loading={loading}
-        pagination={false}
-        rowKey="id"
-      />
-      <DeleteModal ref={modalRef}></DeleteModal>
-    </div>
+    <>
+      <SubTitle>
+        <span>Worker Pools</span>
+      </SubTitle>
+      <div style={{ height: height, overflow: 'hidden' }}>
+        <Table
+          dataSource={dataSource.dataList}
+          columns={columns}
+          loading={loading}
+          pagination={false}
+          rowKey="id"
+        />
+        <AddPool
+          provider={addPoolStatus.provider}
+          open={addPoolStatus.open}
+          action={addPoolStatus.action}
+          title={addPoolStatus.title}
+          currentData={addPoolStatus.currentData}
+          onCancel={() => {
+            setAddPoolStatus({
+              open: false,
+              action: PageAction.CREATE,
+              title: '',
+              provider: ProviderValueMap.DigitalOcean,
+              currentData: null,
+              clusterId: 0
+            });
+          }}
+          onOk={handleSubmitWorkerPool}
+        ></AddPool>
+        <DeleteModal ref={modalRef}></DeleteModal>
+      </div>
+    </>
   );
 };
 

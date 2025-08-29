@@ -7,7 +7,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   NodePoolFormData as FormData,
   NodePoolListItem as ListItem
@@ -18,8 +18,8 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   provider: string; // 'kubernetes' | 'custom' | 'digitalocean';
+  currentData?: ListItem | null;
   onOk: (values: FormData) => void;
-  data?: ListItem;
   onCancel: () => void;
 };
 const AddCluster: React.FC<AddModalProps> = ({
@@ -28,7 +28,7 @@ const AddCluster: React.FC<AddModalProps> = ({
   open,
   provider,
   onOk,
-  data,
+  currentData,
   onCancel
 }) => {
   const [form] = Form.useForm();
@@ -38,10 +38,36 @@ const AddCluster: React.FC<AddModalProps> = ({
     form.submit();
   };
 
+  const handleOnOk = async (data: FormData) => {
+    const { volumes, ...rest } = data;
+
+    await onOk({
+      ...rest,
+      cloud_options: !_.isEmpty(volumes)
+        ? {
+            volumes: [
+              {
+                ...volumes
+              }
+            ]
+          }
+        : {}
+    });
+  };
+
   const handleCancel = () => {
     form.resetFields();
     onCancel();
   };
+
+  useEffect(() => {
+    if (currentData) {
+      form.setFieldsValue({
+        ...currentData,
+        volumes: currentData.cloud_options?.volumes?.[0] || {}
+      });
+    }
+  }, [currentData]);
 
   return (
     <ScrollerModal
@@ -57,7 +83,15 @@ const AddCluster: React.FC<AddModalProps> = ({
         <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
       }
     >
-      <Form form={form} onFinish={onOk} preserve={false}>
+      <Form
+        form={form}
+        onFinish={handleOnOk}
+        preserve={false}
+        initialValues={{
+          replicas: 1,
+          batch_size: 1
+        }}
+      >
         <Form.Item<FormData>
           name="instance_type"
           rules={[
@@ -110,6 +144,22 @@ const AddCluster: React.FC<AddModalProps> = ({
           <SealInputNumber label="Batch Size" required></SealInputNumber>
         </Form.Item>
         <Form.Item<FormData>
+          name="os_image"
+          rules={[
+            {
+              required: true,
+              message: intl.formatMessage(
+                { id: 'common.form.rule.input' },
+                {
+                  name: 'OS Image'
+                }
+              )
+            }
+          ]}
+        >
+          <SealInput.Input label={'OS Image'} required></SealInput.Input>
+        </Form.Item>
+        <Form.Item<FormData>
           name="labels"
           rules={[
             ({ getFieldValue }) => ({
@@ -140,7 +190,7 @@ const AddCluster: React.FC<AddModalProps> = ({
           ></LabelSelector>
         </Form.Item>
         <Form.Item<FormData>
-          name="cloud_options"
+          name="volumes"
           rules={[
             ({ getFieldValue }) => ({
               validator(rule, value) {
@@ -152,7 +202,7 @@ const AddCluster: React.FC<AddModalProps> = ({
                           id: 'common.validate.value'
                         },
                         {
-                          name: 'cloud_options'
+                          name: 'Volumes'
                         }
                       )
                     );
@@ -164,8 +214,8 @@ const AddCluster: React.FC<AddModalProps> = ({
           ]}
         >
           <LabelSelector
-            label="Cloud Options"
-            labels={form.getFieldValue('cloud_options') || {}}
+            label="Volumes"
+            labels={form.getFieldValue('volumes') || {}}
             btnText="Add Option"
           ></LabelSelector>
         </Form.Item>

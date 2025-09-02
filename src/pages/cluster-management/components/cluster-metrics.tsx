@@ -1,15 +1,13 @@
 import GaugeChart from '@/components/echarts/gauge';
 import Card from '@/components/templates/card';
-import { PageAction } from '@/config';
+import { useSearchParams } from '@umijs/max';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { queryClusterDetail } from '../apis';
-import { ProviderValueMap } from '../config';
-import { ClusterListItem, NodePoolListItem } from '../config/types';
+import { ClusterListItem } from '../config/types';
 import TrendChart from './trend-chart';
-import WorkerPools from './worker-pools';
 
 const metricsMap = {
   cpu: {
@@ -81,17 +79,11 @@ const formatValue = (value: number) => {
 
 const CardHeight = 336;
 
-const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
+const ClusterMetrics = () => {
   const chartHeight = 160;
-  const [show, setShow] = React.useState(false);
-  const [addPoolStatus, setAddPoolStatus] = React.useState({
-    open: false,
-    action: PageAction.CREATE,
-    title: '',
-    provider: ProviderValueMap.DigitalOcean,
-    currentData: null as NodePoolListItem | null,
-    clusterId: 0
-  });
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+  const provider = searchParams.get('provider');
   const [detailContent, setDetailContent] = useState<{
     current: {
       cpu: number;
@@ -111,12 +103,12 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
   });
 
   const getClusterDetail = async () => {
-    if (!data) {
+    if (!id) {
       return;
     }
     try {
       const response = await queryClusterDetail({
-        cluster_id: data!.id
+        cluster_id: id
       });
       setDetailContent({
         current: response.system_load?.current,
@@ -137,10 +129,10 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
   };
 
   useEffect(() => {
-    if (data?.id) {
+    if (id) {
       getClusterDetail();
     }
-  }, [data?.id]);
+  }, [id]);
 
   return (
     <div>
@@ -225,13 +217,8 @@ const ClusterDetail: React.FC<ClusterDetailProps> = ({ data }) => {
           </Card>
         </Col>
       </Row>
-      {data?.provider === ProviderValueMap.DigitalOcean && (
-        <>
-          <WorkerPools clusterData={data} height={'auto'} />
-        </>
-      )}
     </div>
   );
 };
 
-export default ClusterDetail;
+export default ClusterMetrics;

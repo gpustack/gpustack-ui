@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import {
   WORKERS_API,
   deleteWorker,
+  downloadWorkerPrivateKey,
   queryWorkersList,
   updateWorker
 } from '../apis';
@@ -143,6 +144,9 @@ const Workers: React.FC = () => {
     }
     if (val === 'details') {
       handleViewDetail(record);
+    }
+    if (val === 'download_ssh_key') {
+      downloadWorkerPrivateKey(record.id);
     }
   });
 

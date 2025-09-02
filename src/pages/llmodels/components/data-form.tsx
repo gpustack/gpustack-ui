@@ -146,34 +146,30 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onValuesChange?.(changedValues, allValues);
   };
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        form: form,
-        submit: handleSumit,
-        resetFields: (fields: any[]) => {
-          form.resetFields(fields);
-        },
-        setFieldsValue: (values: FormData) => {
-          form.setFieldsValue(values);
-        },
-        setFieldValue: (name: string, value: any) => {
-          form.setFieldValue(name, value);
-        },
-        getFieldValue: (name: string) => {
-          return form.getFieldValue(name);
-        },
-        getFieldsValue: () => {
-          return form.getFieldsValue();
-        },
-        getGPUOptionList(params: { clusterId: number }) {
-          getGPUOptionList(params);
-        }
-      };
-    },
-    []
-  );
+  useImperativeHandle(ref, () => {
+    return {
+      form: form,
+      submit: handleSumit,
+      resetFields: (fields: any[]) => {
+        form.resetFields(fields);
+      },
+      setFieldsValue: (values: FormData) => {
+        form.setFieldsValue(values);
+      },
+      setFieldValue: (name: string, value: any) => {
+        form.setFieldValue(name, value);
+      },
+      getFieldValue: (name: string) => {
+        return form.getFieldValue(name);
+      },
+      getFieldsValue: () => {
+        return form.getFieldsValue();
+      },
+      getGPUOptionList(params: { clusterId: number }) {
+        getGPUOptionList(params);
+      }
+    };
+  }, []);
 
   return (
     <FormInnerContext.Provider
@@ -252,14 +248,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           rules={[
             {
               required: true,
-              message: getRuleMessage('select', 'Cluster', false)
+              message: getRuleMessage('select', 'clusters.title')
             }
           ]}
         >
           {
             <SealSelect
               onChange={handleClusterChange}
-              label="Cluster"
+              label={intl.formatMessage({ id: 'clusters.title' })}
               options={clusterList}
               required
             ></SealSelect>

@@ -10,6 +10,18 @@ export default {
   'clusters.edit.cluster': 'Edit {cluster}',
   'clusters.provider.custom': 'Custom',
   'clusters.button.register': 'Register Cluster',
-  'clusters.button.addNodePool': 'Add Node Pool',
-  'clusters.button.add.credential': 'Add {provider} Credential'
+  'clusters.button.addNodePool': 'Add Worker Pool',
+  'clusters.button.add.credential': 'Add {provider} Credential',
+  'clusters.credential.title': 'Credential',
+  'clusters.credential.token': 'Access Token',
+  'clusters.workerpool.region': 'Region',
+  'clusters.workerpool.zone': 'Zone',
+  'clusters.workerpool.instanceType': 'Instance Type',
+  'clusters.workerpool.replicas': 'Replicas',
+  'clusters.workerpool.batchSize': 'Batch Size',
+  'clusters.workerpool.osImage': 'OS Image',
+  'clusters.workerpool.volumes': 'Volumes',
+  'clusters.workerpool.format': 'Format',
+  'clusters.workerpool.size': 'Size (GiB)',
+  'clusters.workerpool.title': 'Worker Pools'
 };

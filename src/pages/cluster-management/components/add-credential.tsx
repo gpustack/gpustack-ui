@@ -3,6 +3,7 @@ import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
@@ -32,6 +33,7 @@ const AddModal: React.FC<AddModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
 
   const handleSumit = () => {
     form.submit();
@@ -93,12 +95,12 @@ const AddModal: React.FC<AddModalProps> = ({
               rules={[
                 {
                   required: action === PageAction.CREATE,
-                  message: 'Access Token is required'
+                  message: getRuleMessage('input', 'clusters.credential.token')
                 }
               ]}
             >
               <SealInput.Password
-                label="Access Token"
+                label={intl.formatMessage({ id: 'clusters.credential.token' })}
                 required={action === PageAction.CREATE}
               ></SealInput.Password>
             </Form.Item>

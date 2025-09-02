@@ -2,7 +2,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import StatusTag from '@/components/status-tag';
-import { useIntl } from '@umijs/max';
+import { Link, useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -14,25 +14,34 @@ import {
 } from '../config';
 import { ClusterListItem } from '../config/types';
 
+const setActionsItems = (row: ClusterListItem) => {
+  return clusterActionList.filter((item) => {
+    if (item.provider) {
+      return item.provider === row.provider;
+    }
+    return true;
+  });
+};
+
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void
 ): ColumnsType<ClusterListItem> => {
   const intl = useIntl();
-  const setActionsItems = (row: ClusterListItem) => {
-    return clusterActionList.filter((item) => {
-      if (item.provider) {
-        return item.provider === row.provider;
-      }
-      return true;
-    });
-  };
 
   return useMemo(() => {
     return [
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
-        render: (text: string) => <AutoTooltip ghost>{text}</AutoTooltip>
+        render: (text: string, record: ClusterListItem) => (
+          <AutoTooltip ghost>
+            <Link
+              to={`/cluster-management/cluster/detail?id=${record.id}&provider=${record.provider}&name=${record.name}`}
+            >
+              {text}
+            </Link>
+          </AutoTooltip>
+        )
       },
       {
         title: intl.formatMessage({ id: 'clusters.table.provider' }),

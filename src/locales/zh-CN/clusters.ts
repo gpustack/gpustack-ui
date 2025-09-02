@@ -11,5 +11,17 @@ export default {
   'clusters.provider.custom': '自定义',
   'clusters.button.register': '注册集群',
   'clusters.button.addNodePool': '添加节点池',
-  'clusters.button.add.credential': '添加 {provider} 凭证'
+  'clusters.button.add.credential': '添加 {provider} 凭证',
+  'clusters.credential.title': '凭证',
+  'clusters.credential.token': '访问令牌',
+  'clusters.workerpool.region': '区域',
+  'clusters.workerpool.zone': '可用区',
+  'clusters.workerpool.instanceType': '实例类型',
+  'clusters.workerpool.replicas': '副本数',
+  'clusters.workerpool.batchSize': '批大小',
+  'clusters.workerpool.osImage': '操作系统镜像',
+  'clusters.workerpool.volumes': '存储卷',
+  'clusters.workerpool.format': '文件系统格式',
+  'clusters.workerpool.size': '容量（GiB）',
+  'clusters.workerpool.title': '节点池'
 };

@@ -1,12 +1,10 @@
 import DeleteModal from '@/components/delete-modal';
-import DropdownButtons from '@/components/drop-down-buttons';
-import LabelsCell from '@/components/label-cell';
+import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
+import { useIntl, useSearchParams } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { message, Table } from 'antd';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -18,10 +16,10 @@ import {
 } from '../apis';
 import { ProviderValueMap } from '../config';
 import {
-  ClusterListItem,
   NodePoolListItem as ListItem,
   NodePoolFormData
 } from '../config/types';
+import usePoolsColumns from '../hooks/use-pools-columns';
 import AddPool from './add-pool';
 
 const SubTitle = styled.div`
@@ -31,39 +29,14 @@ const SubTitle = styled.div`
   margin-block: 24px 16px;
 `;
 
-const actionItems = [
-  {
-    key: 'edit',
-    label: 'common.button.edit',
-    icon: <EditOutlined />
-  },
-
-  {
-    key: 'delete',
-    label: 'common.button.delete',
-    icon: <DeleteOutlined />,
-    props: {
-      danger: true
-    }
-  }
-];
-
-interface WorkerPoolsProps {
-  loading?: boolean;
-  height?: string | number;
-  clusterData: ClusterListItem | null;
-}
-
-const WorkerPools: React.FC<WorkerPoolsProps> = ({
-  loading = false,
-  clusterData,
-  height = 'auto'
-}) => {
+const WorkerPools = () => {
+  const [searchParams] = useSearchParams();
   const {
     dataSource,
     rowSelection,
     queryParams,
     modalRef,
+    sortOrder,
     fetchData,
     handleDelete,
     handleDeleteBatch,
@@ -77,9 +50,9 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     deleteAPI: deleteWorkerPool,
     API: WORKER_POOLS_API,
     watch: false,
-    contentForDelete: 'resources.modelfiles.modelfile',
+    contentForDelete: 'clusters.workerpool.title',
     defaultQueryParams: {
-      cluster_id: clusterData!.id
+      cluster_id: searchParams.get('id') || undefined
     }
   });
   const intl = useIntl();
@@ -89,7 +62,7 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     title: '',
     provider: ProviderValueMap.DigitalOcean,
     currentData: null as ListItem | null,
-    clusterId: 0
+    clusterId: 0 as number | string
   });
 
   // pool action handler
@@ -98,29 +71,43 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
       setAddPoolStatus({
         open: true,
         action: PageAction.EDIT,
-        title: 'Edit Worker Pool',
-        provider: clusterData!.provider,
+        title: intl.formatMessage(
+          { id: 'common.button.edit.item' },
+          { name: record.instance_type }
+        ),
+        provider: searchParams.get('provider') || '',
         currentData: record,
-        clusterId: clusterData!.id
+        clusterId: searchParams.get('id') || 0
       });
     }
   };
 
-  const onSelect = (key: string, record: ListItem) => {
+  const handleAddPool = (row: ListItem) => {
+    setAddPoolStatus({
+      open: true,
+      action: PageAction.CREATE,
+      title: intl.formatMessage({ id: 'clusters.button.addNodePool' }),
+      provider: searchParams.get('provider') || '',
+      clusterId: searchParams.get('id') || 0,
+      currentData: null
+    });
+  };
+
+  const onSelect = useMemoizedFn((key: string, record: ListItem) => {
     if (key === 'delete') {
       handleDelete({ ...record, name: record.instance_type });
     }
     if (key === 'edit') {
       handleEdit(key, record);
     }
-  };
+  });
 
   const handleSubmitWorkerPool = async (formdata: NodePoolFormData) => {
     try {
       if (addPoolStatus.action === PageAction.CREATE) {
         await createWorkerPool({
           data: formdata,
-          clusterId: clusterData!.id
+          clusterId: searchParams.get('id') || 0
         });
       }
       if (addPoolStatus.action === PageAction.EDIT) {
@@ -140,81 +127,64 @@ const WorkerPools: React.FC<WorkerPoolsProps> = ({
     });
   };
 
-  const columns = [
-    {
-      title: 'Instance Type',
-      dataIndex: 'instance_type',
-      key: 'instance_type'
-    },
-    {
-      title: 'Replicas',
-      dataIndex: 'replicas',
-      key: 'replicas'
-    },
-    {
-      title: 'Batch Size',
-      dataIndex: 'batch_size',
-      key: 'batch_size'
-    },
-    {
-      title: 'Labels',
-      dataIndex: 'labels',
-      key: 'labels',
-      render: (text: string, record: ListItem) => (
-        <LabelsCell labels={record.labels}></LabelsCell>
-      )
-    },
-    {
-      title: 'Create Time',
-      dataIndex: 'create_at',
-      key: 'created_at',
-      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      title: 'Operations',
-      key: 'operations',
-      render: (text: string, record: ListItem) => (
-        <DropdownButtons
-          items={actionItems}
-          onSelect={(key) => onSelect?.(key, record)}
-        />
-      )
-    }
-  ];
+  const columns = usePoolsColumns(sortOrder, onSelect);
 
   return (
     <>
       <SubTitle>
-        <span>Worker Pools</span>
+        <span>{intl.formatMessage({ id: 'clusters.workerpool.title' })}</span>
       </SubTitle>
-      <div style={{ height: height, overflow: 'hidden' }}>
-        <Table
-          dataSource={dataSource.dataList}
-          columns={columns}
-          loading={loading}
-          pagination={false}
-          rowKey="id"
-        />
-        <AddPool
-          provider={addPoolStatus.provider}
-          open={addPoolStatus.open}
-          action={addPoolStatus.action}
-          title={addPoolStatus.title}
-          currentData={addPoolStatus.currentData}
-          onCancel={() => {
-            setAddPoolStatus({
-              open: false,
-              action: PageAction.CREATE,
-              title: '',
-              provider: ProviderValueMap.DigitalOcean,
-              currentData: null,
-              clusterId: 0
-            });
-          }}
-          onOk={handleSubmitWorkerPool}
-        ></AddPool>
-        <DeleteModal ref={modalRef}></DeleteModal>
-      </div>
+      <FilterBar
+        showSelect={false}
+        showPrimaryButton={true}
+        showDeleteButton={true}
+        marginBottom={22}
+        marginTop={22}
+        width={{ input: 300 }}
+        buttonText={intl.formatMessage({ id: 'clusters.button.addNodePool' })}
+        rowSelection={rowSelection}
+        handleInputChange={handleNameChange}
+        handleSearch={handleSearch}
+        handleDeleteByBatch={handleDeleteBatch}
+        handleClickPrimary={handleAddPool}
+      ></FilterBar>
+      <Table
+        rowKey="id"
+        tableLayout="fixed"
+        style={{ width: '100%' }}
+        onChange={handleTableChange}
+        dataSource={dataSource.dataList}
+        loading={dataSource.loading}
+        rowSelection={rowSelection}
+        columns={columns}
+        pagination={{
+          showSizeChanger: true,
+          pageSize: queryParams.perPage,
+          current: queryParams.page,
+          total: dataSource.total,
+          hideOnSinglePage: queryParams.perPage === 10,
+          onChange: handlePageChange
+        }}
+      ></Table>
+      <AddPool
+        provider={addPoolStatus.provider}
+        open={addPoolStatus.open}
+        action={addPoolStatus.action}
+        title={addPoolStatus.title}
+        currentData={addPoolStatus.currentData}
+        onCancel={() => {
+          setAddPoolStatus({
+            open: false,
+            action: PageAction.CREATE,
+            title: '',
+            provider: ProviderValueMap.DigitalOcean,
+            currentData: null,
+            clusterId: 0
+          });
+        }}
+        onOk={handleSubmitWorkerPool}
+      ></AddPool>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );
 };

@@ -22,7 +22,8 @@ const LineChart: React.FC<ChartProps> = (props) => {
     title,
     legendOptions,
     gridOptions,
-    titleOptions
+    titleOptions,
+    showArea
   } = props;
   const {
     grid,
@@ -100,19 +101,21 @@ const LineChart: React.FC<ChartProps> = (props) => {
         lineStyle: {
           ...lineItemConfig.lineStyle,
           color: item.color
-        }
-        // areaStyle: {
-        //   color: new LinearGradient(0, 0, 0, 1, [
-        //     {
-        //       offset: 0,
-        //       color: colors[0]
-        //     },
-        //     {
-        //       offset: 1,
-        //       color: colors[1]
-        //     }
-        //   ])
-        // }
+        },
+        areaStyle: showArea
+          ? {
+              color: new LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: colors[0]
+                },
+                {
+                  offset: 1,
+                  color: colors[1]
+                }
+              ])
+            }
+          : null
       };
     });
     return {

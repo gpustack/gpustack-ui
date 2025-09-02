@@ -1,4 +1,5 @@
 import SealSelect from '@/components/seal-form/seal-select';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -11,6 +12,7 @@ type OptionData = {
   label: string;
   datacenter: string;
   value: string;
+  icon: string;
 };
 
 const OptionItem = styled.div`
@@ -29,6 +31,9 @@ const OptionItem = styled.div`
   .datacenter,
   .value {
     color: var(--ant-color-text-secondary);
+  }
+  .icon {
+    margin-right: 8px;
   }
 `;
 
@@ -50,6 +55,7 @@ const optionRender = (
 
   return (
     <OptionItem className="flex-center">
+      <span className="icon">{data.icon}</span>
       <span className="label">{data.label}</span> <span className="dot"></span>
       <span className="datacenter">{data.datacenter}</span>{' '}
       <span className="dot"></span>{' '}
@@ -65,6 +71,7 @@ const labelRender = (props: {
   const data = regionList.find((item) => item.value === props.value);
   return (
     <OptionItem className="flex-center">
+      <span className="icon">{data?.icon}</span>
       <span className="label">{data?.label}</span> <span className="dot"></span>
       <span className="datacenter">{data?.datacenter}</span>{' '}
       <span className="dot"></span>
@@ -76,6 +83,7 @@ const labelRender = (props: {
 const CloudProvider: React.FC<CloudProviderProps> = (props) => {
   const { credentialList } = props;
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
 
   return (
     <>
@@ -94,7 +102,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         ]}
       >
         <SealSelect
-          label="Credential"
+          label={intl.formatMessage({ id: 'clusters.credential.title' })}
           required
           options={credentialList}
         ></SealSelect>
@@ -104,17 +112,12 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         rules={[
           {
             required: true,
-            message: intl.formatMessage(
-              { id: 'common.form.rule.input' },
-              {
-                name: 'Region'
-              }
-            )
+            message: getRuleMessage('input', 'clusters.workerpool.region')
           }
         ]}
       >
         <SealSelect
-          label="Region"
+          label={intl.formatMessage({ id: 'clusters.workerpool.region' })}
           required
           options={regionList}
           labelRender={labelRender}

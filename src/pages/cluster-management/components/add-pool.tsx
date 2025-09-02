@@ -3,7 +3,9 @@ import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import SealInputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -33,6 +35,7 @@ const AddCluster: React.FC<AddModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
 
   const handleSumit = () => {
     form.submit();
@@ -97,17 +100,17 @@ const AddCluster: React.FC<AddModalProps> = ({
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: intl.formatMessage({ id: 'common.table.name' })
-                }
+              message: getRuleMessage(
+                'input',
+                'clusters.workerpool.instanceType'
               )
             }
           ]}
         >
           <SealInput.Input
-            label={intl.formatMessage({ id: 'common.table.name' })}
+            label={intl.formatMessage({
+              id: 'clusters.workerpool.instanceType'
+            })}
             required
           ></SealInput.Input>
         </Form.Item>
@@ -116,49 +119,45 @@ const AddCluster: React.FC<AddModalProps> = ({
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: 'Replicas'
-                }
-              )
+              message: getRuleMessage('input', 'clusters.workerpool.replicas')
             }
           ]}
         >
-          <SealInputNumber label="Replicas" required></SealInputNumber>
+          <SealInputNumber
+            label={intl.formatMessage({ id: 'clusters.workerpool.replicas' })}
+            required
+          ></SealInputNumber>
         </Form.Item>
         <Form.Item<FormData>
           name="batch_size"
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: 'Batch Size'
-                }
-              )
+              message: getRuleMessage('input', 'clusters.workerpool.batchSize')
             }
           ]}
         >
-          <SealInputNumber label="Batch Size" required></SealInputNumber>
+          <SealInputNumber
+            label={intl.formatMessage({ id: 'clusters.workerpool.batchSize' })}
+            required
+          ></SealInputNumber>
         </Form.Item>
         <Form.Item<FormData>
           name="os_image"
           rules={[
             {
               required: true,
-              message: intl.formatMessage(
-                { id: 'common.form.rule.input' },
-                {
-                  name: 'OS Image'
-                }
-              )
+              message: getRuleMessage('input', 'clusters.workerpool.osImage')
             }
           ]}
         >
-          <SealInput.Input label={'OS Image'} required></SealInput.Input>
+          <SealInput.Input
+            disabled={action === PageAction.EDIT}
+            label={intl.formatMessage({ id: 'clusters.workerpool.osImage' })}
+            required
+          ></SealInput.Input>
         </Form.Item>
+
         <Form.Item<FormData>
           name="labels"
           rules={[
@@ -184,9 +183,9 @@ const AddCluster: React.FC<AddModalProps> = ({
           ]}
         >
           <LabelSelector
-            label="Labels"
+            label={intl.formatMessage({ id: 'resources.table.labels' })}
             labels={form.getFieldValue('labels') || {}}
-            btnText="Add Label"
+            btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           ></LabelSelector>
         </Form.Item>
         <Form.Item<FormData>

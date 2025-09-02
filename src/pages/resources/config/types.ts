@@ -66,6 +66,8 @@ export interface ListItem {
   ip: string;
   cluster_id: number;
   state_message: string;
+  ssh_key_id: string;
+  progress: string;
   status: {
     cpu: {
       total: number;

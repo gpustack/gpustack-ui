@@ -5,6 +5,7 @@ import type {
 export interface ChartProps {
   seriesData: any[];
   showEmpty?: boolean;
+  showArea?: boolean;
   xAxisData: string[];
   legendData?: LegendComponentOption['data'];
   legendOptions?: {

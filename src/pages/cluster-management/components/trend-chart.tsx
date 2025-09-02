@@ -63,6 +63,7 @@ const TrendChart: React.FC<TrendChartProps> = ({
       <LineChart
         height={320}
         title={title}
+        showArea={false}
         seriesData={generateData.seriesData}
         legendData={generateData.legendData}
         xAxisData={generateData.xAxisData}

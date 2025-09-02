@@ -5,7 +5,7 @@ import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import AddWorker from '@/pages/resources/components/add-worker';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Table, message } from 'antd';
 import { useEffect, useState } from 'react';
@@ -20,7 +20,6 @@ import {
 } from './apis';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
-import ClusterDetailModal from './components/cluster-detail-modal';
 import RegisterCluster from './components/register-cluster';
 import { ProviderLabelMap, ProviderValueMap, addActions } from './config';
 import {
@@ -49,6 +48,8 @@ const Credentials: React.FC = () => {
     contentForDelete: 'menu.clusterManagement.clusters'
   });
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const intl = useIntl();
   const [registerClusterStatus, setRegisterClusterStatus] = useState<{
     open: boolean;
@@ -67,13 +68,7 @@ const Credentials: React.FC = () => {
       cluster_id: 0
     }
   });
-  const [openClusterDetail, setOpenClusterDetail] = useState<{
-    open: boolean;
-    currentData: ListItem | null;
-  }>({
-    open: false,
-    currentData: {} as ListItem
-  });
+
   const [openAddWorker, setOpenAddWorker] = useState<{
     open: boolean;
     registrationInfo: {
@@ -144,7 +139,7 @@ const Credentials: React.FC = () => {
     setAddPoolStatus({
       open: true,
       action: PageAction.CREATE,
-      title: `Add Node Pool`,
+      title: intl.formatMessage({ id: 'clusters.button.addNodePool' }),
       provider: row.provider,
       clusterId: row.id
     });
@@ -245,11 +240,6 @@ const Credentials: React.FC = () => {
       handleAddWorker(row);
     } else if (val === 'addPool') {
       handleAddPool(row);
-    } else if (val === 'details') {
-      setOpenClusterDetail({
-        open: true,
-        currentData: row
-      });
     } else if (val === 'register_cluster') {
       handleRegisterCluster(row);
     }
@@ -355,13 +345,6 @@ const Credentials: React.FC = () => {
         }
         registrationInfo={openAddWorker.registrationInfo}
       ></AddWorker>
-      <ClusterDetailModal
-        open={openClusterDetail.open}
-        currentData={openClusterDetail.currentData}
-        onClose={() =>
-          setOpenClusterDetail({ open: false, currentData: {} as ListItem })
-        }
-      ></ClusterDetailModal>
       <RegisterCluster
         title={intl.formatMessage({ id: 'clusters.button.register' })}
         open={registerClusterStatus.open}

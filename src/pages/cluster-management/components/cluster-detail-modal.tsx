@@ -1,7 +1,7 @@
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import React from 'react';
 import { ClusterListItem } from '../config/types';
-import ClusterDetailContent from './cluster-detail-content';
+import ClusterDetailContent from './cluster-metrics';
 
 interface ClusterDetailModalProps {
   open: boolean;

@@ -90,5 +90,6 @@ export default {
     '下载并安装<a href={url} target="_blank">安装包</a>，仅支持 {versions}。',
   'resource.register.maos.support': 'M 芯片，macOS 14+',
   'resource.register.windows.support': 'win 10, win 11',
-  'resources.model.instance': '模型实例'
+  'resources.model.instance': '模型实例',
+  'resources.worker.download.privatekey': '下载私钥'
 };

@@ -29,6 +29,7 @@ type StatusTagProps = {
   download?: {
     percent: number;
   };
+  suffix?: React.ReactNode;
   maxTooltipWidth?: number;
   extra?: React.ReactNode;
   actions?: {
@@ -46,7 +47,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
   extra,
   actions = [],
   maxTooltipWidth = 250,
-  type = 'tag'
+  suffix
 }) => {
   const { text, status } = statusValue;
 
@@ -140,6 +141,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
       </div>
     );
   }, [statusValue]);
+
   return (
     <span
       className={classNames('status-tag', {
@@ -161,14 +163,16 @@ const StatusTag: React.FC<StatusTagProps> = ({
           }}
         >
           <span className="txt err">
-            <span className="m-r-5">
-              <InfoCircleOutlined />
-            </span>
+            <InfoCircleOutlined />
             {renderContent()}
+            {suffix && <span>{suffix}</span>}
           </span>
         </TooltipOverlayScroller>
       ) : (
-        <span className="txt">{renderContent()}</span>
+        <span className="txt">
+          {renderContent()}
+          {suffix && <span>{suffix}</span>}
+        </span>
       )}
     </span>
   );

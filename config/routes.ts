@@ -155,16 +155,26 @@ export default [
     routes: [
       {
         path: '/cluster-management',
-        redirect: '/cluster-management/clusters'
+        redirect: '/cluster-management/clusters/list'
       },
       {
         name: 'clusters',
-        path: '/cluster-management/clusters',
+        path: '/cluster-management/clusters/list',
         key: 'clusters',
         icon: 'icon-cluster2-outline',
         selectedIcon: 'icon-cluster2-filled',
         defaultIcon: 'icon-cluster2-outline',
         component: './cluster-management/clusters'
+      },
+      {
+        name: 'clusterDetail',
+        path: '/cluster-management/cluster/detail',
+        key: 'clusterDetail',
+        icon: 'icon-cluster2-outline',
+        selectedIcon: 'icon-cluster2-filled',
+        defaultIcon: 'icon-cluster2-outline',
+        hideInMenu: true,
+        component: './cluster-management/cluster-detail'
       },
       {
         name: 'credentials',

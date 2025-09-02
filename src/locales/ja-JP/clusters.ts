@@ -10,8 +10,20 @@ export default {
   'clusters.edit.cluster': 'Edit {cluster}',
   'clusters.provider.custom': 'Custom',
   'clusters.button.register': 'Register Cluster',
-  'clusters.button.addNodePool': 'Add Node Pool',
-  'clusters.button.add.credential': 'Add {provider} Credential'
+  'clusters.button.addNodePool': 'Add Worker Pool',
+  'clusters.button.add.credential': 'Add {provider} Credential',
+  'clusters.credential.title': 'Credential',
+  'clusters.credential.token': 'Access Token',
+  'clusters.workerpool.region': 'Region',
+  'clusters.workerpool.zone': 'Zone',
+  'clusters.workerpool.instanceType': 'Instance Type',
+  'clusters.workerpool.replicas': 'Replicas',
+  'clusters.workerpool.batchSize': 'Batch Size',
+  'clusters.workerpool.osImage': 'OS Image',
+  'clusters.workerpool.volumes': 'Volumes',
+  'clusters.workerpool.format': 'Format',
+  'clusters.workerpool.size': 'Size (GiB)',
+  'clusters.workerpool.title': 'Worker Pools'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -26,6 +38,18 @@ export default {
 // 9. 'clusters.edit.cluster': 'Edit {cluster}',
 // 10. 'clusters.provider.custom': 'Custom',
 // 11. 'clusters.button.register': 'Register Cluster',
-// 12. 'clusters.button.addNodePool': 'Add Node Pool',
-// 13. 'clusters.button.add.credential': 'Add {provider} Credential'
+// 12. 'clusters.button.addNodePool': 'Add Worker Pool',
+// 13. 'clusters.button.add.credential': 'Add {provider} Credential',
+// 14. 'clusters.credential.token': 'Access Token',
+// 15. 'clusters.workerpool.region': 'Region',
+// 16. 'clusters.workerpool.zone': 'Zone',
+// 17. 'clusters.workerpool.instanceType': 'Instance Type',
+// 18. 'clusters.workerpool.replicas': 'Replicas',
+// 19. 'clusters.workerpool.batchSize': 'Batch Size',
+// 20. 'clusters.workerpool.osImage': 'OS Image',
+// 21. 'clusters.workerpool.volumes': 'Volumes',
+// 22. 'clusters.workerpool.format': 'Format',
+// 23. 'clusters.workerpool.size': 'Size (GiB)',
+// 24.  'clusters.credential.title': 'Credential',
+// 25. 'clusters.workerpool.title': 'Worker Pools'
 // ========== End of To-Do List ==========

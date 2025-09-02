@@ -88,11 +88,6 @@ export const clusterActionList = [
     icon: icons.EditOutlined
   },
   {
-    key: 'details',
-    label: 'common.button.detail',
-    icon: icons.FileTextOutlined
-  },
-  {
     key: 'add_worker',
     label: 'resources.button.create',
     provider: ProviderValueMap.Custom,
@@ -127,20 +122,36 @@ export const regionList: {
   label: string;
   datacenter: string;
   value: string;
+  icon: string;
 }[] = [
-  { label: 'New York', datacenter: 'Datacenter 1', value: 'nyc1' },
-  { label: 'New York', datacenter: 'Datacenter 2', value: 'nyc2' },
-  { label: 'New York', datacenter: 'Datacenter 3', value: 'nyc3' },
-  { label: 'Toronto', datacenter: 'Datacenter 1', value: 'tor1' },
-  { label: 'San Francisco', datacenter: 'Datacenter 1', value: 'sfo1' },
-  { label: 'San Francisco', datacenter: 'Datacenter 2', value: 'sfo2' },
-  { label: 'San Francisco', datacenter: 'Datacenter 3', value: 'sfo3' },
-  { label: 'Atlanta', datacenter: 'Datacenter 1', value: 'atl1' },
-  { label: 'Singapore', datacenter: 'Datacenter 1', value: 'sgp1' },
-  { label: 'Bangalore', datacenter: 'Datacenter 1', value: 'blr1' },
-  { label: 'London', datacenter: 'Datacenter 1', value: 'lon1' },
-  { label: 'Amsterdam', datacenter: 'Datacenter 2', value: 'ams2' },
-  { label: 'Amsterdam', datacenter: 'Datacenter 3', value: 'ams3' },
-  { label: 'Frankfurt', datacenter: 'Datacenter 1', value: 'fra1' },
-  { label: 'Sydney', datacenter: 'Datacenter 1', value: 'syd1' }
+  { label: 'New York', datacenter: 'Datacenter 1', value: 'nyc1', icon: '🇺🇸' },
+  { label: 'New York', datacenter: 'Datacenter 2', value: 'nyc2', icon: '🇺🇸' },
+  { label: 'New York', datacenter: 'Datacenter 3', value: 'nyc3', icon: '🇺🇸' },
+  { label: 'Toronto', datacenter: 'Datacenter 1', value: 'tor1', icon: '🇨🇦' },
+  {
+    label: 'San Francisco',
+    datacenter: 'Datacenter 1',
+    value: 'sfo1',
+    icon: '🇺🇸'
+  },
+  {
+    label: 'San Francisco',
+    datacenter: 'Datacenter 2',
+    value: 'sfo2',
+    icon: '🇺🇸'
+  },
+  {
+    label: 'San Francisco',
+    datacenter: 'Datacenter 3',
+    value: 'sfo3',
+    icon: '🇺🇸'
+  },
+  { label: 'Atlanta', datacenter: 'Datacenter 1', value: 'atl1', icon: '🇺🇸' },
+  { label: 'Singapore', datacenter: 'Datacenter 1', value: 'sgp1', icon: '🇸🇬' },
+  { label: 'Bangalore', datacenter: 'Datacenter 1', value: 'blr1', icon: '🇮🇳' },
+  { label: 'London', datacenter: 'Datacenter 1', value: 'lon1', icon: '🇬🇧' },
+  { label: 'Amsterdam', datacenter: 'Datacenter 2', value: 'ams2', icon: '🇳🇱' },
+  { label: 'Amsterdam', datacenter: 'Datacenter 3', value: 'ams3', icon: '🇳🇱' },
+  { label: 'Frankfurt', datacenter: 'Datacenter 1', value: 'fra1', icon: '🇩🇪' },
+  { label: 'Sydney', datacenter: 'Datacenter 1', value: 'syd1', icon: '🇦🇺' }
 ];

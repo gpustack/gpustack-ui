@@ -1,14 +1,13 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
 import LabelsCell from '@/components/label-cell';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import { convertFileSize } from '@/utils';
 import {
-  CodeOutlined,
   DeleteOutlined,
+  DownloadOutlined,
   EditOutlined,
   FileTextOutlined,
   InfoCircleOutlined
@@ -18,7 +17,7 @@ import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { WorkerStatusMap, WorkerStatusMapValue, status } from '../config';
+import { WorkerStatusMapValue, status } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 
 const ActionList = [
@@ -29,12 +28,17 @@ const ActionList = [
     icon: <FileTextOutlined></FileTextOutlined>
   },
   {
-    label: 'common.button.logs',
-    locale: false,
-    key: 'logs',
-    icon: <IconFont type="icon-logs" />
+    label: 'resources.worker.download.privatekey',
+    key: 'download_ssh_key',
+    icon: <DownloadOutlined />
   },
-  { label: 'Terminal', locale: false, key: 'terminal', icon: <CodeOutlined /> },
+  // {
+  //   label: 'common.button.logs',
+  //   locale: false,
+  //   key: 'logs',
+  //   icon: <IconFont type="icon-logs" />
+  // },
+  // { label: 'Terminal', locale: false, key: 'terminal', icon: <CodeOutlined /> },
   {
     label: 'common.button.delete',
     key: 'delete',
@@ -45,8 +49,8 @@ const ActionList = [
 
 const setActions = (row: ListItem) => {
   return ActionList.filter((action) => {
-    if (action.key === 'details' && row.state === WorkerStatusMap.ready) {
-      return true;
+    if (action.key === 'download_ssh_key') {
+      return !!row.ssh_key_id;
     }
     return true;
   });
@@ -224,6 +228,7 @@ const useWorkerColumns = ({
         render: (_, record) => (
           <StatusTag
             maxTooltipWidth={400}
+            suffix={record.progress}
             statusValue={{
               status: status[record.state] as any,
               text: WorkerStatusMapValue[record.state],

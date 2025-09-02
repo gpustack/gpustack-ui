@@ -93,7 +93,8 @@ export default {
     'Download and install the <a href={url} target="_blank">installer</a>. Only supported: {versions}.',
   'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
   'resource.register.windows.support': 'win 10, win 11',
-  'resources.model.instance': 'Model Instance'
+  'resources.model.instance': 'Model Instance',
+  'resources.worker.download.privatekey': 'Download Private Key'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -109,5 +110,6 @@ export default {
 // 10. 'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
 // 11. 'resource.register.windows.support': 'win 10, win 11',
 // 12. 'resources.filter.status': 'Filter by Status',
-// 13. 'resources.model.instance': 'Model Instance'
+// 13. 'resources.model.instance': 'Model Instance',
+// 14. 'resources.worker.download.privatekey': 'Download Private Key'
 // ========== End of To-Do List ==========

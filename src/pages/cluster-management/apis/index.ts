@@ -84,7 +84,9 @@ export async function deleteCluster(id: number) {
   });
 }
 
-export async function queryClusterDetail(params: { cluster_id: number }) {
+export async function queryClusterDetail(params: {
+  cluster_id: number | string;
+}) {
   return request(`${DASHBOARD_API}`, {
     method: 'GET',
     params
@@ -113,7 +115,7 @@ export async function queryWorkerPools(
 
 export async function createWorkerPool(params: {
   data: NodePoolFormData;
-  clusterId: number;
+  clusterId: number | string;
 }) {
   return request(`${CLUSTERS_API}/${params.clusterId}${WORKER_POOLS_API}`, {
     method: 'POST',

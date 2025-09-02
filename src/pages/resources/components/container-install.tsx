@@ -47,6 +47,7 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     return commandCode?.registerWorker({
       server: registrationInfo.server_url || origin,
       tag: tag,
+      image: registrationInfo.image,
       token: registrationInfo.token || '${token}',
       workerip: '${workerip}'
     });

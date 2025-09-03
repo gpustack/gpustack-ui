@@ -155,3 +155,10 @@ export const regionList: {
   { label: 'Frankfurt', datacenter: 'Datacenter 1', value: 'fra1', icon: '🇩🇪' },
   { label: 'Sydney', datacenter: 'Datacenter 1', value: 'syd1', icon: '🇦🇺' }
 ];
+
+export const CloudOptionItems = [
+  {
+    label: 'Volumes',
+    key: 'volumes'
+  }
+];

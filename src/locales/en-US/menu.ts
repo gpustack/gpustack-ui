@@ -29,5 +29,6 @@ export default {
   'menu.404': '404',
   'menu.clusterManagement': 'Cluster Management',
   'menu.clusterManagement.clusters': 'Clusters',
-  'menu.clusterManagement.credentials': 'Credentials'
+  'menu.clusterManagement.credentials': 'Credentials',
+  'menu.clusterManagement.clusterDetail': 'Cluster Detail'
 };

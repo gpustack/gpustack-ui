@@ -23,7 +23,7 @@ export const status: any = {
   [WorkerStatusMap.not_ready]: StatusMaps.error,
   [WorkerStatusMap.unreachable]: StatusMaps.error,
   [WorkerStatusMap.provisioning]: StatusMaps.transitioning,
-  [WorkerStatusMap.deleting]: StatusMaps.warning,
+  [WorkerStatusMap.deleting]: StatusMaps.transitioning,
   [WorkerStatusMap.error]: StatusMaps.error
 };
 

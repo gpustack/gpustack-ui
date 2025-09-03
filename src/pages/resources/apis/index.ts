@@ -1,14 +1,29 @@
+import { downloadFile } from '@/utils/download-stream';
 import { request } from '@umijs/max';
+import { message } from 'antd';
 import { GPUDeviceItem, ListItem, ModelFile } from '../config/types';
 
 export const WORKERS_API = '/workers';
 export const GPU_DEVICES_API = '/gpu-devices';
 export const MODEL_FILES_API = '/model-files';
 
-export async function downloadWorkerPrivateKey(id: string | number) {
-  return request(`${WORKERS_API}/${id}/privatekey`, {
-    method: 'GET'
-  });
+// download stream data and save as a csv file
+export async function downloadWorkerPrivateKey({
+  id,
+  name
+}: {
+  id: string | number;
+  name?: string;
+}) {
+  try {
+    const res = await fetch(`/v1${WORKERS_API}/${id}/privatekey`);
+    if (res.ok) {
+      const blob = await res.blob();
+      downloadFile(blob, `${name}-privatekey.csv`);
+    }
+  } catch (error) {
+    message.error('Download failed');
+  }
 }
 
 export async function queryWorkersList<T extends Record<string, any>>(

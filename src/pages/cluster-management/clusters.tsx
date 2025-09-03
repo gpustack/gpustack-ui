@@ -251,14 +251,14 @@ const Credentials: React.FC = () => {
         data: formdata,
         clusterId: addPoolStatus.clusterId
       });
+      setAddPoolStatus({
+        ...addPoolStatus,
+        open: false
+      });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       // error
     }
-    setAddPoolStatus({
-      ...addPoolStatus,
-      open: false
-    });
   };
 
   useEffect(() => {

@@ -116,15 +116,15 @@ const WorkerPools = () => {
           id: addPoolStatus.currentData!.id
         });
       }
+      setAddPoolStatus({
+        ...addPoolStatus,
+        open: false
+      });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
       handleSearch();
     } catch (error) {
       // error
     }
-    setAddPoolStatus({
-      ...addPoolStatus,
-      open: false
-    });
   };
 
   const columns = usePoolsColumns(sortOrder, onSelect);

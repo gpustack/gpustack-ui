@@ -347,7 +347,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                   })
                 : ''
             }
-            btnText="common.button.addParams"
+            btnText={intl.formatMessage({ id: 'common.button.addParams' })}
             label={intl.formatMessage({
               id: 'models.form.backend_parameters'
             })}
@@ -395,7 +395,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
               id: 'models.form.env'
             })}
             labels={EnviromentVars}
-            btnText="common.button.vars"
+            btnText={intl.formatMessage({ id: 'common.button.vars' })}
             onBlur={handleEnvSelectorOnBlur}
             onDelete={handleDeleteEnvSelector}
             onChange={handleEnviromentVarsChange}

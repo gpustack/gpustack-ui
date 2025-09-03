@@ -85,7 +85,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     handleDeleteByBatch,
     handleClickPrimary,
     rowSelection,
-    actionItems,
+    actionItems = [],
     selectOptions,
     showSelect,
     buttonText,

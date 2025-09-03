@@ -1,8 +1,6 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
 import _ from 'lodash';
-import React, { useRef } from 'react';
+import React from 'react';
 import LabelItem from './label-item';
 import Wrapper from './wrapper';
 interface LabelSelectorProps {
@@ -31,8 +29,6 @@ const Inner: React.FC<LabelSelectorProps> = ({
   description
 }) => {
   const intl = useIntl();
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const boxRef = useRef<HTMLDivElement>(null);
 
   const updateLabels = (list: { key: string; value: string }[]) => {
     const newLabels = _.reduce(
@@ -75,7 +71,12 @@ const Inner: React.FC<LabelSelectorProps> = ({
   };
 
   return (
-    <Wrapper label={label} description={description}>
+    <Wrapper
+      label={label}
+      description={description}
+      onAdd={handleAddLabel}
+      btnText={btnText}
+    >
       <>
         {labelList?.map((item: any, index: number) => {
           return (
@@ -91,26 +92,9 @@ const Inner: React.FC<LabelSelectorProps> = ({
             />
           );
         })}
-        <div className="flex justify-center">
-          <Button
-            ref={buttonRef}
-            type="text"
-            block
-            style={{
-              marginTop: 16,
-              backgroundColor: 'var(--ant-color-fill-secondary)'
-            }}
-            onClick={handleAddLabel}
-          >
-            <PlusOutlined className="font-size-14" />{' '}
-            {intl.formatMessage({
-              id: btnText || 'common.button.addSelector'
-            })}
-          </Button>
-        </div>
       </>
     </Wrapper>
   );
 };
 
-export default React.memo(Inner);
+export default Inner;

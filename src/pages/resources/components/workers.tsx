@@ -146,7 +146,10 @@ const Workers: React.FC = () => {
       handleViewDetail(record);
     }
     if (val === 'download_ssh_key') {
-      downloadWorkerPrivateKey(record.id);
+      downloadWorkerPrivateKey({
+        id: record.id,
+        name: record.name
+      });
     }
   });
 

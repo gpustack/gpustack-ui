@@ -5,20 +5,6 @@ import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import FormWidget from './form-widget';
 
-interface ListMapProps {
-  dataList: any[];
-  label?: React.ReactNode;
-  btnText?: string;
-  properties: Record<string, any>;
-  onChange?: (data: any) => void;
-}
-
-interface ListItemProps {
-  schemaList: any[];
-  data: Record<string, any>;
-  onChange?: (data: any) => void;
-}
-
 const RowWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -32,6 +18,20 @@ const WidgetBox = styled.div`
   gap: 8px;
   width: 100%;
 `;
+interface ListMapProps {
+  minItems?: number;
+  dataList: any[];
+  label?: React.ReactNode;
+  btnText?: string;
+  properties: Record<string, any>;
+  onChange?: (data: any) => void;
+}
+
+interface ListItemProps {
+  schemaList: any[];
+  data: Record<string, any>;
+  onChange?: (data: any) => void;
+}
 
 const ListItem: React.FC<ListItemProps> = ({ schemaList, data, onChange }) => {
   const handleValueChange = (name: string, target: any) => {
@@ -65,6 +65,7 @@ const ListMap: React.FC<ListMapProps> = ({
   label,
   btnText,
   properties = {},
+  minItems = 0,
   onChange
 }) => {
   const [items, setItems] = React.useState(dataList || []);
@@ -99,10 +100,14 @@ const ListMap: React.FC<ListMapProps> = ({
   };
 
   useEffect(() => {
-    if (!dataList.length) {
+    if (!dataList.length && minItems > 0) {
       handleOnAdd();
     }
   }, []);
+
+  useEffect(() => {
+    setItems(dataList);
+  }, [dataList]);
 
   return (
     <Wrapper label={label} btnText={btnText} onAdd={handleOnAdd}>

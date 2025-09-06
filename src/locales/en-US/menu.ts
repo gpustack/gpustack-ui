@@ -30,5 +30,6 @@ export default {
   'menu.clusterManagement': 'Cluster Management',
   'menu.clusterManagement.clusters': 'Clusters',
   'menu.clusterManagement.credentials': 'Credentials',
-  'menu.clusterManagement.clusterDetail': 'Cluster Detail'
+  'menu.clusterManagement.clusterDetail': 'Cluster Detail',
+  'menu.clusterManagement.clusterCreate': 'Create Cluster'
 };

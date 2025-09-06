@@ -36,7 +36,7 @@ const useClusterColumns = (
         render: (text: string, record: ClusterListItem) => (
           <AutoTooltip ghost>
             <Link
-              to={`/cluster-management/cluster/detail?id=${record.id}&provider=${record.provider}&name=${record.name}`}
+              to={`/cluster-management/clusters/detail?id=${record.id}&provider=${record.provider}&name=${record.name}`}
             >
               {text}
             </Link>

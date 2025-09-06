@@ -258,7 +258,8 @@ export default {
   'common.sso.noConfig':
     'Single sign-on is not enabled on this system. Please contact your administrator.',
   'common.button.edit.item': 'Edit {name}',
-  'common.button.terminal': 'Terminal'
+  'common.button.terminal': 'Terminal',
+  'common.button.addItem': 'Add Item'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -266,5 +267,6 @@ export default {
 // 2. 'common.login.password': 'Log in with Password'
 // 3. 'common.sso.noConfig': 'Single sign-on is not enabled on this system. Please contact your administrator.'
 // 4.  'common.button.edit.item': 'Edit {name}',
-// 5.  'common.button.terminal': 'Terminal'
+// 5.  'common.button.terminal': 'Terminal',
+// 6.  'common.button.addItem': 'Add Item'
 // ========== End of To-Do List ==========

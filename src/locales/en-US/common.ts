@@ -259,5 +259,6 @@ export default {
   'common.sso.noConfig':
     'Single sign-on is not enabled on this system. Please contact your administrator.',
   'common.button.edit.item': 'Edit {name}',
-  'common.button.terminal': 'Terminal'
+  'common.button.terminal': 'Terminal',
+  'common.button.addItem': 'Add Item'
 };

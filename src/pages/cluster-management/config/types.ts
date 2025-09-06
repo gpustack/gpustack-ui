@@ -1,3 +1,5 @@
+import { ProviderType } from '.';
+
 export interface CredentialFormData {
   name: string;
   provider: string;
@@ -20,15 +22,6 @@ export interface CredentialListItem {
   updated_at: string;
 }
 
-export interface ClusterFormData {
-  name: string;
-  description: string;
-  provider: string;
-  credential_id: number;
-  zone: string;
-  region: string;
-}
-
 export interface NodePoolListItem {
   id: number;
   instance_type: string;
@@ -47,7 +40,6 @@ export interface NodePoolFormData {
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;
-  volumes?: Record<string, any>;
 }
 
 export interface ClusterListItem {
@@ -66,4 +58,14 @@ export interface ClusterListItem {
   state: ClusterStatusType;
   state_message: string;
   worker_pools: NodePoolListItem[];
+}
+
+export interface ClusterFormData {
+  name: string;
+  description: string;
+  provider: ProviderType;
+  credential_id: number;
+  zone: string;
+  region: string;
+  worker_pools?: NodePoolFormData[];
 }

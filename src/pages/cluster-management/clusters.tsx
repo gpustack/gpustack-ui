@@ -21,7 +21,7 @@ import {
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
 import RegisterCluster from './components/register-cluster';
-import { ProviderLabelMap, ProviderValueMap, addActions } from './config';
+import { ProviderLabelMap, ProviderValueMap } from './config';
 import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem,
@@ -146,7 +146,8 @@ const Credentials: React.FC = () => {
   };
 
   const handleClickDropdown = (item: any) => {
-    handleAddCluster(item.key);
+    navigate(`/cluster-management/clusters/create?action=${PageAction.CREATE}`);
+    // handleAddCluster(item.key);
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -298,8 +299,6 @@ const Credentials: React.FC = () => {
           marginTop={30}
           width={{ input: 300 }}
           buttonText={intl.formatMessage({ id: 'clusters.button.add' })}
-          actionType="dropdown"
-          actionItems={addActions}
           rowSelection={rowSelection}
           handleInputChange={handleNameChange}
           handleSearch={handleSearch}

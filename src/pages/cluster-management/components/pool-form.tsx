@@ -13,21 +13,20 @@ import React, {
   useImperativeHandle,
   useRef
 } from 'react';
-import {
-  NodePoolFormData as FormData,
-  NodePoolListItem as ListItem
-} from '../config/types';
-import CloudOptions from './cloud-options';
+import { ProviderType } from '../config';
+import { NodePoolFormData as FormData } from '../config/types';
+import VolumesConfig from './volumes-config';
 
 type AddModalProps = {
   ref: any;
+  name?: string;
   action: PageActionType;
-  provider: string; // 'kubernetes' | 'custom' | 'digitalocean';
-  currentData?: ListItem | null;
+  provider: ProviderType; // 'kubernetes' | 'custom' | 'digitalocean';
+  currentData?: FormData | null;
   onFinish: (values: FormData) => void;
 };
 const PoolForm: React.FC<AddModalProps> = forwardRef(
-  ({ action, onFinish, currentData }, ref) => {
+  ({ action, name = 'workerPoolForm', onFinish, currentData }, ref) => {
     const cloudOptionsRef = useRef<any>(null);
     const [form] = Form.useForm();
     const intl = useIntl();
@@ -35,20 +34,25 @@ const PoolForm: React.FC<AddModalProps> = forwardRef(
 
     useEffect(() => {
       if (currentData) {
+        console.log('currentData===========1=', currentData);
         form.setFieldsValue({
-          ...currentData,
-          volumes: currentData.cloud_options?.volumes?.[0] || {}
+          ...currentData
         });
-        cloudOptionsRef.current?.initFieldList();
       }
     }, [currentData]);
 
     useImperativeHandle(ref, () => ({
-      reset: () => {
+      resetFields: () => {
         form.resetFields();
       },
       submit: () => {
         form.submit();
+      },
+      setFieldsValue: (values: any) => {
+        form.setFieldsValue(values);
+      },
+      getFieldsValue: () => {
+        return form.getFieldsValue();
       },
       validateFields: async () => {
         return await form.validateFields();
@@ -57,9 +61,11 @@ const PoolForm: React.FC<AddModalProps> = forwardRef(
 
     return (
       <Form
+        name={name}
         form={form}
         onFinish={onFinish}
         preserve={false}
+        scrollToFirstError={true}
         initialValues={{
           replicas: 1,
           batch_size: 1
@@ -158,7 +164,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef(
             btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
           ></LabelSelector>
         </Form.Item>
-        <CloudOptions ref={cloudOptionsRef}></CloudOptions>
+        <VolumesConfig ref={cloudOptionsRef}></VolumesConfig>
       </Form>
     );
   }

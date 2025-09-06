@@ -23,7 +23,9 @@ export default {
   'clusters.workerpool.volumes': 'Volumes',
   'clusters.workerpool.format': 'Format',
   'clusters.workerpool.size': 'Size (GiB)',
-  'clusters.workerpool.title': 'Worker Pools'
+  'clusters.workerpool.title': 'Worker Pools',
+  'clusters.workerpool.cloudOptions': 'Add Cloud Options',
+  'clusters.workerpool.volumes.add': 'Add Volume'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -51,5 +53,8 @@ export default {
 // 22. 'clusters.workerpool.format': 'Format',
 // 23. 'clusters.workerpool.size': 'Size (GiB)',
 // 24.  'clusters.credential.title': 'Credential',
-// 25. 'clusters.workerpool.title': 'Worker Pools'
+// 25. 'clusters.workerpool.title': 'Worker Pools',
+// 26. 'clusters.workerpool.cloudOptions': 'Add Cloud Options',
+// 27. 'clusters.workerpool.volumes.add': 'Add Volume'
+
 // ========== End of To-Do List ==========

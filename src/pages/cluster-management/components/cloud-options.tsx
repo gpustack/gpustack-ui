@@ -2,6 +2,7 @@ import DropDownActions from '@/components/drop-down-actions';
 import ListMap from '@/components/dynamic-form/components/list-map';
 import { FieldSchema } from '@/components/dynamic-form/config/types';
 import { PlusOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Form } from 'antd';
 import _ from 'lodash';
@@ -36,7 +37,7 @@ const ButtonWrapper = styled.span`
 const CloudOptions: React.FC<{
   ref?: any;
 }> = forwardRef((props, ref) => {
-  // form instance
+  const intl = useIntl();
   const form = Form.useFormInstance();
   const [selectedOptions, setSelectedOptions] = React.useState<Set<string>>(
     new Set()
@@ -102,7 +103,9 @@ const CloudOptions: React.FC<{
         <DropDownActions menu={menu}>
           <Button variant="filled" color="default">
             <PlusOutlined />
-            <span>Add Cloud Options</span>
+            <span>
+              {intl.formatMessage({ id: 'clusters.workerpool.cloudOptions' })}
+            </span>
           </Button>
         </DropDownActions>
       </Title>
@@ -113,7 +116,7 @@ const CloudOptions: React.FC<{
             name={['cloud_options', field.name as string]}
           >
             <ListMap
-              btnText={'Add Item'}
+              btnText={intl.formatMessage({ id: 'common.button.addItem' })}
               label={field.title}
               dataList={form.getFieldValue(['cloud_options', field.name]) || []}
               properties={field.properties || {}}

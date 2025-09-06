@@ -35,7 +35,13 @@ const icons = {
   Deployment: React.createElement(IconFont, { type: 'icon-rocket-launch1' }),
   Docker: React.createElement(IconFont, { type: 'icon-docker' }),
   DigitalOcean: React.createElement(IconFont, { type: 'icon-digitalocean' }),
-  DetailInfo: React.createElement(IconFont, { type: 'icon-detail-info' })
+  DetailInfo: React.createElement(IconFont, { type: 'icon-detail-info' }),
+  HuaweiCloud: React.createElement(IconFont, { type: 'icon-huaweicloud' }),
+  AliCloud: React.createElement(IconFont, { type: 'icon-alicloud' }),
+  TencentCloud: React.createElement(IconFont, { type: 'icon-tencentcloud' }),
+  Nvidia: React.createElement(IconFont, { type: 'icon-nvidia' }),
+  Ascend: React.createElement(IconFont, { type: 'icon-ascend' }),
+  AMD: React.createElement(IconFont, { type: 'icon-amd' })
 };
 
 export default icons;

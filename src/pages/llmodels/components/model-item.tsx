@@ -21,24 +21,6 @@ const ModelItemContent = styled.div`
   height: 100%;
   width: 100%;
   cursor: default;
-  .title {
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 8px;
-    .anticon {
-      font-size: 16px;
-      color: var(--ant-color-text-secondary);
-    }
-    .text {
-      display: flex;
-      align-items: center;
-      font-size: var(--font-size-middle);
-      font-weight: 500;
-      color: var(--ant-color-text);
-    }
-  }
   .content {
     display: flex;
     flex-direction: column;
@@ -83,6 +65,25 @@ const ModelItemContent = styled.div`
   }
 `;
 
+const Header = styled.div`
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  .anticon {
+    font-size: 16px;
+    color: var(--ant-color-text-secondary);
+  }
+  .text {
+    display: flex;
+    align-items: center;
+    font-size: var(--font-size-middle);
+    font-weight: 600;
+    color: var(--ant-color-text);
+  }
+`;
+
 const sourceIconMap = {
   [modelSourceMap.local_path_value]: 'icon-hard-disk',
   [modelSourceMap.huggingface_value]: 'icon-huggingface',
@@ -96,9 +97,12 @@ const ModelItem: React.FC<{
   const { model, onClick } = props;
 
   return (
-    <Card onClick={() => onClick(model)} clickable={false} ghost>
-      <ModelItemContent>
-        <div className="title">
+    <Card
+      onClick={() => onClick(model)}
+      clickable={false}
+      ghost
+      header={
+        <Header>
           <span className="text">
             <IconFont
               type={sourceIconMap[model.source]}
@@ -114,7 +118,10 @@ const ModelItem: React.FC<{
               message: model.state_message
             }}
           ></StatusTag>
-        </div>
+        </Header>
+      }
+    >
+      <ModelItemContent>
         <div className="content">
           <div className="extra-info">
             <ThemeTag className="tag-item" color="blue">

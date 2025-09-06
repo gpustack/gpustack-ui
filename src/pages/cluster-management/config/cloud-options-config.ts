@@ -41,7 +41,7 @@ export const fieldConfig: Record<string, FieldSchema> = {
         type: 'string',
         title: 'Format',
         widget: 'Select',
-        enum: ['ext4', 'xfs', 'btrfs'],
+        enum: ['ext4', 'xfs'],
         style: { width: 150 }
       }
     }

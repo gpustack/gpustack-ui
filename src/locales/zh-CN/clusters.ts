@@ -23,5 +23,7 @@ export default {
   'clusters.workerpool.volumes': '存储卷',
   'clusters.workerpool.format': '文件系统格式',
   'clusters.workerpool.size': '容量（GiB）',
-  'clusters.workerpool.title': '节点池'
+  'clusters.workerpool.title': '节点池',
+  'clusters.workerpool.cloudOptions': '添加云配置',
+  'clusters.workerpool.volumes.add': '添加存储卷'
 };

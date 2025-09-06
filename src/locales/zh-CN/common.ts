@@ -251,5 +251,6 @@ export default {
   'common.external.login': '使用 {type} 登录',
   'common.sso.noConfig': '该系统未启用单点登录，请联系管理员。',
   'common.button.edit.item': '编辑 {name}',
-  'common.button.terminal': '终端'
+  'common.button.terminal': '终端',
+  'common.button.addItem': '添加项'
 };

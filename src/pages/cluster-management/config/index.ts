@@ -1,6 +1,7 @@
 import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
+import React from 'react';
 
 export const ClusterStatusValueMap = {
   Provisioning: 0,
@@ -23,12 +24,17 @@ export const ClusterStatus: Record<string, StatusType> = {
 export const ProviderValueMap = {
   Kubernetes: 'Kubernetes',
   DigitalOcean: 'DigitalOcean',
-  Custom: 'Custom'
+  Custom: 'Custom',
+  HuaweiCloud: 'HuaweiCloud',
+  AliCloud: 'AliCloud',
+  TencentCloud: 'TencentCloud'
 };
+
+export type ProviderType = keyof typeof ProviderValueMap | null | undefined;
 
 export const ProviderLabelMap = {
   [ProviderValueMap.Kubernetes]: 'Kubernetes',
-  [ProviderValueMap.DigitalOcean]: 'Digital Ocean',
+  [ProviderValueMap.DigitalOcean]: 'DigitalOcean',
   [ProviderValueMap.Custom]: 'Custom'
 };
 
@@ -41,27 +47,62 @@ export const generateRegisterCommand = (params: {
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
 
-export const addActions = [
+export const providerList = [
   {
     label: 'clusters.provider.custom',
     locale: true,
     value: ProviderValueMap.Custom,
     key: ProviderValueMap.Custom,
-    icon: icons.Docker
+    icon: React.cloneElement(icons.Docker, {
+      style: { color: 'var(--ant-color-primary)' }
+    })
   },
   {
     label: 'Kubernetes',
     locale: false,
     value: ProviderValueMap.Kubernetes,
     key: ProviderValueMap.Kubernetes,
-    icon: icons.KubernetesOutlined
+    icon: React.cloneElement(icons.KubernetesOutlined, {
+      style: { color: 'var(--ant-color-primary)' }
+    })
   },
   {
-    label: 'Digital Ocean',
+    label: 'DigitalOcean',
     locale: false,
     value: ProviderValueMap.DigitalOcean,
     key: ProviderValueMap.DigitalOcean,
-    icon: icons.DigitalOcean
+    icon: React.cloneElement(icons.DigitalOcean, {
+      style: {
+        color: 'var(--ant-color-primary)'
+      }
+    })
+  },
+  {
+    label: 'Huawei Cloud',
+    locale: false,
+    disabled: true,
+    value: ProviderValueMap.HuaweiCloud,
+    key: ProviderValueMap.HuaweiCloud,
+    icon: icons.HuaweiCloud,
+    description: 'Currently Not Supported'
+  },
+  {
+    label: 'Ali Cloud',
+    locale: false,
+    disabled: true,
+    value: ProviderValueMap.AliCloud,
+    key: ProviderValueMap.AliCloud,
+    icon: icons.AliCloud,
+    description: 'Currently Not Supported'
+  },
+  {
+    label: 'Tencent Cloud',
+    locale: false,
+    disabled: true,
+    value: ProviderValueMap.TencentCloud,
+    key: ProviderValueMap.TencentCloud,
+    icon: icons.TencentCloud,
+    description: 'Currently Not Supported'
   }
 ];
 
@@ -101,13 +142,13 @@ export const clusterActionList = [
     locale: true,
     icon: icons.KubernetesOutlined
   },
-  {
-    key: 'addPool',
-    label: 'clusters.button.addNodePool',
-    provider: ProviderValueMap.DigitalOcean,
-    locale: true,
-    icon: icons.Catalog
-  },
+  // {
+  //   key: 'addPool',
+  //   label: 'clusters.button.addNodePool',
+  //   provider: ProviderValueMap.DigitalOcean,
+  //   locale: true,
+  //   icon: icons.Catalog
+  // },
   {
     key: 'delete',
     label: 'common.button.delete',

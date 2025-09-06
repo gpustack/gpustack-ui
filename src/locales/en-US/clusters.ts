@@ -23,5 +23,7 @@ export default {
   'clusters.workerpool.volumes': 'Volumes',
   'clusters.workerpool.format': 'Format',
   'clusters.workerpool.size': 'Size (GiB)',
-  'clusters.workerpool.title': 'Worker Pools'
+  'clusters.workerpool.title': 'Worker Pools',
+  'clusters.workerpool.cloudOptions': 'Add Cloud Options',
+  'clusters.workerpool.volumes.add': 'Add Volume'
 };

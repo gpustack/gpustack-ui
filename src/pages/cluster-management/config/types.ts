@@ -29,8 +29,10 @@ export interface NodePoolListItem {
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;
+  os_image: string;
   created_at: string;
   updated_at: string;
+  cluster_id: number;
 }
 
 export interface NodePoolFormData {

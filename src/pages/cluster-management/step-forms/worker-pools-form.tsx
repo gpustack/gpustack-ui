@@ -1,7 +1,7 @@
 import PageTools from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, FormInstance } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, FormInstance } from 'antd';
 import {
   forwardRef,
   useEffect,
@@ -22,6 +22,7 @@ const PoolContainer = styled.div`
 
 const PoolFormWrapper = styled.div`
   flex: 1;
+  margin-bottom: 16px;
 `;
 
 const Title = styled.span`
@@ -42,14 +43,15 @@ interface WorkerPoolsFormProps {
 
 const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
   const { provider, action, currentData } = props;
-  const countRef = useRef(1);
+  const countRef = useRef(0);
   const formRefs = useRef<Record<number, FormInstance<any> | null>>({});
+  const [activeKey, setActiveKey] = useState<Set<number>>(new Set([0]));
   const [workerPoolList, setWorkerPoolList] = useState<
     Map<number, NodePoolFormData>
   >(
     new Map([
       [
-        1,
+        0,
         {
           instance_type: 'Pool-1'
         }
@@ -68,9 +70,14 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
     const newId = updateCount();
     setWorkerPoolList((prev) =>
       new Map(prev).set(newId, {
-        instance_type: `Pool-${newId}`
+        instance_type: `Pool-${newId + 1}`
       } as NodePoolFormData)
     );
+    setActiveKey((prev) => new Set([newId]));
+
+    requestAnimationFrame(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
   };
 
   const handleRemovePool = (id: number) => {
@@ -137,6 +144,19 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
     };
   };
 
+  const handleOnToggle = (open: boolean, key: number) => {
+    console.log('Active keys changed:', key);
+    if (open) {
+      setActiveKey((prev) => new Set([key]));
+    } else {
+      setActiveKey((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
+    }
+  };
+
   useImperativeHandle(ref, () => ({
     submit: () => {},
     validateFields: validateFields,
@@ -157,7 +177,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
         marginTop={0}
         left={
           <span className="flex-center gap-16">
-            <Title>Worker Pools Configuration</Title>
+            <Title>Worker Pools</Title>
           </span>
         }
         right={
@@ -171,6 +191,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
           </Button>
         }
       ></PageTools>
+
       {Array.from(workerPoolList.keys()).map((key, index) => (
         <div key={key}>
           <PoolContainer>
@@ -183,34 +204,22 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
                     formRefs.current[key] = el;
                   }
                 }}
+                collapseProps={{
+                  collapsible: true,
+                  open: activeKey.has(key),
+                  defaultOpen: activeKey.has(key),
+                  onToggle: (open: boolean) => handleOnToggle(open, key)
+                }}
+                showDelete={workerPoolList.size > 1}
                 onFinish={handleOnFinish}
                 provider={provider}
                 currentData={workerPoolList.get(key)}
+                onDelete={() => handleRemovePool(key)}
               ></WorkerPoolForm>
             </PoolFormWrapper>
           </PoolContainer>
-          {index !== Array.from(workerPoolList.keys()).length - 1 && (
-            <Divider orientation="right">
-              <Button
-                variant="filled"
-                color="default"
-                onClick={() => handleRemovePool(key)}
-                icon={<DeleteOutlined />}
-              ></Button>
-            </Divider>
-          )}
         </div>
       ))}
-      <div className="flex-end">
-        <Button
-          onClick={handleAddPool}
-          variant="filled"
-          color="default"
-          icon={<PlusOutlined />}
-        >
-          Add Pool
-        </Button>
-      </div>
     </div>
   );
 });

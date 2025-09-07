@@ -102,13 +102,15 @@ export async function queryClusterToken(params: { id: number }) {
 // ===================== Worker Pools =====================
 
 export async function queryWorkerPools(
-  params?: Global.SearchParams & { cluster_id: string | number }
+  params?: Global.SearchParams & { cluster_id: string | number },
+  options?: any
 ) {
   return request<Global.PageResponse<NodePoolListItem>>(
     `${WORKER_POOLS_API}?`,
     {
       method: 'GET',
-      params
+      params,
+      cancelToken: options?.token
     }
   );
 }

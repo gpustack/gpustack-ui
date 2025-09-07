@@ -33,6 +33,7 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
+        span: 3,
         render: (text: string, record: ClusterListItem) => (
           <AutoTooltip ghost>
             <Link
@@ -46,11 +47,13 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
+        span: 3,
         render: (value: string) => <span>{ProviderLabelMap[value]}</span>
       },
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
+        span: 3,
         render: (value: number) => (
           <StatusTag
             statusValue={{
@@ -63,6 +66,7 @@ const useClusterColumns = (
       {
         title: 'Workers',
         dataIndex: 'workers',
+        span: 3,
         render: (value: number, record: ClusterListItem) => (
           <span>
             {record.ready_workers} / {record.workers}
@@ -72,17 +76,19 @@ const useClusterColumns = (
       {
         title: 'GPUs',
         dataIndex: 'gpus',
+        span: 3,
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'clusters.table.deployments' }),
         dataIndex: 'models',
+        span: 2,
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
-        width: 180,
+        span: 4,
         render: (value: string) => (
           <span>{dayjs(value).format('YYYY-MM-DD HH:mm:ss')}</span>
         )
@@ -90,6 +96,7 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         dataIndex: 'operations',
+        span: 3,
         render: (value: string, record: ClusterListItem) => (
           <DropdownButtons
             items={setActionsItems(record)}

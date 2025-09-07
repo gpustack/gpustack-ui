@@ -1,13 +1,17 @@
+import { expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
+import SealTable from '@/components/seal-table';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
+import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import AddWorker from '@/pages/resources/components/add-worker';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Table, message } from 'antd';
+import { message } from 'antd';
+import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
   createCluster,
@@ -16,13 +20,16 @@ import {
   queryClusterList,
   queryClusterToken,
   queryCredentialList,
+  queryWorkerPools,
   updateCluster
 } from './apis';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
+import PoolRows from './components/pool-rows';
 import RegisterCluster from './components/register-cluster';
-import { ProviderLabelMap, ProviderValueMap } from './config';
+import { ProviderLabelMap, ProviderType, ProviderValueMap } from './config';
 import {
+  ClusterListItem,
   ClusterFormData as FormData,
   ClusterListItem as ListItem,
   NodePoolFormData
@@ -47,7 +54,14 @@ const Credentials: React.FC = () => {
     deleteAPI: deleteCluster,
     contentForDelete: 'menu.clusterManagement.clusters'
   });
-
+  const [expandAtom, setExpandAtom] = useAtom(expandKeysAtom);
+  const {
+    handleExpandChange,
+    handleExpandAll,
+    updateExpandedRowKeys,
+    removeExpandedRowKey,
+    expandedRowKeys
+  } = useExpandedRowKeys(expandAtom);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const intl = useIntl();
@@ -106,13 +120,13 @@ const Credentials: React.FC = () => {
     open: boolean;
     action: PageActionType;
     title: string;
-    provider: string;
+    provider: ProviderType;
     clusterId: number;
   }>({
     open: false,
     action: PageAction.CREATE,
     title: '',
-    provider: ProviderValueMap.DigitalOcean,
+    provider: ProviderValueMap.DigitalOcean as ProviderType,
     clusterId: 0
   });
 
@@ -246,6 +260,16 @@ const Credentials: React.FC = () => {
     }
   });
 
+  const handleOnToggleExpandAll = () => {};
+
+  const handleToggleExpandAll = useMemoizedFn((expanded: boolean) => {
+    const keys = dataSource.dataList?.map((item) => item.id);
+    handleExpandAll(expanded, keys);
+    if (expanded) {
+      handleOnToggleExpandAll();
+    }
+  });
+
   const handleSubmitWorkerPool = async (formdata: NodePoolFormData) => {
     try {
       await createWorkerPool({
@@ -262,6 +286,20 @@ const Credentials: React.FC = () => {
     }
   };
 
+  const getWorkerPoolList = useMemoizedFn(
+    async (row: ClusterListItem, options?: any) => {
+      const params = {
+        cluster_id: row.id,
+        page: 1,
+        perPage: 100
+      };
+      const data = await queryWorkerPools(params, {
+        token: options?.token
+      });
+      return data?.items || [];
+    }
+  );
+
   useEffect(() => {
     const fetchCredentialList = async () => {
       const data = await queryCredentialList({ page: 1, perPage: 100 });
@@ -273,6 +311,19 @@ const Credentials: React.FC = () => {
     };
     fetchCredentialList();
   }, []);
+
+  const renderChildren = (
+    list: any,
+    options: { parent?: any; [key: string]: any }
+  ) => {
+    return (
+      <PoolRows
+        dataList={list}
+        provider={options.parent?.provider}
+        clusterId={options.parent?.id}
+      />
+    );
+  };
 
   const columns = useClusterColumns(handleSelect);
 
@@ -305,15 +356,23 @@ const Credentials: React.FC = () => {
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
         ></FilterBar>
-        <Table
+        <SealTable
           rowKey="id"
           tableLayout="fixed"
           style={{ width: '100%' }}
+          loadChildren={getWorkerPoolList}
           onChange={handleTableChange}
+          expandedRowKeys={expandedRowKeys}
+          onExpand={handleExpandChange}
+          onExpandAll={handleToggleExpandAll}
+          renderChildren={renderChildren}
           dataSource={dataSource.dataList}
           loading={dataSource.loading}
+          loadend={dataSource.loadend}
           rowSelection={rowSelection}
           columns={columns}
+          childParentKey="cluster_id"
+          expandable={true}
           pagination={{
             showSizeChanger: true,
             pageSize: queryParams.perPage,
@@ -322,7 +381,35 @@ const Credentials: React.FC = () => {
             hideOnSinglePage: queryParams.perPage === 10,
             onChange: handlePageChange
           }}
-        ></Table>
+        ></SealTable>
+        {/* <SealTable
+          columns={columns}
+          dataSource={dataSource}
+          rowSelection={rowSelection}
+          expandedRowKeys={expandedRowKeys}
+          onExpand={handleExpandChange}
+          onExpandAll={handleToggleExpandAll}
+          loading={loading}
+          loadend={loadend}
+          rowKey="id"
+          childParentKey="model_id"
+          expandable={true}
+          onSort={handleOnSort}
+          onCell={handleOnCell}
+          pollingChildren={false}
+          watchChildren={true}
+          loadChildren={getModelInstances}
+          loadChildrenAPI={generateChildrenRequestAPI}
+          renderChildren={renderChildren}
+          pagination={{
+            showSizeChanger: true,
+            pageSize: queryParams.perPage,
+            current: queryParams.page,
+            total: total,
+            hideOnSinglePage: queryParams.perPage === 10,
+            onChange: handlePageChange
+          }}
+        ></SealTable> */}
       </PageContainer>
       <AddCluster
         provider={openAddModal.provider}

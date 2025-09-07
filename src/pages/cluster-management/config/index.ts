@@ -55,7 +55,8 @@ export const providerList = [
     key: ProviderValueMap.Custom,
     icon: React.cloneElement(icons.Docker, {
       style: { color: 'var(--ant-color-primary)' }
-    })
+    }),
+    group: 'default'
   },
   {
     label: 'Kubernetes',
@@ -64,7 +65,8 @@ export const providerList = [
     key: ProviderValueMap.Kubernetes,
     icon: React.cloneElement(icons.KubernetesOutlined, {
       style: { color: 'var(--ant-color-primary)' }
-    })
+    }),
+    group: 'default'
   },
   {
     label: 'DigitalOcean',
@@ -75,7 +77,8 @@ export const providerList = [
       style: {
         color: 'var(--ant-color-primary)'
       }
-    })
+    }),
+    group: 'Cloud Provider'
   },
   {
     label: 'Huawei Cloud',
@@ -84,7 +87,8 @@ export const providerList = [
     value: ProviderValueMap.HuaweiCloud,
     key: ProviderValueMap.HuaweiCloud,
     icon: icons.HuaweiCloud,
-    description: 'Currently Not Supported'
+    description: 'Comming soon',
+    group: 'Cloud Provider'
   },
   {
     label: 'Ali Cloud',
@@ -93,7 +97,8 @@ export const providerList = [
     value: ProviderValueMap.AliCloud,
     key: ProviderValueMap.AliCloud,
     icon: icons.AliCloud,
-    description: 'Currently Not Supported'
+    description: 'Comming soon',
+    group: 'Cloud Provider'
   },
   {
     label: 'Tencent Cloud',
@@ -102,7 +107,8 @@ export const providerList = [
     value: ProviderValueMap.TencentCloud,
     key: ProviderValueMap.TencentCloud,
     icon: icons.TencentCloud,
-    description: 'Currently Not Supported'
+    description: 'Comming soon',
+    group: 'Cloud Provider'
   }
 ];
 
@@ -142,13 +148,13 @@ export const clusterActionList = [
     locale: true,
     icon: icons.KubernetesOutlined
   },
-  // {
-  //   key: 'addPool',
-  //   label: 'clusters.button.addNodePool',
-  //   provider: ProviderValueMap.DigitalOcean,
-  //   locale: true,
-  //   icon: icons.Catalog
-  // },
+  {
+    key: 'addPool',
+    label: 'clusters.button.addNodePool',
+    provider: ProviderValueMap.DigitalOcean,
+    locale: true,
+    icon: icons.Catalog
+  },
   {
     key: 'delete',
     label: 'common.button.delete',

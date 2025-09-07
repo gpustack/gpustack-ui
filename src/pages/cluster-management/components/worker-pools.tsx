@@ -127,7 +127,7 @@ const WorkerPools = () => {
     }
   };
 
-  const columns = usePoolsColumns(sortOrder, onSelect);
+  const columns = usePoolsColumns(onSelect, sortOrder);
 
   return (
     <>

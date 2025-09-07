@@ -26,8 +26,8 @@ const actionItems = [
   }
 ];
 const usePoolsColumns = (
-  sortOrder: SortOrder,
-  handleSelect: (val: string, record: ListItem) => void
+  handleSelect: (val: string, record: ListItem) => void,
+  sortOrder?: SortOrder
 ): ColumnsType<ListItem> => {
   const intl = useIntl();
 
@@ -40,6 +40,10 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
+        span: 4,
+        style: {
+          paddingInline: 'var(--ant-table-cell-padding-inline)'
+        },
         render: (text: string) => (
           <AutoTooltip title={text} ghost minWidth={20}>
             {text}
@@ -49,17 +53,20 @@ const usePoolsColumns = (
       {
         title: intl.formatMessage({ id: 'clusters.workerpool.replicas' }),
         dataIndex: 'replicas',
+        span: 3,
         key: 'replicas'
       },
       {
         title: intl.formatMessage({ id: 'clusters.workerpool.batchSize' }),
         dataIndex: 'batch_size',
-        key: 'batch_size'
+        key: 'batch_size',
+        span: 3
       },
       {
         title: intl.formatMessage({ id: 'clusters.workerpool.osImage' }),
         dataIndex: 'os_image',
         key: 'os_image',
+        span: 3,
         ellipsis: {
           showTitle: false
         },
@@ -74,6 +81,7 @@ const usePoolsColumns = (
         dataIndex: 'labels',
         key: 'labels',
         width: 200,
+        span: 4,
         render: (text: string, record: ListItem) => (
           <LabelsCell labels={record.labels}></LabelsCell>
         )
@@ -82,6 +90,7 @@ const usePoolsColumns = (
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'create_at',
         key: 'created_at',
+        span: 4,
         showSorterTooltip: false,
         defaultSortOrder: 'descend',
         sortOrder: sortOrder,
@@ -89,11 +98,18 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
+        style: {
+          paddingLeft: 42
+        },
         render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss')
       },
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operations',
+        span: 3,
+        style: {
+          paddingLeft: 36
+        },
         render: (text: string, record: ListItem) => (
           <DropdownButtons
             items={actionItems}

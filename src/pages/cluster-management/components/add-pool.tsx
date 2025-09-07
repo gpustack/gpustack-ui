@@ -2,6 +2,7 @@ import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import { PageActionType } from '@/config/types';
 import React, { useRef } from 'react';
+import { ProviderType } from '../config';
 import {
   NodePoolFormData as FormData,
   NodePoolListItem as ListItem
@@ -12,7 +13,7 @@ type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
-  provider: string; // 'kubernetes' | 'custom' | 'digitalocean';
+  provider: ProviderType; // 'kubernetes' | 'custom' | 'digitalocean';
   currentData?: ListItem | null;
   onOk: (values: FormData) => void;
   onCancel: () => void;

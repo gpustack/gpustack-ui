@@ -3,9 +3,9 @@ import { PageActionType } from '@/config/types';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import _ from 'lodash';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { queryClusterList } from './apis';
+import { createCluster, queryCredentialList } from './apis';
 import ClusterSteps from './components/cluster-steps';
 import FooterButtons from './components/footer-buttons';
 import ProviderCatalog from './components/provider-catalog';
@@ -45,6 +45,7 @@ const HeaderContainer = styled.div`
 
 const ClusterCreate = () => {
   const intl = useIntl();
+  const startStep = 0;
   const stepList = useStepList();
   const [searchParams] = useSearchParams();
   const action =
@@ -53,7 +54,7 @@ const ClusterCreate = () => {
   const [credentialList, setCredentialList] = useState<
     Global.BaseOption<number>[]
   >([]);
-  const [currentStep, setCurrentStep] = useState<number>(0);
+  const [currentStep, setCurrentStep] = useState<number>(startStep);
   const [registrationInfo, setRegistrationInfo] = useState<{
     token: string;
     image: string;
@@ -96,11 +97,7 @@ const ClusterCreate = () => {
     setCurrentStep(newStep);
     console.log('step========', newStep);
   };
-  const customizer = (objValue: any, srcValue: any) => {
-    if (Array.isArray(objValue)) {
-      return srcValue;
-    }
-  };
+
   const getFormFieldsValue = () => {
     setFormValues((prev) => {
       const newFormValues = _.cloneDeep(prev);
@@ -166,16 +163,24 @@ const ClusterCreate = () => {
     }
   };
 
+  const resetForm = () => {
+    setFormValues({});
+    for (const [formKey, formRef] of Object.entries(formRefs)) {
+      formRefs[formKey] = React.createRef();
+    }
+  };
+
   const handleSelectProvider = (value: ProviderType) => {
     setExtraData({
       provider: value
     } as ClusterFormData);
+    resetForm();
     onNext();
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await queryClusterList({ page: 1, perPage: 100 });
+      const res = await queryCredentialList({ page: 1, perPage: 100 });
       const list = res.items?.map((item) => ({
         label: item.name,
         value: item.id
@@ -232,7 +237,7 @@ const ClusterCreate = () => {
       ...extraData,
       ...(typeof values === 'object' ? values : {})
     };
-    console.log('submit values====:', data);
+    await createCluster({ data });
     return true;
   };
 
@@ -274,7 +279,7 @@ const ClusterCreate = () => {
         </HeaderContainer>
       )}
     >
-      {currentStep === 0 && (
+      {currentStep === startStep && (
         <ProviderCatalog
           dataList={providerList}
           onSelect={handleSelectProvider}

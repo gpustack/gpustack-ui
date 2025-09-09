@@ -56,7 +56,7 @@ export const providerList = [
     icon: React.cloneElement(icons.Docker, {
       style: { color: 'var(--ant-color-primary)' }
     }),
-    group: 'default'
+    group: 'Self-Managed'
   },
   {
     label: 'Kubernetes',
@@ -66,7 +66,7 @@ export const providerList = [
     icon: React.cloneElement(icons.KubernetesOutlined, {
       style: { color: 'var(--ant-color-primary)' }
     }),
-    group: 'default'
+    group: 'Self-Managed'
   },
   {
     label: 'DigitalOcean',

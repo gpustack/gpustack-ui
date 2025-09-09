@@ -29,6 +29,9 @@ const Container = styled.div`
   .ant-form-item:nth-child(6) {
     grid-column: 1 / 3;
   }
+  .ant-form-item:nth-child(7) {
+    grid-column: 1 / 3;
+  }
 `;
 
 type AddModalProps = {
@@ -57,7 +60,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const labels = Form.useWatch('labels', form);
-  const instance_type = Form.useWatch('instance_type', form);
+  const title = Form.useWatch('name', form);
 
   useEffect(() => {
     if (currentData) {
@@ -88,13 +91,12 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
 
   return (
     <CollapsibleContainer
-      title={instance_type}
+      {...restCollapseProps}
+      title={title}
       collapsible={collapsible}
       onToggle={onToggle}
-      {...restCollapseProps}
-    >
-      {showDelete && (
-        <div className="flex-end" style={{ marginBlock: '8px 16px' }}>
+      deleteBtn={
+        showDelete && (
           <Button
             onClick={onDelete}
             icon={<DeleteOutlined />}
@@ -104,8 +106,9 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
             color="danger"
             size="small"
           ></Button>
-        </div>
-      )}
+        )
+      }
+    >
       <Form
         name={name}
         form={form}
@@ -118,6 +121,22 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
         }}
       >
         <Container>
+          <Form.Item<FormData>
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('input', 'common.table.name')
+              }
+            ]}
+          >
+            <SealInput.Input
+              label={intl.formatMessage({
+                id: 'common.table.name'
+              })}
+              required
+            ></SealInput.Input>
+          </Form.Item>
           <Form.Item<FormData>
             name="instance_type"
             rules={[
@@ -135,6 +154,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
                 id: 'clusters.workerpool.instanceType'
               })}
               required
+              disabled={action === PageAction.EDIT}
             ></SealInput.Input>
           </Form.Item>
           <Form.Item<FormData>

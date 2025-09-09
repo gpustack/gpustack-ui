@@ -15,6 +15,7 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     sortOrder,
     onSort,
     sorter,
+    width,
     dataIndex
   } = props;
 
@@ -27,7 +28,7 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
   };
   return (
     <div
-      style={{ ...style }}
+      style={{ width, ...style }}
       className={classNames('table-header', {
         'table-header-left': align === 'left',
         'table-header-center': align === 'center',

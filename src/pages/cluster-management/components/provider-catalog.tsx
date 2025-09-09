@@ -21,7 +21,7 @@ const Title = styled.span`
   align-items: center;
   justify-content: space-between;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   margin-block: 16px 24px;
 `;
 

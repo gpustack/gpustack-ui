@@ -20,6 +20,7 @@ export const StatusMaps = {
 };
 
 type StatusTagProps = {
+  style?: React.CSSProperties;
   statusValue: {
     status: StatusType;
     text: string;
@@ -42,6 +43,7 @@ type StatusTagProps = {
 };
 
 const StatusTag: React.FC<StatusTagProps> = ({
+  style,
   statusValue,
   download,
   extra,
@@ -149,7 +151,8 @@ const StatusTag: React.FC<StatusTagProps> = ({
       })}
       style={{
         color: statusColor?.text,
-        border: `1px solid ${statusColor?.border || statusColor?.text}`
+        border: `1px solid ${statusColor?.border || statusColor?.text}`,
+        ...style
       }}
     >
       {statusValue.message ? (

@@ -1,5 +1,16 @@
 import React from 'react';
 
+export interface CellContentProps {
+  dataIndex: string;
+  render?: (text: any, record: any) => React.ReactNode;
+  editable?:
+    | boolean
+    | {
+        valueType?: 'text' | 'number' | 'date' | 'datetime' | 'time';
+        title?: React.ReactNode;
+      };
+}
+
 export interface SealColumnProps {
   title: React.ReactNode;
   render?: (text: any, record: any) => React.ReactNode;
@@ -33,6 +44,7 @@ export interface TableHeaderProps {
   firstCell?: boolean;
   lastCell?: boolean;
   align?: 'left' | 'center' | 'right';
+  width?: number | string;
 }
 
 export interface RowSelectionProps {

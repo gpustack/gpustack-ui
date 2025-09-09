@@ -106,7 +106,7 @@ const LoginForm = () => {
           <img
             src={LogoIcon}
             alt="logo"
-            style={{ height: '24px', marginLeft: 10 }}
+            style={{ height: '36px', marginLeft: 10 }}
           />
         </div>
       </div>

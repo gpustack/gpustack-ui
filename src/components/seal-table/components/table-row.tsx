@@ -8,7 +8,7 @@ import RowContext from '../row-context';
 import TableContext from '../table-context';
 import { RowContextProps, SealTableProps } from '../types';
 import RowPrefix from './row-prefix';
-import TableColumn from './seal-column';
+import TableCell from './table-cell';
 
 const TableRow: React.FC<
   RowContextProps &
@@ -209,7 +209,7 @@ const TableRow: React.FC<
                   key={`${restProps.dataIndex}-${rowIndex}`}
                   span={restProps.span}
                 >
-                  <TableColumn {...restProps}></TableColumn>
+                  <TableCell {...restProps}></TableCell>
                 </Col>
               );
             })}

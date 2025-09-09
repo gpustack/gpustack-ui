@@ -18,6 +18,7 @@ const Header: React.FC<HeaderProps> = (props) => {
           title,
           dataIndex,
           align,
+          width,
           span,
           headerStyle,
           sortOrder,
@@ -31,6 +32,7 @@ const Header: React.FC<HeaderProps> = (props) => {
               sorter={sorter}
               dataIndex={dataIndex}
               sortOrder={sortOrder}
+              width={width}
               defaultSortOrder={defaultSortOrder}
               title={title}
               style={headerStyle}

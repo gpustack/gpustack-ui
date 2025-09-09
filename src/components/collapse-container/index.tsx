@@ -14,11 +14,15 @@ const CardStyled = styled(Card)`
     }
   }
   .ant-card-head {
+    cursor: pointer;
     background-color: var(--ant-color-fill-quaternary);
     border-bottom: none;
     border-radius: var(--ant-border-radius);
     &:hover {
       background-color: var(--ant-color-fill-secondary);
+      .del-btn {
+        display: block;
+      }
     }
   }
 `;
@@ -28,11 +32,16 @@ const useStyles = createStyles(({ css, token }) => {
     title: css`
       font-weight: 400;
       height: 56px;
-      font-size: ${token.fontSizeLG};
+      font-size: var(--font-size-base);
       display: flex;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+    `,
+    expandIcon: css`
+      display: flex;
+      align-items: center;
+      gap: 8px;
     `,
     subtitle: css`
       font-size: 12px;
@@ -48,6 +57,9 @@ const useStyles = createStyles(({ css, token }) => {
       display: flex;
       align-items: center;
       gap: 8px;
+      .del-btn {
+        display: none;
+      }
     `
   };
 });
@@ -56,6 +68,7 @@ export interface CollapsibleContainerProps {
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
   right?: React.ReactNode;
+  deleteBtn?: React.ReactNode;
   defaultOpen?: boolean;
   open?: boolean;
   collapsible?: boolean;
@@ -70,6 +83,7 @@ export default function CollapsibleContainer({
   title,
   subtitle,
   right,
+  deleteBtn,
   defaultOpen = true,
   open,
   onToggle,
@@ -105,19 +119,22 @@ export default function CollapsibleContainer({
     return (
       <div className={styles.title} onClick={toggle}>
         <div className={styles.left}>
-          {title && <div>{title}</div>}
+          <div className={styles.expandIcon}>
+            <IconFont
+              rotate={isOpen ? 180 : 0}
+              type="icon-down"
+              style={{
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                fontSize: 12
+              }}
+            />
+            {title && <div>{title}</div>}
+          </div>
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
         </div>
         <div className={styles.right}>
-          {right}
-          <IconFont
-            rotate={isOpen ? 180 : 0}
-            type="icon-down"
-            style={{
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              fontSize: 12
-            }}
-          />
+          {right && <span>{right}</span>}
+          {deleteBtn && <span className="del-btn">{deleteBtn}</span>}
         </div>
       </div>
     );

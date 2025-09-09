@@ -53,7 +53,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       [
         0,
         {
-          instance_type: 'Pool-1'
+          name: 'Pool-1'
         }
       ]
     ]) as Map<number, NodePoolFormData>
@@ -70,7 +70,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
     const newId = updateCount();
     setWorkerPoolList((prev) =>
       new Map(prev).set(newId, {
-        instance_type: `Pool-${newId + 1}`
+        name: `Pool-${newId + 1}`
       } as NodePoolFormData)
     );
     setActiveKey((prev) => new Set([newId]));
@@ -193,32 +193,30 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       ></PageTools>
 
       {Array.from(workerPoolList.keys()).map((key, index) => (
-        <div key={key}>
-          <PoolContainer>
-            <PoolFormWrapper>
-              <WorkerPoolForm
-                name={`workerPoolForm_${key}`}
-                action={action}
-                ref={(el: any) => {
-                  if (el) {
-                    formRefs.current[key] = el;
-                  }
-                }}
-                collapseProps={{
-                  collapsible: true,
-                  open: activeKey.has(key),
-                  defaultOpen: activeKey.has(key),
-                  onToggle: (open: boolean) => handleOnToggle(open, key)
-                }}
-                showDelete={workerPoolList.size > 1}
-                onFinish={handleOnFinish}
-                provider={provider}
-                currentData={workerPoolList.get(key)}
-                onDelete={() => handleRemovePool(key)}
-              ></WorkerPoolForm>
-            </PoolFormWrapper>
-          </PoolContainer>
-        </div>
+        <PoolContainer key={key}>
+          <PoolFormWrapper>
+            <WorkerPoolForm
+              name={`workerPoolForm_${key}`}
+              action={action}
+              ref={(el: any) => {
+                if (el) {
+                  formRefs.current[key] = el;
+                }
+              }}
+              collapseProps={{
+                collapsible: true,
+                open: activeKey.has(key),
+                defaultOpen: activeKey.has(key),
+                onToggle: (open: boolean) => handleOnToggle(open, key)
+              }}
+              showDelete={workerPoolList.size > 1}
+              onFinish={handleOnFinish}
+              provider={provider}
+              currentData={workerPoolList.get(key)}
+              onDelete={() => handleRemovePool(key)}
+            ></WorkerPoolForm>
+          </PoolFormWrapper>
+        </PoolContainer>
       ))}
     </div>
   );

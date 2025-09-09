@@ -48,7 +48,11 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
         span: 3,
-        render: (value: string) => <span>{ProviderLabelMap[value]}</span>
+        render: (value: string) => (
+          <AutoTooltip ghost minWidth={20}>
+            {ProviderLabelMap[value]}
+          </AutoTooltip>
+        )
       },
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
@@ -90,7 +94,9 @@ const useClusterColumns = (
         dataIndex: 'created_at',
         span: 4,
         render: (value: string) => (
-          <span>{dayjs(value).format('YYYY-MM-DD HH:mm:ss')}</span>
+          <AutoTooltip ghost minWidth={20}>
+            {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}
+          </AutoTooltip>
         )
       },
       {

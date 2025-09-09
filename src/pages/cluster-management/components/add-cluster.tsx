@@ -2,6 +2,7 @@ import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal/index';
 import { PageActionType } from '@/config/types';
 import React, { useRef } from 'react';
+import { ProviderType } from '../config';
 import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
@@ -13,7 +14,7 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
-  provider: string;
+  provider: ProviderType;
   credentialList: Global.BaseOption<number>[];
   onOk: (values: FormData) => void;
   onCancel: () => void;

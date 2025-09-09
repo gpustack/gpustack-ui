@@ -70,12 +70,12 @@ const Icon = styled.div`
   display: flex;
   align-items: center;
   margin-right: 16px;
-  font-size: 46px;
+  font-size: 32px;
 `;
 
 const Header = styled.div`
   font-weight: bold;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   display: flex;
   align-items: center;
   justify-content: space-between;

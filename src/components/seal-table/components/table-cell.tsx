@@ -4,9 +4,34 @@ import { Button, Input, InputNumber, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useContext, useEffect } from 'react';
+import styled from 'styled-components';
 import RowContext from '../row-context';
-import '../styles/cell.less';
 import { SealColumnProps } from '../types';
+import CellContent from './cell-content';
+
+const CellWrapper = styled.div`
+  padding: var(--ant-table-cell-padding-block)
+    var(--ant-table-cell-padding-inline);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 68px;
+  word-break: break-word;
+  min-width: 20px;
+  overflow: hidden;
+
+  &.left {
+    justify-content: flex-start;
+  }
+
+  &.right {
+    justify-content: flex-end;
+  }
+
+  &.center {
+    justify-content: center;
+  }
+`;
 
 interface EditButtonsProps {
   isEditing: boolean;
@@ -89,7 +114,7 @@ const EditButtons: React.FC<EditButtonsProps> = (props) => {
   );
 };
 
-const CellContent: React.FC<CellContentProps> = (props) => {
+const Content: React.FC<CellContentProps> = (props) => {
   const { editable, current, isEditing, row, render, onChange } = props;
   if (isEditing && editable) {
     const isNumType =
@@ -112,7 +137,7 @@ const CellContent: React.FC<CellContentProps> = (props) => {
   return current;
 };
 
-const SealColumn: React.FC<SealColumnProps> = (props) => {
+const TableCell: React.FC<SealColumnProps> = (props) => {
   const { row, onCell } = useContext(RowContext);
   const { dataIndex, render, align, editable } = props;
   const [isEditing, setIsEditing] = React.useState(false);
@@ -150,22 +175,22 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
   }, [row[dataIndex]]);
 
   return (
-    <div
+    <CellWrapper
       className={classNames('cell', {
-        'cell-left': align === 'left',
-        'cell-center': align === 'center',
-        'cell-right': align === 'right'
+        left: align === 'left',
+        center: align === 'center',
+        right: align === 'right'
       })}
     >
-      <span className="cell-content flex-center">
-        <CellContent
+      {/* <span className="cell-content flex-center">
+        <Content
           onChange={handleValueChange}
           isEditing={isEditing}
           editable={editable}
           current={current}
           row={row}
           render={render}
-        ></CellContent>
+        ></Content>
         <EditButtons
           editable={editable}
           isEditing={isEditing}
@@ -173,9 +198,14 @@ const SealColumn: React.FC<SealColumnProps> = (props) => {
           handleSubmit={handleSubmit}
           handleUndo={handleUndo}
         ></EditButtons>
-      </span>
-    </div>
+      </span> */}
+      <CellContent
+        dataIndex={dataIndex}
+        render={render}
+        editable={editable}
+      ></CellContent>
+    </CellWrapper>
   );
 };
 
-export default SealColumn;
+export default TableCell;

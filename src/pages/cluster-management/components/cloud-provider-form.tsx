@@ -92,12 +92,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         rules={[
           {
             required: true,
-            message: intl.formatMessage(
-              { id: 'common.form.rule.input' },
-              {
-                name: 'credential'
-              }
-            )
+            message: getRuleMessage('input', 'clusters.credential.title')
           }
         ]}
       >

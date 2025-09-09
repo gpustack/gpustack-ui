@@ -5,11 +5,11 @@ import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { createCluster, queryCredentialList } from './apis';
+import { createCluster, queryClusterToken, queryCredentialList } from './apis';
 import ClusterSteps from './components/cluster-steps';
 import FooterButtons from './components/footer-buttons';
 import ProviderCatalog from './components/provider-catalog';
-import { providerList, ProviderType } from './config';
+import { providerList, ProviderType, ProviderValueMap } from './config';
 import { ClusterFormData } from './config/types';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
@@ -21,6 +21,19 @@ const Container = styled.div`
   align-items: center;
 `;
 
+const Nav = styled.div`
+  display: flex;
+  align-items: center;
+  height: 72px;
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--ant-color-text-tertiary);
+  .level-2 {
+    color: var(--ant-color-text);
+    font-weight: 600;
+  }
+`;
+
 const Content = styled.div`
   width: 600px;
 `;
@@ -28,11 +41,9 @@ const Content = styled.div`
 const HeaderContainer = styled.div`
   position: relative;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   align-items: center;
   padding-inline: var(--layout-content-header-inlinepadding);
-  border-bottom: 1px solid var(--ant-color-split);
-  min-height: 72px;
   .text {
     margin-right: 16px;
     padding-right: 16px;
@@ -67,7 +78,7 @@ const ClusterCreate = () => {
     cluster_id: 0
   });
   const [extraData, setExtraData] = useState<ClusterFormData>({
-    provider: null
+    provider: ProviderValueMap.Custom
   } as ClusterFormData);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 
@@ -237,7 +248,12 @@ const ClusterCreate = () => {
       ...extraData,
       ...(typeof values === 'object' ? values : {})
     };
-    await createCluster({ data });
+    const res = await createCluster({ data });
+    const info = await queryClusterToken({ id: res.id });
+    setRegistrationInfo({
+      ...info,
+      cluster_id: res.id
+    });
     return true;
   };
 
@@ -252,10 +268,6 @@ const ClusterCreate = () => {
   return (
     <PageContainer
       ghost
-      fixedHeader
-      affixProps={{
-        offsetTop: 0
-      }}
       footer={[
         <FooterButtons
           key="buttons"
@@ -266,11 +278,47 @@ const ClusterCreate = () => {
           showButtons={showButtons}
         />
       ]}
+      header={{
+        title: (
+          <div>
+            <Nav>
+              <span className="level-1">Cluster</span>
+              <span
+                style={{
+                  marginInline: 20,
+                  color: 'var(--ant-color-split)'
+                }}
+              >
+                /
+              </span>
+              <span className="level-2">create</span>
+            </Nav>
+            <ClusterSteps
+              steps={steps}
+              currentStep={currentStep}
+              onChange={handleStepChange}
+            ></ClusterSteps>
+          </div>
+        ),
+        style: {
+          paddingInline: 'var(--layout-content-header-inlinepadding)'
+        },
+        breadcrumb: {}
+      }}
       pageHeaderRender={() => (
         <HeaderContainer>
-          <span className="text">
-            <span>Create Cluster</span>
-          </span>
+          <Nav>
+            <span className="level-1">Cluster</span>
+            <span
+              style={{
+                marginInline: 20,
+                color: 'var(--ant-color-split)'
+              }}
+            >
+              /
+            </span>
+            <span className="level-2">create</span>
+          </Nav>
           <ClusterSteps
             steps={steps}
             currentStep={currentStep}

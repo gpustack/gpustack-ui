@@ -14,7 +14,7 @@ import {
   updateWorkerPool,
   WORKER_POOLS_API
 } from '../apis';
-import { ProviderValueMap } from '../config';
+import { ProviderType, ProviderValueMap } from '../config';
 import {
   NodePoolListItem as ListItem,
   NodePoolFormData
@@ -60,7 +60,7 @@ const WorkerPools = () => {
     open: false,
     action: PageAction.CREATE,
     title: '',
-    provider: ProviderValueMap.DigitalOcean,
+    provider: ProviderValueMap.DigitalOcean as ProviderType,
     currentData: null as ListItem | null,
     clusterId: 0 as number | string
   });
@@ -75,7 +75,7 @@ const WorkerPools = () => {
           { id: 'common.button.edit.item' },
           { name: record.instance_type }
         ),
-        provider: searchParams.get('provider') || '',
+        provider: searchParams.get('provider') as ProviderType,
         currentData: record,
         clusterId: searchParams.get('id') || 0
       });
@@ -87,7 +87,7 @@ const WorkerPools = () => {
       open: true,
       action: PageAction.CREATE,
       title: intl.formatMessage({ id: 'clusters.button.addNodePool' }),
-      provider: searchParams.get('provider') || '',
+      provider: searchParams.get('provider') as ProviderType,
       clusterId: searchParams.get('id') || 0,
       currentData: null
     });
@@ -177,7 +177,7 @@ const WorkerPools = () => {
             open: false,
             action: PageAction.CREATE,
             title: '',
-            provider: ProviderValueMap.DigitalOcean,
+            provider: ProviderValueMap.DigitalOcean as ProviderType,
             currentData: null,
             clusterId: 0
           });

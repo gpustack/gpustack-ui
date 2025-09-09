@@ -1,5 +1,7 @@
 import DeleteModal from '@/components/delete-modal';
+import CellContent from '@/components/seal-table/components/cell-content';
 import RowChildren from '@/components/seal-table/components/row-children';
+import RowContext from '@/components/seal-table/row-context';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
@@ -11,7 +13,6 @@ import { ProviderType } from '../config';
 import { NodePoolFormData, NodePoolListItem } from '../config/types';
 import usePoolsColumns from '../hooks/use-pools-columns';
 import AddPool from './add-pool';
-
 interface PoolRowsProps {
   dataList: NodePoolListItem[];
   provider: ProviderType;
@@ -58,6 +59,18 @@ const PoolRows: React.FC<PoolRowsProps> = ({
     }
   };
 
+  const handleOnCell = async (row: NodePoolListItem, dataIndex: string) => {
+    console.log('handleOncell===', row, dataIndex);
+    try {
+      await updateWorkerPool({
+        data: row,
+        id: row.id
+      });
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {
+      // error
+    }
+  };
   const handleEdit = (action: string, record: NodePoolListItem) => {
     if (action === 'edit') {
       setAddPoolStatus({
@@ -97,6 +110,7 @@ const PoolRows: React.FC<PoolRowsProps> = ({
   });
 
   const columns = usePoolsColumns(onSelect);
+
   return (
     <>
       {dataList?.map((data: NodePoolListItem) => {
@@ -105,23 +119,32 @@ const PoolRows: React.FC<PoolRowsProps> = ({
             key={data.id}
             style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}
           >
-            <RowChildren>
-              <Row style={{ width: '100%' }} align="middle">
-                {columns.map((col: Record<string, any>) => {
-                  return (
-                    <Col
-                      key={col.dataIndex as string}
-                      span={col.span}
-                      style={col.style}
-                    >
-                      {col.render
+            <RowContext.Provider value={{ row: data, onCell: handleOnCell }}>
+              <RowChildren>
+                <Row style={{ width: '100%' }} align="middle">
+                  {columns.map((col: Record<string, any>) => {
+                    return (
+                      <Col
+                        key={col.dataIndex as string}
+                        span={col.span}
+                        style={{
+                          paddingInline: 0,
+                          ...(col.style || {})
+                        }}
+                      >
+                        {/* {col.render
                         ? col.render(data[col.dataIndex as string], data)
-                        : data[col.dataIndex as string]}
-                    </Col>
-                  );
-                })}
-              </Row>
-            </RowChildren>
+                        : data[col.dataIndex as string]} */}
+                        <CellContent
+                          {...col}
+                          dataIndex={col.dataIndex}
+                        ></CellContent>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              </RowChildren>
+            </RowContext.Provider>
           </div>
         );
       })}

@@ -1,6 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
-import LabelsCell from '@/components/label-cell';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
@@ -34,9 +33,9 @@ const usePoolsColumns = (
   return useMemo(() => {
     return [
       {
-        title: intl.formatMessage({ id: 'clusters.workerpool.instanceType' }),
-        dataIndex: 'instance_type',
-        key: 'instance_type',
+        title: intl.formatMessage({ id: 'common.table.name' }),
+        dataIndex: 'name',
+        key: 'name',
         ellipsis: {
           showTitle: false
         },
@@ -51,16 +50,21 @@ const usePoolsColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'clusters.workerpool.replicas' }),
-        dataIndex: 'replicas',
+        title: intl.formatMessage({ id: 'clusters.workerpool.instanceType' }),
+        dataIndex: 'instance_type',
+        key: 'instance_type',
+        ellipsis: {
+          showTitle: false
+        },
         span: 3,
-        key: 'replicas'
-      },
-      {
-        title: intl.formatMessage({ id: 'clusters.workerpool.batchSize' }),
-        dataIndex: 'batch_size',
-        key: 'batch_size',
-        span: 3
+        style: {
+          paddingLeft: 12
+        },
+        render: (text: string) => (
+          <AutoTooltip title={text} ghost minWidth={20}>
+            {text}
+          </AutoTooltip>
+        )
       },
       {
         title: intl.formatMessage({ id: 'clusters.workerpool.osImage' }),
@@ -70,6 +74,9 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
+        style: {
+          paddingLeft: 16
+        },
         render: (text: string) => (
           <AutoTooltip title={text} ghost minWidth={20}>
             {text}
@@ -77,21 +84,46 @@ const usePoolsColumns = (
         )
       },
       {
-        title: intl.formatMessage({ id: 'resources.table.labels' }),
-        dataIndex: 'labels',
-        key: 'labels',
-        width: 200,
-        span: 4,
+        title: 'Workers',
+        dataIndex: 'replicas',
+        span: 3,
+        key: 'replicas',
+        style: {
+          // textAlign: 'center'
+          paddingLeft: 4
+        },
+        editable: {
+          valueType: 'number',
+          title: intl.formatMessage({ id: 'models.table.replicas.edit' })
+        },
         render: (text: string, record: ListItem) => (
-          <LabelsCell labels={record.labels}></LabelsCell>
+          <span>
+            {record.workers} / {record.replicas}
+          </span>
         )
       },
+      {
+        title: intl.formatMessage({ id: 'clusters.workerpool.batchSize' }),
+        dataIndex: 'batch_size',
+        key: 'batch_size',
+        span: 4
+      },
+      // {
+      //   title: intl.formatMessage({ id: 'resources.table.labels' }),
+      //   dataIndex: 'labels',
+      //   key: 'labels',
+      //   width: 200,
+      //   span: 4,
+      //   render: (text: string, record: ListItem) => (
+      //     <LabelsCell labels={record.labels}></LabelsCell>
+      //   )
+      // },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'create_at',
         key: 'created_at',
         span: 4,
-        showSorterTooltip: false,
+        showSorterTootip: false,
         defaultSortOrder: 'descend',
         sortOrder: sortOrder,
         sorter: false,
@@ -101,7 +133,11 @@ const usePoolsColumns = (
         style: {
           paddingLeft: 42
         },
-        render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss')
+        render: (text: string) => (
+          <AutoTooltip ghost minWidth={20}>
+            {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
+          </AutoTooltip>
+        )
       },
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),

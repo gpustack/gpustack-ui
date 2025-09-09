@@ -1,5 +1,10 @@
 import React from 'react';
 
-const RowContext = React.createContext<any>({});
+interface RowContextType {
+  row: Record<string, any>;
+  onCell?: (record: any, dataIndex: string) => any;
+}
+
+const RowContext = React.createContext<RowContextType>({} as RowContextType);
 
 export default RowContext;

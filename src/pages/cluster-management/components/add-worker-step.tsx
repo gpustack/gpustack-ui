@@ -20,10 +20,10 @@ type AddModalProps = {
 const AddWorkerStep: React.FC<AddModalProps> = ({ registrationInfo }) => {
   return (
     <div>
-      <Title>Supported Hardware Platforms</Title>
-      <SupportedHardware />
-      <Title style={{ marginTop: 32 }}>Execute Command</Title>
+      <Title>Execute Command</Title>
       <RegisterClusterInner registrationInfo={registrationInfo} />
+      <Title style={{ marginTop: 32 }}>Supported GPUs</Title>
+      <SupportedHardware />
     </div>
   );
 };

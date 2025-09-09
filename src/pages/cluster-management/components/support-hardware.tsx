@@ -13,10 +13,9 @@ const ProviderImage = ({ src, showBg }: { src: string; showBg?: boolean }) => {
     <img
       src={src}
       style={{
-        width: 46,
+        width: 32,
         objectFit: 'contain'
       }}
-      width={46}
     />
   );
 };
@@ -37,7 +36,7 @@ const supportedHardPlatforms = [
     icon: (
       <IconFont
         type="icon-amd"
-        style={{ fontSize: 46, color: 'var(--ant-color-text)' }}
+        style={{ fontSize: 32, color: 'var(--ant-color-text)' }}
       />
     )
   },

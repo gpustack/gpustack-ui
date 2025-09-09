@@ -7,6 +7,9 @@ export default {
       inputFontSize: 14,
       inputFontSizeLG: 14
     },
+    Steps: {
+      descriptionMaxWidth: 200
+    },
     Table: {
       headerBorderRadius: 4,
       cellPaddingInline: 16,

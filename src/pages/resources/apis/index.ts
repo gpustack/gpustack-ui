@@ -7,6 +7,14 @@ export const WORKERS_API = '/workers';
 export const GPU_DEVICES_API = '/gpu-devices';
 export const MODEL_FILES_API = '/model-files';
 
+const matchFilename = (disposition: string | null): string | undefined => {
+  if (!disposition) return '';
+
+  const match = disposition.match(/filename="?([^"]+)"?/);
+  const filename = match ? match[1] : '';
+  return filename;
+};
+
 // download stream data and save as a csv file
 export async function downloadWorkerPrivateKey({
   id,
@@ -17,9 +25,13 @@ export async function downloadWorkerPrivateKey({
 }) {
   try {
     const res = await fetch(`/v1${WORKERS_API}/${id}/privatekey`);
+    // header
+    const contentDispostion = res.headers.get('content-Disposition');
+    const filename =
+      matchFilename(contentDispostion) || `${name}-privatekey.pem`;
     if (res.ok) {
       const blob = await res.blob();
-      downloadFile(blob, `${name}-privatekey.csv`);
+      downloadFile(blob, filename);
     }
   } catch (error) {
     message.error('Download failed');

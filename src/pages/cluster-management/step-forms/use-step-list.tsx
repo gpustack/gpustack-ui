@@ -15,7 +15,7 @@ export default function useStepList() {
     () => [
       {
         title: 'Select Cloud Provider',
-        content: 'Choose the cloud provider for your cluster.',
+        content: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: false,
@@ -31,7 +31,7 @@ export default function useStepList() {
       },
       {
         title: 'Configure Cluster Settings',
-        content: 'Set up the basic configuration for your cluster.',
+        content: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: true,
@@ -47,7 +47,7 @@ export default function useStepList() {
       },
       {
         title: 'Add Worker Pools',
-        content: 'Define the worker pools for your cluster.',
+        content: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: true,
@@ -64,7 +64,7 @@ export default function useStepList() {
       },
       {
         title: 'Add Worker',
-        content: 'Add a worker node to your cluster.',
+        content: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: false,
@@ -80,7 +80,7 @@ export default function useStepList() {
       },
       {
         title: 'Register Cluster',
-        content: 'Register your cluster with the chosen provider.',
+        content: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: false,

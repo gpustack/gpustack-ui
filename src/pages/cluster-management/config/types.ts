@@ -22,10 +22,21 @@ export interface CredentialListItem {
   updated_at: string;
 }
 
-export interface NodePoolListItem {
+export interface NodePoolFormData {
+  name: string;
+  instance_type: string;
+  os_image: string;
+  replicas: number;
+  batch_size: number;
+  labels: Record<string, string>;
+  cloud_options: Record<string, any>;
+}
+
+export interface NodePoolListItem extends NodePoolFormData {
   id: number;
   instance_type: string;
   replicas: number;
+  workers: number;
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;
@@ -35,20 +46,11 @@ export interface NodePoolListItem {
   cluster_id: number;
 }
 
-export interface NodePoolFormData {
-  instance_type: string;
-  os_image: string;
-  replicas: number;
-  batch_size: number;
-  labels: Record<string, string>;
-  cloud_options: Record<string, any>;
-}
-
 export interface ClusterListItem {
   name: string;
   display_name: string;
   description: string;
-  provider: string;
+  provider: ProviderType;
   credential_id: number;
   zone: string;
   region: string;

@@ -1,10 +1,11 @@
-import { useNavigate } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { useMemo } from 'react';
 import { ProviderType, ProviderValueMap } from '../config';
 import { moduleMap } from './module-registry';
 
 export default function useStepList() {
+  const intl = useIntl();
   const navigate = useNavigate();
 
   const handleBack = useMemoizedFn(() => {
@@ -14,7 +15,7 @@ export default function useStepList() {
   return useMemo(
     () => [
       {
-        title: 'Select Cloud Provider',
+        title: intl.formatMessage({ id: 'clusters.create.selectProvider' }),
         content: '',
         showButtons: (provider?: ProviderType) => {
           return {
@@ -30,7 +31,7 @@ export default function useStepList() {
         providers: []
       },
       {
-        title: 'Configure Cluster Settings',
+        title: intl.formatMessage({ id: 'clusters.create.configBasic' }),
         content: '',
         showButtons: (provider?: ProviderType) => {
           return {
@@ -46,7 +47,7 @@ export default function useStepList() {
         providers: []
       },
       {
-        title: 'Add Worker Pools',
+        title: intl.formatMessage({ id: 'clusters.button.addNodePool' }),
         content: '',
         showButtons: (provider?: ProviderType) => {
           return {
@@ -63,7 +64,7 @@ export default function useStepList() {
         beforeNext: handleBack
       },
       {
-        title: 'Add Worker',
+        title: intl.formatMessage({ id: 'resources.button.create' }),
         content: '',
         showButtons: (provider?: ProviderType) => {
           return {
@@ -79,7 +80,7 @@ export default function useStepList() {
         providers: [ProviderValueMap.Custom]
       },
       {
-        title: 'Register Cluster',
+        title: intl.formatMessage({ id: 'clusters.button.register' }),
         content: '',
         showButtons: (provider?: ProviderType) => {
           return {
@@ -95,6 +96,6 @@ export default function useStepList() {
         providers: [ProviderValueMap.Kubernetes]
       }
     ],
-    [handleBack]
+    [handleBack, intl]
   );
 }

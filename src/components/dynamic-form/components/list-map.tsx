@@ -24,16 +24,23 @@ interface ListMapProps {
   label?: React.ReactNode;
   btnText?: string;
   properties: Record<string, any>;
+  disabled?: boolean;
   onChange?: (data: any) => void;
 }
 
 interface ListItemProps {
   schemaList: any[];
   data: Record<string, any>;
+  disabled?: boolean;
   onChange?: (data: any) => void;
 }
 
-const ListItem: React.FC<ListItemProps> = ({ schemaList, data, onChange }) => {
+const ListItem: React.FC<ListItemProps> = ({
+  schemaList,
+  data,
+  onChange,
+  disabled
+}) => {
   const handleValueChange = (name: string, target: any) => {
     if (target?.target?.type === 'checkbox') {
       const checked = target.target?.checked;
@@ -50,6 +57,7 @@ const ListItem: React.FC<ListItemProps> = ({ schemaList, data, onChange }) => {
         <FormWidget
           widget={schema.type}
           {...schema}
+          disabled={disabled}
           key={schema.name}
           value={data?.[schema.name]}
           checked={data?.[schema.name]}
@@ -66,6 +74,7 @@ const ListMap: React.FC<ListMapProps> = ({
   btnText,
   properties = {},
   minItems = 0,
+  disabled,
   onChange
 }) => {
   const [items, setItems] = React.useState(dataList || []);
@@ -110,28 +119,36 @@ const ListMap: React.FC<ListMapProps> = ({
   }, [dataList]);
 
   return (
-    <Wrapper label={label} btnText={btnText} onAdd={handleOnAdd}>
+    <Wrapper
+      label={label}
+      btnText={btnText}
+      onAdd={handleOnAdd}
+      disabled={disabled}
+    >
       {items.map((item, index) => (
         <RowWrapper key={index}>
           <WidgetBox>
             <ListItem
               schemaList={schemaList}
               data={item}
+              disabled={disabled}
               onChange={(value) => handleItemChange(index, value)}
             />
           </WidgetBox>
-          <Button
-            size="small"
-            type="default"
-            shape="circle"
-            style={{
-              width: 24,
-              marginLeft: 10,
-              flex: 'none'
-            }}
-            icon={<MinusOutlined />}
-            onClick={() => handleDelete(index)}
-          />
+          {!disabled && (
+            <Button
+              size="small"
+              type="default"
+              shape="circle"
+              style={{
+                width: 24,
+                marginLeft: 10,
+                flex: 'none'
+              }}
+              icon={<MinusOutlined />}
+              onClick={() => handleDelete(index)}
+            />
+          )}
         </RowWrapper>
       ))}
     </Wrapper>

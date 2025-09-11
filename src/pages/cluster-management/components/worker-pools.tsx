@@ -73,7 +73,7 @@ const WorkerPools = () => {
         action: PageAction.EDIT,
         title: intl.formatMessage(
           { id: 'common.button.edit.item' },
-          { name: record.instance_type }
+          { name: record.name }
         ),
         provider: searchParams.get('provider') as ProviderType,
         currentData: record,

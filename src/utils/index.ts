@@ -44,6 +44,30 @@ export const convertFileSize = (
   return `${_.round(size, precs[unitIndex])} ${units[unitIndex]}`;
 };
 
+export const convertFileSizeByUnit = (params: {
+  sizeInBytes: number;
+  defaultUnit?: 'B' | 'KiB' | 'MiB' | 'GiB' | 'TiB';
+  allowEmpty?: boolean;
+}): string | number => {
+  const { sizeInBytes, allowEmpty = false, defaultUnit = 'B' } = params;
+
+  if (!sizeInBytes) return allowEmpty ? '' : 0;
+
+  const fmt = 1024;
+
+  const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+  const precs = [0, 1, 1, 2, 2]; // precision for each unit
+  let size = sizeInBytes;
+  let unitIndex = units.indexOf(defaultUnit);
+
+  while (size >= fmt && unitIndex < units.length - 1) {
+    size /= fmt;
+    unitIndex++;
+  }
+
+  return `${_.round(size, precs[unitIndex])} ${units[unitIndex]}`;
+};
+
 export const platformCall = () => {
   const platform = navigator.userAgent;
   const isMac = () => {

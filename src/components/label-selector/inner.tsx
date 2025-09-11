@@ -14,6 +14,7 @@ interface LabelSelectorProps {
   onBlur?: (e: any, type: string, index: number) => void;
   onDelete?: (index: number) => void;
   description?: React.ReactNode;
+  disabled?: boolean;
 }
 
 const Inner: React.FC<LabelSelectorProps> = ({
@@ -24,6 +25,7 @@ const Inner: React.FC<LabelSelectorProps> = ({
   onPaste,
   onBlur,
   onDelete,
+  disabled,
   label,
   btnText,
   description
@@ -75,12 +77,14 @@ const Inner: React.FC<LabelSelectorProps> = ({
       label={label}
       description={description}
       onAdd={handleAddLabel}
+      disabled={disabled}
       btnText={btnText}
     >
       <>
         {labelList?.map((item: any, index: number) => {
           return (
             <LabelItem
+              disabled={disabled}
               key={index}
               label={item}
               seperator=":"

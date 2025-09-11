@@ -23,6 +23,7 @@ export interface FormWidgetProps {
   title?: string;
   required?: boolean;
   placeholder?: string;
+  readOnly?: boolean;
   options?: { label: string; value: string | number }[];
   description?: string;
   enum?: (string | number)[];

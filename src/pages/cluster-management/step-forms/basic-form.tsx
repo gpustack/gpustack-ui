@@ -1,5 +1,6 @@
 import PageTools from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
+import { useIntl } from '@umijs/max';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
 import ClusterForm from '../components/cluster-form';
@@ -23,6 +24,7 @@ interface BasicFormProps {
 }
 
 const BasicForm = forwardRef((props: BasicFormProps, ref) => {
+  const intl = useIntl();
   const { provider, credentialList, action, currentData } = props;
   const formRef = useRef<any>(null);
 
@@ -40,7 +42,11 @@ const BasicForm = forwardRef((props: BasicFormProps, ref) => {
     <div>
       <PageTools
         marginBottom={26}
-        left={<Title>Basic Configuration</Title>}
+        left={
+          <Title>
+            {intl.formatMessage({ id: 'clusters.create.configBasic' })}
+          </Title>
+        }
         marginTop={0}
       ></PageTools>
       <ClusterForm

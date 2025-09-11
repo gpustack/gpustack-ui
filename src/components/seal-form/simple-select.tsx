@@ -241,7 +241,7 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
         options={optionsList}
         maxTagCount={0}
         defaultActiveFirstOption={false}
-        dropdownRender={dropdownRender}
+        popupRender={dropdownRender}
         optionRender={optionRender}
         menuItemSelectedIcon={false}
         onChange={handleOnChange}
@@ -250,7 +250,7 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
         onFocus={handleOnFocus}
         onSearch={handleOnSearch}
         filterOption={filterOption}
-        onDropdownVisibleChange={handleOnOpenChange}
+        onOpenChange={handleOnOpenChange}
       ></Select>
     </div>
   );

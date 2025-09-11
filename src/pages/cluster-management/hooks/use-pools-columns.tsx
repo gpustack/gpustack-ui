@@ -5,7 +5,9 @@ import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
 import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { useMemo } from 'react';
+import { RenderInstanceOption } from '../components/pool-form';
 import { NodePoolListItem as ListItem } from '../config/types';
 
 const actionItems = [
@@ -24,10 +26,11 @@ const actionItems = [
     }
   }
 ];
+
 const usePoolsColumns = (
   handleSelect: (val: string, record: ListItem) => void,
   sortOrder?: SortOrder
-): ColumnsType<ListItem> => {
+): ColumnsType<ListItem & { dataIndex: string }> => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -39,7 +42,7 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
-        span: 4,
+        span: 3,
         style: {
           paddingInline: 'var(--ant-table-cell-padding-inline)'
         },
@@ -56,29 +59,64 @@ const usePoolsColumns = (
         ellipsis: {
           showTitle: false
         },
-        span: 3,
+        span: 4,
         style: {
-          paddingLeft: 12
+          paddingLeft: 62
         },
-        render: (text: string) => (
-          <AutoTooltip title={text} ghost minWidth={20}>
-            {text}
+        render: (text: string, record: ListItem) => (
+          <AutoTooltip
+            title={
+              <RenderInstanceOption
+                styles={{
+                  description: {
+                    color: 'var(--color-white-quaternary)'
+                  }
+                }}
+                data={{
+                  vendor: record.instance_spec.vendor,
+                  description: record.instance_spec.description,
+                  specInfo: _.omit(record.instance_spec, [
+                    'label',
+                    'vendor',
+                    'description'
+                  ])
+                }}
+              />
+            }
+            showTitle
+            ghost
+            minWidth={20}
+          >
+            {record.instance_spec.description || record.instance_spec.label}
           </AutoTooltip>
         )
       },
       {
         title: intl.formatMessage({ id: 'clusters.workerpool.osImage' }),
-        dataIndex: 'os_image',
-        key: 'os_image',
-        span: 3,
+        dataIndex: 'image_name',
+        key: 'image_name',
+        span: 4,
         ellipsis: {
           showTitle: false
         },
         style: {
-          paddingLeft: 16
+          paddingLeft: 56
         },
         render: (text: string) => (
-          <AutoTooltip title={text} ghost minWidth={20}>
+          <AutoTooltip
+            title={
+              <span className="flex-column">
+                <span className="text-tertiary">
+                  {intl.formatMessage({ id: 'clusters.workerpool.osImage' })}
+                  :{' '}
+                </span>
+                {text}
+              </span>
+            }
+            showTitle
+            ghost
+            minWidth={20}
+          >
             {text}
           </AutoTooltip>
         )
@@ -86,11 +124,10 @@ const usePoolsColumns = (
       {
         title: 'Workers',
         dataIndex: 'replicas',
-        span: 3,
+        span: 6,
         key: 'replicas',
         style: {
-          // textAlign: 'center'
-          paddingLeft: 4
+          paddingLeft: 50
         },
         editable: {
           valueType: 'number',
@@ -102,12 +139,13 @@ const usePoolsColumns = (
           </span>
         )
       },
-      {
-        title: intl.formatMessage({ id: 'clusters.workerpool.batchSize' }),
-        dataIndex: 'batch_size',
-        key: 'batch_size',
-        span: 4
-      },
+
+      // {
+      //   title: intl.formatMessage({ id: 'clusters.workerpool.batchSize' }),
+      //   dataIndex: 'batch_size',
+      //   key: 'batch_size',
+      //   span: 4
+      // },
       // {
       //   title: intl.formatMessage({ id: 'resources.table.labels' }),
       //   dataIndex: 'labels',

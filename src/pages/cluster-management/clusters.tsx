@@ -307,7 +307,10 @@ const Credentials: React.FC = () => {
   );
 
   const setDisableExpand = (row: ClusterListItem) => {
-    return row.provider !== ProviderValueMap.DigitalOcean;
+    return (
+      row.provider !== ProviderValueMap.DigitalOcean ||
+      !allWorkerPoolList.some((item) => item.cluster_id === row.id)
+    );
   };
 
   useEffect(() => {

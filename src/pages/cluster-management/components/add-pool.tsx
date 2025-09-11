@@ -29,7 +29,7 @@ const AddPool: React.FC<AddModalProps> = ({
 }) => {
   const formRef = useRef<any>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     formRef.current?.submit?.();
   };
 

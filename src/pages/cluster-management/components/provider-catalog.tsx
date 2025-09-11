@@ -63,7 +63,9 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
     <Container>
       {Object.entries(groupList).map(([groupName, items]) => (
         <div key={groupName}>
-          {groupName !== 'default' && <Title>{groupName}</Title>}
+          {groupName !== 'default' && (
+            <Title>{intl.formatMessage({ id: groupName })}</Title>
+          )}
           <Wrapper>
             {items?.map((action) => (
               <Card

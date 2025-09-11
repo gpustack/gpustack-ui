@@ -90,6 +90,7 @@ export default function useTableFetch<T>(
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
+      console.log('list================:', list);
       updateChunkedList(data);
     });
   };

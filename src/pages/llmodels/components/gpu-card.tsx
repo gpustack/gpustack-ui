@@ -3,7 +3,43 @@ import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React from 'react';
+import styled from 'styled-components';
 import '../style/gpu-card.less';
+
+const CardWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  border-bottom: 1px solid var(--ant-color-split);
+  padding-bottom: 10px;
+`;
+
+const Header = styled.div`
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const Description = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--ant-color-text-tertiary);
+`;
+
+export const CardContainer: React.FC<{
+  header?: React.ReactNode;
+  description?: React.ReactNode;
+}> = ({ header, description }) => {
+  return (
+    <CardWrapper>
+      <Header>{header}</Header>
+      <Description>{description}</Description>
+    </CardWrapper>
+  );
+};
 
 const GPUCard: React.FC<{
   data: any;
@@ -12,17 +48,17 @@ const GPUCard: React.FC<{
 }> = ({ data, header, info }) => {
   const intl = useIntl();
   return (
-    <div className="gpu-card">
-      <div className="header" style={{ width: '100%' }}>
-        {header ?? (
+    <CardContainer
+      header={
+        header || (
           <AutoTooltip ghost>
             <span className="font-700">[{data.index}] </span>
             {data.label}
           </AutoTooltip>
-        )}
-      </div>
-      <div className="info">
-        {info ?? (
+        )
+      }
+      description={
+        info || (
           <>
             <span>
               {intl.formatMessage({ id: 'resources.table.vram' })}(
@@ -37,7 +73,8 @@ const GPUCard: React.FC<{
             </span>
             <span>
               <span>
-                {intl.formatMessage({ id: 'resources.table.gpuutilization' })}:{' '}
+                {intl.formatMessage({ id: 'resources.table.gpuutilization' })}
+                :{' '}
               </span>
               {data?.memory?.used
                 ? _.round(data?.memory?.utilization_rate || 0, 2)
@@ -45,10 +82,10 @@ const GPUCard: React.FC<{
               %
             </span>
           </>
-        )}
-      </div>
-    </div>
+        )
+      }
+    ></CardContainer>
   );
 };
 
-export default React.memo(GPUCard);
+export default GPUCard;

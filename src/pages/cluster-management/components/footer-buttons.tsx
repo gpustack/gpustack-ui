@@ -32,18 +32,18 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
       <div className="flex-center gap-16">
         {showButtons.previous && (
           <Button type="link" icon={<LeftOutlined />} onClick={onPrevious}>
-            Previous
+            {intl.formatMessage({ id: 'common.button.prev' })}
           </Button>
         )}
         {showButtons.next && (
           <Button type="link" onClick={handleOnNext}>
-            Next
+            {intl.formatMessage({ id: 'common.button.next' })}
             <RightOutlined />
           </Button>
         )}
         {showButtons.skip && (
           <Button type="primary" onClick={handleCancel}>
-            Skip for now
+            {intl.formatMessage({ id: 'clusters.create.skipfornow' })}
           </Button>
         )}
         {showButtons.save && (

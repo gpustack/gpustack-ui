@@ -17,7 +17,56 @@ export const WORKER_POOLS_API = '/worker-pools';
 
 export const CLUSTER_TOKEN = 'registration-token';
 
+export const PROVIDER_PROXY_API = '/provider-proxy';
+
+// ============= DigitalOcean start =====================
+
+export const REGIONS_API = '/v2/regions';
+
+export const INSTANCE_TYPE = '/v2/sizes';
+
+export const OS_IMAGE = '/v2/images';
+
+// ============= DigitalOcean end =======================
+
 // ===================== Credentials =====================
+
+export async function queryDigitalOceanRegions(params: { id: number }) {
+  return request(
+    `${CREDENTIALS_API}/${params.id}${PROVIDER_PROXY_API}${REGIONS_API}`,
+    {
+      method: 'GET',
+      params: {
+        per_page: 200
+      }
+    }
+  );
+}
+
+export async function queryDigitalOceanInstanceTypes(params: { id: number }) {
+  return request(
+    `${CREDENTIALS_API}/${params.id}${PROVIDER_PROXY_API}${INSTANCE_TYPE}`,
+    {
+      method: 'GET',
+      params: {
+        per_page: 200
+      }
+    }
+  );
+}
+
+export async function queryDigitalOceanOSImages(params: { id: number }) {
+  return request(
+    `${CREDENTIALS_API}/${params.id}${PROVIDER_PROXY_API}${OS_IMAGE}`,
+    {
+      method: 'GET',
+      params: {
+        per_page: 200,
+        type: 'distribution'
+      }
+    }
+  );
+}
 
 export async function queryCredentialList(params: Global.SearchParams) {
   return request<Global.PageResponse<CredentialListItem>>(

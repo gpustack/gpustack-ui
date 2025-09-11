@@ -18,6 +18,7 @@ const FormWidget: React.FC<
   min,
   max,
   checked,
+  readOnly: disabled,
   onChange
 }) => {
   const Component = ComponentsMap[widget];
@@ -29,7 +30,15 @@ const FormWidget: React.FC<
 
   return Component ? (
     <Component
-      {...{ label, required, placeholder, description, min, max }}
+      {...{
+        label,
+        required,
+        placeholder,
+        description,
+        min,
+        max
+      }}
+      disabled={disabled}
       options={options || optionList}
       value={value}
       checked={checked}

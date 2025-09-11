@@ -185,7 +185,7 @@ const SealCascader: React.FC<
           onBlur={handleOnBlur}
           onChange={handleChange}
           notFoundContent={null}
-          onDropdownVisibleChange={handleDropdownVisibleChange}
+          onOpenChange={handleDropdownVisibleChange}
         ></Cascader>
       </Wrapper>
     </SelectWrapper>

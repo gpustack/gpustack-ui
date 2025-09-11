@@ -79,6 +79,7 @@ const InputWrapper = styled.div`
   }
 
   .ant-input-number {
+    flex: 1;
     position: static;
     display: flex;
     align-items: center;
@@ -87,6 +88,7 @@ const InputWrapper = styled.div`
     padding: 0;
     height: ${INPUTHEIGHT}px !important;
     background-color: ${BGCOLOR};
+    flex: 1;
 
     &:hover .ant-input-number-handler-wrap,
     &-focused .ant-input-number-handler-wrap {

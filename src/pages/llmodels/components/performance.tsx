@@ -147,7 +147,11 @@ const Performance: React.FC = () => {
                 multiple={
                   form.getFieldValue('backend') !== backendOptionsMap.voxBox
                 }
-                popupClassName="cascader-popup-wrapper gpu-selector"
+                classNames={{
+                  popup: {
+                    root: 'cascader-popup-wrapper gpu-selector'
+                  }
+                }}
                 maxTagCount={1}
                 label={intl.formatMessage({ id: 'models.form.gpuselector' })}
                 options={gpuOptions}

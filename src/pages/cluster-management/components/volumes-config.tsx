@@ -8,7 +8,9 @@ const volumeOptions = fieldConfig.volumes;
 
 const CloudOptions: React.FC<{
   ref?: any;
+  disabled?: boolean;
 }> = forwardRef((props, ref) => {
+  const { disabled } = props;
   const intl = useIntl();
   const form = Form.useFormInstance();
   const volumes = Form.useWatch(['cloud_options', volumeOptions.name], form);
@@ -25,6 +27,7 @@ const CloudOptions: React.FC<{
         label={intl.formatMessage({ id: 'clusters.workerpool.volumes' })}
         dataList={volumes || []}
         properties={volumeOptions.properties || {}}
+        disabled={disabled}
         onChange={(value) => handleOnChange(volumeOptions.name, value)}
       />
     </Form.Item>

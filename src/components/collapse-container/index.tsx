@@ -173,8 +173,8 @@ export default function CollapsibleContainer({
         ref={contentRef}
         style={{
           maxHeight: height,
-          overflow: 'hidden',
-          transition: collapsible ? 'max-height 0.2s ease' : 'none'
+          overflow: 'hidden'
+          // transition: collapsible ? 'max-height 0.2s ease' : 'none'
         }}
       >
         <div style={{ paddingTop: 8 }}>{children}</div>

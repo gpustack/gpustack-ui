@@ -25,5 +25,12 @@ export default {
   'clusters.workerpool.size': 'Size (GiB)',
   'clusters.workerpool.title': 'Worker Pools',
   'clusters.workerpool.cloudOptions': 'Add Cloud Options',
-  'clusters.workerpool.volumes.add': 'Add Volume'
+  'clusters.workerpool.volumes.add': 'Add Volume',
+  'clusters.create.provider.self': 'Self-Hosted',
+  'clusters.create.provider.cloud': 'Cloud Provider',
+  'clusters.create.selectProvider': 'Select Provider',
+  'clusters.create.configBasic': 'Basic Configuration',
+  'clusters.create.execCommand': 'Execute Command',
+  'clusters.create.supportedGpu': 'Supported GPUs',
+  'clusters.create.skipfornow': 'Skip for now'
 };

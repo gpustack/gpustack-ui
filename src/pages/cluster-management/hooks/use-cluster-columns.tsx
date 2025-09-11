@@ -25,7 +25,7 @@ const setActionsItems = (row: ClusterListItem) => {
 
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void
-): ColumnsType<ClusterListItem> => {
+): ColumnsType<ClusterListItem & { dataIndex: string; span: number }> => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -47,11 +47,33 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
-        span: 3,
+        span: 4,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {ProviderLabelMap[value]}
           </AutoTooltip>
+        )
+      },
+      {
+        title: 'GPUs',
+        dataIndex: 'gpus',
+        span: 2,
+        render: (value: number) => <span>{value}</span>
+      },
+      {
+        title: intl.formatMessage({ id: 'clusters.table.deployments' }),
+        dataIndex: 'models',
+        span: 2,
+        render: (value: number) => <span>{value}</span>
+      },
+      {
+        title: 'Workers',
+        dataIndex: 'workers',
+        span: 3,
+        render: (value: number, record: ClusterListItem) => (
+          <span>
+            {record.ready_workers} / {record.workers}
+          </span>
         )
       },
       {
@@ -66,28 +88,6 @@ const useClusterColumns = (
             }}
           />
         )
-      },
-      {
-        title: 'Workers',
-        dataIndex: 'workers',
-        span: 3,
-        render: (value: number, record: ClusterListItem) => (
-          <span>
-            {record.ready_workers} / {record.workers}
-          </span>
-        )
-      },
-      {
-        title: 'GPUs',
-        dataIndex: 'gpus',
-        span: 3,
-        render: (value: number) => <span>{value}</span>
-      },
-      {
-        title: intl.formatMessage({ id: 'clusters.table.deployments' }),
-        dataIndex: 'models',
-        span: 2,
-        render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),

@@ -1,3 +1,4 @@
+import { useIntl } from '@umijs/max';
 import React from 'react';
 import styled from 'styled-components';
 import RegisterClusterInner from './register-cluster-inner';
@@ -18,11 +19,14 @@ type AddModalProps = {
   };
 };
 const AddWorkerStep: React.FC<AddModalProps> = ({ registrationInfo }) => {
+  const intl = useIntl();
   return (
     <div>
-      <Title>Execute Command</Title>
+      <Title>{intl.formatMessage({ id: 'clusters.create.execCommand' })}</Title>
       <RegisterClusterInner registrationInfo={registrationInfo} />
-      <Title style={{ marginTop: 32 }}>Supported GPUs</Title>
+      <Title style={{ marginTop: 32 }}>
+        {intl.formatMessage({ id: 'clusters.create.supportedGpu' })}
+      </Title>
       <SupportedHardware />
     </div>
   );

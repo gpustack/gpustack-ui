@@ -11,6 +11,7 @@ interface WrapperProps {
   labelExtra?: React.ReactNode;
   children: React.ReactNode;
   btnText?: string;
+  disabled?: boolean;
   onAdd?: () => void;
   button?: React.ReactNode;
 }
@@ -44,6 +45,7 @@ const Wrapper: React.FC<WrapperProps> = ({
   labelExtra,
   onAdd,
   btnText,
+  disabled,
   button
 }) => {
   const intl = useIntl();
@@ -59,17 +61,19 @@ const Wrapper: React.FC<WrapperProps> = ({
         </span>
       )}
       {children}
-      <ButtonWrapper>
-        {button || (
-          <Button variant="filled" color="default" block onClick={onAdd}>
-            <PlusOutlined className="font-size-14" />
-            {btnText ||
-              intl.formatMessage({
-                id: 'common.button.addSelector'
-              })}
-          </Button>
-        )}
-      </ButtonWrapper>
+      {!disabled && (
+        <ButtonWrapper>
+          {button || (
+            <Button variant="filled" color="default" block onClick={onAdd}>
+              <PlusOutlined className="font-size-14" />
+              {btnText ||
+                intl.formatMessage({
+                  id: 'common.button.addSelector'
+                })}
+            </Button>
+          )}
+        </ButtonWrapper>
+      )}
     </Container>
   );
 };

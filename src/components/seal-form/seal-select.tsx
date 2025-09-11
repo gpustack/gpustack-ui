@@ -18,6 +18,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     options,
     allowNull,
     isInFormItems = true,
+    notFoundContent = null,
     ...rest
   } = props;
   const intl = useIntl();
@@ -102,7 +103,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
           onChange={handleChange}
-          notFoundContent={null}
+          notFoundContent={notFoundContent}
         >
           {children}
         </Select>

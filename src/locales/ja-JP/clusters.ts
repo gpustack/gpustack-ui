@@ -25,7 +25,14 @@ export default {
   'clusters.workerpool.size': 'Size (GiB)',
   'clusters.workerpool.title': 'Worker Pools',
   'clusters.workerpool.cloudOptions': 'Add Cloud Options',
-  'clusters.workerpool.volumes.add': 'Add Volume'
+  'clusters.workerpool.volumes.add': 'Add Volume',
+  'clusters.create.provider.self': 'Self-Hosted',
+  'clusters.create.provider.cloud': 'Cloud Provider',
+  'clusters.create.selectProvider': 'Select Provider',
+  'clusters.create.configBasic': 'Basic Configuration',
+  'clusters.create.execCommand': 'Execute Command',
+  'clusters.create.supportedGpu': 'Supported GPUs',
+  'clusters.create.skipfornow': 'Skip for now'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -56,5 +63,12 @@ export default {
 // 25. 'clusters.workerpool.title': 'Worker Pools',
 // 26. 'clusters.workerpool.cloudOptions': 'Add Cloud Options',
 // 27. 'clusters.workerpool.volumes.add': 'Add Volume'
+// 28. 'clusters.create.provider.self': 'Self-Hosted',
+// 29. 'clusters.create.provider.cloud': 'Cloud Provider',
+// 30. 'clusters.create.selectProvider': 'Select Provider',
+// 31. 'clusters.create.configBasic': 'Basic Configuration',
+// 32. 'clusters.create.execCommand': 'Execute Command',
+// 33. 'clusters.create.supportedGpu': 'Supported GPUs',
+// 34. 'clusters.create.skipfornow': 'Skip for now'
 
 // ========== End of To-Do List ==========

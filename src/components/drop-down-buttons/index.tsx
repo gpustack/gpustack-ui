@@ -76,7 +76,7 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
           disabled={disabled}
           trigger={trigger}
           type="primary"
-          dropdownRender={(menus: any) => {
+          popupRender={(menus: any) => {
             return (
               <DropdownWrapper>
                 {_.map(_.tail(items), (item: any) => {

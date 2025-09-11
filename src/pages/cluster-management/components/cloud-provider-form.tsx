@@ -1,12 +1,15 @@
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { regionList } from '../config';
 import { ClusterFormData as FormData } from '../config/types';
+import { useProviderRegions } from '../hooks/use-provider-regions';
 
 type OptionData = {
   label: string;
@@ -37,10 +40,30 @@ const OptionItem = styled.div`
   }
 `;
 
+const NoContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-block: 12px;
+`;
+
 interface CloudProviderProps {
   provider: string; // 'kubernetes' | 'digitalocean';
   credentialList: Global.BaseOption<number>[];
+  action: PageActionType;
+  credentialID?: number;
 }
+
+const NotFoundContent: React.FC<{ loading: boolean }> = ({ loading }) => {
+  if (loading) {
+    return (
+      <NoContent>
+        <LoadingOutlined />
+      </NoContent>
+    );
+  }
+  return <NoContent>No regions available</NoContent>;
+};
 
 const optionRender = (
   option: Global.BaseOption<
@@ -64,26 +87,65 @@ const optionRender = (
   );
 };
 
-const labelRender = (props: {
-  label: string;
-  value: string;
-}): React.ReactNode => {
-  const data = regionList.find((item) => item.value === props.value);
-  return (
-    <OptionItem className="flex-center">
-      <span className="icon">{data?.icon}</span>
-      <span className="label">{data?.label}</span> <span className="dot"></span>
-      <span className="datacenter">{data?.datacenter}</span>{' '}
-      <span className="dot"></span>
-      <span className="value">{_.toUpper(data?.value)}</span>
-    </OptionItem>
-  );
-};
-
 const CloudProvider: React.FC<CloudProviderProps> = (props) => {
-  const { credentialList } = props;
+  const { credentialList, action, credentialID } = props;
   const intl = useIntl();
+
+  const {
+    getRegions,
+    getOSImages,
+    updateOSImages,
+    updateInstanceTypes,
+    getInstanceTypes,
+    setLoading,
+    loading,
+    regions
+  } = useProviderRegions();
+
   const { getRuleMessage } = useAppUtils();
+
+  const handleCredentialChange = async (value: number) => {
+    setLoading(true);
+    await Promise.all([getOSImages(value), getInstanceTypes(value)]);
+    await getRegions(value);
+  };
+
+  const handleRegionChange = (value: string) => {
+    updateInstanceTypes(value);
+    updateOSImages(value);
+  };
+
+  useEffect(() => {
+    if (credentialID && action !== PageAction.CREATE) {
+      getRegions(credentialID);
+    }
+  }, [credentialID]);
+
+  const labelRender = (props: {
+    label: string;
+    value: string;
+  }): React.ReactNode => {
+    const data = regions.find((item) => item.value === props.value);
+    if (!data) return props.label;
+    return (
+      <OptionItem className="flex-center">
+        <span className="icon">{data?.icon}</span>
+        <span className="label">{data?.label}</span>{' '}
+        <span className="dot"></span>
+        <span className="datacenter">{data?.datacenter}</span>{' '}
+        <span className="dot"></span>
+        <span className="value">{_.toUpper(data?.value)}</span>
+      </OptionItem>
+    );
+  };
+
+  const filterRegionOption = (inputValue: string, option: any) => {
+    return (
+      option.label.toLowerCase().includes(inputValue.toLowerCase()) ||
+      option.datacenter.toLowerCase().includes(inputValue.toLowerCase()) ||
+      option.value.toLowerCase().includes(inputValue.toLowerCase())
+    );
+  };
 
   return (
     <>
@@ -100,6 +162,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
           label={intl.formatMessage({ id: 'clusters.credential.title' })}
           required
           options={credentialList}
+          onChange={handleCredentialChange}
         ></SealSelect>
       </Form.Item>
       <Form.Item<FormData>
@@ -112,11 +175,16 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         ]}
       >
         <SealSelect
+          showSearch
           label={intl.formatMessage({ id: 'clusters.workerpool.region' })}
           required
-          options={regionList}
+          options={regions}
+          loading={loading}
+          filterOption={filterRegionOption}
           labelRender={labelRender}
           optionRender={optionRender}
+          onChange={handleRegionChange}
+          notFoundContent={<NotFoundContent loading={loading} />}
         ></SealSelect>
       </Form.Item>
     </>

@@ -6,7 +6,9 @@ export const WorkerStatusMap = {
   unreachable: 'unreachable',
   provisioning: 'provisioning',
   deleting: 'deleting',
-  error: 'error'
+  error: 'error',
+  pending: 'pending',
+  provisioned: 'provisioned'
 };
 
 export const WorkerStatusMapValue = {
@@ -24,7 +26,9 @@ export const status: any = {
   [WorkerStatusMap.unreachable]: StatusMaps.error,
   [WorkerStatusMap.provisioning]: StatusMaps.transitioning,
   [WorkerStatusMap.deleting]: StatusMaps.transitioning,
-  [WorkerStatusMap.error]: StatusMaps.error
+  [WorkerStatusMap.error]: StatusMaps.error,
+  [WorkerStatusMap.pending]: StatusMaps.transitioning,
+  [WorkerStatusMap.provisioned]: StatusMaps.transitioning
 };
 
 export const addWorkerGuide: Record<string, any> = {

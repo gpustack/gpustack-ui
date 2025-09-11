@@ -14,7 +14,7 @@ export type ClusterStatusType = 0 | 1 | 3;
 export interface CredentialListItem {
   id: number;
   name: string;
-  provider: string;
+  provider: ProviderType;
   access_key: string;
   secret_key: string;
   description?: string;
@@ -26,10 +26,12 @@ export interface NodePoolFormData {
   name: string;
   instance_type: string;
   os_image: string;
+  image_name: string;
   replicas: number;
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;
+  instance_spec: Record<string, any>;
 }
 
 export interface NodePoolListItem extends NodePoolFormData {

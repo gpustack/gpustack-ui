@@ -7,6 +7,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Col, message, Row } from 'antd';
+import _ from 'lodash';
 import React, { useRef, useState } from 'react';
 import { deleteWorkerPool, updateWorkerPool } from '../apis';
 import { ProviderType } from '../config';
@@ -78,7 +79,7 @@ const PoolRows: React.FC<PoolRowsProps> = ({
         action: PageAction.EDIT,
         title: intl.formatMessage(
           { id: 'common.button.edit.item' },
-          { name: record.instance_type }
+          { name: record.name }
         ),
         provider: provider,
         currentData: record,
@@ -125,20 +126,14 @@ const PoolRows: React.FC<PoolRowsProps> = ({
                   {columns.map((col: Record<string, any>) => {
                     return (
                       <Col
-                        key={col.dataIndex as string}
+                        key={col.dataIndex || col.key}
                         span={col.span}
                         style={{
                           paddingInline: 0,
                           ...(col.style || {})
                         }}
                       >
-                        {/* {col.render
-                        ? col.render(data[col.dataIndex as string], data)
-                        : data[col.dataIndex as string]} */}
-                        <CellContent
-                          {...col}
-                          dataIndex={col.dataIndex}
-                        ></CellContent>
+                        <CellContent {..._.omit(col, ['key'])}></CellContent>
                       </Col>
                     );
                   })}

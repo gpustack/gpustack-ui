@@ -156,6 +156,7 @@ export const Label = styled.div.attrs<{
 // inner
 const Inner = styled.div`
   width: 100%;
+  display: flex;
 `;
 
 const Extra = styled.div`

@@ -45,7 +45,7 @@ const useModelsColumns = ({
         )
       },
       {
-        title: 'Cluster',
+        title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster',
         key: 'cluster',
         span: 3,

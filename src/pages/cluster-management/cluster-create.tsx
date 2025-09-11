@@ -9,7 +9,8 @@ import { createCluster, queryClusterToken, queryCredentialList } from './apis';
 import ClusterSteps from './components/cluster-steps';
 import FooterButtons from './components/footer-buttons';
 import ProviderCatalog from './components/provider-catalog';
-import { providerList, ProviderType, ProviderValueMap } from './config';
+import { ProviderType, ProviderValueMap } from './config';
+import providerList from './config/providers';
 import { ClusterFormData } from './config/types';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
@@ -63,7 +64,7 @@ const ClusterCreate = () => {
     (searchParams.get('action') as PageActionType) || PageAction.CREATE;
   const navigate = useNavigate();
   const [credentialList, setCredentialList] = useState<
-    Global.BaseOption<number>[]
+    Global.BaseOption<number, { provider: ProviderType }>[]
   >([]);
   const [currentStep, setCurrentStep] = useState<number>(startStep);
   const [registrationInfo, setRegistrationInfo] = useState<{
@@ -86,6 +87,11 @@ const ClusterCreate = () => {
     [moduleMap.BasicForm]: useRef<any>(null),
     [moduleMap.WorkerPoolForm]: useRef<any>(null)
   };
+
+  const availableCredentials = useMemo(
+    () => credentialList.filter((item) => item.provider === extraData.provider),
+    [credentialList, extraData.provider]
+  );
 
   const steps = useMemo(() => {
     if (!extraData.provider) {
@@ -182,6 +188,10 @@ const ClusterCreate = () => {
   };
 
   const handleSelectProvider = (value: ProviderType) => {
+    if (value === extraData.provider) {
+      onNext();
+      return;
+    }
     setExtraData({
       provider: value
     } as ClusterFormData);
@@ -194,7 +204,8 @@ const ClusterCreate = () => {
       const res = await queryCredentialList({ page: 1, perPage: 100 });
       const list = res.items?.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
+        provider: item.provider
       }));
       setCredentialList(list);
     };
@@ -217,7 +228,7 @@ const ClusterCreate = () => {
           ref={formRefs[key]}
           action={action}
           provider={extraData.provider}
-          credentialList={credentialList}
+          credentialList={availableCredentials}
           currentData={formValues[key]}
         />
       ) : null;
@@ -279,27 +290,7 @@ const ClusterCreate = () => {
         />
       ]}
       header={{
-        title: (
-          <div>
-            <Nav>
-              <span className="level-1">Cluster</span>
-              <span
-                style={{
-                  marginInline: 20,
-                  color: 'var(--ant-color-split)'
-                }}
-              >
-                /
-              </span>
-              <span className="level-2">create</span>
-            </Nav>
-            <ClusterSteps
-              steps={steps}
-              currentStep={currentStep}
-              onChange={handleStepChange}
-            ></ClusterSteps>
-          </div>
-        ),
+        title: false,
         style: {
           paddingInline: 'var(--layout-content-header-inlinepadding)'
         },
@@ -308,7 +299,9 @@ const ClusterCreate = () => {
       pageHeaderRender={() => (
         <HeaderContainer>
           <Nav>
-            <span className="level-1">Cluster</span>
+            <span className="level-1">
+              {intl.formatMessage({ id: 'clusters.title' })}
+            </span>
             <span
               style={{
                 marginInline: 20,
@@ -317,7 +310,9 @@ const ClusterCreate = () => {
             >
               /
             </span>
-            <span className="level-2">create</span>
+            <span className="level-2">
+              {intl.formatMessage({ id: 'common.button.create' })}
+            </span>
           </Nav>
           <ClusterSteps
             steps={steps}

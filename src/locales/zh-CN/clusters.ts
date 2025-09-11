@@ -10,7 +10,7 @@ export default {
   'clusters.edit.cluster': '编辑 {cluster}',
   'clusters.provider.custom': '自定义',
   'clusters.button.register': '注册集群',
-  'clusters.button.addNodePool': '添加节点池',
+  'clusters.button.addNodePool': '添加 Worker Pool',
   'clusters.button.add.credential': '添加 {provider} 凭证',
   'clusters.credential.title': '凭证',
   'clusters.credential.token': '访问令牌',
@@ -23,7 +23,14 @@ export default {
   'clusters.workerpool.volumes': '存储卷',
   'clusters.workerpool.format': '文件系统格式',
   'clusters.workerpool.size': '容量（GiB）',
-  'clusters.workerpool.title': '节点池',
+  'clusters.workerpool.title': 'Worker Pools',
   'clusters.workerpool.cloudOptions': '添加云配置',
-  'clusters.workerpool.volumes.add': '添加存储卷'
+  'clusters.workerpool.volumes.add': '添加存储卷',
+  'clusters.create.provider.self': '自建环境',
+  'clusters.create.provider.cloud': '云环境',
+  'clusters.create.selectProvider': '选择环境',
+  'clusters.create.configBasic': '基本配置',
+  'clusters.create.execCommand': '执行命令',
+  'clusters.create.supportedGpu': '支持的 GPU',
+  'clusters.create.skipfornow': '暂时跳过'
 };

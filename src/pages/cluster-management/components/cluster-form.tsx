@@ -78,6 +78,8 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         {provider === ProviderValueMap.DigitalOcean && (
           <CloudProvider
             provider={provider}
+            action={action}
+            credentialID={currentData?.credential_id}
             credentialList={credentialList}
           ></CloudProvider>
         )}

@@ -228,7 +228,7 @@ const useWorkerColumns = ({
         render: (_, record) => (
           <StatusTag
             maxTooltipWidth={400}
-            suffix={record.progress}
+            suffix={record.provision_progress}
             statusValue={{
               status: status[record.state] as any,
               text: WorkerStatusMapValue[record.state],

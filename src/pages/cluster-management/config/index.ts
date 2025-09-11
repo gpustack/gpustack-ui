@@ -47,6 +47,27 @@ export const generateRegisterCommand = (params: {
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
 
+export const instanceTypeFieldMap = {
+  vram: 'VRAM',
+  vcpus: 'vCPUs',
+  ram: 'RAM',
+  bootDisk: 'Boot Disk',
+  scratchDisk: 'Scratch Disk',
+  minDiskSize: 'Min Disk Size',
+  size: 'Size'
+};
+
+export const vendorIconMap = {
+  amd: 'icon-amd',
+  nvidia: 'icon-nvidia1',
+  rockyLinux: 'icon-rocky-linux',
+  almaLinux: 'icon-alma-linux',
+  ubuntu: 'icon-ubuntu',
+  centOs: 'icon-centos',
+  debian: 'icon-debian',
+  fedora: 'icon-fedora'
+};
+
 export const providerList = [
   {
     label: 'clusters.provider.custom',

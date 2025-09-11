@@ -1,6 +1,7 @@
 import PageTools from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
 import { PlusOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, FormInstance } from 'antd';
 import {
   forwardRef,
@@ -42,6 +43,7 @@ interface WorkerPoolsFormProps {
 }
 
 const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
+  const intl = useIntl();
   const { provider, action, currentData } = props;
   const countRef = useRef(0);
   const formRefs = useRef<Record<number, FormInstance<any> | null>>({});
@@ -73,10 +75,13 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
         name: `Pool-${newId + 1}`
       } as NodePoolFormData)
     );
-    setActiveKey((prev) => new Set([newId]));
 
     requestAnimationFrame(() => {
-      window.scrollTo(0, document.body.scrollHeight);
+      setActiveKey((prev) => new Set([newId]));
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
     });
   };
 
@@ -95,6 +100,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
 
   const gatherFormValues = (results: PromiseSettledResult<any>[]) => {
     const resultList = results.map((result: PromiseSettledResult<any>) => {
+      console.log('gatherFormValues========', results);
       if (result.status === 'fulfilled') {
         return result.value;
       }
@@ -103,7 +109,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       }
       return {};
     });
-    console.log('gatherFormValues========', resultList);
+
     return resultList;
   };
 
@@ -177,7 +183,9 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
         marginTop={0}
         left={
           <span className="flex-center gap-16">
-            <Title>Worker Pools</Title>
+            <Title>
+              {intl.formatMessage({ id: 'clusters.workerpool.title' })}
+            </Title>
           </span>
         }
         right={
@@ -187,7 +195,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
             color="default"
             icon={<PlusOutlined />}
           >
-            Add Pool
+            {intl.formatMessage({ id: 'clusters.button.addNodePool' })}
           </Button>
         }
       ></PageTools>

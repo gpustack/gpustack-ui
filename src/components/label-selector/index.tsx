@@ -8,6 +8,7 @@ interface LabelSelectorProps {
   label?: string;
   btnText?: string;
   description?: React.ReactNode;
+  disabled?: boolean;
   onChange?: (labels: Record<string, any>) => void;
   onBlur?: (e: any, type: string, index: number) => void;
   onDelete?: (index: number) => void;
@@ -18,6 +19,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   onChange,
   onBlur,
   onDelete,
+  disabled,
   label,
   btnText,
   description
@@ -81,6 +83,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
 
   return (
     <Inner
+      disabled={disabled}
       label={label}
       btnText={btnText}
       description={
@@ -97,4 +100,4 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   );
 };
 
-export default React.memo(LabelSelector);
+export default LabelSelector;

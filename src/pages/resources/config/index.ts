@@ -17,7 +17,9 @@ export const WorkerStatusMapValue = {
   [WorkerStatusMap.unreachable]: 'Unreachable',
   [WorkerStatusMap.provisioning]: 'Provisioning',
   [WorkerStatusMap.deleting]: 'Deleting',
-  [WorkerStatusMap.error]: 'Error'
+  [WorkerStatusMap.error]: 'Error',
+  [WorkerStatusMap.provisioned]: 'Provisioned',
+  [WorkerStatusMap.pending]: 'Pending'
 };
 
 export const status: any = {

@@ -16,7 +16,7 @@ import {
   updateCredential
 } from './apis';
 import AddModal from './components/add-credential';
-import { ProviderLabelMap, ProviderValueMap } from './config';
+import { ProviderLabelMap, ProviderType, ProviderValueMap } from './config';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
@@ -55,13 +55,13 @@ const Credentials: React.FC = () => {
 
   const intl = useIntl();
   const [openModalStatus, setOpenModalStatus] = useState<{
-    provider: string;
+    provider: ProviderType;
     open: boolean;
     action: PageActionType;
     title: string;
     currentData: ListItem | undefined;
   }>({
-    provider: '',
+    provider: null,
     open: false,
     action: PageAction.CREATE,
     title: '',
@@ -70,7 +70,7 @@ const Credentials: React.FC = () => {
 
   const handleAddCredential = (item: { key: string; label: string }) => {
     setOpenModalStatus({
-      provider: item.key,
+      provider: item.key as ProviderType,
       open: true,
       action: PageAction.CREATE,
       title: intl.formatMessage(

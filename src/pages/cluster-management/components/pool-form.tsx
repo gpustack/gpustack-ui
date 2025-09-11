@@ -7,6 +7,7 @@ import CollapsibleContainer, {
 } from '@/components/collapse-container';
 import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
+import AutoComplete from '@/components/seal-form/auto-complete';
 import SealInputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
@@ -76,7 +77,21 @@ const DescriptionWrapper = styled.div`
 `;
 
 const NotFoundContent = () => {
-  return <NoContent>No instance type available</NoContent>;
+  const intl = useIntl();
+  return (
+    <NoContent>
+      {intl.formatMessage({ id: 'clusters.create.noInstanceTypes' })}
+    </NoContent>
+  );
+};
+
+const NotFoundImageContent = () => {
+  const intl = useIntl();
+  return (
+    <NoContent>
+      {intl.formatMessage({ id: 'clusters.create.noImages' })}
+    </NoContent>
+  );
 };
 
 export const RenderInstanceOption = (option: any) => {
@@ -171,7 +186,8 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     }
   }, [currentData]);
 
-  const labelRender = (data: { label: string; value: string }) => {
+  const imageLabelRender = (data: { label: string; value: string }) => {
+    console.log('imageLabelRender========', data);
     if (action === PageAction.EDIT) {
       return currentData?.image_name || currentData?.os_image;
     }
@@ -187,7 +203,8 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
 
   const handleOsImageChange = (value: string) => {
     form.setFieldsValue({
-      image_name: osImageList.find((item) => item.value === value)?.label
+      image_name:
+        osImageList.find((item) => item.value === value)?.label || value
     });
   };
 
@@ -211,6 +228,14 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
   const filterInstanceOption = (inputValue: string, option: any) => {
     return (
       option.label.toLowerCase().includes(inputValue.toLowerCase()) ||
+      option.description.toLowerCase().includes(inputValue.toLowerCase())
+    );
+  };
+
+  const filterImageOption = (inputValue: string, option: any) => {
+    return (
+      option.label.toLowerCase().includes(inputValue.toLowerCase()) ||
+      option.value.toLowerCase().includes(inputValue.toLowerCase()) ||
       option.description.toLowerCase().includes(inputValue.toLowerCase())
     );
   };
@@ -337,6 +362,9 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
             ]}
           >
             <SealInputNumber
+              description={intl.formatMessage({
+                id: 'clusters.workerpool.batchSize.desc'
+              })}
               label={intl.formatMessage({
                 id: 'clusters.workerpool.batchSize'
               })}
@@ -353,18 +381,20 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
               }
             ]}
           >
-            <SealSelect
+            <AutoComplete
               showSearch
+              notFoundContent={<NotFoundImageContent />}
               onChange={handleOsImageChange}
+              filterOption={filterImageOption}
               optionRender={RenderInstanceOption}
-              labelRender={labelRender}
+              labelRender={imageLabelRender}
               options={osImageList}
               disabled={action === PageAction.EDIT}
               label={intl.formatMessage({
                 id: 'clusters.workerpool.osImage'
               })}
               required
-            ></SealSelect>
+            ></AutoComplete>
           </Form.Item>
 
           <Form.Item<FormData>

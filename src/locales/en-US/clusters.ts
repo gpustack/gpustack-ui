@@ -32,5 +32,10 @@ export default {
   'clusters.create.configBasic': 'Basic Configuration',
   'clusters.create.execCommand': 'Execute Command',
   'clusters.create.supportedGpu': 'Supported GPUs',
-  'clusters.create.skipfornow': 'Skip for now'
+  'clusters.create.skipfornow': 'Skip for now',
+  'clusters.create.noImages': 'No images available',
+  'clusters.create.noInstanceTypes': 'No instance types available',
+  'clusters.create.noRegions': 'No regions available',
+  'clusters.workerpool.batchSize.desc':
+    'Number of workers created simultaneously in the Worker pool'
 };

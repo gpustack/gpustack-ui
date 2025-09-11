@@ -32,5 +32,9 @@ export default {
   'clusters.create.configBasic': '基本配置',
   'clusters.create.execCommand': '执行命令',
   'clusters.create.supportedGpu': '支持的 GPU',
-  'clusters.create.skipfornow': '暂时跳过'
+  'clusters.create.skipfornow': '暂时跳过',
+  'clusters.create.noImages': '没有可用的镜像',
+  'clusters.create.noInstanceTypes': '没有可用的实例类型',
+  'clusters.create.noRegions': '没有可用的区域',
+  'clusters.workerpool.batchSize.desc': 'Worker池中同时创建的worker数量'
 };

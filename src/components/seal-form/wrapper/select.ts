@@ -101,6 +101,11 @@ const SelectWrapper = styled.div`
         // top: 20px !important;
         // inset-inline-start: ${INPUT_INNER_PADDING}px;
       }
+      &.ant-select-auto-complete {
+        .ant-select-selection-search {
+          inset-inline-start: ${INPUT_INNER_PADDING}px;
+        }
+      }
       &.ant-select-multiple.ant-cascader .ant-select-selection-search {
         top: 0 !important;
       }

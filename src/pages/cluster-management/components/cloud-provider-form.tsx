@@ -55,6 +55,7 @@ interface CloudProviderProps {
 }
 
 const NotFoundContent: React.FC<{ loading: boolean }> = ({ loading }) => {
+  const intl = useIntl();
   if (loading) {
     return (
       <NoContent>
@@ -62,7 +63,11 @@ const NotFoundContent: React.FC<{ loading: boolean }> = ({ loading }) => {
       </NoContent>
     );
   }
-  return <NoContent>No regions available</NoContent>;
+  return (
+    <NoContent>
+      {intl.formatMessage({ id: 'clusters.create.noRegions' })}
+    </NoContent>
+  );
 };
 
 const optionRender = (
@@ -159,6 +164,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         ]}
       >
         <SealSelect
+          disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'clusters.credential.title' })}
           required
           options={credentialList}
@@ -176,6 +182,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
       >
         <SealSelect
           showSearch
+          disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'clusters.workerpool.region' })}
           required
           options={regions}

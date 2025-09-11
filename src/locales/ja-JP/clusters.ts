@@ -32,7 +32,12 @@ export default {
   'clusters.create.configBasic': 'Basic Configuration',
   'clusters.create.execCommand': 'Execute Command',
   'clusters.create.supportedGpu': 'Supported GPUs',
-  'clusters.create.skipfornow': 'Skip for now'
+  'clusters.create.skipfornow': 'Skip for now',
+  'clusters.create.noImages': 'No images available',
+  'clusters.create.noInstanceTypes': 'No instance types available',
+  'clusters.create.noRegions': 'No regions available',
+  'clusters.workerpool.batchSize.desc':
+    'Number of workers created simultaneously in the Worker pool'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -69,6 +74,10 @@ export default {
 // 31. 'clusters.create.configBasic': 'Basic Configuration',
 // 32. 'clusters.create.execCommand': 'Execute Command',
 // 33. 'clusters.create.supportedGpu': 'Supported GPUs',
-// 34. 'clusters.create.skipfornow': 'Skip for now'
+// 34. 'clusters.create.skipfornow': 'Skip for now',
+// 35. 'clusters.create.noImages': 'No images available',
+// 36. 'clusters.create.noInstanceTypes': 'No instance types available',
+// 37. 'clusters.create.noRegions': 'No regions available',
+// 38. 'clusters.workerpool.batchSize.desc': 'Number of workers created simultaneously in the Worker pool'
 
 // ========== End of To-Do List ==========

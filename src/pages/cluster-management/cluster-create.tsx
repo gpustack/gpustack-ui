@@ -244,7 +244,11 @@ const ClusterCreate = () => {
     return moduleKeys.map((key) => {
       const ModuleComponent = moduleRegistry[key];
       return ModuleComponent ? (
-        <ModuleComponent key={key} registrationInfo={registrationInfo} />
+        <ModuleComponent
+          key={key}
+          registrationInfo={registrationInfo}
+          provider={extraData.provider}
+        />
       ) : null;
     });
   };

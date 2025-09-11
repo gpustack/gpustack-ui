@@ -17,7 +17,6 @@ import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
   CLUSTERS_API,
-  createCluster,
   createWorkerPool,
   deleteCluster,
   queryClusterList,
@@ -31,7 +30,7 @@ import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
 import PoolRows from './components/pool-rows';
 import RegisterCluster from './components/register-cluster';
-import { ProviderLabelMap, ProviderType, ProviderValueMap } from './config';
+import { ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
   ClusterFormData as FormData,
@@ -50,7 +49,6 @@ const Credentials: React.FC = () => {
     handleDeleteBatch,
     fetchData,
     handlePageChange,
-    handleTableChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<ListItem>({
@@ -129,32 +127,15 @@ const Credentials: React.FC = () => {
     title: string;
     provider: ProviderType;
     clusterId: number;
+    clusterData: ClusterListItem | null;
   }>({
     open: false,
     action: PageAction.CREATE,
     title: '',
     provider: ProviderValueMap.DigitalOcean as ProviderType,
-    clusterId: 0
+    clusterId: 0,
+    clusterData: null
   });
-
-  const handleAddCluster = (value: string) => {
-    const label = ProviderLabelMap[value];
-    const clusterLabel =
-      value === ProviderValueMap.Custom
-        ? intl.formatMessage({ id: 'clusters.provider.custom' })
-        : label;
-
-    setOpenAddModal({
-      open: true,
-      action: PageAction.CREATE,
-      currentData: undefined,
-      title: intl.formatMessage(
-        { id: 'clusters.add.cluster' },
-        { cluster: clusterLabel }
-      ),
-      provider: value as ProviderType
-    });
-  };
 
   const handleAddPool = (row: ListItem) => {
     setAddPoolStatus({
@@ -162,7 +143,8 @@ const Credentials: React.FC = () => {
       action: PageAction.CREATE,
       title: intl.formatMessage({ id: 'clusters.button.addNodePool' }),
       provider: row.provider as ProviderType,
-      clusterId: row.id
+      clusterId: row.id,
+      clusterData: row
     });
   };
 
@@ -180,27 +162,11 @@ const Credentials: React.FC = () => {
           data: params,
           id: openAddModal.currentData!.id
         });
-      } else {
-        await createCluster({ data: params });
       }
       fetchData();
-      setOpenAddModal({
-        open: false,
-        action: PageAction.CREATE,
-        currentData: undefined,
-        title: '',
-        provider: null
-      });
+
       message.success(intl.formatMessage({ id: 'common.message.success' }));
-    } catch (error) {
-      setOpenAddModal({
-        open: false,
-        action: PageAction.CREATE,
-        currentData: undefined,
-        title: '',
-        provider: null
-      });
-    }
+    } catch (error) {}
   };
 
   const handleModalCancel = () => {
@@ -377,10 +343,7 @@ const Credentials: React.FC = () => {
         >
           <SealTable
             rowKey="id"
-            tableLayout="fixed"
-            style={{ width: '100%' }}
             loadChildren={getWorkerPoolList}
-            onChange={handleTableChange}
             expandedRowKeys={expandedRowKeys}
             onExpand={handleExpandChange}
             onExpandAll={handleToggleExpandAll}
@@ -444,13 +407,15 @@ const Credentials: React.FC = () => {
         open={addPoolStatus.open}
         action={addPoolStatus.action}
         title={addPoolStatus.title}
+        clusterData={addPoolStatus.clusterData}
         onCancel={() => {
           setAddPoolStatus({
             open: false,
             action: PageAction.CREATE,
             title: '',
             provider: ProviderValueMap.DigitalOcean as ProviderType,
-            clusterId: 0
+            clusterId: 0,
+            clusterData: null
           });
         }}
         onOk={handleSubmitWorkerPool}

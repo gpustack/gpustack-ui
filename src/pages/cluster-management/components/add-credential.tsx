@@ -7,7 +7,7 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
-import { ProviderValueMap } from '../config';
+import { ProviderType, ProviderValueMap } from '../config';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
@@ -20,7 +20,7 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   currentData?: ListItem;
   onCancel: () => void;
-  provider: string; // 'kubernetes'  | 'digitalocean';
+  provider: ProviderType;
 };
 const AddModal: React.FC<AddModalProps> = ({
   title,

@@ -1,9 +1,9 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import { SealColumnProps } from '@/components/seal-table/types';
 import StatusTag from '@/components/status-tag';
 import { Link, useIntl } from '@umijs/max';
-import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
@@ -25,7 +25,7 @@ const setActionsItems = (row: ClusterListItem) => {
 
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void
-): ColumnsType<ClusterListItem & { dataIndex: string; span: number }> => {
+): SealColumnProps[] => {
   const intl = useIntl();
 
   return useMemo(() => {

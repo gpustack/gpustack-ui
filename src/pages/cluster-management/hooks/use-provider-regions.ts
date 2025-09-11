@@ -130,6 +130,7 @@ export const useProviderRegions = () => {
           };
         });
       setAllInstanceTypes(list);
+      return list;
     } catch (error) {
       setAllInstanceTypes([]);
     }
@@ -155,18 +156,21 @@ export const useProviderRegions = () => {
           };
         });
       setAllOSImageList(list);
+      return list;
     } catch (error) {}
   };
 
-  const updateInstanceTypes = (region: string) => {
-    const sizes = allInstanceTypes.filter((item) =>
+  const updateInstanceTypes = (region: string, allTypes?: any[]) => {
+    const sizes = (allTypes || allInstanceTypes).filter((item) =>
       item.regions.includes(region)
     );
     setInstanceTypes(sizes);
   };
 
-  const updateOSImages = (region: string) => {
-    const list = allOSImageList.filter((item) => item.regions.includes(region));
+  const updateOSImages = (region: string, allImages?: any[]) => {
+    const list = (allImages || allOSImageList).filter((item) =>
+      item.regions.includes(region)
+    );
     setOSImageList(list);
   };
 

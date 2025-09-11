@@ -100,7 +100,6 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
 
   const gatherFormValues = (results: PromiseSettledResult<any>[]) => {
     const resultList = results.map((result: PromiseSettledResult<any>) => {
-      console.log('gatherFormValues========', results);
       if (result.status === 'fulfilled') {
         return result.value;
       }
@@ -109,8 +108,8 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       }
       return {};
     });
-
-    return resultList;
+    console.log('gatherFormValues========', resultList);
+    return resultList.filter((item) => item);
   };
 
   const validateFields = async () => {

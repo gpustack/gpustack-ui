@@ -1,3 +1,4 @@
+import { fromClusterCreationAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -5,9 +6,10 @@ import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Empty, Table, message } from 'antd';
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import {
   createCredential,
@@ -52,8 +54,9 @@ const Credentials: React.FC = () => {
     deleteAPI: deleteCredential,
     contentForDelete: 'menu.clusterManagement.credentials'
   });
-
+  const [isFromCluster] = useAtom(fromClusterCreationAtom);
   const intl = useIntl();
+  const navigate = useNavigate();
   const [openModalStatus, setOpenModalStatus] = useState<{
     provider: ProviderType;
     open: boolean;
@@ -97,6 +100,9 @@ const Credentials: React.FC = () => {
         });
       } else {
         await createCredential({ data: params });
+        // if (isFromCluster) {
+        //   navigate(-1);
+        // }
       }
       fetchData();
       setOpenModalStatus({ ...openModalStatus, open: false });

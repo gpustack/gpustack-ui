@@ -41,7 +41,7 @@ const BasicForm = forwardRef((props: BasicFormProps, ref) => {
   return (
     <div>
       <PageTools
-        marginBottom={26}
+        marginBottom={16}
         left={
           <Title>
             {intl.formatMessage({ id: 'clusters.create.configBasic' })}

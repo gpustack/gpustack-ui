@@ -187,7 +187,7 @@ const ClusterCreate = () => {
     }
   };
 
-  const handleSelectProvider = (value: ProviderType) => {
+  const handleSelectProvider = (value: string) => {
     if (value === extraData.provider) {
       onNext();
       return;

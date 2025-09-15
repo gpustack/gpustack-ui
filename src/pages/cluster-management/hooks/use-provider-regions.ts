@@ -67,13 +67,17 @@ const formatSpec = (spec: ParsedSpec): string => {
 
   if (spec.vram) parts.push(`${spec.vram} VRAM`);
   if (spec.vcpus) parts.push(`${spec.vcpus} vCPUs`);
-  if (spec.bootDisk) parts.push(`${spec.bootDisk} Boot disk`);
   if (spec.ram) parts.push(`${spec.ram} RAM`);
-  if (spec.scratchDisk) {
-    parts.push(`${spec.scratchDisk} Scratch disk`);
-  }
+  // if (spec.bootDisk) parts.push(`${spec.bootDisk} Boot disk`);
+  // if (spec.scratchDisk) {
+  //   parts.push(`${spec.scratchDisk} Scratch disk`);
+  // }
 
   return parts.join(' / ');
+};
+
+const formatLabel = (instanceSpec: any): string => {
+  return `${_.toUpper(instanceSpec.gpu_info?.model.replace(/_/g, ' '))}`;
 };
 
 export const useProviderRegions = () => {
@@ -119,10 +123,12 @@ export const useProviderRegions = () => {
         ?.filter((sItem: any) => sItem.gpu_info && sItem.available)
         .map((item: any) => {
           const specInfo = parseSpec(item);
+          const label = formatLabel(item);
+          const description = `${label} ${item.gpu_info?.count}X`;
           return {
-            label: formatSpec(specInfo),
+            label: `${description} - ${formatSpec(specInfo)}`,
             value: item.slug,
-            description: item.description,
+            description: description,
             specInfo: specInfo,
             vendor: _.get(_.split(item.gpu_info?.model, '_'), 0),
             available: item.available,
@@ -148,10 +154,7 @@ export const useProviderRegions = () => {
             name: item.name,
             description: item.description,
             vendor: _.camelCase(item.distribution),
-            specInfo: {
-              size: `${item.size_gigabytes} GiB`,
-              minDiskSize: `${item.min_disk_size} GiB`
-            },
+            specInfo: {},
             regions: item.regions || []
           };
         });

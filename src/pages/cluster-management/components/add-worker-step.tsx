@@ -1,4 +1,6 @@
+import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { Alert } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../config';
@@ -9,7 +11,42 @@ import SupportedHardware from './support-hardware';
 const Title = styled.div`
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+`;
+
+const Line = styled.div`
+  position: relative;
+  margin: 24px 0;
+  width: 100%;
+  border-top: 1px solid var(--ant-color-border);
+  &::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: 24px;
+    width: 16px;
+    height: 16px;
+    transform: rotate(45deg);
+    background-color: var(--ant-color-bg-container);
+    border-top: 1px solid var(--ant-color-border);
+    border-left: 1px solid var(--ant-color-border);
+  }
+`;
+
+const Container = styled.div`
+  width: 800px;
+  margin: 0 auto;
+  .command-info {
+    margin-top: 24px;
+    margin-bottom: 8px;
+    // font-weight: 500;
+    color: var(--ant-color-text-secondary);
+  }
+`;
+
+const Content = styled.div`
+  margin-top: 24px;
+  margin-bottom: 16px;
 `;
 
 type AddModalProps = {
@@ -26,19 +63,57 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   registrationInfo
 }) => {
   const intl = useIntl();
+  const [currentProvider, setCurrentProvider] = React.useState<string>('cuda');
+  const [workerCommand, setWorkerCommand] = React.useState<Record<string, any>>(
+    {
+      label: 'NVIDIA CUDA',
+      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda'
+    }
+  );
+
+  const handleSelectProvider = (provider: string, item: any) => {
+    setCurrentProvider(provider);
+    setWorkerCommand(item);
+  };
+
   return (
-    <div>
-      <Title>{intl.formatMessage({ id: 'clusters.create.execCommand' })}</Title>
+    <Container>
+      <Title>
+        {intl.formatMessage({ id: 'clusters.create.supportedGpu' })}
+      </Title>
+      <SupportedHardware
+        onSelect={handleSelectProvider}
+        currentProvider={currentProvider}
+      />
+      {provider === ProviderValueMap.Custom && (
+        <Content>
+          <Line></Line>
+          <Alert
+            type="info"
+            showIcon
+            icon={<BulbOutlined />}
+            message={
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: intl.formatMessage(
+                    { id: 'clusters.create.addworker.tips' },
+                    { label: workerCommand.label, link: workerCommand.link }
+                  )
+                }}
+              ></span>
+            }
+          ></Alert>
+        </Content>
+      )}
+      <div className="command-info">
+        {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
+      </div>
       {provider === ProviderValueMap.Kubernetes ? (
         <RegisterClusterInner registrationInfo={registrationInfo} />
       ) : (
         <AddWorkerCommand registrationInfo={registrationInfo} />
       )}
-      <Title style={{ marginTop: 32 }}>
-        {intl.formatMessage({ id: 'clusters.create.supportedGpu' })}
-      </Title>
-      <SupportedHardware />
-    </div>
+    </Container>
   );
 };
 

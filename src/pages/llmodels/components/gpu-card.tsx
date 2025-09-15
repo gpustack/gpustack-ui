@@ -8,6 +8,7 @@ import '../style/gpu-card.less';
 
 const CardWrapper = styled.div`
   display: flex;
+  gap: 10px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
@@ -18,7 +19,6 @@ const CardWrapper = styled.div`
 
 const Header = styled.div`
   width: 100%;
-  margin-bottom: 10px;
 `;
 
 const Description = styled.div`
@@ -36,7 +36,7 @@ export const CardContainer: React.FC<{
   return (
     <CardWrapper>
       <Header>{header}</Header>
-      <Description>{description}</Description>
+      {description && <Description>{description}</Description>}
     </CardWrapper>
   );
 };

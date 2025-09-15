@@ -6,7 +6,7 @@ export interface DropDownItem {
   iconfont?: boolean;
 }
 
-export type PageActionType = 'create' | 'update' | 'view';
+export type PageActionType = 'create' | 'update' | 'view' | 'edit';
 
 export type StatusType =
   | 'error'

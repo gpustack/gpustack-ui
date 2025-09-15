@@ -1,13 +1,13 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import { SealColumnProps } from '@/components/seal-table/types';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { ColumnsType } from 'antd/es/table';
 import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { RenderInstanceOption } from '../components/pool-form';
+import { RenderOption } from '../components/pool-form';
 import { NodePoolListItem as ListItem } from '../config/types';
 
 const actionItems = [
@@ -30,7 +30,7 @@ const actionItems = [
 const usePoolsColumns = (
   handleSelect: (val: string, record: ListItem) => void,
   sortOrder?: SortOrder
-): ColumnsType<ListItem & { dataIndex: string }> => {
+): SealColumnProps[] => {
   const intl = useIntl();
 
   return useMemo(() => {
@@ -66,7 +66,7 @@ const usePoolsColumns = (
         render: (text: string, record: ListItem) => (
           <AutoTooltip
             title={
-              <RenderInstanceOption
+              <RenderOption
                 styles={{
                   description: {
                     color: 'var(--color-white-quaternary)'
@@ -180,6 +180,7 @@ const usePoolsColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),
         key: 'operations',
+        dataIndex: 'operations',
         span: 3,
         style: {
           paddingLeft: 36

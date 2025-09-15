@@ -4,14 +4,20 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { ProviderType } from '../config';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $cols?: number }>`
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 22px;
+  grid-template-columns: repeat(${(props) => props.$cols || 3}, 1fr);
+  gap: 16px;
+  .template-card-wrapper {
+    padding: 16px;
+  }
 `;
 
 const Container = styled.div`
   display: flex;
+  width: 800px;
+  margin: 0 auto;
   flex-direction: column;
   gap: 16px;
 `;
@@ -22,19 +28,20 @@ const Title = styled.span`
   justify-content: space-between;
   font-weight: 700;
   font-size: 16px;
-  margin-block: 16px 24px;
+  margin-block: 20px 16px;
 `;
 
 interface ProviderCatalogProps {
-  onSelect?: (provider: ProviderType) => void;
-  currentProvider?: ProviderType;
+  onSelect?: (provider: string, item: any) => void;
+  cols?: number;
+  currentProvider?: ProviderType | string;
   clickable?: boolean;
   dataList: {
     label: string;
     key: string;
     locale?: boolean;
     disabled?: boolean;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     description?: string;
     group?: string;
   }[];
@@ -42,6 +49,7 @@ interface ProviderCatalogProps {
 
 const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   onSelect,
+  cols = 3,
   dataList,
   clickable,
   currentProvider
@@ -66,12 +74,12 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
           {groupName !== 'default' && (
             <Title>{intl.formatMessage({ id: groupName })}</Title>
           )}
-          <Wrapper>
+          <Wrapper $cols={cols}>
             {items?.map((action) => (
               <Card
-                height="auto"
+                height="80px"
                 key={action.key}
-                onClick={() => onSelect?.(action.key as ProviderType)}
+                onClick={() => onSelect?.(action.key as string, action)}
                 active={currentProvider === action.key}
                 disabled={action.disabled}
                 clickable={clickable}
@@ -82,7 +90,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                 }
                 icon={action.icon}
               >
-                {action.description || 'This is a description'}
+                {action.description}
               </Card>
             ))}
           </Wrapper>

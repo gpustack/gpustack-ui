@@ -128,7 +128,7 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
   const { styles, cx } = useStyles();
   const location = useLocation();
   const [collapseKeys, setCollapseKeys] = useState<Set<string>>(new Set());
-  console.log('SiderMenu', props);
+  console.log('SiderMenu', location.pathname);
 
   const dividerStyles = useMemo(() => {
     if (collapsed) {
@@ -167,7 +167,9 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
           to={menuItem.path.replace('/*', '')}
           target={menuItem.target}
           className={cx(styles.menuItemWrapper, 'menu-item', {
-            'menu-item-selected': location.pathname === menuItem.path
+            'menu-item-selected':
+              location.pathname === menuItem.path ||
+              menuItem.subMenu?.includes(location.pathname)
           })}
         >
           {collapsed ? (
@@ -175,7 +177,8 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
               <span className="icon-wrapper">
                 <IconFont
                   type={
-                    location.pathname === menuItem.path
+                    location.pathname === menuItem.path ||
+                    menuItem.subMenu?.includes(location.pathname)
                       ? menuItem.selectedIcon || ''
                       : menuItem.defaultIcon || ''
                   }
@@ -186,7 +189,8 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
             <>
               <IconFont
                 type={
-                  location.pathname === menuItem.path
+                  location.pathname === menuItem.path ||
+                  menuItem.subMenu?.includes(location.pathname)
                     ? menuItem.selectedIcon || ''
                     : menuItem.defaultIcon || ''
                 }

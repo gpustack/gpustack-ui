@@ -164,7 +164,11 @@ export default [
         icon: 'icon-cluster2-outline',
         selectedIcon: 'icon-cluster2-filled',
         defaultIcon: 'icon-cluster2-outline',
-        component: './cluster-management/clusters'
+        component: './cluster-management/clusters',
+        subMenu: [
+          '/cluster-management/clusters/detail',
+          '/cluster-management/clusters/create'
+        ]
       },
       {
         name: 'clusterDetail',

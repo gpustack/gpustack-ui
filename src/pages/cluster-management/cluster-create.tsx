@@ -79,7 +79,7 @@ const ClusterCreate = () => {
     cluster_id: 0
   });
   const [extraData, setExtraData] = useState<ClusterFormData>({
-    provider: ProviderValueMap.Custom
+    provider: ProviderValueMap.Docker
   } as ClusterFormData);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 

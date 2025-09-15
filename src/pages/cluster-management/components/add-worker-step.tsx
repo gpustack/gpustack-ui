@@ -66,7 +66,7 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   const [currentProvider, setCurrentProvider] = React.useState<string>('cuda');
   const [workerCommand, setWorkerCommand] = React.useState<Record<string, any>>(
     {
-      label: 'NVIDIA CUDA',
+      label: 'NVIDIA',
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda'
     }
   );
@@ -85,7 +85,7 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
         onSelect={handleSelectProvider}
         currentProvider={currentProvider}
       />
-      {provider === ProviderValueMap.Custom && (
+      {provider === ProviderValueMap.Docker && (
         <Content>
           <Line></Line>
           <Alert

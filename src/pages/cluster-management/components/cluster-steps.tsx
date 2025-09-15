@@ -5,6 +5,8 @@ import styled from 'styled-components';
 const { Step } = Steps;
 
 const Wrapper = styled.div`
+  width: min(1200px, 100%);
+  margin: 0 auto;
   padding-block: 30px;
   background-color: var(--ant-color-bg-container);
   .ant-steps-item-description {

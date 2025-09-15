@@ -77,7 +77,7 @@ export default function useStepList() {
         defaultShow: false,
         showForms: [],
         showModules: [moduleMap.AddWorkerStep],
-        providers: [ProviderValueMap.Custom]
+        providers: [ProviderValueMap.Docker]
       },
       {
         title: intl.formatMessage({ id: 'clusters.button.register' }),

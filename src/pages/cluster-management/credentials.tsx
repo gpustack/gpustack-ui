@@ -100,9 +100,9 @@ const Credentials: React.FC = () => {
         });
       } else {
         await createCredential({ data: params });
-        // if (isFromCluster) {
-        //   navigate(-1);
-        // }
+        if (isFromCluster) {
+          navigate(-1);
+        }
       }
       fetchData();
       setOpenModalStatus({ ...openModalStatus, open: false });

@@ -103,7 +103,7 @@ const SelectWrapper = styled.div`
       }
       &.ant-select-auto-complete {
         .ant-select-selection-search {
-          inset-inline-start: ${INPUT_INNER_PADDING}px;
+          padding-inline-start: ${INPUT_INNER_PADDING}px;
         }
       }
       &.ant-select-multiple.ant-cascader .ant-select-selection-search {

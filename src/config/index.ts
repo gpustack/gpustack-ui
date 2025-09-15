@@ -3,7 +3,8 @@ import { PageActionType, StatusType } from './types';
 export const PageAction: Record<string, PageActionType> = {
   CREATE: 'create',
   UPDATE: 'update',
-  VIEW: 'view'
+  VIEW: 'view',
+  EDIT: 'edit'
 };
 
 export const StatusColorMap: Record<

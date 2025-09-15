@@ -25,7 +25,7 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({ registrationInfo }) => {
   return (
     <HighlightCode
       theme="dark"
-      code={code.replace(/\\/g, '')}
+      code={code}
       copyValue={code}
       lang="bash"
     ></HighlightCode>

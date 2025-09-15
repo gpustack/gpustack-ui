@@ -37,7 +37,11 @@ export default {
   'clusters.create.noInstanceTypes': 'No instance types available',
   'clusters.create.noRegions': 'No regions available',
   'clusters.workerpool.batchSize.desc':
-    'Number of workers created simultaneously in the Worker pool'
+    'Number of workers created simultaneously in the Worker pool',
+  'clusters.create.addworker.tips':
+    ' Please make sure the prerequisites for <a href={link} target="_blank">{label}</a> are met before executing the following command.',
+  'clusters.create.addCommand.tips':
+    ' On the Worker that needs to be added, run the following command to join it to the cluster.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -78,6 +82,8 @@ export default {
 // 35. 'clusters.create.noImages': 'No images available',
 // 36. 'clusters.create.noInstanceTypes': 'No instance types available',
 // 37. 'clusters.create.noRegions': 'No regions available',
-// 38. 'clusters.workerpool.batchSize.desc': 'Number of workers created simultaneously in the Worker pool'
+// 38. 'clusters.workerpool.batchSize.desc': 'Number of workers created simultaneously in the Worker pool',
+// 39. 'clusters.create.addworker.tips': ' Please make sure the prerequisites for <a href={link} target="_blank">{label}</a> are met before executing the following command.',
+// 40. 'clusters.create.addCommand.tips': ' On the Worker that needs to be added, run the following command to join it to the cluster.'
 
 // ========== End of To-Do List ==========

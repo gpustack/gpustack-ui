@@ -1,10 +1,12 @@
+import { fromClusterCreationAtom } from '@/atoms/clusters';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
+import { Link, useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -14,7 +16,7 @@ import { useProviderRegions } from '../hooks/use-provider-regions';
 type OptionData = {
   label: string;
   datacenter: string;
-  value: string;
+  value: string | number;
   icon: string;
 };
 
@@ -70,14 +72,24 @@ const NotFoundContent: React.FC<{ loading: boolean }> = ({ loading }) => {
   );
 };
 
-const optionRender = (
-  option: Global.BaseOption<
-    number,
-    {
-      data: OptionData;
-    }
-  >
-): React.ReactNode => {
+const NotFoundCredentialContent: React.FC = () => {
+  const [, setFromClusterCreation] = useAtom(fromClusterCreationAtom);
+  const intl = useIntl();
+  const handleOnClick = () => {
+    console.log('click add credential');
+    setFromClusterCreation(true);
+  };
+
+  return (
+    <NoContent>
+      <Link to={'/cluster-management/credentials'} onClick={handleOnClick}>
+        {intl.formatMessage({ id: 'clusters.button.addCredential' })}
+      </Link>
+    </NoContent>
+  );
+};
+
+const optionRender = (option: any): React.ReactNode => {
   const { value } = option;
   const data = option.data!;
 
@@ -127,8 +139,8 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
   }, [credentialID]);
 
   const labelRender = (props: {
-    label: string;
-    value: string;
+    label: React.ReactNode;
+    value: string | number;
   }): React.ReactNode => {
     const data = regions.find((item) => item.value === props.value);
     if (!data) return props.label;
@@ -164,6 +176,7 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         ]}
       >
         <SealSelect
+          notFoundContent={<NotFoundCredentialContent />}
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'clusters.credential.title' })}
           required

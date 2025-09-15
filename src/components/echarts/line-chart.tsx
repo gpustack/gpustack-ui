@@ -23,7 +23,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     legendOptions,
     gridOptions,
     titleOptions,
-    showArea
+    showArea = 0.25
   } = props;
   const {
     grid,
@@ -87,7 +87,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     const data = _.map(seriesData, (item: any) => {
       const colors = genColors({
         color: item.color,
-        alpha1: 0.5,
+        alpha1: 0.25,
         alpha2: 0.1
       });
       return {

@@ -33,8 +33,12 @@ export default {
   'clusters.create.execCommand': '执行命令',
   'clusters.create.supportedGpu': '支持的 GPU',
   'clusters.create.skipfornow': '暂时跳过',
-  'clusters.create.noImages': '没有可用的镜像',
-  'clusters.create.noInstanceTypes': '没有可用的实例类型',
-  'clusters.create.noRegions': '没有可用的区域',
-  'clusters.workerpool.batchSize.desc': 'Worker池中同时创建的worker数量'
+  'clusters.create.noImages': '无可用的镜像',
+  'clusters.create.noInstanceTypes': '无可用的实例类型',
+  'clusters.create.noRegions': '无可用的区域',
+  'clusters.workerpool.batchSize.desc': 'Worker 池中同时创建的 worker 数量',
+  'clusters.create.addworker.tips':
+    '在执行以下命令之前，请确保已满足 <a href={link} target="_blank">{label}</a> 的先决条件。',
+  'clusters.create.addCommand.tips':
+    ' 在需要添加的 Worker 上运行以下命令，将其加入到集群中'
 };

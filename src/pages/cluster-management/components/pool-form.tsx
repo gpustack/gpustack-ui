@@ -72,7 +72,7 @@ const OptionItem = styled.div.attrs({
 const DescriptionWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
+  gap: 4px 8px;
   font-weight: 400;
 `;
 
@@ -94,34 +94,48 @@ const NotFoundImageContent = () => {
   );
 };
 
-export const RenderInstanceOption = (option: any) => {
-  const { data, styles } = option;
+const RenderLabel = (data: {
+  label: React.ReactNode;
+  vendor: string;
+  style?: React.CSSProperties;
+}) => {
+  const { label, vendor, style } = data;
+  return (
+    <div style={style} className="flex-center gap-8">
+      <IconFont type={_.get(vendorIconMap, vendor, 'icon-gpu1')}></IconFont>
+      {label}
+    </div>
+  );
+};
 
+export const RenderOption = (option: any) => {
+  const { data = {}, styles } = option;
+  const entries = Object.entries(data?.specInfo || {});
   return (
     <CardContainer
       key={data.value}
       header={
-        <span>
-          <IconFont
-            type={_.get(vendorIconMap, data.vendor, 'icon-gpu1')}
-            className="m-r-8"
-          ></IconFont>
-          {data.description}
-        </span>
+        <RenderLabel
+          label={data.description || data.label}
+          vendor={data.vendor}
+          style={styles?.header}
+        />
       }
       description={
-        <DescriptionWrapper style={{ ...(styles?.description || {}) }}>
-          {Object.entries(data?.specInfo)
-            .filter(([key, value]) => value)
-            .map(([key, value]) => (
-              <OptionItem key={key}>
-                <span className="label">
-                  {_.get(instanceTypeFieldMap, key, key)}:
-                </span>
-                <span className="value">{value as string}</span>
-              </OptionItem>
-            ))}
-        </DescriptionWrapper>
+        entries.length > 0 && (
+          <DescriptionWrapper style={{ ...styles?.description }}>
+            {Object.entries(data?.specInfo)
+              .filter(([key, value]) => value)
+              .map(([key, value]) => (
+                <OptionItem key={key}>
+                  <span className="label">
+                    {_.get(instanceTypeFieldMap, key, key)}:
+                  </span>
+                  <span className="value">{value as string}</span>
+                </OptionItem>
+              ))}
+          </DescriptionWrapper>
+        )
       }
     />
   );
@@ -186,19 +200,45 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     }
   }, [currentData]);
 
-  const imageLabelRender = (data: { label: string; value: string }) => {
-    console.log('imageLabelRender========', data);
+  const imageLabelRender = (data: {
+    label: React.ReactNode;
+    value: string | number;
+  }) => {
     if (action === PageAction.EDIT) {
-      return currentData?.image_name || currentData?.os_image;
+      console.log('imageLabelRender========::', action, currentData, data);
+      // return currentData?.image_name || currentData?.os_image;
+      const vendor = _.split(currentData?.image_name || '', ' ')[0];
+      const iconType = _.get(vendorIconMap, vendor.toLowerCase());
+      return (
+        <div className="flex-center gap-8">
+          {iconType && <IconFont type={iconType}></IconFont>}
+          {currentData?.image_name || currentData?.os_image}
+        </div>
+      );
     }
-    return data.label;
+    const selectImage = osImageList.find((item) => item.value === data.value);
+    console.log('imageLabelRender========::', selectImage);
+    if (selectImage) {
+      return (
+        <RenderLabel label={data.label} vendor={selectImage.vendor || ''} />
+      );
+    }
+    return data.value;
   };
 
-  const instanceLabelRender = (data: { label: string; value: string }) => {
-    if (action === PageAction.EDIT) {
-      return currentData?.instance_spec?.label || currentData?.instance_type;
-    }
-    return data.label;
+  const instanceLabelRender = (data: {
+    label: React.ReactNode;
+    value: string | number;
+  }) => {
+    const currentInstanceSpec =
+      instanceTypeList.find((item) => item.value === data.value) ||
+      instanceSpec;
+    return (
+      <RenderLabel
+        label={data.label || currentInstanceSpec?.label || data.value}
+        vendor={currentInstanceSpec?.vendor || ''}
+      />
+    );
   };
 
   const handleOsImageChange = (value: string) => {
@@ -329,7 +369,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
               required
               options={instanceTypeList}
               disabled={action === PageAction.EDIT}
-              optionRender={RenderInstanceOption}
+              optionRender={RenderOption}
               onChange={handleInstanceTypeChange}
             ></SealSelect>
           </Form.Item>
@@ -383,11 +423,16 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
           >
             <AutoComplete
               showSearch
-              notFoundContent={<NotFoundImageContent />}
               onChange={handleOsImageChange}
               filterOption={filterImageOption}
-              optionRender={RenderInstanceOption}
+              optionRender={(option) =>
+                RenderOption({
+                  ...option,
+                  styles: { header: { marginBlock: 5 } }
+                })
+              }
               labelRender={imageLabelRender}
+              placeholder={currentData?.image_name}
               options={osImageList}
               disabled={action === PageAction.EDIT}
               label={intl.formatMessage({

@@ -17,6 +17,11 @@ export const regionInstanceTypeListAtom = atom<
   {
     label: string;
     value: string;
+    description: string;
+    specInfo: Record<string, any>;
+    vendor: string;
+    available: boolean;
+    regions: string[];
   }[]
 >([]);
 
@@ -24,6 +29,11 @@ export const regionOSImageListAtom = atom<
   {
     label: string;
     value: string;
+    name: string;
+    description: string;
+    vendor: string;
+    specInfo: Record<string, any>;
+    regions: string[];
   }[]
 >([]);
 
@@ -42,3 +52,5 @@ export const allRegionInstanceTypeListAtom = atom<
     regions: string[];
   }[]
 >([]);
+
+export const fromClusterCreationAtom = atom(false);

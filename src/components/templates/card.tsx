@@ -16,7 +16,9 @@ interface CardProps {
   onClick?: () => void;
 }
 
-const CardWrapper = styled.div`
+const CardWrapper = styled.div.attrs({
+  className: 'template-card-wrapper'
+})`
   overflow: hidden;
   display: flex;
   padding: 22px;
@@ -43,37 +45,44 @@ const CardWrapper = styled.div`
     cursor: pointer;
   }
   &.disabled {
-    cursor: not-allowed;
+    cursor: default;
     opacity: 0.6;
     pointer-events: none;
-    background-color: var(--ant-color-fill-quaternary);
+    border-style: dashed;
   }
 `;
 
-const CardContent = styled.div`
+const CardContent = styled.div.attrs({
+  className: 'template-card-content'
+})`
   width: 100%;
   flex: 1;
   color: var(--ant-color-text-tertiary);
 `;
 
-const Inner = styled.div`
+const Inner = styled.div.attrs({
+  className: 'template-card-inner'
+})`
   display: flex;
   width: 100%;
-  height: 100%;
   flex-direction: column;
   justify-content: flex-start;
   gap: 8px;
   line-height: 1.5;
 `;
 
-const Icon = styled.div`
+const Icon = styled.div.attrs({
+  className: 'template-card-icon'
+})`
   display: flex;
   align-items: center;
   margin-right: 16px;
   font-size: 32px;
 `;
 
-const Header = styled.div`
+const Header = styled.div.attrs({
+  className: 'template-card-header'
+})`
   font-weight: bold;
   font-size: var(--font-size-base);
   display: flex;
@@ -110,7 +119,7 @@ const Card: React.FC<CardProps> = (props) => {
       {icon && <Icon>{icon}</Icon>}
       <Inner>
         {header && <Header>{header}</Header>}
-        <CardContent>{children}</CardContent>
+        {children && <CardContent>{children}</CardContent>}
         {footer}
       </Inner>
     </CardWrapper>

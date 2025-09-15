@@ -4,11 +4,11 @@ import { ProviderValueMap } from '.';
 
 export default [
   {
-    label: 'clusters.provider.custom',
-    locale: true,
-    value: ProviderValueMap.Custom,
-    key: ProviderValueMap.Custom,
-    icon: React.cloneElement(icons.Docker, {
+    label: 'Docker',
+    locale: false,
+    value: ProviderValueMap.Docker,
+    key: ProviderValueMap.Docker,
+    icon: React.cloneElement(icons.DockerOutlined, {
       style: { color: 'var(--ant-color-primary)' }
     }),
     group: 'clusters.create.provider.self'
@@ -18,7 +18,7 @@ export default [
     locale: false,
     value: ProviderValueMap.Kubernetes,
     key: ProviderValueMap.Kubernetes,
-    icon: React.cloneElement(icons.KubernetesOutlined, {
+    icon: React.cloneElement(icons.KubernetesFilled, {
       style: { color: 'var(--ant-color-primary)' }
     }),
     group: 'clusters.create.provider.self'

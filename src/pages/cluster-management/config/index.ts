@@ -24,7 +24,7 @@ export const ClusterStatus: Record<string, StatusType> = {
 export const ProviderValueMap = {
   Kubernetes: 'Kubernetes',
   DigitalOcean: 'DigitalOcean',
-  Custom: 'Custom',
+  Docker: 'Docker',
   HuaweiCloud: 'HuaweiCloud',
   AliCloud: 'AliCloud',
   TencentCloud: 'TencentCloud'
@@ -35,7 +35,7 @@ export type ProviderType = keyof typeof ProviderValueMap | null | undefined;
 export const ProviderLabelMap = {
   [ProviderValueMap.Kubernetes]: 'Kubernetes',
   [ProviderValueMap.DigitalOcean]: 'DigitalOcean',
-  [ProviderValueMap.Custom]: 'Custom'
+  [ProviderValueMap.Docker]: 'Docker'
 };
 
 export const generateRegisterCommand = (params: {
@@ -72,8 +72,8 @@ export const providerList = [
   {
     label: 'clusters.provider.custom',
     locale: true,
-    value: ProviderValueMap.Custom,
-    key: ProviderValueMap.Custom,
+    value: ProviderValueMap.Docker,
+    key: ProviderValueMap.Docker,
     icon: React.cloneElement(icons.Docker, {
       style: { color: 'var(--ant-color-primary)' }
     }),
@@ -158,7 +158,7 @@ export const clusterActionList = [
   {
     key: 'add_worker',
     label: 'resources.button.create',
-    provider: ProviderValueMap.Custom,
+    provider: ProviderValueMap.Docker,
     locale: true,
     icon: icons.Docker
   },

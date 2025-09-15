@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import {
   ApiOutlined,
   DeleteOutlined,
+  DockerOutlined,
   DownloadOutlined,
   EditOutlined,
   ExperimentOutlined,
@@ -24,6 +25,7 @@ const icons = {
   ApiOutlined: React.createElement(ApiOutlined),
   KubernetesOutlined: React.createElement(KubernetesOutlined),
   ProfileOutlined: React.createElement(ProfileOutlined),
+  DockerOutlined: React.createElement(DockerOutlined),
   Stop: React.createElement(IconFont, { type: 'icon-stop1' }),
   Play: React.createElement(IconFont, { type: 'icon-outline-play' }),
   Catalog: React.createElement(IconFont, { type: 'icon-catalog' }),
@@ -41,7 +43,8 @@ const icons = {
   TencentCloud: React.createElement(IconFont, { type: 'icon-tencentcloud' }),
   Nvidia: React.createElement(IconFont, { type: 'icon-nvidia' }),
   Ascend: React.createElement(IconFont, { type: 'icon-ascend' }),
-  AMD: React.createElement(IconFont, { type: 'icon-amd' })
+  AMD: React.createElement(IconFont, { type: 'icon-amd' }),
+  KubernetesFilled: React.createElement(IconFont, { type: 'icon-k8s-filled' })
 };
 
 export default icons;

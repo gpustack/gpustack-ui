@@ -1,20 +1,23 @@
 import ScrollerModal from '@/components/scroller-modal';
 import { useIntl } from '@umijs/max';
 import React from 'react';
-import ContainerInstall from './container-install';
+import { ProviderType } from '../config';
+import AddWorkerStep from './add-worker-step';
 
 type ViewModalProps = {
   open: boolean;
+  provider: ProviderType;
   registrationInfo: {
     token: string;
     image: string;
     server_url: string;
+    cluster_id: number;
   };
   onCancel: () => void;
 };
 
 const AddWorker: React.FC<ViewModalProps> = (props) => {
-  const { open, onCancel, registrationInfo } = props || {};
+  const { open, onCancel, registrationInfo, provider } = props || {};
   const intl = useIntl();
 
   return (
@@ -27,14 +30,14 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={700}
+      width={860}
       style={{
         top: 100
       }}
-      maxContentHeight={450}
+      maxContentHeight={600}
       footer={null}
     >
-      <ContainerInstall registrationInfo={registrationInfo} />
+      <AddWorkerStep registrationInfo={registrationInfo} provider={provider} />
     </ScrollerModal>
   );
 };

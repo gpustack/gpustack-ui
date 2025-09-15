@@ -23,7 +23,7 @@ const LineChart: React.FC<ChartProps> = (props) => {
     legendOptions,
     gridOptions,
     titleOptions,
-    showArea = 0.25
+    showArea
   } = props;
   const {
     grid,

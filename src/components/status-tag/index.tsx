@@ -5,10 +5,17 @@ import { Button, Divider, Tooltip } from 'antd';
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
+import styled from 'styled-components';
 import CopyButton from '../copy-button';
 import { TooltipOverlayScroller } from '../overlay-scroller';
 import CopyStyle from './copy-btn.less';
 import './index.less';
+
+const Text = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
 const linkReg = /<a (.*?)>(.*?)<\/a>/g;
 export const StatusMaps = {
@@ -89,7 +96,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
         </>
       );
     }
-    return <span>{text}</span>;
+    return <Text>{text}</Text>;
   };
 
   const renderTitle = useMemo(() => {

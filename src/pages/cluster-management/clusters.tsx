@@ -8,7 +8,7 @@ import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
-import AddWorker from '@/pages/resources/components/add-worker';
+import AddWorker from '@/pages/cluster-management/components/add-worker';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -90,17 +90,21 @@ const Credentials: React.FC = () => {
 
   const [openAddWorker, setOpenAddWorker] = useState<{
     open: boolean;
+    provider: ProviderType;
     registrationInfo: {
       token: string;
       image: string;
       server_url: string;
+      cluster_id: number;
     };
   }>({
     open: false,
+    provider: null,
     registrationInfo: {
       token: '',
       image: '',
-      server_url: ''
+      server_url: '',
+      cluster_id: 0
     }
   });
   const [openAddModal, setOpenAddModal] = useState<{
@@ -204,7 +208,11 @@ const Credentials: React.FC = () => {
       const data = await queryClusterToken({ id: row.id });
       setOpenAddWorker({
         open: true,
-        registrationInfo: data
+        provider: row.provider as ProviderType,
+        registrationInfo: {
+          ...data,
+          cluster_id: row.id
+        }
       });
     } catch (error: any) {
       message.error(error.message || 'Failed to fetch cluster token');
@@ -384,10 +392,17 @@ const Credentials: React.FC = () => {
       ></AddCluster>
       <AddWorker
         open={openAddWorker.open}
+        provider={openAddWorker.provider}
         onCancel={() =>
           setOpenAddWorker({
             open: false,
-            registrationInfo: { token: '', image: '', server_url: '' }
+            provider: null,
+            registrationInfo: {
+              token: '',
+              image: '',
+              server_url: '',
+              cluster_id: 0
+            }
           })
         }
         registrationInfo={openAddWorker.registrationInfo}

@@ -15,7 +15,7 @@ const renderCardItem = (data: {
   const { label, value, bgColor } = data;
   return (
     <Card
-      bordered={false}
+      variant="borderless"
       style={{ background: 'var(--color-white-1)' }}
       className={styles['card-body']}
     >

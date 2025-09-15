@@ -55,7 +55,8 @@ const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
           paddingBottom: '0'
         },
         body: {
-          padding: '0'
+          padding: '0',
+          paddingBlockEnd: props.footer ? '0' : '24px'
         },
         footer: props.footer
           ? {
@@ -71,7 +72,7 @@ const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
         className="overlay-scroller-wrapper"
         $maxHeight={props.maxContentHeight || 500}
         hidden={false}
-        style={{ paddingInline: 24, paddingBlockEnd: props.footer ? 0 : 24 }}
+        style={{ paddingInline: 24, paddingBlockEnd: 0 }}
       >
         {props.children}
       </Wrapper>

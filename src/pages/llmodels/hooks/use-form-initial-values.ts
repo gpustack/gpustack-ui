@@ -173,7 +173,7 @@ export const useGenerateWorkerOptions = () => {
       clusterList.map((item) => ({
         label: item.name,
         value: item.id,
-        provider: item.provider,
+        provider: item.provider as string,
         state: item.state
       }))
     );
@@ -202,7 +202,7 @@ export default function useFormInitialValues() {
       const list = response.items.map((item) => ({
         label: item.name,
         value: item.id,
-        provider: item.provider,
+        provider: item.provider as string,
         state: item.state
       }));
       setClusterList(list);

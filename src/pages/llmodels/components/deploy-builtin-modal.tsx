@@ -349,7 +349,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const initClusterId = () => {
     const cluster_id =
-      clusterList?.find((item) => item.provider === ProviderValueMap.Custom)
+      clusterList?.find((item) => item.provider === ProviderValueMap.Docker)
         ?.value || clusterList?.[0]?.value;
 
     console.log('cluster_id:', cluster_id);

@@ -109,7 +109,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     ];
 
     const customWorker = workerOptions.find(
-      (item) => item.provider === ProviderValueMap.Custom
+      (item) => item.provider === ProviderValueMap.Docker
     );
 
     const worker_id = getWorkerId(customWorker || workerOptions[0]);

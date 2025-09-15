@@ -369,7 +369,7 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const initClusterId = () => {
     const cluster_id =
-      clusterList?.find((item) => item.provider === ProviderValueMap.Custom)
+      clusterList?.find((item) => item.provider === ProviderValueMap.Docker)
         ?.value || clusterList?.[0]?.value;
 
     return cluster_id;

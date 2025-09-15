@@ -164,7 +164,13 @@ const Credentials: React.FC = () => {
         });
       }
       fetchData();
-
+      setOpenAddModal({
+        open: false,
+        action: PageAction.CREATE,
+        currentData: undefined,
+        title: '',
+        provider: null
+      });
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   };

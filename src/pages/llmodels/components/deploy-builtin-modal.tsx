@@ -486,6 +486,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     if (open) {
       setTimeout(() => {
         fetchSpecData();
+        form.current?.getGPUOptionList?.({
+          clusterId: initClusterId()
+        });
       }, 100);
     }
     return () => {

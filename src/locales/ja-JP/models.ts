@@ -164,11 +164,16 @@ export default {
   'models.form.gpuCount': '各レプリカのGPU数',
   'models.form.gpuType': 'GPU タイプ',
   'models.form.optimizeLongPrompt': '長いプロンプトを最適化',
-  'models.form.enableSpeculativeDecoding': '推測デコーディングを有効にする'
+  'models.form.enableSpeculativeDecoding': '推測デコーディングを有効にする',
+  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+  'models.form.check.otherClustersAvailable':
+    'Available clusters: {clusters}. Please switch cluster.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.ollama.deprecated.title': 'Deprecation Notice',
 // 2. 'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
-// 3.  'models.backend.mindie.310p':'Ascend 310P only supports FP16, so you need to set --dtype=float16.'
+// 3.  'models.backend.mindie.310p':'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
+// 4.  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+// 5. 'models.form.check.otherClustersAvailable': 'Available clusters: {clusters}. Please switch cluster.'
 // ========== End of To-Do List ==========

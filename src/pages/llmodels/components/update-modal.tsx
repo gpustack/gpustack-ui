@@ -256,6 +256,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   useEffect(() => {
     if (open && formData) {
       setOriginalFormData();
+      getGPUOptionList({ clusterId: formData.cluster_id });
     }
     if (!open) {
       checkTokenRef.current?.cancel?.();

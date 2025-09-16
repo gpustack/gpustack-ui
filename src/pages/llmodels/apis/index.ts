@@ -376,23 +376,23 @@ export async function evaluationsModelSpec(
   },
   options: { token: any }
 ) {
-  return request<{ results: EvaluateResult[] }>(`${MODEL_EVALUATIONS}`, {
-    method: 'POST',
-    data,
-    cancelToken: options?.token
-  });
-}
+  const result = await request<{ results: EvaluateResult[] }>(
+    `${MODEL_EVALUATIONS}`,
+    {
+      method: 'POST',
+      data,
+      cancelToken: options?.token
+    }
+  );
 
-// export const evaluationsModelSpec = async (
-//   data: {
-//     model_specs: EvaluateSpec[];
-//   },
-//   options: { token: any }
-// ) => {
-//   const response = await fetch(`v1/${MODEL_EVALUATIONS}`, {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify(data)
-//   });
-//   return response.json();
-// };
+  const resultList = result?.results || [];
+
+  return {
+    results: resultList.map((item) => {
+      return {
+        ...item,
+        cluster_id: data.model_specs?.[0]?.cluster_id || undefined
+      };
+    })
+  };
+}

@@ -167,5 +167,8 @@ export default {
   'models.form.gpuCount': 'GPUs per Replica',
   'models.form.gpuType': 'GPU Type',
   'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
-  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding'
+  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding',
+  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+  'models.form.check.otherClustersAvailable':
+    'Available clusters: {clusters}. Please switch cluster.'
 };

@@ -477,6 +477,10 @@ const AddModal: FC<AddModalProps> = (props) => {
                     onSelectModelAfterEvaluate={
                       handleOnSelectModelAfterEvaluate
                     }
+                    clusterId={
+                      form.current?.getFieldValue?.('cluster_id') ||
+                      initClusterId()
+                    }
                     displayEvaluateStatus={displayEvaluateStatus}
                     gpuOptions={[]}
                   ></SearchModel>

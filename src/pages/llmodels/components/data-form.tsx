@@ -169,7 +169,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         getGPUOptionList(params);
       }
     };
-  }, []);
+  });
 
   return (
     <FormInnerContext.Provider
@@ -242,7 +242,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
         <HuggingFaceForm></HuggingFaceForm>
         <LocalPathForm></LocalPathForm>
-
         <Form.Item<FormData>
           name="cluster_id"
           rules={[

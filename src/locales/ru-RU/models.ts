@@ -166,7 +166,10 @@ export default {
   'models.form.gpuCount': 'GPUs per Replica',
   'models.form.gpuType': 'GPU Type',
   'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
-  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding'
+  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding',
+  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+  'models.form.check.otherClustersAvailable':
+    'Available clusters: {clusters}. Please switch cluster.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -176,5 +179,7 @@ export default {
 // 4. 'models.form.gpuCount': 'GPUs per Replica',
 // 5. 'models.form.gpuType': 'GPU Type',
 // 6. 'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
-// 7. 'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding'
+// 7. 'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding',
+// 8. 'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+// 9. 'models.form.check.otherClustersAvailable': 'Available clusters: {clusters}. Please switch cluster.'
 // ========== End of To-Do List ==========

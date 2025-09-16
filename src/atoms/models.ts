@@ -16,3 +16,10 @@ export const getRequestId = () => {
   const store = getDefaultStore();
   return store.get(requestIdAtom);
 };
+
+export const clusterListAtom = atom<
+  {
+    label: string;
+    value: number;
+  }[]
+>([]);

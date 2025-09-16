@@ -1,8 +1,10 @@
+import { clusterListAtom } from '@/atoms/models';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { queryModelFilesList } from '@/pages/resources/apis';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
+import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec } from '../apis';
@@ -148,6 +150,7 @@ export const useCheckCompatibility = () => {
   const requestIdRef = useRef(0);
   const updateStatusTimer = useRef<any>(null);
   const isLockWarningStatus = useRef<boolean>(false);
+  const clusterList = useAtomValue(clusterListAtom);
   const [warningStatus, setWarningStatus] = useState<MessageStatus>({
     show: false,
     title: '',
@@ -220,10 +223,25 @@ export const useCheckCompatibility = () => {
     }
   };
 
+  const getAvailableClusters = (ids: string[]) => {
+    const clusterNames: string[] = [];
+    clusterList.forEach?.((item: { value: number; label: string }) => {
+      if (ids.includes(item.value.toString())) {
+        clusterNames.push(item.label);
+      }
+    });
+    return clusterNames.join(', ');
+  };
+
+  const getCurrentCluster = (id: number) => {
+    const cluster = clusterList.find?.((item) => item.value === id);
+    return cluster?.label || '';
+  };
+
   const handleCheckCompatibility = (
     evaluateResult: EvaluateResult | null
   ): MessageStatus => {
-    console.log('handleCheckCompatibility', evaluateResult);
+    console.log('handleCheckCompatibility', clusterList, evaluateResult);
     if (!evaluateResult) {
       return {
         show: false,
@@ -234,7 +252,8 @@ export const useCheckCompatibility = () => {
       compatible,
       compatibility_messages = [],
       scheduling_messages = [],
-      resource_claim,
+      resource_claim_by_cluster_id,
+      cluster_id,
       error,
       error_message
     } = evaluateResult || {};
@@ -248,7 +267,17 @@ export const useCheckCompatibility = () => {
       };
     }
 
+    const resourceClaimMap = new Map(
+      Object.entries(resource_claim_by_cluster_id || {})
+    );
+
+    // current cluster resource claim
+    const resource_claim = resourceClaimMap.get(`${cluster_id}`);
+
     const hasClaim = !!resource_claim?.ram || !!resource_claim?.vram;
+
+    // current cluster is not available, but other clusters are available
+    const othersAvailable = !hasClaim && resourceClaimMap.size > 0;
 
     let msgData = {
       title:
@@ -260,6 +289,7 @@ export const useCheckCompatibility = () => {
           ? scheduling_messages
           : compatibility_messages?.join(' ')
     };
+
     if (hasClaim) {
       const ram = convertFileSize(resource_claim.ram, 2);
       const vram = convertFileSize(resource_claim.vram, 2);
@@ -274,11 +304,25 @@ export const useCheckCompatibility = () => {
         title: intl.formatMessage({ id: 'models.form.check.passed' }),
         message: intl.formatMessage({ id: messageId }, { ram, vram })
       };
+    } else if (othersAvailable) {
+      msgData = {
+        title: intl.formatMessage({
+          id: 'models.form.check.clusterUnavailable'
+        }),
+        message: intl.formatMessage(
+          {
+            id: 'models.form.check.otherClustersAvailable'
+          },
+          {
+            clusters: getAvailableClusters(Array.from(resourceClaimMap.keys()))
+          }
+        )
+      };
     }
 
     return {
-      show: !compatible || hasClaim,
-      type: !compatible ? 'warning' : 'success',
+      show: !compatible || hasClaim || othersAvailable,
+      type: !compatible || othersAvailable ? 'warning' : 'success',
       ...msgData
     };
   };

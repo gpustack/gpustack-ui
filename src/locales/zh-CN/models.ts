@@ -157,5 +157,8 @@ export default {
   'models.form.gpuCount': '每副本 GPU 数量',
   'models.form.gpuType': 'GPU 类型',
   'models.form.optimizeLongPrompt': '优化长提示',
-  'models.form.enableSpeculativeDecoding': '启用推测解码'
+  'models.form.enableSpeculativeDecoding': '启用推测解码',
+  'models.form.check.clusterUnavailable': '当前集群不可用',
+  'models.form.check.otherClustersAvailable':
+    '可用的集群有: {clusters}。请切换集群。'
 };

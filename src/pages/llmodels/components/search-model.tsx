@@ -40,19 +40,12 @@ const PaginationMain = styled(Pagination)`
   }
 `;
 
-const IconFontWrapper = styled.div`
-  .ant-pagination-item-link {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-  }
-`;
-
 interface SearchInputProps {
   hasLinuxWorker?: boolean;
   modelSource: string;
   isDownload?: boolean;
   gpuOptions?: any[];
+  clusterId: number;
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any, manul?: boolean) => void;
@@ -70,6 +63,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     isDownload,
     hasLinuxWorker,
     gpuOptions,
+    clusterId,
     setLoadingModel,
     onSelectModel,
     onSelectModelAfterEvaluate,
@@ -295,6 +289,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
         return {
           ...backendObj,
+          cluster_id: clusterId,
           source: modelSource,
           ...(modelSource === modelSourceMap.huggingface_value
             ? {

@@ -1,3 +1,4 @@
+import { clusterListAtom } from '@/atoms/models';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import { queryWorkersList } from '@/pages/resources/apis';
@@ -6,6 +7,7 @@ import {
   WorkerStatusMapValue
 } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useState } from 'react';
 import { queryGPUList } from '../apis';
@@ -188,6 +190,7 @@ export const useGenerateWorkerOptions = () => {
 
 export default function useFormInitialValues() {
   const { getGPUOptionList } = useGenerateGPUOptions();
+  const [, setClusterListAtom] = useAtom(clusterListAtom);
 
   const [clusterList, setClusterList] = useState<
     Global.BaseOption<number, { provider: string; state: string | number }>[]
@@ -206,10 +209,12 @@ export default function useFormInitialValues() {
         state: item.state
       }));
       setClusterList(list);
+      setClusterListAtom(list);
       return list;
     } catch (error) {
       console.error('Failed to fetch cluster list:', error);
       setClusterList([]);
+      setClusterListAtom([]);
       return [];
     }
   };

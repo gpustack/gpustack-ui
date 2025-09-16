@@ -192,6 +192,7 @@ export interface CatalogSpec {
 
 export interface EvaluateSpec {
   source?: string;
+  cluster_id?: number;
   huggingface_repo_id?: string;
   huggingface_filename?: string;
   ollama_library_model_name?: string;
@@ -230,5 +231,12 @@ export interface EvaluateResult {
   resource_claim?: {
     ram: number;
     vram: number;
+  };
+  cluster_id?: number;
+  resource_claim_by_cluster_id?: {
+    [key: number]: {
+      ram: number;
+      vram: number;
+    };
   };
 }

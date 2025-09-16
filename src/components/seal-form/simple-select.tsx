@@ -1,10 +1,11 @@
 import { useIntl } from '@umijs/max';
 import type { SelectProps } from 'antd';
-import { Checkbox, Select, Tag } from 'antd';
+import { Checkbox, Tag } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import AutoTooltip from '../auto-tooltip';
+import BaseSelect from './base/select';
 
 const OptionWrapper = styled.div`
   display: flex;
@@ -236,7 +237,7 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
 
   return (
     <div ref={selectRef}>
-      <Select
+      <BaseSelect
         {...restProps}
         options={optionsList}
         maxTagCount={0}
@@ -251,7 +252,7 @@ const SimpleSelect: React.FC<SelectProps> = (props) => {
         onSearch={handleOnSearch}
         filterOption={filterOption}
         onOpenChange={handleOnOpenChange}
-      ></Select>
+      ></BaseSelect>
     </div>
   );
 };

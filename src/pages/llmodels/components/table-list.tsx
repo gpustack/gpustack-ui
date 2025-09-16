@@ -4,6 +4,7 @@ import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
+import BaseSelect from '@/components/seal-form/base/select';
 import SealTable from '@/components/seal-table';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
@@ -16,7 +17,7 @@ import { DownOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Input, Select, Space, message } from 'antd';
+import { Button, Input, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, {
@@ -584,7 +585,7 @@ const Models: React.FC<ModelsProps> = ({
                 allowClear
                 onChange={handleNameChange}
               ></Input>
-              <Select
+              <BaseSelect
                 allowClear
                 showSearch={false}
                 placeholder={intl.formatMessage({
@@ -595,8 +596,8 @@ const Models: React.FC<ModelsProps> = ({
                 maxTagCount={1}
                 onChange={handleCategoryChange}
                 options={modelCategories.filter((item) => item.value)}
-              ></Select>
-              <Select
+              ></BaseSelect>
+              <BaseSelect
                 allowClear
                 showSearch={false}
                 placeholder={intl.formatMessage({
@@ -607,7 +608,7 @@ const Models: React.FC<ModelsProps> = ({
                 maxTagCount={1}
                 onChange={handleClusterChange}
                 options={clusterList}
-              ></Select>
+              ></BaseSelect>
               <Button
                 type="text"
                 style={{ color: 'var(--ant-color-text-tertiary)' }}

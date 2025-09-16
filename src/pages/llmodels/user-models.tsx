@@ -1,12 +1,13 @@
 import MoreButton from '@/components/buttons/more';
 import PageTools from '@/components/page-tools';
+import BaseSelect from '@/components/seal-form/base/select';
 import CardList from '@/components/templates/card-list';
 import CardSkeleton from '@/components/templates/card-skelton';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
-import { Button, Input, Select, Space } from 'antd';
+import { Button, Input, Space } from 'antd';
 import React from 'react';
 import { MODELS_API, queryModelsList } from './apis';
 import ModelItem from './components/model-item';
@@ -96,7 +97,7 @@ const UserModels: React.FC = () => {
               }
               onChange={handleNameChange}
             ></Input>
-            <Select
+            <BaseSelect
               allowClear
               showSearch={false}
               placeholder={intl.formatMessage({ id: 'models.filter.category' })}
@@ -105,7 +106,7 @@ const UserModels: React.FC = () => {
               maxTagCount={1}
               options={categoryOptions}
               onChange={handleCategoryChange}
-            ></Select>
+            ></BaseSelect>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}

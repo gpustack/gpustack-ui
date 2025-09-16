@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
 import OverlayScroller from '@/components/overlay-scroller';
+import BaseSelect from '@/components/seal-form/base/select';
 import {
   ClearOutlined,
   DeleteOutlined,
@@ -8,7 +9,7 @@ import {
   SettingOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Dropdown, Popover, Select, Spin } from 'antd';
+import { Button, Checkbox, Dropdown, Popover, Spin } from 'antd';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
@@ -239,7 +240,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
     <div className="model-item">
       <div className="header">
         <span className="title">
-          <Select
+          <BaseSelect
             style={{ width: '100%' }}
             variant="borderless"
             options={modelFullList}
@@ -273,7 +274,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
                 </AutoTooltip>
               );
             }}
-          ></Select>
+          ></BaseSelect>
         </span>
         {tokenResult && !loading && (
           <ReferenceParams usage={tokenResult} scaleable></ReferenceParams>

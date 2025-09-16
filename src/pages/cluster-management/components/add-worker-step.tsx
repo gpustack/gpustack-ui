@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../config';
 import AddWorkerCommand from './add-worker-command';
 import RegisterClusterInner from './register-cluster-inner';
-import SupportedHardware from './support-hardware';
+import SupportedGPUs from './support-gpus';
 
 const Title = styled.div`
   font-size: 16px;
@@ -63,7 +63,8 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   registrationInfo
 }) => {
   const intl = useIntl();
-  const [currentProvider, setCurrentProvider] = React.useState<string>('cuda');
+  const [currentSelection, setCurrentSelection] =
+    React.useState<string>('cuda');
   const [workerCommand, setWorkerCommand] = React.useState<Record<string, any>>(
     {
       label: 'NVIDIA',
@@ -71,8 +72,9 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
     }
   );
 
-  const handleSelectProvider = (provider: string, item: any) => {
-    setCurrentProvider(provider);
+  const handleSelectProvider = (value: string, item: any) => {
+    if (provider !== ProviderValueMap.Docker) return;
+    setCurrentSelection(value);
     setWorkerCommand(item);
   };
 
@@ -81,9 +83,10 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
       <Title>
         {intl.formatMessage({ id: 'clusters.create.supportedGpu' })}
       </Title>
-      <SupportedHardware
+      <SupportedGPUs
         onSelect={handleSelectProvider}
-        currentProvider={currentProvider}
+        current={provider === ProviderValueMap.Docker ? currentSelection : ''}
+        clickable={provider === ProviderValueMap.Docker}
       />
       {provider === ProviderValueMap.Docker && (
         <Content>

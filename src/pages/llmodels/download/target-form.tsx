@@ -128,7 +128,11 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             showSearch
             expandTrigger="hover"
             multiple={false}
-            popupClassName="cascader-popup-wrapper gpu-selector"
+            classNames={{
+              popup: {
+                root: 'cascader-popup-wrapper gpu-selector'
+              }
+            }}
             maxTagCount={1}
             label="Worker"
             options={workerOptions}

@@ -331,7 +331,7 @@ const ClusterCreate = () => {
           dataList={providerList}
           onSelect={handleSelectProvider}
           clickable={true}
-          currentProvider={extraData.provider}
+          current={extraData.provider}
         />
       )}
       {renderModules()}

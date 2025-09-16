@@ -22,12 +22,14 @@ const ProviderImage = ({ src, showBg }: { src: string; showBg?: boolean }) => {
 
 interface SupportedHardwareProps {
   onSelect?: (provider: string, item: any) => void;
-  currentProvider?: string;
+  current?: string;
+  clickable?: boolean;
 }
 
 const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   onSelect,
-  currentProvider
+  clickable,
+  current
 }) => {
   const intl = useIntl();
 
@@ -110,9 +112,9 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   return (
     <ProviderCatalog
       onSelect={onSelect}
-      currentProvider={currentProvider}
+      current={current}
       dataList={supportedHardPlatforms}
-      clickable={true}
+      clickable={clickable}
       cols={4}
     />
   );

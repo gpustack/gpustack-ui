@@ -34,7 +34,7 @@ const Title = styled.span`
 interface ProviderCatalogProps {
   onSelect?: (provider: string, item: any) => void;
   cols?: number;
-  currentProvider?: ProviderType | string;
+  current?: ProviderType | string;
   clickable?: boolean;
   dataList: {
     label: string;
@@ -52,7 +52,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   cols = 3,
   dataList,
   clickable,
-  currentProvider
+  current
 }) => {
   const intl = useIntl();
 
@@ -80,7 +80,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                 height="80px"
                 key={action.key}
                 onClick={() => onSelect?.(action.key as string, action)}
-                active={currentProvider === action.key}
+                active={current === action.key}
                 disabled={action.disabled}
                 clickable={clickable}
                 header={

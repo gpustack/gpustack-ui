@@ -17,8 +17,8 @@ const metricsMap = {
     color: 'rgba(250, 173, 20,.8)'
   },
   ram: {
-    label: 'Used',
-    type: 'Used',
+    label: 'RAM',
+    type: 'RAM',
     intl: false,
     color: 'rgba(114, 46, 209,.8)'
   },
@@ -35,8 +35,8 @@ const metricsMap = {
     color: 'rgba(84, 204, 152,.8)'
   },
   vram: {
-    label: 'Used',
-    type: 'Used',
+    label: 'VRAM',
+    type: 'VRAM',
     intl: false,
     color: 'rgba(255, 107, 179, 80%)'
   }
@@ -178,7 +178,7 @@ const ClusterMetrics = () => {
           <Card height={CardHeight} clickable={false} ghost>
             <TrendChart
               data={detailContent?.history}
-              metrics={['vram', 'allocated']}
+              metrics={['vram']}
               metricsMap={metricsMap}
               title="VRAM"
             ></TrendChart>
@@ -188,7 +188,7 @@ const ClusterMetrics = () => {
           <Card height={CardHeight} clickable={false} ghost>
             <TrendChart
               data={detailContent?.history}
-              metrics={['ram', 'allocated']}
+              metrics={['ram']}
               metricsMap={metricsMap}
               title="RAM"
             ></TrendChart>

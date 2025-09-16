@@ -1,8 +1,9 @@
 import { getRequestId } from '@/atoms/models';
+import BaseSelect from '@/components/seal-form/base/select';
 import SimpleOverlay from '@/components/simple-overlay';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
-import { Empty, Select, Spin } from 'antd';
+import { Empty, Spin } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
@@ -367,7 +368,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           {intl.formatMessage({ id: 'models.available.files' })} (
           {dataSource.fileList.length || 0})
         </span>
-        <Select
+        <BaseSelect
           value={sortType}
           onChange={handleSortChange}
           labelRender={({ label }) => {
@@ -380,7 +381,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
           options={modelFilesSortOptions.current}
           size="middle"
           style={{ width: '120px' }}
-        ></Select>
+        ></BaseSelect>
       </TitleWrapper>
       {dataSource.loading && (
         <div className="spin-wrapper">

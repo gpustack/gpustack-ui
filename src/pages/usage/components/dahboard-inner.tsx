@@ -1,7 +1,8 @@
 import PageTools from '@/components/page-tools';
+import BaseSelect from '@/components/seal-form/base/select';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Select, Space } from 'antd';
+import { Button, Input, Space } from 'antd';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { queryDashboardData } from '../apis';
 import DashboardContext from '../config/dashboard-context';
@@ -41,10 +42,10 @@ const Page: React.FC<{ setLoading: (loading: boolean) => void }> = ({
               style={{ width: 200 }}
               allowClear
             ></Input>
-            <Select
+            <BaseSelect
               style={{ width: 300 }}
               placeholder={intl.formatMessage({ id: 'usage.filter.model' })}
-            ></Select>
+            ></BaseSelect>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}

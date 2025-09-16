@@ -1,9 +1,10 @@
 import { isNotEmptyValue } from '@/utils/index';
 import { useIntl } from '@umijs/max';
 import type { SelectProps } from 'antd';
-import { Form, Select } from 'antd';
+import { Form } from 'antd';
 import { cloneDeep } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import BaseSelect from './base/select';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import SelectWrapper from './wrapper/select';
@@ -96,7 +97,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
         disabled={props.disabled}
         onClick={handleClickWrapper}
       >
-        <Select
+        <BaseSelect
           {...rest}
           ref={inputRef}
           options={children ? null : _options}
@@ -106,7 +107,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
           notFoundContent={notFoundContent}
         >
           {children}
-        </Select>
+        </BaseSelect>
       </Wrapper>
     </SelectWrapper>
   );

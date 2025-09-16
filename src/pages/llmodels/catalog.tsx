@@ -1,13 +1,14 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import MoreButton from '@/components/buttons/more';
 import PageTools from '@/components/page-tools';
+import BaseSelect from '@/components/seal-form/base/select';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
-import { Button, Input, Pagination, Select, Space, message } from 'antd';
+import { Button, Input, Pagination, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -278,7 +279,7 @@ const Catalog: React.FC = () => {
               }
               onChange={handleNameChange}
             ></Input>
-            <Select
+            <BaseSelect
               allowClear
               showSearch={false}
               placeholder={intl.formatMessage({ id: 'models.filter.category' })}
@@ -287,7 +288,7 @@ const Catalog: React.FC = () => {
               maxTagCount={1}
               onChange={handleCategoryChange}
               options={categoryOptions}
-            ></Select>
+            ></BaseSelect>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}

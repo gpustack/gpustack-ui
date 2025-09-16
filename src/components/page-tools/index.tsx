@@ -6,8 +6,9 @@ import {
   SyncOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Input, Select, Space } from 'antd';
+import { Button, Input, Space } from 'antd';
 import React, { useMemo } from 'react';
+import BaseSelect from '../seal-form/base/select';
 import './index.less';
 
 type PageToolsProps = {
@@ -176,7 +177,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
             onChange={handleInputChange}
           ></Input>
           {showSelect && (
-            <Select
+            <BaseSelect
               allowClear
               showSearch={false}
               placeholder={selectHolder}
@@ -184,7 +185,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
               size="large"
               onChange={handleSelectChange}
               options={selectOptions}
-            ></Select>
+            ></BaseSelect>
           )}
           <Button
             type="text"

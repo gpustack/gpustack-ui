@@ -1,8 +1,9 @@
 import { getRequestId, setRquestId } from '@/atoms/models';
+import BaseSelect from '@/components/seal-form/base/select';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Pagination, Select, Tooltip } from 'antd';
+import { Pagination, Tooltip } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -547,7 +548,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         </div>
         <div className={SearchStyle.filter}>
           <span>
-            <Select
+            <BaseSelect
               value={dataSource.sortType}
               onChange={handleSortChange}
               labelRender={({ label }) => {
@@ -560,7 +561,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               options={modelFilesSortOptions.current}
               size="middle"
               style={{ width: '150px' }}
-            ></Select>
+            ></BaseSelect>
             {/* <Checkbox
               onChange={handleFilterGGUFChange}
               className="m-l-8"

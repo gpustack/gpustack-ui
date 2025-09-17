@@ -7,7 +7,7 @@ import { Form } from 'antd';
 import React from 'react';
 import { scheduleList, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { useFormContext, useFormInnerContext } from '../config/form-context';
+import { useCatalogFormContext, useFormContext } from '../config/form-context';
 import GPUCard from './gpu-card';
 
 const scheduleTypeTips = [
@@ -29,8 +29,8 @@ const scheduleTypeTips = [
 
 const Performance: React.FC = () => {
   const intl = useIntl();
-  const { gpuOptions } = useFormInnerContext();
-  const { onValuesChange, onQuantizationChange } = useFormContext();
+  const { onValuesChange, gpuOptions } = useFormContext();
+  const { onQuantizationChange } = useCatalogFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
 
@@ -62,28 +62,7 @@ const Performance: React.FC = () => {
           <Form.Item name={['gpu_selector', 'gpu_type']}>
             <SealSelect
               label={intl.formatMessage({ id: 'models.form.gpuType' })}
-              options={[
-                {
-                  label: 'NVIDIA 4090',
-                  value: 'nvidia-4090'
-                },
-                {
-                  label: 'NVIDIA A100',
-                  value: 'nvidia-a100'
-                },
-                {
-                  label: 'NVIDIA H100',
-                  value: 'nvidia-h100'
-                },
-                {
-                  label: 'Huawei 910B',
-                  value: 'huawei-910b'
-                },
-                {
-                  label: 'Huawei 910C',
-                  value: 'huawei-910c'
-                }
-              ]}
+              options={[]}
             ></SealSelect>
           </Form.Item>
           <Form.Item name={['gpu_selector', 'gpu_count']}>

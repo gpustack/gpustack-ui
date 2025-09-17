@@ -8,11 +8,9 @@ import {
 } from '@/pages/resources/config';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useAtom } from 'jotai';
-import _ from 'lodash';
 import { useState } from 'react';
 import { queryGPUList } from '../apis';
-import { ScheduleValueMap, setSourceRepoConfigValue } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
+import { ScheduleValueMap } from '../config';
 import { GPUListItem, ListItem } from '../config/types';
 
 type EmptyObject = Record<never, never>;
@@ -100,6 +98,7 @@ export const useGenerateGPUOptions = () => {
     setGpuOptions(gpuList);
     return gpuList;
   };
+
   return {
     getGPUOptionList,
     gpuOptions
@@ -190,7 +189,7 @@ export const useGenerateWorkerOptions = () => {
 };
 
 export default function useFormInitialValues() {
-  const { getGPUOptionList } = useGenerateGPUOptions();
+  const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
   const [, setClusterListAtom] = useAtom(clusterListAtom);
 
   const [clusterList, setClusterList] = useState<
@@ -220,43 +219,13 @@ export default function useFormInitialValues() {
     }
   };
 
-  const generateGPUSelector = (data: any, gpuOptions: any[]) => {
-    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-    if (gpu_ids.length === 0) {
-      return [];
-    }
-
-    const valueMap = new Map<string, string>();
-    gpuOptions?.forEach((item) => {
-      item.children?.forEach((child: any) => {
-        valueMap.set(child.value, item.value);
-      });
-    });
-
-    const gpuids: string[][] = gpu_ids
-      .map((id: string) => {
-        const parent = valueMap.get(id);
-        return parent ? [parent, id] : null;
-      })
-      .filter(Boolean) as string[][];
-
-    return data.backend === backendOptionsMap.voxBox ? gpuids[0] : gpuids;
-  };
-
   const generateFormValues = (data: ListItem, gpuOptions: any[]) => {
-    const result = setSourceRepoConfigValue(data?.source || '', data);
-
     const formData = {
-      ...result.values,
+      ...data,
       categories: data?.categories?.length ? data.categories[0] : null,
       scheduleType: data?.gpu_selector
         ? ScheduleValueMap.Manual
-        : ScheduleValueMap.Auto,
-      gpu_selector: data?.gpu_selector?.gpu_ids?.length
-        ? {
-            gpu_ids: generateGPUSelector(data, gpuOptions)
-          }
-        : null
+        : ScheduleValueMap.Auto
     };
     return formData;
   };
@@ -265,6 +234,7 @@ export default function useFormInitialValues() {
     getGPUOptionList,
     generateFormValues,
     getClusterList,
-    clusterList
+    clusterList,
+    gpuOptions
   };
 }

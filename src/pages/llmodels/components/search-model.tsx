@@ -1,11 +1,10 @@
 import { getRequestId, setRquestId } from '@/atoms/models';
 import BaseSelect from '@/components/seal-form/base/select';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Pagination, Tooltip } from 'antd';
+import { Pagination } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   evaluationsModelSpec,
@@ -62,7 +61,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const {
     modelSource,
     isDownload,
-    hasLinuxWorker,
     gpuOptions,
     clusterId,
     setLoadingModel,
@@ -94,7 +92,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
-  const filterGGUFRef = useRef<boolean | undefined>(!hasLinuxWorker);
   const filterTaskRef = useRef<string>('');
   const timer = useRef<any>(null);
   const requestIdRef = useRef<number>(0);
@@ -458,15 +455,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     });
   };
 
-  const handleFilterGGUFChange = (e: any) => {
-    filterGGUFRef.current = e.target.checked;
-    handleOnSearchRepo({
-      sortType: dataSource.sortType,
-      page: 1,
-      perPage: query.perPage
-    });
-  };
-
   const handleOnPageChange = (page: number) => {
     if (modelSource === modelSourceMap.huggingface_value) {
       const currentList = getCurrentPage(page);
@@ -507,32 +495,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     handleOnSelectModel(model, true);
   };
 
-  const renderGGUFTips = useMemo(() => {
-    return (
-      <Tooltip
-        styles={{
-          body: {
-            width: 'max-content'
-          }
-        }}
-        title={
-          <UL>
-            <li>{intl.formatMessage({ id: 'models.search.gguf.tips' })}</li>
-            <li>{intl.formatMessage({ id: 'models.search.vllm.tips' })}</li>
-            <li>
-              {intl.formatMessage({
-                id: 'models.search.voxbox.tips'
-              })}
-            </li>
-          </UL>
-        }
-      >
-        GGUF
-        <QuestionCircleOutlined className="m-l-4" />
-      </Tooltip>
-    );
-  }, [intl]);
-
   const renderHFSearch = () => {
     return (
       <>
@@ -562,13 +524,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               size="middle"
               style={{ width: '150px' }}
             ></BaseSelect>
-            {/* <Checkbox
-              onChange={handleFilterGGUFChange}
-              className="m-l-8"
-              checked={filterGGUFRef.current}
-            >
-              {renderGGUFTips}
-            </Checkbox> */}
           </span>
           <PaginationMain
             simple={{ readOnly: true }}

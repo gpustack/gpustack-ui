@@ -1,31 +1,30 @@
 import { PageActionType } from '@/config/types';
 import React from 'react';
+import { DeployFormKey } from './types';
 
 interface FormContextProps {
   isGGUF?: boolean;
-  byBuiltIn?: boolean;
+  formKey: DeployFormKey;
   source?: string;
   pageAction: PageActionType;
-  sizeOptions?: Global.BaseOption<number>[];
-  quantizationOptions?: Global.BaseOption<string>[];
   gpuOptions?: any[];
-  onSizeChange?: (val: number) => void;
-  onQuantizationChange?: (val: string) => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
+  onBackendChange?: (backend: string) => void;
 }
 
-interface FormInnerContextProps {
-  onBackendChange?: (backend: string) => void;
-  onValuesChange?: (changedValues: any, allValues: any) => void;
-  gpuOptions?: any[];
+interface CatalogFormContextProps {
+  sizeOptions: Global.BaseOption<number>[];
+  quantizationOptions: Global.BaseOption<string>[];
+  onSizeChange: (val: number) => void;
+  onQuantizationChange: (val: string) => void;
 }
 
 export const FormContext = React.createContext<FormContextProps>(
   {} as FormContextProps
 );
 
-export const FormInnerContext = React.createContext<FormInnerContextProps>(
-  {} as FormInnerContextProps
+export const CatalogFormContext = React.createContext<CatalogFormContextProps>(
+  {} as CatalogFormContextProps
 );
 
 export const useFormContext = () => {
@@ -36,11 +35,11 @@ export const useFormContext = () => {
   return context;
 };
 
-export const useFormInnerContext = () => {
-  const context = React.useContext(FormInnerContext);
+export const useCatalogFormContext = () => {
+  const context = React.useContext(CatalogFormContext);
   if (!context) {
     throw new Error(
-      'useFormInnerContext must be used within a FormInnerProvider'
+      'useCatalogFormContext must be used within a CatalogFormProvider'
     );
   }
   return context;

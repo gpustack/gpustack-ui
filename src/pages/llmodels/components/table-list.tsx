@@ -123,7 +123,7 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
-  const { getGPUOptionList, generateFormValues, clusterList, getClusterList } =
+  const { generateFormValues, clusterList, getClusterList } =
     useFormInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [updateFormInitials, setUpdateFormInitials] = useState<{
@@ -188,9 +188,7 @@ const Models: React.FC<ModelsProps> = ({
 
   useEffect(() => {
     const getData = async () => {
-      const res = await getClusterList();
-      const clusterId = res[0]?.value;
-      await getGPUOptionList({ clusterId });
+      await getClusterList();
     };
     getData();
     return () => {

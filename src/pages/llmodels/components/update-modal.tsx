@@ -1,38 +1,29 @@
 import ModalFooter from '@/components/modal-footer';
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
-import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Modal } from 'antd';
+import { Button, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
-  updateExcludeFields as excludeFields,
-  getSourceRepoConfigValue,
+  deployFormKeyMap,
   modelSourceMap,
   ScheduleValueMap,
-  sourceOptions,
   updateIgnoreFields
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { FormContext, FormInnerContext } from '../config/form-context';
-import { FormData, ListItem } from '../config/types';
-import HuggingFaceForm from '../forms/hugging-face';
-import LocalPathForm from '../forms/local-path';
+import { FormData } from '../config/types';
+import { generateGPUSelector } from '../config/utils';
 import { useCheckCompatibility } from '../hooks';
-import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
-import AdvanceConfig from './advance-config';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
+import DataForm from './data-form';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
   updateFormInitials: {
-    data?: ListItem;
+    data: FormData;
     isGGUF: boolean;
   };
   clusterList: Global.BaseOption<
@@ -56,21 +47,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const intl = useIntl();
   const {
     setWarningStatus,
-    generateGPUIds,
     handleBackendChangeBefore,
     checkTokenRef,
     warningStatus
   } = useCheckCompatibility();
-  const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
 
-  const { getRuleMessage } = useAppUtils();
-  const [form] = Form.useForm();
+  const formRef = useRef<any>(null);
   const submitAnyway = useRef<boolean>(false);
   const originFormData = useRef<any>(null);
-
-  const handleClusterChange = (value: number) => {
-    getGPUOptionList({ clusterId: value });
-  };
 
   const setOriginalFormData = () => {
     if (!originFormData.current) {
@@ -91,7 +75,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleOnValuesChange = _.debounce((data: any) => {
-    const formdata = form.getFieldsValue?.();
+    const formdata = formRef.current?.getFieldsValue?.();
     console.log('handleOnValuesChange:', formdata);
 
     let alldata = {};
@@ -138,10 +122,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
 
   // voxbox is not support multi gpu
   const handleSetGPUIds = (backend: string) => {
-    const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
+    const gpuids =
+      formRef.current?.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
 
     if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
-      form.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
+      formRef.current?.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
     }
   };
 
@@ -155,10 +140,14 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         cpu_offloading: true
       });
     }
-    form.setFieldsValue({ ...updates, backend_parameters: [], env: null });
+    formRef.current?.setFieldsValue({
+      ...updates,
+      backend_parameters: [],
+      env: null
+    });
     handleSetGPUIds(backend);
 
-    const data = form.getFieldsValue?.();
+    const data = formRef.current?.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
     if (res.show) {
       return;
@@ -185,23 +174,20 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleSumit = () => {
-    form.submit();
+    formRef.current?.submit();
   };
 
   const handleSubmitAnyway = async () => {
     submitAnyway.current = true;
-    form.submit?.();
+    formRef.current?.submit?.();
   };
 
-  const handleOk = async (data: FormData) => {
-    const formdata = getSourceRepoConfigValue(data.source, data).values;
-
+  const handleOk = async (formdata: FormData) => {
     let submitData = {} as FormData;
     const isVoxBox = [backendOptionsMap.voxBox].includes(formdata.backend);
 
     submitData = {
       ..._.omit(formdata, ['scheduleType']),
-      categories: formdata.categories ? [formdata.categories] : [],
       worker_selector:
         formdata.scheduleType === ScheduleValueMap.Manual
           ? null
@@ -211,25 +197,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             distributed_inference_across_workers: false,
             cpu_offloading: false
           }
-        : {}),
-      ...generateGPUIds(formdata)
+        : {})
     };
     onOk(submitData);
   };
 
-  const onValuesChange = (changedValues: any, allValues: any) => {
-    const fieldName = Object.keys(changedValues)[0];
-    if (excludeFields.includes(fieldName)) {
-      return;
-    }
-    handleOnValuesChange({
-      changedValues,
-      allValues,
-      source: formData?.source as string
-    });
-  };
-
   const handleManulOnValuesChange = (changedValues: any, allValues: any) => {
+    console.log('handleManulOnValuesChange:', { changedValues, allValues });
     handleOnValuesChange({
       changedValues,
       allValues,
@@ -249,17 +223,20 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     );
   }, [warningStatus.show, warningStatus.type, warningStatus.isDefault]);
 
-  const isVllmOrAscend = useMemo(() => {
-    return (
-      formData?.backend === backendOptionsMap.vllm ||
-      formData?.backend === backendOptionsMap.ascendMindie
-    );
-  }, [formData?.backend]);
-
   useEffect(() => {
+    const initGPUSelector = async () => {
+      const gpuOptions = await formRef.current?.getGPUOptionList({
+        clusterId: formData.cluster_id
+      });
+      const gpuSelector = generateGPUSelector(formData, gpuOptions);
+      formRef.current?.setFieldsValue(gpuSelector);
+    };
+
     if (open && formData) {
-      setOriginalFormData();
-      getGPUOptionList({ clusterId: formData.cluster_id });
+      setTimeout(() => {
+        setOriginalFormData();
+        initGPUSelector();
+      }, 100);
     }
     if (!open) {
       checkTokenRef.current?.cancel?.();
@@ -339,109 +316,18 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           </>
         }
       >
-        <FormContext.Provider
-          value={{
-            isGGUF: isGGUF,
-            pageAction: action,
-            onValuesChange: handleManulOnValuesChange
-          }}
-        >
-          <FormInnerContext.Provider
-            value={{
-              onBackendChange: handleBackendChange,
-              gpuOptions: gpuOptions
-            }}
-          >
-            <Form
-              name="updateModalForm"
-              form={form}
-              onFinish={handleOk}
-              onValuesChange={onValuesChange}
-              scrollToFirstError={true}
-              preserve={false}
-              clearOnDestroy={true}
-              initialValues={{
-                ...formData
-              }}
-              style={{
-                padding: 'var(--ant-modal-content-padding)',
-                paddingBlock: 0
-              }}
-            >
-              <Form.Item<FormData>
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                    message: getRuleMessage('input', 'common.table.name')
-                  }
-                ]}
-              >
-                <SealInput.Input
-                  label={intl.formatMessage({
-                    id: 'common.table.name'
-                  })}
-                  required
-                ></SealInput.Input>
-              </Form.Item>
-              <Form.Item<FormData>
-                name="source"
-                rules={[
-                  {
-                    required: true,
-                    message: getRuleMessage('select', 'models.form.source')
-                  }
-                ]}
-              >
-                <SealSelect
-                  disabled={true}
-                  label={intl.formatMessage({
-                    id: 'models.form.source'
-                  })}
-                  options={sourceOptions}
-                  required
-                ></SealSelect>
-              </Form.Item>
-
-              <HuggingFaceForm></HuggingFaceForm>
-              <LocalPathForm></LocalPathForm>
-              <Form.Item<FormData>
-                name="cluster_id"
-                rules={[
-                  {
-                    required: true,
-                    message: getRuleMessage('select', 'Cluster', false)
-                  }
-                ]}
-              >
-                {
-                  <SealSelect
-                    onChange={handleClusterChange}
-                    label="Cluster"
-                    options={clusterList}
-                    required
-                  ></SealSelect>
-                }
-              </Form.Item>
-              <Form.Item<FormData> name="description">
-                <SealInput.TextArea
-                  scaleSize={true}
-                  label={intl.formatMessage({
-                    id: 'common.table.description'
-                  })}
-                ></SealInput.TextArea>
-              </Form.Item>
-
-              <AdvanceConfig
-                form={form}
-                gpuOptions={gpuOptions}
-                action={PageAction.EDIT}
-                source={formData?.source || ''}
-                isGGUF={formData?.backend === backendOptionsMap.llamaBox}
-              ></AdvanceConfig>
-            </Form>
-          </FormInnerContext.Provider>
-        </FormContext.Provider>
+        <DataForm
+          formKey={deployFormKeyMap.deployment}
+          initialValues={formData}
+          source={formData.source || ''}
+          action={action}
+          clusterList={clusterList}
+          onOk={handleOk}
+          ref={formRef}
+          isGGUF={isGGUF}
+          onBackendChange={handleAsyncBackendChange}
+          onValuesChange={handleManulOnValuesChange}
+        ></DataForm>
       </ColumnWrapper>
     </Modal>
   );

@@ -1,20 +1,14 @@
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
-import useDeferredRequest from '@/hooks/use-deferred-request';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import {
-  defaultFormValues,
-  getSourceRepoConfigValue,
-  modelSourceMap
-} from '../config';
+import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { FormContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
 import {
   MessageStatus,
@@ -32,15 +26,9 @@ import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
 
-const resetFieldsByModel = ['backend_version', 'backend_parameters', 'env'];
 const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
 const dropFieldsFromForm = ['name', 'file_name', 'repo_id', 'backend'];
 const resetFields = ['worker_selector', 'env'];
-
-const resetFieldsByFile = [
-  'cpu_offloading',
-  'distributed_inference_across_workers'
-];
 
 const ModalFooterStyle = {
   padding: '16px 24px',
@@ -132,11 +120,6 @@ const AddModal: FC<AddModalProps> = (props) => {
   });
   const requestModelIdRef = useRef<number>(0);
   const currentSelectedModel = useRef<any>({});
-
-  const { run: fetchModelFiles } = useDeferredRequest(
-    () => modelFileRef.current?.fetchModelFiles?.(),
-    100
-  );
 
   const updateSelectedModel = (model: any) => {
     currentSelectedModel.current = model;
@@ -310,8 +293,8 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnOk = async (allValues: FormData) => {
-    const result = getSourceRepoConfigValue(props.source, allValues).values;
-    onOk(result);
+    console.log('handleOnOk:', allValues);
+    onOk(allValues);
   };
 
   const handleSubmitAnyway = async () => {
@@ -503,74 +486,66 @@ const AddModal: FC<AddModalProps> = (props) => {
             </>
           )}
 
-        <FormContext.Provider
-          value={{
-            isGGUF: isGGUF,
-            pageAction: action,
-            onValuesChange: onValuesChange
-          }}
-        >
-          <FormWrapper>
-            <ColumnWrapper
-              paddingBottom={warningStatus.show ? 170 : 50}
-              footer={
-                <>
-                  <CompatibilityAlert
-                    showClose={true}
-                    onClose={() => {
-                      setWarningStatus({
-                        show: false,
-                        message: ''
-                      });
-                    }}
-                    warningStatus={warningStatus}
-                    contentStyle={{ paddingInline: 0 }}
-                  ></CompatibilityAlert>
-                  <ModalFooter
-                    onCancel={handleCancel}
-                    onOk={handleSumit}
-                    showOkBtn={!showExtraButton}
-                    extra={
-                      showExtraButton && (
-                        <Button
-                          type="primary"
-                          onClick={handleSubmitAnyway}
-                          disabled={isGGUF}
-                        >
-                          {intl.formatMessage({
-                            id: 'models.form.submit.anyway'
-                          })}
-                        </Button>
-                      )
-                    }
-                    style={ModalFooterStyle}
-                  ></ModalFooter>
-                </>
-              }
-            >
+        <FormWrapper>
+          <ColumnWrapper
+            paddingBottom={warningStatus.show ? 170 : 50}
+            footer={
               <>
-                {SEARCH_SOURCE.includes(source) &&
-                  deploymentType === 'modelList' && (
-                    <TitleWrapper>
-                      {intl.formatMessage({ id: 'models.form.configurations' })}
-                    </TitleWrapper>
-                  )}
-                <DataForm
-                  initialValues={initialValues}
-                  source={source}
-                  action={action}
-                  clusterList={clusterList}
-                  selectedModel={selectedModel}
-                  onOk={handleOnOk}
-                  ref={form}
-                  isGGUF={isGGUF}
-                  onBackendChange={handleBackendChange}
-                  onValuesChange={onValuesChange}
-                ></DataForm>
+                <CompatibilityAlert
+                  showClose={true}
+                  onClose={() => {
+                    setWarningStatus({
+                      show: false,
+                      message: ''
+                    });
+                  }}
+                  warningStatus={warningStatus}
+                  contentStyle={{ paddingInline: 0 }}
+                ></CompatibilityAlert>
+                <ModalFooter
+                  onCancel={handleCancel}
+                  onOk={handleSumit}
+                  showOkBtn={!showExtraButton}
+                  extra={
+                    showExtraButton && (
+                      <Button
+                        type="primary"
+                        onClick={handleSubmitAnyway}
+                        disabled={isGGUF}
+                      >
+                        {intl.formatMessage({
+                          id: 'models.form.submit.anyway'
+                        })}
+                      </Button>
+                    )
+                  }
+                  style={ModalFooterStyle}
+                ></ModalFooter>
               </>
-            </ColumnWrapper>
-          </FormWrapper>
-        </FormContext.Provider>
+            }
+          >
+            <>
+              {SEARCH_SOURCE.includes(source) &&
+                deploymentType === 'modelList' && (
+                  <TitleWrapper>
+                    {intl.formatMessage({ id: 'models.form.configurations' })}
+                  </TitleWrapper>
+                )}
+              <DataForm
+                formKey={deployFormKeyMap.deployment}
+                initialValues={initialValues}
+                source={source}
+                action={action}
+                clusterList={clusterList}
+                onOk={handleOnOk}
+                ref={form}
+                isGGUF={isGGUF}
+                onBackendChange={handleBackendChange}
+                onValuesChange={onValuesChange}
+              ></DataForm>
+            </>
+          </ColumnWrapper>
+        </FormWrapper>
       </div>
     </GSDrawer>
   );

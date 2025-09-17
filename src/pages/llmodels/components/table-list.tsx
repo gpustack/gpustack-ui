@@ -38,11 +38,11 @@ import {
 } from '../apis';
 import {
   InstanceRealtimeLogStatus,
-  backendOptionsMap,
   modelCategories,
   modelCategoriesMap,
   modelSourceMap
 } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import {
   ButtonList,
   categoryToPathMap,

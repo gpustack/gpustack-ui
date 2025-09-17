@@ -49,12 +49,6 @@ const Scaling: React.FC = () => {
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
 
-  const handleScheduleTypeChange = (value: string) => {
-    if (value === 'auto') {
-      onValuesChange?.({}, form.getFieldsValue());
-    }
-  };
-
   const handleOnQuantizationChange = (val: any) => {
     onQuantizationChange?.(val);
   };

@@ -9,12 +9,12 @@ import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec } from '../apis';
 import {
-  backendOptionsMap,
   getSourceRepoConfigValue,
   modelSourceMap,
   modelTaskMap
 } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { EvaluateResult, FormData } from '../config/types';
 
 export type MessageStatus = {

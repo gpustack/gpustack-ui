@@ -1,4 +1,6 @@
-const options = [
+import { BackendParameter } from './index';
+
+const options: BackendParameter[] = [
   {
     label: '--uvicorn-log-level',
     value: '--uvicorn-log-level',
@@ -774,17 +776,4 @@ const options = [
   }
 ];
 
-const resultList = options.map((option) => {
-  return {
-    label: option.label,
-    value: option.value,
-    opts: option.options.map((opt) => {
-      return {
-        label: opt,
-        value: opt
-      };
-    })
-  };
-});
-
-export default resultList;
+export default options;

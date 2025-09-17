@@ -7,8 +7,9 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
-import { backendOptionsMap, modelSourceMap } from '@/pages/llmodels/config';
+import { modelSourceMap } from '@/pages/llmodels/config';
 import { identifyModelTask } from '@/pages/llmodels/config/audio-catalog';
+import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
 import {
   modalConfig,
   onLineSourceOptions

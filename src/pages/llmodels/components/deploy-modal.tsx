@@ -9,11 +9,11 @@ import _ from 'lodash';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
-  backendOptionsMap,
   defaultFormValues,
   getSourceRepoConfigValue,
   modelSourceMap
 } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
 import {

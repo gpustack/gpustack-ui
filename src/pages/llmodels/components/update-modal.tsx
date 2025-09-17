@@ -9,13 +9,14 @@ import { Button, Form, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
-  backendOptionsMap,
   updateExcludeFields as excludeFields,
   getSourceRepoConfigValue,
   modelSourceMap,
+  ScheduleValueMap,
   sourceOptions,
   updateIgnoreFields
 } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext, FormInnerContext } from '../config/form-context';
 import { FormData, ListItem } from '../config/types';
 import HuggingFaceForm from '../forms/hugging-face';
@@ -94,7 +95,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     console.log('handleOnValuesChange:', formdata);
 
     let alldata = {};
-    if (formdata.scheduleType === 'manual') {
+    if (formdata.scheduleType === ScheduleValueMap.Manual) {
       alldata = {
         ..._.omit(formdata, ['worker_selector']),
         env: formdata.env || originFormData.current?.env || null,
@@ -202,7 +203,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       ..._.omit(formdata, ['scheduleType']),
       categories: formdata.categories ? [formdata.categories] : [],
       worker_selector:
-        formdata.scheduleType === 'manual' ? null : formdata.worker_selector,
+        formdata.scheduleType === ScheduleValueMap.Manual
+          ? null
+          : formdata.worker_selector,
       ...(isVoxBox
         ? {
             distributed_inference_across_workers: false,

@@ -26,12 +26,8 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
-import {
-  InstanceStatusMap,
-  InstanceStatusMapValue,
-  backendOptionsMap,
-  status
-} from '../config';
+import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import {
   DistributedServerItem,
   DistributedServers,

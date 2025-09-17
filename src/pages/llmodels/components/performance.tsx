@@ -5,7 +5,8 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
-import { backendOptionsMap } from '../config';
+import { scheduleList, ScheduleValueMap } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext, useFormInnerContext } from '../config/form-context';
 import GPUCard from './gpu-card';
 
@@ -34,7 +35,7 @@ const Performance: React.FC = () => {
   const form = Form.useFormInstance();
 
   const handleScheduleTypeChange = (value: string) => {
-    if (value === 'auto') {
+    if (value === ScheduleValueMap.Auto) {
       onValuesChange?.({}, form.getFieldsValue());
     }
   };
@@ -52,29 +53,11 @@ const Performance: React.FC = () => {
           onChange={handleScheduleTypeChange}
           label={intl.formatMessage({ id: 'models.form.scheduletype' })}
           description={<TooltipList list={scheduleTypeTips}></TooltipList>}
-          options={[
-            {
-              label: intl.formatMessage({
-                id: 'models.form.scheduletype.auto'
-              }),
-              value: 'auto'
-            },
-            {
-              label: intl.formatMessage({
-                id: 'models.form.scheduletype.manual'
-              }),
-              value: 'manual'
-            },
-            {
-              label: intl.formatMessage({
-                id: 'models.form.scheduletype.gpuType'
-              }),
-              value: 'specific_gpu_type'
-            }
-          ]}
+          options={scheduleList}
         ></SealSelect>
       </Form.Item>
-      {form.getFieldValue('scheduleType') === 'specific_gpu_type' && (
+      {form.getFieldValue('scheduleType') ===
+        ScheduleValueMap.SpecificGPUType && (
         <>
           <Form.Item name={['gpu_selector', 'gpu_type']}>
             <SealSelect
@@ -128,7 +111,7 @@ const Performance: React.FC = () => {
           </Form.Item>
         </>
       )}
-      {form.getFieldValue('scheduleType') === 'manual' &&
+      {form.getFieldValue('scheduleType') === ScheduleValueMap.Manual &&
         !form.getFieldValue('fix_gpu_type') && (
           <>
             <Form.Item

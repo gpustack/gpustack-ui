@@ -11,7 +11,8 @@ import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useState } from 'react';
 import { queryGPUList } from '../apis';
-import { backendOptionsMap, setSourceRepoConfigValue } from '../config';
+import { ScheduleValueMap, setSourceRepoConfigValue } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { GPUListItem, ListItem } from '../config/types';
 
 type EmptyObject = Record<never, never>;
@@ -248,7 +249,9 @@ export default function useFormInitialValues() {
     const formData = {
       ...result.values,
       categories: data?.categories?.length ? data.categories[0] : null,
-      scheduleType: data?.gpu_selector ? 'manual' : 'auto',
+      scheduleType: data?.gpu_selector
+        ? ScheduleValueMap.Manual
+        : ScheduleValueMap.Auto,
       gpu_selector: data?.gpu_selector?.gpu_ids?.length
         ? {
             gpu_ids: generateGPUSelector(data, gpuOptions)

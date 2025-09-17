@@ -7,25 +7,25 @@ import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Collapse, Form, FormInstance, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
   backendLabelMap,
-  backendOptionsMap,
   backendParamsHolderTips,
   backendTipsList,
   getBackendParamsTips,
   modelCategories,
   modelSourceMap,
-  placementStrategyOptions
+  placementStrategyOptions,
+  ScheduleValueMap
 } from '../config';
+import BackendParameters, {
+  backendOptionsMap
+} from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
-import mindieConfig from '../config/mindie-config';
 import { FormData } from '../config/types';
-import vllmConfig from '../config/vllm-config';
 import dataformStyles from '../style/data-form.less';
 import Performance from './performance';
 
@@ -52,7 +52,6 @@ const placementStrategyTips = [
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const { form, isGGUF, gpuOptions, source, backendOptions, action } = props;
-  const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
   const EnviromentVars = Form.useWatch('env', form);
@@ -67,13 +66,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const { onValuesChange } = useFormContext();
 
   const paramsConfig = useMemo(() => {
-    if (backend === backendOptionsMap.vllm) {
-      return vllmConfig;
-    }
-    if (backend === backendOptionsMap.ascendMindie) {
-      return mindieConfig;
-    }
-    return [];
+    return _.get(BackendParameters, backend, []);
   }, [backend]);
 
   const backendParamsTips = useMemo(() => {
@@ -137,7 +130,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   };
 
   const handleScheduleTypeChange = (value: string) => {
-    if (value === 'auto') {
+    if (value === ScheduleValueMap.Auto) {
       onValuesChange?.({}, form.getFieldsValue());
     }
   };
@@ -202,7 +195,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             }
           ></SealSelect>
         </Form.Item>
-        {scheduleType === 'auto' && (
+        {scheduleType === ScheduleValueMap.Auto && (
           <>
             <Form.Item<FormData> name="placement_strategy">
               <SealSelect
@@ -221,7 +214,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
                 ({ getFieldValue }) => ({
                   validator(rule, value) {
                     if (
-                      getFieldValue('scheduleType') === 'auto' &&
+                      getFieldValue('scheduleType') === ScheduleValueMap.Auto &&
                       _.keys(value).length > 0
                     ) {
                       if (_.some(_.keys(value), (k: string) => !value[k])) {
@@ -263,35 +256,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </>
         )}
-        {/* {scheduleType === 'manual' && (
-          <>
-            <Form.Item
-              name={['gpu_selector', 'gpu_ids']}
-              rules={[
-                {
-                  required: true,
-                  message: getRuleMessage('select', 'models.form.gpuselector')
-                }
-              ]}
-            >
-              <SealCascader
-                required
-                showSearch
-                expandTrigger="hover"
-                multiple={backend !== backendOptionsMap.voxBox}
-                popupClassName="cascader-popup-wrapper gpu-selector"
-                maxTagCount={1}
-                label={intl.formatMessage({ id: 'models.form.gpuselector' })}
-                options={gpuOptions}
-                showCheckedStrategy="SHOW_CHILD"
-                value={form.getFieldValue(['gpu_selector', 'gpu_ids'])}
-                optionNode={GPUCard}
-                getPopupContainer={(triggerNode) => triggerNode.parentNode}
-                onChange={handleGpuSelectorChange}
-              ></SealCascader>
-            </Form.Item>
-          </>
-        )} */}
 
         <Form.Item name="backend_version">
           <SealInput.Input
@@ -402,7 +366,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           ></LabelSelector>
         </Form.Item>
 
-        {scheduleType === 'auto' &&
+        {scheduleType === ScheduleValueMap.Auto &&
           [backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
             backend
           ) && (

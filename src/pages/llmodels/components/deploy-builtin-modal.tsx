@@ -10,11 +10,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
-  backendOptionsMap,
   defaultFormValues,
   modelCategoriesMap,
   sourceOptions
 } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
 import { useCheckCompatibility } from '../hooks';
@@ -321,6 +321,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     } else {
       setIsGGUF(false);
     }
+
     const sizeList = handleSetSizeOptions({
       backend: backend
     });

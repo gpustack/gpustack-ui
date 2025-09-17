@@ -5,11 +5,8 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { useRef } from 'react';
-import {
-  backendOptionsMap,
-  localPathTipsList,
-  modelSourceMap
-} from '../config';
+import { localPathTipsList, modelSourceMap } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext, useFormInnerContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { checkOnlyAscendNPU } from '../hooks';

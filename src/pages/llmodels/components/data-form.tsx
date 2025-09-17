@@ -6,7 +6,8 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { backendOptionsMap, excludeFields, sourceOptions } from '../config';
+import { excludeFields, ScheduleValueMap, sourceOptions } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { FormInnerContext } from '../config/form-context';
 import { FormData, SourceType } from '../config/types';
 import CatalogFrom from '../forms/catalog';
@@ -193,7 +194,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           source: props.source,
           placement_strategy: 'spread',
           cpu_offloading: true,
-          scheduleType: 'auto',
+          scheduleType: ScheduleValueMap.Auto,
           categories: null,
           restart_on_error: true,
           distributed_inference_across_workers: true,

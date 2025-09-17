@@ -1,6 +1,7 @@
 import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
+import { backendOptionsMap } from './backend-parameters';
 
 export const backendTipsList = [
   {
@@ -41,18 +42,12 @@ export const localPathTipsList = [
   }
 ];
 
-export const backendOptionsMap = {
-  llamaBox: 'llama-box',
-  vllm: 'vllm',
-  voxBox: 'vox-box',
-  ascendMindie: 'ascend-mindie'
-};
-
 export const backendLabelMap = {
   [backendOptionsMap.llamaBox]: 'llama-box',
   [backendOptionsMap.vllm]: 'vLLM',
   [backendOptionsMap.voxBox]: 'vox-box',
-  [backendOptionsMap.ascendMindie]: 'Ascend MindIE'
+  [backendOptionsMap.ascendMindie]: 'Ascend MindIE',
+  [backendOptionsMap.custom]: 'Custom'
 };
 
 export const backendParamsHolderTips = {
@@ -136,11 +131,6 @@ export const sourceOptions = [
     key: 'huggingface'
   },
   {
-    label: 'Ollama Library',
-    value: modelSourceMap.ollama_library_value,
-    key: 'ollama_library'
-  },
-  {
     label: 'ModelScope',
     value: modelSourceMap.modelscope_value,
     key: 'model_scope'
@@ -197,6 +187,30 @@ export const status: any = {
   [InstanceStatusMap.Starting]: StatusMaps.transitioning,
   [InstanceStatusMap.Unreachable]: StatusMaps.error
 };
+
+export const ScheduleValueMap = {
+  Auto: 'auto',
+  Manual: 'manual',
+  SpecificGPUType: 'specific_gpu_type'
+};
+
+export const scheduleList = [
+  {
+    label: 'models.form.scheduletype.auto',
+    locale: true,
+    value: ScheduleValueMap.Auto
+  },
+  {
+    label: 'models.form.scheduletype.manual',
+    value: ScheduleValueMap.Manual,
+    locale: true
+  }
+  // {
+  //   label: 'models.form.scheduletype.gpuType',
+  //   value: ScheduleValueMap.SpecificGPUType,
+  //   locale: true
+  // }
+];
 
 export const ActionList = [
   {
@@ -414,7 +428,7 @@ export const defaultFormValues = {
   description: '',
   categories: null,
   env: {},
-  scheduleType: 'auto',
+  scheduleType: ScheduleValueMap.Auto,
   placement_strategy: 'spread',
   gpu_ids: null,
   gpu_selector: {},

@@ -43,6 +43,7 @@ const icons = {
   TencentCloud: React.createElement(IconFont, { type: 'icon-tencentcloud' }),
   Nvidia: React.createElement(IconFont, { type: 'icon-nvidia' }),
   Ascend: React.createElement(IconFont, { type: 'icon-ascend' }),
+  Catalog1: React.createElement(IconFont, { type: 'icon-catalog1' }),
   AMD: React.createElement(IconFont, { type: 'icon-amd' }),
   KubernetesFilled: React.createElement(IconFont, { type: 'icon-k8s-filled' })
 };

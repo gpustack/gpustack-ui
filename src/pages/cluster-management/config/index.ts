@@ -160,7 +160,7 @@ export const clusterActionList = [
     label: 'resources.button.create',
     provider: ProviderValueMap.Docker,
     locale: true,
-    icon: icons.Docker
+    icon: icons.DockerOutlined
   },
   {
     key: 'register_cluster',
@@ -174,7 +174,7 @@ export const clusterActionList = [
     label: 'clusters.button.addNodePool',
     provider: ProviderValueMap.DigitalOcean,
     locale: true,
-    icon: icons.Catalog
+    icon: icons.Catalog1
   },
   {
     key: 'delete',

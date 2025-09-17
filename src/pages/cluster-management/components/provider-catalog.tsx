@@ -36,6 +36,7 @@ interface ProviderCatalogProps {
   cols?: number;
   current?: ProviderType | string;
   clickable?: boolean;
+  height: string | number;
   dataList: {
     label: string;
     key: string;
@@ -52,6 +53,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   cols = 3,
   dataList,
   clickable,
+  height,
   current
 }) => {
   const intl = useIntl();
@@ -77,7 +79,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
           <Wrapper $cols={cols}>
             {items?.map((action) => (
               <Card
-                height="80px"
+                height={height}
                 key={action.key}
                 onClick={() => onSelect?.(action.key as string, action)}
                 active={current === action.key}

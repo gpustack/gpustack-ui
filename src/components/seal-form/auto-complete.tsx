@@ -1,10 +1,8 @@
 import { AutoComplete, Form, Spin } from 'antd';
 import type { AutoCompleteProps } from 'antd/lib';
-import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
-import AutoCompleteLabel from './wrapper/auto-complete-label';
 import SelectWrapper from './wrapper/select';
 
 const SealAutoComplete: React.FC<
@@ -26,7 +24,6 @@ const SealAutoComplete: React.FC<
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
-  const [_isFocus_, _setIsFocus_] = useState(false);
   const inputRef = useRef<any>(null);
   let status = '';
   if (isInFormItems) {
@@ -44,7 +41,6 @@ const SealAutoComplete: React.FC<
     if (!props.disabled && !isFocus) {
       inputRef.current?.focus?.();
       setIsFocus(true);
-      _setIsFocus_(true);
     }
   };
 
@@ -53,20 +49,17 @@ const SealAutoComplete: React.FC<
     if (trim) {
       value = value?.trim?.();
     }
-    _setIsFocus_(false);
     props.onChange?.(value, option);
   };
 
   const handleOnFocus = (e: any) => {
     setIsFocus(true);
-    _setIsFocus_(true);
     props.onFocus?.(e);
   };
 
   const handleOnBlur = (e: any) => {
     if (!props.value) {
       setIsFocus(false);
-      _setIsFocus_(false);
     }
     e.target.value = e.target.value?.trim?.();
     props.onBlur?.(e);
@@ -84,39 +77,6 @@ const SealAutoComplete: React.FC<
       return <Spin size="small"></Spin>;
     }
     return addAfter;
-  };
-
-  const renderAutoCompleteLabel = () => {
-    console.log(
-      'renderAutoCompleteLabel===',
-      props.value,
-      props.showSearch,
-      _isFocus_,
-      isFocus
-    );
-    if (!props.showSearch || _isFocus_) {
-      return null;
-    }
-    let selectItem: {
-      label: React.ReactNode;
-      value: string | number;
-    } = props.options?.find((item: any) => item.value === props.value) as {
-      label: React.ReactNode;
-      value: string | number;
-    };
-
-    if (!selectItem) {
-      selectItem = { label: props.value, value: props.value };
-    }
-    return (
-      <AutoCompleteLabel
-        className={classNames({
-          disabled: props.disabled
-        })}
-      >
-        {props.labelRender ? props.labelRender(selectItem) : selectItem.label}
-      </AutoCompleteLabel>
-    );
   };
 
   return (

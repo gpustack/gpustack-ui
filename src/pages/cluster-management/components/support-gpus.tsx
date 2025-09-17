@@ -112,6 +112,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   return (
     <ProviderCatalog
       onSelect={onSelect}
+      height={60}
       current={current}
       dataList={supportedHardPlatforms}
       clickable={clickable}

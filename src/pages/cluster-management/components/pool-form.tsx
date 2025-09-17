@@ -425,7 +425,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
               showSearch
               allowClear
               onChange={handleOsImageChange}
-              filterOption={filterImageOption}
               optionRender={(option) =>
                 RenderOption({
                   ...option,

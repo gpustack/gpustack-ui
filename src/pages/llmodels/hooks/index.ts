@@ -8,11 +8,7 @@ import { useAtomValue } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec } from '../apis';
-import {
-  getSourceRepoConfigValue,
-  modelSourceMap,
-  modelTaskMap
-} from '../config';
+import { modelSourceMap, modelTaskMap } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { EvaluateResult, FormData } from '../config/types';
@@ -394,6 +390,7 @@ export const useCheckCompatibility = () => {
 
   const generateGPUIds = (data: FormData) => {
     const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+    console.log('generateGPUIds', gpu_ids);
     if (!gpu_ids.length) {
       return {
         gpu_selector: null
@@ -454,11 +451,10 @@ export const useCheckCompatibility = () => {
       return;
     }
 
-    cacheFormValuesRef.current = allValues;
-    const data = getSourceRepoConfigValue(source, allValues);
-    const gpuSelector = generateGPUIds(data.values);
+    cacheFormValuesRef.current = _.cloneDeep(allValues);
+    const gpuSelector = generateGPUIds(allValues);
     return await handleDoEvalute({
-      ...data.values,
+      ...allValues,
       ...gpuSelector,
       replicas: allValues.replicas || 0
     });
@@ -534,8 +530,13 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
     });
 
     return {
-      repo_id: selectModel.name,
-      file_name: '',
+      ...(source === modelSourceMap.huggingface_value
+        ? { huggingface_repo_id: selectModel.name }
+        : {}),
+      ...(source === modelSourceMap.modelscope_value
+        ? { model_scope_model_id: selectModel.name }
+        : {}),
+      ...modelTaskData,
       name: name,
       source: source,
       backend: backend

@@ -30,6 +30,8 @@ export interface ListItem {
   worker_selector?: object;
 }
 
+export type DeployFormKey = 'deployment' | 'catalog';
+
 export type SourceType =
   | 'huggingface'
   | 'model_scope'
@@ -45,7 +47,7 @@ export interface FormData {
   categories?: string[];
   backend_parameters?: string[];
   backend_version?: string;
-  source: string;
+  source: SourceType;
   repo_id: string;
   file_name: string;
   huggingface_repo_id: string;

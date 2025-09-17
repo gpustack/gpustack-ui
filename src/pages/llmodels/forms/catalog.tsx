@@ -2,25 +2,27 @@ import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
 import { Form } from 'antd';
 import React from 'react';
-import { useFormContext } from '../config/form-context';
+import { deployFormKeyMap } from '../config';
+import { useCatalogFormContext, useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const CatalogForm: React.FC = () => {
   const formCtx = useFormContext();
+  const catalogFormCtx = useCatalogFormContext();
   const { getRuleMessage } = useAppUtils();
+  const { formKey } = formCtx;
   const {
-    isGGUF,
-    byBuiltIn,
     sizeOptions,
     quantizationOptions,
     onSizeChange,
     onQuantizationChange
-  } = formCtx;
-  const source = Form.useWatch('source');
+  } = catalogFormCtx;
 
-  console.log('HuggingFaceForm', { source, isGGUF });
-
-  if (!byBuiltIn && !sizeOptions?.length && !quantizationOptions?.length) {
+  if (
+    formKey !== deployFormKeyMap.catalog &&
+    !sizeOptions?.length &&
+    !quantizationOptions?.length
+  ) {
     return null;
   }
 

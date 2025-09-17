@@ -1,7 +1,7 @@
 import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
-import _ from 'lodash';
 import { backendOptionsMap } from './backend-parameters';
+import { DeployFormKey } from './types';
 
 export const backendTipsList = [
   {
@@ -277,59 +277,6 @@ export const modelCategories = [
   ...categoryOptions
 ];
 
-export const sourceRepoConfig = {
-  [modelSourceMap.huggingface_value]: {
-    repo_id: 'huggingface_repo_id',
-    file_name: 'huggingface_filename'
-  },
-
-  [modelSourceMap.modelscope_value]: {
-    repo_id: 'model_scope_model_id',
-    file_name: 'model_scope_file_path'
-  }
-};
-
-export const getSourceRepoConfigValue = (
-  source: string,
-  data: any
-): {
-  values: typeof data;
-} => {
-  const config: Record<string, any> = sourceRepoConfig[source] || {};
-  const result: Record<string, any> = {};
-  const omits: string[] = [];
-  Object.keys(config)?.forEach((key: string) => {
-    if (config[key]) {
-      result[config[key]] = data[key];
-      omits.push(key);
-    }
-  });
-  return {
-    values: { ...result, ..._.omit(data, omits) }
-  };
-};
-
-export const setSourceRepoConfigValue = (
-  source: string,
-  data: any
-): {
-  values: Record<string, any>;
-} => {
-  const config: Record<string, any> = sourceRepoConfig[source] || {};
-  const result: Record<string, any> = {};
-  const omits: string[] = [];
-  Object.keys(config)?.forEach((key: string) => {
-    if (config[key]) {
-      result[key] = data[config[key]];
-      omits.push(config[key]);
-    }
-  });
-
-  return {
-    values: { ...result, ..._.omit(data, omits) }
-  };
-};
-
 export const getbackendParameters = (data: any) => {
   const backendParameters = data.backend_parameters || {};
   const result: string[] = [];
@@ -487,3 +434,8 @@ export const scheduleTypeTips = [
     tips: 'models.form.scheduletype.manual.tips'
   }
 ];
+
+export const deployFormKeyMap: Record<string, DeployFormKey> = {
+  deployment: 'deployment',
+  catalog: 'catalog'
+};

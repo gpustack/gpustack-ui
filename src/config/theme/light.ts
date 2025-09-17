@@ -78,6 +78,7 @@ export default {
     colorText: 'rgba(0,0,0,1)',
     colorPrimary: '#007BFF',
     colorSuccess: '#54cc98',
+    colorBorder: '#d3d0d9',
     borderRadius: 4,
     borderRadiusSM: 2,
     colorBgContainer: '#fff',

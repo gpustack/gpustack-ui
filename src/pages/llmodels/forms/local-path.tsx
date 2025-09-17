@@ -5,24 +5,25 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { useRef } from 'react';
-import { localPathTipsList, modelSourceMap } from '../config';
+import { deployFormKeyMap, localPathTipsList, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { useFormContext, useFormInnerContext } from '../config/form-context';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import { checkOnlyAscendNPU } from '../hooks';
 
 const LocalPathForm: React.FC = () => {
   const form = Form.useFormInstance();
   const formCtx = useFormContext();
-  const formInnerCtx = useFormInnerContext();
   const source = Form.useWatch('source', form);
-  const { onBackendChange, onValuesChange, gpuOptions } = formInnerCtx;
-  const { byBuiltIn } = formCtx;
+  const { formKey, gpuOptions, onValuesChange, onBackendChange } = formCtx;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const localPathCache = useRef<string>(form.getFieldValue('local_path') || '');
 
-  if (![modelSourceMap.local_path_value].includes(source) || byBuiltIn) {
+  if (
+    ![modelSourceMap.local_path_value].includes(source) ||
+    formKey === deployFormKeyMap.catalog
+  ) {
     return null;
   }
 

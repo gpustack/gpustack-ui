@@ -8,8 +8,8 @@ import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { excludeFields, ScheduleValueMap, sourceOptions } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { FormInnerContext } from '../config/form-context';
-import { FormData, SourceType } from '../config/types';
+import { FormContext } from '../config/form-context';
+import { DeployFormKey, FormData, SourceType } from '../config/types';
 import CatalogFrom from '../forms/catalog';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
@@ -21,8 +21,8 @@ interface DataFormProps {
   ref?: any;
   source: SourceType;
   action: PageActionType;
-  selectedModel: any;
   isGGUF: boolean;
+  formKey: DeployFormKey;
   sourceDisable?: boolean;
   backendOptions?: Global.BaseOption<string>[];
   sourceList?: Global.BaseOption<string>[];
@@ -38,6 +38,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const {
     action,
     isGGUF,
+    formKey,
     initialValues,
     sourceDisable = true,
     backendOptions,
@@ -77,7 +78,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       });
     }
     form.setFieldsValue({
-      ...updates,
+      backend_version: '',
       backend_parameters: [],
       env: null
     });
@@ -116,11 +117,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // generate the data is available for the backend including the gpu_ids
   const handleOk = async (formdata: FormData) => {
     let data = _.cloneDeep(formdata);
-    data.categories = Array.isArray(data.categories)
-      ? data.categories
-      : data.categories
-        ? [data.categories]
-        : [];
+    data.categories = data.categories ? [data.categories] : [];
     const gpuSelector = generateGPUIds(data);
     const allValues = {
       ..._.omit(data, ['scheduleType']),
@@ -166,18 +163,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       getFieldsValue: () => {
         return form.getFieldsValue();
       },
-      getGPUOptionList(params: { clusterId: number }) {
-        getGPUOptionList(params);
+      getGPUOptionList: async (params: { clusterId: number }) => {
+        return await getGPUOptionList(params);
       }
     };
   });
 
   return (
-    <FormInnerContext.Provider
+    <FormContext.Provider
       value={{
-        onBackendChange: handleBackendChange,
+        isGGUF: isGGUF,
+        formKey: formKey,
+        pageAction: action,
+        gpuOptions: gpuOptions,
         onValuesChange: onValuesChange,
-        gpuOptions: gpuOptions
+        onBackendChange: handleBackendChange
       }}
     >
       <Form
@@ -261,47 +261,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             ></SealSelect>
           }
         </Form.Item>
-        {/* <Form.Item name="backend" rules={[{ required: true }]}>
-        <SealSelect
-          required
-          onChange={handleBackendChange}
-          label={intl.formatMessage({ id: 'models.form.backend' })}
-          description={<TooltipList list={backendTipsList}></TooltipList>}
-          options={
-            backendOptions ?? [
-              {
-                label: backendLabelMap[backendOptionsMap.vllm],
-                value: backendOptionsMap.vllm,
-                disabled:
-                  props.source === modelSourceMap.local_path_value
-                    ? false
-                    : isGGUF
-              },
-              {
-                label: backendLabelMap[backendOptionsMap.ascendMindie],
-                value: backendOptionsMap.ascendMindie,
-                disabled:
-                  props.source === modelSourceMap.local_path_value
-                    ? false
-                    : isGGUF
-              },
-              {
-                label: backendLabelMap[backendOptionsMap.voxBox],
-                value: backendOptionsMap.voxBox,
-                disabled:
-                  props.source === modelSourceMap.local_path_value
-                    ? false
-                    : props.source === modelSourceMap.ollama_library_value ||
-                      isGGUF
-              }
-            ]
-          }
-          disabled={
-            action === PageAction.EDIT &&
-            props.source !== modelSourceMap.local_path_value
-          }
-        ></SealSelect>
-      </Form.Item> */}
         <CatalogFrom></CatalogFrom>
         <Form.Item<FormData> name="description">
           <SealInput.TextArea
@@ -321,7 +280,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           handleBackendChange={handleBackendChange}
         ></AdvanceConfig>
       </Form>
-    </FormInnerContext.Provider>
+    </FormContext.Provider>
   );
 });
 

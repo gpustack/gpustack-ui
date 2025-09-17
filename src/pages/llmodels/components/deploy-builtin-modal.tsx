@@ -11,11 +11,12 @@ import styled from 'styled-components';
 import { queryCatalogItemSpec } from '../apis';
 import {
   defaultFormValues,
+  deployFormKeyMap,
   modelCategoriesMap,
   sourceOptions
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { FormContext } from '../config/form-context';
+import { CatalogFormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
 import { useCheckCompatibility } from '../hooks';
 import useFormInitialValues from '../hooks/use-form-initial-values';
@@ -107,8 +108,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [sourceList, setSourceList] = useState<any[]>([]);
   const [backendList, setBackendList] = useState<any[]>([]);
-  const [sizeOptions, setSizeOptions] = useState<any[]>([]);
-  const [quantizationOptions, setQuantizationOptions] = useState<any[]>([]);
+  const [sizeOptions, setSizeOptions] = useState<Global.BaseOption<number>[]>(
+    []
+  );
+  const [quantizationOptions, setQuantizationOptions] = useState<
+    Global.BaseOption<string>[]
+  >([]);
   const sourceGroupMap = useRef<any>({});
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
@@ -529,16 +534,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       width={width}
       footer={false}
     >
-      <FormContext.Provider
+      <CatalogFormContext.Provider
         value={{
-          isGGUF: isGGUF,
-          byBuiltIn: true,
           sizeOptions: sizeOptions,
           quantizationOptions: quantizationOptions,
-          pageAction: action,
           onSizeChange: handleOnSizeChange,
-          onQuantizationChange: handleOnQuantizationChange,
-          onValuesChange: onValuesChange
+          onQuantizationChange: handleOnQuantizationChange
         }}
       >
         <FormWrapper>
@@ -590,10 +591,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 fields={[]}
                 source={source}
                 action={action}
-                selectedModel={{}}
                 onOk={handleOk}
                 ref={form}
                 isGGUF={isGGUF}
+                formKey={deployFormKeyMap.catalog}
                 sourceDisable={false}
                 backendOptions={backendList}
                 sourceList={sourceList}
@@ -605,7 +606,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             </>
           </ColumnWrapper>
         </FormWrapper>
-      </FormContext.Provider>
+      </CatalogFormContext.Provider>
     </GSDrawer>
   );
 };

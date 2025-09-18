@@ -72,6 +72,7 @@ const Credentials: React.FC = () => {
   const intl = useIntl();
   const [registerClusterStatus, setRegisterClusterStatus] = useState<{
     open: boolean;
+    provider: ProviderType;
     registrationInfo: {
       token: string;
       image: string;
@@ -80,6 +81,7 @@ const Credentials: React.FC = () => {
     };
   }>({
     open: false,
+    provider: null,
     registrationInfo: {
       token: '',
       image: '',
@@ -224,6 +226,7 @@ const Credentials: React.FC = () => {
       const info = await queryClusterToken({ id: row.id });
       setRegisterClusterStatus({
         open: true,
+        provider: row.provider as ProviderType,
         registrationInfo: {
           ...info,
           cluster_id: row.id
@@ -410,10 +413,12 @@ const Credentials: React.FC = () => {
       <RegisterCluster
         title={intl.formatMessage({ id: 'clusters.button.register' })}
         open={registerClusterStatus.open}
+        provider={registerClusterStatus.provider}
         registrationInfo={registerClusterStatus.registrationInfo}
         onCancel={() => {
           setRegisterClusterStatus({
             open: false,
+            provider: null,
             registrationInfo: {
               token: '',
               image: '',

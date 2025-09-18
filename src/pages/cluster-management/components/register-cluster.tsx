@@ -1,10 +1,12 @@
 import ScrollerModal from '@/components/scroller-modal/index';
 import React from 'react';
-import RegisterClusterInner from './register-cluster-inner';
+import { ProviderType } from '../config';
+import AddWorkerStep from './add-worker-step';
 
 type AddModalProps = {
   title: string;
   open: boolean;
+  provider: ProviderType;
   registrationInfo: {
     token: string;
     image: string;
@@ -16,6 +18,7 @@ type AddModalProps = {
 const AddCluster: React.FC<AddModalProps> = ({
   title,
   open,
+  provider,
   registrationInfo,
   onCancel
 }) => {
@@ -32,10 +35,10 @@ const AddCluster: React.FC<AddModalProps> = ({
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      width={860}
       footer={false}
     >
-      <RegisterClusterInner registrationInfo={registrationInfo} />
+      <AddWorkerStep registrationInfo={registrationInfo} provider={provider} />
     </ScrollerModal>
   );
 };

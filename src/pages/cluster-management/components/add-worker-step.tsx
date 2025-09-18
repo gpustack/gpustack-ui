@@ -39,7 +39,6 @@ const Container = styled.div`
   .command-info {
     margin-top: 24px;
     margin-bottom: 8px;
-    // font-weight: 500;
     color: var(--ant-color-text-secondary);
   }
 `;

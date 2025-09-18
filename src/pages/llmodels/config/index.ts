@@ -324,7 +324,9 @@ export const excludeFields = [
   'scheduleType',
   'placement_strategy',
   'backend',
-  'gpu_selector'
+  'gpu_selector',
+  'run_command',
+  'image_name'
 ];
 
 // ingore fields when compare old and new data

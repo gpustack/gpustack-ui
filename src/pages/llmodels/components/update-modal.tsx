@@ -11,7 +11,7 @@ import {
   updateIgnoreFields
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { FormData } from '../config/types';
+import { BackendOption, FormData } from '../config/types';
 import { generateGPUSelector } from '../config/utils';
 import { useCheckCompatibility } from '../hooks';
 import ColumnWrapper from './column-wrapper';
@@ -26,6 +26,7 @@ type AddModalProps = {
     data: FormData;
     isGGUF: boolean;
   };
+  backendOptions: BackendOption[];
   clusterList: Global.BaseOption<
     number,
     { provider: string; state: string | number }
@@ -325,6 +326,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           onOk={handleOk}
           ref={formRef}
           isGGUF={isGGUF}
+          backendOptions={props.backendOptions}
           onBackendChange={handleAsyncBackendChange}
           onValuesChange={handleManulOnValuesChange}
         ></DataForm>

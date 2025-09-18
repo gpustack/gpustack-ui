@@ -9,7 +9,12 @@ import React, { forwardRef, useImperativeHandle } from 'react';
 import { excludeFields, ScheduleValueMap, sourceOptions } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
-import { DeployFormKey, FormData, SourceType } from '../config/types';
+import {
+  BackendOption,
+  DeployFormKey,
+  FormData,
+  SourceType
+} from '../config/types';
 import CatalogFrom from '../forms/catalog';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
@@ -24,7 +29,7 @@ interface DataFormProps {
   isGGUF: boolean;
   formKey: DeployFormKey;
   sourceDisable?: boolean;
-  backendOptions?: Global.BaseOption<string>[];
+  backendOptions: BackendOption[];
   sourceList?: Global.BaseOption<string>[];
   clusterList: Global.BaseOption<number>[];
   fields?: string[];
@@ -41,7 +46,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     formKey,
     initialValues,
     sourceDisable = true,
-    backendOptions,
+    backendOptions = [],
     sourceList,
     clusterList = [],
     fields = ['source'],
@@ -174,8 +179,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       value={{
         isGGUF: isGGUF,
         formKey: formKey,
+        source: props.source,
         pageAction: action,
         gpuOptions: gpuOptions,
+        backendOptions: backendOptions,
         onValuesChange: onValuesChange,
         onBackendChange: handleBackendChange
       }}
@@ -276,8 +283,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           isGGUF={isGGUF}
           action={action}
           source={props.source}
-          backendOptions={backendOptions}
-          handleBackendChange={handleBackendChange}
         ></AdvanceConfig>
       </Form>
     </FormContext.Provider>

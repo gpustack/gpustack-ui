@@ -97,10 +97,10 @@ const SelectWrapper = styled.div`
       align-items: center;
       height: 54px;
 
-      .ant-select-selection-search {
-        // top: 20px !important;
-        // inset-inline-start: ${INPUT_INNER_PADDING}px;
+      .ant-select-selection-wrap {
+        height: 100%;
       }
+
       &.ant-select-auto-complete {
         .ant-select-selection-search {
           padding-inline-start: ${INPUT_INNER_PADDING}px;

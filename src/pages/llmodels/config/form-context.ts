@@ -1,15 +1,16 @@
 import { PageActionType } from '@/config/types';
 import React from 'react';
-import { DeployFormKey } from './types';
+import { BackendOption, DeployFormKey } from './types';
 
 interface FormContextProps {
   isGGUF?: boolean;
   formKey: DeployFormKey;
-  source?: string;
+  source: string;
   pageAction: PageActionType;
   gpuOptions?: any[];
+  backendOptions: BackendOption[];
   onValuesChange?: (changedValues: any, allValues: any) => void;
-  onBackendChange?: (backend: string) => void;
+  onBackendChange: (backend: string) => void;
 }
 
 interface CatalogFormContextProps {
@@ -19,12 +20,20 @@ interface CatalogFormContextProps {
   onQuantizationChange: (val: string) => void;
 }
 
+interface FormOuterContextProps {
+  sourceList?: Global.BaseOption<string>[];
+}
+
 export const FormContext = React.createContext<FormContextProps>(
   {} as FormContextProps
 );
 
 export const CatalogFormContext = React.createContext<CatalogFormContextProps>(
   {} as CatalogFormContextProps
+);
+
+export const FormOuterContext = React.createContext<FormOuterContextProps>(
+  {} as FormOuterContextProps
 );
 
 export const useFormContext = () => {
@@ -40,6 +49,16 @@ export const useCatalogFormContext = () => {
   if (!context) {
     throw new Error(
       'useCatalogFormContext must be used within a CatalogFormProvider'
+    );
+  }
+  return context;
+};
+
+export const useFormOuterContext = () => {
+  const context = React.useContext(FormOuterContext);
+  if (!context) {
+    throw new Error(
+      'useFormOuterContext must be used within a FormOuterProvider'
     );
   }
   return context;

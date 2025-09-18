@@ -2,22 +2,17 @@ import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
 import ListInput from '@/components/list-input';
 import CheckboxField from '@/components/seal-form/checkbox-field';
-import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
-import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Collapse, Form, FormInstance, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import {
-  backendLabelMap,
   backendParamsHolderTips,
-  backendTipsList,
   getBackendParamsTips,
   modelCategories,
-  modelSourceMap,
   placementStrategyOptions,
   ScheduleValueMap
 } from '../config';
@@ -26,6 +21,7 @@ import BackendParameters, {
 } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import BackendFields from '../forms/backend-fields';
 import dataformStyles from '../style/data-form.less';
 import Performance from './performance';
 
@@ -35,8 +31,6 @@ interface AdvanceConfigProps {
   gpuOptions: Array<any>;
   action: PageActionType;
   source: string;
-  backendOptions?: Global.BaseOption<string>[];
-  handleBackendChange?: (value: string) => void;
 }
 
 const placementStrategyTips = [
@@ -51,7 +45,7 @@ const placementStrategyTips = [
 ];
 
 const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, isGGUF, gpuOptions, source, backendOptions, action } = props;
+  const { form, isGGUF, gpuOptions, source, action } = props;
   const intl = useIntl();
   const wokerSelector = Form.useWatch('worker_selector', form);
   const EnviromentVars = Form.useWatch('env', form);
@@ -63,7 +57,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const placement_strategy = Form.useWatch('placement_strategy', form);
   const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
   const worker_selector = Form.useWatch('worker_selector', form);
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, onBackendChange, backendOptions } = useFormContext();
 
   const paramsConfig = useMemo(() => {
     return _.get(BackendParameters, backend, []);
@@ -154,47 +148,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={modelCategories}
           ></SealSelect>
         </Form.Item>
-        <Form.Item name="backend" rules={[{ required: true }]}>
-          <SealSelect
-            required
-            onChange={props.handleBackendChange}
-            label={intl.formatMessage({ id: 'models.form.backend' })}
-            description={<TooltipList list={backendTipsList}></TooltipList>}
-            options={
-              backendOptions ?? [
-                {
-                  label: backendLabelMap[backendOptionsMap.vllm],
-                  value: backendOptionsMap.vllm,
-                  disabled:
-                    props.source === modelSourceMap.local_path_value
-                      ? false
-                      : isGGUF
-                },
-                {
-                  label: backendLabelMap[backendOptionsMap.ascendMindie],
-                  value: backendOptionsMap.ascendMindie,
-                  disabled:
-                    props.source === modelSourceMap.local_path_value
-                      ? false
-                      : isGGUF
-                },
-                {
-                  label: backendLabelMap[backendOptionsMap.voxBox],
-                  value: backendOptionsMap.voxBox,
-                  disabled:
-                    props.source === modelSourceMap.local_path_value
-                      ? false
-                      : props.source === modelSourceMap.ollama_library_value ||
-                        isGGUF
-                }
-              ]
-            }
-            disabled={
-              action === PageAction.EDIT &&
-              props.source !== modelSourceMap.local_path_value
-            }
-          ></SealSelect>
-        </Form.Item>
+        <BackendFields></BackendFields>
         {scheduleType === ScheduleValueMap.Auto && (
           <>
             <Form.Item<FormData> name="placement_strategy">
@@ -256,51 +210,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             </Form.Item>
           </>
         )}
-
-        <Form.Item name="backend_version">
-          <SealInput.Input
-            placeholder={
-              backendParamsTips?.version
-                ? `${intl.formatMessage({ id: 'common.help.eg' })} ${backendParamsTips?.version}`
-                : ''
-            }
-            onBlur={handleBackendVersionOnBlur}
-            label={intl.formatMessage({ id: 'models.form.backendVersion' })}
-            description={intl.formatMessage(
-              {
-                id: 'models.form.backendVersion.tips'
-              },
-              {
-                backend: backendLabelMap[backend],
-                version: backendParamsTips?.version
-                  ? `(${intl.formatMessage({ id: 'common.help.eg' })} ${backendParamsTips?.version})`
-                  : '',
-                link: backendParamsTips?.releases && (
-                  <span
-                    style={{
-                      marginLeft: 5
-                    }}
-                  >
-                    <Typography.Link
-                      className="flex-center"
-                      style={{ display: 'inline' }}
-                      href={backendParamsTips?.releases}
-                      target="_blank"
-                    >
-                      <span>
-                        {intl.formatMessage({ id: 'models.form.releases' })}
-                      </span>
-                      <IconFont
-                        type="icon-external-link"
-                        className="font-size-14 m-l-4"
-                      ></IconFont>
-                    </Typography.Link>
-                  </span>
-                )
-              }
-            )}
-          ></SealInput.Input>
-        </Form.Item>
 
         <Form.Item<FormData> name="backend_parameters">
           <ListInput

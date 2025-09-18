@@ -210,7 +210,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     ) {
       return;
     }
-    console.log('isgguf==================> select 1', item.isGGUF);
     console.log('handleOnSelectModel:', item, selectedModel);
     setIsGGUF(item.isGGUF);
     clearCahceFormValues();

@@ -11,13 +11,7 @@ import {
   queryHuggingfaceModels,
   queryModelScopeModels
 } from '../apis';
-import {
-  HuggingFaceTaskMap,
-  ModelScopeSortType,
-  ModelSortType,
-  ModelscopeTaskMap,
-  modelSourceMap
-} from '../config';
+import { ModelScopeSortType, ModelSortType, modelSourceMap } from '../config';
 import { handleRecognizeAudioModel } from '../config/audio-catalog';
 import {
   MessageStatus,
@@ -28,12 +22,10 @@ import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
 
-const UL = styled.ul`
-  list-style: decimal;
-  padding-left: 16px;
-  margin: 0;
-`;
-
+const filterOptions = [
+  { label: 'AWQ', value: 'awq' },
+  { label: 'GPTQ', value: 'gptq' }
+];
 const PaginationMain = styled(Pagination)`
   .ant-pagination-slash {
     margin-inline: 5px;
@@ -70,15 +62,19 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   } = props;
 
   const [dataSource, setDataSource] = useState<{
-    repoOptions: any[];
+    dataList: any[];
     loading: boolean;
     networkError: boolean;
     sortType: string;
+    filters: Record<string, any>;
   }>({
-    repoOptions: [],
+    dataList: [],
     loading: false,
     networkError: false,
-    sortType: ModelSortType.trendingScore
+    sortType: ModelSortType.trendingScore,
+    filters: {
+      tag: null
+    }
   });
   const SUPPORTEDSOURCE = [
     modelSourceMap.huggingface_value,
@@ -92,16 +88,15 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   const axiosTokenRef = useRef<any>(null);
   const checkTokenRef = useRef<any>(null);
   const searchInputRef = useRef<any>('');
-  const filterTaskRef = useRef<string>('');
   const timer = useRef<any>(null);
   const requestIdRef = useRef<number>(0);
   const searchRepoRequestIdRef = useRef<number>(0);
-  const [query, setQuery] = useState({
+  const [paginationInfo, setPaginationInfo] = useState({
     page: 1,
     perPage: 10,
     total: 0
   });
-  const modelFilesSortOptions = useRef<any[]>([
+  const modelFilesSortOptions = [
     {
       label: intl.formatMessage({ id: 'models.sort.trending' }),
       value: ModelSortType.trendingScore
@@ -118,7 +113,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       label: intl.formatMessage({ id: 'models.sort.updated' }),
       value: ModelSortType.lastModified
     }
-  ]);
+  ];
 
   const updateSearchRepoRequestId = () => {
     searchRepoRequestIdRef.current += 1;
@@ -152,15 +147,18 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   // huggeface
-  const getModelsFromHuggingface = async (sort: string) => {
+  const getModelsFromHuggingface = async (query: {
+    sort: string;
+    filters?: Record<string, any>;
+  }) => {
     const currentSearchId = setRquestId();
     const task: any = searchInputRef.current ? '' : 'text-generation';
     const params = {
       search: {
         query: searchInputRef.current || '',
-        sort: sort,
-        tags: [],
-        task: HuggingFaceTaskMap[filterTaskRef.current] || task
+        sort: query.sort,
+        tags: query.filters?.tag ? [query.filters.tag] : [],
+        task: task
       }
     };
     const data = await queryHuggingfaceModels(params, {
@@ -186,18 +184,17 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     sortType: string;
     page: number;
     perPage?: number;
+    filters?: Record<string, any>;
   }) => {
     const currentSearchId = setRquestId();
     try {
       const params = {
         Name: `${searchInputRef.current}`,
-        tags: [],
-        tasks: filterTaskRef.current
-          ? ([ModelscopeTaskMap[filterTaskRef.current]] as string[])
-          : [],
+        tags: queryParams.filters?.tag ? [queryParams.filters.tag] : [],
         SortBy: ModelScopeSortType[queryParams.sortType],
         PageNumber: queryParams.page,
-        PageSize: queryParams.perPage
+        PageSize: queryParams.perPage,
+        tasks: []
       };
       const data = await queryModelScopeModels(params, {
         signal: axiosTokenRef.current.signal
@@ -221,6 +218,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           task: item.Tasks?.map((sItem: any) => sItem.Name).join(','),
           tags: item.Tags,
           libraries: item.Libraries,
+          avatar: item.Avatar,
           isGGUF: checkIsGGUF({
             tags: item.Tags,
             libraries: item.Libraries
@@ -229,7 +227,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         };
       });
 
-      setQuery((prev) => {
+      setPaginationInfo((prev) => {
         return {
           ...prev,
           page: queryParams.page,
@@ -238,7 +236,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       });
       return list;
     } catch (error) {
-      setQuery((prev) => {
+      setPaginationInfo((prev) => {
         return {
           ...prev,
           page: queryParams.page
@@ -342,8 +340,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   };
 
   const getCurrentPage = (page: number) => {
-    const start = (page - 1) * query.perPage;
-    const end = start + query.perPage;
+    const start = (page - 1) * paginationInfo.perPage;
+    const end = start + paginationInfo.perPage;
     return cacheRepoOptions.current.slice(start, end);
   };
 
@@ -351,6 +349,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     sortType: string;
     page: number;
     perPage: number;
+    filters: Record<string, any>;
   }) => {
     if (!SUPPORTEDSOURCE.includes(modelSource)) {
       return;
@@ -362,7 +361,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     if (timer.current) {
       clearTimeout(timer.current);
     }
-    const sort = params.sortType;
     try {
       setDataSource((pre) => {
         pre.loading = true;
@@ -372,13 +370,16 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       cacheRepoOptions.current = [];
       let list: any[] = [];
       if (modelSource === modelSourceMap.huggingface_value) {
-        const resultList = await getModelsFromHuggingface(sort);
+        const resultList = await getModelsFromHuggingface({
+          sort: params.sortType,
+          filters: params.filters
+        });
 
         cacheRepoOptions.current = resultList;
 
         // hf has no page and perPage, so we need to slice the resultList
         list = getCurrentPage(params.page);
-        setQuery((prev) => {
+        setPaginationInfo((prev) => {
           return {
             ...prev,
             page: params.page,
@@ -392,10 +393,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       }
 
       setDataSource({
-        repoOptions: list,
+        dataList: list,
         loading: false,
         networkError: false,
-        sortType: sort
+        sortType: params.sortType,
+        filters: params.filters
       });
 
       handleOnSelectModel(list[0]);
@@ -405,9 +407,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     } catch (error: any) {
       console.log('error:', error);
       setDataSource({
-        repoOptions: [],
+        dataList: [],
         loading: currentSearchId !== searchRepoRequestIdRef.current,
-        sortType: sort,
+        sortType: params.sortType,
+        filters: params.filters,
         networkError: error?.message === 'Failed to fetch'
       });
 
@@ -428,21 +431,23 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       handleOnSearchRepo({
         sortType: dataSource.sortType,
         page: 1,
-        perPage: query.perPage
+        perPage: paginationInfo.perPage,
+        filters: dataSource.filters
       }),
     100
   );
 
   const handleOnOpen = () => {
     if (
-      !dataSource.repoOptions.length &&
+      !dataSource.dataList.length &&
       !cacheRepoOptions.current.length &&
       SUPPORTEDSOURCE.includes(modelSource)
     ) {
       handleOnSearchRepo({
         sortType: dataSource.sortType,
         page: 1,
-        perPage: query.perPage
+        perPage: paginationInfo.perPage,
+        filters: dataSource.filters
       });
     }
   };
@@ -451,14 +456,27 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     handleOnSearchRepo({
       sortType: value,
       page: 1,
-      perPage: query.perPage
+      perPage: paginationInfo.perPage,
+      filters: dataSource.filters
+    });
+  };
+
+  const handleFilterChange = (value: string) => {
+    handleOnSearchRepo({
+      sortType: dataSource.sortType,
+      page: 1,
+      perPage: paginationInfo.perPage,
+      filters: {
+        ...dataSource.filters,
+        tag: value
+      }
     });
   };
 
   const handleOnPageChange = (page: number) => {
     if (modelSource === modelSourceMap.huggingface_value) {
       const currentList = getCurrentPage(page);
-      setQuery((prev) => {
+      setPaginationInfo((prev) => {
         return {
           ...prev,
           page: page
@@ -467,13 +485,13 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       setDataSource((pre) => {
         return {
           ...pre,
-          repoOptions: currentList
+          dataList: currentList
         };
       });
       handleOnSelectModel(currentList[0]);
       handleEvaluate(currentList);
     } else if (modelSource === modelSourceMap.modelscope_value) {
-      setQuery((prev) => {
+      setPaginationInfo((prev) => {
         return {
           ...prev,
           page: page
@@ -482,7 +500,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
       handleOnSearchRepo({
         sortType: dataSource.sortType,
         page: page,
-        perPage: query.perPage
+        perPage: paginationInfo.perPage,
+        filters: dataSource.filters
       });
     }
   };
@@ -509,7 +528,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           </span>
         </div>
         <div className={SearchStyle.filter}>
-          <span>
+          <span className="flex-center gap-8">
             <BaseSelect
               value={dataSource.sortType}
               onChange={handleSortChange}
@@ -520,19 +539,28 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
                   </span>
                 );
               }}
-              options={modelFilesSortOptions.current}
+              options={modelFilesSortOptions}
               size="middle"
               style={{ width: '150px' }}
+            ></BaseSelect>
+            <BaseSelect
+              allowClear
+              value={dataSource.filters.tag}
+              onChange={handleFilterChange}
+              options={filterOptions}
+              size="middle"
+              placeholder="quantization type"
+              style={{ width: 150 }}
             ></BaseSelect>
           </span>
           <PaginationMain
             simple={{ readOnly: true }}
-            total={query.total}
-            current={query.page}
-            pageSize={query.perPage}
+            total={paginationInfo.total}
+            current={paginationInfo.page}
+            pageSize={paginationInfo.perPage}
             onChange={handleOnPageChange}
             showSizeChanger={false}
-            hideOnSinglePage={query.total <= query.perPage}
+            hideOnSinglePage={paginationInfo.total <= paginationInfo.perPage}
           ></PaginationMain>
         </div>
       </>
@@ -560,7 +588,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
 
       <SearchResult
         loading={dataSource.loading}
-        resultList={dataSource.repoOptions}
+        resultList={dataSource.dataList}
         networkError={dataSource.networkError}
         current={current}
         source={modelSource}

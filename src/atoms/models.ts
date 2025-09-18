@@ -23,3 +23,13 @@ export const clusterListAtom = atom<
     value: number;
   }[]
 >([]);
+
+export const backendOptionsAtom = atom<
+  {
+    value: string;
+    label: string;
+    default_backend_param: string[];
+    default_version: string;
+    versions: { label: string; value: string }[];
+  }[]
+>([]);

@@ -163,6 +163,9 @@ const InputWrapper = styled.div`
     height: auto;
     padding-right: 10px;
   }
+  .ant-input-textarea-allow-clear.ant-input-affix-wrapper {
+    padding: 0;
+  }
 `;
 
 export default InputWrapper;

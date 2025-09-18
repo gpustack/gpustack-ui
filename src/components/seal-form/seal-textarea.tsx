@@ -12,7 +12,12 @@ import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import InputWrapper from './wrapper/input';
 
-const LabelWrapper = styled.div`
+const LabelWrapper = styled.div.attrs({
+  className: 'seal-textarea-label'
+})`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   background-color: var(--ant-color-bg-container);
 `;
 
@@ -110,7 +115,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
     <InputWrapper>
       <Wrapper
         status={status}
-        label={<LabelWrapper>{label}</LabelWrapper>}
+        label={label}
         isFocus={isFocus}
         required={required}
         description={description}

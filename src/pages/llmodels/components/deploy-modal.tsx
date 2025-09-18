@@ -9,7 +9,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { FormData, SourceType } from '../config/types';
+import { BackendOption, FormData, SourceType } from '../config/types';
 import {
   MessageStatus,
   WarningStausOptions,
@@ -58,6 +58,7 @@ type AddModalProps = {
   width?: string | number;
   initialValues?: any;
   deploymentType?: 'modelList' | 'modelFiles';
+  backendOptions: BackendOption[];
   clusterList: Global.BaseOption<
     number,
     { provider: string; state: string | number }
@@ -541,6 +542,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 onOk={handleOnOk}
                 ref={form}
                 isGGUF={isGGUF}
+                backendOptions={props.backendOptions}
                 onBackendChange={handleBackendChange}
                 onValuesChange={onValuesChange}
               ></DataForm>

@@ -128,10 +128,6 @@ export const checkCurrentbackend = (data: {
     return backendOptionsMap.voxBox;
   }
 
-  if (isGGUF) {
-    return backendOptionsMap.llamaBox;
-  }
-
   if (checkOnlyAscendNPU(gpuOptions)) {
     return backendOptionsMap.ascendMindie;
   }
@@ -227,11 +223,6 @@ export const useCheckCompatibility = () => {
       }
     });
     return clusterNames.join(', ');
-  };
-
-  const getCurrentCluster = (id: number) => {
-    const cluster = clusterList.find?.((item) => item.value === id);
-    return cluster?.label || '';
   };
 
   const handleCheckCompatibility = (

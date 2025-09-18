@@ -39,6 +39,8 @@ export type SourceType =
   | 'ollama_library';
 
 export interface FormData {
+  image_name?: string;
+  run_command?: string;
   backend: string;
   restart_on_error?: boolean;
   env?: Record<string, any>;
@@ -241,4 +243,12 @@ export interface EvaluateResult {
       vram: number;
     };
   };
+}
+
+export interface BackendOption {
+  value: string;
+  label: string;
+  default_backend_param: string[];
+  default_version: string;
+  versions: { label: string; value: string }[];
 }

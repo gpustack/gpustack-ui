@@ -17,6 +17,7 @@ import {
 import { SourceType } from '@/pages/llmodels/config/types';
 import DownloadModal from '@/pages/llmodels/download';
 import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
+import useQueryBackends from '@/pages/llmodels/hooks/use-query-backends';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -64,7 +65,7 @@ const ModelFiles = () => {
     watch: true,
     contentForDelete: 'resources.modelfiles.modelfile'
   });
-
+  const { backendOptions } = useQueryBackends();
   const intl = useIntl();
   const { showSuccess } = useAppUtils();
   const [downloadModalStatus, setDownlaodMoalStatus] = useState<{
@@ -106,9 +107,15 @@ const ModelFiles = () => {
       worker_id: value
     });
   };
-  const generateInitialValues = (record: ListItem, gpuOptions: any[]) => {
+
+  const checkIsGGUF = (record: ListItem) => {
     const isGGUF = _.includes(record.resolved_paths?.[0], 'gguf');
     const isOllama = !!record.ollama_library_model_name;
+    return isGGUF || isOllama;
+  };
+
+  const generateInitialValues = (record: ListItem, gpuOptions: any[]) => {
+    const isGGUF = checkIsGGUF(record);
     const audioModelTag = identifyModelTask(
       record.source,
       record.resolved_paths?.[0]
@@ -140,12 +147,12 @@ const ModelFiles = () => {
         : {},
       name: extractFileName(name),
       backend: checkCurrentbackend({
-        isGGUF: !audioModelTag && (isGGUF || isOllama),
+        isGGUF: !audioModelTag && isGGUF,
         isAudio: !!audioModelTag,
         gpuOptions: gpuOptions,
         defaultBackend: backendOptionsMap.vllm
       }),
-      isGGUF: !audioModelTag && (isGGUF || isOllama)
+      isGGUF: !audioModelTag && isGGUF
     };
   };
 
@@ -338,6 +345,7 @@ const ModelFiles = () => {
           workerOptions={readyWorkers}
         ></DownloadModal>
         <DeployModal
+          backendOptions={backendOptions}
           deploymentType="modelFiles"
           title={intl.formatMessage({ id: 'models.button.deploy' })}
           onCancel={handleDeployModalCancel}

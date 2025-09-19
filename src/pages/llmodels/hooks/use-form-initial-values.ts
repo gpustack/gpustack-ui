@@ -115,7 +115,7 @@ export const useGenerateWorkerOptions = () => {
   const [workersList, setWorkersList] = useState<
     Global.BaseOption<
       number,
-      { state: string; labels: Record<string, string> }
+      { state: string; labels: Record<string, string>; cluster_id: number }
     >[]
   >([]);
 
@@ -129,7 +129,11 @@ export const useGenerateWorkerOptions = () => {
         value: cluster.id,
         parent: true,
         children: workerList
-          .filter((worker) => worker.cluster_id === cluster.id)
+          .filter(
+            (worker) =>
+              worker.cluster_id === cluster.id &&
+              worker.state === WorkerStatusMap.ready
+          )
           .map((worker) => ({
             disabled: WorkerStatusMap.ready !== worker.state,
             state: worker.state,
@@ -166,6 +170,7 @@ export const useGenerateWorkerOptions = () => {
     generateCascaderWorkerOptions(workerList, clusterList);
     setWorkersList(
       workerList.map((item) => ({
+        cluster_id: item.cluster_id,
         state: item.state,
         label: item.name,
         value: item.id

@@ -4,6 +4,7 @@ import { FormWidgetProps } from '../config/types';
 const FormWidget: React.FC<
   FormWidgetProps & {
     onChange?: (data: any) => void;
+    disabled?: boolean;
   }
 > = ({
   widget,
@@ -17,8 +18,10 @@ const FormWidget: React.FC<
   value,
   min,
   max,
+  status,
   checked,
-  readOnly: disabled,
+  isInFormItems,
+  disabled,
   onChange
 }) => {
   const Component = ComponentsMap[widget];
@@ -38,6 +41,8 @@ const FormWidget: React.FC<
         min,
         max
       }}
+      status={status}
+      isInFormItems={isInFormItems}
       disabled={disabled}
       options={options || optionList}
       value={value}

@@ -205,8 +205,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     value: string | number;
   }) => {
     if (action === PageAction.EDIT) {
-      console.log('imageLabelRender========::', action, currentData, data);
-      // return currentData?.image_name || currentData?.os_image;
       const vendor = _.split(currentData?.image_name || '', ' ')[0];
       const iconType = _.get(vendorIconMap, vendor.toLowerCase());
       return (
@@ -217,7 +215,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
       );
     }
     const selectImage = osImageList.find((item) => item.value === data.value);
-    console.log('imageLabelRender========::', selectImage);
     if (selectImage) {
       return (
         <RenderLabel label={data.label} vendor={selectImage.vendor || ''} />
@@ -268,14 +265,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
   const filterInstanceOption = (inputValue: string, option: any) => {
     return (
       option.label.toLowerCase().includes(inputValue.toLowerCase()) ||
-      option.description.toLowerCase().includes(inputValue.toLowerCase())
-    );
-  };
-
-  const filterImageOption = (inputValue: string, option: any) => {
-    return (
-      option.label.toLowerCase().includes(inputValue.toLowerCase()) ||
-      option.value.toLowerCase().includes(inputValue.toLowerCase()) ||
       option.description.toLowerCase().includes(inputValue.toLowerCase())
     );
   };

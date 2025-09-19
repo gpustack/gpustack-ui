@@ -1,4 +1,5 @@
 import { StatusMaps } from '@/config';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 
 export const WorkerStatusMap = {
   ready: 'ready',
@@ -57,16 +58,18 @@ export const addWorkerGuide: Record<string, any> = {
       image: string;
       workerip: string;
     }) {
-      return `docker run -d --name gpustack \\
+      return `docker run -d --name gpustack-worker \\
     --restart=unless-stopped \\
-    --gpus all \\
-    --network=host \\
-    --ipc=host \\
+    --privileged \\
+    --net=host \\
     -v gpustack-data:/var/lib/gpustack \\
-    ${params.image} \\
     --server-url ${params.server} \\
     --registration-token ${params.token} \\
     --worker-ip ${params.workerip}`;
+    },
+    checkEnvCommand: {
+      [ProviderValueMap.Docker]: `nvidia-smi >/dev/null 2>&1 && echo "NVIDIA driver OK" || (echo "NVIDIA driver issue"; exit 1) && docker info 2>/dev/null | grep -q "Default Runtime: nvidia" && echo "NVIDIA Container Toolkit OK" || (echo "NVIDIA Container Toolkit not configured"; exit 1)`,
+      [ProviderValueMap.Kubernetes]: 'k8s env check command'
     }
   },
   npu: {

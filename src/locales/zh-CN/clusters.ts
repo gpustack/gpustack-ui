@@ -40,5 +40,6 @@ export default {
   'clusters.create.addworker.tips':
     '在执行以下命令之前，请确保已满足 <a href={link} target="_blank">{label}</a> 的先决条件。',
   'clusters.create.addCommand.tips':
-    ' 在需要添加的 Worker 上运行以下命令，将其加入到集群中'
+    ' 在需要添加的 Worker 上运行以下命令，将其加入到集群中',
+  'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当'
 };

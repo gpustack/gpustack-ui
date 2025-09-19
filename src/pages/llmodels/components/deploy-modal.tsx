@@ -351,6 +351,9 @@ const AddModal: FC<AddModalProps> = (props) => {
   }, [onCancel]);
 
   const initClusterId = () => {
+    if (initialValues?.cluster_id) {
+      return initialValues.cluster_id;
+    }
     const cluster_id =
       clusterList?.find((item) => item.provider === ProviderValueMap.Docker)
         ?.value || clusterList?.[0]?.value;
@@ -361,14 +364,12 @@ const AddModal: FC<AddModalProps> = (props) => {
   const handleOnOpen = () => {
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
-        ...props.initialValues,
-        cluster_id: initClusterId()
+        ...props.initialValues
       });
       handleOnValuesChange?.({
         changedValues: {},
         allValues: {
-          ...props.initialValues,
-          cluster_id: initClusterId()
+          ...props.initialValues
         },
         source: source
       });
@@ -422,7 +423,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         message: []
       });
     };
-  }, [open, clusterList]);
+  }, [open, clusterList, initialValues?.cluster_id]);
 
   return (
     <GSDrawer

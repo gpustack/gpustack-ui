@@ -5,6 +5,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../config';
 import AddWorkerCommand from './add-worker-command';
+import CheckEnvCommand from './check-env-command';
 import RegisterClusterInner from './register-cluster-inner';
 import SupportedGPUs from './support-gpus';
 
@@ -62,8 +63,8 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   registrationInfo
 }) => {
   const intl = useIntl();
-  const [currentSelection, setCurrentSelection] =
-    React.useState<string>('cuda');
+  const [currentGPU, setCurrentGPU] = React.useState<string>('cuda');
+  React.useState<string>('cuda');
   const [workerCommand, setWorkerCommand] = React.useState<Record<string, any>>(
     {
       label: 'NVIDIA',
@@ -73,7 +74,7 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
 
   const handleSelectProvider = (value: string, item: any) => {
     if (provider !== ProviderValueMap.Docker) return;
-    setCurrentSelection(value);
+    setCurrentGPU(value);
     setWorkerCommand(item);
   };
 
@@ -84,31 +85,35 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
       </Title>
       <SupportedGPUs
         onSelect={handleSelectProvider}
-        current={provider === ProviderValueMap.Docker ? currentSelection : ''}
-        clickable={provider === ProviderValueMap.Docker}
+        current={currentGPU}
+        clickable={true}
       />
-      {provider === ProviderValueMap.Docker && (
-        <Content>
-          <Line></Line>
-          <Alert
-            type="info"
-            showIcon
-            icon={<BulbOutlined />}
-            message={
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: intl.formatMessage(
-                    { id: 'clusters.create.addworker.tips' },
-                    { label: workerCommand.label, link: workerCommand.link }
-                  )
-                }}
-              ></span>
-            }
-          ></Alert>
-        </Content>
-      )}
+
+      <Content>
+        <Line></Line>
+        <Alert
+          type="info"
+          showIcon
+          icon={<BulbOutlined />}
+          message={
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage(
+                  { id: 'clusters.create.addworker.tips' },
+                  { label: workerCommand.label, link: workerCommand.link }
+                )
+              }}
+            ></span>
+          }
+        ></Alert>
+      </Content>
+
       <div className="command-info">
-        {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
+        1. {intl.formatMessage({ id: 'cluster.create.checkEnv.tips' })}
+      </div>
+      <CheckEnvCommand provider={provider} currentGPU={currentGPU} />
+      <div className="command-info">
+        2. {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
       </div>
       {provider === ProviderValueMap.Kubernetes ? (
         <RegisterClusterInner registrationInfo={registrationInfo} />

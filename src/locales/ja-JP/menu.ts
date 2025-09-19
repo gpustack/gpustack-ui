@@ -28,7 +28,7 @@ export default {
   'menu.accessControl.users': 'Users',
   'menu.clusterManagement': 'Cluster Management',
   'menu.clusterManagement.clusters': 'Clusters',
-  'menu.clusterManagement.credentials': 'Credentials',
+  'menu.clusterManagement.credentials': 'Cloud Credentials',
   'menu.models.userModels': 'My Models',
   'menu.clusterManagement.clusterDetail': 'Cluster Detail',
   'menu.clusterManagement.clusterCreate': 'Create Cluster'
@@ -44,7 +44,7 @@ export default {
 // 7. 'menu.accessControl.users': 'Users',
 // 8. 'menu.clusterManagement': 'Cluster Management',
 // 9. 'menu.clusterManagement.clusters': 'Clusters',
-// 10. 'menu.clusterManagement.credentials': 'Credentials',
+// 10. 'menu.clusterManagement.credentials': 'Cloud Credentials',
 // 11. 'menu.models.userModels': 'My Models'
 // 12. 'menu.clusterManagement.clusterDetail': 'Cluster Detail',
 // 13. 'menu.clusterManagement.clusterCreate': 'Create Cluster'

@@ -41,7 +41,9 @@ export default {
   'clusters.create.addworker.tips':
     ' Please make sure the prerequisites for <a href={link} target="_blank">{label}</a> are met before executing the following command.',
   'clusters.create.addCommand.tips':
-    ' On the Worker that needs to be added, run the following command to join it to the cluster.'
+    ' On the Worker that needs to be added, run the following command to join it to the cluster.',
+  'cluster.create.checkEnv.tips':
+    'Use the following command to check if the environment is ready'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -84,6 +86,7 @@ export default {
 // 37. 'clusters.create.noRegions': 'No regions available',
 // 38. 'clusters.workerpool.batchSize.desc': 'Number of workers created simultaneously in the Worker pool',
 // 39. 'clusters.create.addworker.tips': ' Please make sure the prerequisites for <a href={link} target="_blank">{label}</a> are met before executing the following command.',
-// 40. 'clusters.create.addCommand.tips': ' On the Worker that needs to be added, run the following command to join it to the cluster.'
+// 40. 'clusters.create.addCommand.tips': ' On the Worker that needs to be added, run the following command to join it to the cluster.',
+// 41. 'cluster.create.checkEnv.tips': 'Use the following command to check if the environment is ready'
 
 // ========== End of To-Do List ==========

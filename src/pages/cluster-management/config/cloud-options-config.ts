@@ -21,6 +21,7 @@ export const fieldConfig: Record<string, FieldSchema> = {
     type: 'array',
     title: 'Volumes',
     name: 'volumes',
+    required: ['name', 'size_gb', 'format'],
     properties: {
       name: {
         name: 'name',

@@ -12,12 +12,9 @@ import {
   queryModelScopeModels
 } from '../apis';
 import { ModelScopeSortType, ModelSortType, modelSourceMap } from '../config';
-import { handleRecognizeAudioModel } from '../config/audio-catalog';
-import {
-  MessageStatus,
-  WarningStausOptions,
-  checkCurrentbackend
-} from '../hooks';
+import { MessageStatus, WarningStausOptions } from '../hooks';
+import useCheckBackend from '../hooks/use-check-backend';
+import useRecognizeAudio from '../hooks/use-recognize-audio';
 import SearchStyle from '../style/search-result.less';
 import SearchInput from './search-input';
 import SearchResult from './search-result';
@@ -61,6 +58,8 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     displayEvaluateStatus
   } = props;
 
+  const { recognizeAudioModel } = useRecognizeAudio();
+  const { checkCurrentbackend } = useCheckBackend();
   const [dataSource, setDataSource] = useState<{
     dataList: any[];
     loading: boolean;
@@ -268,7 +267,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     const currentSearchId = getRequestId();
     try {
       const repoList = list.map((item) => {
-        const res = handleRecognizeAudioModel(item, modelSource);
+        const res = recognizeAudioModel(item, modelSource);
 
         let backendObj = {};
         const backend = checkCurrentbackend({

@@ -9,9 +9,10 @@ import { deployFormKeyMap, localPathTipsList, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import { checkOnlyAscendNPU } from '../hooks';
+import useCheckBackend from '../hooks/use-check-backend';
 
 const LocalPathForm: React.FC = () => {
+  const { checkOnlyAscendNPU } = useCheckBackend();
   const form = Form.useFormInstance();
   const formCtx = useFormContext();
   const source = Form.useWatch('source', form);

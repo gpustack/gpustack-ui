@@ -39,7 +39,7 @@ const HFModelItem: React.FC<HFModelItemProps> = (props) => {
               : 'icon-modelscope_light'
           }
           className="m-r-5"
-          style={{ color: 'var(--ant-color-text-tertiary)' }}
+          style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 16 }}
         />
         {props.title}
       </div>

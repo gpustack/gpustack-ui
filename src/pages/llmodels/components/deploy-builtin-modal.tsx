@@ -18,6 +18,7 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { CatalogFormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
+import { generateGPUIds } from '../config/utils';
 import { useCheckCompatibility } from '../hooks';
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import ColumnWrapper from './column-wrapper';
@@ -96,7 +97,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     setWarningStatus,
     handleDoEvalute,
-    generateGPUIds,
     cancelEvaluate,
     submitAnyway,
     handleOnValuesChange,

@@ -15,6 +15,7 @@ import {
   FormData,
   SourceType
 } from '../config/types';
+import { generateGPUIds } from '../config/utils';
 import CatalogFrom from '../forms/catalog';
 import HuggingFaceForm from '../forms/hugging-face';
 import LocalPathForm from '../forms/local-path';
@@ -64,59 +65,27 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   // voxbox is not support multi gpu
-  const handleSetGPUIds = (backend: string) => {
+  const updateGPUSelector = (backend: string) => {
     const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
 
     if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
-      form.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
-    }
-  };
-
-  const handleBackendChange = async (val: string) => {
-    const updates = {
-      backend_version: ''
-    };
-    if (val === backendOptionsMap.llamaBox) {
-      Object.assign(updates, {
-        distributed_inference_across_workers: true,
-        cpu_offloading: true
-      });
-    }
-    form.setFieldsValue({
-      backend_version: '',
-      backend_parameters: [],
-      env: null
-    });
-    handleSetGPUIds(val);
-    props.onBackendChange?.(val);
-  };
-
-  const generateGPUIds = (data: FormData) => {
-    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-    if (!gpu_ids.length) {
       return {
-        gpu_selector: null
+        gpu_selector: { gpu_ids: [gpuids[0]] }
       };
     }
-
-    const result = _.reduce(
-      gpu_ids,
-      (acc: string[], item: string | string[], index: number) => {
-        if (Array.isArray(item)) {
-          acc.push(item[1]);
-        } else if (index === 1) {
-          acc.push(item);
-        }
-        return acc;
-      },
-      []
-    );
-
     return {
-      gpu_selector: {
-        gpu_ids: result
-      }
+      gpu_selector: { gpu_ids: gpuids }
     };
+  };
+
+  const handleBackendChange = async (val: string, option: BackendOption) => {
+    form.setFieldsValue({
+      env: null,
+      backend_version: option.default_version || '',
+      backend_parameters: option.default_backend_param || [],
+      ...updateGPUSelector(val)
+    });
+    props.onBackendChange?.(val);
   };
 
   // generate the data is available for the backend including the gpu_ids

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { backendOptionsMap } from '../config/backend-parameters';
+import { FormData } from './types';
 
 export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
   const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
@@ -28,6 +29,35 @@ export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
   return {
     gpu_selector: {
       gpu_ids: result
+    }
+  };
+};
+
+export const generateGPUIds = (data: FormData) => {
+  const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
+  console.log('generateGPUIds', gpu_ids);
+  if (!gpu_ids.length) {
+    return {
+      gpu_selector: null
+    };
+  }
+
+  const result = _.reduce(
+    gpu_ids,
+    (acc: string[], item: string | string[], index: number) => {
+      if (Array.isArray(item)) {
+        acc.push(item[1]);
+      } else if (index === 1) {
+        acc.push(item);
+      }
+      return acc;
+    },
+    []
+  );
+
+  return {
+    gpu_selector: {
+      gpu_ids: result || []
     }
   };
 };

@@ -73,7 +73,6 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   );
 
   const handleSelectProvider = (value: string, item: any) => {
-    if (provider !== ProviderValueMap.Docker) return;
     setCurrentGPU(value);
     setWorkerCommand(item);
   };

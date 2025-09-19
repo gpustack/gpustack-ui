@@ -400,16 +400,52 @@ export async function evaluationsModelSpec(
 }
 
 export async function queryBackendList() {
-  return request<{
-    items: {
-      backend_name: string;
-      backend_show_name: string;
-      from_config: boolean;
-      default_version: string;
-      default_backend_param: string[];
-      versions: string[];
-    }[];
-  }>(BACKEND_LIST_API, {
-    method: 'GET'
-  });
+  // return request<{
+  //   items: {
+  //     backend_name: string;
+  //     backend_show_name: string;
+  //     from_config: boolean;
+  //     default_version: string;
+  //     default_backend_param: string[];
+  //     versions: string[];
+  //   }[];
+  // }>(BACKEND_LIST_API, {
+  //   method: 'GET'
+  // });
+  return {
+    items: [
+      {
+        backend_name: 'vllm',
+        backend_show_name: 'vLLM',
+        from_config: false,
+        default_version: '0.10.1.1',
+        default_backend_param: null,
+        versions: ['0.10.1.1', '0.10.0', '0.9.2', '0.8.5', '0.8.3']
+      },
+      {
+        backend_name: 'ascend-mindie',
+        backend_show_name: 'Ascend MindIE',
+        from_config: false,
+        default_version: null,
+        default_backend_param: null,
+        versions: null
+      },
+      {
+        backend_name: 'custom',
+        backend_show_name: 'Custom',
+        from_config: false,
+        default_version: null,
+        default_backend_param: null,
+        versions: null
+      },
+      {
+        backend_name: 'test',
+        backend_show_name: null,
+        from_config: true,
+        default_version: 'v1',
+        default_backend_param: ['--host=0.0.0.0'],
+        versions: ['v1']
+      }
+    ]
+  };
 }

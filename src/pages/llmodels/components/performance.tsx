@@ -44,7 +44,12 @@ const Performance: React.FC = () => {
     onQuantizationChange?.(val);
   };
 
-  const handleGpuSelectorChange = (value: any) => {};
+  const handleBeforeGpuSelectorChange = (gpuIds: any[]) => {};
+
+  const handleGpuSelectorChange = (value: any[]) => {
+    handleBeforeGpuSelectorChange(value);
+    onValuesChange?.({}, form.getFieldsValue());
+  };
 
   return (
     <>

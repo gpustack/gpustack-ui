@@ -13,10 +13,10 @@ import { BackendOption, FormData, SourceType } from '../config/types';
 import {
   MessageStatus,
   WarningStausOptions,
-  checkOnlyAscendNPU,
   useCheckCompatibility,
   useSelectModel
 } from '../hooks';
+import useCheckBackend from '../hooks/use-check-backend';
 import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
@@ -94,6 +94,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     modelSourceMap.modelscope_value
   ];
 
+  const { checkOnlyAscendNPU } = useCheckBackend();
   const {
     handleShowCompatibleAlert,
     setWarningStatus,
@@ -312,11 +313,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = async (backend: string) => {
-    if (backend === backendOptionsMap.llamaBox) {
-      setIsGGUF(true);
-    } else {
-      setIsGGUF(false);
-    }
+    setIsGGUF(false);
 
     const data = form.current.form.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);

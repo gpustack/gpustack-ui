@@ -8,7 +8,6 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
 import { modelSourceMap } from '@/pages/llmodels/config';
-import { identifyModelTask } from '@/pages/llmodels/config/audio-catalog';
 import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
 import {
   modalConfig,
@@ -16,8 +15,10 @@ import {
 } from '@/pages/llmodels/config/button-actions';
 import { SourceType } from '@/pages/llmodels/config/types';
 import DownloadModal from '@/pages/llmodels/download';
+import useCheckBackend from '@/pages/llmodels/hooks/use-check-backend';
 import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
 import useQueryBackends from '@/pages/llmodels/hooks/use-query-backends';
+import useRecognizeAudio from '@/pages/llmodels/hooks/use-recognize-audio';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -25,7 +26,6 @@ import { ConfigProvider, Empty, Table, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { checkCurrentbackend } from '../../llmodels/hooks';
 import {
   MODEL_FILES_API,
   deleteModelFile,
@@ -40,6 +40,8 @@ import useFilesColumns from '../hooks/use-files-columns';
 const filterPattern = /^(.*?)(?:-\d+-of-\d+)?(\.gguf)?$/;
 
 const ModelFiles = () => {
+  const { identifyModelTask } = useRecognizeAudio();
+  const { checkCurrentbackend } = useCheckBackend();
   const { getWorkerOptionList, workerOptions, clusterList, workersList } =
     useGenerateWorkerOptions();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();

@@ -10,7 +10,7 @@ interface FormContextProps {
   gpuOptions?: any[];
   backendOptions: BackendOption[];
   onValuesChange?: (changedValues: any, allValues: any) => void;
-  onBackendChange: (backend: string) => void;
+  onBackendChange: (backend: string, option: any) => void;
 }
 
 interface CatalogFormContextProps {

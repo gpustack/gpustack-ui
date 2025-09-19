@@ -9,9 +9,11 @@ import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec } from '../apis';
 import { modelSourceMap, modelTaskMap } from '../config';
-import { handleRecognizeAudioModel } from '../config/audio-catalog';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { EvaluateResult, FormData } from '../config/types';
+import { generateGPUIds } from '../config/utils';
+import useCheckBackend from './use-check-backend';
+import useRecognizeAudio from './use-recognize-audio';
 
 export type MessageStatus = {
   show: boolean;
@@ -100,38 +102,6 @@ export const useGenerateModelFileOptions = () => {
     getModelFileList,
     generateModelFileOptions
   };
-};
-
-// handle for ascend npu only
-export const checkOnlyAscendNPU = (gpuOptions: any[]) => {
-  if (!gpuOptions?.length) {
-    return false;
-  }
-  return gpuOptions?.every?.((item) => {
-    if (!item.children?.length) {
-      return false;
-    }
-    return item.children?.every((child: any) => {
-      return _.toLower(child.vendor) === 'huawei';
-    });
-  });
-};
-
-export const checkCurrentbackend = (data: {
-  isAudio: boolean;
-  isGGUF: boolean;
-  gpuOptions: any[];
-  defaultBackend?: string;
-}) => {
-  const { isAudio, isGGUF, gpuOptions, defaultBackend } = data;
-  if (isAudio) {
-    return backendOptionsMap.voxBox;
-  }
-
-  if (checkOnlyAscendNPU(gpuOptions)) {
-    return backendOptionsMap.ascendMindie;
-  }
-  return defaultBackend;
 };
 
 export const useCheckCompatibility = () => {
@@ -379,35 +349,6 @@ export const useCheckCompatibility = () => {
     return warningMessage;
   };
 
-  const generateGPUIds = (data: FormData) => {
-    const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-    console.log('generateGPUIds', gpu_ids);
-    if (!gpu_ids.length) {
-      return {
-        gpu_selector: null
-      };
-    }
-
-    const result = _.reduce(
-      gpu_ids,
-      (acc: string[], item: string | string[], index: number) => {
-        if (Array.isArray(item)) {
-          acc.push(item[1]);
-        } else if (index === 1) {
-          acc.push(item);
-        }
-        return acc;
-      },
-      []
-    );
-
-    return {
-      gpu_selector: {
-        gpu_ids: result || []
-      }
-    };
-  };
-
   const handleDoEvalute = async (formData: FormData) => {
     const currentRequestId = updateRequestId();
     const evalutionData = await handleEvaluate(formData);
@@ -428,6 +369,7 @@ export const useCheckCompatibility = () => {
       !allValues.local_path
     );
   };
+
   const handleOnValuesChange = async (params: {
     changedValues: any;
     allValues: any;
@@ -487,7 +429,6 @@ export const useCheckCompatibility = () => {
     handleShowCompatibleAlert,
     handleUpdateWarning,
     handleDoEvalute,
-    generateGPUIds,
     handleEvaluate,
     setWarningStatus: updateWarningStatus,
     unlockWarningStatus,
@@ -503,6 +444,9 @@ export const useCheckCompatibility = () => {
 };
 
 export const useSelectModel = (data: { gpuOptions: any[] }) => {
+  const { checkCurrentbackend } = useCheckBackend();
+  const { recognizeAudioModel } = useRecognizeAudio();
+
   // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
   const { gpuOptions } = data;
 
@@ -511,7 +455,7 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
 
-    const modelTaskData = handleRecognizeAudioModel(selectModel, source);
+    const modelTaskData = recognizeAudioModel(selectModel, source);
 
     const backend = checkCurrentbackend({
       defaultBackend: backendOptionsMap.vllm,

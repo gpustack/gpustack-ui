@@ -57,7 +57,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const placement_strategy = Form.useWatch('placement_strategy', form);
   const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
   const worker_selector = Form.useWatch('worker_selector', form);
-  const { onValuesChange, onBackendChange, backendOptions } = useFormContext();
+  const { onValuesChange } = useFormContext();
 
   const paramsConfig = useMemo(() => {
     return _.get(BackendParameters, backend, []);
@@ -116,23 +116,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   };
 
   const handleDeleteEnvSelector = (index: number) => {
-    onValuesChange?.({}, form.getFieldsValue());
-  };
-
-  const handleBackendVersionOnBlur = () => {
-    onValuesChange?.({}, form.getFieldsValue());
-  };
-
-  const handleScheduleTypeChange = (value: string) => {
-    if (value === ScheduleValueMap.Auto) {
-      onValuesChange?.({}, form.getFieldsValue());
-    }
-  };
-
-  const handleBeforeGpuSelectorChange = (gpuIds: any[]) => {};
-
-  const handleGpuSelectorChange = (value: any[]) => {
-    handleBeforeGpuSelectorChange(value);
     onValuesChange?.({}, form.getFieldsValue());
   };
 

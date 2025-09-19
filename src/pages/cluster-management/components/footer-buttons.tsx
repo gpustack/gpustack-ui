@@ -6,7 +6,7 @@ import styled from 'styled-components';
 const Title = styled.span`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   font-weight: 700;
   font-size: 16px;
   .text {

@@ -329,7 +329,7 @@ const ClusterCreate = () => {
       {currentStep === startStep && (
         <ProviderCatalog
           dataList={providerList}
-          height={80}
+          height={70}
           onSelect={handleSelectProvider}
           clickable={true}
           current={extraData.provider}

@@ -25,7 +25,7 @@ interface CatalogListProps {
   resizable?: boolean;
   dataList: any[];
   loading: boolean;
-  activeId: number;
+  activeId: Global.WithFalse<number>;
   isFirst: boolean;
   renderItem: (data: any) => React.ReactNode;
   Skeleton: React.ComponentType<{ span: number }>;

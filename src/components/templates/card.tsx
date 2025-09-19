@@ -66,9 +66,9 @@ const Inner = styled.div.attrs({
   display: flex;
   width: 100%;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 8px;
-  line-height: 1.5;
+  height: 100%;
 `;
 
 const Icon = styled.div.attrs({

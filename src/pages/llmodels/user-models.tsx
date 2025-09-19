@@ -119,7 +119,7 @@ const UserModels: React.FC = () => {
       <CardList
         dataList={dataSource.dataList}
         loading={dataSource.loading}
-        activeId={-1}
+        activeId={false}
         isFirst={!dataSource.loadend}
         Skeleton={CardSkeleton}
         renderItem={renderCard}

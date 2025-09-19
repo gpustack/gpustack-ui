@@ -1,4 +1,5 @@
 declare namespace Global {
+  type WithFalse<T> = T | false;
   interface Pagination {
     page: number;
     perPage?: number;

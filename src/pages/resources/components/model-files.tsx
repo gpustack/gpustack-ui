@@ -128,6 +128,9 @@ const ModelFiles = () => {
       ?.labels?.['worker-name'];
 
     return {
+      cluster_id: workersList?.find(
+        (worker) => worker.value === record.worker_id
+      )?.cluster_id,
       source: modelSourceMap.local_path_value,
       local_path: record.resolved_paths?.[0],
       worker_selector: targetWorker

@@ -3,6 +3,7 @@ import { MinusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+import { statusType } from '../config/types';
 import FormWidget from './form-widget';
 
 const RowWrapper = styled.div`
@@ -23,8 +24,12 @@ interface ListMapProps {
   dataList: any[];
   label?: React.ReactNode;
   btnText?: string;
+  requiredFields?: string[];
+  validateStatusList?: Record<string, statusType>[];
   properties: Record<string, any>;
   disabled?: boolean;
+  onAdd?: (data: any[]) => void;
+  onDelete?: (deletedItem: any, data: any[]) => void;
   onChange?: (data: any) => void;
 }
 
@@ -32,6 +37,7 @@ interface ListItemProps {
   schemaList: any[];
   data: Record<string, any>;
   disabled?: boolean;
+  validateStatus?: Record<string, statusType>;
   onChange?: (data: any) => void;
 }
 
@@ -39,6 +45,7 @@ const ListItem: React.FC<ListItemProps> = ({
   schemaList,
   data,
   onChange,
+  validateStatus,
   disabled
 }) => {
   const handleValueChange = (name: string, target: any) => {
@@ -50,17 +57,18 @@ const ListItem: React.FC<ListItemProps> = ({
       onChange?.({ [name]: value });
     }
   };
-
   return (
     <>
       {schemaList.map((schema: any) => (
         <FormWidget
+          status={validateStatus?.[schema.name]}
           widget={schema.type}
           {...schema}
-          disabled={disabled}
+          disabled={disabled || schema.readOnly}
           key={schema.name}
           value={data?.[schema.name]}
           checked={data?.[schema.name]}
+          isInFormItems={false}
           onChange={(target) => handleValueChange(schema.name, target)}
         />
       ))}
@@ -73,8 +81,12 @@ const ListMap: React.FC<ListMapProps> = ({
   label,
   btnText,
   properties = {},
+  requiredFields = [],
   minItems = 0,
+  validateStatusList = [],
   disabled,
+  onAdd,
+  onDelete,
   onChange
 }) => {
   const [items, setItems] = React.useState(dataList || []);
@@ -82,23 +94,27 @@ const ListMap: React.FC<ListMapProps> = ({
   const schemaList = useMemo(() => {
     const list = Object.entries(properties).map(([key, value]) => ({
       ...value,
+      required: requiredFields.includes(key),
       name: key
     }));
     return list;
-  }, [properties]);
+  }, [properties, requiredFields]);
 
   const handleOnAdd = () => {
     const keys = Object.keys(properties);
-    setItems([
+    const newItems = [
       ...items,
       { ...keys.reduce((acc, key) => ({ ...acc, [key]: '' }), {}) }
-    ]);
+    ];
+    setItems(newItems);
+    onAdd?.(newItems);
   };
 
   const handleDelete = (index: number) => {
+    const deleteItem = items[index];
     const newItems = items.filter((_, i) => i !== index);
     setItems(newItems);
-    onChange?.(newItems);
+    onDelete?.(deleteItem, newItems);
   };
 
   const handleItemChange = (index: number, data: { [key: string]: any }) => {
@@ -131,6 +147,7 @@ const ListMap: React.FC<ListMapProps> = ({
             <ListItem
               schemaList={schemaList}
               data={item}
+              validateStatus={validateStatusList?.[index]}
               disabled={disabled}
               onChange={(value) => handleItemChange(index, value)}
             />

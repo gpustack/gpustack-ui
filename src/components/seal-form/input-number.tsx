@@ -23,6 +23,8 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
   if (isInFormItems) {
     const statusData = Form?.Item?.useStatus?.();
     status = statusData?.status || '';
+  } else {
+    status = props.status || '';
   }
 
   useEffect(() => {

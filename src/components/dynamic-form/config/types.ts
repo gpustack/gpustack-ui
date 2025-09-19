@@ -15,9 +15,13 @@ export interface FieldSchema {
   widget?: string;
   min?: number;
   style?: React.CSSProperties;
+  required?: string[];
 }
 
+export type statusType = 'error' | 'warning' | '' | undefined;
 export interface FormWidgetProps {
+  status?: statusType;
+  isInFormItems?: boolean;
   widget: 'Input' | 'Select' | 'Checkbox' | 'InputNumber';
   name: string;
   title?: string;

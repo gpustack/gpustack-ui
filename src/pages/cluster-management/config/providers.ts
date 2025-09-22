@@ -42,7 +42,7 @@ export default [
     value: ProviderValueMap.AliCloud,
     key: ProviderValueMap.AliCloud,
     icon: icons.AliCloud,
-    description: 'Comming soon',
+    description: 'Coming soon',
     group: 'clusters.create.provider.cloud'
   },
   {
@@ -52,7 +52,7 @@ export default [
     value: ProviderValueMap.TencentCloud,
     key: ProviderValueMap.TencentCloud,
     icon: icons.TencentCloud,
-    description: 'Comming soon',
+    description: 'Coming soon',
     group: 'clusters.create.provider.cloud'
   }
 ];

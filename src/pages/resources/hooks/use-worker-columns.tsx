@@ -17,7 +17,7 @@ import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { WorkerStatusMapValue, status } from '../config';
+import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 
 const ActionList = [
@@ -179,6 +179,18 @@ const StorageCell = ({ files }: { files: Filesystem[] }) => {
   );
 };
 
+const statusAvailable = (record: ListItem) => {
+  return (
+    WorkerStatusMap.provisioned !== record.state &&
+    WorkerStatusMap.provisioning !== record.state &&
+    record.status
+  );
+};
+
+const HolderStatus = () => {
+  return <span>N/A</span>;
+};
+
 const useWorkerColumns = ({
   clusterData,
   loadend,
@@ -249,49 +261,68 @@ const useWorkerColumns = ({
       {
         title: 'CPU',
         dataIndex: 'cpu',
-        render: (text: string, record) => (
-          <ProgressBar
-            percent={_.round(record?.status?.cpu?.utilization_rate, 0)}
-          />
-        )
+        render: (text: string, record) =>
+          statusAvailable(record) ? (
+            <ProgressBar
+              percent={_.round(record?.status?.cpu?.utilization_rate, 0)}
+            />
+          ) : (
+            <HolderStatus />
+          )
       },
       {
         title: intl.formatMessage({ id: 'resources.table.memory' }),
         dataIndex: 'memory',
-        render: (_, record) => (
-          <ProgressBar
-            percent={formateUtilization(
-              record?.status?.memory?.used,
-              record?.status?.memory?.total
-            )}
-            label={
-              <InfoColumn fieldList={fieldList} data={record.status.memory} />
-            }
-          />
-        )
+        render: (_, record) =>
+          statusAvailable(record) ? (
+            <ProgressBar
+              percent={formateUtilization(
+                record?.status?.memory?.used,
+                record?.status?.memory?.total
+              )}
+              label={
+                <InfoColumn fieldList={fieldList} data={record.status.memory} />
+              }
+            />
+          ) : (
+            <HolderStatus />
+          )
       },
       {
         title: 'GPU',
         dataIndex: 'gpu',
-        render: (_, record) => <GPUCell devices={record?.status?.gpu_devices} />
+        render: (_, record) =>
+          statusAvailable(record) ? (
+            <GPUCell devices={record?.status?.gpu_devices} />
+          ) : (
+            <HolderStatus />
+          )
       },
       {
         title: intl.formatMessage({ id: 'resources.table.vram' }),
         dataIndex: 'vram',
-        render: (_, record, rIndex) => (
-          <VRAMCell
-            devices={record?.status?.gpu_devices}
-            intl={intl}
-            rIndex={rIndex}
-            loadend={loadend}
-            firstLoad={firstLoad}
-          />
-        )
+        render: (_, record, rIndex) =>
+          statusAvailable(record) ? (
+            <VRAMCell
+              devices={record?.status?.gpu_devices}
+              intl={intl}
+              rIndex={rIndex}
+              loadend={loadend}
+              firstLoad={firstLoad}
+            />
+          ) : (
+            <HolderStatus />
+          )
       },
       {
         title: intl.formatMessage({ id: 'resources.table.disk' }),
         dataIndex: 'storage',
-        render: (_, record) => <StorageCell files={record.status?.filesystem} />
+        render: (_, record) =>
+          statusAvailable(record) ? (
+            <StorageCell files={record.status?.filesystem} />
+          ) : (
+            <HolderStatus />
+          )
       },
       {
         title: intl.formatMessage({ id: 'common.table.operation' }),

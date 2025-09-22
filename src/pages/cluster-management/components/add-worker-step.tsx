@@ -28,7 +28,7 @@ const Line = styled.div`
     width: 16px;
     height: 16px;
     transform: rotate(45deg);
-    background-color: var(--ant-color-bg-container);
+    background-color: var(--ant-color-bg-elevated);
     border-top: 1px solid var(--ant-color-border);
     border-left: 1px solid var(--ant-color-border);
   }

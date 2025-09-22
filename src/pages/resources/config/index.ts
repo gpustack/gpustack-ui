@@ -69,7 +69,8 @@ export const addWorkerGuide: Record<string, any> = {
     },
     checkEnvCommand: {
       [ProviderValueMap.Docker]: `nvidia-smi >/dev/null 2>&1 && echo "NVIDIA driver OK" || (echo "NVIDIA driver issue"; exit 1) && docker info 2>/dev/null | grep -q "Default Runtime: nvidia" && echo "NVIDIA Container Toolkit OK" || (echo "NVIDIA Container Toolkit not configured"; exit 1)`,
-      [ProviderValueMap.Kubernetes]: 'k8s env check command'
+      [ProviderValueMap.Kubernetes]:
+        'kubectl get runtimeclass nvidia > /dev/null 2>&1  && echo "NVIDIA runtimeclass registered" || (echo "NVIDIA runtimeclass issue"; exit 1)'
     }
   },
   npu: {

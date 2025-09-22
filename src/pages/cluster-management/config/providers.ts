@@ -36,16 +36,6 @@ export default [
     group: 'clusters.create.provider.cloud'
   },
   {
-    label: 'Huawei Cloud',
-    locale: false,
-    disabled: true,
-    value: ProviderValueMap.HuaweiCloud,
-    key: ProviderValueMap.HuaweiCloud,
-    icon: icons.HuaweiCloud,
-    description: 'Comming soon',
-    group: 'clusters.create.provider.cloud'
-  },
-  {
     label: 'Ali Cloud',
     locale: false,
     disabled: true,

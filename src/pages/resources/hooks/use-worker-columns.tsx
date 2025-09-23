@@ -181,7 +181,7 @@ const StorageCell = ({ files }: { files: Filesystem[] }) => {
 
 const statusAvailable = (record: ListItem) => {
   return (
-    WorkerStatusMap.provisioned !== record.state &&
+    WorkerStatusMap.initializing !== record.state &&
     WorkerStatusMap.provisioning !== record.state &&
     record.status
   );

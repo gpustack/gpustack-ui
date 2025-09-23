@@ -9,7 +9,7 @@ export const WorkerStatusMap = {
   deleting: 'deleting',
   error: 'error',
   pending: 'pending',
-  provisioned: 'provisioned'
+  initializing: 'initializing'
 };
 
 export const WorkerStatusMapValue = {
@@ -19,7 +19,7 @@ export const WorkerStatusMapValue = {
   [WorkerStatusMap.provisioning]: 'Provisioning',
   [WorkerStatusMap.deleting]: 'Deleting',
   [WorkerStatusMap.error]: 'Error',
-  [WorkerStatusMap.provisioned]: 'Provisioned',
+  [WorkerStatusMap.initializing]: 'Initializing',
   [WorkerStatusMap.pending]: 'Pending'
 };
 
@@ -31,7 +31,7 @@ export const status: any = {
   [WorkerStatusMap.deleting]: StatusMaps.transitioning,
   [WorkerStatusMap.error]: StatusMaps.error,
   [WorkerStatusMap.pending]: StatusMaps.transitioning,
-  [WorkerStatusMap.provisioned]: StatusMaps.transitioning
+  [WorkerStatusMap.initializing]: StatusMaps.transitioning
 };
 
 export const addWorkerGuide: Record<string, any> = {

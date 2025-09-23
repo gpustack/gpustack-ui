@@ -6,19 +6,19 @@ import React from 'react';
 export const ClusterStatusValueMap = {
   Provisioning: 0,
   Ready: 3,
-  ProvisionedNotReady: 1
+  Provisioned: 1
 };
 
 export const ClusterStatusLabelMap = {
   [ClusterStatusValueMap.Provisioning]: 'Provisioning',
   [ClusterStatusValueMap.Ready]: 'Ready',
-  [ClusterStatusValueMap.ProvisionedNotReady]: 'Provisioned Not Ready'
+  [ClusterStatusValueMap.Provisioned]: 'Provisioned'
 };
 
 export const ClusterStatus: Record<string, StatusType> = {
   [ClusterStatusValueMap.Provisioning]: StatusMaps.transitioning,
   [ClusterStatusValueMap.Ready]: StatusMaps.success,
-  [ClusterStatusValueMap.ProvisionedNotReady]: StatusMaps.error
+  [ClusterStatusValueMap.Provisioned]: StatusMaps.transitioning
 };
 
 export const ProviderValueMap = {
@@ -184,44 +184,6 @@ export const clusterActionList = [
       danger: true
     }
   }
-];
-
-export const regionList: {
-  label: string;
-  datacenter: string;
-  value: string;
-  icon: string;
-}[] = [
-  { label: 'New York', datacenter: 'Datacenter 1', value: 'nyc1', icon: '🇺🇸' },
-  { label: 'New York', datacenter: 'Datacenter 2', value: 'nyc2', icon: '🇺🇸' },
-  { label: 'New York', datacenter: 'Datacenter 3', value: 'nyc3', icon: '🇺🇸' },
-  { label: 'Toronto', datacenter: 'Datacenter 1', value: 'tor1', icon: '🇨🇦' },
-  {
-    label: 'San Francisco',
-    datacenter: 'Datacenter 1',
-    value: 'sfo1',
-    icon: '🇺🇸'
-  },
-  {
-    label: 'San Francisco',
-    datacenter: 'Datacenter 2',
-    value: 'sfo2',
-    icon: '🇺🇸'
-  },
-  {
-    label: 'San Francisco',
-    datacenter: 'Datacenter 3',
-    value: 'sfo3',
-    icon: '🇺🇸'
-  },
-  { label: 'Atlanta', datacenter: 'Datacenter 1', value: 'atl1', icon: '🇺🇸' },
-  { label: 'Singapore', datacenter: 'Datacenter 1', value: 'sgp1', icon: '🇸🇬' },
-  { label: 'Bangalore', datacenter: 'Datacenter 1', value: 'blr1', icon: '🇮🇳' },
-  { label: 'London', datacenter: 'Datacenter 1', value: 'lon1', icon: '🇬🇧' },
-  { label: 'Amsterdam', datacenter: 'Datacenter 2', value: 'ams2', icon: '🇳🇱' },
-  { label: 'Amsterdam', datacenter: 'Datacenter 3', value: 'ams3', icon: '🇳🇱' },
-  { label: 'Frankfurt', datacenter: 'Datacenter 1', value: 'fra1', icon: '🇩🇪' },
-  { label: 'Sydney', datacenter: 'Datacenter 1', value: 'syd1', icon: '🇦🇺' }
 ];
 
 export const CloudOptionItems = [

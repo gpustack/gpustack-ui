@@ -1,11 +1,11 @@
 import useUserSettings from '@/hooks/use-user-settings';
 import { FitAddon } from '@xterm/addon-fit';
 import { Terminal } from '@xterm/xterm';
+import '@xterm/xterm/css/xterm.css';
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
 import qs from 'query-string';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import 'xterm/css/xterm.css';
 
 const useStyles = createStyles(({ token, css }) => ({
   wrap: css`

@@ -105,6 +105,16 @@ export default [
         defaultIcon: 'icon-models',
         access: 'canSeeAdmin',
         component: './llmodels/user-models'
+      },
+      {
+        name: 'backendsList',
+        path: '/models/backends/list',
+        key: 'backendsList',
+        icon: 'icon-backend',
+        selectedIcon: 'icon-backend-filled',
+        defaultIcon: 'icon-backend',
+        access: 'canSeeAdmin',
+        component: './backends/list'
       }
     ]
   },

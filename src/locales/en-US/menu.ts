@@ -31,5 +31,6 @@ export default {
   'menu.clusterManagement.clusters': 'Clusters',
   'menu.clusterManagement.credentials': 'Cloud Credentials',
   'menu.clusterManagement.clusterDetail': 'Cluster Detail',
-  'menu.clusterManagement.clusterCreate': 'Create Cluster'
+  'menu.clusterManagement.clusterCreate': 'Create Cluster',
+  'menu.models.backendsList': 'Backends'
 };

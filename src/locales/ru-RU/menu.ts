@@ -31,9 +31,10 @@ export default {
   'menu.clusterManagement.credentials': 'Облачные аккаунты',
   'menu.models.userModels': 'Мои модели',
   'menu.clusterManagement.clusterDetail': 'Детали кластера',
-  'menu.clusterManagement.clusterCreate': 'Создать кластер'
+  'menu.clusterManagement.clusterCreate': 'Создать кластер',
+  'menu.models.backendsList': 'Backends'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 14. 'menu.models.backendsList': 'Backends'
 // ========== End of To-Do List ==========

@@ -31,5 +31,6 @@ export default {
   'menu.clusterManagement.clusters': '集群',
   'menu.clusterManagement.credentials': '云凭证',
   'menu.clusterManagement.clusterDetail': '集群详情',
-  'menu.clusterManagement.clusterCreate': '创建集群'
+  'menu.clusterManagement.clusterCreate': '创建集群',
+  'menu.models.backendsList': '后端'
 };

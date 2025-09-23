@@ -66,7 +66,7 @@ const Inner = styled.div.attrs({
   display: flex;
   width: 100%;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   height: 100%;
 `;

@@ -39,6 +39,7 @@ export interface NodePoolListItem extends NodePoolFormData {
   instance_type: string;
   replicas: number;
   workers: number;
+  ready_workers?: number;
   batch_size: number;
   labels: Record<string, string>;
   cloud_options: Record<string, any>;

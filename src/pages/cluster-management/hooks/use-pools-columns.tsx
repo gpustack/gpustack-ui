@@ -135,7 +135,7 @@ const usePoolsColumns = (
         },
         render: (text: string, record: ListItem) => (
           <span>
-            {record.workers} / {record.replicas}
+            {record.ready_workers} / {record.replicas}
           </span>
         )
       },
@@ -158,7 +158,7 @@ const usePoolsColumns = (
       // },
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
-        dataIndex: 'create_at',
+        dataIndex: 'created_at',
         key: 'created_at',
         span: 4,
         showSorterTootip: false,

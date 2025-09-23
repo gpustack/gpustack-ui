@@ -63,7 +63,7 @@ interface FilterBarProps {
   actionItems?: ActionItem[];
   selectOptions?: Global.BaseOption<string | number>[];
   showSelect?: boolean;
-  buttonText: string;
+  buttonText?: string;
   buttonIcon?: React.ReactNode;
   marginBottom?: number;
   marginTop?: number;
@@ -72,6 +72,8 @@ interface FilterBarProps {
   actionType?: 'dropdown' | 'button';
   showPrimaryButton?: boolean;
   showDeleteButton?: boolean;
+  right?: React.ReactNode;
+  left?: React.ReactNode;
   width?: {
     input?: number;
     select?: number;
@@ -98,6 +100,8 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     selectHolder,
     showPrimaryButton = true,
     showDeleteButton = true,
+    right,
+    left,
     width
   } = props;
   const intl = useIntl();
@@ -195,7 +199,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
           ></Button>
         </Space>
       }
-      right={renderRight}
+      right={right || renderRight}
     ></PageTools>
   );
 };

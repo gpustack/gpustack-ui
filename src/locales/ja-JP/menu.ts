@@ -31,7 +31,8 @@ export default {
   'menu.clusterManagement.credentials': 'Cloud Credentials',
   'menu.models.userModels': 'My Models',
   'menu.clusterManagement.clusterDetail': 'Cluster Detail',
-  'menu.clusterManagement.clusterCreate': 'Create Cluster'
+  'menu.clusterManagement.clusterCreate': 'Create Cluster',
+  'menu.models.backendsList': 'Backends'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -47,5 +48,6 @@ export default {
 // 10. 'menu.clusterManagement.credentials': 'Cloud Credentials',
 // 11. 'menu.models.userModels': 'My Models'
 // 12. 'menu.clusterManagement.clusterDetail': 'Cluster Detail',
-// 13. 'menu.clusterManagement.clusterCreate': 'Create Cluster'
+// 13. 'menu.clusterManagement.clusterCreate': 'Create Cluster',
+// 14. 'menu.models.backendsList': 'Backends'
 // ========== End of To-Do List ==========

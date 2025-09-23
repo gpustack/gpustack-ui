@@ -12,6 +12,9 @@ const Wrapper = styled.div<{ $cols?: number }>`
   .template-card-wrapper {
     padding: 16px;
   }
+  .template-card-inner {
+    justify-content: center;
+  }
 `;
 
 const Container = styled.div`

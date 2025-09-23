@@ -7,6 +7,7 @@ import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Empty, Table, message } from 'antd';
 import React, { useEffect, useState } from 'react';
+import TerminalTabs from '../../_components/terminal-tabs';
 import {
   WORKERS_API,
   deleteWorker,
@@ -64,6 +65,16 @@ const Workers: React.FC = () => {
     open: false,
     currentData: null
   });
+  const [terminals, setTerminals] = useState<{ url: string; name: string }[]>(
+    []
+  );
+  const [terminalModalStatus, setTerminalModalStatus] = useState<{
+    open: boolean;
+    currentActive: string;
+  }>({
+    open: false,
+    currentActive: ''
+  });
 
   const getClusterList = async () => {
     try {
@@ -97,7 +108,6 @@ const Workers: React.FC = () => {
 
   const handleUpdateLabelsOk = async (values: Record<string, any>) => {
     try {
-      console.log('updateLabelsData.data', updateLabelsData.data);
       await updateWorker(updateLabelsData.data.id, {
         ...updateLabelsData.data,
         labels: values.labels
@@ -118,7 +128,6 @@ const Workers: React.FC = () => {
   };
 
   const handleUpdateLabels = (record: ListItem) => {
-    console.log('record', record);
     setUpdateLabelsData({
       open: true,
       data: {
@@ -151,6 +160,19 @@ const Workers: React.FC = () => {
         name: record.name
       });
     }
+    if (val === 'terminal') {
+      const url = `/api/workers/${record.id}/terminal`;
+      setTerminals((prev) => {
+        return [
+          ...prev,
+          {
+            url,
+            name: record.name
+          }
+        ];
+      });
+      setTerminalModalStatus({ open: true, currentActive: url });
+    }
   });
 
   const renderEmpty = (type?: string) => {
@@ -172,6 +194,11 @@ const Workers: React.FC = () => {
     });
   };
 
+  const handleTerminalClose = () => {
+    setTerminalModalStatus({ open: false, currentActive: '' });
+    setTerminals([]);
+  };
+
   const columns = useWorkerColumns({
     clusterData,
     loadend: dataSource.loadend,
@@ -187,6 +214,16 @@ const Workers: React.FC = () => {
     <>
       <PageContainer
         ghost
+        footer={[
+          <TerminalTabs
+            height={300}
+            key="terminal-tabs"
+            terminals={terminals}
+            open={terminalModalStatus.open}
+            currentActive={terminalModalStatus.currentActive}
+            onClose={handleTerminalClose}
+          />
+        ]}
         header={{
           title: 'Workers',
           style: {

@@ -253,20 +253,14 @@ export default {
   'common.select.count': '{count} Выбрано',
   'common.login.auth': 'Аутентификация...',
   'common.login.auth.failed': 'Ошибка аутентификации',
-  'common.login.password': 'Log in with Password',
-  'common.external.login': 'Log in with {type}',
-  'common.sso.noConfig':
-    'Single sign-on is not enabled on this system. Please contact your administrator.',
-  'common.button.edit.item': 'Edit {name}',
-  'common.button.terminal': 'Terminal',
-  'common.button.addItem': 'Add Item'
+  'common.login.password': 'Войти с паролем',
+  'common.external.login': 'Войти через {type}',
+  'common.sso.noConfig': 'Единый вход не настроен в этой системе. Пожалуйста, обратитесь к администратору.',
+  'common.button.edit.item': 'Редактировать {name}',
+  'common.button.terminal': 'Терминал',
+  'common.button.addItem': 'Добавить элемент'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.external.login': 'Log in with {type}'
-// 2. 'common.login.password': 'Log in with Password'
-// 3. 'common.sso.noConfig': 'Single sign-on is not enabled on this system. Please contact your administrator.'
-// 4.  'common.button.edit.item': 'Edit {name}',
-// 5.  'common.button.terminal': 'Terminal',
-// 6.  'common.button.addItem': 'Add Item'
+
 // ========== End of To-Do List ==========

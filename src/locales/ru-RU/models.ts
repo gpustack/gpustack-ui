@@ -162,24 +162,16 @@ export default {
     'См. связанную проблему: <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">#1979 on GitHub</a>.',
   'models.ollama.deprecated.notice': `Источник моделей Ollama объявлен устаревшим начиная с версии v0.6.1. Подробности см. в  <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">соответствующем issue на GitHub</a>.`,
   'models.backend.mindie.310p':
-    'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
-  'models.form.gpuCount': 'GPUs per Replica',
-  'models.form.gpuType': 'GPU Type',
-  'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
-  'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding',
-  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
+    'Ascend 310P поддерживает только FP16, поэтому необходимо установить --dtype=float16.',
+  'models.form.gpuCount': 'GPU на реплику',
+  'models.form.gpuType': 'Тип GPU',
+  'models.form.optimizeLongPrompt': 'Оптимизировать длинные промпты',
+  'models.form.enableSpeculativeDecoding': 'Включить спекулятивное декодирование',
+  'models.form.check.clusterUnavailable': 'Текущий кластер недоступен',
   'models.form.check.otherClustersAvailable':
-    'Available clusters: {clusters}. Please switch cluster.'
+    'Доступные кластеры: {clusters}. Пожалуйста, переключитесь на другой кластер.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.ollama.deprecated.title': 'Deprecation Notice',
-// 2. 'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
-// 3. 'models.backend.mindie.310p':'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
-// 4. 'models.form.gpuCount': 'GPUs per Replica',
-// 5. 'models.form.gpuType': 'GPU Type',
-// 6. 'models.form.optimizeLongPrompt': 'Optimize Long Prompt',
-// 7. 'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding',
-// 8. 'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
-// 9. 'models.form.check.otherClustersAvailable': 'Available clusters: {clusters}. Please switch cluster.'
+
 // ========== End of To-Do List ==========

@@ -13,7 +13,7 @@ import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
-import { DownOutlined, SyncOutlined } from '@ant-design/icons';
+import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -579,6 +579,11 @@ const Models: React.FC<ModelsProps> = ({
           left={
             <Space>
               <Input
+                prefix={
+                  <SearchOutlined
+                    style={{ color: 'var(--ant-color-text-placeholder)' }}
+                  ></SearchOutlined>
+                }
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 160 }}
                 size="large"

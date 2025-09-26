@@ -127,6 +127,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
       >
         <Input.TextArea
           {...rest}
+          spellCheck={rest.spellCheck ?? false}
           autoSize={autoSize}
           ref={inputRef}
           style={{ minHeight: '80px', ...style }}

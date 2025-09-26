@@ -4,7 +4,7 @@ import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ColumnWrapper from '../components/column-wrapper';
+import ColumnWrapper from '../../_components/column-wrapper';
 import CompatibilityAlert from '../components/compatible-alert';
 import ModelCard from '../components/model-card';
 import SearchModel from '../components/search-model';

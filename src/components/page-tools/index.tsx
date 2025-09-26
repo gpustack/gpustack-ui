@@ -3,6 +3,7 @@ import {
   DeleteOutlined,
   DownOutlined,
   PlusOutlined,
+  SearchOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -170,6 +171,11 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
       left={
         <Space>
           <Input
+            prefix={
+              <SearchOutlined
+                style={{ color: 'var(--ant-color-text-placeholder)' }}
+              ></SearchOutlined>
+            }
             placeholder={
               inputHolder ||
               intl.formatMessage({

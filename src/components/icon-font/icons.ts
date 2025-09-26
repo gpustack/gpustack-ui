@@ -45,7 +45,11 @@ const icons = {
   Ascend: React.createElement(IconFont, { type: 'icon-ascend' }),
   Catalog1: React.createElement(IconFont, { type: 'icon-catalog1' }),
   AMD: React.createElement(IconFont, { type: 'icon-amd' }),
-  KubernetesFilled: React.createElement(IconFont, { type: 'icon-k8s-filled' })
+  KubernetesFilled: React.createElement(IconFont, { type: 'icon-k8s-filled' }),
+  EditContent: React.createElement(IconFont, { type: 'icon-edit-content' }),
+  Yaml: React.createElement(IconFont, { type: 'icon-code_block' }),
+  Version: React.createElement(IconFont, { type: 'icon-version' }),
+  Parameter: React.createElement(IconFont, { type: 'icon-parameters' })
 };
 
 export default icons;

@@ -1,74 +1,66 @@
+import classNames from 'classnames';
 import React from 'react';
 import styled from 'styled-components';
-import CopyButton from '../copy-button';
-import SegmentLine from '../segment-line';
 import './index.less';
 
-const Wrapper = styled.div<{ $height: number }>`
-  height: ${(props) => props.$height}px;
+const HeaderWrapper = styled.div<{ $height?: number }>`
+  height: ${(props) => (props.$height ? `${props.$height}px` : 'auto')};
+  display: flex;
+  padding-block: 0;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Wrapper = styled.div`
+  border-radius: var(--border-radius-mini);
+  overflow: hidden;
+
+  &.bordered {
+    border: 1px solid var(--ant-color-border);
+  }
+  &.borderless {
+    border: none;
+  }
+  .code-pre {
+    margin-bottom: 0;
+  }
+  .scrollbar {
+    .slider {
+      border-radius: 6px;
+    }
+  }
 `;
 
 interface EditorwrapProps {
   headerHeight?: number;
   header?: React.ReactNode;
   children: React.ReactNode;
-  showHeader?: boolean;
-  copyText: string;
-  defaultValue?: string;
-  langOptions?: Global.BaseOption<string | number>[];
+  variant?: 'bordered' | 'borderless';
   styles?: {
     wrapper?: React.CSSProperties;
     header?: React.CSSProperties;
     content?: React.CSSProperties;
   };
-  onChangeLang?: (value: string | number) => void;
 }
 const EditorWrap: React.FC<EditorwrapProps> = ({
   headerHeight = 40,
   header,
   children,
-  copyText,
-  langOptions = [],
-  onChangeLang,
-  defaultValue,
-  styles = {},
-  showHeader = true
+  variant = 'borderless',
+  styles = {}
 }) => {
-  const handleChangeLang = (value: string | number) => {
-    onChangeLang?.(value);
-  };
-  const renderHeader = () => {
-    if (header) {
-      return <div className="editor-header">{header}</div>;
-    }
-    if (showHeader) {
-      return (
-        <Wrapper className="editor-header" $height={headerHeight}>
-          <SegmentLine
-            height={headerHeight}
-            defaultValue={defaultValue}
-            size="small"
-            options={langOptions}
-            onChange={handleChangeLang}
-          ></SegmentLine>
-          <CopyButton
-            text={copyText}
-            size="small"
-            style={{
-              color: 'rgba(255,255,255,.7)'
-            }}
-          />
-        </Wrapper>
-      );
-    }
-    return null;
-  };
   return (
-    <div className="editor-wrap" style={{ ...styles.wrapper }}>
-      {renderHeader()}
-      <div className="editor-content">{children}</div>
-    </div>
+    <Wrapper
+      style={{ ...styles.wrapper }}
+      className={classNames({
+        bordered: variant === 'bordered',
+        borderless: variant === 'borderless'
+      })}
+    >
+      {header && <HeaderWrapper $height={headerHeight}>{header}</HeaderWrapper>}
+      <div>{children}</div>
+    </Wrapper>
   );
 };
 
-export default React.memo(EditorWrap);
+export default EditorWrap;

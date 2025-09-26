@@ -1,4 +1,4 @@
-import nvidiaLogo from '@/assets/logo/nvidia.png';
+import lmDeployLogo from '@/assets/logo/lmdeploy.png';
 import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
 
@@ -37,8 +37,8 @@ export default [
   },
   {
     id: 3,
-    backend_name: 'TensorRT',
-    icon: nvidiaLogo,
+    backend_name: 'LMDeploy',
+    icon: lmDeployLogo,
     version_configs: {
       'v1.0': {
         image_name: 'example/image:v1.0',
@@ -49,6 +49,6 @@ export default [
     health_check_path: '/v1/models',
     default_version: 'v1.0',
     default_backend_param: ['--param1', '--param2'],
-    description: 'TensorRT description'
+    description: 'LMDeploy description'
   }
 ];

@@ -48,6 +48,7 @@ const SegmentedQwrapper = styled.div<{ $height: number }>`
         border-radius: 2px;
         bottom: 0px;
         top: unset;
+        opacity: 1;
       }
     }
     .ant-segmented-item-selected {
@@ -55,6 +56,7 @@ const SegmentedQwrapper = styled.div<{ $height: number }>`
       color: var(--color-white-primary);
       &::after {
         height: 2px;
+        opacity: 1;
       }
     }
   }
@@ -68,6 +70,7 @@ const SegmentLine: React.FC<SegmentLineProps> = (props) => {
     className = 'segment-line',
     ...rest
   } = props;
+
   return (
     <SegmentedQwrapper $height={height}>
       <Segmented

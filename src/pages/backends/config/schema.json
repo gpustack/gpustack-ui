@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "backend name",
+      "severity": "error"
+    },
+    "default_version": {
+      "type": "string",
+      "description": "default backend version"
+    },
+    "health_check_path": {
+      "type": "string",
+      "description": "health check path"
+    },
+    "allowed_proxy_uris": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "allowed proxy URIs"
+    },
+    "versions": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9._-]+$": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string",
+              "description": "image name"
+            },
+            "command": {
+              "type": "string",
+              "description": "start command"
+            }
+          },
+          "required": ["image", "command"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "multiple backend versions"
+    },
+    "default_backend_parameters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "default backend parameters"
+    }
+  },
+  "required": ["name", "default_version", "health_check_path", "versions"],
+  "additionalProperties": false
+}

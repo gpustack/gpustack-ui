@@ -1,30 +1,39 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import Editor from '@monaco-editor/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef
+} from 'react';
 import EditorWrap from '../editor-wrap';
-
 interface ViewerProps {
+  ref?: any;
   lang: string;
   defaultLang?: string;
-  langOptions?: Global.BaseOption<string>[];
   config?: any;
   value: string;
   height?: string | number;
   theme?: string;
-  showHeader?: boolean;
+  header?: React.ReactNode;
+  placeholder?: string;
+  variant?: 'bordered' | 'borderless';
 }
 
-const ViewerEditor: React.FC<ViewerProps> = (props) => {
-  const editorRef = useRef<any>(null);
+const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
   const {
     lang,
     value,
     config,
-    langOptions,
     defaultLang,
     height = 380,
-    showHeader
+    theme = 'vs-dark',
+    header,
+    variant = 'borderless',
+    placeholder
   } = props;
-  const [langType, setLangType] = useState(defaultLang);
+
+  const editorRef = useRef<any>(null);
 
   const handleBeforeMount = (monaco: any) => {
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -36,12 +45,8 @@ const ViewerEditor: React.FC<ViewerProps> = (props) => {
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
-    console.log('loaded====', editor, monaco);
   };
 
-  const handleOnChangeLang = (value: string) => {
-    setLangType(value);
-  };
   const formatCode = () => {
     if (editorRef.current) {
       setTimeout(() => {
@@ -55,35 +60,50 @@ const ViewerEditor: React.FC<ViewerProps> = (props) => {
     }
   };
 
+  useImperativeHandle(ref, () => ({
+    format: () => {
+      formatCode();
+    },
+    getValue: () => {
+      return editorRef.current?.getValue?.();
+    },
+    setValue: (val: string) => {
+      editorRef.current?.setValue?.(val);
+    },
+    editor: editorRef.current
+  }));
+
   useEffect(() => {
     formatCode();
     setTimeout(() => {
-      const lineCount = editorRef.current?.getModel().getLineCount(); // 获取总行数
-      editorRef.current?.revealLine(lineCount); // 滚动到最后一行
-    }, 100); // 可以调整延时，确保编辑器完全加载
+      const lineCount = editorRef.current?.getModel().getLineCount();
+      editorRef.current?.revealLine(lineCount);
+    }, 100);
   }, [value]);
 
   return (
-    <EditorWrap
-      copyText={value}
-      langOptions={langOptions}
-      defaultValue={lang}
-      showHeader={showHeader}
-      onChangeLang={handleOnChangeLang}
-    >
+    <EditorWrap header={header} variant={variant}>
       <Editor
         height={height}
-        theme="vs-dark"
+        theme={theme}
         className="monaco-editor"
         defaultLanguage={defaultLang}
-        language={langType}
+        language={lang}
         value={value}
-        options={config}
+        options={{
+          minimap: { enabled: false },
+          scrollbar: {
+            verticalScrollbarSize: 6,
+            horizontalScrollbarSize: 6
+          },
+          placeholder: placeholder
+        }}
+        loading={<LoadingOutlined style={{ fontSize: 24 }}></LoadingOutlined>}
         beforeMount={handleBeforeMount}
         onMount={handleEditorDidMount}
       />
     </EditorWrap>
   );
-};
+});
 
-export default React.memo(ViewerEditor);
+export default ViewerEditor;

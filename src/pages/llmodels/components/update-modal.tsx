@@ -4,6 +4,7 @@ import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
+import ColumnWrapper from '../../_components/column-wrapper';
 import {
   deployFormKeyMap,
   modelSourceMap,
@@ -14,7 +15,6 @@ import { backendOptionsMap } from '../config/backend-parameters';
 import { BackendOption, FormData } from '../config/types';
 import { generateGPUSelector } from '../config/utils';
 import { useCheckCompatibility } from '../hooks';
-import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 

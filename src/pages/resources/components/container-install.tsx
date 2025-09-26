@@ -1,7 +1,7 @@
 import { GPUStackVersionAtom } from '@/atoms/user';
 import { getAtomStorage } from '@/atoms/utils';
-import EditorWrap from '@/components/editor-wrap';
 import HighlightCode from '@/components/highlight-code';
+import CommandViewer from '@/pages/_components/command-viewer';
 import { useIntl } from '@umijs/max';
 import { Radio } from 'antd';
 import React from 'react';
@@ -98,27 +98,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
         ></div>
       )}
       {activeKey === 'npu' ? (
-        <EditorWrap
+        <CommandViewer
           headerHeight={32}
           copyText={code}
-          langOptions={npuOptions}
+          options={npuOptions}
           defaultValue="npu"
-          showHeader={true}
-          onChangeLang={handleOnChange}
-          styles={{
-            wrapper: {
-              backgroundColor: 'var(--color-editor-dark)'
-            }
-          }}
-        >
-          <HighlightCode
-            theme="dark"
-            code={code.replace(/\\/g, '')}
-            copyValue={code}
-            lang="bash"
-            copyable={false}
-          ></HighlightCode>
-        </EditorWrap>
+          onChange={handleOnChange}
+          lang="bash"
+          code={code.replace(/\\/g, '')}
+        ></CommandViewer>
       ) : (
         <HighlightCode
           theme="dark"

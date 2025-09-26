@@ -8,6 +8,7 @@ import { Button } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import ColumnWrapper from '../../_components/column-wrapper';
 import { queryCatalogItemSpec } from '../apis';
 import {
   defaultFormValues,
@@ -21,7 +22,6 @@ import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
 import { generateGPUIds } from '../config/utils';
 import { useCheckCompatibility } from '../hooks';
 import useFormInitialValues from '../hooks/use-form-initial-values';
-import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 

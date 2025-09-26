@@ -1,9 +1,8 @@
-import EditorWrap from '@/components/editor-wrap';
-import HighlightCode from '@/components/highlight-code';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Modal } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import CommandViewer from '../../_components/command-viewer';
 
 type ViewModalProps = {
   title?: string;
@@ -32,29 +31,29 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   const { title, open, onCancel, viewCodeContent } = props || {};
 
   const intl = useIntl();
-  const [lang, setLang] = useState<string>(langMap.shell);
-
-  const codeValue = useMemo(() => {
-    if (lang === langMap.shell) {
-      return viewCodeContent?.curlCode;
-    }
-    if (lang === langMap.javascript) {
-      return viewCodeContent?.nodeJsCode;
-    }
-    if (lang === langMap.python) {
-      return viewCodeContent?.pythonCode;
-    }
-    return '';
-  }, [lang, viewCodeContent]);
+  const [codeValue, setCodeValue] = useState<string>(viewCodeContent?.curlCode);
 
   const handleOnChangeLang = (value: string | number) => {
-    setLang(value as string);
+    if (value === langMap.shell) {
+      setCodeValue(viewCodeContent?.curlCode);
+    }
+    if (value === langMap.javascript) {
+      setCodeValue(viewCodeContent?.nodeJsCode);
+    }
+    if (value === langMap.python) {
+      setCodeValue(viewCodeContent?.pythonCode);
+    }
   };
 
   const handleClose = () => {
-    setLang(langMap.shell);
     onCancel();
   };
+
+  useEffect(() => {
+    if (open) {
+      setCodeValue(viewCodeContent?.curlCode);
+    }
+  }, [open]);
 
   return (
     <>
@@ -74,26 +73,13 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
           {intl.formatMessage({ id: 'playground.viewcode.info' })}
         </div>
         <div>
-          <EditorWrap
+          <CommandViewer
+            code={codeValue}
             copyText={codeValue}
-            langOptions={langOptions}
+            options={langOptions}
             defaultValue={langMap.shell}
-            showHeader={true}
-            onChangeLang={handleOnChangeLang}
-            styles={{
-              wrapper: {
-                backgroundColor: 'var(--color-editor-dark)'
-              }
-            }}
-          >
-            <HighlightCode
-              height={380}
-              theme="dark"
-              code={codeValue}
-              lang={lang}
-              copyable={false}
-            ></HighlightCode>
-          </EditorWrap>
+            onChange={handleOnChangeLang}
+          ></CommandViewer>
           <div
             style={{ marginTop: 10, display: 'flex', alignItems: 'baseline' }}
           >
@@ -128,4 +114,4 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
   );
 };
 
-export default React.memo(ViewCodeModal);
+export default ViewCodeModal;

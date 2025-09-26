@@ -87,7 +87,6 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
         form={form}
         onFinish={handleOk}
         preserve={false}
-        style={{ padding: '16px 24px' }}
         clearOnDestroy={true}
         initialValues={{
           source: source

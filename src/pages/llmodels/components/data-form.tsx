@@ -161,7 +161,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         form={form}
         onFinish={handleOk}
         preserve={false}
-        style={{ padding: '16px 24px' }}
         clearOnDestroy={true}
         onValuesChange={handleOnValuesChange}
         scrollToFirstError={true}

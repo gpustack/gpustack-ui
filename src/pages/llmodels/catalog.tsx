@@ -5,7 +5,7 @@ import BaseSelect from '@/components/seal-form/base/select';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
-import { SyncOutlined } from '@ant-design/icons';
+import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Pagination, Space, message } from 'antd';
@@ -266,6 +266,11 @@ const Catalog: React.FC = () => {
         left={
           <Space>
             <Input
+              prefix={
+                <SearchOutlined
+                  style={{ color: 'var(--ant-color-text-placeholder)' }}
+                ></SearchOutlined>
+              }
               placeholder={intl.formatMessage({ id: 'common.filter.name' })}
               style={{ width: 230 }}
               size="large"

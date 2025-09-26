@@ -55,9 +55,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
       });
 
       clipboardRef.current.on('error', (e: any) => {
-        message.success(
-          intl.formatMessage({ id: 'common.copy.fail' }) as string
-        );
+        message.error(intl.formatMessage({ id: 'common.copy.fail' }) as string);
         e.clearSelection();
       });
     }

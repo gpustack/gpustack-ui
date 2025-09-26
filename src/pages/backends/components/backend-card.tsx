@@ -1,6 +1,7 @@
 import DropDownActions from '@/components/drop-down-actions';
 import IconFont from '@/components/icon-font';
 import Card from '@/components/templates/card';
+import { DockerOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import styled from 'styled-components';
 import { backendActions } from '../config';
@@ -22,8 +23,17 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-top: 12x;
-  gap: 16px;
+  margin-top: 8px;
+  gap: 12px;
+  color: var(--ant-color-text-secondary);
+  .description {
+    margin-block: 12px;
+    color: var(--ant-color-text-tertiary);
+  }
+  .text {
+    margin-left: 4px;
+    color: var(--ant-color-text-secondary);
+  }
   .title {
     color: var(--ant-color-text);
     font-weight: 500;
@@ -47,12 +57,13 @@ const BackendCard: React.FC<BackendCardProps> = ({
       onClick={() => onClick(data)}
       clickable={true}
       disabled={false}
-      height={205}
+      height={'auto'}
       ghost
       header={
         <Header>
           <div className="title">
             <img src={data.icon} alt={data.backend_name} height={20} />
+            <span>{data.backend_name}</span>
           </div>
           <span>
             <DropDownActions
@@ -72,11 +83,16 @@ const BackendCard: React.FC<BackendCardProps> = ({
       }
     >
       <Content>
-        <div className="title">{data.backend_name}</div>
-        <div>This is a description</div>
-        <div>默认版本：{data.default_version}</div>
+        <div className="description">This is a description</div>
         <div>
-          镜像：{data.version_configs?.[data.default_version]?.image_name}
+          <IconFont type="icon-version" style={{ marginRight: 4 }} /> Default
+          version: <span className="text">{data.default_version}</span>
+        </div>
+        <div>
+          <DockerOutlined style={{ marginRight: 4 }} /> Default Image:{' '}
+          <span className="text">
+            {data.version_configs?.[data.default_version]?.image_name}
+          </span>
         </div>
       </Content>
     </Card>

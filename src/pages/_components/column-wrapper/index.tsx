@@ -1,6 +1,6 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import React from 'react';
-import '../style/column-wrapper.less';
+import './style.less';
 
 const ColumnWrapper: React.FC<any> = ({
   children,
@@ -25,24 +25,25 @@ const ColumnWrapper: React.FC<any> = ({
 
   return (
     <>
-      {footer ? (
-        <div className="column-wrapper-footer">
-          <div className="column-wrapper" ref={scroller} style={{ maxHeight }}>
-            <div
-              style={{
-                paddingBottom: paddingBottom
-              }}
-            >
-              {children}
-            </div>
+      <div
+        className="column-wrapper-footer"
+        style={{ height: maxHeight || '100%' }}
+      >
+        <div
+          className="column-wrapper"
+          ref={scroller}
+          style={{ padding: '16px 24px' }}
+        >
+          <div
+            style={{
+              paddingBottom: footer ? paddingBottom : 0
+            }}
+          >
+            {children}
           </div>
-          {<div className="footer">{footer}</div>}
         </div>
-      ) : (
-        <div className="column-wrapper" ref={scroller} style={{ maxHeight }}>
-          <div>{children}</div>
-        </div>
-      )}
+        {footer && <div className="footer">{footer}</div>}
+      </div>
     </>
   );
 };

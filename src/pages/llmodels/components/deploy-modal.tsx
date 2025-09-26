@@ -7,6 +7,7 @@ import { Button } from 'antd';
 import _ from 'lodash';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import ColumnWrapper from '../../_components/column-wrapper';
 import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { BackendOption, FormData, SourceType } from '../config/types';
@@ -17,7 +18,6 @@ import {
   useSelectModel
 } from '../hooks';
 import useCheckBackend from '../hooks/use-check-backend';
-import ColumnWrapper from './column-wrapper';
 import CompatibilityAlert from './compatible-alert';
 import DataForm from './data-form';
 import GGUFResult from './gguf-result';

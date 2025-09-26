@@ -1,21 +1,18 @@
 import { FilterBar } from '@/components/page-tools';
+import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import {
-  DeleteOutlined,
-  ImportOutlined,
-  PlusOutlined
-} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Space } from 'antd';
+import { useState } from 'react';
 import {
   deleteBackend,
   INFERENCE_BACKEND_API,
   queryBackendsList
 } from './apis';
+import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
 import dataList from './config/test';
-import { ListItem } from './config/types';
+import { FormData, ListItem } from './config/types';
 
 const BackendList = () => {
   const intl = useIntl();
@@ -40,10 +37,27 @@ const BackendList = () => {
     watch: false,
     contentForDelete: 'resources.modelfiles.modelfile'
   });
+  const [openModalStatus, setOpenModalStatus] = useState<{
+    open: boolean;
+    action: PageActionType;
+    currentData?: Partial<FormData>;
+  }>({ open: false, action: 'create' });
 
-  const handleClickDropdown = () => {};
+  const handleOnSubmit = (values: FormData) => {
+    console.log('yaml content:', values);
+    setOpenModalStatus({
+      open: false,
+      action: 'create',
+      currentData: undefined
+    });
+  };
 
-  const handleDeleteByBatch = () => {};
+  const handleAddBackend = () => {
+    setOpenModalStatus({
+      open: true,
+      action: 'create'
+    });
+  };
 
   return (
     <PageContainer
@@ -63,40 +77,14 @@ const BackendList = () => {
         width={{
           input: 300
         }}
-        actionType="dropdown"
         inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
-        buttonText={intl.formatMessage({
-          id: 'resources.modelfiles.download'
-        })}
-        handleDeleteByBatch={handleDeleteByBatch}
-        handleClickPrimary={handleClickDropdown}
+        buttonText={'Add Backend'}
+        handleDeleteByBatch={handleDeleteBatch}
+        handleClickPrimary={handleAddBackend}
         handleSearch={handleSearch}
         handleInputChange={handleNameChange}
         rowSelection={rowSelection}
         showSelect={false}
-        right={
-          <Space size={20}>
-            <Button type="primary" icon={<PlusOutlined />}>
-              Add Backend
-            </Button>
-            <Button type="primary" icon={<ImportOutlined />}>
-              Import backend from yaml
-            </Button>
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={handleDeleteByBatch}
-              disabled={!rowSelection?.selectedRowKeys?.length}
-            >
-              <span>
-                {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                {rowSelection?.selectedRowKeys?.length > 0 && (
-                  <span>({rowSelection?.selectedRowKeys?.length})</span>
-                )}
-              </span>
-            </Button>
-          </Space>
-        }
       ></FilterBar>
 
       <BackendCardList
@@ -105,6 +93,18 @@ const BackendList = () => {
         activeId={false}
         isFirst={!dataSource.loadend}
       ></BackendCardList>
+      <AddModal
+        action={openModalStatus.action}
+        onClose={() => setOpenModalStatus({ open: false, action: 'create' })}
+        onSubmit={handleOnSubmit}
+        currentData={openModalStatus.currentData}
+        open={openModalStatus.open}
+        title={
+          openModalStatus.action === 'create'
+            ? 'Create Backend'
+            : 'Edit Backend'
+        }
+      ></AddModal>
     </PageContainer>
   );
 };

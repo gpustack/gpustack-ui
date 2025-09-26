@@ -1,5 +1,6 @@
 import { defineConfig } from '@umijs/max';
 import keepAlive from './keep-alive';
+import { compressionPluginConfig, monacoPluginConfig } from './plugins';
 import proxy from './proxy';
 import routes from './routes';
 import { getBranchInfo } from './utils';
@@ -29,7 +30,7 @@ export default defineConfig({
     defaultSizes: 'parsed' // stat  // gzip
   },
   mfsu: {
-    exclude: ['lodash', 'ml-pca']
+    exclude: ['lodash', 'ml-pca', 'monaco-editor']
   },
   base: process.env.npm_config_base || '/',
   ...(isProduction
@@ -56,21 +57,13 @@ export default defineConfig({
           config.output
             .filename(`js/[name].${t}.js`)
             .chunkFilename(`js/[name].${t}.chunk.js`);
-          config
-            .plugin('compression-webpack-plugin')
-            .use(CompressionWebpackPlugin, [
-              {
-                filename: '[path][base].gz',
-                algorithm: 'gzip',
-                test: /\.(js|css|html|svg)$/,
-                threshold: 10240,
-                minRatio: 0.8
-              }
-            ]);
+          compressionPluginConfig(config);
         }
       }
     : {}),
-
+  chainWebpack(config) {
+    monacoPluginConfig(config);
+  },
   favicons: ['/static/favicon.png'],
   jsMinifier: 'terser',
   cssMinifier: 'cssnano',

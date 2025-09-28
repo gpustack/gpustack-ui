@@ -27,5 +27,6 @@ declare module 'node-vibrant';
 declare module 'lamejs';
 declare module 'file-saver';
 declare module 'tinycolor2';
+declare module 'js-yaml';
 
 declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;

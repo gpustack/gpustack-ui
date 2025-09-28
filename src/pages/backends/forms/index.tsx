@@ -1,6 +1,7 @@
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { Form } from 'antd';
+import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { FormData, ListItem } from '../config/types';
 import BasicForm from './basic';
@@ -9,16 +10,34 @@ import VersionsForm from './versions-config';
 
 type AddModalProps = {
   action: PageActionType;
-  currentData?: ListItem; // Used when action is EDIT
+  currentData?: ListItem;
   onFinish: (values: FormData) => void;
   ref?: any;
 };
 const BackendForm: React.FC<AddModalProps> = forwardRef(
   ({ action, currentData, onFinish }, ref) => {
     const [form] = Form.useForm();
+    const [activeKey, setActiveKey] = React.useState<string[]>([]);
+
+    const onFinishFailed = (errorInfo: any) => {
+      const errorFields = errorInfo.errorFields || [];
+      if (errorFields.length > 0) {
+        const hasVersionsError = errorFields.some((field: any) =>
+          field.name.includes('version_configs')
+        );
+        if (hasVersionsError) {
+          setActiveKey([...new Set([...activeKey, 'version_configs'])]);
+        }
+      }
+    };
+
+    const handleOnCollapseChange = (keys: string | string[]) => {
+      setActiveKey(Array.isArray(keys) ? keys : [keys]);
+    };
 
     useEffect(() => {
       if (currentData) {
+        console.log('currentData:', currentData);
         form.setFieldsValue(currentData);
       }
     }, [currentData]);
@@ -48,15 +67,25 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
         onFinish={onFinish}
         preserve={false}
         scrollToFirstError={true}
-        initialValues={currentData}
+        initialValues={_.omit(currentData, ['version_configs'])}
+        onFinishFailed={onFinishFailed}
       >
         <BasicForm action={action}></BasicForm>
         <CollapsePanel
+          activeKey={activeKey}
+          accordion={false}
+          onChange={handleOnCollapseChange}
           items={[
             {
-              key: 'versions',
+              key: 'version_configs',
               label: 'Versions',
-              children: <VersionsForm action={action}></VersionsForm>
+              forceRender: true,
+              children: (
+                <VersionsForm
+                  action={action}
+                  currentData={currentData}
+                ></VersionsForm>
+              )
             },
             {
               key: 'parameters',

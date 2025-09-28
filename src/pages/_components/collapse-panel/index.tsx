@@ -30,15 +30,20 @@ const CollapseInner = styled(Collapse)`
   }
 `;
 
-const CollapsePanel: React.FC<{ items: CollapseProps['items'] }> = ({
-  items
-}) => {
+const CollapsePanel: React.FC<{
+  items: CollapseProps['items'];
+  activeKey: string | string[];
+  accordion?: boolean;
+  onChange?: (key: string | string[]) => void;
+}> = ({ items, activeKey, accordion, onChange }) => {
   return (
     <CollapseInner
       expandIconPosition="start"
       bordered={false}
       ghost
-      accordion
+      accordion={accordion}
+      activeKey={activeKey}
+      onChange={onChange}
       destroyOnHidden={false}
       expandIcon={({ isActive }) => (
         <IconFont

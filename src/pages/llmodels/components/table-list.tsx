@@ -61,7 +61,7 @@ import useQueryBackends from '../hooks/use-query-backends';
 import APIAccessInfoModal from './api-access-info';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
-import UpdateModel from './update-modal';
+import UpdateModelModal from './update-modal';
 import ViewLogsModal from './view-logs-modal';
 interface ModelsProps {
   handleSearch: (params?: any) => void;
@@ -685,7 +685,7 @@ const Models: React.FC<ModelsProps> = ({
           }}
         ></SealTable>
       </PageContainer>
-      <UpdateModel
+      <UpdateModelModal
         open={openAddModal}
         action={PageAction.EDIT}
         title={intl.formatMessage({ id: 'models.title.edit' })}
@@ -694,7 +694,7 @@ const Models: React.FC<ModelsProps> = ({
         onCancel={handleModalCancel}
         onOk={handleModalOk}
         backendOptions={backendOptions}
-      ></UpdateModel>
+      ></UpdateModelModal>
       <DeployModal
         open={openDeployModal.show}
         action={PageAction.CREATE}

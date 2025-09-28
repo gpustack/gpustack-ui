@@ -1,42 +1,38 @@
 {
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "description": "backend name",
-      "severity": "error"
+    "description": {
+      "type": ["string", "null"],
+      "description": "backend description"
     },
     "default_version": {
       "type": "string",
       "description": "default backend version"
     },
+    "default_run_command": {
+      "type": ["string", "null"],
+      "description": "default start command"
+    },
     "health_check_path": {
-      "type": "string",
+      "type": ["string", "null"],
       "description": "health check path"
     },
-    "allowed_proxy_uris": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "allowed proxy URIs"
-    },
-    "versions": {
+    "version_configs": {
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z0-9._-]+$": {
           "type": "object",
           "properties": {
-            "image": {
+            "image_name": {
               "type": "string",
               "description": "image name"
             },
-            "command": {
-              "type": "string",
+            "run_command": {
+              "type": ["string", "null"],
               "description": "start command"
             }
           },
-          "required": ["image", "command"],
+          "required": ["image_name", "run_command"],
           "additionalProperties": false
         }
       },
@@ -51,6 +47,6 @@
       "description": "default backend parameters"
     }
   },
-  "required": ["name", "default_version", "health_check_path", "versions"],
+  "required": ["default_version", "version_configs"],
   "additionalProperties": false
 }

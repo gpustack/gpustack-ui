@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "properties": {
+    "backend_name": {
+      "type": "string",
+      "description": "backend name",
+      "severity": "error"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "backend description"
+    },
+    "default_version": {
+      "type": "string",
+      "description": "default backend version"
+    },
+    "default_run_command": {
+      "type": ["string", "null"],
+      "description": "default start command"
+    },
+    "health_check_path": {
+      "type": ["string", "null"],
+      "description": "health check path"
+    },
+    "version_configs": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9._-]+$": {
+          "type": "object",
+          "properties": {
+            "image_name": {
+              "type": "string",
+              "description": "image name"
+            },
+            "run_command": {
+              "type": ["string", "null"],
+              "description": "start command"
+            }
+          },
+          "required": ["image_name", "run_command"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "multiple backend versions"
+    },
+    "default_backend_parameters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "default backend parameters"
+    }
+  },
+  "required": ["backend_name", "default_version", "version_configs"],
+  "additionalProperties": false
+}

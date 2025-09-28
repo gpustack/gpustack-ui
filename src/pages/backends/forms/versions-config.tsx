@@ -1,9 +1,10 @@
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Form } from 'antd';
+import { Button, Checkbox, Divider, Form, Radio } from 'antd';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { ListItem } from '../config/types';
 
 const Box = styled.div`
   display: grid;
@@ -12,36 +13,36 @@ const Box = styled.div`
   align-items: center;
 `;
 
-const ItemWrapper = styled.div`
-  &:hover {
-    .divider {
-      border-top: 1px dashed var(--ant-color-primary) !important;
-    }
-  }
-`;
-
-const Label = styled.div`
-  color: var(--ant-color-text-tertiary);
-  font-size: var(--font-size-base);
-  margin-bottom: 10px;
-`;
+const ItemWrapper = styled.div``;
 
 type AddModalProps = {
   action: PageActionType;
+  currentData?: ListItem;
 };
-const VersionsForm: React.FC<AddModalProps> = ({ action }) => {
+const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   const form = Form.useFormInstance();
   const versionList = [
     {
       version_no: '',
       image_name: '',
       run_command: '',
-      is_default: false
+      isBuiltin: false,
+      is_default: true
     }
   ];
 
+  const handleSetDefaultVersion = (e: any, index: number) => {
+    const versions = form.getFieldValue('version_configs') || [];
+    const updatedVersions = versions.map((version: any, idx: number) => ({
+      ...version,
+      is_default: idx === index
+    }));
+    form.setFieldValue('version_configs', updatedVersions);
+  };
+
   useEffect(() => {
     const versions = form.getFieldValue('version_configs') || [];
+    console.log('versions:', versions);
     if (Array.isArray(versions) && versions.length === 0) {
       form.setFieldValue('version_configs', versionList);
     }
@@ -64,12 +65,11 @@ const VersionsForm: React.FC<AddModalProps> = ({ action }) => {
                   <Form.Item
                     {...restField}
                     name={[name, 'version_no']}
-                    rules={[
-                      { required: true, message: 'Version No. is required' }
-                    ]}
+                    rules={[{ required: true, message: 'Version is required' }]}
                   >
                     <SealInput.Input
-                      label="Version No."
+                      trim
+                      label="Version"
                       required
                     ></SealInput.Input>
                   </Form.Item>
@@ -81,6 +81,7 @@ const VersionsForm: React.FC<AddModalProps> = ({ action }) => {
                     ]}
                   >
                     <SealInput.Input
+                      trim
                       label="Image Name"
                       required
                     ></SealInput.Input>
@@ -89,29 +90,42 @@ const VersionsForm: React.FC<AddModalProps> = ({ action }) => {
                 <Form.Item name={[name, 'run_command']} {...restField}>
                   <SealInput.TextArea label="Execution Command"></SealInput.TextArea>
                 </Form.Item>
+                <Form.Item name={[name, 'isBuiltin']} {...restField} hidden>
+                  <Checkbox></Checkbox>
+                </Form.Item>
                 <div className="flex justify-between items-center">
                   <span className="flex-center">
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'is_default']}
-                      valuePropName="checked"
-                      initialValue={false}
-                      noStyle
-                    >
-                      <Checkbox>Set as Default Version</Checkbox>
-                    </Form.Item>
-                  </span>
-                  <div className="flex-center gap-16">
-                    {fields.length > 1 && (
-                      <Button
-                        size="small"
-                        onClick={() => remove(name)}
-                        shape="circle"
+                    {!currentData?.is_build_in && (
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'is_default']}
+                        valuePropName="checked"
+                        initialValue={false}
+                        noStyle
                       >
-                        <MinusOutlined />
-                      </Button>
+                        <Radio
+                          onChange={(e: any) =>
+                            handleSetDefaultVersion(e, index)
+                          }
+                        >
+                          Set as Default Version
+                        </Radio>
+                      </Form.Item>
                     )}
-                  </div>
+                  </span>
+                  {
+                    <div className="flex-center gap-16">
+                      {fields.length > 1 && (
+                        <Button
+                          size="small"
+                          onClick={() => remove(name)}
+                          shape="circle"
+                        >
+                          <MinusOutlined />
+                        </Button>
+                      )}
+                    </div>
+                  }
                 </div>
                 <Divider
                   className="divider"

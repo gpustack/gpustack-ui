@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 import { FormData, ListItem } from '../config/types';
 
-export const INFERENCE_BACKEND_API = '/inference-backend';
+export const INFERENCE_BACKEND_API = '/inference-backends';
 
 export const FROM_YAML_API = '/from-yaml';
 

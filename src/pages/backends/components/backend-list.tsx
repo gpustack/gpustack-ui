@@ -29,6 +29,7 @@ interface BackendListProps {
   loading: boolean;
   activeId: Global.WithFalse<number>;
   isFirst: boolean;
+  onSelect?: (item: any) => void;
 }
 
 const InnerSkeleton: React.FC<{
@@ -66,15 +67,16 @@ const CardList: React.FC<BackendListProps> = (props) => {
     dataList,
     loading,
     isFirst,
-    defaultSpan = 6,
-    resizable = true
+    defaultSpan = 8,
+    resizable = true,
+    onSelect
   } = props;
   const [span, setSpan] = React.useState(defaultSpan);
 
   const getSpanByWidth = (width: number) => {
     if (width < breakpoints.md) return 24;
     if (width < breakpoints.lg) return 12;
-    return 6;
+    return 8;
   };
 
   const handleResize = useCallback(
@@ -92,7 +94,7 @@ const CardList: React.FC<BackendListProps> = (props) => {
             {dataList.map((item: any) => {
               return (
                 <Col span={span} key={item.id}>
-                  <BackendCard onClick={() => {}} data={item} />
+                  <BackendCard data={item} onSelect={onSelect} />
                 </Col>
               );
             })}

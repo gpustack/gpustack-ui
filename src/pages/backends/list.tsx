@@ -1,3 +1,4 @@
+import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -5,14 +6,19 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { useState } from 'react';
 import {
+  createBackend,
+  createBackendFromYAML,
   deleteBackend,
   INFERENCE_BACKEND_API,
-  queryBackendsList
+  queryBackendsList,
+  updateBackend,
+  updateBackendFromYAML
 } from './apis';
 import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
-import dataList from './config/test';
+import { json2Yaml, yaml2Json } from './config';
 import { FormData, ListItem } from './config/types';
+import useExportYAML from './hooks/use-export-yaml';
 
 const BackendList = () => {
   const intl = useIntl();
@@ -35,21 +41,62 @@ const BackendList = () => {
     deleteAPI: deleteBackend,
     API: INFERENCE_BACKEND_API,
     watch: false,
-    contentForDelete: 'resources.modelfiles.modelfile'
+    contentForDelete: 'backends.title',
+    defaultQueryParams: {
+      perPage: 100
+    }
   });
+  const { exportYAML } = useExportYAML();
   const [openModalStatus, setOpenModalStatus] = useState<{
     open: boolean;
     action: PageActionType;
-    currentData?: Partial<FormData>;
+    currentData?: Partial<ListItem>;
   }>({ open: false, action: 'create' });
 
-  const handleOnSubmit = (values: FormData) => {
-    console.log('yaml content:', values);
-    setOpenModalStatus({
-      open: false,
-      action: 'create',
-      currentData: undefined
-    });
+  const handleOnSubmit = async (values: FormData) => {
+    try {
+      if (openModalStatus.action === 'create') {
+        await createBackend({ data: values });
+      } else {
+        await updateBackend(openModalStatus.currentData!.id!, {
+          data: {
+            ...values
+          }
+        });
+      }
+      setOpenModalStatus({
+        open: false,
+        action: 'create',
+        currentData: undefined
+      });
+      handleSearch();
+    } catch (error) {}
+  };
+
+  const handleOnSubmitYaml = async (values: { content: string }) => {
+    try {
+      if (openModalStatus.action === 'create') {
+        await createBackendFromYAML({ data: values });
+      } else {
+        const jsonData = yaml2Json(values.content);
+        const yamlContent = json2Yaml({
+          backend_name: openModalStatus.currentData?.backend_name,
+          default_version: openModalStatus.currentData?.default_version,
+          ...jsonData
+        });
+        await updateBackendFromYAML(openModalStatus.currentData!.id!, {
+          data: {
+            content: yamlContent
+          }
+        });
+      }
+      setOpenModalStatus({
+        open: false,
+        action: 'create',
+        currentData: undefined
+      });
+      handleSearch();
+    } catch (error) {}
   };
 
   const handleAddBackend = () => {
@@ -57,6 +104,25 @@ const BackendList = () => {
       open: true,
       action: 'create'
     });
+  };
+
+  const handleOnSelect = (item: any) => {
+    console.log('selected item:', item);
+    if (item.action === 'edit') {
+      setOpenModalStatus({
+        open: true,
+        action: 'edit',
+        currentData: item.data
+      });
+    } else if (item.action === 'delete') {
+      handleDelete(item.data, {
+        name: item.data.backend_name
+      });
+    } else if (item.action === 'export') {
+      // Export YAML action
+      console.log('Export YAML for:', item.data);
+      exportYAML(item.data);
+    }
   };
 
   return (
@@ -88,16 +154,18 @@ const BackendList = () => {
       ></FilterBar>
 
       <BackendCardList
-        dataList={dataList}
+        dataList={dataSource.dataList}
         loading={dataSource.loading}
         activeId={false}
         isFirst={!dataSource.loadend}
+        onSelect={handleOnSelect}
       ></BackendCardList>
       <AddModal
         action={openModalStatus.action}
         onClose={() => setOpenModalStatus({ open: false, action: 'create' })}
         onSubmit={handleOnSubmit}
-        currentData={openModalStatus.currentData}
+        onSubmitYaml={handleOnSubmitYaml}
+        currentData={openModalStatus.currentData as ListItem}
         open={openModalStatus.open}
         title={
           openModalStatus.action === 'create'
@@ -105,6 +173,7 @@ const BackendList = () => {
             : 'Edit Backend'
         }
       ></AddModal>
+      <DeleteModal ref={modalRef}></DeleteModal>
     </PageContainer>
   );
 };

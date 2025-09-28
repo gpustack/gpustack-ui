@@ -5,7 +5,12 @@ import { PageAction } from '@/config';
 import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  SyncOutlined
+} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import {
@@ -110,6 +115,11 @@ const APIKeys: React.FC = () => {
           left={
             <Space>
               <Input
+                prefix={
+                  <SearchOutlined
+                    style={{ color: 'var(--ant-color-text-placeholder)' }}
+                  ></SearchOutlined>
+                }
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
                 allowClear

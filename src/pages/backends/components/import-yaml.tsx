@@ -49,18 +49,21 @@ const Container = styled.div`
 
 interface ImportYAMLProps {
   ref?: any;
-  action: PageActionType;
+  actionStatus: {
+    action: PageActionType;
+    isBuiltIn: boolean;
+  };
   content?: string;
   onSubmit?: (content: string) => void;
 }
 
 const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
-  ({ action, content = '' }, ref) => {
+  ({ actionStatus, content = '' }, ref) => {
     const intl = useIntl();
     const { userSettings } = useUserSettings();
     const editorRef = useRef<any>(null);
     const [fileContent, setFileContent] = useState<string>(
-      action === PageAction.CREATE ? yamlTemplate : content
+      actionStatus.action === PageAction.CREATE ? yamlTemplate : content
     );
     const [error, setError] = useState<string>('');
 
@@ -131,6 +134,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
         <YamlEditor
           ref={editorRef}
           lang="yaml"
+          actionStatus={actionStatus}
           theme={userSettings?.isDarkTheme ? 'vs-dark' : 'vs-light'}
           value={fileContent}
           height={'calc(100vh - 255px)'}

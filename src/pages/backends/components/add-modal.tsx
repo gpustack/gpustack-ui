@@ -1,12 +1,15 @@
 import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Segmented, Tabs } from 'antd';
-import React, { useRef, useState } from 'react';
+import _ from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
+import { backendFields, json2Yaml } from '../config';
 import { FormData, ListItem } from '../config/types';
 import BackendForm from '../forms';
 import ImportYAML from './import-yaml';
@@ -35,23 +38,28 @@ interface AddModalProps {
   currentData?: ListItem; // Used when action is EDIT
   onClose: () => void;
   onSubmit: (values: FormData) => void;
+  onSubmitYaml: (values: { content: string }) => void;
   open: boolean;
   title?: string;
 }
 
 const AddModal: React.FC<AddModalProps> = (props) => {
-  const { action, currentData, onClose, onSubmit, open, title } = props;
+  const { action, currentData, onClose, onSubmit, onSubmitYaml, open, title } =
+    props;
   const formRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
   const intl = useIntl();
   const [activeKey, setActiveKey] = useState<string>('form');
+  const [yamlContent, setYamlContent] = useState<string>('');
+  const [formContent, setFormContent] = useState<FormData>({} as FormData);
+  const tabsRef = useRef<any>(null);
 
   const onOk = () => {
     if (activeKey === 'yaml') {
       const content = editorRef.current?.getContent();
       const valid = editorRef.current?.validate();
       if (valid) {
-        onSubmit({ content: content });
+        onSubmitYaml({ content: content });
       }
     } else {
       formRef.current?.submit();
@@ -59,8 +67,63 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onFinish = (values: FormData) => {
-    onSubmit(values);
+    console.log('Form values:', values);
+    const versionConfigs = values.version_configs?.reduce(
+      (acc: Record<string, any>, curr) => {
+        if (curr.version_no) {
+          acc[curr.version_no] = {
+            image_name: curr.image_name,
+            run_command: curr.run_command
+          };
+        }
+        return acc;
+      },
+      {}
+    );
+
+    const defaultVersion = values.version_configs?.find((v) => v.is_default);
+
+    onSubmit({
+      ...values,
+      default_version: defaultVersion?.version_no || '',
+      // @ts-ignore
+      version_configs: versionConfigs
+    });
   };
+
+  const iniFormContent = (values: any) => {
+    const versionConfigs = Object.keys(values.version_configs || {}).map(
+      (key) => ({
+        version_no: key,
+        image_name: values.version_configs[key].image_name,
+        run_command: values.version_configs[key].run_command,
+        is_default: key === values.default_version,
+        isBuiltin: true
+      })
+    );
+    return {
+      ...values,
+      version_configs: versionConfigs
+    };
+  };
+
+  const initYamlContent = (values: any) => {
+    if (currentData?.is_build_in) {
+      return json2Yaml(_.pick(values, backendFields));
+    }
+    return json2Yaml(_.pick(values, [...backendFields, 'default_version']));
+  };
+
+  useEffect(() => {
+    if (action === PageAction.EDIT) {
+      const yaml = initYamlContent(currentData || {});
+      const formData = iniFormContent(currentData || {});
+      setYamlContent(yaml);
+      setFormContent(formData);
+      formRef.current?.setFieldsValue?.(formData);
+      editorRef.current?.setValue?.(yaml);
+    }
+  }, [action, currentData]);
 
   return (
     <GSDrawer
@@ -115,7 +178,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         }
       >
         <Tabs
-          renderTabBar={() => <></>}
+          renderTabBar={(agrs, tab) => <></>}
           activeKey={activeKey}
           defaultActiveKey={activeKey}
           items={[
@@ -126,7 +189,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <BackendForm
                   onFinish={onFinish}
                   action={action}
-                  currentData={currentData}
+                  currentData={formContent as ListItem}
                   ref={formRef}
                 />
               )
@@ -135,7 +198,14 @@ const AddModal: React.FC<AddModalProps> = (props) => {
               key: 'yaml',
               label: 'YAML',
               children: (
-                <ImportYAML action={action} ref={editorRef}></ImportYAML>
+                <ImportYAML
+                  actionStatus={{
+                    action: action,
+                    isBuiltIn: currentData?.is_build_in || false
+                  }}
+                  ref={editorRef}
+                  content={yamlContent}
+                />
               )
             }
           ]}

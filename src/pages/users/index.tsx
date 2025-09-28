@@ -11,6 +11,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
+  SearchOutlined,
   SyncOutlined
 } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
@@ -168,6 +169,11 @@ const Users: React.FC = () => {
           left={
             <Space>
               <Input
+                prefix={
+                  <SearchOutlined
+                    style={{ color: 'var(--ant-color-text-placeholder)' }}
+                  ></SearchOutlined>
+                }
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
                 style={{ width: 300 }}
                 allowClear

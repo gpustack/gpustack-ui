@@ -1,15 +1,15 @@
 export interface VersionConfigs {
-  [key: string]: {
-    image_name: string;
-    run_command: string;
-  };
+  image_name: string;
+  run_command: string;
+  is_default: boolean;
+  version_no?: string;
 }
 
 export interface FormData {
-  backend_name?: string;
+  backend_name: string;
   description?: string;
-  version_configs?: VersionConfigs;
-  compatibility_type?: string;
+  version_configs?: VersionConfigs[];
+  default_run_command?: string;
   health_check_path?: string;
   default_version?: string;
   default_backend_param?: string[];
@@ -18,7 +18,8 @@ export interface FormData {
 }
 
 export interface ListItem extends FormData {
-  id?: number;
+  id: number;
+  is_build_in?: boolean;
   created_at?: string;
   updated_at?: string;
 }

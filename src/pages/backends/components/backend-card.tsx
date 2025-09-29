@@ -1,5 +1,6 @@
 import DropDownActions from '@/components/drop-down-actions';
 import IconFont from '@/components/icon-font';
+import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
 import { DockerOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
@@ -10,7 +11,8 @@ import {
   backendActions,
   builtInBackendLogos,
   customColors,
-  customIcons
+  customIcons,
+  gpuColorMap
 } from '../config';
 import { ListItem } from '../config/types';
 
@@ -84,6 +86,12 @@ const Content = styled.div`
   }
 `;
 
+const BackendBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
 interface BackendCardProps {
   onClick?: (data: any) => void;
   onSelect?: (item: any) => void;
@@ -120,17 +128,65 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     return backendActions;
   }, [data.is_build_in]);
 
+  const onClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const renderDrivers = () => {
+    if (data.is_build_in) {
+      const backendList = _.get(
+        data,
+        ['build_in_version_configs', data.default_version, 'backend_list'],
+        []
+      );
+
+      return (
+        <>
+          <span className="label">
+            <IconFont className="icon" type="icon-gpu1" />
+            <span>Supported Frameworks: </span>
+          </span>
+          <BackendBox>
+            {backendList.map((item: string) => {
+              return (
+                <ThemeTag
+                  key={item}
+                  style={{ marginRight: 0 }}
+                  color={gpuColorMap[item] || 'default'}
+                >
+                  {item}
+                </ThemeTag>
+              );
+            })}
+          </BackendBox>
+        </>
+      );
+    }
+    return (
+      <>
+        <span className="label">
+          <DockerOutlined className="icon" />
+          <span>Default Image: </span>
+        </span>
+        <span className="text">
+          {_.get(data, ['version_configs', data.default_version, 'image_name'])}
+        </span>
+      </>
+    );
+  };
+
   return (
     <Card
       onClick={handleClick}
-      clickable={true}
+      clickable={false}
+      hoverable={true}
       disabled={false}
       height={160}
       ghost
       header={
         <Header>
           <div className="title">{renderIcon()}</div>
-          <span>
+          <span onClick={onClick}>
             <DropDownActions
               menu={{
                 items: actions,
@@ -167,17 +223,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
             <span>Default Version: </span>
           </span>
           <span className="text">{data.default_version}</span>
-          <span className="label">
-            <DockerOutlined className="icon" />
-            <span>Default Image: </span>
-          </span>
-          <span className="text">
-            {_.get(data, [
-              'version_configs',
-              data.default_version,
-              'image_name'
-            ])}
-          </span>
+          {renderDrivers()}
         </div>
       </Content>
     </Card>

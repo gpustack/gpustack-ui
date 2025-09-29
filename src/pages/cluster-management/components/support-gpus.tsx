@@ -35,7 +35,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
 
   const supportedHardPlatforms = [
     {
-      label: intl.formatMessage({ id: 'vendor.nividia' }),
+      label: 'Nvidia',
       value: 'cuda',
       description: '',
       key: 'cuda',

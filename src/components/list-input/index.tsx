@@ -6,7 +6,7 @@ import ListItem from './list-item';
 
 interface ListInputProps {
   dataList: string[];
-  label: React.ReactNode;
+  label?: React.ReactNode;
   description?: React.ReactNode;
   btnText?: string;
   options?: Global.HintOptions[];

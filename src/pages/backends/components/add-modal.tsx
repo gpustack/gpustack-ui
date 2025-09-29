@@ -92,31 +92,44 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
   };
 
-  const iniFormContent = (values: any) => {
-    const versionConfigs = Object.keys(values.version_configs || {}).map(
-      (key) => ({
-        version_no: key,
-        image_name: values.version_configs[key].image_name,
-        run_command: values.version_configs[key].run_command,
-        is_default: key === values.default_version,
-        isBuiltin: true
-      })
-    );
-    return {
-      ...values,
-      version_configs: versionConfigs
-    };
-  };
-
-  const initYamlContent = (values: any) => {
-    if (currentData?.is_build_in) {
-      return json2Yaml(_.pick(values, backendFields));
-    }
-    return json2Yaml(_.pick(values, [...backendFields, 'default_version']));
-  };
-
   useEffect(() => {
-    if (action === PageAction.EDIT) {
+    const iniFormContent = (values: any) => {
+      const versionConfigs = Object.keys(values.version_configs || {}).map(
+        (key) => ({
+          version_no: key,
+          image_name: values.version_configs[key].image_name,
+          run_command: values.version_configs[key].run_command,
+          is_default: key === values.default_version
+        })
+      );
+
+      const builtInVersions = Object.keys(
+        values.build_in_version_configs || {}
+      ).map((key) => ({
+        version_no: key,
+        image_name: values.build_in_version_configs[key].image_name,
+        run_command: values.build_in_version_configs[key].run_command,
+        is_default: key === values.default_version,
+        backend_list: values.build_in_version_configs[key].backend_list || [],
+        is_built_in: true
+      }));
+
+      return {
+        ...values,
+        version_configs: versionConfigs,
+        build_in_version_configs: builtInVersions
+      };
+    };
+
+    // built-in backend does not allow to edit default_version
+    const initYamlContent = (values: any) => {
+      if (currentData?.is_build_in) {
+        return json2Yaml(_.pick(values, backendFields));
+      }
+      return json2Yaml(_.pick(values, [...backendFields, 'default_version']));
+    };
+
+    if (action === PageAction.EDIT && open) {
       const yaml = initYamlContent(currentData || {});
       const formData = iniFormContent(currentData || {});
       setYamlContent(yaml);
@@ -124,7 +137,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       formRef.current?.setFieldsValue?.(formData);
       editorRef.current?.setContent?.(yaml);
     }
-  }, [action, currentData]);
+
+    if (!open) {
+      formRef.current?.resetFields?.();
+      editorRef.current?.setContent?.('');
+      setFormContent({} as FormData);
+      setYamlContent('');
+      setActiveKey('form');
+    }
+  }, [action, currentData, open]);
 
   return (
     <GSDrawer
@@ -169,7 +190,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         />
       </SegmentedHeader>
       <ColumnWrapper
-        style={{ flex: 1 }}
         maxHeight={'calc(100vh - 123px)'}
         footer={
           <ModalFooter

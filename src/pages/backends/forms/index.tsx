@@ -5,6 +5,7 @@ import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { FormData, ListItem } from '../config/types';
 import BasicForm from './basic';
+import BuiltInVersionsForm from './built-in-versions';
 import ParametersForm from './parameters';
 import VersionsForm from './versions-config';
 
@@ -76,9 +77,19 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
           accordion={false}
           onChange={handleOnCollapseChange}
           items={[
+            ...(currentData?.is_build_in
+              ? [
+                  {
+                    key: 'builtin_version_configs',
+                    label: 'Built-in Versions',
+                    forceRender: true,
+                    children: <BuiltInVersionsForm></BuiltInVersionsForm>
+                  }
+                ]
+              : []),
             {
               key: 'version_configs',
-              label: 'Versions',
+              label: 'Custom Versions',
               forceRender: true,
               children: (
                 <VersionsForm

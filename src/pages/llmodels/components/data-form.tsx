@@ -2,6 +2,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
+import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -17,10 +18,12 @@ import {
 } from '../config/types';
 import { generateGPUIds } from '../config/utils';
 import CatalogFrom from '../forms/catalog';
-import HuggingFaceForm from '../forms/hugging-face';
-import LocalPathForm from '../forms/local-path';
+import LocalPathSource from '../forms/local-path-source';
+import OnlineSource from '../forms/online-source';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
-import AdvanceConfig from './advance-config';
+// import AdvanceConfig from './advance-config';
+import AdvanceConfig from '../forms/advance-config';
+import Performance from '../forms/performance';
 
 interface DataFormProps {
   initialValues?: any;
@@ -59,6 +62,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
+  const [activeKey, setActiveKey] = React.useState<string[]>([]);
 
   const handleSumit = () => {
     form.submit();
@@ -116,6 +120,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return;
     }
     onValuesChange?.(changedValues, allValues);
+  };
+
+  const handleOnCollapseChange = (keys: string | string[]) => {
+    setActiveKey(Array.isArray(keys) ? keys : [keys]);
   };
 
   useImperativeHandle(ref, () => {
@@ -216,8 +224,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           </Form.Item>
         )}
 
-        <HuggingFaceForm></HuggingFaceForm>
-        <LocalPathForm></LocalPathForm>
+        <OnlineSource></OnlineSource>
+        <LocalPathSource></LocalPathSource>
         <Form.Item<FormData>
           name="cluster_id"
           rules={[
@@ -245,13 +253,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             })}
           ></SealInput.TextArea>
         </Form.Item>
-        <AdvanceConfig
-          form={form}
-          gpuOptions={gpuOptions}
-          isGGUF={isGGUF}
-          action={action}
-          source={props.source}
-        ></AdvanceConfig>
+        <CollapsePanel
+          activeKey={activeKey}
+          accordion={false}
+          onChange={handleOnCollapseChange}
+          items={[
+            {
+              key: 'performance',
+              label: 'Performance',
+              forceRender: true,
+              children: <Performance></Performance>
+            },
+            {
+              key: 'advance_config',
+              label: 'Advanced',
+              forceRender: true,
+              children: <AdvanceConfig></AdvanceConfig>
+            }
+          ]}
+        ></CollapsePanel>
       </Form>
     </FormContext.Provider>
   );

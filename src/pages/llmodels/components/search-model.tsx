@@ -1,6 +1,7 @@
 import { getRequestId, setRquestId } from '@/atoms/models';
 import BaseSelect from '@/components/seal-form/base/select';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
+import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl } from '@umijs/max';
 import { Pagination } from 'antd';
 import _ from 'lodash';
@@ -521,11 +522,11 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           onChange={handleSearchInputChange}
           modelSource={modelSource}
         ></SearchInput>
-        <div className="gguf-tips">
+        {/* <div className="gguf-tips">
           <span>
             {intl.formatMessage({ id: 'models.form.search.gguftips' })}
           </span>
-        </div>
+        </div> */}
         <div className={SearchStyle.filter}>
           <span className="flex-center gap-8">
             <BaseSelect
@@ -582,18 +583,19 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   }, []);
 
   return (
-    <div style={{ flex: 1 }}>
+    <div style={{ width: '100%' }}>
       <div className={SearchStyle['search-bar']}>{renderHFSearch()}</div>
-
-      <SearchResult
-        loading={dataSource.loading}
-        resultList={dataSource.dataList}
-        networkError={dataSource.networkError}
-        current={current}
-        source={modelSource}
-        isEvaluating={isEvaluating}
-        onSelect={handleSelectModelManually}
-      ></SearchResult>
+      <ColumnWrapper maxHeight={'calc(100vh - 210px)'}>
+        <SearchResult
+          loading={dataSource.loading}
+          resultList={dataSource.dataList}
+          networkError={dataSource.networkError}
+          current={current}
+          source={modelSource}
+          isEvaluating={isEvaluating}
+          onSelect={handleSelectModelManually}
+        ></SearchResult>
+      </ColumnWrapper>
     </div>
   );
 };

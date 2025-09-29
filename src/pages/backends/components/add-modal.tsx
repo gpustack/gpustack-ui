@@ -6,7 +6,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Segmented, Tabs } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import { backendFields, json2Yaml } from '../config';
@@ -46,6 +46,7 @@ interface AddModalProps {
 const AddModal: React.FC<AddModalProps> = (props) => {
   const { action, currentData, onClose, onSubmit, onSubmitYaml, open, title } =
     props;
+  const uid = useId();
   const formRef = useRef<any>(null);
   const editorRef = useRef<any>(null);
   const intl = useIntl();
@@ -121,7 +122,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       setYamlContent(yaml);
       setFormContent(formData);
       formRef.current?.setFieldsValue?.(formData);
-      editorRef.current?.setValue?.(yaml);
+      editorRef.current?.setContent?.(yaml);
     }
   }, [action, currentData]);
 
@@ -129,6 +130,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     <GSDrawer
       title={title}
       open={open}
+      key={uid}
       onClose={onClose}
       destroyOnHidden={true}
       closeIcon={false}

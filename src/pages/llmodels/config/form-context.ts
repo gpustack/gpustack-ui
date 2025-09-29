@@ -7,7 +7,7 @@ interface FormContextProps {
   formKey: DeployFormKey;
   source: string;
   pageAction: PageActionType;
-  gpuOptions?: any[];
+  gpuOptions: any[];
   backendOptions: BackendOption[];
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onBackendChange: (backend: string, option: any) => void;

@@ -58,12 +58,14 @@ export default defineConfig({
             .filename(`js/[name].${t}.js`)
             .chunkFilename(`js/[name].${t}.chunk.js`);
           compressionPluginConfig(config);
+          monacoPluginConfig(config);
         }
       }
-    : {}),
-  chainWebpack(config) {
-    monacoPluginConfig(config);
-  },
+    : {
+        chainWebpack(config) {
+          monacoPluginConfig(config);
+        }
+      }),
   favicons: ['/static/favicon.png'],
   jsMinifier: 'terser',
   cssMinifier: 'cssnano',

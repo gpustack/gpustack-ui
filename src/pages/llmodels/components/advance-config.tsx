@@ -1,16 +1,14 @@
 import IconFont from '@/components/icon-font';
 import LabelSelector from '@/components/label-selector';
-import ListInput from '@/components/list-input';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Collapse, Form, FormInstance, Typography } from 'antd';
+import { Collapse, Form, FormInstance } from 'antd';
 import _ from 'lodash';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
-  backendParamsHolderTips,
   getBackendParamsTips,
   modelCategories,
   placementStrategyOptions,
@@ -21,9 +19,10 @@ import BackendParameters, {
 } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import BackendFields from '../forms/backend-fields';
+import Backend from '../forms/backend';
+import BackendParametersList from '../forms/backend-parameters-list';
+import Performance from '../forms/performance';
 import dataformStyles from '../style/data-form.less';
-import Performance from './performance';
 
 interface AdvanceConfigProps {
   isGGUF: boolean;
@@ -44,9 +43,9 @@ const placementStrategyTips = [
   }
 ];
 
-const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
-  const { form, isGGUF, gpuOptions, source, action } = props;
+const AdvanceConfig = () => {
   const intl = useIntl();
+  const form = Form.useFormInstance();
   const wokerSelector = Form.useWatch('worker_selector', form);
   const EnviromentVars = Form.useWatch('env', form);
   const scheduleType = Form.useWatch('scheduleType', form);
@@ -57,7 +56,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
   const placement_strategy = Form.useWatch('placement_strategy', form);
   const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
   const worker_selector = Form.useWatch('worker_selector', form);
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, gpuOptions, source, isGGUF } = useFormContext();
 
   const paramsConfig = useMemo(() => {
     return _.get(BackendParameters, backend, []);
@@ -131,7 +130,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
             options={modelCategories}
           ></SealSelect>
         </Form.Item>
-        <BackendFields></BackendFields>
+        <Backend></Backend>
         {scheduleType === ScheduleValueMap.Auto && (
           <>
             <Form.Item<FormData> name="placement_strategy">
@@ -194,57 +193,7 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
           </>
         )}
 
-        <Form.Item<FormData> name="backend_parameters">
-          <ListInput
-            placeholder={
-              backendParamsHolderTips[backend]
-                ? intl.formatMessage({
-                    id: backendParamsHolderTips[backend].holder
-                  })
-                : ''
-            }
-            btnText={intl.formatMessage({ id: 'common.button.addParams' })}
-            label={intl.formatMessage({
-              id: 'models.form.backend_parameters'
-            })}
-            dataList={form.getFieldValue('backend_parameters') || []}
-            onChange={handleBackendParametersChange}
-            onBlur={handleBackendParametersOnBlur}
-            onDelete={handleDeleteBackendParameters}
-            options={paramsConfig}
-            description={
-              backendParamsTips.link && (
-                <span>
-                  {backend === backendOptionsMap.ascendMindie && (
-                    <span>
-                      {intl.formatMessage({ id: 'models.backend.mindie.310p' })}
-                    </span>
-                  )}
-                  <span style={{ marginLeft: 5 }}>
-                    {intl.formatMessage(
-                      { id: 'models.form.backend_parameters.vllm.tips' },
-                      { backend: backendParamsTips.backend || '' }
-                    )}{' '}
-                    <Typography.Link
-                      style={{ display: 'inline' }}
-                      className="flex-center"
-                      href={backendParamsTips.link}
-                      target="_blank"
-                    >
-                      <span>
-                        {intl.formatMessage({ id: 'common.text.here' })}
-                      </span>
-                      <IconFont
-                        type="icon-external-link"
-                        className="font-size-14 m-l-4"
-                      ></IconFont>
-                    </Typography.Link>
-                  </span>
-                </span>
-              )
-            }
-          ></ListInput>
-        </Form.Item>
+        <BackendParametersList></BackendParametersList>
         <Form.Item<FormData> name="env">
           <LabelSelector
             label={intl.formatMessage({
@@ -313,19 +262,6 @@ const AdvanceConfig: React.FC<AdvanceConfigProps> = (props) => {
         forceRender: true,
         children: <Performance></Performance>
       },
-      // {
-      //   key: '3',
-      //   label: (
-      //     <span
-      //       style={{ fontWeight: 'var(--font-weight-medium)' }}
-      //       className="font-size-14"
-      //     >
-      //       Scaling
-      //     </span>
-      //   ),
-      //   forceRender: true,
-      //   children: <Scaling></Scaling>
-      // },
       {
         key: '1',
         label: (

@@ -5,10 +5,10 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
+import GPUCard from '../components/gpu-card';
 import { scheduleList, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useCatalogFormContext, useFormContext } from '../config/form-context';
-import GPUCard from './gpu-card';
 
 const scheduleTypeTips = [
   {

@@ -1,7 +1,6 @@
 @padding: 24px;
 
 .search-result-wrap {
-  padding: 16px @padding;
   border-radius: 0 0 var(--border-radius-base) var(--border-radius-base);
 
   .ant-spin-container.ant-spin-blur {
@@ -21,8 +20,6 @@
 }
 
 .search-bar {
-  left: 0;
-  right: 0;
   padding-inline: @padding;
   background: var(--ant-color-bg-elevated);
   padding-bottom: 10px;
@@ -32,6 +29,8 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 10px;
+    row-gap: 10px;
+    flex-wrap: wrap;
     color: var(--ant-color-text-tertiary);
 
     :global {

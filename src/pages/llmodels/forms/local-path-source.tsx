@@ -14,9 +14,14 @@ import useCheckBackend from '../hooks/use-check-backend';
 const LocalPathForm: React.FC = () => {
   const { checkOnlyAscendNPU } = useCheckBackend();
   const form = Form.useFormInstance();
-  const formCtx = useFormContext();
   const source = Form.useWatch('source', form);
-  const { formKey, gpuOptions, onValuesChange, onBackendChange } = formCtx;
+  const {
+    formKey,
+    gpuOptions,
+    backendOptions,
+    onValuesChange,
+    onBackendChange
+  } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const localPathCache = useRef<string>(form.getFieldValue('local_path') || '');
@@ -58,7 +63,8 @@ const LocalPathForm: React.FC = () => {
     });
 
     if (oldBackend !== backend) {
-      onBackendChange?.(backend);
+      const option = backendOptions.find((item) => item.value === backend);
+      onBackendChange?.(backend, option);
     } else {
       onValuesChange?.({ local_path: value }, form.getFieldsValue());
     }

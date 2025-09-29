@@ -36,10 +36,15 @@ const ModalFooterStyle = {
   justifyContent: 'flex-end'
 };
 
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
 const ColWrapper = styled.div`
   display: flex;
   flex: 1;
-  maxwidth: 33.33%;
+  max-width: 33.33%;
 `;
 
 const FormWrapper = styled.div`
@@ -445,31 +450,27 @@ const AddModal: FC<AddModalProps> = (props) => {
       width={width}
       footer={false}
     >
-      <div style={{ display: 'flex', height: '100%' }}>
+      <Container>
         {SEARCH_SOURCE.includes(props.source) &&
           deploymentType === 'modelList' && (
             <>
               <ColWrapper>
-                <ColumnWrapper>
-                  <SearchModel
-                    hasLinuxWorker={hasLinuxWorker}
-                    modelSource={props.source}
-                    onSelectModel={handleOnSelectModel}
-                    onSelectModelAfterEvaluate={
-                      handleOnSelectModelAfterEvaluate
-                    }
-                    clusterId={
-                      form.current?.getFieldValue?.('cluster_id') ||
-                      initClusterId()
-                    }
-                    displayEvaluateStatus={displayEvaluateStatus}
-                    gpuOptions={[]}
-                  ></SearchModel>
-                </ColumnWrapper>
+                <SearchModel
+                  hasLinuxWorker={hasLinuxWorker}
+                  modelSource={props.source}
+                  onSelectModel={handleOnSelectModel}
+                  onSelectModelAfterEvaluate={handleOnSelectModelAfterEvaluate}
+                  clusterId={
+                    form.current?.getFieldValue?.('cluster_id') ||
+                    initClusterId()
+                  }
+                  displayEvaluateStatus={displayEvaluateStatus}
+                  gpuOptions={[]}
+                ></SearchModel>
                 <Separator></Separator>
               </ColWrapper>
               <ColWrapper>
-                <ColumnWrapper>
+                <ColumnWrapper styles={{ container: { paddingTop: 0 } }}>
                   <ModelCard
                     selectedModel={selectedModel}
                     onCollapse={setCollapsed}
@@ -545,7 +546,7 @@ const AddModal: FC<AddModalProps> = (props) => {
             </>
           </ColumnWrapper>
         </FormWrapper>
-      </div>
+      </Container>
     </GSDrawer>
   );
 };

@@ -4,6 +4,7 @@ import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
+import _ from 'lodash';
 import { useState } from 'react';
 import {
   createBackend,
@@ -53,6 +54,7 @@ const BackendList = () => {
     currentData?: Partial<ListItem>;
   }>({ open: false, action: 'create' });
 
+  // build_in_version_configs is read-only, but needs to be included when updating
   const handleOnSubmit = async (values: FormData) => {
     try {
       if (openModalStatus.action === 'create') {
@@ -60,7 +62,9 @@ const BackendList = () => {
       } else {
         await updateBackend(openModalStatus.currentData!.id!, {
           data: {
-            ...values
+            build_in_version_configs:
+              openModalStatus.currentData?.build_in_version_configs,
+            ..._.omit(values, ['build_in_version_configs'])
           }
         });
       }
@@ -73,6 +77,7 @@ const BackendList = () => {
     } catch (error) {}
   };
 
+  // build_in_version_configs needs to be included when updating from YAML, but not allowed to be changed
   const handleOnSubmitYaml = async (values: { content: string }) => {
     try {
       if (openModalStatus.action === 'create') {
@@ -82,6 +87,8 @@ const BackendList = () => {
         const yamlContent = json2Yaml({
           backend_name: openModalStatus.currentData?.backend_name,
           default_version: openModalStatus.currentData?.default_version,
+          build_in_version_configs:
+            openModalStatus.currentData?.build_in_version_configs,
           ...jsonData
         });
         await updateBackendFromYAML(openModalStatus.currentData!.id!, {

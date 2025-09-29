@@ -39,6 +39,13 @@ export const backendActions = [
     locale: false
   },
   {
+    label: 'View Built-in Versions',
+    value: 'view_versions',
+    key: 'view_versions',
+    icon: icons.Version,
+    locale: false
+  },
+  {
     label: 'Export YAML',
     value: 'yaml',
     key: 'export',
@@ -84,6 +91,15 @@ export const customColors = [
   'blue',
   'geekblue'
 ];
+
+export const gpuColorMap: Record<string, string> = {
+  cann: 'orange',
+  cuda: 'green',
+  rocm: 'volcano',
+  dtk: 'magenta',
+  musa: 'cyan',
+  corex: 'purple'
+};
 
 export const customIcons = ['∑', '∏', '∫', '∂', '∞', 'θ', '∆', '∇'];
 

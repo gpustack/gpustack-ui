@@ -2,7 +2,9 @@ export interface VersionConfigs {
   image_name: string;
   run_command: string;
   is_default: boolean;
+  backend_list?: string[];
   version_no?: string;
+  is_built_in?: boolean;
 }
 
 export interface FormData {
@@ -22,4 +24,5 @@ export interface ListItem extends FormData {
   is_build_in?: boolean;
   created_at?: string;
   updated_at?: string;
+  build_in_version_configs?: Record<string, VersionConfigs>;
 }

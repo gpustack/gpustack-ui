@@ -12,6 +12,7 @@ interface CardProps {
   footer?: React.ReactNode;
   icon?: React.ReactNode;
   active?: boolean;
+  hoverable?: boolean;
   disabled?: boolean;
   onClick?: () => void;
 }
@@ -29,6 +30,11 @@ const CardWrapper = styled.div.attrs({
   cursor: default;
   width: 100%;
   &.clickable:hover:not(.disabled) {
+    background-color: var(--ant-color-fill-tertiary);
+    transition: background-color 0.2s ease;
+  }
+
+  &.hoverable:hover:not(.disabled) {
     background-color: var(--ant-color-fill-tertiary);
     transition: background-color 0.2s ease;
   }
@@ -102,19 +108,26 @@ const Card: React.FC<CardProps> = (props) => {
     icon,
     active,
     disabled,
+    hoverable,
     onClick
   } = props;
+
+  const handleClick = () => {
+    if (disabled || !clickable) return;
+    onClick?.();
+  };
 
   return (
     <CardWrapper
       className={classNames(className, {
         clickable: clickable,
+        hoverable: hoverable,
         active: active,
         disabled: disabled,
         ghost: ghost
       })}
       style={{ height: height || '180px' }}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {icon && <Icon>{icon}</Icon>}
       <Inner>

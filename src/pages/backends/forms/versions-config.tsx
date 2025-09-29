@@ -1,7 +1,7 @@
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Divider, Form, Radio } from 'antd';
+import { Button, Divider, Form, Radio } from 'antd';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ListItem } from '../config/types';
@@ -11,6 +11,13 @@ const Box = styled.div`
   grid-template-columns: 200px 1fr;
   gap: 16px;
   align-items: center;
+`;
+
+const ActionWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
 `;
 
 const ItemWrapper = styled.div``;
@@ -51,6 +58,7 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   return (
     <Form.List name="version_configs">
       {(fields, { add, remove }) => {
+        console.log('fields:', fields);
         return (
           <div
             style={{
@@ -87,13 +95,10 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
                     ></SealInput.Input>
                   </Form.Item>
                 </Box>
-                <Form.Item name={[name, 'run_command']} {...restField}>
+                <Form.Item name={[name, 'run_command']} {...restField} noStyle>
                   <SealInput.TextArea label="Execution Command"></SealInput.TextArea>
                 </Form.Item>
-                <Form.Item name={[name, 'isBuiltin']} {...restField} hidden>
-                  <Checkbox></Checkbox>
-                </Form.Item>
-                <div className="flex justify-between items-center">
+                <ActionWrapper>
                   <span className="flex-center">
                     {!currentData?.is_build_in && (
                       <Form.Item
@@ -113,36 +118,32 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
                       </Form.Item>
                     )}
                   </span>
-                  {
-                    <div className="flex-center gap-16">
-                      {fields.length > 1 && (
-                        <Button
-                          size="small"
-                          onClick={() => remove(name)}
-                          shape="circle"
-                        >
-                          <MinusOutlined />
-                        </Button>
-                      )}
-                    </div>
-                  }
-                </div>
+                  <div className="flex-center gap-16">
+                    {(fields.length > 1 || currentData?.is_build_in) && (
+                      <Button
+                        size="small"
+                        onClick={() => remove(name)}
+                        shape="circle"
+                      >
+                        <MinusOutlined />
+                      </Button>
+                    )}
+                  </div>
+                </ActionWrapper>
                 <Divider
                   className="divider"
                   style={{ borderTop: '1px  dashed var(--ant-color-border)' }}
                 />
-                {index === fields.length - 1 && (
-                  <Button
-                    onClick={() => add()}
-                    block
-                    variant="filled"
-                    color="default"
-                  >
-                    <PlusOutlined /> Add Version
-                  </Button>
-                )}
               </ItemWrapper>
             ))}
+            <Button
+              onClick={() => add()}
+              block
+              variant="filled"
+              color="default"
+            >
+              <PlusOutlined /> Add Version
+            </Button>
           </div>
         );
       }}

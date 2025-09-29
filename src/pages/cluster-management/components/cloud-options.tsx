@@ -22,18 +22,6 @@ const Title = styled.div`
   font-weight: 600;
 `;
 
-const ButtonWrapper = styled.span`
-  display: flex;
-  align-items: center;
-  height: 100%;
-  font-weight: 400;
-  cursor: pointer;
-  gap: 8px;
-  &:hover {
-    color: var(--ant-color-text-secondary);
-  }
-`;
-
 const CloudOptions: React.FC<{
   ref?: any;
 }> = forwardRef((props, ref) => {

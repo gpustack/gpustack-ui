@@ -1,3 +1,4 @@
+import { PageActionType } from './types';
 declare namespace Global {
   type WithFalse<T> = T | false;
   interface Pagination {
@@ -53,6 +54,15 @@ declare namespace Global {
   type SearchParams = Pagination & { search?: string };
 
   type MessageType = 'transition' | 'warning' | 'danger' | 'success' | 'info';
+
+  interface ScrollerModalProps<T = unknown, U = unknown> {
+    title?: string;
+    action?: PageActionType;
+    open: boolean;
+    currentData?: T | null;
+    onOk?: (values: U) => void;
+    onCancel: () => void;
+  }
 }
 
 interface Window {

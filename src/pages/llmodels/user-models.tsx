@@ -9,7 +9,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
-import { MODELS_API, queryModelsList } from './apis';
+import { MY_MODELS_API, queryMyModels } from './apis';
 import ModelItem from './components/model-item';
 import { categoryOptions, modelCategoriesMap } from './config';
 import { categoryToPathMap } from './config/button-actions';
@@ -24,8 +24,8 @@ const UserModels: React.FC = () => {
     handleQueryChange,
     handleNameChange
   } = useTableFetch<any>({
-    fetchAPI: queryModelsList,
-    API: MODELS_API,
+    fetchAPI: queryMyModels,
+    API: MY_MODELS_API,
     watch: false
   });
   const intl = useIntl();

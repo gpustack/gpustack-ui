@@ -1,35 +1,17 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import DeleteModal from '@/components/delete-modal';
-import PageTools from '@/components/page-tools';
+import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
-import HotKeys from '@/config/hotkeys';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import {
-  DeleteOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  SyncOutlined
-} from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import {
-  Button,
-  ConfigProvider,
-  Empty,
-  Input,
-  Space,
-  Table,
-  Tooltip
-} from 'antd';
-import dayjs from 'dayjs';
+import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
+import { ConfigProvider, Empty, Table } from 'antd';
 import { useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { deleteApisKey, queryApisKeysList } from './apis';
-import AddAPIKeyModal from './components/add-apikey';
+import AddAPIKeyModal from './components/add-apikey-modal';
 import { ListItem } from './config/types';
-
-const { Column } = Table;
+import useKeysColumns from './hooks/use-keys-columns';
 
 const APIKeys: React.FC = () => {
   const {
@@ -52,19 +34,45 @@ const APIKeys: React.FC = () => {
   });
 
   const intl = useIntl();
+  const [openAddModal, setOpenAddModal] = useState<{
+    open: boolean;
+    action: PageActionType;
+    title: string;
+    currentData?: Partial<ListItem> | null;
+  }>({
+    open: false,
+    action: PageAction.CREATE,
+    title: '',
+    currentData: null
+  });
 
-  const [openAddModal, setOpenAddModal] = useState(false);
-  const [action, setAction] = useState<PageActionType>(PageAction.CREATE);
+  const handleAddKey = () => {
+    setOpenAddModal({
+      open: true,
+      title: intl.formatMessage({ id: 'apikeys.button.create' }),
+      action: PageAction.CREATE,
+      currentData: null
+    });
+  };
 
-  const handleAddUser = () => {
-    setOpenAddModal(true);
-    setAction(PageAction.CREATE);
+  const handleEditKey = (record: ListItem) => {
+    setOpenAddModal({
+      open: true,
+      title: 'Edit API Key',
+      action: PageAction.EDIT,
+      currentData: record
+    });
   };
 
   const handleModalOk = async () => {
     try {
       await fetchData();
-      setOpenAddModal(false);
+      setOpenAddModal({
+        open: false,
+        title: '',
+        action: PageAction.CREATE,
+        currentData: null
+      });
     } catch (error) {
       // do nothing
     }
@@ -72,8 +80,21 @@ const APIKeys: React.FC = () => {
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
-    setOpenAddModal(false);
+    setOpenAddModal({
+      open: false,
+      title: '',
+      action: PageAction.CREATE,
+      currentData: null
+    });
   };
+
+  const onSelect = useMemoizedFn(async (val: string, record: ListItem) => {
+    if (val === 'delete') {
+      handleDelete(record);
+    } else if (val === 'edit') {
+      handleEditKey(record);
+    }
+  });
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
@@ -87,15 +108,7 @@ const APIKeys: React.FC = () => {
     return <div></div>;
   };
 
-  useHotkeys(
-    HotKeys.CREATE,
-    () => {
-      handleAddUser();
-    },
-    {
-      enabled: !openAddModal
-    }
-  );
+  const columns = useKeysColumns({ handleSelect: onSelect, sortOrder });
 
   return (
     <>
@@ -110,56 +123,20 @@ const APIKeys: React.FC = () => {
         }}
         extra={[]}
       >
-        <PageTools
+        <FilterBar
           marginBottom={22}
-          left={
-            <Space>
-              <Input
-                prefix={
-                  <SearchOutlined
-                    style={{ color: 'var(--ant-color-text-placeholder)' }}
-                  ></SearchOutlined>
-                }
-                placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 300 }}
-                allowClear
-                onChange={handleNameChange}
-              ></Input>
-              <Button
-                type="text"
-                style={{ color: 'var(--ant-color-text-tertiary)' }}
-                onClick={handleSearch}
-                icon={<SyncOutlined></SyncOutlined>}
-              ></Button>
-            </Space>
-          }
-          right={
-            <Space size={20}>
-              <Button
-                icon={<PlusOutlined></PlusOutlined>}
-                type="primary"
-                onClick={handleAddUser}
-              >
-                {intl.formatMessage({ id: 'apikeys.button.create' })}
-              </Button>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={handleDeleteBatch}
-                disabled={!rowSelection.selectedRowKeys.length}
-              >
-                <span>
-                  {intl?.formatMessage?.({ id: 'common.button.delete' })}
-                  {rowSelection.selectedRowKeys.length > 0 && (
-                    <span>({rowSelection.selectedRowKeys?.length})</span>
-                  )}
-                </span>
-              </Button>
-            </Space>
-          }
-        ></PageTools>
+          marginTop={30}
+          buttonText={intl.formatMessage({ id: 'apikeys.button.create' })}
+          handleSearch={handleSearch}
+          handleDeleteByBatch={handleDeleteBatch}
+          handleClickPrimary={handleAddKey}
+          handleInputChange={handleNameChange}
+          rowSelection={rowSelection}
+          width={{ input: 300 }}
+        ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
+            columns={columns}
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
@@ -173,102 +150,14 @@ const APIKeys: React.FC = () => {
               hideOnSinglePage: queryParams.perPage === 10,
               onChange: handlePageChange
             }}
-          >
-            <Column
-              title={intl.formatMessage({ id: 'common.table.name' })}
-              dataIndex="name"
-              key="name"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost style={{ maxWidth: 400 }}>
-                    {text}
-                  </AutoTooltip>
-                );
-              }}
-            />
-
-            <Column
-              title={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
-              dataIndex="expires_at"
-              key="expiration"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost>
-                    {text
-                      ? dayjs(text).format('YYYY-MM-DD HH:mm:ss')
-                      : intl.formatMessage({
-                          id: 'apikeys.form.expiration.never'
-                        })}
-                  </AutoTooltip>
-                );
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'common.table.description' })}
-              dataIndex="description"
-              key="description"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return <AutoTooltip ghost>{text}</AutoTooltip>;
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'common.table.createTime' })}
-              dataIndex="created_at"
-              key="createTime"
-              defaultSortOrder="descend"
-              sortOrder={sortOrder}
-              showSorterTooltip={false}
-              sorter={false}
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record) => {
-                return (
-                  <AutoTooltip ghost>
-                    {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
-                  </AutoTooltip>
-                );
-              }}
-            />
-            <Column
-              title={intl.formatMessage({ id: 'common.table.operation' })}
-              key="operation"
-              ellipsis={{
-                showTitle: false
-              }}
-              render={(text, record: ListItem) => {
-                return (
-                  <Space size={20}>
-                    <Tooltip
-                      title={intl.formatMessage({ id: 'common.button.delete' })}
-                    >
-                      <Button
-                        onClick={() => handleDelete(record)}
-                        size="small"
-                        danger
-                        icon={<DeleteOutlined></DeleteOutlined>}
-                      ></Button>
-                    </Tooltip>
-                  </Space>
-                );
-              }}
-            />
-          </Table>
+          ></Table>
         </ConfigProvider>
       </PageContainer>
       <AddAPIKeyModal
-        open={openAddModal}
-        action={action}
-        title={intl.formatMessage({ id: 'apikeys.button.create' })}
+        open={openAddModal.open}
+        action={openAddModal.action}
+        title={openAddModal.title}
+        currentData={openAddModal.currentData}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAPIKeyModal>

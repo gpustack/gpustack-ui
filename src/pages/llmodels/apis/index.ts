@@ -22,6 +22,8 @@ export const MODEL_EVALUATIONS = '/model-evaluations';
 
 export const BACKEND_LIST_API = '/inference-backends/list';
 
+export const MY_MODELS_API = '/my-models';
+
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
 };

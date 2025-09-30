@@ -252,3 +252,8 @@ export interface BackendOption {
   default_version: string;
   versions: { label: string; value: string }[];
 }
+
+export interface AccessControlFormData {
+  set_public: boolean;
+  users: { id: number }[];
+}

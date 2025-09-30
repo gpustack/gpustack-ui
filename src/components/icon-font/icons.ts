@@ -49,7 +49,8 @@ const icons = {
   EditContent: React.createElement(IconFont, { type: 'icon-edit-content' }),
   Yaml: React.createElement(IconFont, { type: 'icon-code_block' }),
   Version: React.createElement(IconFont, { type: 'icon-version' }),
-  Parameter: React.createElement(IconFont, { type: 'icon-parameters' })
+  Parameter: React.createElement(IconFont, { type: 'icon-parameters' }),
+  Private: React.createElement(IconFont, { type: 'icon-private' })
 };
 
 export default icons;

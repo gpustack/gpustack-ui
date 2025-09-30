@@ -43,9 +43,11 @@ export default {
   'clusters.create.addCommand.tips':
     'На воркере, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
   'cluster.create.checkEnv.tips':
-    'Используйте следующую команду для проверки готовности окружения'
+    'Используйте следующую команду для проверки готовности окружения',
+  'clusters.create.register.tips':
+    ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
 // ========== End of To-Do List ==========

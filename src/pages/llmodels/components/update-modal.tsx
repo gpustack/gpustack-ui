@@ -14,9 +14,9 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { BackendOption, FormData } from '../config/types';
 import { generateGPUSelector } from '../config/utils';
+import DataForm from '../forms';
 import { useCheckCompatibility } from '../hooks';
 import CompatibilityAlert from './compatible-alert';
-import DataForm from './data-form';
 
 type AddModalProps = {
   title: string;

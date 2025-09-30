@@ -33,6 +33,7 @@ const Performance: React.FC = () => {
   const { onQuantizationChange } = useCatalogFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
+  const scheduleType = Form.useWatch('scheduleType', form);
 
   const handleScheduleTypeChange = (value: string) => {
     if (value === ScheduleValueMap.Auto) {
@@ -61,8 +62,7 @@ const Performance: React.FC = () => {
           options={scheduleList}
         ></SealSelect>
       </Form.Item>
-      {form.getFieldValue('scheduleType') ===
-        ScheduleValueMap.SpecificGPUType && (
+      {scheduleType === ScheduleValueMap.SpecificGPUType && (
         <>
           <Form.Item name={['gpu_selector', 'gpu_type']}>
             <SealSelect
@@ -95,7 +95,7 @@ const Performance: React.FC = () => {
           </Form.Item>
         </>
       )}
-      {form.getFieldValue('scheduleType') === ScheduleValueMap.Manual &&
+      {scheduleType === ScheduleValueMap.Manual &&
         !form.getFieldValue('fix_gpu_type') && (
           <>
             <Form.Item

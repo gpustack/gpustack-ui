@@ -2,6 +2,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Form, Radio } from 'antd';
+import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ListItem } from '../config/types';
@@ -20,6 +21,13 @@ const ActionWrapper = styled.div`
   margin-top: 24px;
 `;
 
+const Label = styled.div`
+  line-height: 1;
+  color: var(--ant-color-text-tertiary);
+  margin-bottom: 20px;
+  font-size: var(--font-size-base);
+`;
+
 const ItemWrapper = styled.div``;
 
 type AddModalProps = {
@@ -28,6 +36,7 @@ type AddModalProps = {
 };
 const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   const form = Form.useFormInstance();
+  const version_configs = Form.useWatch('version_configs', form);
   const versionList = [
     {
       version_no: '',
@@ -47,6 +56,26 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
     form.setFieldValue('version_configs', updatedVersions);
   };
 
+  const handleVersionOnBlur = (
+    e: React.FocusEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const inputValue = e.target.value.trim() || '';
+    const versions = form.getFieldValue('version_configs') || [];
+    console.log('inputValue:', version_configs, currentData);
+    const isDuplicate =
+      _.get(currentData, ['build_in_version_configs', inputValue]) ||
+      versions.some(
+        (version: any, idx: number) =>
+          version?.version_no === inputValue && idx !== index
+      );
+    if (isDuplicate) {
+      const updatedVersions = [...versions];
+      updatedVersions[index].version_no = '';
+      form.setFieldValue('version_configs', updatedVersions);
+    }
+  };
+
   useEffect(() => {
     const versions = form.getFieldValue('version_configs') || [];
     console.log('versions:', versions);
@@ -58,7 +87,6 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   return (
     <Form.List name="version_configs">
       {(fields, { add, remove }) => {
-        console.log('fields:', fields);
         return (
           <div
             style={{
@@ -67,6 +95,7 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
               padding: '14px'
             }}
           >
+            <Label>Custom Versions</Label>
             {fields.map(({ key, name, ...restField }, index) => (
               <ItemWrapper key={key}>
                 <Box>

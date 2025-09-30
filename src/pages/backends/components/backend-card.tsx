@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import DropDownActions from '@/components/drop-down-actions';
 import IconFont from '@/components/icon-font';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
@@ -12,7 +13,7 @@ import {
   builtInBackendLogos,
   customColors,
   customIcons,
-  gpuColorMap
+  getGpuColor
 } from '../config';
 import { ListItem } from '../config/types';
 
@@ -125,7 +126,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     if (data.is_build_in) {
       return backendActions.filter((item) => item.key !== 'delete');
     }
-    return backendActions;
+    return backendActions.filter((item) => item.key !== 'view_versions');
   }, [data.is_build_in]);
 
   const onClick = (e: React.MouseEvent) => {
@@ -146,19 +147,21 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
             <IconFont className="icon" type="icon-gpu1" />
             <span>Supported Frameworks: </span>
           </span>
-          <BackendBox>
-            {backendList.map((item: string) => {
-              return (
-                <ThemeTag
-                  key={item}
-                  style={{ marginRight: 0 }}
-                  color={gpuColorMap[item] || 'default'}
-                >
-                  {item}
-                </ThemeTag>
-              );
-            })}
-          </BackendBox>
+          <AutoTooltip ghost maxWidth={'100%'}>
+            <BackendBox>
+              {_.take(backendList, 3).map((item: string) => {
+                return (
+                  <ThemeTag
+                    key={item}
+                    style={{ marginRight: 0 }}
+                    color={getGpuColor(item)}
+                  >
+                    {item}
+                  </ThemeTag>
+                );
+              })}
+            </BackendBox>
+          </AutoTooltip>
         </>
       );
     }
@@ -169,7 +172,13 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
           <span>Default Image: </span>
         </span>
         <span className="text">
-          {_.get(data, ['version_configs', data.default_version, 'image_name'])}
+          <AutoTooltip ghost maxWidth={'100%'}>
+            {_.get(data, [
+              'version_configs',
+              data.default_version,
+              'image_name'
+            ])}
+          </AutoTooltip>
         </span>
       </>
     );
@@ -178,7 +187,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   return (
     <Card
       onClick={handleClick}
-      clickable={false}
+      clickable={true}
       hoverable={true}
       disabled={false}
       height={160}

@@ -1,7 +1,7 @@
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { Divider, Form } from 'antd';
 import styled from 'styled-components';
-import { gpuColorMap } from '../config';
+import { getGpuColor } from '../config';
 
 const ItemWrapper = styled.div`
   display: flex;
@@ -62,7 +62,7 @@ const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
               <ThemeTag
                 key={item}
                 style={{ marginRight: 0 }}
-                color={gpuColorMap[item] || 'default'}
+                color={getGpuColor(item)}
               >
                 {item}
               </ThemeTag>

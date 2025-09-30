@@ -17,13 +17,13 @@ import {
   SourceType
 } from '../config/types';
 import { generateGPUIds } from '../config/utils';
-import CatalogFrom from '../forms/catalog';
-import LocalPathSource from '../forms/local-path-source';
-import OnlineSource from '../forms/online-source';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
+import CatalogFrom from './catalog';
+import LocalPathSource from './local-path-source';
+import OnlineSource from './online-source';
 // import AdvanceConfig from './advance-config';
-import AdvanceConfig from '../forms/advance-config';
-import Performance from '../forms/performance';
+import AdvanceConfig from './advance-config';
+import Performance from './performance';
 
 interface DataFormProps {
   initialValues?: any;
@@ -266,7 +266,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             },
             {
               key: 'advance_config',
-              label: 'Advanced',
+              label: intl.formatMessage({ id: 'resources.form.advanced' }),
               forceRender: true,
               children: <AdvanceConfig></AdvanceConfig>
             }

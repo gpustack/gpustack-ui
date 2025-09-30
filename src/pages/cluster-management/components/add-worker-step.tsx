@@ -111,13 +111,21 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
         1. {intl.formatMessage({ id: 'cluster.create.checkEnv.tips' })}
       </div>
       <CheckEnvCommand provider={provider} currentGPU={currentGPU} />
-      <div className="command-info">
-        2. {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
-      </div>
+
       {provider === ProviderValueMap.Kubernetes ? (
-        <RegisterClusterInner registrationInfo={registrationInfo} />
+        <>
+          <div className="command-info">
+            2. {intl.formatMessage({ id: 'clusters.create.register.tips' })}
+          </div>
+          <RegisterClusterInner registrationInfo={registrationInfo} />
+        </>
       ) : (
-        <AddWorkerCommand registrationInfo={registrationInfo} />
+        <>
+          <div className="command-info">
+            2. {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
+          </div>
+          <AddWorkerCommand registrationInfo={registrationInfo} />
+        </>
       )}
     </Container>
   );

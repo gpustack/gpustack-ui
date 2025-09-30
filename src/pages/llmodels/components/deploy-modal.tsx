@@ -11,6 +11,7 @@ import ColumnWrapper from '../../_components/column-wrapper';
 import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { BackendOption, FormData, SourceType } from '../config/types';
+import DataForm from '../forms';
 import {
   MessageStatus,
   WarningStausOptions,
@@ -19,7 +20,6 @@ import {
 } from '../hooks';
 import useCheckBackend from '../hooks/use-check-backend';
 import CompatibilityAlert from './compatible-alert';
-import DataForm from './data-form';
 import GGUFResult from './gguf-result';
 import ModelCard from './model-card';
 import SearchModel from './search-model';
@@ -488,6 +488,9 @@ const AddModal: FC<AddModalProps> = (props) => {
         <FormWrapper>
           <ColumnWrapper
             paddingBottom={warningStatus.show ? 170 : 50}
+            styles={{
+              container: { paddingTop: 0 }
+            }}
             footer={
               <>
                 <CompatibilityAlert

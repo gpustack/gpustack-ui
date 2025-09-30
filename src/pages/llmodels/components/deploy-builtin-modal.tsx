@@ -20,10 +20,10 @@ import { backendOptionsMap } from '../config/backend-parameters';
 import { CatalogFormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
 import { generateGPUIds } from '../config/utils';
+import DataForm from '../forms';
 import { useCheckCompatibility } from '../hooks';
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import CompatibilityAlert from './compatible-alert';
-import DataForm from './data-form';
 
 const pickFieldsFromSpec = [
   'backend_version',

@@ -67,7 +67,6 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
     if (!inputRef.current?.input?.value) {
       setIsFocus(false);
     }
-    props.onChange?.(e);
     props.onBlur?.(e);
   };
 

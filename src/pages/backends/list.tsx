@@ -17,6 +17,7 @@ import {
 } from './apis';
 import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
+import ViewBuiltinVersionsModal from './components/view-builtin-versions-modal';
 import { json2Yaml, yaml2Json } from './config';
 import { FormData, ListItem } from './config/types';
 import useExportYAML from './hooks/use-export-yaml';
@@ -53,6 +54,11 @@ const BackendList = () => {
     action: PageActionType;
     currentData?: Partial<ListItem>;
   }>({ open: false, action: 'create' });
+  const [openViewBuiltinVersionsModal, setOpenViewBuiltinVersionsModal] =
+    useState<{
+      open: boolean;
+      currentData?: Partial<ListItem>;
+    }>({ open: false });
 
   // build_in_version_configs is read-only, but needs to be included when updating
   const handleOnSubmit = async (values: FormData) => {
@@ -129,6 +135,11 @@ const BackendList = () => {
       // Export YAML action
       console.log('Export YAML for:', item.data);
       exportYAML(item.data);
+    } else if (item.action === 'view_versions') {
+      setOpenViewBuiltinVersionsModal({
+        open: true,
+        currentData: item.data
+      });
     }
   };
 
@@ -180,6 +191,16 @@ const BackendList = () => {
             : 'Edit Backend'
         }
       ></AddModal>
+      <ViewBuiltinVersionsModal
+        open={openViewBuiltinVersionsModal.open}
+        currentData={openViewBuiltinVersionsModal.currentData as ListItem}
+        onClose={() =>
+          setOpenViewBuiltinVersionsModal({
+            open: false,
+            currentData: undefined
+          })
+        }
+      ></ViewBuiltinVersionsModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </PageContainer>
   );

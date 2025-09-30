@@ -1,36 +1,14 @@
 import IconFont from '@/components/icon-font';
 import CheckboxField from '@/components/seal-form/checkbox-field';
+import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
-import { Form, Transfer } from 'antd';
+import { Form } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
 import { queryModelAccessUserList } from '../../apis';
 import { AccessControlFormData, ListItem } from '../../config/types';
 
 type TransferKey = string | number | bigint;
-
-const TransferWrap = styled.div`
-  .ant-transfer-list {
-    width: 100%;
-    height: 400px;
-  }
-  .ant-transfer-list-content {
-    .ant-transfer-list-content-item {
-      &:hover {
-        background-color: var(--ant-control-item-bg-hover);
-      }
-      &.ant-transfer-list-content-item-checked {
-        background-color: unset;
-        &:hover {
-          background-color: var(--ant-control-item-bg-hover);
-        }
-      }
-    }
-  }
-  .ant-pagination {
-    justify-content: center;
-  }
-`;
 
 const Label = styled.div`
   font-weight: 500;
@@ -138,21 +116,27 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         ></CheckboxField>
       </Form.Item>
       {setPublic && (
-        <Form.Item<AccessControlFormData> name="users">
-          <TransferWrap>
-            <Transfer
-              dataSource={userList}
-              targetKeys={targetKeys}
-              showSelectAll
-              showSearch
-              pagination={totalPages > 1}
-              titles={['Available Users', 'Users with Access']}
-              render={(item) => item.title}
-              selectAllLabels={[]}
-              selectionsIcon={<IconFont type="icon-down"></IconFont>}
-              onChange={handleOnChange}
-            />
-          </TransferWrap>
+        <Form.Item<AccessControlFormData>
+          name="users"
+          rules={[
+            {
+              required: true,
+              message: 'Please select at least one user'
+            }
+          ]}
+        >
+          <TransferInner
+            dataSource={userList}
+            targetKeys={targetKeys}
+            showSelectAll
+            showSearch
+            pagination={totalPages > 1}
+            titles={['Available Users', 'Users with Access']}
+            render={(item) => item.title}
+            selectAllLabels={[]}
+            selectionsIcon={<IconFont type="icon-down"></IconFont>}
+            onChange={handleOnChange}
+          />
         </Form.Item>
       )}
     </Form>

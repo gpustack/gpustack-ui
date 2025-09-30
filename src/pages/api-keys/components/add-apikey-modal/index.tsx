@@ -9,14 +9,16 @@ import { useIntl } from '@umijs/max';
 import { Button, Form, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { createApisKey } from '../apis';
-import { expirationOptions } from '../config';
-import { FormData } from '../config/types';
+import { createApisKey } from '../../apis';
+import { expirationOptions } from '../../config';
+import { FormData, ListItem } from '../../config/types';
+import AllowModelsForm from './allow-models';
 
 type AddModalProps = {
   title: string;
   action: PageActionType;
   open: boolean;
+  currentData?: Partial<ListItem> | null;
   onOk: () => void;
   onCancel: () => void;
 };
@@ -25,6 +27,7 @@ const AddModal: React.FC<AddModalProps> = ({
   title,
   action,
   open,
+  currentData,
   onOk,
   onCancel
 }) => {
@@ -166,6 +169,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 required
               ></SealSelect>
             </Form.Item>
+            <AllowModelsForm></AllowModelsForm>
             <Form.Item<FormData>
               name="description"
               rules={[{ required: false }]}

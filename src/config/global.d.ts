@@ -1,4 +1,3 @@
-import { PageActionType } from './types';
 declare namespace Global {
   type WithFalse<T> = T | false;
   interface Pagination {
@@ -57,11 +56,20 @@ declare namespace Global {
 
   interface ScrollerModalProps<T = unknown, U = unknown> {
     title?: string;
-    action?: PageActionType;
+    action?: 'create' | 'update' | 'view' | 'edit';
     open: boolean;
     currentData?: T | null;
     onOk?: (values: U) => void;
     onCancel: () => void;
+  }
+
+  interface ActionItem {
+    label: string;
+    key: string;
+    icon: React.ReactNode;
+    props?: {
+      danger?: boolean;
+    };
   }
 }
 

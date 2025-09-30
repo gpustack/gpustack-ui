@@ -45,7 +45,7 @@ const AccessControlModal: React.FC<
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={800}
+      width={600}
       footer={
         <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
       }

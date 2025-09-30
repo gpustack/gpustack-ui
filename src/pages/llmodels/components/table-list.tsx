@@ -7,6 +7,7 @@ import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import SealTable from '@/components/seal-table';
 import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
@@ -58,6 +59,7 @@ import {
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import useModelsColumns from '../hooks/use-models-columns';
 import useQueryBackends from '../hooks/use-query-backends';
+import AccessControlModal from './access-control-modal';
 import APIAccessInfoModal from './api-access-info';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
@@ -179,6 +181,17 @@ const Models: React.FC<ModelsProps> = ({
   }>({
     url: '',
     status: ''
+  });
+  const [openAccessControlModal, setOpenAccessControlModal] = useState<{
+    open: boolean;
+    currentData: ListItem | null;
+    title: string;
+    action: PageActionType;
+  }>({
+    open: false,
+    currentData: null,
+    title: '',
+    action: PageAction.CREATE
   });
   const modalRef = useRef<any>(null);
 
@@ -454,6 +467,15 @@ const Models: React.FC<ModelsProps> = ({
           }
         });
       }
+
+      if (val === 'accessControl') {
+        setOpenAccessControlModal({
+          title: 'Edit Access Control',
+          action: PageAction.EDIT,
+          currentData: row,
+          open: true
+        });
+      }
     } catch (error) {
       // ignore
     }
@@ -559,6 +581,16 @@ const Models: React.FC<ModelsProps> = ({
       handleOnToggleExpandAll();
     }
   });
+
+  const handleCancelAccessControl = () => {
+    setOpenAccessControlModal({
+      ...openAccessControlModal,
+      currentData: null,
+      open: false
+    });
+  };
+
+  const handleSubmitAccessControl = (data: any) => {};
 
   return (
     <>
@@ -728,6 +760,14 @@ const Models: React.FC<ModelsProps> = ({
           });
         }}
       ></APIAccessInfoModal>
+      <AccessControlModal
+        onCancel={handleCancelAccessControl}
+        onOk={handleSubmitAccessControl}
+        title={openAccessControlModal.title}
+        open={openAccessControlModal.open}
+        currentData={openAccessControlModal.currentData}
+        action={openAccessControlModal.action}
+      ></AccessControlModal>
     </>
   );
 };

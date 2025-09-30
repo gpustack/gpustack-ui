@@ -1,0 +1,162 @@
+import IconFont from '@/components/icon-font';
+import CheckboxField from '@/components/seal-form/checkbox-field';
+import { queryUsersList } from '@/pages/users/apis';
+import { Form, Transfer } from 'antd';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import styled from 'styled-components';
+import { queryModelAccessUserList } from '../../apis';
+import { AccessControlFormData, ListItem } from '../../config/types';
+
+type TransferKey = string | number | bigint;
+
+const TransferWrap = styled.div`
+  .ant-transfer-list {
+    width: 100%;
+    height: 400px;
+  }
+  .ant-transfer-list-content {
+    .ant-transfer-list-content-item {
+      &:hover {
+        background-color: var(--ant-control-item-bg-hover);
+      }
+      &.ant-transfer-list-content-item-checked {
+        background-color: unset;
+        &:hover {
+          background-color: var(--ant-control-item-bg-hover);
+        }
+      }
+    }
+  }
+  .ant-pagination {
+    justify-content: center;
+  }
+`;
+
+const Label = styled.div`
+  font-weight: 500;
+  margin-bottom: 16px;
+  margin-top: 16px;
+  font-size: 14px;
+`;
+
+interface AccessControlFormProps {
+  currentData?: ListItem | null;
+  onFinish: (values: AccessControlFormData) => void;
+}
+
+const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
+  const { currentData, onFinish } = props;
+  const [form] = Form.useForm();
+  const setPublic = Form.useWatch('set_public', form);
+  const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [userList, setUserList] = useState<{ title: string; key: number }[]>(
+    []
+  );
+  const [queryParams, setQueryParams] = useState<Global.SearchParams>({
+    page: 1,
+    perPage: 30
+  });
+
+  const getUserList = async (query: Global.SearchParams) => {
+    try {
+      const res = await queryUsersList(query);
+      const options = res.items.map((item) => ({
+        title: item.username,
+        key: item.id
+      }));
+      console.log('options', options);
+      setTotalPages(res.pagination.totalPage);
+      setUserList(options);
+    } catch (error) {
+      setUserList([]);
+    }
+  };
+
+  const handleOnChange = (
+    nextTargetKeys: TransferKey[],
+    direction: string,
+    removeKeys: TransferKey[]
+  ) => {
+    setTargetKeys(nextTargetKeys);
+    console.log('nextTargetKeys', nextTargetKeys);
+    const users = nextTargetKeys.map((key) => ({ id: key }));
+    form.setFieldsValue({ users });
+  };
+
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      form.submit();
+    },
+    setFieldsValue: (values: Partial<AccessControlFormData>) => {
+      form.setFieldsValue(values);
+    },
+    getFieldsValue: () => {
+      return form.getFieldsValue();
+    },
+    resetFields: () => {
+      form.resetFields();
+    }
+  }));
+
+  useEffect(() => {
+    if (currentData?.id) {
+      queryModelAccessUserList(currentData.id).then((res) => {
+        const keys = res.items.map((item) => item.id);
+        setTargetKeys(keys);
+        form.setFieldsValue({
+          set_public: res.items.length > 0,
+          users: res.items.map((item) => ({ id: item.id }))
+        });
+      });
+    } else {
+      setTargetKeys([]);
+      form.setFieldsValue({ users: [] });
+    }
+    getUserList(queryParams);
+  }, [currentData?.id]);
+
+  return (
+    <Form
+      form={form}
+      onFinish={onFinish}
+      preserve={false}
+      clearOnDestroy={true}
+      scrollToFirstError={true}
+      initialValues={{
+        public: true
+      }}
+    >
+      <Form.Item<AccessControlFormData>
+        valuePropName="checked"
+        name="set_public"
+        style={{ marginBottom: 24, paddingLeft: 6 }}
+      >
+        <CheckboxField
+          description="Only authorized users can access"
+          label={'Restricted'}
+        ></CheckboxField>
+      </Form.Item>
+      {setPublic && (
+        <Form.Item<AccessControlFormData> name="users">
+          <TransferWrap>
+            <Transfer
+              dataSource={userList}
+              targetKeys={targetKeys}
+              showSelectAll
+              showSearch
+              pagination={totalPages > 1}
+              titles={['Available Users', 'Users with Access']}
+              render={(item) => item.title}
+              selectAllLabels={[]}
+              selectionsIcon={<IconFont type="icon-down"></IconFont>}
+              onChange={handleOnChange}
+            />
+          </TransferWrap>
+        </Form.Item>
+      )}
+    </Form>
+  );
+});
+
+export default AccessControlForm;

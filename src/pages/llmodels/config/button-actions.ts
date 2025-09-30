@@ -62,6 +62,11 @@ export const ActionList: ActionItem[] = [
     icon: icons.ApiOutlined
   },
   {
+    label: 'Access Control',
+    key: 'accessControl',
+    icon: icons.Private
+  },
+  {
     label: 'common.button.stop',
     key: 'stop',
     icon: icons.Stop

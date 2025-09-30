@@ -1,3 +1,4 @@
+import { ListItem as UserListItem } from '@/pages/users/config/types';
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
@@ -21,6 +22,8 @@ export const MODEL_INSTANCE_API = '/model-instances';
 export const MODEL_EVALUATIONS = '/model-evaluations';
 
 export const BACKEND_LIST_API = '/inference-backends/list';
+
+export const MY_MODELS_API = '/my-models';
 
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
@@ -410,6 +413,37 @@ export async function queryBackendList() {
       versions: string[];
     }[];
   }>(BACKEND_LIST_API, {
+    method: 'GET'
+  });
+}
+
+export async function queryModelAccessUserList(id: number) {
+  return request<{ items: UserListItem[] }>(`${MODELS_API}/${id}/access`, {
+    method: 'GET'
+  });
+}
+
+export async function updateModelAccessUser(params: {
+  id: number;
+  data: { users: { id: number }[]; set_public: boolean };
+}) {
+  return request(`${MODELS_API}/${params.id}/access`, {
+    method: 'POST',
+    data: params.data
+  });
+}
+
+export async function queryMyModels(params: Global.SearchParams) {
+  return request<Global.PageResponse<ListItem>>(
+    `${MY_MODELS_API}?${qs.stringify(params)}`,
+    {
+      method: 'GET'
+    }
+  );
+}
+
+export async function queryMyModelDetail(id: number) {
+  return request(`${MY_MODELS_API}/${id}`, {
     method: 'GET'
   });
 }

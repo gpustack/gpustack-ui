@@ -1,5 +1,6 @@
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
+import SealCheckbox from '@/components/seal-form/seal-checkbox';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction, PasswordReg } from '@/config';
@@ -34,11 +35,13 @@ const AddModal: React.FC<AddModalProps> = ({
     if (action === PageAction.EDIT && open) {
       form.setFieldsValue({
         ...data,
-        is_admin: data?.is_admin ? UserRoles.ADMIN : UserRoles.USER
+        is_admin: data?.is_admin ? UserRoles.ADMIN : UserRoles.USER,
+        is_active: data?.is_active !== undefined ? data.is_active : true
       });
     } else if (action === PageAction.CREATE && open) {
       form.setFieldsValue({
-        is_admin: UserRoles.USER
+        is_admin: UserRoles.USER,
+        is_active: true
       });
     }
   };
@@ -93,24 +96,44 @@ const AddModal: React.FC<AddModalProps> = ({
             label={intl.formatMessage({ id: 'users.form.fullname' })}
           ></SealInput.Input>
         </Form.Item>
-        <Form.Item<FormData> name="is_admin" rules={[{ required: false }]}>
-          <SealSelect label={intl.formatMessage({ id: 'users.table.role' })}>
-            {UserRolesOptions.map((item) => {
-              return (
-                <Select.Option value={item.value} key={item.value}>
-                  {item.value === UserRoles.ADMIN ? (
-                    <UserSwitchOutlined className="size-16" />
-                  ) : (
-                    <UserOutlined className="size-16" />
-                  )}
-                  <span className="m-l-5">
-                    {intl.formatMessage({ id: item.label })}
-                  </span>
-                </Select.Option>
-              );
-            })}
-          </SealSelect>
-        </Form.Item>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <div style={{ flex: 1 }}>
+            <Form.Item<FormData> name="is_admin" rules={[{ required: false }]}>
+              <SealSelect
+                label={intl.formatMessage({ id: 'users.table.role' })}
+              >
+                {UserRolesOptions.map((item) => {
+                  return (
+                    <Select.Option value={item.value} key={item.value}>
+                      {item.value === UserRoles.ADMIN ? (
+                        <UserSwitchOutlined className="size-16" />
+                      ) : (
+                        <UserOutlined className="size-16" />
+                      )}
+                      <span className="m-l-5">
+                        {intl.formatMessage({ id: item.label })}
+                      </span>
+                    </Select.Option>
+                  );
+                })}
+              </SealSelect>
+            </Form.Item>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Form.Item<FormData>
+              name="is_active"
+              rules={[{ required: false }]}
+              valuePropName="checked"
+            >
+              <SealCheckbox
+                label={intl.formatMessage({ id: 'users.form.active' })}
+                description={intl.formatMessage({
+                  id: 'users.form.active.description'
+                })}
+              />
+            </Form.Item>
+          </div>
+        </div>
 
         <Form.Item<FormData>
           name="password"

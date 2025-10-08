@@ -296,6 +296,23 @@ const Users: React.FC = () => {
               }}
             />
             <Column
+              title={intl.formatMessage({ id: 'users.table.status' })}
+              dataIndex="is_active"
+              key="status"
+              ellipsis={{
+                showTitle: false
+              }}
+              render={(text, record: ListItem) => {
+                return (
+                  <AutoTooltip ghost minWidth={20}>
+                    {record.is_active
+                      ? intl.formatMessage({ id: 'users.status.active' })
+                      : intl.formatMessage({ id: 'users.status.inactive' })}
+                  </AutoTooltip>
+                );
+              }}
+            />
+            <Column
               title={intl.formatMessage({ id: 'common.table.createTime' })}
               dataIndex="created_at"
               key="createTime"

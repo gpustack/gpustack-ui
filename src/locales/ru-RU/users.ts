@@ -5,6 +5,12 @@ export default {
   'users.form.create': 'Новый пользователь',
   'users.table.username': 'Имя пользователя',
   'users.table.role': 'Роль',
+  'users.table.status': 'Статус',
+  'users.status.active': 'Активен',
+  'users.status.inactive': 'Неактивен',
+  'users.form.active': 'Активная учетная запись',
+  'users.form.active.description':
+    'Включить или отключить эту учетную запись пользователя',
   'users.form.fullname': 'Полное имя',
   'users.form.source': 'Источник',
   'users.table.user': 'пользователи',

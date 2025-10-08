@@ -8,6 +8,7 @@ export interface ListItem {
   username: string;
   created_at: string;
   updated_at: string;
+  is_active?: boolean;
 }
 
 export interface FormData {
@@ -16,4 +17,5 @@ export interface FormData {
   is_admin: boolean | string;
   full_name: string;
   password: string;
+  is_active?: boolean;
 }

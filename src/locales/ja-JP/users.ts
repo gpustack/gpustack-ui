@@ -5,6 +5,12 @@ export default {
   'users.form.create': 'ユーザーを追加',
   'users.table.username': 'ユーザー名',
   'users.table.role': '役割',
+  'users.table.status': 'ステータス',
+  'users.status.active': 'アクティブ',
+  'users.status.inactive': '非アクティブ',
+  'users.form.active': 'アクティブアカウント',
+  'users.form.active.description':
+    'このユーザーアカウントを有効または無効にする',
   'users.form.fullname': 'フルネーム',
   'users.form.source': 'ソース',
   'users.table.user': 'ユーザー',

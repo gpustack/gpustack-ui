@@ -63,6 +63,7 @@ export const addWorkerGuide: Record<string, any> = {
     --privileged \\
     --net=host \\
     -v gpustack-data:/var/lib/gpustack \\
+    ${params.image} \\
     --server-url ${params.server} \\
     --registration-token ${params.token} \\
     --worker-ip ${params.workerip}`;

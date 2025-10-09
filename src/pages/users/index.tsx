@@ -20,17 +20,27 @@ import {
   ConfigProvider,
   Empty,
   Input,
+  message,
   Space,
+  Switch,
   Table,
-  message
+  Tag
 } from 'antd';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import styled from 'styled-components';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 const { Column } = Table;
+
+const StyledSwitch = styled(Switch)`
+  .ant-switch-handle::before {
+    inset-inline-end: 0 !important;
+    inset-inline-start: 0 !important;
+  }
+`;
 
 const ActionList = [
   {
@@ -105,6 +115,7 @@ const Users: React.FC = () => {
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {
       setOpenAddModal(false);
+      message.error(intl.formatMessage({ id: 'common.message.fail' }));
     }
   };
 
@@ -125,6 +136,22 @@ const Users: React.FC = () => {
       handleEditUser(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.username });
+    }
+  };
+
+  const handleActiveChange = async (checked: boolean, row: ListItem) => {
+    try {
+      await updateUser({
+        data: {
+          ...row,
+          is_active: checked,
+          id: row?.id
+        }
+      });
+      handleSearch();
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+    } catch (error) {
+      message.error(intl.formatMessage({ id: 'common.message.fail' }));
     }
   };
 
@@ -304,11 +331,18 @@ const Users: React.FC = () => {
               }}
               render={(text, record: ListItem) => {
                 return (
-                  <AutoTooltip ghost minWidth={20}>
-                    {record.is_active
-                      ? intl.formatMessage({ id: 'users.status.active' })
-                      : intl.formatMessage({ id: 'users.status.inactive' })}
-                  </AutoTooltip>
+                  <>
+                    <Tag
+                      style={{ marginRight: 0 }}
+                      color={record.is_active ? 'success' : 'default'}
+                    >
+                      {intl.formatMessage({
+                        id: record.is_active
+                          ? 'users.status.active'
+                          : 'users.status.inactive'
+                      })}
+                    </Tag>
+                  </>
                 );
               }}
             />

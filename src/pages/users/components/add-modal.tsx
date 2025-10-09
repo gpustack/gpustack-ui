@@ -1,8 +1,8 @@
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
-import SealCheckbox from '@/components/seal-form/seal-checkbox';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import SealSwitch from '@/components/seal-form/seal-switch';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
 import { UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
@@ -36,7 +36,7 @@ const AddModal: React.FC<AddModalProps> = ({
       form.setFieldsValue({
         ...data,
         is_admin: data?.is_admin ? UserRoles.ADMIN : UserRoles.USER,
-        is_active: data?.is_active !== undefined ? data.is_active : true
+        is_active: !!data?.is_active
       });
     } else if (action === PageAction.CREATE && open) {
       form.setFieldsValue({
@@ -125,7 +125,7 @@ const AddModal: React.FC<AddModalProps> = ({
               rules={[{ required: false }]}
               valuePropName="checked"
             >
-              <SealCheckbox
+              <SealSwitch
                 label={intl.formatMessage({ id: 'users.form.active' })}
                 description={intl.formatMessage({
                   id: 'users.form.active.description'

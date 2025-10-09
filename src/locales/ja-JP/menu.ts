@@ -32,7 +32,7 @@ export default {
   'menu.models.userModels': 'My Models',
   'menu.clusterManagement.clusterDetail': 'Cluster Detail',
   'menu.clusterManagement.clusterCreate': 'Create Cluster',
-  'menu.models.backendsList': 'Backends'
+  'menu.models.backendsList': 'Inference Backends'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -49,5 +49,5 @@ export default {
 // 11. 'menu.models.userModels': 'My Models'
 // 12. 'menu.clusterManagement.clusterDetail': 'Cluster Detail',
 // 13. 'menu.clusterManagement.clusterCreate': 'Create Cluster',
-// 14. 'menu.models.backendsList': 'Backends'
+// 14. 'menu.models.backendsList': 'Inference Backends'
 // ========== End of To-Do List ==========

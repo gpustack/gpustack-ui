@@ -1,3 +1,3 @@
 export default {
-  'backends.title': 'Backends'
+  'backends.title': 'Inference Backends'
 };

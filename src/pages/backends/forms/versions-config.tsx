@@ -1,3 +1,4 @@
+import CollapsibleContainer from '@/components/collapse-container';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
@@ -21,6 +22,14 @@ const ActionWrapper = styled.div`
   margin-top: 24px;
 `;
 
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 8px;
+`;
+
 const Label = styled.div`
   line-height: 1;
   color: var(--ant-color-text-tertiary);
@@ -37,6 +46,7 @@ type AddModalProps = {
 const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   const form = Form.useFormInstance();
   const version_configs = Form.useWatch('version_configs', form);
+  const [collapseKey, setCollapseKey] = React.useState<string[]>(['0']);
   const versionList = [
     {
       version_no: '',
@@ -76,6 +86,24 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
     }
   };
 
+  const onToggle = (open: boolean, key: string) => {
+    setCollapseKey(open ? [key] : []);
+  };
+
+  const handleAdd = async (add: (defaultValue?: any) => void) => {
+    try {
+      const isValid = await form.validateFields(['version_configs'], {
+        recursive: true
+      });
+      console.log('isValid:', isValid);
+      if (isValid) {
+        add();
+      }
+    } catch (error) {
+      console.log('Validation failed:', error);
+    }
+  };
+
   useEffect(() => {
     const versions = form.getFieldValue('version_configs') || [];
     console.log('versions:', versions);
@@ -90,89 +118,118 @@ const VersionsForm: React.FC<AddModalProps> = ({ action, currentData }) => {
         return (
           <div
             style={{
-              border: '1px solid var(--ant-color-border)',
-              borderRadius: 'var(--border-radius-base)',
-              padding: '14px'
+              display: 'flex',
+              flexDirection: 'column',
+              marginBottom: '24px'
             }}
           >
-            <Label>Custom Versions</Label>
+            <Title>
+              <span>Version Configurations</span>
+              <Button
+                onClick={() => handleAdd(add)}
+                variant="filled"
+                color="default"
+              >
+                <PlusOutlined /> Add Version
+              </Button>
+            </Title>
             {fields.map(({ key, name, ...restField }, index) => (
-              <ItemWrapper key={key}>
-                <Box>
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'version_no']}
-                    rules={[{ required: true, message: 'Version is required' }]}
-                  >
-                    <SealInput.Input
-                      trim
-                      label="Version"
-                      required
-                    ></SealInput.Input>
-                  </Form.Item>
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'image_name']}
-                    rules={[
-                      { required: true, message: 'Image Name is required' }
-                    ]}
-                  >
-                    <SealInput.Input
-                      trim
-                      label="Image Name"
-                      required
-                    ></SealInput.Input>
-                  </Form.Item>
-                </Box>
-                <Form.Item name={[name, 'run_command']} {...restField} noStyle>
-                  <SealInput.TextArea label="Execution Command"></SealInput.TextArea>
-                </Form.Item>
-                <ActionWrapper>
-                  <span className="flex-center">
-                    {!currentData?.is_build_in && (
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'is_default']}
-                        valuePropName="checked"
-                        initialValue={false}
-                        noStyle
+              <>
+                <CollapsibleContainer
+                  collapsible={true}
+                  key={key}
+                  defaultOpen
+                  open={collapseKey.includes(String(key))}
+                  title={<span>{version_configs[name]?.version_no}</span>}
+                  subtitle={
+                    version_configs[name]?.image_name && (
+                      <span style={{ marginLeft: 20 }}>
+                        {version_configs[name]?.image_name}
+                      </span>
+                    )
+                  }
+                  onToggle={(open) => onToggle(open, key + '')}
+                  deleteBtn={false}
+                  right={
+                    <div className="flex-center gap-8">
+                      <span
+                        className="flex-center"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <Radio
-                          onChange={(e: any) =>
-                            handleSetDefaultVersion(e, index)
-                          }
+                        {!currentData?.is_build_in && (
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'is_default']}
+                            valuePropName="checked"
+                            initialValue={false}
+                            noStyle
+                          >
+                            <Radio
+                              onChange={(e: any) =>
+                                handleSetDefaultVersion(e, index)
+                              }
+                            >
+                              Default Version
+                            </Radio>
+                          </Form.Item>
+                        )}
+                      </span>
+                      {(fields.length > 1 || currentData?.is_build_in) && (
+                        <Button
+                          size="small"
+                          onClick={() => remove(name)}
+                          shape="circle"
                         >
-                          Set as Default Version
-                        </Radio>
-                      </Form.Item>
-                    )}
-                  </span>
-                  <div className="flex-center gap-16">
-                    {(fields.length > 1 || currentData?.is_build_in) && (
-                      <Button
-                        size="small"
-                        onClick={() => remove(name)}
-                        shape="circle"
-                      >
-                        <MinusOutlined />
-                      </Button>
-                    )}
-                  </div>
-                </ActionWrapper>
-                <Divider
-                  className="divider"
-                  style={{ borderTop: '1px  dashed var(--ant-color-border)' }}
-                />
-              </ItemWrapper>
+                          <MinusOutlined />
+                        </Button>
+                      )}
+                    </div>
+                  }
+                >
+                  <Box>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'version_no']}
+                      rules={[
+                        { required: true, message: 'Version is required' }
+                      ]}
+                    >
+                      <SealInput.Input
+                        trim
+                        label="Version"
+                        required
+                      ></SealInput.Input>
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'image_name']}
+                      rules={[
+                        { required: true, message: 'Image Name is required' }
+                      ]}
+                    >
+                      <SealInput.Input
+                        trim
+                        label="Image Name"
+                        required
+                      ></SealInput.Input>
+                    </Form.Item>
+                  </Box>
+                  <Form.Item
+                    name={[name, 'run_command']}
+                    {...restField}
+                    noStyle
+                  >
+                    <SealInput.TextArea label="Execution Command"></SealInput.TextArea>
+                  </Form.Item>
+                </CollapsibleContainer>
+                {index < fields.length - 1 && (
+                  <Divider
+                    className="divider"
+                    style={{ borderTop: '1px  dashed var(--ant-color-border)' }}
+                  />
+                )}
+              </>
             ))}
-            <Button
-              onClick={() => add()}
-              block
-              variant="filled"
-              color="default"
-            >
-              <PlusOutlined /> Add Version
-            </Button>
           </div>
         );
       }}

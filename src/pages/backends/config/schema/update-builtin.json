@@ -26,6 +26,13 @@
             "run_command": {
               "type": ["string", "null"],
               "description": "start command"
+            },
+            "backend_list": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "backend list"
             }
           },
           "required": ["image_name", "run_command"],

@@ -97,8 +97,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       const versionConfigs = Object.keys(values.version_configs || {}).map(
         (key) => ({
           version_no: key,
-          image_name: values.version_configs[key].image_name,
-          run_command: values.version_configs[key].run_command,
+          image_name: values.version_configs?.[key]?.image_name,
+          run_command: values.version_configs?.[key]?.run_command,
           is_default: key === values.default_version
         })
       );
@@ -107,10 +107,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         values.build_in_version_configs || {}
       ).map((key) => ({
         version_no: key,
-        image_name: values.build_in_version_configs[key].image_name,
-        run_command: values.build_in_version_configs[key].run_command,
+        image_name: values.build_in_version_configs?.[key]?.image_name,
+        run_command: values.build_in_version_configs?.[key]?.run_command,
         is_default: key === values.default_version,
-        backend_list: values.build_in_version_configs[key].backend_list || [],
+        backend_list:
+          values.build_in_version_configs?.[key]?.backend_list || [],
         is_built_in: true
       }));
 
@@ -171,7 +172,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     >
       <SegmentedHeader>
         <SegmentedInner
-          shape="round"
           onChange={(value) => setActiveKey(value as string)}
           options={[
             {

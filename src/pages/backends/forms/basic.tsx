@@ -1,3 +1,4 @@
+import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
@@ -44,8 +45,23 @@ const BasicForm: React.FC<AddModalProps> = ({ action }) => {
         <SealInput.TextArea label="Default Execution Command"></SealInput.TextArea>
       </Form.Item>
 
+      <Form.Item<FormData>
+        name="default_backend_param"
+        rules={[{ required: false }]}
+      >
+        <ListInput
+          dataList={form.getFieldValue('default_backend_param') || []}
+          onChange={(data: string[]) => {
+            form.setFieldValue('default_backend_param', data);
+          }}
+          btnText={'Add Backend Parameter'}
+          label={'Default Backend Parameters'}
+        ></ListInput>
+      </Form.Item>
+
       <Form.Item<FormData> name="description" rules={[{ required: false }]}>
         <SealInput.TextArea
+          scaleSize={true}
           label={intl.formatMessage({ id: 'common.table.description' })}
         ></SealInput.TextArea>
       </Form.Item>

@@ -6,7 +6,6 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { FormData, ListItem } from '../config/types';
 import BasicForm from './basic';
 import BuiltInVersionsForm from './built-in-versions';
-import ParametersForm from './parameters';
 import VersionsForm from './versions-config';
 
 type AddModalProps = {
@@ -72,6 +71,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
         onFinishFailed={onFinishFailed}
       >
         <BasicForm action={action}></BasicForm>
+
         <CollapsePanel
           activeKey={activeKey}
           accordion={false}
@@ -86,25 +86,10 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
                     children: <BuiltInVersionsForm></BuiltInVersionsForm>
                   }
                 ]
-              : []),
-            {
-              key: 'version_configs',
-              label: 'Custom Versions',
-              forceRender: true,
-              children: (
-                <VersionsForm
-                  action={action}
-                  currentData={currentData}
-                ></VersionsForm>
-              )
-            },
-            {
-              key: 'parameters',
-              label: 'Default Parameters',
-              children: <ParametersForm action={action}></ParametersForm>
-            }
+              : [])
           ]}
         ></CollapsePanel>
+        <VersionsForm action={action} currentData={currentData}></VersionsForm>
       </Form>
     );
   }

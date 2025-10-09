@@ -44,7 +44,7 @@ const useStyles = createStyles(({ css, token }) => {
       gap: 8px;
     `,
     subtitle: css`
-      font-size: 12px;
+      font-size: 14px;
       color: ${token.colorTextSecondary};
     `,
     content: css`

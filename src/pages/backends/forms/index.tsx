@@ -1,11 +1,9 @@
 import { PageActionType } from '@/config/types';
-import CollapsePanel from '@/pages/_components/collapse-panel';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { FormData, ListItem } from '../config/types';
 import BasicForm from './basic';
-import BuiltInVersionsForm from './built-in-versions';
 import VersionsForm from './versions-config';
 
 type AddModalProps = {
@@ -22,17 +20,15 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
     const onFinishFailed = (errorInfo: any) => {
       const errorFields = errorInfo.errorFields || [];
       if (errorFields.length > 0) {
-        const hasVersionsError = errorFields.some((field: any) =>
+        const versionError = errorFields.find((field: any) =>
           field.name.includes('version_configs')
         );
-        if (hasVersionsError) {
-          setActiveKey([...new Set([...activeKey, 'version_configs'])]);
+        if (versionError) {
+          setActiveKey([...new Set([versionError.name[1]])]);
+        } else {
+          setActiveKey([]);
         }
       }
-    };
-
-    const handleOnCollapseChange = (keys: string | string[]) => {
-      setActiveKey(Array.isArray(keys) ? keys : [keys]);
     };
 
     useEffect(() => {
@@ -71,25 +67,11 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
         onFinishFailed={onFinishFailed}
       >
         <BasicForm action={action}></BasicForm>
-
-        <CollapsePanel
+        <VersionsForm
+          action={action}
+          currentData={currentData}
           activeKey={activeKey}
-          accordion={false}
-          onChange={handleOnCollapseChange}
-          items={[
-            ...(currentData?.is_build_in
-              ? [
-                  {
-                    key: 'builtin_version_configs',
-                    label: 'Built-in Versions',
-                    forceRender: true,
-                    children: <BuiltInVersionsForm></BuiltInVersionsForm>
-                  }
-                ]
-              : [])
-          ]}
-        ></CollapsePanel>
-        <VersionsForm action={action} currentData={currentData}></VersionsForm>
+        ></VersionsForm>
       </Form>
     );
   }

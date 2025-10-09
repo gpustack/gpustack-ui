@@ -18,6 +18,7 @@ const CardStyled = styled(Card)`
     background-color: var(--ant-color-fill-quaternary);
     border-bottom: none;
     border-radius: var(--ant-border-radius);
+    padding: 0 16px;
     &:hover {
       background-color: var(--ant-color-fill-secondary);
       .del-btn {
@@ -72,6 +73,7 @@ export interface CollapsibleContainerProps {
   defaultOpen?: boolean;
   open?: boolean;
   collapsible?: boolean;
+  showExpandIcon?: boolean;
   onToggle?: (open: boolean) => void;
   disabled?: boolean;
   variant?: 'outlined' | 'borderless' | undefined;
@@ -88,6 +90,7 @@ export default function CollapsibleContainer({
   open,
   onToggle,
   disabled = false,
+  showExpandIcon = true,
   variant = 'borderless',
   className = '',
   collapsible,
@@ -120,14 +123,16 @@ export default function CollapsibleContainer({
       <div className={styles.title} onClick={toggle}>
         <div className={styles.left}>
           <div className={styles.expandIcon}>
-            <IconFont
-              rotate={isOpen ? 180 : 0}
-              type="icon-down"
-              style={{
-                cursor: disabled ? 'not-allowed' : 'pointer',
-                fontSize: 12
-              }}
-            />
+            {showExpandIcon && (
+              <IconFont
+                rotate={isOpen ? 180 : 0}
+                type="icon-down"
+                style={{
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  fontSize: 12
+                }}
+              />
+            )}
             {title && <div>{title}</div>}
           </div>
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}

@@ -53,7 +53,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [activeKey, setActiveKey] = useState<string>('form');
   const [yamlContent, setYamlContent] = useState<string>('');
   const [formContent, setFormContent] = useState<FormData>({} as FormData);
-  const tabsRef = useRef<any>(null);
 
   const onOk = () => {
     if (activeKey === 'yaml') {
@@ -73,6 +72,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       (acc: Record<string, any>, curr) => {
         if (curr.version_no) {
           acc[curr.version_no] = {
+            custom_framework: curr.custom_framework,
             image_name: curr.image_name,
             run_command: curr.run_command
           };
@@ -99,6 +99,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           version_no: key,
           image_name: values.version_configs?.[key]?.image_name,
           run_command: values.version_configs?.[key]?.run_command,
+          custom_framework: values.version_configs?.[key]?.custom_framework,
           is_default: key === values.default_version
         })
       );
@@ -110,8 +111,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         image_name: values.build_in_version_configs?.[key]?.image_name,
         run_command: values.build_in_version_configs?.[key]?.run_command,
         is_default: key === values.default_version,
-        backend_list:
-          values.build_in_version_configs?.[key]?.backend_list || [],
+        build_in_frameworks:
+          values.build_in_version_configs?.[key]?.build_in_frameworks || [],
         is_built_in: true
       }));
 

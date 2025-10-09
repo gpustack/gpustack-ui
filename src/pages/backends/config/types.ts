@@ -2,7 +2,8 @@ export interface VersionConfigs {
   image_name: string;
   run_command: string;
   is_default: boolean;
-  backend_list?: string[];
+  build_in_frameworks?: string[];
+  custom_framework: string;
   version_no?: string;
   is_built_in?: boolean;
 }

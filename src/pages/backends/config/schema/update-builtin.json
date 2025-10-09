@@ -27,12 +27,9 @@
               "type": ["string", "null"],
               "description": "start command"
             },
-            "backend_list": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "backend list"
+            "custom_framework": {
+              "type": ["string", "null"],
+              "description": "custom framework"
             }
           },
           "required": ["image_name", "run_command"],

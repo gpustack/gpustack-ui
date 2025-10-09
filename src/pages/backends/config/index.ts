@@ -39,13 +39,6 @@ export const backendActions = [
     locale: false
   },
   {
-    label: 'View Built-in Versions',
-    value: 'view_versions',
-    key: 'view_versions',
-    icon: icons.Version,
-    locale: false
-  },
-  {
     label: 'Export YAML',
     value: 'yaml',
     key: 'export',
@@ -123,6 +116,28 @@ export const backendFields = [
   'version_configs',
   'default_backend_parameters'
 ];
+export const frameworks = [
+  {
+    label: 'CUDA',
+    value: 'cuda'
+  },
+  {
+    label: 'ROCm',
+    value: 'rocm'
+  },
+  {
+    label: 'CANN',
+    value: 'cann'
+  },
+  {
+    label: 'DTK',
+    value: 'dtk'
+  },
+  {
+    label: 'CoreX',
+    value: 'corex'
+  }
+];
 
 export const yamlTemplate = `# backend configuration template
 backend_name: SGLang
@@ -134,9 +149,11 @@ version_configs:
   v0.0.1:
     image_name: lm/sglang
     run_command: run sglang
+    custom_framework: cuda
   v0.0.2:
     image_name: lm/sglang
-    run_command: run sglang
+    run_command:
+    custom_framework:
 default_backend_parameters:
   - --host
   `;

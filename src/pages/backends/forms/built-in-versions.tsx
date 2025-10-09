@@ -8,13 +8,13 @@ const ItemWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  width: 100%;
   .title {
     width: 100%;
     justify-content: space-between;
     display: flex;
     align-items: center;
     font-weight: 600;
-    margin-bottom: 8px;
   }
 `;
 
@@ -35,7 +35,8 @@ const RowWrapper = styled.div`
 
 interface VersionItemProps {
   data: {
-    backend_list: string[];
+    build_in_frameworks: string[];
+    custom_framework: string;
     version_no: string;
     image_name: string;
     run_command: string;
@@ -44,20 +45,24 @@ interface VersionItemProps {
   };
 }
 
-const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
+export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
   return (
     <ItemWrapper>
       <div className="title">
         <span>{data.version_no}</span>
         {data.is_default && (
-          <ThemeTag color="geekblue" className="font-400">
+          <ThemeTag
+            color="geekblue"
+            className="font-400"
+            style={{ marginRight: 0 }}
+          >
             Default
           </ThemeTag>
         )}
       </div>
       <RowWrapper>
         <span className="text drivers">
-          {data.backend_list?.map((item) => {
+          {data.build_in_frameworks?.map((item) => {
             return (
               <ThemeTag
                 key={item}

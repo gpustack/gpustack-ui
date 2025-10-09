@@ -137,7 +137,11 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     if (data.is_build_in) {
       const backendList = _.get(
         data,
-        ['build_in_version_configs', data.default_version, 'backend_list'],
+        [
+          'build_in_version_configs',
+          data.default_version,
+          'build_in_frameworks'
+        ],
         []
       );
 

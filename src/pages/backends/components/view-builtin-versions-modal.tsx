@@ -25,8 +25,8 @@ const ViewBuiltinVersionsModal: React.FC<ViewBuiltinVersionsModalProps> = ({
         image_name: currentData.build_in_version_configs[key].image_name,
         run_command: currentData.build_in_version_configs[key].run_command,
         is_default: key === currentData.default_version,
-        backend_list:
-          currentData.build_in_version_configs[key].backend_list || [],
+        build_in_frameworks:
+          currentData.build_in_version_configs[key].build_in_frameworks || [],
         is_built_in: true
       }));
       form.setFieldsValue({

@@ -16,7 +16,7 @@ interface ColumnsHookProps {
 
 const actionList: Global.ActionItem[] = [
   {
-    label: 'common.button.edit',
+    label: 'Edit Allowed Models',
     key: 'edit',
     icon: icons.EditOutlined
   },
@@ -58,6 +58,17 @@ const useModelsColumns = ({
                   id: 'apikeys.form.expiration.never'
                 })}
           </AutoTooltip>
+        )
+      },
+      {
+        title: intl.formatMessage({ id: 'apikeys.table.bindModels' }),
+        dataIndex: 'allowed_model_names',
+        key: 'allowed_model_names',
+        ellipsis: {
+          showTitle: false
+        },
+        render: (text: string[], record: ListItem) => (
+          <AutoTooltip ghost>{text?.join(', ')}</AutoTooltip>
         )
       },
       {

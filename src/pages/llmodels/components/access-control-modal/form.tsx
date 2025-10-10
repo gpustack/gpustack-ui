@@ -1,4 +1,3 @@
-import IconFont from '@/components/icon-font';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
@@ -33,7 +32,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   );
   const [queryParams, setQueryParams] = useState<Global.SearchParams>({
     page: 1,
-    perPage: 30
+    perPage: 100
   });
 
   const getUserList = async (query: Global.SearchParams) => {
@@ -60,6 +59,10 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     console.log('nextTargetKeys', nextTargetKeys);
     const users = nextTargetKeys.map((key) => ({ id: key }));
     form.setFieldsValue({ users });
+  };
+
+  const onSearch = (dir: 'left' | 'right', value: string) => {
+    console.log('search:', dir, value);
   };
 
   useImperativeHandle(ref, () => ({
@@ -116,28 +119,34 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         ></CheckboxField>
       </Form.Item>
       {setPublic && (
-        <Form.Item<AccessControlFormData>
-          name="users"
-          rules={[
-            {
-              required: true,
-              message: 'Please select at least one user'
-            }
-          ]}
-        >
-          <TransferInner
-            dataSource={userList}
-            targetKeys={targetKeys}
-            showSelectAll
-            showSearch
-            pagination={totalPages > 1}
-            titles={['Available Users', 'Users with Access']}
-            render={(item) => item.title}
-            selectAllLabels={[]}
-            selectionsIcon={<IconFont type="icon-down"></IconFont>}
-            onChange={handleOnChange}
-          />
-        </Form.Item>
+        <>
+          <Label>User Select</Label>
+          <Form.Item<AccessControlFormData>
+            name="users"
+            rules={[
+              {
+                required: true,
+                message: 'Please select at least one user'
+              }
+            ]}
+          >
+            <TransferInner
+              total={100}
+              dataSource={userList}
+              targetKeys={targetKeys}
+              showSelectAll
+              pagination={false}
+              titles={['Available Users', 'Users with Access']}
+              showSearch={{
+                placeholder: 'Filter by username'
+              }}
+              render={(item) => item.title}
+              selectAllLabels={[]}
+              onSearch={onSearch}
+              onChange={handleOnChange}
+            />
+          </Form.Item>
+        </>
       )}
     </Form>
   );

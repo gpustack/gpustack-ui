@@ -17,6 +17,13 @@ export async function createApisKey(params: { data: FormData }) {
   });
 }
 
+export async function updateApisKey(id: number, params: { data: FormData }) {
+  return request<ListItem>(`${APIS_KEYS_API}/${id}`, {
+    method: 'PUT',
+    data: params.data
+  });
+}
+
 export async function deleteApisKey(id: number) {
   return request(`${APIS_KEYS_API}/${id}`, {
     method: 'DELETE'

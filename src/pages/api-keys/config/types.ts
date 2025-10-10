@@ -6,6 +6,7 @@ export interface ListItem {
   created_at: string;
   updated_at: string;
   expires_at: string;
+  allowed_model_names: string[];
 }
 
 export interface FormData {

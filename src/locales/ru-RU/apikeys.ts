@@ -11,5 +11,6 @@ export default {
   'apikeys.form.expiration.7days': '7 дней',
   'apikeys.form.expiration.1month': '1 месяц',
   'apikeys.form.expiration.6months': '6 месяцев',
-  'apikeys.form.expiration.never': 'Без срока действия'
+  'apikeys.form.expiration.never': 'Без срока действия',
+  'apikeys.table.bindModels': 'Разрешенные модели'
 };

@@ -70,7 +70,6 @@ export default [
     name: 'models',
     path: '/models',
     key: 'models',
-    access: 'canSeeAdmin',
     routes: [
       {
         path: '/models',
@@ -103,7 +102,7 @@ export default [
         icon: 'icon-models',
         selectedIcon: 'icon-models-filled',
         defaultIcon: 'icon-models',
-        access: 'canSeeAdmin',
+        access: 'canSeeUser',
         component: './llmodels/user-models'
       },
       {

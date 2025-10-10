@@ -11,5 +11,6 @@ export default {
   'apikeys.form.expiration.7days': '7日間',
   'apikeys.form.expiration.1month': '1ヶ月',
   'apikeys.form.expiration.6months': '6ヶ月',
-  'apikeys.form.expiration.never': '無期限'
+  'apikeys.form.expiration.never': '無期限',
+  'apikeys.table.bindModels': '許可されたモデル'
 };

@@ -39,7 +39,9 @@ const AllowModelsForm: React.FC = () => {
         }}
         render={(item) => item.title}
         titles={['Available Models', 'Allowed Models']}
-        showSearch
+        showSearch={{
+          placeholder: 'Filter by model name'
+        }}
         filterOption={(inputValue, item) =>
           item.title.toLowerCase().includes(inputValue.toLowerCase())
         }

@@ -2,17 +2,17 @@ import CopyButton from '@/components/copy-button';
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Button, Form, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { createApisKey } from '../../apis';
+import { createApisKey, updateApisKey } from '../../apis';
 import { expirationOptions } from '../../config';
 import { FormData, ListItem } from '../../config/types';
 import AllowModelsForm from './allow-models';
+import APIKeyForm from './form';
 
 type AddModalProps = {
   title: string;
@@ -43,6 +43,13 @@ const AddModal: React.FC<AddModalProps> = ({
         expires_in: 1
       });
     }
+    if (action === PageAction.EDIT && currentData && open) {
+      form.setFieldsValue({
+        name: currentData.name,
+        description: currentData.description,
+        allowed_model_names: currentData.allowed_model_names || []
+      });
+    }
   };
 
   useEffect(() => {
@@ -67,16 +74,29 @@ const AddModal: React.FC<AddModalProps> = ({
     return res;
   };
 
+  const createAPIKey = async (data: FormData) => {
+    const params = {
+      ...data,
+      expires_in: getExpireValue(data.expires_in)
+    };
+    const res = await createApisKey({ data: params });
+    setAPIKeyValue(res.value);
+    setShowKey(true);
+  };
+
+  const updateAPIKey = async (data: FormData) => {
+    await updateApisKey(currentData?.id as number, { data });
+    onOk();
+  };
+
   const handleOnOk = async (data: FormData) => {
     try {
       setLoading(true);
-      const params = {
-        ...data,
-        expires_in: getExpireValue(data.expires_in)
-      };
-      const res = await createApisKey({ data: params });
-      setAPIKeyValue(res.value);
-      setShowKey(true);
+      if (action === PageAction.CREATE) {
+        await createAPIKey(data);
+      } else if (action === PageAction.EDIT && currentData?.id) {
+        await updateAPIKey(data);
+      }
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -109,7 +129,7 @@ const AddModal: React.FC<AddModalProps> = ({
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      width={700}
       styles={{}}
       footer={
         !showKey ? (
@@ -126,60 +146,9 @@ const AddModal: React.FC<AddModalProps> = ({
       }
     >
       <Form name="addAPIKey" form={form} onFinish={handleOnOk} preserve={false}>
-        {!showKey ? (
-          <>
-            <Form.Item<FormData>
-              name="name"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    { id: 'common.form.rule.input' },
-                    {
-                      name: intl.formatMessage({ id: 'common.table.name' })
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealInput.Input
-                label={intl.formatMessage({ id: 'common.table.name' })}
-                required
-              ></SealInput.Input>
-            </Form.Item>
-            <Form.Item<FormData>
-              name="expires_in"
-              rules={[
-                {
-                  required: true,
-                  message: intl.formatMessage(
-                    { id: 'common.form.rule.select' },
-                    {
-                      name: intl.formatMessage({
-                        id: 'apikeys.form.expiretime'
-                      })
-                    }
-                  )
-                }
-              ]}
-            >
-              <SealSelect
-                options={expirationOptions}
-                label={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
-                required
-              ></SealSelect>
-            </Form.Item>
-            <AllowModelsForm></AllowModelsForm>
-            <Form.Item<FormData>
-              name="description"
-              rules={[{ required: false }]}
-            >
-              <SealInput.TextArea
-                label={intl.formatMessage({ id: 'common.table.description' })}
-              ></SealInput.TextArea>
-            </Form.Item>
-          </>
-        ) : (
+        {action === PageAction.EDIT && <AllowModelsForm></AllowModelsForm>}
+        {!showKey && action === PageAction.CREATE && <APIKeyForm></APIKeyForm>}
+        {showKey && action === PageAction.CREATE && (
           <Form.Item>
             <div>
               <Tag

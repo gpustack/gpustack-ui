@@ -4,8 +4,15 @@ export default (initialState: { currentUser?: Global.UserInfo }) => {
     initialState.currentUser &&
     initialState.currentUser.is_admin
   );
+  const canSeeUser = !!(
+    initialState &&
+    initialState.currentUser &&
+    !initialState.currentUser.is_admin
+  );
+
   return {
     canSeeAdmin,
+    canSeeUser,
     canDelete: true,
     canLogin: true
   };

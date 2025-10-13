@@ -1,3 +1,4 @@
+import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
@@ -5,7 +6,6 @@ import SealSelect from '@/components/seal-form/seal-select';
 import SealSwitch from '@/components/seal-form/seal-switch';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
-import { UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, Select } from 'antd';
 import { useEffect } from 'react';
@@ -106,9 +106,15 @@ const AddModal: React.FC<AddModalProps> = ({
                   return (
                     <Select.Option value={item.value} key={item.value}>
                       {item.value === UserRoles.ADMIN ? (
-                        <UserSwitchOutlined className="size-16" />
+                        <IconFont
+                          type="icon-manage_user"
+                          className="size-16"
+                        ></IconFont>
                       ) : (
-                        <UserOutlined className="size-16" />
+                        <IconFont
+                          type="icon-user"
+                          className="size-16"
+                        ></IconFont>
                       )}
                       <span className="m-l-5">
                         {intl.formatMessage({ id: item.label })}

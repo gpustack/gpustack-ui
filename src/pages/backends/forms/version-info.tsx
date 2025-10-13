@@ -174,7 +174,7 @@ const VersionList: React.FC<{ versionConfigs: VersionListItem[] }> = ({
           <Empty
             style={{ width: '100%' }}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="Data not found"
+            description={intl.formatMessage({ id: 'backend.noVersion' })}
           />
         )}
       </ListWrapper>

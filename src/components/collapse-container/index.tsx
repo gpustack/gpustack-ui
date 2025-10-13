@@ -79,6 +79,11 @@ export interface CollapsibleContainerProps {
   variant?: 'outlined' | 'borderless' | undefined;
   className?: string;
   children?: React.ReactNode;
+  styles?: {
+    body?: React.CSSProperties;
+    header?: React.CSSProperties;
+    content?: React.CSSProperties;
+  };
 }
 
 export default function CollapsibleContainer({
@@ -94,6 +99,7 @@ export default function CollapsibleContainer({
   variant = 'borderless',
   className = '',
   collapsible,
+  styles: cardStyles,
   children
 }: CollapsibleContainerProps) {
   const { styles } = useStyles();
@@ -169,7 +175,11 @@ export default function CollapsibleContainer({
       variant={variant}
       styles={{
         body: {
-          padding: 0
+          padding: 0,
+          ...cardStyles?.body
+        },
+        header: {
+          ...cardStyles?.header
         }
       }}
       title={renderTitle()}
@@ -181,7 +191,7 @@ export default function CollapsibleContainer({
           overflow: 'hidden'
         }}
       >
-        <div style={{ paddingTop: 8 }}>{children}</div>
+        <div style={{ paddingTop: 8, ...cardStyles?.content }}>{children}</div>
       </div>
     </CardStyled>
   );

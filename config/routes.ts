@@ -115,7 +115,7 @@ export default [
         defaultIcon: 'icon-backend',
         access: 'canSeeAdmin',
         subMenu: ['/models/backends/create'],
-        component: './backends/list'
+        component: './backends/index'
       }
     ]
   },

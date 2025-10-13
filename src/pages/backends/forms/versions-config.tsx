@@ -1,16 +1,15 @@
-import AutoTooltip from '@/components/auto-tooltip';
 import CollapsibleContainer from '@/components/collapse-container';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
+import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Form, Radio } from 'antd';
-import _ from 'lodash';
-import React, { useEffect } from 'react';
+import { useIntl } from '@umijs/max';
+import { Button, Empty, Form, Select, Tag } from 'antd';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { frameworks } from '../config';
 import { ListItem } from '../config/types';
-import { VersionItem } from './built-in-versions';
 
 const Box = styled.div`
   display: grid;
@@ -26,86 +25,66 @@ const Label = styled.span`
   color: var(--ant-color-text-secondary);
 `;
 
-const ImageInner = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 20px;
+const DefaultTag = styled(Tag)`
+  font-weight: 500;
+  margin-left: 8px;
+  color: var(--ant-color-text);
 `;
 
 const Title = styled.div`
+  position: sticky;
+  top: -16px;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: var(--ant-color-bg-container);
   font-weight: 600;
-  margin-bottom: 8px;
-`;
-
-const VersionItemWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 8px 16px;
-  border-radius: var(--ant-border-radius);
-  background-color: var(--ant-color-fill-quaternary);
-  width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
 `;
 
 type AddModalProps = {
   action: PageActionType;
   currentData?: ListItem;
-  activeKey?: number[];
+  activeKey?: Array<string | number>;
 };
 const VersionsForm: React.FC<AddModalProps> = ({
   action,
   currentData,
   activeKey
 }) => {
+  const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
+  const [defaultVersion, setDefaultVersion] = React.useState<string | null>(
+    null
+  );
   const defaultCollapseKey =
     action === 'edit' ? new Set<number>() : new Set([0]);
   const form = Form.useFormInstance();
   const version_configs = Form.useWatch('version_configs', form);
-  const buildInVersionConfigs = Form.useWatch('build_in_version_configs', form);
   const [collapseKey, setCollapseKey] =
-    React.useState<Set<number>>(defaultCollapseKey);
+    React.useState<Set<number | string>>(defaultCollapseKey);
   const versionList = [
     {
       version_no: '',
       image_name: '',
       run_command: '',
       isBuiltin: false,
-      is_default: true
+      is_default: false
     }
   ];
 
-  const handleSetDefaultVersion = (e: any, index: number) => {
-    const versions = form.getFieldValue('version_configs') || [];
-    const updatedVersions = versions.map((version: any, idx: number) => ({
-      ...version,
-      is_default: idx === index
-    }));
-    form.setFieldValue('version_configs', updatedVersions);
-  };
-
-  const handleVersionOnBlur = (
-    e: React.FocusEvent<HTMLInputElement>,
-    index: number
-  ) => {
-    const inputValue = e.target.value.trim() || '';
-    const versions = form.getFieldValue('version_configs') || [];
-    console.log('inputValue:', version_configs, currentData);
-    const isDuplicate =
-      _.get(currentData, ['build_in_version_configs', inputValue]) ||
-      versions.some(
-        (version: any, idx: number) =>
-          version?.version_no === inputValue && idx !== index
-      );
-    if (isDuplicate) {
-      const updatedVersions = [...versions];
-      updatedVersions[index].version_no = '';
-      form.setFieldValue('version_configs', updatedVersions);
-    }
-  };
+  const validVersions = useMemo(() => {
+    return (version_configs || [])
+      .filter((v: any) => v.version_no)
+      ?.map((v: any) => {
+        return {
+          label: v.version_no,
+          value: v.version_no
+        };
+      });
+  }, [version_configs]);
 
   const onToggle = (open: boolean, key: number) => {
     setCollapseKey(open ? new Set([key]) : new Set());
@@ -123,23 +102,11 @@ const VersionsForm: React.FC<AddModalProps> = ({
     form.setFieldValue('version_configs', [...versions, newVersion]);
   };
 
-  const remove = (versions: any[], index: number) => {
-    const updatedVersions = versions.filter(
-      (_: any, idx: number) => idx !== index
-    );
-    // If the removed version was the default, set the first version as default
-    if (versions[index].is_default && updatedVersions.length > 0) {
-      updatedVersions[0].is_default = true;
-    }
-    form.setFieldValue('version_configs', updatedVersions);
-  };
-
   const handleAdd = async () => {
     try {
       const isValid = await form.validateFields(['version_configs'], {
         recursive: true
       });
-      console.log('isValid:', isValid, version_configs);
       if (isValid) {
         add();
         setTimeout(() => {
@@ -152,6 +119,16 @@ const VersionsForm: React.FC<AddModalProps> = ({
         setCollapseKey(new Set([errorKey]));
       }
     }
+  };
+
+  const handleDefaultChange = (value: string) => {
+    const versions = form.getFieldValue('version_configs') || [];
+    const updatedVersions = versions.map((version: any, idx: number) => ({
+      ...version,
+      is_default: version.version_no === value
+    }));
+    form.setFieldValue('version_configs', updatedVersions);
+    setDefaultVersion(value);
   };
 
   useEffect(() => {
@@ -168,141 +145,185 @@ const VersionsForm: React.FC<AddModalProps> = ({
     }
   }, [activeKey]);
 
+  useEffect(() => {
+    if (currentData?.default_version) {
+      setDefaultVersion(currentData.default_version);
+    }
+  }, [currentData?.default_version]);
+
   return (
     <>
-      <Form.Item name="version_configs" hidden></Form.Item>
-      <Form.Item name="build_in_version_configs" hidden></Form.Item>
+      <Title>
+        <span className="flex-center gap-8">
+          <span>
+            {intl.formatMessage({ id: 'backend.form.versionConfig' })}
+          </span>
+          <Button onClick={handleAdd} type="link">
+            <PlusOutlined /> {intl.formatMessage({ id: 'backend.addVersion' })}
+          </Button>
+        </span>
+        {!currentData?.is_build_in && (
+          <Select
+            prefix={
+              <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
+                {intl.formatMessage({ id: 'backend.isDefault' })}:
+              </span>
+            }
+            value={defaultVersion}
+            notFoundContent={
+              <Empty
+                style={{ marginBlock: 8 }}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={intl.formatMessage({
+                  id: 'backend.form.noVersion'
+                })}
+              />
+            }
+            placeholder={intl.formatMessage({ id: 'backend.version' })}
+            options={validVersions}
+            style={{ width: 200, fontWeight: 400 }}
+            allowClear
+            onChange={handleDefaultChange}
+          />
+        )}
+      </Title>
       <div
         style={{
           display: 'flex',
           flexDirection: 'column',
+          gap: '16px',
           marginBottom: '24px'
         }}
       >
-        <Title>
-          <span>Versions Config</span>
-          <Button onClick={handleAdd} variant="filled" color="default">
-            <PlusOutlined /> Add Version
-          </Button>
-        </Title>
-        {buildInVersionConfigs?.map((item: any, index: number) => (
-          <>
-            <VersionItemWrapper>
-              <VersionItem data={item} />
-            </VersionItemWrapper>
-            <Divider
-              className="divider"
-              style={{
-                borderTop: '1px  dashed var(--ant-color-border)'
-              }}
-            />
-          </>
-        ))}
-        {version_configs?.map((item: any, index: number) => (
-          <>
-            <CollapsibleContainer
-              collapsible={true}
-              showExpandIcon={true}
-              key={index}
-              defaultOpen
-              open={collapseKey.has(index)}
-              title={
-                <Label>
-                  <span>Version:</span>
-                  <span>{item.version_no}</span>
-                </Label>
-              }
-              subtitle={
-                item.image_name && (
-                  <ImageInner>
-                    <span>Image:</span>
-                    <AutoTooltip ghost maxWidth={280}>
-                      {item.image_name}
-                    </AutoTooltip>
-                  </ImageInner>
-                )
-              }
-              onToggle={(open) => onToggle(open, index)}
-              deleteBtn={false}
-              right={
-                <div className="flex-center gap-8">
-                  <span
-                    className="flex-center"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {!currentData?.is_build_in && (
-                      <Form.Item
-                        name={['version_configs', index, 'is_default']}
-                        valuePropName="checked"
-                        initialValue={false}
-                        noStyle
-                      >
-                        <Radio
-                          onChange={(e: any) =>
-                            handleSetDefaultVersion(e, index)
-                          }
-                        >
-                          Default Version
-                        </Radio>
-                      </Form.Item>
-                    )}
-                  </span>
-                  {(version_configs.length > 1 || currentData?.is_build_in) && (
-                    <Button
-                      size="small"
-                      shape="circle"
-                      onClick={() => remove(version_configs, index)}
-                    >
-                      <MinusOutlined />
-                    </Button>
-                  )}
-                </div>
-              }
-            >
-              <Box>
-                <Form.Item
-                  name={['version_configs', index, 'version_no']}
-                  rules={[{ required: true, message: 'Version is required' }]}
-                >
-                  <SealInput.Input
-                    trim
-                    label="Version"
-                    required
-                  ></SealInput.Input>
-                </Form.Item>
-                <Form.Item
-                  name={['version_configs', index, 'image_name']}
-                  rules={[
-                    { required: true, message: 'Image Name is required' }
-                  ]}
-                >
-                  <SealInput.Input
-                    trim
-                    label="Image Name"
-                    required
-                  ></SealInput.Input>
-                </Form.Item>
-              </Box>
-              <Form.Item name={['version_configs', index, 'run_command']}>
-                <SealInput.TextArea label="Execution Command"></SealInput.TextArea>
-              </Form.Item>
-              <Form.Item
-                name={['version_configs', index, 'custom_framework']}
-                style={{ marginBottom: 0 }}
-              >
-                <SealSelect label="Framework" options={frameworks} />
-              </Form.Item>
-            </CollapsibleContainer>
-            {index < version_configs.length - 1 && (
-              <Divider
-                className="divider"
+        <Form.List name="version_configs">
+          {(
+            fields: Array<{ key: React.Key; name: number }>,
+            { add, remove }
+          ) => {
+            const versionConfigs = form.getFieldValue('version_configs');
+            return fields?.map(({ key, name }) => (
+              <div
+                key={name}
                 style={{
-                  borderTop: '1px  dashed var(--ant-color-border)'
+                  borderRadius: 'var(--ant-border-radius)',
+                  border: '1px solid var(--ant-color-split)'
                 }}
-              />
-            )}
-          </>
-        ))}
+              >
+                <CollapsibleContainer
+                  collapsible={true}
+                  showExpandIcon={true}
+                  key={name}
+                  defaultOpen
+                  styles={{
+                    body: collapseKey.has(name) ? { padding: 16 } : {},
+                    content: { paddingTop: 0 },
+                    header: {
+                      backgroundColor: 'unset'
+                    }
+                  }}
+                  open={collapseKey.has(name)}
+                  title={
+                    <Label>
+                      <span>
+                        {intl.formatMessage({ id: 'backend.version' })}:
+                      </span>
+                      <span>{versionConfigs[name]?.version_no}</span>
+                      {versionConfigs[name]?.is_default && (
+                        <DefaultTag>
+                          {intl.formatMessage({ id: 'backend.isDefault' })}
+                        </DefaultTag>
+                      )}
+                    </Label>
+                  }
+                  onToggle={(open) => onToggle(open, name)}
+                  deleteBtn={false}
+                  right={
+                    <div className="flex-center gap-8">
+                      <span
+                        className="flex-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {!currentData?.is_build_in && (
+                          <Form.Item
+                            name={[name, 'is_default']}
+                            valuePropName="checked"
+                            initialValue={false}
+                            noStyle
+                          ></Form.Item>
+                        )}
+                      </span>
+                      {(fields.length > 1 || currentData?.is_build_in) && (
+                        <Button
+                          size="small"
+                          shape="circle"
+                          onClick={(e: any) => remove(name)}
+                        >
+                          <MinusOutlined />
+                        </Button>
+                      )}
+                    </div>
+                  }
+                >
+                  <Box>
+                    <Form.Item
+                      name={[name, 'version_no']}
+                      rules={[
+                        {
+                          required: true,
+                          message: getRuleMessage(`input`, 'backend.version')
+                        }
+                      ]}
+                    >
+                      <SealInput.Input
+                        trim
+                        label={intl.formatMessage({ id: 'backend.version' })}
+                        required
+                      ></SealInput.Input>
+                    </Form.Item>
+                    <Form.Item
+                      name={[name, 'image_name']}
+                      rules={[
+                        {
+                          required: true,
+                          message: getRuleMessage(`input`, 'backend.imageName')
+                        }
+                      ]}
+                    >
+                      <SealInput.Input
+                        trim
+                        label={intl.formatMessage({ id: 'backend.imageName' })}
+                        required
+                      ></SealInput.Input>
+                    </Form.Item>
+                  </Box>
+                  <Form.Item
+                    name={[name, 'custom_framework']}
+                    rules={[
+                      {
+                        required: true,
+                        message: getRuleMessage('select', 'backend.framework')
+                      }
+                    ]}
+                  >
+                    <SealSelect
+                      label={intl.formatMessage({ id: 'backend.framework' })}
+                      options={frameworks}
+                      required
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name={[name, 'run_command']}
+                    style={{ marginBottom: 0 }}
+                  >
+                    <SealInput.TextArea
+                      label={intl.formatMessage({ id: 'backend.runCommand' })}
+                    ></SealInput.TextArea>
+                  </Form.Item>
+                </CollapsibleContainer>
+              </div>
+            ));
+          }}
+        </Form.List>
       </div>
     </>
   );

@@ -3,7 +3,7 @@ import DropDownActions from '@/components/drop-down-actions';
 import IconFont from '@/components/icon-font';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
-import { DockerOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
@@ -87,6 +87,22 @@ const Content = styled.div`
   }
 `;
 
+const InfoItem = styled.div`
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: 8px;
+  color: var(--ant-color-text-tertiary);
+  .icon {
+    color: var(--ant-color-text-tertiary);
+  }
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+`;
+
 const BackendBox = styled.div`
   display: flex;
   align-items: center;
@@ -100,12 +116,14 @@ interface BackendCardProps {
 }
 
 const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
+  const intl = useIntl();
+
   const handleOnSelect = (item: any) => {
     onSelect?.({ action: item.key, data: data });
   };
 
   const handleClick = () => {
-    onSelect?.({ action: 'edit', data: data });
+    onSelect?.({ action: 'view_versions', data: data });
   };
 
   const renderIcon = () => {
@@ -133,28 +151,30 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     e.stopPropagation();
   };
 
-  const renderDrivers = () => {
-    if (data.is_build_in) {
-      const backendList = _.get(
-        data,
-        [
-          'build_in_version_configs',
-          data.default_version,
-          'build_in_frameworks'
-        ],
-        []
-      );
+  const renderFrameworks = () => {
+    const frameworks = _.keys(data.framework_index_map || {});
 
-      return (
-        <>
-          <span className="label">
-            <IconFont className="icon" type="icon-gpu1" />
-            <span>Supported Frameworks: </span>
+    return (
+      <InfoItem>
+        <span className="label">
+          <IconFont className="icon" type="icon-gpu1" />
+          <span>
+            {intl.formatMessage({ id: 'backend.availableFrameworks' })}:{' '}
           </span>
-          <AutoTooltip ghost maxWidth={'100%'}>
-            <BackendBox>
-              {_.take(backendList, 3).map((item: string) => {
-                return (
+        </span>
+
+        <BackendBox>
+          {_.take(frameworks, 3).map((item: string) => {
+            return (
+              <div key={item}>
+                <AutoTooltip
+                  ghost
+                  minWidth={20}
+                  showTitle
+                  title={
+                    _.join(data.framework_index_map?.[item], ', ') || false
+                  }
+                >
                   <ThemeTag
                     key={item}
                     style={{ marginRight: 0 }}
@@ -162,29 +182,12 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
                   >
                     {item}
                   </ThemeTag>
-                );
-              })}
-            </BackendBox>
-          </AutoTooltip>
-        </>
-      );
-    }
-    return (
-      <>
-        <span className="label">
-          <DockerOutlined className="icon" />
-          <span>Default Image: </span>
-        </span>
-        <span className="text">
-          <AutoTooltip ghost maxWidth={'100%'}>
-            {_.get(data, [
-              'version_configs',
-              data.default_version,
-              'image_name'
-            ])}
-          </AutoTooltip>
-        </span>
-      </>
+                </AutoTooltip>
+              </div>
+            );
+          })}
+        </BackendBox>
+      </InfoItem>
     );
   };
 
@@ -194,7 +197,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
       clickable={true}
       hoverable={true}
       disabled={false}
-      height={160}
+      height={140}
       ghost
       header={
         <Header>
@@ -226,18 +229,11 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
               bordered={false}
               style={{ borderRadius: 'var(--ant-border-radius)' }}
             >
-              Built-in
+              {intl.formatMessage({ id: 'backend.builtin' })}
             </Tag>
           )}
         </CardName>
-        <div className="info">
-          <span className="label">
-            <InfoCircleOutlined className="icon" />
-            <span>Default Version: </span>
-          </span>
-          <span className="text">{data.default_version}</span>
-          {renderDrivers()}
-        </div>
+        {renderFrameworks()}
       </Content>
     </Card>
   );

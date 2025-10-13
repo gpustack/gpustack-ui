@@ -1,14 +1,13 @@
 import { backendOptionsAtom } from '@/atoms/models';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
 import { queryBackendList } from '../apis';
 
 export default function useQueryBackends() {
   const [backendOptions, setBackendOptions] = useAtom(backendOptionsAtom);
 
-  const getBackendOptions = async () => {
+  const getBackendOptions = async (params?: { cluster_id: number }) => {
     try {
-      const res = await queryBackendList();
+      const res = await queryBackendList(params);
       const list = res?.items?.map((item) => {
         return {
           value: item.backend_name,
@@ -29,10 +28,6 @@ export default function useQueryBackends() {
       setBackendOptions([]);
     }
   };
-
-  useEffect(() => {
-    getBackendOptions();
-  }, []);
 
   return {
     backendOptions,

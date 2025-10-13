@@ -245,6 +245,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     return result;
   };
 
+  // TODO need check the backend is available
   const handleSetBackendOptions = () => {
     const backendGroup = _.groupBy(specListRef.current, 'backend');
 
@@ -495,6 +496,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         form.current?.getGPUOptionList?.({
           clusterId: initClusterId()
         });
+        form.current?.getBackendOptions?.({
+          cluster_id: initClusterId()
+        });
       }, 100);
     }
     return () => {
@@ -596,7 +600,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 isGGUF={isGGUF}
                 formKey={deployFormKeyMap.catalog}
                 sourceDisable={false}
-                backendOptions={backendList}
                 sourceList={sourceList}
                 clusterList={clusterList}
                 onBackendChange={handleBackendChange}

@@ -1,3 +1,26 @@
 export default {
-  'backends.title': '推理后端'
+  'backends.title': '推理后端',
+  'backend.button.add': '添加后端',
+  'backend.button.edit': '编辑后端',
+  'backend.versions': '版本列表',
+  'backend.defaultVersion': '默认版本',
+  'backend.version': '版本',
+  'backend.imageName': '镜像名称',
+  'backend.runCommand': '执行命令',
+  'backend.framework': '框架',
+  'backend.builtin': '内置',
+  'backend.custom': '自定义',
+  'backend.isDefault': '默认',
+  'backend.availableFrameworks': '可用框架',
+  'backend.addVersion': '添加版本',
+  'backend.filter.framework': '按框架过滤',
+  'backend.export.yaml': '导出 YAML',
+  'backend.mode.form': '表单模式',
+  'backend.mode.yaml': 'YAML 模式',
+  'backend.form.healthCheckPath': '健康检查路径',
+  'backend.form.defaultExecuteCommand': '默认执行命令',
+  'backend.form.defaultBackendParameters': '默认后端参数',
+  'backend.form.versionConfig': '版本配置',
+  'backend.form.addParameter': '添加参数',
+  'backend.form.noVersion': '尚未添加版本'
 };

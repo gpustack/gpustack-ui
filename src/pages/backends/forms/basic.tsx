@@ -38,11 +38,18 @@ const BasicForm: React.FC<AddModalProps> = ({ action }) => {
         name="health_check_path"
         rules={[{ required: false }]}
       >
-        <SealInput.Input trim label={'Health Check Path'}></SealInput.Input>
+        <SealInput.Input
+          trim
+          label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
+        ></SealInput.Input>
       </Form.Item>
 
       <Form.Item name="default_run_command">
-        <SealInput.TextArea label="Default Execution Command"></SealInput.TextArea>
+        <SealInput.TextArea
+          label={intl.formatMessage({
+            id: 'backend.form.defaultExecuteCommand'
+          })}
+        ></SealInput.TextArea>
       </Form.Item>
 
       <Form.Item<FormData>
@@ -54,8 +61,10 @@ const BasicForm: React.FC<AddModalProps> = ({ action }) => {
           onChange={(data: string[]) => {
             form.setFieldValue('default_backend_param', data);
           }}
-          btnText={'Add Backend Parameter'}
-          label={'Default Backend Parameters'}
+          btnText={intl.formatMessage({ id: 'backend.form.addParameter' })}
+          label={intl.formatMessage({
+            id: 'backend.form.defaultBackendParameters'
+          })}
         ></ListInput>
       </Form.Item>
 

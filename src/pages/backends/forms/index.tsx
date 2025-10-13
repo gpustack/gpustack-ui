@@ -1,4 +1,5 @@
 import { PageActionType } from '@/config/types';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -14,6 +15,7 @@ type AddModalProps = {
 };
 const BackendForm: React.FC<AddModalProps> = forwardRef(
   ({ action, currentData, onFinish }, ref) => {
+    const intl = useIntl();
     const [form] = Form.useForm();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
 
@@ -33,7 +35,6 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
 
     useEffect(() => {
       if (currentData) {
-        console.log('currentData:', currentData);
         form.setFieldsValue(currentData);
       }
     }, [currentData]);

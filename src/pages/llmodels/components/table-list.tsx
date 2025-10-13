@@ -42,7 +42,6 @@ import {
   modelCategoriesMap,
   modelSourceMap
 } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
 import {
   ButtonList,
   categoryToPathMap,
@@ -57,7 +56,6 @@ import {
 } from '../config/types';
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import useModelsColumns from '../hooks/use-models-columns';
-import useQueryBackends from '../hooks/use-query-backends';
 import APIAccessInfoModal from './api-access-info';
 import DeployModal from './deploy-modal';
 import Instances from './instances';
@@ -124,7 +122,6 @@ const Models: React.FC<ModelsProps> = ({
   loadend,
   total
 }) => {
-  const { backendOptions } = useQueryBackends();
   const { generateFormValues, clusterList, getClusterList } =
     useFormInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
@@ -401,7 +398,7 @@ const Models: React.FC<ModelsProps> = ({
     const initialValues = generateFormValues(row, []);
     setUpdateFormInitials({
       data: initialValues,
-      isGGUF: row.backend === backendOptionsMap.llamaBox
+      isGGUF: false
     });
     setCurrentData(row);
     setOpenAddModal(true);
@@ -693,7 +690,6 @@ const Models: React.FC<ModelsProps> = ({
         clusterList={clusterList}
         onCancel={handleModalCancel}
         onOk={handleModalOk}
-        backendOptions={backendOptions}
       ></UpdateModelModal>
       <DeployModal
         open={openDeployModal.show}
@@ -704,7 +700,6 @@ const Models: React.FC<ModelsProps> = ({
         isGGUF={openDeployModal.isGGUF}
         hasLinuxWorker={openDeployModal.hasLinuxWorker}
         clusterList={clusterList}
-        backendOptions={backendOptions}
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DeployModal>

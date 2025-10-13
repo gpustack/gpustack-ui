@@ -399,7 +399,7 @@ export async function evaluationsModelSpec(
   };
 }
 
-export async function queryBackendList() {
+export async function queryBackendList(params?: { cluster_id: number }) {
   return request<{
     items: {
       backend_name: string;
@@ -410,6 +410,7 @@ export async function queryBackendList() {
       versions: string[];
     }[];
   }>(BACKEND_LIST_API, {
-    method: 'GET'
+    method: 'GET',
+    params
   });
 }

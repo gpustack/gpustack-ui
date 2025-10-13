@@ -1,7 +1,9 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import useAppUtils from '@/hooks/use-app-utils';
 import SelectPanel from '@/pages/_components/select-panel';
 import { queryModelsList } from '@/pages/llmodels/apis';
+import { useIntl } from '@umijs/max';
 import { Divider, Form, Radio } from 'antd';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -18,6 +20,8 @@ const AllowModelsForm: React.FC<{
   currentData?: Partial<ListItem> | null;
   action: PageActionType;
 }> = ({ currentData, action }) => {
+  const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const allowedModelNames = Form.useWatch(
     'allowed_model_names',
@@ -57,7 +61,7 @@ const AllowModelsForm: React.FC<{
   return (
     <div>
       <Divider></Divider>
-      <Label>Model Access</Label>
+      <Label>{intl.formatMessage({ id: 'apikeys.table.bindModels' })}</Label>
       <Form.Item
         name="allowed_type"
         initialValue="all"
@@ -65,17 +69,38 @@ const AllowModelsForm: React.FC<{
       >
         <Radio.Group
           options={[
-            { label: 'All models', value: 'all' },
-            { label: 'Selected models', value: 'custom' }
+            {
+              label: intl.formatMessage({ id: 'apikeys.models.all' }),
+              value: 'all'
+            },
+            {
+              label: intl.formatMessage({ id: 'apikeys.models.selected' }),
+              value: 'custom'
+            }
           ]}
         ></Radio.Group>
       </Form.Item>
-      <Form.Item name="allowed_model_names" hidden={allowedType === 'all'}>
+      <Form.Item
+        name="allowed_model_names"
+        hidden={allowedType === 'all'}
+        rules={[
+          {
+            required: allowedType === 'custom',
+            message: getRuleMessage(
+              'select',
+              intl.formatMessage({ id: 'models.table.models' })
+            )
+          }
+        ]}
+      >
         <SelectPanel
           height={300}
-          searchPlaceholder="Search by model name"
+          searchPlaceholder={intl.formatMessage({ id: 'common.filter.name' })}
           options={modelList}
           selectedKeys={allowedModelNames || []}
+          notFoundContent={intl.formatMessage({
+            id: 'apikeys.models.noModelsFound'
+          })}
           onSelectChange={(selectedKeys) => {
             form.setFieldsValue({ allowed_model_names: selectedKeys });
           }}

@@ -166,12 +166,34 @@ export default {
   'models.form.gpuCount': 'GPU на реплику',
   'models.form.gpuType': 'Тип GPU',
   'models.form.optimizeLongPrompt': 'Оптимизировать длинные промпты',
-  'models.form.enableSpeculativeDecoding': 'Включить спекулятивное декодирование',
+  'models.form.enableSpeculativeDecoding':
+    'Включить спекулятивное декодирование',
   'models.form.check.clusterUnavailable': 'Текущий кластер недоступен',
   'models.form.check.otherClustersAvailable':
-    'Доступные кластеры: {clusters}. Пожалуйста, переключитесь на другой кластер.'
+    'Доступные кластеры: {clusters}. Пожалуйста, переключитесь на другой кластер.',
+  'models.button.accessSettings': 'Access Settings',
+  'models.table.accessScope': 'Access Scope',
+  'models.table.accessScope.all': 'All users',
+  'models.table.accessScope.selected': 'Selected users',
+  'models.table.userSelection': 'User Selection',
+  'models.table.filterByName': 'Filter by username',
+  'models.table.admin': 'Admin',
+  'models.table.noselected': 'No users selected',
+  'models.table.users.all': 'All users',
+  'models.table.users.selected': 'Selected users',
+  'models.table.nouserFound': 'No users found'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1.   'models.button.accessSettings': 'Access Settings',
+// 2. 'models.table.accessScope': 'Access Scope',
+// 3. 'models.table.accessScope.all': 'All users',
+// 4. 'models.table.accessScope.selected': 'Selected users',
+// 5. 'models.table.userSelection': 'User Selection',
+// 6. 'models.table.filterByName': 'Filter by username',
+// 7. 'models.table.admin': 'Admin',
+// 8. 'models.table.noselected': 'No users selected',
+// 9. 'models.table.users.all': 'All users',
+// 10. 'models.table.users.selected': 'Selected users',
+// 11. 'models.table.nouserFound': 'No users found'
 // ========== End of To-Do List ==========

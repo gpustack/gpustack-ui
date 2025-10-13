@@ -68,7 +68,11 @@ const useModelsColumns = ({
           showTitle: false
         },
         render: (text: string[], record: ListItem) => (
-          <AutoTooltip ghost>{text?.join(', ')}</AutoTooltip>
+          <AutoTooltip ghost>
+            {text?.length
+              ? text?.join(', ')
+              : intl.formatMessage({ id: 'common.select.option' })}
+          </AutoTooltip>
         )
       },
       {

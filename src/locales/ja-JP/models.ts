@@ -167,7 +167,18 @@ export default {
   'models.form.enableSpeculativeDecoding': '推測デコーディングを有効にする',
   'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
   'models.form.check.otherClustersAvailable':
-    'Available clusters: {clusters}. Please switch cluster.'
+    'Available clusters: {clusters}. Please switch cluster.',
+  'models.button.accessSettings': 'Access Settings',
+  'models.table.accessScope': 'Access Scope',
+  'models.table.accessScope.all': 'All users',
+  'models.table.accessScope.selected': 'Selected users',
+  'models.table.userSelection': 'User Selection',
+  'models.table.filterByName': 'Filter by username',
+  'models.table.admin': 'Admin',
+  'models.table.noselected': 'No users selected',
+  'models.table.users.all': 'All Users',
+  'models.table.users.selected': 'Selected Users',
+  'models.table.nouserFound': 'No users found'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -175,5 +186,19 @@ export default {
 // 2. 'models.ollama.deprecated.notice': `The Ollama model source has been deprecated as of v0.6.1. For more information, see the <a href="https://github.com/gpustack/gpustack/issues/1979" target="_blank">related GitHub issue</a>.`
 // 3.  'models.backend.mindie.310p':'Ascend 310P only supports FP16, so you need to set --dtype=float16.',
 // 4.  'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
-// 5. 'models.form.check.otherClustersAvailable': 'Available clusters: {clusters}. Please switch cluster.'
+// 5. 'models.form.check.otherClustersAvailable': 'Available clusters: {clusters}. Please switch cluster.',
+// 6. 'models.button.accessSettings': 'Access Settings',
+// 7. 'models.table.accessScope': 'Access Scope',
+// 8. 'models.table.accessScope.all': 'All users',
+// 9. 'models.table.accessScope.selected': 'Selected users',
+// 10. 'models.table.userSelection': 'User Selection',
+// 11. 'models.table.filterByName': 'Filter by username',
+// 12. 'models.table.admin': 'Admin',
+// 13. 'models.table.noselected': 'No users selected'
+// 14. 'models.table.uses.all': 'All users',
+// 15. 'models.table.uses.selected': 'Selected users',
+// 16. 'models.table.nouserFound': 'No users found',
+// 17. 'models.table.users.all': 'All Users',
+// 18. 'models.table.users.selected': 'Selected Users',
+// 19. 'models.table.nouserFound': 'No users found'
 // ========== End of To-Do List ==========

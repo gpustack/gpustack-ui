@@ -11,5 +11,8 @@ export default {
   'apikeys.form.expiration.1month': '1个月',
   'apikeys.form.expiration.6months': '6个月',
   'apikeys.form.expiration.never': '永不过期',
-  'apikeys.table.bindModels': '绑定模型'
+  'apikeys.table.bindModels': '模型访问',
+  'apikeys.models.all': '所有模型',
+  'apikeys.models.selected': '指定模型',
+  'apikeys.models.noModelsFound': '未找到模型'
 };

@@ -160,5 +160,16 @@ export default {
   'models.form.enableSpeculativeDecoding': '启用推测解码',
   'models.form.check.clusterUnavailable': '当前集群不可用',
   'models.form.check.otherClustersAvailable':
-    '可用的集群有: {clusters}。请切换集群。'
+    '可用的集群有: {clusters}。请切换集群。',
+  'models.button.accessSettings': '访问设置',
+  'models.table.accessScope': '访问范围',
+  'models.table.accessScope.all': '所有用户',
+  'models.table.accessScope.selected': '指定用户',
+  'models.table.userSelection': '用户选择',
+  'models.table.filterByName': '按用户名筛选',
+  'models.table.admin': '管理员',
+  'models.table.noselected': '未选择用户',
+  'models.table.users.all': '所有用户',
+  'models.table.users.selected': '已选用户',
+  'models.table.nouserFound': '未找到用户'
 };

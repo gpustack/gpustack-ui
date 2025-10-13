@@ -22,6 +22,7 @@ import CatalogFrom from './catalog';
 import LocalPathSource from './local-path-source';
 import OnlineSource from './online-source';
 // import AdvanceConfig from './advance-config';
+import useQueryBackends from '../hooks/use-query-backends';
 import AdvanceConfig from './advance-config';
 import Performance from './performance';
 
@@ -33,7 +34,6 @@ interface DataFormProps {
   isGGUF: boolean;
   formKey: DeployFormKey;
   sourceDisable?: boolean;
-  backendOptions: BackendOption[];
   sourceList?: Global.BaseOption<string>[];
   clusterList: Global.BaseOption<number>[];
   fields?: string[];
@@ -50,7 +50,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     formKey,
     initialValues,
     sourceDisable = true,
-    backendOptions = [],
     sourceList,
     clusterList = [],
     fields = ['source'],
@@ -58,6 +57,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onValuesChange,
     onOk
   } = props;
+  const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
   const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
@@ -111,6 +111,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleClusterChange = (value: number) => {
     getGPUOptionList({ clusterId: value });
+    getBackendOptions({ cluster_id: value });
   };
 
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
@@ -147,6 +148,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       },
       getGPUOptionList: async (params: { clusterId: number }) => {
         return await getGPUOptionList(params);
+      },
+      getBackendOptions: async (params?: { cluster_id: number }) => {
+        getBackendOptions(params);
       }
     };
   });

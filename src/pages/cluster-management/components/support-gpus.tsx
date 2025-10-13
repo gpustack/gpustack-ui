@@ -35,7 +35,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
 
   const supportedHardPlatforms = [
     {
-      label: 'Nvidia',
+      label: 'NVIDIA',
       value: 'cuda',
       description: '',
       key: 'cuda',

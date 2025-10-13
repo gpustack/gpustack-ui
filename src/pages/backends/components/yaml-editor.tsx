@@ -74,29 +74,6 @@ const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
     const uri = monaco.Uri.parse(path);
-
-    // monaco.editor.onDidChangeMarkers((uris: string[]) => {
-    //   if (!uris.some((u) => u.toString() === uri.toString())) return;
-
-    //   const model = monaco.editor.getModel(uri);
-    //   if (!model) return;
-    //   console.log('Markers changed:', uris);
-    //   const markers = monaco.editor.getModelMarkers({ resource: uri });
-    //   const adjusted = markers.map((m: any) => {
-    //     if (m._adjusted) return m;
-    //     return {
-    //       ...m,
-    //       _adjusted: true,
-    //       severity: monaco.MarkerSeverity.ErrorText
-    //     };
-    //   });
-
-    //   monaco.editor.setModelMarkers(
-    //     monaco.editor.getModel(uri),
-    //     'yaml',
-    //     adjusted
-    //   );
-    // });
   };
 
   const formatCode = () => {

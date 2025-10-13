@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { BackendOption, FormData, SourceType } from '../config/types';
+import { FormData, SourceType } from '../config/types';
 import DataForm from '../forms';
 import {
   MessageStatus,
@@ -63,7 +63,6 @@ type AddModalProps = {
   width?: string | number;
   initialValues?: any;
   deploymentType?: 'modelList' | 'modelFiles';
-  backendOptions: BackendOption[];
   clusterList: Global.BaseOption<
     number,
     { provider: string; state: string | number }
@@ -326,15 +325,17 @@ const AddModal: FC<AddModalProps> = (props) => {
       return;
     }
     if (data.local_path || props.source !== modelSourceMap.local_path_value) {
+      // TODO confirm wheather it is gguf by model file not by backend
       handleOnValuesChange?.({
         changedValues: {},
-        allValues:
-          backend === backendOptionsMap.llamaBox
-            ? data
-            : _.omit(data, [
-                'cpu_offloading',
-                'distributed_inference_across_workers'
-              ]),
+        // allValues:
+        //   backend === backendOptionsMap.llamaBox
+        //     ? data
+        //     : _.omit(data, [
+        //         'cpu_offloading',
+        //         'distributed_inference_across_workers'
+        //       ]),
+        allValues: data,
         source: props.source
       });
     }
@@ -412,6 +413,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       handleOnOpen();
       form.current?.getGPUOptionList?.({
         clusterId: initClusterId()
+      });
+      form.current?.getBackendOptions?.({
+        cluster_id: initClusterId()
       });
     } else {
       cancelEvaluate();
@@ -542,7 +546,6 @@ const AddModal: FC<AddModalProps> = (props) => {
                 onOk={handleOnOk}
                 ref={form}
                 isGGUF={isGGUF}
-                backendOptions={props.backendOptions}
                 onBackendChange={handleBackendChange}
                 onValuesChange={onValuesChange}
               ></DataForm>

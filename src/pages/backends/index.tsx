@@ -17,7 +17,7 @@ import {
 } from './apis';
 import AddModal from './components/add-modal';
 import BackendCardList from './components/backend-list';
-import ViewBuiltinVersionsModal from './components/view-builtin-versions-modal';
+import VersionInfoModal from './components/version-info-modal';
 import { json2Yaml, yaml2Json } from './config';
 import { FormData, ListItem } from './config/types';
 import useExportYAML from './hooks/use-export-yaml';
@@ -54,11 +54,10 @@ const BackendList = () => {
     action: PageActionType;
     currentData?: Partial<ListItem>;
   }>({ open: false, action: 'create' });
-  const [openViewBuiltinVersionsModal, setOpenViewBuiltinVersionsModal] =
-    useState<{
-      open: boolean;
-      currentData?: Partial<ListItem>;
-    }>({ open: false });
+  const [openVersionInfoModal, setOpenVersionInfoModal] = useState<{
+    open: boolean;
+    currentData?: Partial<ListItem>;
+  }>({ open: false });
 
   // build_in_version_configs is read-only, but needs to be included when updating
   const handleOnSubmit = async (values: FormData) => {
@@ -133,10 +132,9 @@ const BackendList = () => {
       });
     } else if (item.action === 'export') {
       // Export YAML action
-      console.log('Export YAML for:', item.data);
       exportYAML(item.data);
     } else if (item.action === 'view_versions') {
-      setOpenViewBuiltinVersionsModal({
+      setOpenVersionInfoModal({
         open: true,
         currentData: item.data
       });
@@ -156,13 +154,14 @@ const BackendList = () => {
       extra={[]}
     >
       <FilterBar
+        showDeleteButton={false}
         marginBottom={22}
         marginTop={30}
         width={{
           input: 300
         }}
         inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
-        buttonText={'Add Backend'}
+        buttonText={intl.formatMessage({ id: 'backend.button.add' })}
         handleDeleteByBatch={handleDeleteBatch}
         handleClickPrimary={handleAddBackend}
         handleSearch={handleSearch}
@@ -187,20 +186,20 @@ const BackendList = () => {
         open={openModalStatus.open}
         title={
           openModalStatus.action === 'create'
-            ? 'Create Backend'
-            : 'Edit Backend'
+            ? intl.formatMessage({ id: 'backend.button.add' })
+            : intl.formatMessage({ id: 'backend.button.edit' })
         }
       ></AddModal>
-      <ViewBuiltinVersionsModal
-        open={openViewBuiltinVersionsModal.open}
-        currentData={openViewBuiltinVersionsModal.currentData as ListItem}
+      <VersionInfoModal
+        open={openVersionInfoModal.open}
+        currentData={openVersionInfoModal.currentData as ListItem}
         onClose={() =>
-          setOpenViewBuiltinVersionsModal({
+          setOpenVersionInfoModal({
             open: false,
             currentData: undefined
           })
         }
-      ></ViewBuiltinVersionsModal>
+      ></VersionInfoModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </PageContainer>
   );

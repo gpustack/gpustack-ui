@@ -67,7 +67,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const onFinish = (values: FormData) => {
-    console.log('Form values:', values);
     const versionConfigs = values.version_configs?.reduce(
       (acc: Record<string, any>, curr) => {
         if (curr.version_no) {
@@ -176,12 +175,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           onChange={(value) => setActiveKey(value as string)}
           options={[
             {
-              label: 'Form',
+              label: intl.formatMessage({ id: 'backend.mode.form' }),
               value: 'form',
               icon: <IconFont type="icon-edit-content" />
             },
             {
-              label: 'YAML',
+              label: intl.formatMessage({ id: 'backend.mode.yaml' }),
               value: 'yaml',
               icon: <IconFont type="icon-code_block" />
             }
@@ -207,7 +206,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           items={[
             {
               key: 'form',
-              label: 'Form',
+              label: intl.formatMessage({ id: 'backend.mode.form' }),
               children: (
                 <BackendForm
                   onFinish={onFinish}
@@ -219,7 +218,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
             },
             {
               key: 'yaml',
-              label: 'YAML',
+              label: intl.formatMessage({ id: 'backend.mode.yaml' }),
               children: (
                 <ImportYAML
                   actionStatus={{

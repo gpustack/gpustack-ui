@@ -17,7 +17,6 @@ import { SourceType } from '@/pages/llmodels/config/types';
 import DownloadModal from '@/pages/llmodels/download';
 import useCheckBackend from '@/pages/llmodels/hooks/use-check-backend';
 import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
-import useQueryBackends from '@/pages/llmodels/hooks/use-query-backends';
 import useRecognizeAudio from '@/pages/llmodels/hooks/use-recognize-audio';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -67,7 +66,6 @@ const ModelFiles = () => {
     watch: true,
     contentForDelete: 'resources.modelfiles.modelfile'
   });
-  const { backendOptions } = useQueryBackends();
   const intl = useIntl();
   const { showSuccess } = useAppUtils();
   const [downloadModalStatus, setDownlaodMoalStatus] = useState<{
@@ -347,7 +345,6 @@ const ModelFiles = () => {
           workerOptions={readyWorkers}
         ></DownloadModal>
         <DeployModal
-          backendOptions={backendOptions}
           deploymentType="modelFiles"
           title={intl.formatMessage({ id: 'models.button.deploy' })}
           onCancel={handleDeployModalCancel}

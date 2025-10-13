@@ -3,9 +3,13 @@ export interface VersionConfigs {
   run_command: string;
   is_default: boolean;
   build_in_frameworks?: string[];
-  custom_framework: string;
+  custom_framework?: string;
   version_no?: string;
   is_built_in?: boolean;
+}
+
+export interface VersionListItem extends VersionConfigs {
+  availableFrameworks: string[];
 }
 
 export interface FormData {
@@ -26,4 +30,5 @@ export interface ListItem extends FormData {
   created_at?: string;
   updated_at?: string;
   build_in_version_configs?: Record<string, VersionConfigs>;
+  framework_index_map?: Record<string, string[]>;
 }

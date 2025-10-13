@@ -1,3 +1,26 @@
 export default {
-  'backends.title': 'Inference Backends'
+  'backends.title': 'Inference Backends',
+  'backend.button.add': 'Add Backend',
+  'backend.button.edit': 'Edit Backend',
+  'backend.versions': 'Version List',
+  'backend.defaultVersion': 'Default Version',
+  'backend.version': 'Version',
+  'backend.imageName': 'Image Name',
+  'backend.runCommand': 'Execution Command',
+  'backend.framework': 'Framework',
+  'backend.builtin': 'Built-in',
+  'backend.custom': 'Custom',
+  'backend.isDefault': 'Default',
+  'backend.availableFrameworks': 'Available Frameworks',
+  'backend.addVersion': 'Add Version',
+  'backend.filter.framework': 'Filter by Framework',
+  'backend.export.yaml': 'Export YAML',
+  'backend.mode.form': 'Form Mode',
+  'backend.mode.yaml': 'YAML Mode',
+  'backend.form.healthCheckPath': 'Health Check Path',
+  'backend.form.defaultExecuteCommand': 'Default Execution Command',
+  'backend.form.defaultBackendParameters': 'Default Backend Parameters',
+  'backend.form.versionConfig': 'Versions Config',
+  'backend.form.addParameter': 'Add Parameter',
+  'backend.form.noVersion': 'No versions added'
 };

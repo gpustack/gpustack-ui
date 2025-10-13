@@ -18,8 +18,8 @@ const SEAL_SCHEMA = jsYaml.DEFAULT_SCHEMA.extend([SealYamlType]);
 
 export const builtInBackends = {
   SGLang: 'SGLang',
-  vLLM: 'vllm',
-  MindIE: 'mindie',
+  vLLM: 'vLLM',
+  MindIE: 'MindIE',
   VoxBox: 'voxbox'
 };
 
@@ -32,25 +32,25 @@ export const builtInBackendLogos: Record<string, string> = {
 
 export const backendActions = [
   {
-    label: 'Edit',
+    label: 'common.button.edit',
     value: 'edit',
     key: 'edit',
-    icon: icons.EditOutlined,
-    locale: false
+    locale: true,
+    icon: icons.EditOutlined
   },
   {
-    label: 'Export YAML',
+    label: 'backend.export.yaml',
     value: 'yaml',
     key: 'export',
-    icon: icons.Yaml,
-    locale: false
+    locale: true,
+    icon: icons.Yaml
   },
   {
-    label: 'Delete',
+    label: 'common.button.delete',
     value: 'delete',
     key: 'delete',
     icon: icons.DeleteOutlined,
-    locale: false,
+    locale: true,
     danger: true
   }
 ];
@@ -136,6 +136,10 @@ export const frameworks = [
   {
     label: 'CoreX',
     value: 'corex'
+  },
+  {
+    label: 'CPU',
+    value: 'cpu'
   }
 ];
 

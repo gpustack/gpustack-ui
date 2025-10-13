@@ -1,20 +1,51 @@
 import { MoreOutlined } from '@ant-design/icons';
-import { Pagination, Transfer, TransferProps } from 'antd';
-import { useState } from 'react';
+import { Transfer, TransferProps } from 'antd';
 import styled from 'styled-components';
 
 type TransferKey = string | number | bigint;
 
-const PaginationWrapper = styled.div`
-  padding: 4px 16px;
-`;
-
 const TransferWrap = styled.div`
   .ant-transfer-list {
     width: 100%;
-    height: 360px;
+    height: 300px;
+    .ant-transfer-list-header-dropdown {
+      display: none;
+    }
+    .ant-input-outlined {
+      height: 32px;
+      padding-block: 4px;
+      border-radius: 4px;
+    }
+  }
+  .ant-transfer-operation {
+    margin: 0 16px;
+    gap: 12px;
+    .ant-btn-icon-only {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
   }
   .ant-transfer-list-content {
+    &::-webkit-scrollbar {
+      width: var(--scrollbar-size);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 4px;
+      }
+    }
     .ant-transfer-list-content-item {
       &:hover {
         background-color: var(--ant-control-item-bg-hover);
@@ -39,38 +70,28 @@ interface TransferInnerProps extends TransferProps {
   dataSource?: Array<{ key: TransferKey; title: string }>;
   targetKeys?: TransferKey[];
 }
+
 const TransferInner: React.FC<TransferInnerProps> = (props) => {
-  const [page, setPage] = useState(1);
-  const { onPageChange, total, perPage = 30 } = props;
-
-  const handleOnPageChange = (page: number, perPage?: number) => {
-    setPage(page);
-    onPageChange?.(page, perPage);
-  };
-
-  const renderFooter = (TransferProps: any, { direction }: any) => {
-    if (direction === 'left' && total && total > perPage!) {
+  const renderAllLabels = (info: {
+    selectedCount: number;
+    totalCount: number;
+  }) => {
+    if (info.selectedCount) {
       return (
-        <PaginationWrapper>
-          <Pagination
-            simple={{ readOnly: true }}
-            size="small"
-            total={total}
-            onChange={handleOnPageChange}
-            pageSize={perPage}
-            current={page}
-            showSizeChanger={false}
-          />
-        </PaginationWrapper>
+        <span style={{ color: 'var(--ant-color-text-secondary)' }}>
+          {info.selectedCount} selected
+        </span>
       );
     }
     return null;
   };
-
   return (
     <TransferWrap>
       <Transfer
         {...props}
+        selectAllLabels={
+          props.selectAllLabels || [renderAllLabels, renderAllLabels]
+        }
         selectionsIcon={
           <MoreOutlined style={{ fontSize: 14, marginBottom: 3 }} />
         }

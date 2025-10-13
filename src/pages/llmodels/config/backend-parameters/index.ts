@@ -7,7 +7,7 @@ export const backendOptionsMap = {
   vllm: 'vLLM',
   voxBox: 'vox-box',
   ascendMindie: 'MindIE',
-  custom: 'custom'
+  custom: 'Custom'
 };
 
 export interface BackendParameter {

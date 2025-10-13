@@ -264,7 +264,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           items={[
             {
               key: 'performance',
-              label: 'Performance',
+              label: intl.formatMessage({ id: 'models.form.performance' }),
               forceRender: true,
               children: <Performance></Performance>
             },

@@ -1,4 +1,6 @@
 import breakpoints from '@/config/breakpoints';
+import InfiniteScroller from '@/pages/_components/infinite-scroller';
+import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { Col, FloatButton, Row, Spin } from 'antd';
 import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
@@ -74,6 +76,12 @@ const CardList: React.FC<CatalogListProps> = (props) => {
     renderItem
   } = props;
   const [span, setSpan] = React.useState(defaultSpan);
+  const {
+    total,
+    current,
+    loading: contextLoading,
+    refresh
+  } = useScrollerContext();
 
   const getSpanByWidth = (width: number) => {
     if (width < breakpoints.md) return 24;
@@ -91,7 +99,12 @@ const CardList: React.FC<CatalogListProps> = (props) => {
   return (
     <div className="relative" style={{ width: '100%' }}>
       <ResizeObserver onResize={handleResize} disabled={!resizable}>
-        <div style={{ width: '100%' }}>
+        <InfiniteScroller
+          total={total}
+          current={current}
+          loading={contextLoading}
+          refresh={refresh}
+        >
           <Row gutter={[16, 16]}>
             {dataList.map((item: any, index) => {
               return (
@@ -107,7 +120,7 @@ const CardList: React.FC<CatalogListProps> = (props) => {
             isFirst={isFirst}
             Skeleton={Skeleton}
           />
-        </div>
+        </InfiniteScroller>
       </ResizeObserver>
       <FloatButton.BackTop visibilityHeight={1000} />
     </div>

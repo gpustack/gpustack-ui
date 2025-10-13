@@ -162,7 +162,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
             <PlusOutlined /> {intl.formatMessage({ id: 'backend.addVersion' })}
           </Button>
         </span>
-        {!currentData?.is_build_in && (
+        {!currentData?.is_built_in && (
           <Select
             prefix={
               <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
@@ -243,7 +243,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                         className="flex-center"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {!currentData?.is_build_in && (
+                        {!currentData?.is_built_in && (
                           <Form.Item
                             name={[name, 'is_default']}
                             valuePropName="checked"
@@ -252,7 +252,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                           ></Form.Item>
                         )}
                       </span>
-                      {(fields.length > 1 || currentData?.is_build_in) && (
+                      {(fields.length > 1 || currentData?.is_built_in) && (
                         <Button
                           size="small"
                           shape="circle"

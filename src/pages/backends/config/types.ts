@@ -26,7 +26,7 @@ export interface FormData {
 
 export interface ListItem extends FormData {
   id: number;
-  is_build_in?: boolean;
+  is_built_in?: boolean;
   created_at?: string;
   updated_at?: string;
   build_in_version_configs?: Record<string, VersionConfigs>;

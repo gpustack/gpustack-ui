@@ -29,6 +29,7 @@ interface AutoTooltipProps extends Omit<TagProps, 'title'> {
 }
 
 const StyledTag = styled(Tag)`
+  margin: 0;
   &.tag-filled {
     border: none;
     background-color: var(--ant-color-fill-secondary);

@@ -16,7 +16,7 @@ interface ColumnsHookProps {
 
 const actionList: Global.ActionItem[] = [
   {
-    label: 'Edit Allowed Models',
+    label: 'common.button.edit',
     key: 'edit',
     icon: icons.EditOutlined
   },

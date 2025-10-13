@@ -1,13 +1,18 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { expirationOptions } from '../../config';
-import { FormData } from '../../config/types';
+import { FormData, ListItem } from '../../config/types';
 import AllowModelsForm from './allow-models';
 
-const APIKeyForm: React.FC = () => {
+const APIKeyForm: React.FC<{
+  action: PageActionType;
+  currentData?: Partial<ListItem> | null;
+}> = ({ action, currentData }) => {
   const intl = useIntl();
 
   return (
@@ -27,6 +32,8 @@ const APIKeyForm: React.FC = () => {
         ]}
       >
         <SealInput.Input
+          trim
+          disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required
         ></SealInput.Input>
@@ -48,18 +55,22 @@ const APIKeyForm: React.FC = () => {
         ]}
       >
         <SealSelect
+          disabled={action === PageAction.EDIT}
           options={expirationOptions}
           label={intl.formatMessage({ id: 'apikeys.form.expiretime' })}
           required
         ></SealSelect>
       </Form.Item>
-      <AllowModelsForm></AllowModelsForm>
       <Form.Item<FormData> name="description" rules={[{ required: false }]}>
         <SealInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({ id: 'common.table.description' })}
         ></SealInput.TextArea>
       </Form.Item>
+      <AllowModelsForm
+        currentData={currentData}
+        action={action}
+      ></AllowModelsForm>
     </>
   );
 };

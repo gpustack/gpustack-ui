@@ -18,11 +18,10 @@ const AccessControlModal: React.FC<
   };
 
   const handleOnFinish = async (values: AccessControlFormData) => {
-    console.log('onFinish', values);
     try {
       const data = {
-        set_public: !values.set_public,
-        users: values.users || []
+        set_public: values.set_public,
+        users: values.set_public ? [] : values.users || []
       };
       await updateModelAccessUser({
         id: currentData?.id as number,

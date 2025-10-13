@@ -1,4 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Empty, Input } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
@@ -34,6 +35,7 @@ interface SelectPanelProps {
   leftWidth?: number;
   options: Array<{ key: string; title: string }>;
   selectedKeys: string[];
+  notFoundContent?: React.ReactNode;
   onSelectChange: (selectedKeys: string[]) => void;
 }
 
@@ -43,8 +45,10 @@ const SelectPanel: React.FC<SelectPanelProps> = ({
   options,
   selectedKeys,
   searchPlaceholder,
+  notFoundContent,
   onSelectChange
 }) => {
+  const intl = useIntl();
   const [indeterminate, setIndeterminate] = React.useState(false);
   const [checkAll, setCheckAll] = React.useState(false);
   const [searchText, setSearchText] = useState('');
@@ -162,7 +166,12 @@ const SelectPanel: React.FC<SelectPanelProps> = ({
               indeterminate={indeterminate}
               onChange={handleCheckAllChange}
             ></Checkbox>
-            <span> {selectedKeys.length} selected</span>
+            <span>
+              {intl.formatMessage(
+                { id: 'common.select.count' },
+                { count: selectedKeys.length }
+              )}
+            </span>
           </span>
           <Input
             prefix={
@@ -172,6 +181,7 @@ const SelectPanel: React.FC<SelectPanelProps> = ({
             }
             size="small"
             allowClear
+            status={'null' as any}
             placeholder={searchPlaceholder}
             style={{
               width: 300,
@@ -192,7 +202,7 @@ const SelectPanel: React.FC<SelectPanelProps> = ({
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description="No models found"
+            description={notFoundContent}
           ></Empty>
         )}
       </Left>

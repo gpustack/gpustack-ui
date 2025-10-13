@@ -170,5 +170,16 @@ export default {
   'models.form.enableSpeculativeDecoding': 'Enable Speculative Decoding',
   'models.form.check.clusterUnavailable': 'Current cluster is unavailable',
   'models.form.check.otherClustersAvailable':
-    'Available clusters: {clusters}. Please switch cluster.'
+    'Available clusters: {clusters}. Please switch cluster.',
+  'models.button.accessSettings': 'Access Settings',
+  'models.table.accessScope': 'Access Scope',
+  'models.table.accessScope.all': 'All users',
+  'models.table.accessScope.selected': 'Selected users',
+  'models.table.userSelection': 'User Selection',
+  'models.table.filterByName': 'Filter by username',
+  'models.table.admin': 'Admin',
+  'models.table.noselected': 'No users selected',
+  'models.table.users.all': 'All Users',
+  'models.table.users.selected': 'Selected Users',
+  'models.table.nouserFound': 'No users found'
 };

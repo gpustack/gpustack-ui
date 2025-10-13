@@ -467,7 +467,7 @@ const Models: React.FC<ModelsProps> = ({
 
       if (val === 'accessControl') {
         setOpenAccessControlModal({
-          title: 'Access Settings',
+          title: intl.formatMessage({ id: 'models.button.accessSettings' }),
           action: PageAction.EDIT,
           currentData: row,
           open: true

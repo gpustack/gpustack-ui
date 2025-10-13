@@ -1,4 +1,5 @@
 import { MoreOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Transfer, TransferProps } from 'antd';
 import styled from 'styled-components';
 
@@ -72,6 +73,8 @@ interface TransferInnerProps extends TransferProps {
 }
 
 const TransferInner: React.FC<TransferInnerProps> = (props) => {
+  const intl = useIntl();
+
   const renderAllLabels = (info: {
     selectedCount: number;
     totalCount: number;
@@ -79,7 +82,10 @@ const TransferInner: React.FC<TransferInnerProps> = (props) => {
     if (info.selectedCount) {
       return (
         <span style={{ color: 'var(--ant-color-text-secondary)' }}>
-          {info.selectedCount} selected
+          {intl.formatMessage(
+            { id: 'common.select.count' },
+            { count: info.selectedCount }
+          )}
         </span>
       );
     }

@@ -12,5 +12,15 @@ export default {
   'apikeys.form.expiration.1month': '1ヶ月',
   'apikeys.form.expiration.6months': '6ヶ月',
   'apikeys.form.expiration.never': '無期限',
-  'apikeys.table.bindModels': '許可されたモデル'
+  'apikeys.table.bindModels': 'Model Access',
+  'apikeys.models.all': 'All models',
+  'apikeys.models.selected': 'Selected models',
+  'apikeys.models.noModelsFound': 'No models found'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'apikeys.table.bindModels': 'Model Access',
+// 2. 'apikeys.models.all': 'All models',
+// 3. 'apikeys.models.selected': 'Selected models',
+// 4. 'apikeys.models.noModelsFound': 'No models found'
+// ========== End of To-Do List ==========

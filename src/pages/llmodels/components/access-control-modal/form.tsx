@@ -1,5 +1,6 @@
 import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
+import { useIntl } from '@umijs/max';
 import { Empty, Form, Radio } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
@@ -22,6 +23,7 @@ interface AccessControlFormProps {
 
 const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const { currentData, onFinish } = props;
+  const intl = useIntl();
   const [form] = Form.useForm();
   const setPublic = Form.useWatch('set_public', form);
   const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
@@ -42,7 +44,6 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         key: item.id,
         is_admin: item.is_admin
       }));
-      console.log('options', options);
       setTotalPages(res.pagination.totalPage);
       setUserList(options);
     } catch (error) {
@@ -56,7 +57,6 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     removeKeys: TransferKey[]
   ) => {
     setTargetKeys(nextTargetKeys);
-    console.log('nextTargetKeys', nextTargetKeys);
     const users = nextTargetKeys.map((key) => ({ id: key }));
     form.setFieldsValue({ users });
   };
@@ -108,41 +108,62 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         set_public: true
       }}
     >
-      <Label>Access Scope</Label>
+      <Label>{intl.formatMessage({ id: 'models.table.accessScope' })}</Label>
       <Form.Item<AccessControlFormData> name="set_public" noStyle>
         <Radio.Group
           style={{ marginBottom: 12 }}
           options={[
-            { label: 'All users', value: true },
-            { label: 'Selected users', value: false }
+            {
+              label: intl.formatMessage({ id: 'models.table.accessScope.all' }),
+              value: true
+            },
+            {
+              label: intl.formatMessage({
+                id: 'models.table.accessScope.selected'
+              }),
+              value: false
+            }
           ]}
         ></Radio.Group>
       </Form.Item>
       {!setPublic && (
         <>
-          <Label>User Selection</Label>
+          <Label>
+            {intl.formatMessage({ id: 'models.table.userSelection' })}
+          </Label>
           <Form.Item<AccessControlFormData> name="users">
             <TransferInner
               dataSource={userList}
               targetKeys={targetKeys}
               pagination={false}
-              titles={['All Users', 'Selected Users']}
+              titles={[
+                intl.formatMessage({ id: 'models.table.users.all' }),
+                intl.formatMessage({
+                  id: 'models.table.users.selected'
+                })
+              ]}
               locale={{
                 notFoundContent: [
                   <Empty
                     key="all"
-                    description="No users found"
+                    description={intl.formatMessage({
+                      id: 'models.table.nouserFound'
+                    })}
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                   />,
                   <Empty
                     key="selected"
-                    description="No users selected"
+                    description={intl.formatMessage({
+                      id: 'models.table.noselected'
+                    })}
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                   />
                 ]
               }}
               showSearch={{
-                placeholder: 'Filter by username'
+                placeholder: intl.formatMessage({
+                  id: 'common.filter.name'
+                })
               }}
               filterOption={(inputValue, item) =>
                 item.title.toLowerCase().includes(inputValue.toLowerCase())
@@ -151,7 +172,9 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                 <span className="flex-center gap-8">
                   <span>{item.title}</span>
                   <span className="text-tertiary">
-                    {item.is_admin ? '(Admin)' : ''}
+                    {item.is_admin
+                      ? `(${intl.formatMessage({ id: 'models.table.admin' })})`
+                      : ''}
                   </span>
                 </span>
               )}

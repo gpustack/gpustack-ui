@@ -24,6 +24,7 @@ export interface ListItem {
   local_path?: string;
   created_at: string;
   updated_at: string;
+  public?: boolean;
   gpu_selector?: {
     gpu_ids: string[];
   };

@@ -11,6 +11,7 @@ export interface ListItem {
 
 export interface FormData {
   name: string;
+  allowed_type: 'all' | 'custom';
   description: string;
   allowed_model_names: string[];
   expires_in: number | null;

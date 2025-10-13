@@ -181,5 +181,6 @@ export default {
   'models.table.noselected': 'No users selected',
   'models.table.users.all': 'All Users',
   'models.table.users.selected': 'Selected Users',
-  'models.table.nouserFound': 'No users found'
+  'models.table.nouserFound': 'No users found',
+  'models.form.performance': 'Performance'
 };

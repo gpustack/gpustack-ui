@@ -9,7 +9,6 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
-  FileTextOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -22,11 +21,11 @@ import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
 
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
-  {
-    label: 'common.button.detail',
-    key: 'details',
-    icon: <FileTextOutlined></FileTextOutlined>
-  },
+  // {
+  //   label: 'common.button.detail',
+  //   key: 'details',
+  //   icon: <FileTextOutlined></FileTextOutlined>
+  // },
   {
     label: 'resources.worker.download.privatekey',
     key: 'download_ssh_key',

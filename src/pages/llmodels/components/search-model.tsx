@@ -23,6 +23,7 @@ import SearchResult from './search-result';
 const filterOptions = [
   { label: 'AWQ', value: 'awq' },
   { label: 'GPTQ', value: 'gptq' }
+  // { label: 'GGUF', value: 'gguf' }
 ];
 const PaginationMain = styled(Pagination)`
   .ant-pagination-slash {
@@ -532,13 +533,9 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
             <BaseSelect
               value={dataSource.sortType}
               onChange={handleSortChange}
-              labelRender={({ label }) => {
-                return (
-                  <span>
-                    {intl.formatMessage({ id: 'model.deploy.sort' })}: {label}
-                  </span>
-                );
-              }}
+              prefix={
+                <span>{intl.formatMessage({ id: 'model.deploy.sort' })}:</span>
+              }
               options={modelFilesSortOptions}
               size="middle"
               style={{ width: '150px' }}
@@ -549,7 +546,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               onChange={handleFilterChange}
               options={filterOptions}
               size="middle"
-              placeholder="quantization type"
+              placeholder={intl.formatMessage({ id: 'common.input.type' })}
               style={{ width: 150 }}
             ></BaseSelect>
           </span>

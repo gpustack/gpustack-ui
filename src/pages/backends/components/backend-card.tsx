@@ -141,11 +141,11 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   };
 
   const actions = useMemo(() => {
-    if (data.is_build_in) {
+    if (data.is_built_in) {
       return backendActions.filter((item) => item.key !== 'delete');
     }
     return backendActions.filter((item) => item.key !== 'view_versions');
-  }, [data.is_build_in]);
+  }, [data.is_built_in]);
 
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -222,7 +222,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
       <Content>
         <CardName>
           <span>{data.backend_name}</span>
-          {data.is_build_in && (
+          {data.is_built_in && (
             <Tag
               color="geekblue"
               className="font-400"

@@ -124,7 +124,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
     // built-in backend does not allow to edit default_version
     const initYamlContent = (values: any) => {
-      if (currentData?.is_build_in) {
+      if (currentData?.is_built_in) {
         return json2Yaml(_.pick(values, backendFields));
       }
       return json2Yaml(_.pick(values, [...backendFields, 'default_version']));
@@ -223,7 +223,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 <ImportYAML
                   actionStatus={{
                     action: action,
-                    isBuiltIn: currentData?.is_build_in || false
+                    isBuiltIn: currentData?.is_built_in || false
                   }}
                   ref={editorRef}
                   content={yamlContent}

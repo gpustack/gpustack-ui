@@ -17,7 +17,7 @@ type AddModalProps = {
   action: PageActionType;
   open: boolean;
   onOk: (values: FormData) => void;
-  data?: ListItem;
+  data?: ListItem | null;
   onCancel: () => void;
 };
 const AddModal: React.FC<AddModalProps> = ({

@@ -181,7 +181,8 @@ export default {
   'models.table.noselected': 'No users selected',
   'models.table.users.all': 'All users',
   'models.table.users.selected': 'Selected users',
-  'models.table.nouserFound': 'No users found'
+  'models.table.nouserFound': 'No users found',
+  'models.form.performance': 'Performance'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -195,5 +196,6 @@ export default {
 // 8. 'models.table.noselected': 'No users selected',
 // 9. 'models.table.users.all': 'All users',
 // 10. 'models.table.users.selected': 'Selected users',
-// 11. 'models.table.nouserFound': 'No users found'
+// 11. 'models.table.nouserFound': 'No users found',
+// 12. 'models.form.performance': 'Performance'
 // ========== End of To-Do List ==========

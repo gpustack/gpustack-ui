@@ -171,5 +171,6 @@ export default {
   'models.table.noselected': '未选择用户',
   'models.table.users.all': '所有用户',
   'models.table.users.selected': '已选用户',
-  'models.table.nouserFound': '未找到用户'
+  'models.table.nouserFound': '未找到用户',
+  'models.form.performance': '性能'
 };

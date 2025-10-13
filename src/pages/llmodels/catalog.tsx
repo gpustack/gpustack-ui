@@ -1,13 +1,14 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
-import MoreButton from '@/components/buttons/more';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import { ScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Input, Pagination, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -213,12 +214,12 @@ const Catalog: React.FC = () => {
     });
   };
 
-  const loadMore = () => {
+  const loadMore = useMemoizedFn((nextPage: number) => {
     fetchData({
       ...queryParams,
-      page: queryParams.page + 1
+      page: nextPage
     });
-  };
+  });
 
   useEffect(() => {
     fetchData();
@@ -303,18 +304,23 @@ const Catalog: React.FC = () => {
           </Space>
         }
       ></PageTools>
-      <CatalogList
-        dataList={dataSource.dataList}
-        loading={dataSource.loading}
-        onDeploy={handleOnDeploy}
-        activeId={-1}
-        isFirst={isFirst}
-      ></CatalogList>
-      <MoreButton
-        show={queryParams.page < dataSource.totalPage}
-        loading={dataSource.loading}
-        loadMore={loadMore}
-      ></MoreButton>
+      <ScrollerContext.Provider
+        value={{
+          total: dataSource.totalPage,
+          current: queryParams.page,
+          loading: dataSource.loading,
+          refresh: loadMore,
+          throttleDelay: 300
+        }}
+      >
+        <CatalogList
+          dataList={dataSource.dataList}
+          loading={dataSource.loading}
+          onDeploy={handleOnDeploy}
+          activeId={-1}
+          isFirst={isFirst}
+        ></CatalogList>
+      </ScrollerContext.Provider>
       <PageWrapper>
         <Pagination
           hideOnSinglePage={queryParams.perPage === 100}

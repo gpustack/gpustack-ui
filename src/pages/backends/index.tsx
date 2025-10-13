@@ -4,8 +4,10 @@ import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
+import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import _ from 'lodash';
 import { useState } from 'react';
+import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
 import {
   createBackend,
   createBackendFromYAML,
@@ -141,6 +143,13 @@ const BackendList = () => {
     }
   };
 
+  const loadMore = useMemoizedFn((nextPage: number) => {
+    fetchData({
+      ...queryParams,
+      page: nextPage
+    });
+  });
+
   return (
     <PageContainer
       ghost
@@ -170,13 +179,23 @@ const BackendList = () => {
         showSelect={false}
       ></FilterBar>
 
-      <BackendCardList
-        dataList={dataSource.dataList}
-        loading={dataSource.loading}
-        activeId={false}
-        isFirst={!dataSource.loadend}
-        onSelect={handleOnSelect}
-      ></BackendCardList>
+      <ScrollerContext.Provider
+        value={{
+          total: dataSource.totalPage,
+          current: queryParams.page!,
+          loading: dataSource.loading,
+          refresh: loadMore,
+          throttleDelay: 300
+        }}
+      >
+        <BackendCardList
+          dataList={dataSource.dataList}
+          loading={dataSource.loading}
+          activeId={false}
+          isFirst={!dataSource.loadend}
+          onSelect={handleOnSelect}
+        ></BackendCardList>
+      </ScrollerContext.Provider>
       <AddModal
         action={openModalStatus.action}
         onClose={() => setOpenModalStatus({ open: false, action: 'create' })}

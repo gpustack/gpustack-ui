@@ -114,7 +114,7 @@ const BackendFields: React.FC = () => {
               required
               allowClear
               scaleSize={true}
-              label="Image Name"
+              label={intl.formatMessage({ id: 'backend.imageName' })}
             ></SealInput.Input>
           </Form.Item>
           <Form.Item<FormData> name="run_command" rules={[{ required: true }]}>
@@ -122,7 +122,7 @@ const BackendFields: React.FC = () => {
               required
               scaleSize={true}
               allowClear
-              label="Execution Command"
+              label={intl.formatMessage({ id: 'backend.runCommand' })}
             ></SealInput.TextArea>
           </Form.Item>
         </>

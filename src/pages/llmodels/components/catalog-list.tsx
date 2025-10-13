@@ -1,5 +1,7 @@
 import CatalogSkelton from '@/components/templates/card-skelton';
 import breakpoints from '@/config/breakpoints';
+import InfiniteScroller from '@/pages/_components/infinite-scroller';
+import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { Col, FloatButton, Row, Spin } from 'antd';
 import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
@@ -54,6 +56,13 @@ const ListSkeleton: React.FC<{
 
 const CatalogList: React.FC<CatalogListProps> = (props) => {
   const { dataList, loading, activeId, isFirst, onDeploy } = props;
+  const {
+    total,
+    current,
+    loading: contextLoading,
+    refresh,
+    throttleDelay
+  } = useScrollerContext();
   const [span, setSpan] = React.useState(8);
 
   const getSpanByWidth = (width: number) => {
@@ -72,7 +81,13 @@ const CatalogList: React.FC<CatalogListProps> = (props) => {
   return (
     <div className="relative" style={{ width: '100%' }}>
       <ResizeObserver onResize={handleResize}>
-        <div>
+        <InfiniteScroller
+          total={total}
+          current={current}
+          loading={contextLoading}
+          refresh={refresh}
+          throttleDelay={throttleDelay}
+        >
           <Row gutter={[16, 16]}>
             {dataList.map((item: CatalogItemType, index) => {
               return (
@@ -87,11 +102,11 @@ const CatalogList: React.FC<CatalogListProps> = (props) => {
             })}
           </Row>
           <ListSkeleton span={span} loading={loading} isFirst={isFirst} />
-        </div>
+        </InfiniteScroller>
       </ResizeObserver>
       <FloatButton.BackTop visibilityHeight={1000} />
     </div>
   );
 };
 
-export default React.memo(CatalogList);
+export default CatalogList;

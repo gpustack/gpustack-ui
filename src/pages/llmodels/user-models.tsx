@@ -1,4 +1,3 @@
-import MoreButton from '@/components/buttons/more';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import CardList from '@/components/templates/card-list';
@@ -7,8 +6,10 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
+import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
+import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import ModelItem from './components/model-item';
 import { categoryOptions, modelCategoriesMap } from './config';
@@ -29,13 +30,6 @@ const UserModels: React.FC = () => {
     watch: false
   });
   const intl = useIntl();
-
-  const loadMore = () => {
-    fetchData({
-      ...queryParams,
-      page: queryParams.page + 1
-    });
-  };
 
   const handleCategoryChange = (value: string) => {
     handleQueryChange({
@@ -66,6 +60,13 @@ const UserModels: React.FC = () => {
   const renderCard = (data: any) => {
     return <ModelItem model={data} onClick={handleOnClick} />;
   };
+
+  const loadMore = useMemoizedFn((nextPage: number) => {
+    fetchData({
+      ...queryParams,
+      page: nextPage
+    });
+  });
 
   return (
     <PageContainer
@@ -116,19 +117,23 @@ const UserModels: React.FC = () => {
           </Space>
         }
       ></PageTools>
-      <CardList
-        dataList={dataSource.dataList}
-        loading={dataSource.loading}
-        activeId={false}
-        isFirst={!dataSource.loadend}
-        Skeleton={CardSkeleton}
-        renderItem={renderCard}
-      ></CardList>
-      <MoreButton
-        show={queryParams.page < dataSource.totalPage}
-        loading={dataSource.loading}
-        loadMore={loadMore}
-      ></MoreButton>
+      <ScrollerContext.Provider
+        value={{
+          total: dataSource.totalPage,
+          current: queryParams.page,
+          loading: dataSource.loading,
+          refresh: loadMore
+        }}
+      >
+        <CardList
+          dataList={dataSource.dataList}
+          loading={dataSource.loading}
+          activeId={false}
+          isFirst={!dataSource.loadend}
+          Skeleton={CardSkeleton}
+          renderItem={renderCard}
+        ></CardList>
+      </ScrollerContext.Provider>
     </PageContainer>
   );
 };

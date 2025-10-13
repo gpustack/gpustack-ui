@@ -22,5 +22,6 @@ export default {
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',
   'backend.form.versionConfig': 'Versions Config',
   'backend.form.addParameter': 'Add Parameter',
-  'backend.form.noVersion': 'No versions added'
+  'backend.form.noVersion': 'No versions added',
+  'backend.noVersion': 'No versions found'
 };

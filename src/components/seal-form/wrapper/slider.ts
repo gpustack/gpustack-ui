@@ -6,6 +6,7 @@ const SliderWrapper = styled.div`
     height: 100%;
     justify-content: center;
   }
+
   .borderless {
     background-color: transparent;
   }

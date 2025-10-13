@@ -2,18 +2,19 @@ import IconFont from '@/components/icon-font';
 import StatusTag from '@/components/status-tag';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
+import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import {
-  InstanceStatusMap,
   InstanceStatusMapValue,
   modelCategories,
-  modelSourceMap,
-  status
+  modelCategoriesMap,
+  modelSourceMap
 } from '../config';
+import { categoryToPathMap } from '../config/button-actions';
 
 const ModelItemContent = styled.div`
   display: flex;
@@ -87,7 +88,7 @@ const Header = styled.div`
 const sourceIconMap = {
   [modelSourceMap.local_path_value]: 'icon-hard-disk',
   [modelSourceMap.huggingface_value]: 'icon-huggingface',
-  [modelSourceMap.modelscope_value]: 'icon-modelscope'
+  [modelSourceMap.modelscope_value]: 'icon-tu2'
 };
 
 const ModelItem: React.FC<{
@@ -95,6 +96,28 @@ const ModelItem: React.FC<{
   onClick: (model: any) => void;
 }> = (props) => {
   const { model, onClick } = props;
+  const intl = useIntl();
+  const navigate = useNavigate();
+
+  const handleOpenPlayGround = () => {
+    for (const [category, path] of Object.entries(categoryToPathMap)) {
+      if (
+        model.categories?.includes(category) &&
+        [
+          modelCategoriesMap.text_to_speech,
+          modelCategoriesMap.speech_to_text
+        ].includes(category)
+      ) {
+        navigate(`${path}&model=${model.name}`);
+        return;
+      }
+      if (model.categories?.includes(category)) {
+        navigate(`${path}?model=${model.name}`);
+        return;
+      }
+    }
+    navigate(`/playground/chat?model=${model.name}`);
+  };
 
   return (
     <Card
@@ -113,8 +136,8 @@ const ModelItem: React.FC<{
           <StatusTag
             maxTooltipWidth={400}
             statusValue={{
-              status: status[InstanceStatusMap.Running] as any,
-              text: InstanceStatusMapValue[InstanceStatusMap.Running],
+              status: model.state as any,
+              text: InstanceStatusMapValue[model.state],
               message: model.state_message
             }}
           ></StatusTag>
@@ -141,8 +164,9 @@ const ModelItem: React.FC<{
               className="btn"
               variant="filled"
               color="default"
+              onClick={handleOpenPlayGround}
             >
-              Go to Playground
+              {intl.formatMessage({ id: 'models.openinplayground' })}
             </Button>
           </div>
         </div>

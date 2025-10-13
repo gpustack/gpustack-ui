@@ -6,7 +6,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl } from '@umijs/max';
-import { Button, Form, Tag } from 'antd';
+import { Form, Tag } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
@@ -194,9 +194,18 @@ const AddModal: React.FC<AddModalProps> = ({
               }}
             ></ModalFooter>
           ) : (
-            <Button type="primary" onClick={handleDone}>
-              {intl.formatMessage({ id: 'common.button.done' })}
-            </Button>
+            <ModalFooter
+              onOk={handleDone}
+              onCancel={onCancel}
+              loading={loading}
+              okText={intl.formatMessage({ id: 'common.button.done' })}
+              showCancelBtn={false}
+              style={{
+                padding: '16px 24px',
+                display: 'flex',
+                justifyContent: 'flex-end'
+              }}
+            ></ModalFooter>
           )
         }
       >

@@ -1,3 +1,4 @@
+import { ListItem as UserListItem } from '@/pages/users/config/types';
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
@@ -414,5 +415,36 @@ export async function queryBackendList(params?: { cluster_id: number }) {
   }>(BACKEND_LIST_API, {
     method: 'GET',
     params
+  });
+}
+
+export async function queryModelAccessUserList(id: number) {
+  return request<{ items: UserListItem[] }>(`${MODELS_API}/${id}/access`, {
+    method: 'GET'
+  });
+}
+
+export async function updateModelAccessUser(params: {
+  id: number;
+  data: { users: { id: number }[]; set_public: boolean };
+}) {
+  return request(`${MODELS_API}/${params.id}/access`, {
+    method: 'POST',
+    data: params.data
+  });
+}
+
+export async function queryMyModels(params: Global.SearchParams) {
+  return request<Global.PageResponse<ListItem>>(
+    `${MY_MODELS_API}?${qs.stringify(params)}`,
+    {
+      method: 'GET'
+    }
+  );
+}
+
+export async function queryMyModelDetail(id: number) {
+  return request(`${MY_MODELS_API}/${id}`, {
+    method: 'GET'
   });
 }

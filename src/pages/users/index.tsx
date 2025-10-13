@@ -281,7 +281,7 @@ const Users: React.FC = () => {
                 return record.is_admin ? (
                   <AutoTooltip ghost minWidth={50}>
                     <IconFont
-                      type="icon-admin-user"
+                      type="icon-manage_user"
                       className="size-16"
                     ></IconFont>
                     <span className="m-l-5">

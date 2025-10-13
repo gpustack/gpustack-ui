@@ -22,5 +22,6 @@ export default {
   'backend.form.defaultBackendParameters': '默认后端参数',
   'backend.form.versionConfig': '版本配置',
   'backend.form.addParameter': '添加参数',
-  'backend.form.noVersion': '尚未添加版本'
+  'backend.form.noVersion': '未添加版本',
+  'backend.noVersion': '未找到版本'
 };

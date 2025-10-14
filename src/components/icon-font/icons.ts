@@ -50,7 +50,8 @@ const icons = {
   Yaml: React.createElement(IconFont, { type: 'icon-code_block' }),
   Version: React.createElement(IconFont, { type: 'icon-version' }),
   Parameter: React.createElement(IconFont, { type: 'icon-parameters' }),
-  Private: React.createElement(IconFont, { type: 'icon-private' })
+  Private: React.createElement(IconFont, { type: 'icon-private' }),
+  AWS: React.createElement(IconFont, { type: 'icon-aws' })
 };
 
 export default icons;

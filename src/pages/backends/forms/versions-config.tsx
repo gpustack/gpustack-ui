@@ -1,11 +1,12 @@
 import CollapsibleContainer from '@/components/collapse-container';
+import BaseSelect from '@/components/seal-form/base/select';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Empty, Form, Select, Tag } from 'antd';
+import { Button, Empty, Form, Tag } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { frameworks } from '../config';
@@ -163,7 +164,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
           </Button>
         </span>
         {!currentData?.is_built_in && (
-          <Select
+          <BaseSelect
             prefix={
               <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
                 {intl.formatMessage({ id: 'backend.isDefault' })}:

@@ -104,17 +104,6 @@ export default [
         defaultIcon: 'icon-models',
         access: 'canSeeUser',
         component: './llmodels/user-models'
-      },
-      {
-        name: 'backendsList',
-        path: '/models/backends/list',
-        key: 'backendsList',
-        icon: 'icon-backend',
-        selectedIcon: 'icon-backend-filled',
-        defaultIcon: 'icon-backend',
-        access: 'canSeeAdmin',
-        subMenu: ['/models/backends/create'],
-        component: './backends/index'
       }
     ]
   },
@@ -154,6 +143,16 @@ export default [
         selectedIcon: 'icon-files-filled',
         defaultIcon: 'icon-files',
         component: './resources/components/model-files'
+      },
+      {
+        name: 'backendsList',
+        path: '/resources/backends',
+        key: 'backendsList',
+        icon: 'icon-backend',
+        selectedIcon: 'icon-backend-filled',
+        defaultIcon: 'icon-backend',
+        access: 'canSeeAdmin',
+        component: './backends/index'
       }
     ]
   },

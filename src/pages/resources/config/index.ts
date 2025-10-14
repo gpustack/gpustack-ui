@@ -62,7 +62,8 @@ export const addWorkerGuide: Record<string, any> = {
     --restart=unless-stopped \\
     --privileged \\
     --net=host \\
-    -v gpustack-data:/var/lib/gpustack \\
+    -v /var/run/docker.sock:/var/run/docker.sock \\
+    -v /var/lib/gpustack:/var/lib/gpustack \\
     ${params.image} \\
     --server-url ${params.server} \\
     --registration-token ${params.token} \\

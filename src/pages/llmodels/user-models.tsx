@@ -27,7 +27,8 @@ const UserModels: React.FC = () => {
   } = useTableFetch<any>({
     fetchAPI: queryMyModels,
     API: MY_MODELS_API,
-    watch: false
+    watch: false,
+    isInfiniteScroll: true
   });
   const intl = useIntl();
 

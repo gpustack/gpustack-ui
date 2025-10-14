@@ -9,7 +9,7 @@ export default [
     value: ProviderValueMap.Docker,
     key: ProviderValueMap.Docker,
     icon: React.cloneElement(icons.DockerOutlined, {
-      style: { color: 'var(--ant-color-primary)' }
+      style: { color: 'var(--ant-blue-6)' }
     }),
     group: 'clusters.create.provider.self'
   },
@@ -19,7 +19,7 @@ export default [
     value: ProviderValueMap.Kubernetes,
     key: ProviderValueMap.Kubernetes,
     icon: React.cloneElement(icons.KubernetesFilled, {
-      style: { color: 'var(--ant-color-primary)' }
+      style: { color: 'var(--ant-blue-6)' }
     }),
     group: 'clusters.create.provider.self'
   },
@@ -30,13 +30,13 @@ export default [
     key: ProviderValueMap.DigitalOcean,
     icon: React.cloneElement(icons.DigitalOcean, {
       style: {
-        color: 'var(--ant-color-primary)'
+        color: 'var(--ant-blue-6)'
       }
     }),
     group: 'clusters.create.provider.cloud'
   },
   {
-    label: 'Ali Cloud',
+    label: 'Alibaba Cloud',
     locale: false,
     disabled: true,
     value: ProviderValueMap.AliCloud,
@@ -53,6 +53,16 @@ export default [
     key: ProviderValueMap.TencentCloud,
     icon: icons.TencentCloud,
     description: 'Coming soon',
+    group: 'clusters.create.provider.cloud'
+  },
+  {
+    label: 'AWS',
+    locale: false,
+    disabled: true,
+    value: ProviderValueMap.AWS,
+    key: ProviderValueMap.AWS,
+    icon: icons.AWS,
+    description: 'Comming soon',
     group: 'clusters.create.provider.cloud'
   }
 ];

@@ -59,29 +59,6 @@ const Catalog: React.FC = () => {
 
   const categoryOptions = [...modelCategories.filter((item) => item.value)];
 
-  const filterData = useCallback(
-    (data: { search: string; categories: string }) => {
-      const { search, categories } = data;
-      const dataList = cacheData.current.filter((item) => {
-        if (search && categories) {
-          return (
-            _.toLower(item.name).includes(search) &&
-            item.categories.includes(categories)
-          );
-        }
-        if (search) {
-          return _.toLower(item.name).includes(_.toLower(search));
-        }
-        if (categories) {
-          return item.categories.includes(categories);
-        }
-        return true;
-      });
-      return dataList;
-    },
-    [cacheData.current]
-  );
-
   const fetchData = useCallback(
     async (query?: any) => {
       const searchQuery = {

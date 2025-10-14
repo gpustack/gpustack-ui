@@ -3,6 +3,8 @@ import React from 'react';
 
 interface CatalogSkeltonProps {
   span: number;
+  skeletonProps?: any;
+  skeletonStyle?: React.CSSProperties;
 }
 
 const CardSkelton: React.FC<CatalogSkeltonProps> = (props) => {
@@ -21,8 +23,10 @@ const CardSkelton: React.FC<CatalogSkeltonProps> = (props) => {
                 style={{
                   border: '1px solid var(--ant-color-border)',
                   borderRadius: 'var(--border-radius-base)',
-                  padding: '16px 16px'
+                  padding: '16px 16px',
+                  ...props.skeletonStyle
                 }}
+                {...(props.skeletonProps || {})}
               ></Skeleton>
             </Col>
           );

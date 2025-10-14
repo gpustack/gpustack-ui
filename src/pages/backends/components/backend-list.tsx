@@ -24,6 +24,20 @@ const SpinWrapper = styled.div`
   }
 `;
 
+const SkeletonWrapper = styled.div`
+  .ant-skeleton-content {
+    .ant-skeleton-paragraph {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 0;
+      li {
+        margin-top: 0 !important;
+      }
+    }
+  }
+`;
+
 interface BackendListProps {
   defaultSpan?: number;
   resizable?: boolean;
@@ -33,12 +47,6 @@ interface BackendListProps {
   isFirst: boolean;
   onSelect?: (item: any) => void;
 }
-
-const InnerSkeleton: React.FC<{
-  span: number;
-}> = (props) => {
-  return <CardSkeleton {...props} />;
-};
 
 const ListSkeleton: React.FC<{
   span: number;
@@ -56,7 +64,21 @@ const ListSkeleton: React.FC<{
             }}
             wrapperClassName="skelton-wrapper"
           >
-            {isFirst && <InnerSkeleton span={span}></InnerSkeleton>}
+            {isFirst && (
+              <SkeletonWrapper>
+                <CardSkeleton
+                  span={span}
+                  skeletonProps={{
+                    title: false
+                  }}
+                  skeletonStyle={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 26
+                  }}
+                ></CardSkeleton>
+              </SkeletonWrapper>
+            )}
           </Spin>
         </SpinWrapper>
       )}

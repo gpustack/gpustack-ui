@@ -2,19 +2,38 @@ import IconFont from '@/components/icon-font';
 import StatusTag from '@/components/status-tag';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
+import { StatusMaps } from '@/config';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
-import dayjs from 'dayjs';
 import _ from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import {
-  InstanceStatusMapValue,
-  modelCategories,
-  modelCategoriesMap,
-  modelSourceMap
-} from '../config';
+import { modelCategories, modelCategoriesMap, modelSourceMap } from '../config';
 import { categoryToPathMap } from '../config/button-actions';
+
+const MyModelsStatusValueMap = {
+  Inactive: 'Inactive',
+  Starting: 'Starting',
+  Degrade: 'Degrade',
+  Active: 'Active'
+};
+
+const MyModelsStatusMap = {
+  [MyModelsStatusValueMap.Inactive]: StatusMaps.inactive,
+  [MyModelsStatusValueMap.Starting]: StatusMaps.transitioning,
+  [MyModelsStatusValueMap.Degrade]: StatusMaps.warning,
+  [MyModelsStatusValueMap.Active]: StatusMaps.success
+};
+
+const CardWrapper = styled.div`
+  &:hover {
+    .content {
+      .btn {
+        display: block;
+      }
+    }
+  }
+`;
 
 const ModelItemContent = styled.div`
   display: flex;
@@ -24,7 +43,6 @@ const ModelItemContent = styled.div`
   cursor: default;
   .content {
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
     flex: 1;
   }
@@ -37,11 +55,7 @@ const ModelItemContent = styled.div`
       display: none;
     }
   }
-  &:hover {
-    .btn {
-      display: block;
-    }
-  }
+
   .time {
     color: var(--ant-color-text-secondary);
     font-size: var(--font-size-small);
@@ -51,7 +65,6 @@ const ModelItemContent = styled.div`
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
     .tag-item {
       margin-right: 0;
       display: flex;
@@ -80,7 +93,7 @@ const Header = styled.div`
     display: flex;
     align-items: center;
     font-size: var(--font-size-middle);
-    font-weight: 600;
+    font-weight: 500;
     color: var(--ant-color-text);
   }
 `;
@@ -119,59 +132,100 @@ const ModelItem: React.FC<{
     navigate(`/playground/chat?model=${model.name}`);
   };
 
+  // context length
+  const maxToken = useMemo(() => {
+    const meta = model.meta || {};
+    const { max_model_len, n_ctx, n_slot, max_total_tokens } = meta || {};
+
+    let max_tokens: number = 0;
+
+    if (n_ctx && n_slot) {
+      max_tokens = _.divide(n_ctx, n_slot);
+    } else if (max_model_len) {
+      max_tokens = max_model_len;
+    } else if (max_total_tokens) {
+      max_tokens = max_total_tokens;
+    }
+
+    return max_tokens / 1024;
+  }, [model]);
+
+  const status = useMemo(() => {
+    if (!model.replicas && !model.ready_replicas) {
+      return MyModelsStatusValueMap.Inactive;
+    }
+    if (model.replicas > 0 && !model.ready_replicas) {
+      return MyModelsStatusValueMap.Starting;
+    }
+    if (model.replicas > 1 && model.replicas !== model.ready_replicas) {
+      return MyModelsStatusValueMap.Degrade;
+    }
+    if (model.replicas === model.ready_replicas && model.replicas > 0) {
+      return MyModelsStatusValueMap.Active;
+    }
+    return MyModelsStatusValueMap.Inactive;
+  }, [model]);
+
   return (
-    <Card
-      onClick={() => onClick(model)}
-      clickable={false}
-      ghost
-      header={
-        <Header>
-          <span className="text">
-            <IconFont
-              type={sourceIconMap[model.source]}
-              style={{ marginRight: 8 }}
-            />
-            <span>{model.name}</span>
-          </span>
-          <StatusTag
-            maxTooltipWidth={400}
-            statusValue={{
-              status: model.state as any,
-              text: InstanceStatusMapValue[model.state],
-              message: model.state_message
-            }}
-          ></StatusTag>
-        </Header>
-      }
-    >
-      <ModelItemContent>
-        <div className="content">
-          <div className="extra-info">
-            <ThemeTag className="tag-item" color="blue">
-              {_.find(modelCategories, { value: model.categories?.[0] })
-                ?.label || model.categories?.[0]}
-            </ThemeTag>
-            <ThemeTag className="tag-item" color="purple">
-              128K context
-            </ThemeTag>
-          </div>
-          <div className="footer">
-            <span className="time">
-              {dayjs(model.created_at).format('YYYY-MM-DD HH:mm:ss')}
+    <CardWrapper>
+      <Card
+        height={140}
+        onClick={() => onClick(model)}
+        clickable={false}
+        hoverable={true}
+        ghost
+        header={
+          <Header>
+            <span className="text">
+              <IconFont
+                type={sourceIconMap[model.source]}
+                style={{ marginRight: 8, fontSize: 24 }}
+              />
+              <span>{model.name}</span>
             </span>
-            <Button
-              size="middle"
-              className="btn"
-              variant="filled"
-              color="default"
-              onClick={handleOpenPlayGround}
-            >
-              {intl.formatMessage({ id: 'models.openinplayground' })}
-            </Button>
+            <StatusTag
+              maxTooltipWidth={400}
+              statusValue={{
+                status: MyModelsStatusMap[status],
+                text: status,
+                message: model.state_message
+              }}
+            ></StatusTag>
+          </Header>
+        }
+      >
+        <ModelItemContent>
+          <div className="content">
+            <div className="footer">
+              <div className="extra-info">
+                <ThemeTag className="tag-item" color="blue">
+                  {_.find(modelCategories, { value: model.categories?.[0] })
+                    ?.label || model.categories?.[0]}
+                </ThemeTag>
+                {maxToken > 0 && (
+                  <ThemeTag className="tag-item" color="purple">
+                    {maxToken}K context
+                  </ThemeTag>
+                )}
+              </div>
+              {[
+                MyModelsStatusValueMap.Active,
+                MyModelsStatusValueMap.Degrade
+              ].includes(status) && (
+                <Button
+                  size="middle"
+                  className="btn"
+                  type="primary"
+                  onClick={handleOpenPlayGround}
+                >
+                  {intl.formatMessage({ id: 'models.openinplayground' })}
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      </ModelItemContent>
-    </Card>
+        </ModelItemContent>
+      </Card>
+    </CardWrapper>
   );
 };
 

@@ -3,7 +3,6 @@ import AutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
-import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
@@ -11,8 +10,7 @@ import React, { useMemo } from 'react';
 import {
   backendLabelMap,
   backendTipsList,
-  getBackendParamsTips,
-  modelSourceMap
+  getBackendParamsTips
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
@@ -68,10 +66,6 @@ const BackendFields: React.FC = () => {
           label={intl.formatMessage({ id: 'models.form.backend' })}
           description={<TooltipList list={backendTipsList}></TooltipList>}
           options={backendOptions}
-          disabled={
-            action === PageAction.EDIT &&
-            source !== modelSourceMap.local_path_value
-          }
         ></SealSelect>
       </Form.Item>
       {backendOptionsMap.custom !== backend && (

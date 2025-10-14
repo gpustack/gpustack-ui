@@ -1,3 +1,4 @@
+import IconFont from '@/components/icon-font';
 import { isNotEmptyValue } from '@/utils/index';
 import { useIntl } from '@umijs/max';
 import type { CascaderAutoProps } from 'antd';
@@ -33,10 +34,11 @@ const renderTag = (props: any) => {
 
 const OptionNodes = (props: {
   data: any;
+  notFoundContent?: React.ReactNode;
   optionNode: React.FC<{ data: any }>;
 }) => {
   const intl = useIntl();
-  const { data, optionNode: OptionNode } = props;
+  const { data, optionNode: OptionNode, notFoundContent } = props;
   if (data.value === '__EMPTY__') {
     return (
       <Empty
@@ -48,9 +50,12 @@ const OptionNodes = (props: {
           justifyContent: 'center',
           alignItems: 'center'
         }}
-        description={intl.formatMessage({
-          id: 'common.search.empty'
-        })}
+        description={
+          notFoundContent ||
+          intl.formatMessage({
+            id: 'common.search.empty'
+          })
+        }
       ></Empty>
     );
   }
@@ -85,6 +90,7 @@ const SealCascader: React.FC<
     allowNull,
     isInFormItems = true,
     optionNode,
+    notFoundContent,
     tagRender,
     ...rest
   } = props;
@@ -168,11 +174,13 @@ const SealCascader: React.FC<
       >
         <Cascader
           {...rest}
+          suffixIcon={<IconFont type="icon-down"></IconFont>}
           optionRender={
             optionNode
               ? (data) => (
                   <OptionNodes
                     data={data}
+                    notFoundContent={notFoundContent}
                     optionNode={optionNode}
                   ></OptionNodes>
                 )

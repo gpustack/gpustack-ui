@@ -76,6 +76,12 @@ export interface FormData {
   optimize_long_prompt: boolean;
   enable_speculative_decoding: boolean;
   cluster_id: number;
+  extended_kv_cache: {
+    enabled: boolean;
+    chunk_size: number;
+    max_local_cpu_size: number;
+    remote_url: string;
+  };
 }
 
 interface ComputedResourceClaim {

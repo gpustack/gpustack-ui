@@ -1,7 +1,8 @@
 import ModalFooter from '@/components/modal-footer';
+import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Button, Modal } from 'antd';
+import { Button } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import ColumnWrapper from '../../_components/column-wrapper';
@@ -32,6 +33,12 @@ type AddModalProps = {
   >[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
+};
+
+const ModalFooterStyle = {
+  padding: '16px 24px',
+  display: 'flex',
+  justifyContent: 'flex-end'
 };
 
 const UpdateModal: React.FC<AddModalProps> = (props) => {
@@ -249,57 +256,34 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   }, [open, formData]);
 
   return (
-    <Modal
+    <GSDrawer
       title={title}
       open={open}
-      centered={true}
-      onOk={handleSumit}
-      onCancel={handleOnClose}
+      onClose={handleOnClose}
       destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
       width={600}
       styles={{
-        content: {
-          padding: '0 0 16px 0'
-        },
-        header: {
-          padding: 'var(--ant-modal-content-padding)',
-          paddingBottom: '0'
-        },
         body: {
-          padding: '0'
+          height: 'calc(100vh - 57px)',
+          padding: '16px 0',
+          overflowX: 'hidden'
         },
-        footer: {
-          padding: '16px 24px',
-          margin: '0'
+        content: {
+          borderRadius: '6px 0 0 6px'
         }
       }}
-      footer={
-        <>
-          <ModalFooter
-            onCancel={onCancel}
-            onOk={handleSumit}
-            showOkBtn={!showExtraButton}
-            extra={
-              showExtraButton && (
-                <Button type="primary" onClick={handleSubmitAnyway}>
-                  {intl.formatMessage({
-                    id: 'models.form.submit.anyway'
-                  })}
-                </Button>
-              )
-            }
-          ></ModalFooter>
-        </>
-      }
+      footer={false}
     >
       <ColumnWrapper
-        maxHeight={550}
-        paddingBottom={
-          warningStatus.show ? (warningStatus.isDefault ? 50 : 100) : 0
-        }
+        styles={{
+          container: {
+            paddingTop: 0
+          }
+        }}
+        paddingBottom={warningStatus.show ? 100 : 50}
         footer={
           <>
             <CompatibilityAlert
@@ -313,6 +297,21 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
               warningStatus={warningStatus}
               contentStyle={{ paddingInline: 0 }}
             ></CompatibilityAlert>
+            <ModalFooter
+              style={ModalFooterStyle}
+              onCancel={onCancel}
+              onOk={handleSumit}
+              showOkBtn={!showExtraButton}
+              extra={
+                showExtraButton && (
+                  <Button type="primary" onClick={handleSubmitAnyway}>
+                    {intl.formatMessage({
+                      id: 'models.form.submit.anyway'
+                    })}
+                  </Button>
+                )
+              }
+            ></ModalFooter>
           </>
         }
       >
@@ -329,7 +328,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           onValuesChange={handleManulOnValuesChange}
         ></DataForm>
       </ColumnWrapper>
-    </Modal>
+    </GSDrawer>
   );
 };
 

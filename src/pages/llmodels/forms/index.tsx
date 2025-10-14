@@ -1,13 +1,11 @@
-import SealInput from '@/components/seal-form/seal-input';
-import SealSelect from '@/components/seal-form/seal-select';
 import { PageActionType } from '@/config/types';
-import useAppUtils from '@/hooks/use-app-utils';
 import CollapsePanel from '@/pages/_components/collapse-panel';
+import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { excludeFields, ScheduleValueMap, sourceOptions } from '../config';
+import { excludeFields, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import {
@@ -18,13 +16,9 @@ import {
 } from '../config/types';
 import { generateGPUIds } from '../config/utils';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
-import CatalogFrom from './catalog';
-import LocalPathSource from './local-path-source';
-import OnlineSource from './online-source';
-// import AdvanceConfig from './advance-config';
 import useQueryBackends from '../hooks/use-query-backends';
 import AdvanceConfig from './advance-config';
-import Performance from './performance';
+import BasicForm from './basic';
 
 interface DataFormProps {
   initialValues?: any;
@@ -57,13 +51,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onValuesChange,
     onOk
   } = props;
+  const { scrollToTarget, scrollToBottom } = useWrapperContext();
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
-  const { getRuleMessage } = useAppUtils();
   const [form] = Form.useForm();
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const scheduleType = Form.useWatch('scheduleType', form);
+  const [target, setTarget] = React.useState<string>('basic');
+  const performanceRef = React.useRef<HTMLDivElement>(null);
+  const advanceRef = React.useRef<HTMLDivElement>(null);
 
   const handleSumit = () => {
     form.submit();
@@ -106,10 +103,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk(allValues);
   };
 
-  const handleOnSourceChange = (val: string) => {
-    onSourceChange?.(val);
-  };
-
   const handleClusterChange = (value: number) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
@@ -131,6 +124,20 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const handleOnCollapseChange = (keys: string | string[]) => {
     setActiveKey(Array.isArray(keys) ? keys : [keys]);
+  };
+
+  const handleTargetChange = (val: string) => {
+    console.log('val', val);
+    // if (val === 'performance' && performanceRef.current) {
+    //   scrollToTarget?.(performanceRef.current);
+    // }
+    // if (val === 'advanced' && advanceRef.current) {
+    //   scrollToTarget?.(advanceRef.current);
+    // }
+    // scrollToBottom?.();
+    // setTimeout(() => {
+    //   setTarget(val);
+    // }, 100);
   };
 
   useImperativeHandle(ref, () => {
@@ -174,6 +181,27 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         onBackendChange: handleBackendChange
       }}
     >
+      {/* <div className="m-b-8">
+        <Segmented
+          value={target}
+          defaultValue="Basic"
+          onChange={handleTargetChange}
+          options={[
+            {
+              value: 'basic',
+              label: 'Basic'
+            },
+            {
+              value: 'performance',
+              label: 'Performance'
+            },
+            {
+              value: 'advanced',
+              label: 'Advanced'
+            }
+          ]}
+        />
+      </div> */}
       <Form
         name="deployModel"
         form={form}
@@ -200,112 +228,31 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           ...initialValues
         }}
       >
-        <Form.Item<FormData>
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'common.table.name')
-            }
-          ]}
-        >
-          <SealInput.Input
-            label={intl.formatMessage({
-              id: 'common.table.name'
-            })}
-            required
-          ></SealInput.Input>
-        </Form.Item>
-        {fields.includes('source') && (
-          <Form.Item<FormData>
-            name="source"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('select', 'models.form.source')
-              }
-            ]}
-          >
-            {
-              <SealSelect
-                onChange={handleOnSourceChange}
-                disabled={sourceDisable}
-                label={intl.formatMessage({
-                  id: 'models.form.source'
-                })}
-                options={sourceList ?? sourceOptions}
-                required
-              ></SealSelect>
-            }
-          </Form.Item>
-        )}
-
-        <OnlineSource></OnlineSource>
-        <LocalPathSource></LocalPathSource>
-        <Form.Item<FormData>
-          name="cluster_id"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('select', 'clusters.title')
-            }
-          ]}
-        >
-          {
-            <SealSelect
-              onChange={handleClusterChange}
-              label={intl.formatMessage({ id: 'clusters.title' })}
-              options={clusterList}
-              required
-            ></SealSelect>
-          }
-        </Form.Item>
-        <Form.Item<FormData>
-          name="replicas"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'models.form.replicas')
-            }
-          ]}
-        >
-          <SealInput.Number
-            style={{ width: '100%' }}
-            label={intl.formatMessage({
-              id: 'models.form.replicas'
-            })}
-            required
-            description={intl.formatMessage(
-              { id: 'models.form.replicas.tips' },
-              { api: `${window.location.origin}/v1` }
-            )}
-            min={0}
-          ></SealInput.Number>
-        </Form.Item>
-        <CatalogFrom></CatalogFrom>
-        <Form.Item<FormData> name="description">
-          <SealInput.TextArea
-            scaleSize={true}
-            label={intl.formatMessage({
-              id: 'common.table.description'
-            })}
-          ></SealInput.TextArea>
-        </Form.Item>
+        <BasicForm
+          fields={fields}
+          sourceList={sourceList}
+          clusterList={clusterList}
+          sourceDisable={sourceDisable}
+          handleClusterChange={handleClusterChange}
+          onSourceChange={onSourceChange}
+        ></BasicForm>
         <CollapsePanel
           activeKey={activeKey}
           accordion={false}
           onChange={handleOnCollapseChange}
           items={[
+            // {
+            //   key: 'performance',
+            //   label: intl.formatMessage({ id: 'models.form.performance' }),
+            //   forceRender: true,
+            //   extra: <div ref={performanceRef}></div>,
+            //   children: <Performance></Performance>
+            // },
             {
-              key: 'performance',
-              label: intl.formatMessage({ id: 'models.form.performance' }),
-              forceRender: true,
-              children: <Performance></Performance>
-            },
-            {
-              key: 'advance_config',
+              key: 'advanced',
               label: intl.formatMessage({ id: 'resources.form.advanced' }),
               forceRender: true,
+              extra: <div ref={advanceRef}></div>,
               children: <AdvanceConfig></AdvanceConfig>
             }
           ]}

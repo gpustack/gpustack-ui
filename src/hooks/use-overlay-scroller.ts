@@ -1,3 +1,4 @@
+import { useMemoizedFn } from 'ahooks';
 import { throttle } from 'lodash';
 import {
   UseOverlayScrollbarsParams,
@@ -108,48 +109,44 @@ export default function useOverlayScroller(data?: {
     }
   };
 
-  const throttledScroll = React.useCallback(
+  const throttledScroll = useMemoizedFn(
     throttle(() => {
       scrollEventElement.current?.scrollTo?.({
         top: scrollEventElement.current?.scrollHeight,
         behavior: 'smooth'
       });
       instanceRef.current?.update?.();
-    }, 100),
-    [(scrollEventElement.current, instanceRef.current)]
+    }, 100)
   );
 
-  const scrollauto = React.useCallback(() => {
+  const scrollauto = useMemoizedFn(() => {
     scrollEventElement.current?.scrollTo?.({
       top: scrollEventElement.current.scrollHeight,
       behavior: 'auto'
     });
     instanceRef.current?.update?.();
-  }, [scrollEventElement.current, instanceRef.current]);
+  });
 
   // scroll to bottom
-  const throttledUpdateScrollerPosition = React.useCallback(
-    (delay?: number) => {
-      if (stopUpdatePosition.current) {
-        return;
-      }
-      if (delay === 0) {
-        scrollauto();
-      } else {
-        throttledScroll();
-      }
-    },
-    [throttledScroll, scrollauto]
-  );
+  const throttledUpdateScrollerPosition = useMemoizedFn((delay?: number) => {
+    if (stopUpdatePosition.current) {
+      return;
+    }
+    if (delay === 0) {
+      scrollauto();
+    } else {
+      throttledScroll();
+    }
+  });
 
   // scroll to top
-  const updateScrollerPositionToTop = React.useCallback(() => {
+  const updateScrollerPositionToTop = useMemoizedFn(() => {
     scrollEventElement.current?.scrollTo?.({
       top: 0,
       behavior: 'auto'
     });
     instanceRef.current?.update?.();
-  }, [scrollEventElement.current, instanceRef.current]);
+  });
 
   const generateInstance = () => {
     instanceRef.current = instance?.();
@@ -157,7 +154,7 @@ export default function useOverlayScroller(data?: {
       instanceRef.current?.elements()?.scrollEventElement;
   };
 
-  const handleWheelCallback = React.useCallback((e: any) => {
+  const handleWheelCallback = useMemoizedFn((e: any) => {
     handleOnScroll();
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -165,7 +162,7 @@ export default function useOverlayScroller(data?: {
     timerRef.current = setTimeout(() => {
       stopUpdatePosition.current = false;
     }, RESETSCROLLDELAY);
-  }, []);
+  });
 
   // add  wheel event
   const handleWheelEvent = () => {
@@ -180,29 +177,58 @@ export default function useOverlayScroller(data?: {
     );
   };
 
-  const createInstance = React.useCallback(
-    (el: any) => {
-      if (instanceRef.current) {
-        return instanceRef.current;
-      }
-      if (el) {
-        initialize(el);
-        scrollElementRef.current = el;
-        initialized.current = true;
-        instanceRef.current = instance?.();
-        scrollEventElement.current =
-          instanceRef.current?.elements()?.scrollEventElement;
-        handleWheelEvent();
-      }
+  const createInstance = useMemoizedFn((el: any) => {
+    if (instanceRef.current) {
       return instanceRef.current;
-    },
-    [initialize, instance]
-  );
+    }
+    if (el) {
+      initialize(el);
+      scrollElementRef.current = el;
+      initialized.current = true;
+      instanceRef.current = instance?.();
+      scrollEventElement.current =
+        instanceRef.current?.elements()?.scrollEventElement;
+      handleWheelEvent();
+    }
+    return instanceRef.current;
+  });
 
   const destroyInstance = () => {
     instanceRef.current?.destroy?.();
     removeWheelEvent();
     instanceRef.current = null;
+  };
+
+  const scrollToTarget = (target: any, offset = 100) => {
+    if (!target) return;
+    if (!instanceRef.current || !scrollEventElement.current) {
+      instanceRef.current = instance?.();
+      scrollEventElement.current =
+        instanceRef.current?.elements()?.scrollEventElement;
+    }
+
+    const viewport = instanceRef.current?.elements().viewport;
+    const containerRect = viewport.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+
+    const scrollerState = instanceRef.current?.state();
+
+    const currentScroll = scrollerState.current?.overflowAmount?.y;
+
+    // const currentScroll = instanceRef.current?.scroll().position.y;
+    const targetPos = targetRect.top - containerRect.top + currentScroll;
+    console.log(
+      'target=======',
+      currentScroll,
+      targetPos,
+      instanceRef.current?.options()
+    );
+
+    scrollEventElement.current.scroll({
+      y: targetPos - offset,
+      behavior: 'smooth'
+    });
+    instanceRef.current?.update?.();
   };
 
   useEffect(() => {
@@ -220,6 +246,9 @@ export default function useOverlayScroller(data?: {
     generateInstance,
     destroyInstance: destroyInstance,
     updateScrollerPosition: throttledUpdateScrollerPosition,
-    updateScrollerPositionToTop: updateScrollerPositionToTop
+    updateScrollerPositionToTop: updateScrollerPositionToTop,
+    scrollToBottom: scrollauto,
+    scrollToTop: updateScrollerPositionToTop,
+    scrollToTarget
   };
 }

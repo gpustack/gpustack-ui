@@ -243,6 +243,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       setTimeout(() => {
         setOriginalFormData();
         initGPUSelector();
+        formRef.current?.getBackendOptions?.({
+          cluster_id: formData.cluster_id
+        });
       }, 100);
     }
     if (!open) {

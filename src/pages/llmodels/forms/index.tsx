@@ -191,6 +191,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           categories: null,
           restart_on_error: true,
           distributed_inference_across_workers: true,
+          extended_kv_cache: {
+            enabled: false,
+            chunk_size: 256,
+            max_local_cpu_size: 10,
+            remote_url: ''
+          },
           ...initialValues
         }}
       >
@@ -253,6 +259,28 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               required
             ></SealSelect>
           }
+        </Form.Item>
+        <Form.Item<FormData>
+          name="replicas"
+          rules={[
+            {
+              required: true,
+              message: getRuleMessage('input', 'models.form.replicas')
+            }
+          ]}
+        >
+          <SealInput.Number
+            style={{ width: '100%' }}
+            label={intl.formatMessage({
+              id: 'models.form.replicas'
+            })}
+            required
+            description={intl.formatMessage(
+              { id: 'models.form.replicas.tips' },
+              { api: `${window.location.origin}/v1` }
+            )}
+            min={0}
+          ></SealInput.Number>
         </Form.Item>
         <CatalogFrom></CatalogFrom>
         <Form.Item<FormData> name="description">

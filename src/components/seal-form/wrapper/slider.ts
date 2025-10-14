@@ -10,6 +10,9 @@ const SliderWrapper = styled.div`
   .borderless {
     background-color: transparent;
   }
+  .ant-slider {
+    flex: 1;
+  }
   padding-block: 0;
   padding-inline: 2px;
   input.ant-input-number-input {

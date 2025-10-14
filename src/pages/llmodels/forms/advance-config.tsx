@@ -16,6 +16,7 @@ import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import Backend from '../forms/backend';
 import BackendParametersList from '../forms/backend-parameters-list';
+import ScheduleTypeForm from '../forms/schedule-type';
 
 const placementStrategyTips = [
   {
@@ -88,6 +89,7 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
+      <ScheduleTypeForm></ScheduleTypeForm>
       <Backend></Backend>
       {scheduleType === ScheduleValueMap.Auto && (
         <>
@@ -169,7 +171,7 @@ const AdvanceConfig = () => {
         [backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
           backend
         ) && (
-          <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
+          <div style={{ paddingBottom: 22 }}>
             <Form.Item<FormData>
               name="distributed_inference_across_workers"
               valuePropName="checked"
@@ -187,7 +189,7 @@ const AdvanceConfig = () => {
             </Form.Item>
           </div>
         )}
-      <div style={{ paddingBottom: 22, paddingLeft: 10 }}>
+      <div style={{ paddingBottom: 22 }}>
         <Form.Item<FormData>
           name="restart_on_error"
           valuePropName="checked"

@@ -158,6 +158,7 @@ const Inner = styled.div.attrs({
   className: '__inner__'
 })`
   width: 100%;
+  display: flex;
 `;
 
 const Extra = styled.div`

@@ -179,7 +179,12 @@ export default {
   'models.table.users.all': 'All Users',
   'models.table.users.selected': 'Selected Users',
   'models.table.nouserFound': 'No users found',
-  'models.form.performance': 'Performance'
+  'models.form.performance': 'Performance',
+  'models.form.gpus.notfound': 'No GPUs found',
+  'models.form.extendedkvcache': 'Enable Extended KV Cache',
+  'models.form.chunkSize': 'Size Of Cache Chunks',
+  'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
+  'models.form.remoteURL': 'Remote Storage URL'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -202,5 +207,11 @@ export default {
 // 17. 'models.table.users.all': 'All Users',
 // 18. 'models.table.users.selected': 'Selected Users',
 // 19. 'models.table.nouserFound': 'No users found',
-// 20. 'models.form.performance': 'Performance'
+// 20. 'models.form.performance': 'Performance',
+// 21. 'models.form.gpus.notfound': 'No GPUs found',
+// 22. 'models.form.extendedkvcache': 'Enable Extended KV Cache',
+// 23. 'models.form.chunkSize': 'Size Of Cache Chunks',
+// 24. 'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
+// 25. 'models.form.remoteURL': 'Remote Storage URL'
+
 // ========== End of To-Do List ==========

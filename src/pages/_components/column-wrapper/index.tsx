@@ -1,6 +1,7 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import React from 'react';
 import './style.less';
+import { WrapperContext } from './use-wrapper-context';
 
 interface ColumnWrapperProps {
   children: React.ReactNode;
@@ -21,13 +22,14 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
   styles = {}
 }) => {
   const scroller = React.useRef<any>(null);
-  const { initialize } = useOverlayScroller({
-    options: {
-      scrollbars: {
-        autoHide: 'move'
+  const { initialize, instance, scrollToBottom, scrollToTarget } =
+    useOverlayScroller({
+      options: {
+        scrollbars: {
+          autoHide: 'move'
+        }
       }
-    }
-  });
+    });
 
   React.useEffect(() => {
     if (scroller.current) {
@@ -36,7 +38,9 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
   }, []);
 
   return (
-    <>
+    <WrapperContext.Provider
+      value={{ osInstance: instance, scrollToBottom, scrollToTarget }}
+    >
       <div
         className="column-wrapper-footer"
         style={{ height: maxHeight || '100%', ...styles.wrapper }}
@@ -56,7 +60,7 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
         </div>
         {footer && <div className="footer">{footer}</div>}
       </div>
-    </>
+    </WrapperContext.Provider>
   );
 };
 

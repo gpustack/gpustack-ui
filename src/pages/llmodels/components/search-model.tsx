@@ -36,7 +36,7 @@ interface SearchInputProps {
   modelSource: string;
   isDownload?: boolean;
   gpuOptions?: any[];
-  clusterId: number;
+  clusterId?: number;
   setLoadingModel?: (flag: boolean) => void;
   onSourceChange?: (source: string) => void;
   onSelectModel: (model: any, manul?: boolean) => void;
@@ -547,7 +547,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               options={filterOptions}
               size="middle"
               placeholder={intl.formatMessage({ id: 'common.input.type' })}
-              style={{ width: 150 }}
+              style={{ width: 120 }}
             ></BaseSelect>
           </span>
           <PaginationMain

@@ -16,7 +16,6 @@ const Title = styled.div`
   height: 40px;
   align-items: center;
   gap: 16px;
-  // background-color: var(--ant-color-fill-secondary);
   border-radius: var(--ant-border-radius);
   margin-bottom: 22px;
   font-weight: 600;

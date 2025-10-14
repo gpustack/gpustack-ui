@@ -1,4 +1,5 @@
 import SealCascader from '@/components/seal-form/seal-cascader';
+import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -9,6 +10,7 @@ import GPUCard from '../components/gpu-card';
 import { scheduleList, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useCatalogFormContext, useFormContext } from '../config/form-context';
+import { FormData } from '../config/types';
 
 const scheduleTypeTips = [
   {
@@ -54,6 +56,28 @@ const Performance: React.FC = () => {
 
   return (
     <>
+      <Form.Item<FormData>
+        name="replicas"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'models.form.replicas')
+          }
+        ]}
+      >
+        <SealInput.Number
+          style={{ width: '100%' }}
+          label={intl.formatMessage({
+            id: 'models.form.replicas'
+          })}
+          required
+          description={intl.formatMessage(
+            { id: 'models.form.replicas.tips' },
+            { api: `${window.location.origin}/v1` }
+          )}
+          min={0}
+        ></SealInput.Number>
+      </Form.Item>
       <Form.Item name="scheduleType">
         <SealSelect
           onChange={handleScheduleTypeChange}
@@ -73,24 +97,7 @@ const Performance: React.FC = () => {
           <Form.Item name={['gpu_selector', 'gpu_count']}>
             <SealSelect
               label={intl.formatMessage({ id: 'models.form.gpuCount' })}
-              options={[
-                {
-                  label: 'Auto',
-                  value: 'auto'
-                },
-                {
-                  label: '1',
-                  value: 1
-                },
-                {
-                  label: '2',
-                  value: 2
-                },
-                {
-                  label: '4',
-                  value: 4
-                }
-              ]}
+              options={[]}
             ></SealSelect>
           </Form.Item>
         </>

@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import hotkeys from '@/config/hotkeys';
+import { SearchOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Input } from 'antd';
 import React, { useRef } from 'react';
@@ -61,6 +62,12 @@ const SearchInput: React.FC<{
           e.stopPropagation();
         }}
         allowClear
+        suffix={
+          <SearchOutlined
+            className="font-size-16"
+            style={{ color: 'var(--ant-color-text-placeholder)' }}
+          />
+        }
         prefix={
           <IconFont
             className="font-size-16"

@@ -1,12 +1,11 @@
 import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
 import { StatusType } from '@/config/types';
-import React from 'react';
 
 export const ClusterStatusValueMap = {
-  Provisioning: 0,
-  Ready: 3,
-  Provisioned: 1
+  Provisioning: 'provisioning',
+  Ready: 'ready',
+  Provisioned: 'provisioned'
 };
 
 export const ClusterStatusLabelMap = {
@@ -26,8 +25,9 @@ export const ProviderValueMap = {
   DigitalOcean: 'DigitalOcean',
   Docker: 'Docker',
   HuaweiCloud: 'HuaweiCloud',
-  AliCloud: 'AliCloud',
-  TencentCloud: 'TencentCloud'
+  AliCloud: 'AlibabaCloud',
+  TencentCloud: 'TencentCloud',
+  AWS: 'AWS'
 };
 
 export type ProviderType = keyof typeof ProviderValueMap | null | undefined;
@@ -67,71 +67,6 @@ export const vendorIconMap = {
   debian: 'icon-debian',
   fedora: 'icon-fedora'
 };
-
-export const providerList = [
-  {
-    label: 'clusters.provider.custom',
-    locale: true,
-    value: ProviderValueMap.Docker,
-    key: ProviderValueMap.Docker,
-    icon: React.cloneElement(icons.Docker, {
-      style: { color: 'var(--ant-color-primary)' }
-    }),
-    group: 'Self-Managed'
-  },
-  {
-    label: 'Kubernetes',
-    locale: false,
-    value: ProviderValueMap.Kubernetes,
-    key: ProviderValueMap.Kubernetes,
-    icon: React.cloneElement(icons.KubernetesOutlined, {
-      style: { color: 'var(--ant-color-primary)' }
-    }),
-    group: 'Self-Managed'
-  },
-  {
-    label: 'DigitalOcean',
-    locale: false,
-    value: ProviderValueMap.DigitalOcean,
-    key: ProviderValueMap.DigitalOcean,
-    icon: React.cloneElement(icons.DigitalOcean, {
-      style: {
-        color: 'var(--ant-color-primary)'
-      }
-    }),
-    group: 'Cloud Provider'
-  },
-  {
-    label: 'Huawei Cloud',
-    locale: false,
-    disabled: true,
-    value: ProviderValueMap.HuaweiCloud,
-    key: ProviderValueMap.HuaweiCloud,
-    icon: icons.HuaweiCloud,
-    description: 'Comming soon',
-    group: 'Cloud Provider'
-  },
-  {
-    label: 'Ali Cloud',
-    locale: false,
-    disabled: true,
-    value: ProviderValueMap.AliCloud,
-    key: ProviderValueMap.AliCloud,
-    icon: icons.AliCloud,
-    description: 'Comming soon',
-    group: 'Cloud Provider'
-  },
-  {
-    label: 'Tencent Cloud',
-    locale: false,
-    disabled: true,
-    value: ProviderValueMap.TencentCloud,
-    key: ProviderValueMap.TencentCloud,
-    icon: icons.TencentCloud,
-    description: 'Comming soon',
-    group: 'Cloud Provider'
-  }
-];
 
 export const credentialActionList = [
   {

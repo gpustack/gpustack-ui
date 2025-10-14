@@ -4,6 +4,7 @@ import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import CompatibilityAlert from '../components/compatible-alert';
 import ModelCard from '../components/model-card';
@@ -24,6 +25,18 @@ type AddModalProps = {
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
+
+const ColWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  max-width: 33.33%;
+`;
+
+const FormWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  maxwidth: 100%;
+`;
 
 const DownloadModel: React.FC<AddModalProps> = (props) => {
   const {
@@ -155,31 +168,17 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
       <div style={{ display: 'flex', height: '100%' }}>
         {SEARCH_SOURCE.includes(props.source) && (
           <>
-            <div
-              style={{
-                display: 'flex',
-                flex: 1,
-                maxWidth: '33.33%'
-              }}
-            >
-              <ColumnWrapper>
-                <SearchModel
-                  hasLinuxWorker={hasLinuxWorker}
-                  modelSource={props.source}
-                  onSelectModel={handleOnSelectModel}
-                  isDownload={true}
-                ></SearchModel>
-              </ColumnWrapper>
+            <ColWrapper>
+              <SearchModel
+                hasLinuxWorker={hasLinuxWorker}
+                modelSource={props.source}
+                onSelectModel={handleOnSelectModel}
+                isDownload={true}
+              ></SearchModel>
               <Separator></Separator>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flex: 1,
-                maxWidth: '33.33%'
-              }}
-            >
-              <ColumnWrapper>
+            </ColWrapper>
+            <ColWrapper>
+              <ColumnWrapper styles={{ container: { paddingTop: 0 } }}>
                 <ModelCard
                   selectedModel={selectedModel}
                   onCollapse={setCollapsed}
@@ -189,12 +188,15 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 ></ModelCard>
               </ColumnWrapper>
               <Separator></Separator>
-            </div>
+            </ColWrapper>
           </>
         )}
-        <div style={{ display: 'flex', flex: 1, maxWidth: '100%' }}>
+        <FormWrapper>
           <ColumnWrapper
             paddingBottom={50}
+            styles={{
+              container: { paddingTop: 0 }
+            }}
             footer={
               <>
                 <CompatibilityAlert
@@ -238,7 +240,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
               ></TargetForm>
             </>
           </ColumnWrapper>
-        </div>
+        </FormWrapper>
       </div>
     </GSDrawer>
   );

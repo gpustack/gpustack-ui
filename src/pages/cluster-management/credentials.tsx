@@ -31,7 +31,12 @@ const addActions = [
     locale: false,
     key: ProviderValueMap.DigitalOcean,
     value: ProviderValueMap.DigitalOcean,
-    icon: <IconFont type="icon-digitalocean" />
+    icon: (
+      <IconFont
+        type="icon-digitalocean"
+        style={{ color: 'var(--ant-blue-6)' }}
+      />
+    )
   }
 ];
 

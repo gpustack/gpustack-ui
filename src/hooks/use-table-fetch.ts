@@ -22,6 +22,7 @@ export default function useTableFetch<T>(
     defaultData?: any[];
     events?: EventsType[];
     defaultQueryParams?: Record<string, any>;
+    isInfiniteScroll?: boolean;
   } & WatchConfig
 ) {
   const {
@@ -33,7 +34,8 @@ export default function useTableFetch<T>(
     watch,
     defaultData = [],
     events = ['UPDATE', 'DELETE'],
-    defaultQueryParams = {}
+    defaultQueryParams = {},
+    isInfiniteScroll = false
   } = options;
   const pollingRef = useRef<any>(null);
   const chunkRequedtRef = useRef<any>(null);
@@ -141,6 +143,9 @@ export default function useTableFetch<T>(
           total: newRes.pagination.total,
           totalPage: newRes.pagination.totalPage
         });
+        if (isInfiniteScroll) {
+          setQueryParams(newParams);
+        }
         return;
       }
 
@@ -151,6 +156,12 @@ export default function useTableFetch<T>(
         total: res.pagination.total,
         totalPage: res.pagination.totalPage
       });
+      if (isInfiniteScroll && query?.page) {
+        setQueryParams({
+          ...queryParams,
+          ...query
+        });
+      }
     } catch (error) {
       console.log('error', error);
       setDataSource({

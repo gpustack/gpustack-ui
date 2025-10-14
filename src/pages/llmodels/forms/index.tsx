@@ -63,6 +63,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
+  const scheduleType = Form.useWatch('scheduleType', form);
 
   const handleSumit = () => {
     form.submit();
@@ -112,6 +113,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleClusterChange = (value: number) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
+    if (scheduleType === ScheduleValueMap.Manual) {
+      form.setFieldsValue({
+        gpu_selector: { gpu_ids: [] }
+      });
+    }
   };
 
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {

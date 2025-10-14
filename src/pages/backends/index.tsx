@@ -45,6 +45,7 @@ const BackendList = () => {
     deleteAPI: deleteBackend,
     API: INFERENCE_BACKEND_API,
     watch: false,
+    isInfiniteScroll: true,
     contentForDelete: 'backends.title',
     defaultQueryParams: {
       perPage: 100
@@ -154,7 +155,7 @@ const BackendList = () => {
     <PageContainer
       ghost
       header={{
-        title: intl.formatMessage({ id: 'menu.models.backendsList' }),
+        title: intl.formatMessage({ id: 'menu.resources.backendsList' }),
         style: {
           paddingInline: 'var(--layout-content-header-inlinepadding)'
         },

@@ -4,6 +4,7 @@ import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
+import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import React, { useMemo } from 'react';
@@ -19,6 +20,7 @@ import { FormData } from '../config/types';
 
 const BackendFields: React.FC = () => {
   const intl = useIntl();
+  const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const {
     isGGUF,
@@ -51,7 +53,15 @@ const BackendFields: React.FC = () => {
 
   return (
     <>
-      <Form.Item name="backend" rules={[{ required: true }]}>
+      <Form.Item
+        name="backend"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('select', 'models.form.backend')
+          }
+        ]}
+      >
         <SealSelect
           required
           onChange={onBackendChange}
@@ -109,7 +119,15 @@ const BackendFields: React.FC = () => {
       )}
       {backend === backendOptionsMap.custom && (
         <>
-          <Form.Item<FormData> name="image_name" rules={[{ required: true }]}>
+          <Form.Item<FormData>
+            name="image_name"
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('input', 'backend.imageName')
+              }
+            ]}
+          >
             <SealInput.Input
               required
               allowClear
@@ -117,7 +135,15 @@ const BackendFields: React.FC = () => {
               label={intl.formatMessage({ id: 'backend.imageName' })}
             ></SealInput.Input>
           </Form.Item>
-          <Form.Item<FormData> name="run_command" rules={[{ required: true }]}>
+          <Form.Item<FormData>
+            name="run_command"
+            rules={[
+              {
+                required: true,
+                message: getRuleMessage('input', 'backend.runCommand')
+              }
+            ]}
+          >
             <SealInput.TextArea
               required
               scaleSize={true}

@@ -1,3 +1,4 @@
+import AlertBlockInfo from '@/components/alert-info/block';
 import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
 import { useIntl } from '@umijs/max';
@@ -132,6 +133,16 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           ]}
         ></Radio.Group>
       </Form.Item>
+      {accessPolicy === 'public' && (
+        <div style={{ marginBlock: '16px 12px' }}>
+          <AlertBlockInfo
+            type="danger"
+            message={intl.formatMessage({
+              id: 'models.accessSettings.public.tips'
+            })}
+          ></AlertBlockInfo>
+        </div>
+      )}
       {accessPolicy === 'allowed_users' && (
         <>
           <Label>

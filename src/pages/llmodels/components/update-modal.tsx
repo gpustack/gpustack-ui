@@ -127,33 +127,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
   }, 100);
 
-  // voxbox is not support multi gpu
-  const handleSetGPUIds = (backend: string) => {
-    const gpuids =
-      formRef.current?.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
-
-    if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
-      formRef.current?.setFieldValue(['gpu_selector', 'gpu_ids'], [gpuids[0]]);
-    }
-  };
-
   const handleBackendChange = (backend: string) => {
-    const updates = {
-      backend_version: ''
-    };
-    if (backend === backendOptionsMap.llamaBox) {
-      Object.assign(updates, {
-        distributed_inference_across_workers: true,
-        cpu_offloading: true
-      });
-    }
-    formRef.current?.setFieldsValue({
-      ...updates,
-      backend_parameters: [],
-      env: null
-    });
-    handleSetGPUIds(backend);
-
     const data = formRef.current?.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
     if (res.show) {

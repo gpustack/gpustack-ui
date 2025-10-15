@@ -80,6 +80,27 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   };
 
+  const checkIsGGUF = () => {
+    const huggingface_filename = form.getFieldValue('huggingface_filename');
+    const model_scope_model_id = form.getFieldValue('model_scope_model_id');
+    const local_path = form.getFieldValue('local_path');
+
+    if (local_path) {
+      const isEndwithGGUF = _.endsWith(local_path, '.gguf');
+      const isBlobFile = local_path.split('/').pop().includes('sha256');
+      return isEndwithGGUF || isBlobFile;
+    }
+    return huggingface_filename || model_scope_model_id;
+  };
+
+  const updateFieldsOnGGUF = () => {
+    // when isGGUF is true, set distributed_inference_across_workers and cpu_offloading to true
+    return {
+      distributed_inference_across_workers: true,
+      cpu_offloading: true
+    };
+  };
+
   const handleBackendChange = async (val: string, option: BackendOption) => {
     form.setFieldsValue({
       env: null,

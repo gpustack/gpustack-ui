@@ -127,6 +127,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
       >
         <Input.TextArea
           {...rest}
+          placeholder={placeholder}
           spellCheck={rest.spellCheck ?? false}
           autoSize={autoSize}
           ref={inputRef}

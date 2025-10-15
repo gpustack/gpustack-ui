@@ -57,10 +57,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const onOk = () => {
     if (activeKey === 'yaml') {
       const content = editorRef.current?.getContent();
-      const valid = editorRef.current?.validate();
-      if (valid) {
-        onSubmitYaml({ content: content });
-      }
+      onSubmitYaml({ content: content });
     } else {
       formRef.current?.submit();
     }
@@ -104,30 +101,40 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       );
 
       const builtInVersions = Object.keys(
-        values.build_in_version_configs || {}
+        values.built_in_version_configs || {}
       ).map((key) => ({
         version_no: key,
-        image_name: values.build_in_version_configs?.[key]?.image_name,
-        run_command: values.build_in_version_configs?.[key]?.run_command,
+        image_name: values.built_in_version_configs?.[key]?.image_name,
+        run_command: values.built_in_version_configs?.[key]?.run_command,
         is_default: key === values.default_version,
-        build_in_frameworks:
-          values.build_in_version_configs?.[key]?.build_in_frameworks || [],
+        built_in_frameworks:
+          values.built_in_version_configs?.[key]?.built_in_frameworks || [],
         is_built_in: true
       }));
 
       return {
         ...values,
         version_configs: versionConfigs,
-        build_in_version_configs: builtInVersions
+        built_in_version_configs: builtInVersions
       };
     };
 
     // built-in backend does not allow to edit default_version
     const initYamlContent = (values: any) => {
+      const copyValues = structuredClone(values);
+      copyValues.version_configs = _.mapValues(
+        copyValues.version_configs || {},
+        (v: any) => {
+          return _.omit(v, ['built_in_frameworks']);
+        }
+      );
+
       if (currentData?.is_built_in) {
-        return json2Yaml(_.pick(values, backendFields));
+        return json2Yaml(_.pick(copyValues, backendFields));
       }
-      return json2Yaml(_.pick(values, [...backendFields, 'default_version']));
+      return json2Yaml(
+        _.pick(copyValues, [...backendFields, 'default_version'])
+      );
     };
 
     if (action === PageAction.EDIT && open) {

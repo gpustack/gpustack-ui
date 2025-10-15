@@ -11,7 +11,7 @@ export default {
   'backend.builtin': 'Built-in',
   'backend.custom': 'Custom',
   'backend.isDefault': 'Default',
-  'backend.availableFrameworks': 'Available Frameworks',
+  'backend.availableFrameworks': 'Supported Frameworks',
   'backend.addVersion': 'Add Version',
   'backend.filter.framework': 'Filter by Framework',
   'backend.export.yaml': 'Export YAML',

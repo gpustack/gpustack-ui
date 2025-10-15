@@ -90,6 +90,15 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
             {intl.formatMessage({ id: 'backend.builtin' })}
           </ThemeTag>
         )}
+        {!data.is_built_in && data.is_default && (
+          <ThemeTag
+            color="geekblue"
+            className="font-400"
+            style={{ marginRight: 0 }}
+          >
+            {intl.formatMessage({ id: 'backend.isDefault' })}
+          </ThemeTag>
+        )}
       </div>
       <RowWrapper>
         {data.image_name && (

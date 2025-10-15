@@ -114,7 +114,7 @@ export const backendFields = [
   'health_check_path',
   'default_run_command',
   'version_configs',
-  'default_backend_parameters'
+  'default_backend_param'
 ];
 export const frameworks = [
   {
@@ -148,6 +148,8 @@ backend_name: SGLang
 description: SGLang backend
 default_version: v0.5.1
 health_check_path: /health
+default_backend_param:
+  - --host
 default_run_command: run sglang
 version_configs:
   v0.0.1:
@@ -158,6 +160,4 @@ version_configs:
     image_name: lm/sglang
     run_command:
     custom_framework:
-default_backend_parameters:
-  - --host
   `;

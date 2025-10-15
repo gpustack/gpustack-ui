@@ -62,7 +62,7 @@ const BackendList = () => {
     currentData?: Partial<ListItem>;
   }>({ open: false });
 
-  // build_in_version_configs is read-only, but needs to be included when updating
+  // built_in_version_configs is read-only, but needs to be included when updating
   const handleOnSubmit = async (values: FormData) => {
     try {
       if (openModalStatus.action === 'create') {
@@ -70,9 +70,10 @@ const BackendList = () => {
       } else {
         await updateBackend(openModalStatus.currentData!.id!, {
           data: {
-            build_in_version_configs:
-              openModalStatus.currentData?.build_in_version_configs,
-            ..._.omit(values, ['build_in_version_configs'])
+            built_in_version_configs:
+              openModalStatus.currentData?.built_in_version_configs,
+            ..._.omit(values, ['built_in_version_configs']),
+            health_check_path: values.health_check_path || null
           }
         });
       }
@@ -85,7 +86,7 @@ const BackendList = () => {
     } catch (error) {}
   };
 
-  // build_in_version_configs needs to be included when updating from YAML, but not allowed to be changed
+  // built_in_version_configs needs to be included when updating from YAML, but not allowed to be changed
   const handleOnSubmitYaml = async (values: { content: string }) => {
     try {
       if (openModalStatus.action === 'create') {
@@ -95,8 +96,8 @@ const BackendList = () => {
         const yamlContent = json2Yaml({
           backend_name: openModalStatus.currentData?.backend_name,
           default_version: openModalStatus.currentData?.default_version,
-          build_in_version_configs:
-            openModalStatus.currentData?.build_in_version_configs,
+          built_in_version_configs:
+            openModalStatus.currentData?.built_in_version_configs,
           ...jsonData
         });
         await updateBackendFromYAML(openModalStatus.currentData!.id!, {
@@ -122,7 +123,6 @@ const BackendList = () => {
   };
 
   const handleOnSelect = (item: any) => {
-    console.log('selected item:', item);
     if (item.action === 'edit') {
       setOpenModalStatus({
         open: true,
@@ -134,8 +134,16 @@ const BackendList = () => {
         name: item.data.backend_name
       });
     } else if (item.action === 'export') {
-      // Export YAML action
-      exportYAML(item.data);
+      const currentData = structuredClone(item.data);
+
+      currentData.version_configs = _.mapValues(
+        currentData.version_configs,
+        (v: any) => {
+          return _.omit(v, ['built_in_frameworks']);
+        }
+      );
+
+      exportYAML(_.omit(currentData, ['id', 'created_at', 'updated_at']));
     } else if (item.action === 'view_versions') {
       setOpenVersionInfoModal({
         open: true,

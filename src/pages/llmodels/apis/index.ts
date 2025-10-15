@@ -4,6 +4,7 @@ import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import qs from 'query-string';
 import {
+  AccessControlFormData,
   CatalogItem,
   CatalogSpec,
   EvaluateResult,
@@ -426,7 +427,7 @@ export async function queryModelAccessUserList(id: number) {
 
 export async function updateModelAccessUser(params: {
   id: number;
-  data: { users: { id: number }[]; set_public: boolean };
+  data: AccessControlFormData;
 }) {
   return request(`${MODELS_API}/${params.id}/access`, {
     method: 'POST',

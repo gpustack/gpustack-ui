@@ -174,7 +174,6 @@ export default {
   'models.button.accessSettings': 'Access Settings',
   'models.table.accessScope': 'Access Scope',
   'models.table.accessScope.all': 'All users',
-  'models.table.accessScope.selected': 'Selected users',
   'models.table.userSelection': 'User Selection',
   'models.table.filterByName': 'Filter by username',
   'models.table.admin': 'Admin',
@@ -189,5 +188,10 @@ export default {
   'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
   'models.form.remoteURL': 'Remote Storage URL',
   'models.form.runCommandPlaceholder':
-    'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct'
+    'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
+  'models.accessSettings.public': 'Public',
+  'models.accessSettings.authed': 'Authenticated',
+  'models.accessSettings.allowedUsers': 'Allowed users',
+  'models.accessSettings.public.tips':
+    'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.'
 };

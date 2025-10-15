@@ -24,7 +24,7 @@ export interface ListItem {
   local_path?: string;
   created_at: string;
   updated_at: string;
-  public?: boolean;
+  access_policy: 'public' | 'authed' | 'allowed_users';
   gpu_selector?: {
     gpu_ids: string[];
   };
@@ -261,6 +261,6 @@ export interface BackendOption {
 }
 
 export interface AccessControlFormData {
-  set_public: boolean;
+  access_policy: 'public' | 'authed' | 'allowed_users';
   users: { id: number }[];
 }

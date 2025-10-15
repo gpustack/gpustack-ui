@@ -144,20 +144,20 @@ export const frameworks = [
 ];
 
 export const yamlTemplate = `# backend configuration template
-backend_name: SGLang
-description: SGLang backend
+backend_name: my-backend
+description: this is my-backend
 default_version: v0.5.1
 health_check_path: /health
 default_backend_param:
   - --host
-default_run_command: run sglang
+default_run_command: myBackend serve {model} --port {port}
 version_configs:
   v0.0.1:
-    image_name: lm/sglang
-    run_command: run sglang
+    image_name: lm/mybackend:latest
+    run_command: myBackend serve {model} --port {port}
     custom_framework: cuda
   v0.0.2:
-    image_name: lm/sglang
+    image_name: lm/mybackend:test
     run_command:
     custom_framework:
   `;

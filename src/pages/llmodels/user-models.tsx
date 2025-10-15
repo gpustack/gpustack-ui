@@ -28,7 +28,10 @@ const UserModels: React.FC = () => {
     fetchAPI: queryMyModels,
     API: MY_MODELS_API,
     watch: false,
-    isInfiniteScroll: true
+    isInfiniteScroll: true,
+    defaultQueryParams: {
+      perPage: 24
+    }
   });
   const intl = useIntl();
 

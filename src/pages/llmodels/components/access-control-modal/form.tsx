@@ -25,7 +25,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const { currentData, onFinish } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
-  const setPublic = Form.useWatch('set_public', form);
+  const accessPolicy = Form.useWatch('access_policy', form);
   const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [userList, setUserList] = useState<{ title: string; key: number }[]>(
@@ -86,7 +86,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         const keys = res.items.map((item) => item.id);
         setTargetKeys(keys);
         form.setFieldsValue({
-          set_public: currentData.public,
+          access_policy: currentData.access_policy,
           users: res.items.map((item) => ({ id: item.id }))
         });
       });
@@ -105,28 +105,34 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       clearOnDestroy={true}
       scrollToFirstError={true}
       initialValues={{
-        set_public: true
+        access_policy: 'authed'
       }}
     >
       <Label>{intl.formatMessage({ id: 'models.table.accessScope' })}</Label>
-      <Form.Item<AccessControlFormData> name="set_public" noStyle>
+      <Form.Item<AccessControlFormData> name="access_policy" noStyle>
         <Radio.Group
           style={{ marginBottom: 12 }}
           options={[
             {
-              label: intl.formatMessage({ id: 'models.table.accessScope.all' }),
-              value: true
+              label: intl.formatMessage({ id: 'models.accessSettings.authed' }),
+              value: 'authed'
             },
             {
               label: intl.formatMessage({
-                id: 'models.table.accessScope.selected'
+                id: 'models.accessSettings.allowedUsers'
               }),
-              value: false
+              value: 'allowed_users'
+            },
+            {
+              label: intl.formatMessage({
+                id: 'models.accessSettings.public'
+              }),
+              value: 'public'
             }
           ]}
         ></Radio.Group>
       </Form.Item>
-      {!setPublic && (
+      {accessPolicy === 'allowed_users' && (
         <>
           <Label>
             {intl.formatMessage({ id: 'models.table.userSelection' })}

@@ -20,8 +20,9 @@ const AccessControlModal: React.FC<
   const handleOnFinish = async (values: AccessControlFormData) => {
     try {
       const data = {
-        set_public: values.set_public,
-        users: values.set_public ? [] : values.users || []
+        access_policy: values.access_policy,
+        users:
+          values.access_policy === 'allowed_users' ? values.users || [] : []
       };
       await updateModelAccessUser({
         id: currentData?.id as number,

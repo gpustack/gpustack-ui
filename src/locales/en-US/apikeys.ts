@@ -14,6 +14,6 @@ export default {
   'apikeys.form.expiration.never': 'No expiration',
   'apikeys.table.bindModels': 'Model Access',
   'apikeys.models.all': 'All models',
-  'apikeys.models.selected': 'Selected models',
+  'apikeys.models.selected': 'Allowed models',
   'apikeys.models.noModelsFound': 'No models found'
 };

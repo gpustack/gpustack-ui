@@ -174,7 +174,6 @@ export default {
   'models.button.accessSettings': 'Access Settings',
   'models.table.accessScope': 'Access Scope',
   'models.table.accessScope.all': 'All users',
-  'models.table.accessScope.selected': 'Selected users',
   'models.table.userSelection': 'User Selection',
   'models.table.filterByName': 'Filter by username',
   'models.table.admin': 'Admin',
@@ -189,14 +188,18 @@ export default {
   'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
   'models.form.remoteURL': 'Remote Storage URL',
   'models.form.runCommandPlaceholder':
-    'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct'
+    'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
+  'models.accessSettings.public': 'Public',
+  'models.accessSettings.authed': 'Authenticated',
+  'models.accessSettings.allowedUsers': 'Allowed users',
+  'models.accessSettings.public.tips':
+    'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1.   'models.button.accessSettings': 'Access Settings',
 // 2. 'models.table.accessScope': 'Access Scope',
 // 3. 'models.table.accessScope.all': 'All users',
-// 4. 'models.table.accessScope.selected': 'Selected users',
 // 5. 'models.table.userSelection': 'User Selection',
 // 6. 'models.table.filterByName': 'Filter by username',
 // 7. 'models.table.admin': 'Admin',
@@ -210,5 +213,9 @@ export default {
 // 15. 'models.form.chunkSize': 'Size Of Cache Chunks',
 // 16. 'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
 // 17. 'models.form.remoteURL': 'Remote Storage URL',
-// 18. 'models.form.runCommandPlaceholder': 'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct';
+// 18. 'models.form.runCommandPlaceholder': 'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct'
+// 19. 'models.accessSettings.public': 'Public',
+// 20. 'models.accessSettings.authed': 'Authenticated',
+// 21. 'models.accessSettings.allowedUsers': 'Allowed users',
+// 22. 'models.accessSettings.public.tips': 'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.'
 // ========== End of To-Do List ==========

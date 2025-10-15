@@ -164,7 +164,6 @@ export default {
   'models.button.accessSettings': '访问设置',
   'models.table.accessScope': '访问范围',
   'models.table.accessScope.all': '所有用户',
-  'models.table.accessScope.selected': '指定用户',
   'models.table.userSelection': '用户选择',
   'models.table.filterByName': '按用户名筛选',
   'models.table.admin': '管理员',
@@ -179,5 +178,10 @@ export default {
   'models.form.maxCPUSize': 'CPU 缓存最大占用 (GiB)',
   'models.form.remoteURL': '远程存储地址',
   'models.form.runCommandPlaceholder':
-    '例如，vllm serve Qwen/Qwen2.5-1.5B-Instruct'
+    '例如，vllm serve Qwen/Qwen2.5-1.5B-Instruct',
+  'models.accessSettings.public': '公开',
+  'models.accessSettings.authed': '认证用户',
+  'models.accessSettings.allowedUsers': '指定用户',
+  'models.accessSettings.public.tips':
+    '公开后，任何人无需认证即可访问，可能存在数据泄露风险。'
 };

@@ -48,7 +48,7 @@ const BackendList = () => {
     isInfiniteScroll: true,
     contentForDelete: 'backends.title',
     defaultQueryParams: {
-      perPage: 100
+      perPage: 24
     }
   });
   const { exportYAML } = useExportYAML();

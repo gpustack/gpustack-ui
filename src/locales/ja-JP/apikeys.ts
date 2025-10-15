@@ -14,13 +14,13 @@ export default {
   'apikeys.form.expiration.never': '無期限',
   'apikeys.table.bindModels': 'Model Access',
   'apikeys.models.all': 'All models',
-  'apikeys.models.selected': 'Selected models',
+  'apikeys.models.selected': 'Allowed models',
   'apikeys.models.noModelsFound': 'No models found'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'apikeys.table.bindModels': 'Model Access',
 // 2. 'apikeys.models.all': 'All models',
-// 3. 'apikeys.models.selected': 'Selected models',
+// 3. 'apikeys.models.selected': 'Allowed models',
 // 4. 'apikeys.models.noModelsFound': 'No models found'
 // ========== End of To-Do List ==========

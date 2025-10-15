@@ -177,5 +177,7 @@ export default {
   'models.form.extendedkvcache': '启用扩展 KV 缓存',
   'models.form.chunkSize': '缓存分块大小',
   'models.form.maxCPUSize': 'CPU 缓存最大占用 (GiB)',
-  'models.form.remoteURL': '远程存储地址'
+  'models.form.remoteURL': '远程存储地址',
+  'models.form.runCommandPlaceholder':
+    '例如，vllm serve Qwen/Qwen2.5-1.5B-Instruct'
 };

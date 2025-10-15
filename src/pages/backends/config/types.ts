@@ -2,7 +2,7 @@ export interface VersionConfigs {
   image_name: string;
   run_command: string;
   is_default: boolean;
-  build_in_frameworks?: string[];
+  built_in_frameworks?: string[];
   custom_framework?: string;
   version_no?: string;
   is_built_in?: boolean;
@@ -29,6 +29,6 @@ export interface ListItem extends FormData {
   is_built_in?: boolean;
   created_at?: string;
   updated_at?: string;
-  build_in_version_configs?: Record<string, VersionConfigs>;
+  built_in_version_configs?: Record<string, VersionConfigs>;
   framework_index_map?: Record<string, string[]>;
 }

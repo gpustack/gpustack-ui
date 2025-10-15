@@ -14,6 +14,17 @@
       "type": "string",
       "description": "default backend version"
     },
+    "is_built_in": {
+      "type": "boolean",
+      "description": "is built-in backend"
+    },
+    "default_backend_param": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "default backend parameter"
+    },
     "default_run_command": {
       "type": ["string", "null"],
       "description": "default start command"
@@ -48,12 +59,51 @@
       "additionalProperties": false,
       "description": "multiple backend versions"
     },
-    "default_backend_parameters": {
-      "type": "array",
-      "items": {
-        "type": "string"
+    "built_in_version_configs": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9._-]+$": {
+          "type": "object",
+          "properties": {
+            "image_name": {
+              "type": "string",
+              "description": "image name"
+            },
+            "run_command": {
+              "type": ["string", "null"],
+              "description": "start command"
+            },
+            "custom_framework": {
+              "type": ["string", "null"],
+              "description": "custom framework"
+            },
+            "built_in_frameworks": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "built-in frameworks"
+            }
+          },
+          "required": ["image_name", "run_command"],
+          "additionalProperties": false
+        }
       },
-      "description": "default backend parameters"
+      "additionalProperties": false,
+      "description": "multiple backend versions"
+    },
+    "framework_index_map": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9._-]+$": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "description": "framework to version mapping"
     }
   },
   "required": ["backend_name", "default_version", "version_configs"],

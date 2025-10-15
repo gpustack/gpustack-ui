@@ -187,7 +187,9 @@ export default {
   'models.form.extendedkvcache': 'Enable Extended KV Cache',
   'models.form.chunkSize': 'Size Of Cache Chunks',
   'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
-  'models.form.remoteURL': 'Remote Storage URL'
+  'models.form.remoteURL': 'Remote Storage URL',
+  'models.form.runCommandPlaceholder':
+    'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -207,5 +209,6 @@ export default {
 // 14. 'models.form.extendedkvcache': 'Enable Extended KV Cache',
 // 15. 'models.form.chunkSize': 'Size Of Cache Chunks',
 // 16. 'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
-// 17. 'models.form.remoteURL': 'Remote Storage URL'
+// 17. 'models.form.remoteURL': 'Remote Storage URL',
+// 18. 'models.form.runCommandPlaceholder': 'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct';
 // ========== End of To-Do List ==========

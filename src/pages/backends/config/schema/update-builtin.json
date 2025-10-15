@@ -5,6 +5,13 @@
       "type": ["string", "null"],
       "description": "backend description"
     },
+    "default_backend_param": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "default backend parameter"
+    },
     "default_run_command": {
       "type": ["string", "null"],
       "description": "default start command"
@@ -38,13 +45,6 @@
       },
       "additionalProperties": false,
       "description": "multiple backend versions"
-    },
-    "default_backend_parameters": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "default backend parameters"
     }
   },
   "required": ["version_configs"],

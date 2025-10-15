@@ -20,8 +20,8 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
 
   useEffect(() => {
     if (open && currentData) {
-      // add is_built_in field to build_in_version_configs
-      const builtInVersions = currentData.build_in_version_configs || {};
+      // add is_built_in field to built_in_version_configs
+      const builtInVersions = currentData.built_in_version_configs || {};
 
       for (const key in builtInVersions) {
         if (builtInVersions?.hasOwnProperty(key)) {
@@ -41,7 +41,7 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
           run_command: value.run_command,
           is_default: key === currentData.default_version,
           availableFrameworks: [
-            ...(value.build_in_frameworks || []),
+            ...(value.built_in_frameworks || []),
             ...(value.custom_framework ? [value.custom_framework] : [])
           ],
           is_built_in: value.is_built_in || false

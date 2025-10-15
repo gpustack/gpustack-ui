@@ -11,7 +11,7 @@ export default {
   'backend.builtin': '内置',
   'backend.custom': '自定义',
   'backend.isDefault': '默认',
-  'backend.availableFrameworks': '可用框架',
+  'backend.availableFrameworks': '支持框架',
   'backend.addVersion': '添加版本',
   'backend.filter.framework': '按框架过滤',
   'backend.export.yaml': '导出 YAML',

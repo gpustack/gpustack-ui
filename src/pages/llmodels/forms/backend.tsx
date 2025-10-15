@@ -143,6 +143,9 @@ const BackendFields: React.FC = () => {
               scaleSize={true}
               allowClear
               label={intl.formatMessage({ id: 'backend.runCommand' })}
+              placeholder={intl.formatMessage({
+                id: 'models.form.runCommandPlaceholder'
+              })}
             ></SealInput.TextArea>
           </Form.Item>
         </>

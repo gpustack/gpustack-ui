@@ -19,6 +19,7 @@ import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
+import Performance from './performance';
 
 const requiredFields = ['gpu_selector', 'backend'];
 
@@ -274,13 +275,13 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           accordion={false}
           onChange={handleOnCollapseChange}
           items={[
-            // {
-            //   key: 'performance',
-            //   label: intl.formatMessage({ id: 'models.form.performance' }),
-            //   forceRender: true,
-            //   extra: <div ref={performanceRef}></div>,
-            //   children: <Performance></Performance>
-            // },
+            {
+              key: 'performance',
+              label: intl.formatMessage({ id: 'models.form.performance' }),
+              forceRender: true,
+              extra: <div ref={performanceRef}></div>,
+              children: <Performance></Performance>
+            },
             {
               key: 'advanced',
               label: intl.formatMessage({ id: 'resources.form.advanced' }),

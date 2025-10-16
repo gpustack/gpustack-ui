@@ -5,6 +5,7 @@ import { request } from '@umijs/max';
 import qs from 'query-string';
 import {
   AccessControlFormData,
+  BackendItem,
   CatalogItem,
   CatalogSpec,
   EvaluateResult,
@@ -405,14 +406,7 @@ export async function evaluationsModelSpec(
 
 export async function queryBackendList(params?: { cluster_id: number }) {
   return request<{
-    items: {
-      backend_name: string;
-      backend_show_name: string;
-      from_config: boolean;
-      default_version: string;
-      default_backend_param: string[];
-      versions: string[];
-    }[];
+    items: BackendItem[];
   }>(BACKEND_LIST_API, {
     method: 'GET',
     params

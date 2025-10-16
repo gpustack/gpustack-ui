@@ -112,20 +112,23 @@ export default function useTableFetch<T>(
     }
   };
 
-  const fetchData = async (params?: { query: any }, polling = false) => {
+  const fetchData = async (
+    params?: { query: Record<string, any>; loadmore?: boolean },
+    polling = false
+  ) => {
     if (!polling) {
       setDataSource((pre) => {
         pre.loading = true;
         return { ...pre };
       });
     }
-    const { query } = params || {};
+    const { query, loadmore } = params || {};
+
     try {
       const params = {
         ..._.pickBy(query || queryParams, (val: any) => !!val)
       };
       const res = await fetchAPI(params);
-
       if (
         !res.items.length &&
         params.page > res.pagination.totalPage &&
@@ -137,7 +140,9 @@ export default function useTableFetch<T>(
         };
         const newRes = await fetchAPI(newParams);
         setDataSource({
-          dataList: newRes.items || [],
+          dataList: loadmore
+            ? [...dataSource.dataList, ...(newRes.items || [])]
+            : newRes.items || [],
           loading: false,
           loadend: true,
           total: newRes.pagination.total,
@@ -150,7 +155,9 @@ export default function useTableFetch<T>(
       }
 
       setDataSource({
-        dataList: res.items || [],
+        dataList: loadmore
+          ? [...dataSource.dataList, ...(res.items || [])]
+          : res.items || [],
         loading: false,
         loadend: true,
         total: res.pagination.total,

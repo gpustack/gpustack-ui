@@ -2,6 +2,7 @@ import { modelsExpandKeysAtom } from '@/atoms/models';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
@@ -12,6 +13,7 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
+import NoResult from '@/pages/_components/no-result';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
@@ -704,6 +706,30 @@ const Models: React.FC<ModelsProps> = ({
           loadChildren={getModelInstances}
           loadChildrenAPI={generateChildrenRequestAPI}
           renderChildren={renderChildren}
+          empty={
+            <NoResult
+              loading={loading}
+              loadend={loadend}
+              dataSource={dataSource}
+              image={<IconFont type="icon-rocket-launch1" />}
+              filters={queryParams}
+              noFoundText={intl.formatMessage({
+                id: 'noresult.mymodels.nofound'
+              })}
+              title={intl.formatMessage({ id: 'noresult.deployments.title' })}
+              subTitle={intl.formatMessage({
+                id: 'noresult.deployments.subTitle'
+              })}
+            >
+              <Button
+                type="primary"
+                iconPosition="end"
+                onClick={() => handleClickDropdown({ key: 'catalog' })}
+              >
+                {intl?.formatMessage?.({ id: 'models.table.button.deploy' })}
+              </Button>
+            </NoResult>
+          }
           pagination={{
             showSizeChanger: true,
             pageSize: queryParams.perPage,

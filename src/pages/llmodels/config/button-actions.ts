@@ -13,12 +13,6 @@ export const modalConfig: Record<
     width: 'calc(100vw - 220px)',
     source: modelSourceMap.huggingface_value
   },
-  ollama_library: {
-    show: true,
-    width: 600,
-    isGGUF: true,
-    source: modelSourceMap.ollama_library_value
-  },
   modelscope: {
     show: true,
     width: 'calc(100vw - 220px)',

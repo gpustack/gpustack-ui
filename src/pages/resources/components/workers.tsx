@@ -1,12 +1,14 @@
 import DeleteModal from '@/components/delete-modal';
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Empty, Table, message } from 'antd';
+import { Button, ConfigProvider, Table, message } from 'antd';
 import React, { useEffect, useState } from 'react';
+import NoResult from '../../_components/no-result';
 import TerminalTabs from '../../_components/terminal-tabs';
 import {
   WORKERS_API,
@@ -43,6 +45,7 @@ const Workers: React.FC = () => {
     API: WORKERS_API
   });
 
+  const navigate = useNavigate();
   const intl = useIntl();
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
@@ -175,16 +178,28 @@ const Workers: React.FC = () => {
     }
   });
 
+  const handleAddWorker = () => {
+    navigate('/cluster-management/clusters/list');
+  };
+
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
-    if (
-      !dataSource.loading &&
-      dataSource.loadend &&
-      !dataSource.dataList.length
-    ) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
-    }
-    return <div></div>;
+    return (
+      <NoResult
+        loading={dataSource.loading}
+        loadend={dataSource.loadend}
+        dataSource={dataSource.dataList}
+        image={<IconFont type="icon-resources" />}
+        filters={queryParams}
+        noFoundText={intl.formatMessage({ id: 'noresult.workers.nofound' })}
+        title={intl.formatMessage({ id: 'noresult.workers.title' })}
+        subTitle={intl.formatMessage({ id: 'noresult.workers.subTitle' })}
+      >
+        <Button type="primary" onClick={handleAddWorker}>
+          {intl.formatMessage({ id: 'noresult.workers.button.add' })}
+        </Button>
+      </NoResult>
+    );
   };
 
   const handleClusterChange = (value: number) => {

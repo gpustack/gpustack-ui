@@ -264,3 +264,14 @@ export interface AccessControlFormData {
   access_policy: 'public' | 'authed' | 'allowed_users';
   users: { id: number }[];
 }
+
+export interface BackendItem {
+  backend_name: string;
+  from_config: boolean;
+  default_version: string;
+  default_backend_param: string[];
+  versions: {
+    version: string;
+    is_deprecated: boolean;
+  }[];
+}

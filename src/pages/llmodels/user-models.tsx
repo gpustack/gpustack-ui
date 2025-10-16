@@ -1,3 +1,4 @@
+import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import CardList from '@/components/templates/card-list';
@@ -10,6 +11,7 @@ import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
 import React from 'react';
 import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
+import NoResult from '../_components/no-result';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import ModelItem from './components/model-item';
 import { categoryOptions, modelCategoriesMap } from './config';
@@ -67,8 +69,11 @@ const UserModels: React.FC = () => {
 
   const loadMore = useMemoizedFn((nextPage: number) => {
     fetchData({
-      ...queryParams,
-      page: nextPage
+      query: {
+        ...queryParams,
+        page: nextPage
+      },
+      loadmore: true
     });
   });
 
@@ -137,6 +142,18 @@ const UserModels: React.FC = () => {
           Skeleton={CardSkeleton}
           renderItem={renderCard}
         ></CardList>
+        <NoResult
+          loading={dataSource.loading}
+          loadend={dataSource.loadend}
+          dataSource={dataSource.dataList}
+          image={<IconFont type="icon-models" />}
+          filters={queryParams}
+          noFoundText={intl.formatMessage({
+            id: 'noresult.mymodels.nofound'
+          })}
+          title={intl.formatMessage({ id: 'noresult.mymodels.title' })}
+          subTitle={intl.formatMessage({ id: 'noresult.mymodels.subTitle' })}
+        ></NoResult>
       </ScrollerContext.Provider>
     </PageContainer>
   );

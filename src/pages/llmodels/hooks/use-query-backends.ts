@@ -11,12 +11,12 @@ export default function useQueryBackends() {
       const list = res?.items?.map((item) => {
         return {
           value: item.backend_name,
-          label: item.backend_show_name,
+          label: item.backend_name,
           default_backend_param: item.default_backend_param || [],
           default_version: item.default_version,
-          versions: (item.versions || []).map((version) => ({
-            label: version,
-            value: version
+          versions: (item.versions || []).map((vItem) => ({
+            label: vItem.version,
+            value: vItem.version
           }))
         };
       });

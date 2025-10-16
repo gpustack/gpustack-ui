@@ -1,5 +1,6 @@
 import { expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import TableContext from '@/components/seal-table/table-context';
@@ -12,9 +13,10 @@ import AddWorker from '@/pages/cluster-management/components/add-worker';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
+import NoResult from '../_components/no-result';
 import {
   CLUSTERS_API,
   createWorkerPool,
@@ -39,7 +41,7 @@ import {
 } from './config/types';
 import useClusterColumns from './hooks/use-cluster-columns';
 
-const Credentials: React.FC = () => {
+const Clusters: React.FC = () => {
   const {
     dataSource,
     rowSelection,
@@ -372,6 +374,26 @@ const Credentials: React.FC = () => {
             columns={columns}
             childParentKey="cluster_id"
             expandable={true}
+            empty={
+              <NoResult
+                loading={dataSource.loading}
+                loadend={dataSource.loadend}
+                dataSource={dataSource.dataList}
+                image={<IconFont type="icon-cluster-outline" />}
+                filters={queryParams}
+                noFoundText={intl.formatMessage({
+                  id: 'noresult.cluster.nofound'
+                })}
+                title={intl.formatMessage({ id: 'noresult.cluster.title' })}
+                subTitle={intl.formatMessage({
+                  id: 'noresult.cluster.subTitle'
+                })}
+              >
+                <Button type="primary" onClick={handleClickDropdown}>
+                  {intl.formatMessage({ id: 'noresult.button.add' })}
+                </Button>
+              </NoResult>
+            }
             pagination={{
               showSizeChanger: true,
               pageSize: queryParams.perPage,
@@ -451,4 +473,4 @@ const Credentials: React.FC = () => {
   );
 };
 
-export default Credentials;
+export default Clusters;

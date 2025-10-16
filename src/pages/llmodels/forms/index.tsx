@@ -20,6 +20,8 @@ import useQueryBackends from '../hooks/use-query-backends';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 
+const requiredFields = ['gpu_selector', 'backend'];
+
 interface DataFormProps {
   initialValues?: any;
   ref?: any;
@@ -147,18 +149,24 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey(Array.isArray(keys) ? keys : [keys]);
   };
 
+  const handleOnFinishFailed = (errorInfo: any) => {
+    const { errorFields } = errorInfo;
+    if (errorFields && errorFields.length > 0) {
+      const names = errorFields.map((item: any) => item.name[0]);
+      const isRequired = names.some((name: string) =>
+        requiredFields.includes(name)
+      );
+      if (isRequired) {
+        setActiveKey(['advanced']);
+      }
+    }
+  };
+
   const handleTargetChange = (val: string) => {
-    console.log('val', val);
-    // if (val === 'performance' && performanceRef.current) {
-    //   scrollToTarget?.(performanceRef.current);
-    // }
-    // if (val === 'advanced' && advanceRef.current) {
-    //   scrollToTarget?.(advanceRef.current);
-    // }
-    // scrollToBottom?.();
-    // setTimeout(() => {
-    //   setTarget(val);
-    // }, 100);
+    form.scrollToField(val, {
+      behavior: 'smooth',
+      block: 'center'
+    });
   };
 
   useImperativeHandle(ref, () => {
@@ -202,22 +210,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         onBackendChange: handleBackendChange
       }}
     >
-      {/* <div className="m-b-8">
+      {/* <div
+        className="m-b-8"
+        style={{ position: 'sticky', top: 0, zIndex: 100 }}
+      >
         <Segmented
           value={target}
           defaultValue="Basic"
           onChange={handleTargetChange}
           options={[
             {
-              value: 'basic',
+              value: 'name',
               label: 'Basic'
             },
             {
-              value: 'performance',
+              value: 'categories',
               label: 'Performance'
             },
             {
-              value: 'advanced',
+              value: 'categories',
               label: 'Advanced'
             }
           ]}
@@ -230,6 +241,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         preserve={false}
         clearOnDestroy={true}
         onValuesChange={handleOnValuesChange}
+        onFinishFailed={handleOnFinishFailed}
         scrollToFirstError={true}
         initialValues={{
           replicas: 1,

@@ -184,5 +184,6 @@ export default {
   'models.accessSettings.allowedUsers': '指定用户',
   'models.accessSettings.public.tips':
     '公开后，任何人无需认证即可访问，可能存在数据泄露风险。',
-  'models.table.button.deploy': '立即部署'
+  'models.table.button.deploy': '立即部署',
+  'models.form.backendVersion.holder': '输入或选择一个版本'
 };

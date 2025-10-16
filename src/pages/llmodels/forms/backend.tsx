@@ -47,7 +47,7 @@ const BackendFields: React.FC = () => {
     return (
       backendOptions.find((item) => item.value === backend)?.versions || []
     );
-  }, [backend]);
+  }, [backend, backendOptions]);
 
   return (
     <>
@@ -72,7 +72,9 @@ const BackendFields: React.FC = () => {
         <Form.Item name="backend_version">
           <AutoComplete
             options={backendVersions}
-            placeholder="enter or select a version"
+            placeholder={intl.formatMessage({
+              id: 'models.form.backendVersion.holder'
+            })}
             onBlur={handleBackendVersionOnBlur}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
             description={intl.formatMessage(

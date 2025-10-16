@@ -80,7 +80,9 @@ export const useGenerateGPUOptions = () => {
     return gpuSelectorList;
   };
 
-  const getGPUOptionList = async (params?: { clusterId: number }) => {
+  const getGPUOptionList = async (params?: {
+    clusterId: number;
+  }): Promise<CascaderOption[]> => {
     const { clusterId } = params || {};
     const [gpuData, workerData] = await Promise.all([
       queryGPUList({

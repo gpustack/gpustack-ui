@@ -194,5 +194,6 @@ export default {
   'models.accessSettings.allowedUsers': 'Allowed users',
   'models.accessSettings.public.tips':
     'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
-  'models.table.button.deploy': 'Deploy Now'
+  'models.table.button.deploy': 'Deploy Now',
+  'models.form.backendVersion.holder': 'Enter or select a version'
 };

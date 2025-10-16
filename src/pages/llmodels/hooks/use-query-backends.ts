@@ -23,9 +23,11 @@ export default function useQueryBackends() {
       if (res?.items) {
         setBackendOptions(list || []);
       }
+      return list || [];
     } catch (error) {
       // ignore
       setBackendOptions([]);
+      return [];
     }
   };
 

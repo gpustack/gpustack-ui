@@ -45,9 +45,11 @@ export default {
   'cluster.create.checkEnv.tips':
     'Используйте следующую команду для проверки готовности окружения',
   'clusters.create.register.tips':
-    ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.'
+    ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
+  'cluster.provider.comingsoon': 'Coming soon'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
+// 2. 'cluster.provider.comingsoon': 'Coming soon'
 // ========== End of To-Do List ==========

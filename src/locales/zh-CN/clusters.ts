@@ -43,5 +43,6 @@ export default {
     ' 在需要添加的 Worker 上运行以下命令，将其加入到集群中',
   'clusters.create.register.tips':
     ' 在需要添加的 Kubernetes 集群上运行以下命令，将其中的节点加入到集群中',
-  'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当'
+  'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当',
+  'cluster.provider.comingsoon': '即将推出'
 };

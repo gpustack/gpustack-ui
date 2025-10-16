@@ -45,7 +45,8 @@ export default {
   'cluster.create.checkEnv.tips':
     'Use the following command to check if the environment is ready',
   'clusters.create.register.tips':
-    ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.'
+    ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
+  'cluster.provider.comingsoon': 'Coming soon'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -90,6 +91,7 @@ export default {
 // 39. 'clusters.create.addworker.tips': ' Please make sure the prerequisites for <a href={link} target="_blank">{label}</a> are met before executing the following command.',
 // 40. 'clusters.create.addCommand.tips': ' On the Worker that needs to be added, run the following command to join it to the cluster.',
 // 41. 'cluster.create.checkEnv.tips': 'Use the following command to check if the environment is ready',
-// 42. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.'
+// 42. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
+// 43. 'cluster.provider.comingsoon': 'Coming soon'
 
 // ========== End of To-Do List ==========

@@ -45,5 +45,6 @@ export default {
   'clusters.create.register.tips':
     ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
   'cluster.create.checkEnv.tips':
-    'Use the following command to check if the environment is ready'
+    'Use the following command to check if the environment is ready',
+  'cluster.provider.comingsoon': 'Coming soon'
 };

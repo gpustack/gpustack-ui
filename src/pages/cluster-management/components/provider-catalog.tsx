@@ -95,7 +95,8 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                 }
                 icon={action.icon}
               >
-                {action.description}
+                {action.description &&
+                  intl.formatMessage({ id: action.description })}
               </Card>
             ))}
           </Wrapper>

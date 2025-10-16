@@ -76,6 +76,7 @@ const InputWrapper = styled.div`
   }
   .ant-input.seal-textarea {
     flex: 1;
+    overflow-y: auto !important;
   }
 
   .ant-input-number {

@@ -18,6 +18,7 @@ const LabelWrapper = styled.div.attrs({
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  padding-bottom: 2px;
   background-color: var(--ant-color-bg-container);
 `;
 
@@ -111,11 +112,13 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
     [onInput]
   );
 
+  console.log('style=========', style, rest);
+
   return (
     <InputWrapper>
       <Wrapper
         status={status}
-        label={label}
+        label={<LabelWrapper>{label}</LabelWrapper>}
         isFocus={isFocus}
         required={required}
         description={description}

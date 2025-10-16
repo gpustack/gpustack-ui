@@ -73,6 +73,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
           <SealInput.Input
             label={intl.formatMessage({ id: 'common.table.name' })}
             required
+            trim={false}
           ></SealInput.Input>
         </Form.Item>
         {provider === ProviderValueMap.DigitalOcean && (

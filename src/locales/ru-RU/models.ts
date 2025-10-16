@@ -194,7 +194,8 @@ export default {
   'models.accessSettings.allowedUsers': 'Allowed users',
   'models.accessSettings.public.tips':
     'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
-  'models.table.button.deploy': 'Deploy Now'
+  'models.table.button.deploy': 'Deploy Now',
+  'models.form.backendVersion.holder': 'Enter or select a version'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -219,5 +220,6 @@ export default {
 // 20. 'models.accessSettings.authed': 'Authenticated',
 // 21. 'models.accessSettings.allowedUsers': 'Allowed users',
 // 22. 'models.accessSettings.public.tips': 'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
-// 23. 'models.table.button.deploy': 'Deploy Now'
+// 23. 'models.table.button.deploy': 'Deploy Now',
+// 24. 'models.form.backendVersion.holder': 'Enter or select a version'
 // ========== End of To-Do List ==========

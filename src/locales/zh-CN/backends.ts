@@ -23,5 +23,6 @@ export default {
   'backend.form.versionConfig': '版本配置',
   'backend.form.addParameter': '添加参数',
   'backend.form.noVersion': '未添加版本',
-  'backend.noVersion': '未找到版本'
+  'backend.noVersion': '未找到版本',
+  'backend.versionInfo.autoImage': '运行时自动选择'
 };

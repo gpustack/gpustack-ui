@@ -22,8 +22,8 @@ import SearchResult from './search-result';
 
 const filterOptions = [
   { label: 'AWQ', value: 'awq' },
-  { label: 'GPTQ', value: 'gptq' }
-  // { label: 'GGUF', value: 'gguf' }
+  { label: 'GPTQ', value: 'gptq' },
+  { label: 'GGUF', value: 'gguf' }
 ];
 const PaginationMain = styled(Pagination)`
   .ant-pagination-slash {
@@ -523,11 +523,6 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
           onChange={handleSearchInputChange}
           modelSource={modelSource}
         ></SearchInput>
-        {/* <div className="gguf-tips">
-          <span>
-            {intl.formatMessage({ id: 'models.form.search.gguftips' })}
-          </span>
-        </div> */}
         <div className={SearchStyle.filter}>
           <span className="flex-center gap-8">
             <BaseSelect

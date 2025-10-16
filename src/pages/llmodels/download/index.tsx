@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
-import CompatibilityAlert from '../components/compatible-alert';
+import HFModelFile from '../components/hf-model-file';
 import ModelCard from '../components/model-card';
 import SearchModel from '../components/search-model';
 import Separator from '../components/separator';
@@ -59,6 +59,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
   const [selectedModel, setSelectedModel] = useState<any>({});
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>('');
   const modelFileRef = useRef<any>(null);
 
   const generateModelInfo = () => {
@@ -106,6 +107,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
       debounceFetchModelFiles();
     }
   };
+  const handleSelectModelFile = useCallback((item: any) => {
+    setFileName(item.fakeName);
+  }, []);
 
   const handleCancel = useCallback(() => {
     onCancel?.();
@@ -178,7 +182,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
               <Separator></Separator>
             </ColWrapper>
             <ColWrapper>
-              <ColumnWrapper styles={{ container: { paddingTop: 0 } }}>
+              <ColumnWrapper styles={{ container: { padding: 0 } }}>
                 <ModelCard
                   selectedModel={selectedModel}
                   onCollapse={setCollapsed}
@@ -186,6 +190,16 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                   modelSource={props.source}
                   setIsGGUF={handleSetIsGGUF}
                 ></ModelCard>
+                {isGGUF && (
+                  <HFModelFile
+                    ref={modelFileRef}
+                    selectedModel={selectedModel}
+                    modelSource={props.source}
+                    onSelectFile={handleSelectModelFile}
+                    collapsed={collapsed}
+                    isDownload={true}
+                  ></HFModelFile>
+                )}
               </ColumnWrapper>
               <Separator></Separator>
             </ColWrapper>
@@ -199,21 +213,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
             }}
             footer={
               <>
-                <CompatibilityAlert
-                  showClose={false}
-                  warningStatus={{
-                    show: isGGUF,
-                    type: 'danger',
-                    message: 'GGUF is not supported'
-                  }}
-                  contentStyle={{ paddingInline: 0 }}
-                ></CompatibilityAlert>
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
-                  okBtnProps={{
-                    disabled: isGGUF
-                  }}
                   style={{
                     padding: '16px 24px',
                     display: 'flex',

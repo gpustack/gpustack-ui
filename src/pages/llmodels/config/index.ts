@@ -306,8 +306,10 @@ export const modelLabels = [
 
 // do not trigger form check compatibility
 export const excludeFields = [
-  'repo_id',
-  'file_name',
+  'model_scope_model_id',
+  'huggingface_repo_id',
+  'huggingface_filename',
+  'model_scope_file_path',
   'replicas',
   'name',
   'description',
@@ -334,8 +336,10 @@ export const updateIgnoreFields = ['categories', 'replicas', 'description'];
 
 // if some fields need to trigger manual check, add them here
 export const updateExcludeFields = [
-  'repo_id',
-  'file_name',
+  'model_scope_model_id',
+  'huggingface_repo_id',
+  'huggingface_filename',
+  'model_scope_file_path',
   'description',
   'source',
   'worker_selector',
@@ -352,8 +356,10 @@ export const updateExcludeFields = [
 
 export const formFields = [
   'name',
-  'repo_id',
-  'file_name',
+  'model_scope_model_id',
+  'huggingface_repo_id',
+  'huggingface_filename',
+  'model_scope_file_path',
   'local_path',
   'ollama_library_model_name',
   'backend',

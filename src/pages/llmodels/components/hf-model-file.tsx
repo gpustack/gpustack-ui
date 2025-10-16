@@ -19,7 +19,8 @@ import {
   queryHuggingfaceModelFiles,
   queryModelScopeModelFiles
 } from '../apis';
-import { backendOptionsMap, modelSourceMap } from '../config';
+import { modelSourceMap } from '../config';
+import { backendOptionsMap } from '../config/backend-parameters';
 import '../style/hf-model-file.less';
 import FileSkeleton from './file-skeleton';
 import ModelFileItem from './model-file-item';
@@ -40,7 +41,6 @@ interface HFModelFileProps {
   loadingModel?: boolean;
   modelSource: string;
   ref: any;
-  gpuOptions?: any[];
   onSelectFile?: (
     file: any,
     options: { requestModelId: number; manual?: boolean }
@@ -250,6 +250,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
     }
     try {
       const evaluateFileList = list.map((item: any) => {
+        // TODO: llamabox is remove from backend options, user should select a available backend
         return {
           backend: backendOptionsMap.llamaBox,
           source: modelSource,
@@ -363,7 +364,7 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
 
   return (
     <div className="files-wrap">
-      <TitleWrapper>
+      <TitleWrapper style={{ paddingInline: '24px' }}>
         <span className="title">
           {intl.formatMessage({ id: 'models.available.files' })} (
           {dataSource.fileList.length || 0})

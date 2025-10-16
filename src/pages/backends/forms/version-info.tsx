@@ -108,7 +108,7 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
             </span>
             <AutoTooltip ghost minWidth={20}>
               {data.is_built_in
-                ? 'Selected dynamically at runtime'
+                ? intl.formatMessage({ id: 'backend.versionInfo.autoImage' })
                 : data.image_name}
             </AutoTooltip>
           </InfoItem>

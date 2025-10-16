@@ -23,5 +23,6 @@ export default {
   'backend.form.versionConfig': 'Versions Config',
   'backend.form.addParameter': 'Add Parameter',
   'backend.form.noVersion': 'No versions added',
-  'backend.noVersion': 'No versions found'
+  'backend.noVersion': 'No versions found',
+  'backend.versionInfo.autoImage': 'Automatically selected at runtime'
 };

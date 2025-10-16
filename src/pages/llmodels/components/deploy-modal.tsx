@@ -1,11 +1,14 @@
+import { getRequestId } from '@/atoms/models';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
+import useDeferredRequest from '@/hooks/use-deferred-request';
 import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
 import _ from 'lodash';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
@@ -20,14 +23,21 @@ import {
 } from '../hooks';
 import useCheckBackend from '../hooks/use-check-backend';
 import CompatibilityAlert from './compatible-alert';
-import GGUFResult from './gguf-result';
+import HFModelFile from './hf-model-file';
 import ModelCard from './model-card';
 import SearchModel from './search-model';
 import Separator from './separator';
 import TitleWrapper from './title-wrapper';
 
 const pickFieldsFromSpec = ['backend_version', 'backend_parameters', 'env'];
-const dropFieldsFromForm = ['name', 'file_name', 'repo_id', 'backend'];
+const dropFieldsFromForm = [
+  'name',
+  'huggingface_filename',
+  'model_scope_file_path',
+  'model_scope_model_id',
+  'huggingface_repo_id',
+  'backend'
+];
 const resetFields = ['worker_selector', 'env'];
 
 const ModalFooterStyle = {
@@ -127,6 +137,11 @@ const AddModal: FC<AddModalProps> = (props) => {
   const requestModelIdRef = useRef<number>(0);
   const currentSelectedModel = useRef<any>({});
 
+  const { run: fetchModelFiles } = useDeferredRequest(
+    () => modelFileRef.current?.fetchModelFiles?.(),
+    100
+  );
+
   const updateSelectedModel = (model: any) => {
     currentSelectedModel.current = model;
     setSelectedModel(model);
@@ -180,6 +195,78 @@ const AddModal: FC<AddModalProps> = (props) => {
       return categories?.[0] || null;
     }
     return categories || null;
+  };
+
+  const { run: onSelectFile } = useDeferredRequest(
+    async (item: any, modelInfo: any, manual?: boolean) => {
+      unlockWarningStatus();
+
+      const evaluateRes = await handleOnValuesChangeBefore?.({
+        changedValues: {},
+        allValues: form.current?.form?.getFieldsValue?.(),
+        source: props.source
+      });
+      console.log('onSelectFile:', item, modelInfo, evaluateRes);
+
+      // for cancel evaluate request case
+      if (!evaluateRes) {
+        return;
+      }
+
+      const defaultSpec = getDefaultSpec({
+        evaluateResult: evaluateRes
+      });
+
+      /**
+       * do not reset backend_parameters when select a model file
+       */
+      const formValues = form.current?.getFieldsValue?.(pickFieldsFromSpec);
+
+      form.current?.setFieldsValue?.({
+        ..._.omit(modelInfo, ['name']),
+        huggingface_filename: item.fakeName,
+        model_scope_file_path: item.fakeName,
+        backend_parameters:
+          formValues.backend_parameters?.length > 0
+            ? formValues.backend_parameters
+            : defaultSpec.backend_parameters || [],
+        backend_version:
+          formValues.backend_version || defaultSpec.backend_version,
+        env: formValues.env || defaultSpec.env,
+        categories: getCategory(item)
+      });
+    },
+    100
+  );
+
+  const handleSelectModelFile = async (
+    item: any,
+    options: { requestModelId: number; manual?: boolean }
+  ) => {
+    const { requestModelId, manual } = options || {};
+    if (requestModelId !== getRequestId()) {
+      return;
+    }
+    console.log('handleSelectModelFile:', item, selectedModel);
+
+    const modelInfo = onSelectModel(selectedModel, props.source);
+
+    form.current?.setFieldsValue?.({
+      ..._.omit(modelInfo, ['name']),
+      huggingface_filename: item.fakeName,
+      model_scope_file_path: item.fakeName,
+      backend_parameters: [],
+      backend_version: '',
+      backend: '',
+      env: {},
+      categories: getCategory(item)
+    });
+
+    // evaluate the form data when select a model file
+    // TODO: reset backend related fields when select a GGUF file
+    if (item.fakeName) {
+      // onSelectFile(item, modelInfo, manual);
+    }
   };
 
   const handleCancelFiles = () => {
@@ -242,8 +329,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     };
 
     if (item.isGGUF) {
-      warningStatus.type = 'danger';
-      warningStatus.message = 'GGUF model is not supported.';
+      fetchModelFiles();
     }
     setWarningStatus(warningStatus, { override: true });
   };
@@ -317,25 +403,21 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = async (backend: string) => {
-    setIsGGUF(false);
-
     const data = form.current.form.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
     if (res.show) {
       return;
     }
     if (data.local_path || props.source !== modelSourceMap.local_path_value) {
-      // TODO confirm wheather it is gguf by model file not by backend
+      // TODO confirm whether it is gguf by model file not by backend
       handleOnValuesChange?.({
         changedValues: {},
-        // allValues:
-        //   backend === backendOptionsMap.llamaBox
-        //     ? data
-        //     : _.omit(data, [
-        //         'cpu_offloading',
-        //         'distributed_inference_across_workers'
-        //       ]),
-        allValues: data,
+        allValues: isGGUF
+          ? data
+          : _.omit(data, [
+              'cpu_offloading',
+              'distributed_inference_across_workers'
+            ]),
         source: props.source
       });
     }
@@ -349,9 +431,9 @@ const AddModal: FC<AddModalProps> = (props) => {
     });
   };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = useMemoizedFn(() => {
     onCancel?.();
-  }, [onCancel]);
+  });
 
   const initClusterId = () => {
     if (initialValues?.cluster_id) {
@@ -492,7 +574,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 <Separator></Separator>
               </ColWrapper>
               <ColWrapper>
-                <ColumnWrapper styles={{ container: { paddingTop: 0 } }}>
+                <ColumnWrapper styles={{ container: { padding: 0 } }}>
                   <ModelCard
                     selectedModel={selectedModel}
                     onCollapse={setCollapsed}
@@ -500,7 +582,16 @@ const AddModal: FC<AddModalProps> = (props) => {
                     modelSource={props.source}
                     setIsGGUF={handleSetIsGGUF}
                   ></ModelCard>
-                  {isGGUF && <GGUFResult></GGUFResult>}
+
+                  {isGGUF && (
+                    <HFModelFile
+                      ref={modelFileRef}
+                      selectedModel={selectedModel}
+                      modelSource={props.source}
+                      onSelectFile={handleSelectModelFile}
+                      collapsed={collapsed}
+                    ></HFModelFile>
+                  )}
                 </ColumnWrapper>
                 <Separator></Separator>
               </ColWrapper>
@@ -532,11 +623,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
-                      <Button
-                        type="primary"
-                        onClick={handleSubmitAnyway}
-                        disabled={isGGUF}
-                      >
+                      <Button type="primary" onClick={handleSubmitAnyway}>
                         {intl.formatMessage({
                           id: 'models.form.submit.anyway'
                         })}

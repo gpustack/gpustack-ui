@@ -311,7 +311,7 @@ const ModelCard: React.FC<{
 
   return (
     <>
-      <TitleWrapper>
+      <TitleWrapper style={{ paddingInline: 24 }}>
         <div className="title">{modelData?.id || modelData?.name} </div>
         {generateModelLink()}
       </TitleWrapper>
@@ -392,7 +392,7 @@ const ModelCard: React.FC<{
           <div style={{ minHeight: 200 }}>
             {readmeText && (
               <>
-                <TitleWrapper>
+                <TitleWrapper style={{ paddingInline: 24 }}>
                   <span className="title">README.md</span>
                 </TitleWrapper>
                 <div className="card-wrapper">

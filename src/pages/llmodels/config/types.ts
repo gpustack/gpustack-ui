@@ -51,8 +51,6 @@ export interface FormData {
   backend_parameters?: string[];
   backend_version?: string;
   source: SourceType;
-  repo_id: string;
-  file_name: string;
   huggingface_repo_id: string;
   huggingface_filename: string;
   s3_address: string;

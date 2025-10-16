@@ -5,7 +5,7 @@ import vllmParameters from './vllm-parameters';
 export const backendOptionsMap = {
   llamaBox: 'llama-box',
   vllm: 'vLLM',
-  voxBox: 'vox-box',
+  voxBox: 'VoxBox',
   ascendMindie: 'MindIE',
   custom: 'Custom'
 };

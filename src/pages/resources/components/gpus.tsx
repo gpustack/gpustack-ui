@@ -1,9 +1,11 @@
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
+import NoResult from '@/pages/_components/no-result';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { ConfigProvider, Empty, Table } from 'antd';
+import { ConfigProvider, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
@@ -44,14 +46,18 @@ const GPUList: React.FC = () => {
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
-    if (
-      !dataSource.loading &&
-      dataSource.loadend &&
-      !dataSource.dataList.length
-    ) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
-    }
-    return <div></div>;
+    return (
+      <NoResult
+        loading={dataSource.loading}
+        loadend={dataSource.loadend}
+        dataSource={dataSource.dataList}
+        image={<IconFont type="icon-gpu1" />}
+        filters={queryParams}
+        noFoundText={intl.formatMessage({ id: 'noresult.gpus.nofound' })}
+        title={intl.formatMessage({ id: 'noresult.gpus.title' })}
+        subTitle={intl.formatMessage({ id: 'noresult.gpus.subTitle' })}
+      ></NoResult>
+    );
   };
 
   const columns = useGPUColumns({

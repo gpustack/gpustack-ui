@@ -1,10 +1,12 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import DeleteModal from '@/components/delete-modal';
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
+import NoResult from '@/pages/_components/no-result';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
 import { modelSourceMap } from '@/pages/llmodels/config';
@@ -21,7 +23,7 @@ import useRecognizeAudio from '@/pages/llmodels/hooks/use-recognize-audio';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Empty, Table, message } from 'antd';
+import { ConfigProvider, Table, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
@@ -190,18 +192,6 @@ const ModelFiles = () => {
     }
   });
 
-  const renderEmpty = (type?: string) => {
-    if (type !== 'Table') return;
-    if (
-      !dataSource.loading &&
-      dataSource.loadend &&
-      !dataSource.dataList.length
-    ) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
-    }
-    return <div></div>;
-  };
-
   const handleClickDropdown = (item: any) => {
     const config = modalConfig[item.key];
     const hasLinuxWorker = workersList.some(
@@ -210,6 +200,22 @@ const ModelFiles = () => {
     if (config) {
       setDownlaodMoalStatus({ ...config, hasLinuxWorker });
     }
+  };
+
+  const renderEmpty = (type?: string) => {
+    if (type !== 'Table') return;
+    return (
+      <NoResult
+        loading={dataSource.loading}
+        loadend={dataSource.loadend}
+        dataSource={dataSource.dataList}
+        image={<IconFont type="icon-files" />}
+        filters={queryParams}
+        noFoundText={intl.formatMessage({ id: 'noresult.modelfiles.nofound' })}
+        title={intl.formatMessage({ id: 'noresult.modelfiles.title' })}
+        subTitle={intl.formatMessage({ id: 'noresult.modelfiles.subTitle' })}
+      ></NoResult>
+    );
   };
 
   const handleDownloadCancel = () => {

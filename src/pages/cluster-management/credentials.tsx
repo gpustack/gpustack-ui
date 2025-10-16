@@ -8,9 +8,10 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, Empty, Table, message } from 'antd';
+import { Button, ConfigProvider, Table, message } from 'antd';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import NoResult from '../_components/no-result';
 import {
   createCredential,
   deleteCredential,
@@ -148,14 +149,29 @@ const Credentials: React.FC = () => {
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
-    if (
-      !dataSource.loading &&
-      dataSource.loadend &&
-      !dataSource.dataList.length
-    ) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
-    }
-    return <div></div>;
+    return (
+      <NoResult
+        loading={dataSource.loading}
+        loadend={dataSource.loadend}
+        dataSource={[]}
+        image={<IconFont type="icon-credential-outline" />}
+        filters={queryParams}
+        noFoundText={intl.formatMessage({
+          id: 'noresult.credentials.nofound'
+        })}
+        title={intl.formatMessage({ id: 'noresult.credentials.title' })}
+        subTitle={intl.formatMessage({
+          id: 'noresult.credentials.subTitle'
+        })}
+      >
+        <Button
+          type="primary"
+          onClick={() => handleAddCredential(addActions[0])}
+        >
+          {intl.formatMessage({ id: 'noresult.button.add' })}
+        </Button>
+      </NoResult>
+    );
   };
 
   const columns = useCredentialColumns(sortOrder, handleSelect);

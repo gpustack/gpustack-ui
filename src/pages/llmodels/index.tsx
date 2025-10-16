@@ -44,6 +44,7 @@ const Models: React.FC = () => {
     page: 1,
     perPage: 10,
     search: '',
+    cluster_id: 0,
     categories: []
   });
 
@@ -191,7 +192,11 @@ const Models: React.FC = () => {
   };
 
   const createModelsChunkRequest = useCallback(
-    async (params?: { search: string; categories: any[] }) => {
+    async (params?: {
+      search: string;
+      categories: any[];
+      cluster_id: number;
+    }) => {
       const search = params?.search || queryParams.search;
       const categories = params?.categories || queryParams.categories;
       chunkRequedtRef.current?.current?.cancel?.();
@@ -266,7 +271,8 @@ const Models: React.FC = () => {
     });
     createModelsChunkRequest({
       search: e.target.value,
-      categories: queryParams.categories
+      categories: queryParams.categories,
+      cluster_id: queryParams.cluster_id || 0
     });
   }, 350);
 
@@ -279,17 +285,19 @@ const Models: React.FC = () => {
     });
     createModelsChunkRequest({
       search: queryParams.search,
+      cluster_id: queryParams.cluster_id || 0,
       categories: value
     });
   };
 
-  const handleClusterChange = async (value: any) => {
+  const handleClusterChange = async (value: number) => {
     handleQueryChange({
       page: 1,
       cluster_id: value
     });
     createModelsChunkRequest({
       search: queryParams.search,
+      categories: queryParams.categories,
       cluster_id: value
     });
   };

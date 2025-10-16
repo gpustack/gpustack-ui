@@ -193,7 +193,8 @@ export default {
   'models.accessSettings.authed': 'Authenticated',
   'models.accessSettings.allowedUsers': 'Allowed users',
   'models.accessSettings.public.tips':
-    'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.'
+    'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
+  'models.table.button.deploy': 'Deploy Now'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -217,5 +218,6 @@ export default {
 // 19. 'models.accessSettings.public': 'Public',
 // 20. 'models.accessSettings.authed': 'Authenticated',
 // 21. 'models.accessSettings.allowedUsers': 'Allowed users',
-// 22. 'models.accessSettings.public.tips': 'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.'
+// 22. 'models.accessSettings.public.tips': 'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
+// 23. 'models.table.button.deploy': 'Deploy Now'
 // ========== End of To-Do List ==========

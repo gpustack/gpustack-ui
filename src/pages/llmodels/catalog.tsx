@@ -1,4 +1,5 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
+import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import { PageAction } from '@/config';
@@ -14,6 +15,7 @@ import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import NoResult from '../_components/no-result';
 import { createModel, queryCatalogList } from './apis';
 import CatalogList from './components/catalog-list';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
@@ -297,6 +299,18 @@ const Catalog: React.FC = () => {
           activeId={-1}
           isFirst={isFirst}
         ></CatalogList>
+        <NoResult
+          loading={dataSource.loading}
+          loadend={!isFirst}
+          dataSource={dataSource.dataList}
+          image={<IconFont type="icon-layers" />}
+          filters={queryParams}
+          noFoundText={intl.formatMessage({
+            id: 'noresult.catalog.nofound'
+          })}
+          title={intl.formatMessage({ id: 'noresult.catalog.title' })}
+          subTitle={intl.formatMessage({ id: 'noresult.catalog.subTitle' })}
+        ></NoResult>
       </ScrollerContext.Provider>
       <PageWrapper>
         <Pagination

@@ -1,13 +1,16 @@
 import DeleteModal from '@/components/delete-modal';
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
+import { Button } from 'antd';
 import _ from 'lodash';
 import { useState } from 'react';
 import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
+import NoResult from '../_components/no-result';
 import {
   createBackend,
   createBackendFromYAML,
@@ -154,8 +157,11 @@ const BackendList = () => {
 
   const loadMore = useMemoizedFn((nextPage: number) => {
     fetchData({
-      ...queryParams,
-      page: nextPage
+      query: {
+        ...queryParams,
+        page: nextPage
+      },
+      loadmore: true
     });
   });
 
@@ -204,6 +210,22 @@ const BackendList = () => {
           isFirst={!dataSource.loadend}
           onSelect={handleOnSelect}
         ></BackendCardList>
+        <NoResult
+          loading={dataSource.loading}
+          loadend={dataSource.loadend}
+          dataSource={dataSource.dataList}
+          image={<IconFont type="icon-models" />}
+          filters={queryParams}
+          noFoundText={intl.formatMessage({
+            id: 'noresult.backend.nofound'
+          })}
+          title={intl.formatMessage({ id: 'noresult.backend.title' })}
+          subTitle={intl.formatMessage({ id: 'noresult.backend.subTitle' })}
+        >
+          <Button type="primary" onClick={handleAddBackend}>
+            {intl.formatMessage({ id: 'noresult.button.add' })}
+          </Button>
+        </NoResult>
       </ScrollerContext.Provider>
       <AddModal
         action={openModalStatus.action}

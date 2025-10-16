@@ -1,4 +1,5 @@
 import DeleteModal from '@/components/delete-modal';
+import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
@@ -6,8 +7,9 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { ConfigProvider, Empty, Table } from 'antd';
+import { Button, ConfigProvider, Table } from 'antd';
 import { useState } from 'react';
+import NoResult from '../_components/no-result';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey-modal';
 import { ListItem } from './config/types';
@@ -97,14 +99,24 @@ const APIKeys: React.FC = () => {
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
-    if (
-      !dataSource.loading &&
-      dataSource.loadend &&
-      !dataSource.dataList.length
-    ) {
-      return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}></Empty>;
-    }
-    return <div></div>;
+    return (
+      <NoResult
+        loading={dataSource.loading}
+        loadend={dataSource.loadend}
+        dataSource={dataSource.dataList}
+        image={<IconFont type="icon-key" />}
+        filters={queryParams}
+        noFoundText={intl.formatMessage({
+          id: 'noresult.keys.nofound'
+        })}
+        title={intl.formatMessage({ id: 'noresult.keys.title' })}
+        subTitle={intl.formatMessage({ id: 'noresult.keys.subTitle' })}
+      >
+        <Button type="primary" onClick={handleAddKey}>
+          {intl.formatMessage({ id: 'noresult.button.add' })}
+        </Button>
+      </NoResult>
+    );
   };
 
   const columns = useKeysColumns({ handleSelect: onSelect, sortOrder });

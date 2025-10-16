@@ -8,7 +8,7 @@ export default {
   'users.table.status': 'Status',
   'users.status.active': 'Active',
   'users.status.inactive': 'Inactive',
-  'users.form.active': 'Active account',
+  'users.form.active': 'Active Account',
   'users.form.active.description': 'Enable or disable this user account',
   'users.form.fullname': 'Full Name',
   'users.form.source': 'Source',

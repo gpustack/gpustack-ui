@@ -1,6 +1,7 @@
 import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { deployFormKeyMap, modelSourceMap } from '../config';
@@ -8,10 +9,11 @@ import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const HuggingFaceForm: React.FC = () => {
+  const intl = useIntl();
   const formInstance = Form.useFormInstance();
   const formCtx = useFormContext();
   const { getRuleMessage } = useAppUtils();
-  const { formKey, pageAction, onValuesChange } = formCtx;
+  const { formKey, pageAction, isGGUF, onValuesChange } = formCtx;
   const source = Form.useWatch('source');
 
   if (
@@ -43,21 +45,23 @@ const HuggingFaceForm: React.FC = () => {
             ]}
           >
             <SealInput.Input
-              label="Base Model"
+              label={intl.formatMessage({ id: 'models.form.repoid' })}
               required
               disabled={pageAction === PageAction.CREATE}
               onBlur={handleOnBlur}
             ></SealInput.Input>
           </Form.Item>
-          <Form.Item<FormData>
-            hidden
-            name="huggingface_filename"
-            key="huggingface_filename"
-          >
-            <SealInput.Input
-              disabled={pageAction === PageAction.CREATE}
-            ></SealInput.Input>
-          </Form.Item>
+          {isGGUF && (
+            <Form.Item<FormData>
+              name="huggingface_filename"
+              key="huggingface_filename"
+            >
+              <SealInput.Input
+                label={intl.formatMessage({ id: 'models.form.filename' })}
+                disabled={pageAction === PageAction.CREATE}
+              ></SealInput.Input>
+            </Form.Item>
+          )}
         </>
       ) : (
         <>
@@ -72,21 +76,23 @@ const HuggingFaceForm: React.FC = () => {
             ]}
           >
             <SealInput.Input
-              label="Base Model"
               required
+              label={intl.formatMessage({ id: 'models.form.repoid' })}
               disabled={pageAction === PageAction.CREATE}
               onBlur={handleOnBlur}
             ></SealInput.Input>
           </Form.Item>
-          <Form.Item<FormData>
-            hidden
-            name="model_scope_file_path"
-            key="model_scope_file_path"
-          >
-            <SealInput.Input
-              disabled={pageAction === PageAction.CREATE}
-            ></SealInput.Input>
-          </Form.Item>
+          {isGGUF && (
+            <Form.Item<FormData>
+              name="model_scope_file_path"
+              key="model_scope_file_path"
+            >
+              <SealInput.Input
+                label={intl.formatMessage({ id: 'models.form.filename' })}
+                disabled={pageAction === PageAction.CREATE}
+              ></SealInput.Input>
+            </Form.Item>
+          )}
         </>
       )}
     </>

@@ -79,7 +79,7 @@ const StatusTag: React.FC<StatusTagProps> = ({
     if (link) {
       return statusValue.message?.replace(
         linkReg,
-        '<a $1 target="_blank">$2</a>'
+        `<a $1 target="_blank">$2</a>`
       );
     }
     return statusValue.message;

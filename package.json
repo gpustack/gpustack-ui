@@ -45,6 +45,7 @@
     "file-saver": "^2.0.5",
     "has-ansi": "^5.0.1",
     "highlight.js": "^11.10.0",
+    "jdenticon": "^3.3.0",
     "jotai": "^2.8.4",
     "js-yaml": "^4.1.0",
     "jszip": "^3.10.1",

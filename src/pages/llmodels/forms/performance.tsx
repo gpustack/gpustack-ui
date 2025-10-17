@@ -1,10 +1,11 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Select } from 'antd';
 import React from 'react';
 import { deployFormKeyMap } from '../config';
-import { useFormContext } from '../config/form-context';
+import { useCatalogFormContext, useFormContext } from '../config/form-context';
 import KVCacheForm from './kv-cache';
 import SpeculativeDecode from './speculative-decode';
 
@@ -36,6 +37,7 @@ const Performance: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { formKey } = useFormContext();
+  const { modeList, onModeChange } = useCatalogFormContext();
 
   return (
     <>
@@ -43,25 +45,24 @@ const Performance: React.FC = () => {
       {formKey === deployFormKeyMap.catalog && (
         <Form.Item name="mode">
           <SealSelect
+            onChange={onModeChange}
             description={<TooltipList list={modeTipsList}></TooltipList>}
             label={intl.formatMessage({ id: 'models.form.mode' })}
-            options={[
-              {
-                label: intl.formatMessage({
-                  id: 'models.form.mode.throughput'
-                }),
-                value: 'throughput'
-              },
-              {
-                label: intl.formatMessage({ id: 'models.form.mode.latency' }),
-                value: 'latency'
-              },
-              {
-                label: intl.formatMessage({ id: 'models.form.mode.reference' }),
-                value: 'reference'
-              }
-            ]}
-          ></SealSelect>
+          >
+            {modeList.map((item: any) => (
+              <Select.Option key={item.value} value={item.value}>
+                <AutoTooltip
+                  showTitle={item.isBuiltIn}
+                  ghost
+                  title={intl.formatMessage({ id: item.tips })}
+                >
+                  {item.isBuiltIn
+                    ? intl.formatMessage({ id: item.label })
+                    : item.label}
+                </AutoTooltip>
+              </Select.Option>
+            ))}
+          </SealSelect>
         </Form.Item>
       )}
       <KVCacheForm></KVCacheForm>

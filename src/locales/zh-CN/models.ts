@@ -186,10 +186,16 @@ export default {
     '公开后，任何人无需认证即可访问，可能存在数据泄露风险。',
   'models.table.button.deploy': '立即部署',
   'models.form.backendVersion.holder': '输入或选择一个版本',
-  'models.form.flavor.throughput.tips':
-    'optimized for high throughput under high request concurrency.',
-  'models.form.flavor.latency.tips':
-    'optimized for low latency under low request concurrency.',
-  'models.form.flavor.reference.tips':
-    'the most compatible option with full precision.'
+  'models.form.mode': '模式',
+  'models.form.algorithm': '算法',
+  'models.form.draftModel': '草稿模型',
+  'models.form.numDraftTokens': '草稿生成 Token 数',
+  'models.form.ngramMinMatchLength': 'N-gram 最小匹配长度',
+  'models.form.ngramMaxMatchLength': 'N-gram 最大匹配长度',
+  'models.form.mode.throughput': '高吞吐',
+  'models.form.mode.latency': '低延迟',
+  'models.form.mode.reference': '参考',
+  'models.form.mode.throughput.tips': '在高并发请求下优化吞吐性能。',
+  'models.form.mode.latency.tips': '在低并发请求下优化响应延迟。',
+  'models.form.mode.reference.tips': '最兼容且保留完整精度的选项。'
 };

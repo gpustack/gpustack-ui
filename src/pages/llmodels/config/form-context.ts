@@ -30,7 +30,7 @@ interface FormContextProps {
 interface CatalogFormContextProps {
   sizeOptions: Global.BaseOption<number>[];
   quantizationOptions: Global.BaseOption<string>[];
-  modeList: Global.BaseOption<string & { isBuiltIn: boolean; tips: string }>[];
+  modeList: Global.BaseOption<string, { isBuiltIn: boolean; tips: string }>[];
   onModeChange: (val: string) => void;
   onSizeChange: (val: number) => void;
   onQuantizationChange: (val: string) => void;

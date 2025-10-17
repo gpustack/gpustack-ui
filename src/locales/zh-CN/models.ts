@@ -208,5 +208,17 @@ export default {
     'KV 缓存在系统内存与 GPU 显存之间的比例。例如设置为 2.0 表示系统内存中可缓存的数据量是显存的两倍。',
   'models.form.ramSize.tips': `KV 缓存在系统内存中的最大值。当设置该值时，将覆盖 "{content}" 的配置。`,
   'models.form.chunkSize.tips':
-    '每个 KV 缓存块包含的 token 数量。数值越大可提升吞吐量，但也会增加内存占用。'
+    '每个 KV 缓存块包含的 token 数量。数值越大可提升吞吐量，但也会增加内存占用。',
+  'models.form.mode': '模式',
+  'models.form.algorithm': '算法',
+  'models.form.draftModel': '草稿模型',
+  'models.form.numDraftTokens': '草稿生成 Token 数',
+  'models.form.ngramMinMatchLength': 'N-gram 最小匹配长度',
+  'models.form.ngramMaxMatchLength': 'N-gram 最大匹配长度',
+  'models.form.mode.throughput': '高吞吐',
+  'models.form.mode.latency': '低延迟',
+  'models.form.mode.reference': '参考',
+  'models.form.mode.throughput.tips': '在高并发请求下优化吞吐性能。',
+  'models.form.mode.latency.tips': '在低并发请求下优化响应延迟。',
+  'models.form.mode.reference.tips': '最兼容且保留完整精度的选项。'
 };

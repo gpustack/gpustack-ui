@@ -8,18 +8,27 @@ import { useFormContext } from '../config/form-context';
 import KVCacheForm from './kv-cache';
 import SpeculativeDecode from './speculative-decode';
 
-const flavorTipsList = [
+const modeTipsList = [
   {
-    title: 'Throughput',
-    tips: 'models.form.flavor.throughput.tips'
+    title: {
+      text: 'models.form.mode.throughput',
+      locale: true
+    },
+    tips: 'models.form.mode.throughput.tips'
   },
   {
-    title: 'Latency',
-    tips: 'models.form.flavor.latency.tips'
+    title: {
+      text: 'models.form.mode.latency',
+      locale: true
+    },
+    tips: 'models.form.mode.latency.tips'
   },
   {
-    title: 'Reference',
-    tips: 'models.form.flavor.reference.tips'
+    title: {
+      text: 'models.form.mode.reference',
+      locale: true
+    },
+    tips: 'models.form.mode.reference.tips'
   }
 ];
 
@@ -34,12 +43,23 @@ const Performance: React.FC = () => {
       {formKey === deployFormKeyMap.catalog && (
         <Form.Item name="mode">
           <SealSelect
-            description={<TooltipList list={flavorTipsList}></TooltipList>}
-            label="Mode"
+            description={<TooltipList list={modeTipsList}></TooltipList>}
+            label={intl.formatMessage({ id: 'models.form.mode' })}
             options={[
-              { label: 'Throughput', value: 'throughput' },
-              { label: 'Latency', value: 'latency' },
-              { label: 'Reference', value: 'reference' }
+              {
+                label: intl.formatMessage({
+                  id: 'models.form.mode.throughput'
+                }),
+                value: 'throughput'
+              },
+              {
+                label: intl.formatMessage({ id: 'models.form.mode.latency' }),
+                value: 'latency'
+              },
+              {
+                label: intl.formatMessage({ id: 'models.form.mode.reference' }),
+                value: 'reference'
+              }
             ]}
           ></SealSelect>
         </Form.Item>

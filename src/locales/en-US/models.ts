@@ -233,5 +233,5 @@ export default {
   'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
   'models.form.mode.reference.tips':
-    'the most compatible option with full precision.'
+    'Runs at full (original) precision and prioritizes compatibility.'
 };

@@ -219,11 +219,20 @@ export default {
     'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
   'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
   'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.',
-  'models.form.flavor.throughput.tips':
+  'models.form.mode': 'Mode',
+  'models.form.algorithm': 'Algorithm',
+  'models.form.draftModel': 'Draft Model',
+  'models.form.numDraftTokens': 'Number of Draft Tokens',
+  'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
+  'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
+  'models.form.mode.throughput': 'Throughput',
+  'models.form.mode.latency': 'Latency',
+  'models.form.mode.reference': 'Reference',
+  'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',
-  'models.form.flavor.latency.tips':
+  'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
-  'models.form.flavor.reference.tips':
+  'models.form.mode.reference.tips':
     'the most compatible option with full precision.'
 };
 
@@ -277,4 +286,17 @@ export default {
 // 49. 'models.form.ramRatio.tips': 'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
 // 50. 'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
 // 51. 'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
+// 33. 'models.form.mode': 'Mode',
+// 34. 'models.form.algorithm': 'Algorithm',
+// 35. 'models.form.draftModel': 'Draft Model',
+// 36. 'models.form.numDraftTokens': 'Number of Draft Tokens',
+// 37. 'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
+// 38. 'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
+// 39. 'models.form.mode.throughput': 'Throughput',
+// 40. 'models.form.mode.latency': 'Latency',
+// 41. 'models.form.mode.reference': 'Reference',
+// 42. 'models.form.mode.throughput.tips': 'optimized for high throughput under high request concurrency.',
+// 43. 'models.form.mode.latency.tips': 'optimized for low latency under low request concurrency.',
+// 44. 'models.form.mode.reference.tips': 'the most compatible option with full precision
+
 // ========== End of To-Do List ==========

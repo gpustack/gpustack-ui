@@ -218,7 +218,22 @@ export default {
   'models.form.ramRatio.tips':
     'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
   'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
+  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.',
+  'models.form.mode': 'Mode',
+  'models.form.algorithm': 'Algorithm',
+  'models.form.draftModel': 'Draft Model',
+  'models.form.numDraftTokens': 'Number of Draft Tokens',
+  'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
+  'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
+  'models.form.mode.throughput': 'Throughput',
+  'models.form.mode.latency': 'Latency',
+  'models.form.mode.reference': 'Reference',
+  'models.form.mode.throughput.tips':
+    'optimized for high throughput under high request concurrency.',
+  'models.form.mode.latency.tips':
+    'optimized for low latency under low request concurrency.',
+  'models.form.mode.reference.tips':
+    'the most compatible option with full precision.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -234,4 +249,16 @@ export default {
 // 11. 'models.form.ramRatio.tips': 'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
 // 12. 'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
 // 13. 'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
+// 25. 'models.form.mode': 'Mode',
+// 26. 'models.form.algorithm': 'Algorithm',
+// 27. 'models.form.draftModel': 'Draft Model',
+// 28. 'models.form.numDraftTokens': 'Number of Draft Tokens',
+// 29. 'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
+// 30. 'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
+// 31. 'models.form.mode.throughput': 'Throughput',
+// 32. 'models.form.mode.latency': 'Latency',
+// 33. 'models.form.mode.reference': 'Reference',
+// 34. 'models.form.mode.throughput.tips': 'optimized for high throughput under high request concurrency.',
+// 35. 'models.form.mode.latency.tips': 'optimized for low latency under low request concurrency.',
+// 36. 'models.form.mode.reference.tips': 'the most compatible option with full precision.'
 // ========== End of To-Do List ==========

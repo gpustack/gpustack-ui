@@ -48,9 +48,9 @@ export default {
   'models.form.scheduletype.manual': 'Specify GPU',
   'models.form.scheduletype.gpuType': 'Specify GPU Type',
   'models.form.scheduletype.auto.tips':
-    'Automatically deploys model instances to appropriate GPUs/Workers based on current resource conditions.',
+    'Automatically deploys model instances to appropriate GPUs based on current resource conditions.',
   'models.form.scheduletype.manual.tips':
-    'Allows you to manually specify the GPUs/Workers to deploy the model instances to.',
+    'Allows you to manually specify the GPUs to deploy the model instances to.',
   'models.form.manual.schedule': 'Manual Schedule',
   'models.table.gpuindex': 'GPU Index',
   'models.table.backend': 'Backends',

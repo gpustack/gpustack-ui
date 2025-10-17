@@ -60,7 +60,8 @@ const renderGpuIndexs = (gpuIndexes: number[]) => {
 
 const distributeCols: ColumnProps[] = [
   {
-    title: 'Worker',
+    title: 'resources.worker',
+    locale: true,
     key: 'worker_name',
     style: {
       wordBreak: 'break-word'
@@ -310,7 +311,7 @@ const useInstanceColumns = (props: {
         )
       },
       {
-        title: 'Worker',
+        title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_name',
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>

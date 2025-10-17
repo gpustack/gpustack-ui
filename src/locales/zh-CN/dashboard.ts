@@ -1,6 +1,6 @@
 export default {
   'dashboard.title': '概览',
-  'dashboard.workers': 'Workers',
+  'dashboard.workers': '节点',
   'dashboard.models': '模型',
   'dashboard.totalgpus': 'GPUs',
   'dashboard.allocategpus': '已分配 GPU 数量',

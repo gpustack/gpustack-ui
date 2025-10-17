@@ -92,9 +92,10 @@ export default {
   'resource.register.maos.support': 'Apple Silicon (серия M), macOS 14+',
   'resource.register.windows.support': 'Windows 10, Windows 11',
   'resources.model.instance': 'Модель экземпляра',
-  'resources.worker.download.privatekey': 'Скачать приватный ключ'
+  'resources.worker.download.privatekey': 'Скачать приватный ключ',
+  'resources.worker': 'Worker'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'resources.worker': 'Worker',
 // ========== End of To-Do List ==========

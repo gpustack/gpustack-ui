@@ -122,7 +122,7 @@ const usePoolsColumns = (
         )
       },
       {
-        title: 'Workers',
+        title: intl.formatMessage({ id: 'resources.nodes' }),
         dataIndex: 'replicas',
         span: 6,
         key: 'replicas',

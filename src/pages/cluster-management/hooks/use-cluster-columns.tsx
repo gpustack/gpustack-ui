@@ -67,7 +67,7 @@ const useClusterColumns = (
         render: (value: number) => <span>{value}</span>
       },
       {
-        title: 'Workers',
+        title: intl.formatMessage({ id: 'resources.nodes' }),
         dataIndex: 'workers',
         span: 3,
         render: (value: number, record: ClusterListItem) => (

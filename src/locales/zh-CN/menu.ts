@@ -21,7 +21,7 @@ export default {
   'menu.login': '登录',
   'menu.usage': '使用量',
   'menu.404': '404',
-  'menu.resources.workers': 'Workers',
+  'menu.resources.workers': '节点',
   'menu.resources.gpus': 'GPUs',
   'menu.resources.modelfiles': '模型文件',
   'menu.accessControl': '访问控制',

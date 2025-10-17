@@ -48,9 +48,9 @@ export default {
   'models.form.scheduletype.manual': 'Указать GPU',
   'models.form.scheduletype.gpuType': 'Указать тип GPU',
   'models.form.scheduletype.auto.tips':
-    'Автоматическое развертывание инстансов модели на подходящие GPU/воркеры в зависимости от текущих ресурсов.',
+    'Автоматическое развертывание инстансов модели на подходящие GPU в зависимости от текущих ресурсов.',
   'models.form.scheduletype.manual.tips':
-    'Позволяет вручную указать GPU/воркеры для развертывания инстансов модели.',
+    'Позволяет вручную указать GPU для развертывания инстансов модели.',
   'models.form.manual.schedule': 'Ручное распределение',
   'models.table.gpuindex': 'Индекс GPU',
   'models.table.backend': 'Бэкенды',

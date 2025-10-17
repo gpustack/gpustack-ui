@@ -40,6 +40,9 @@ export const FormContext = React.createContext<FormContextProps>(
   {} as FormContextProps
 );
 
+/**
+ * Catalog form context
+ */
 export const CatalogFormContext = React.createContext<CatalogFormContextProps>(
   {} as CatalogFormContextProps
 );
@@ -47,6 +50,10 @@ export const CatalogFormContext = React.createContext<CatalogFormContextProps>(
 export const FormOuterContext = React.createContext<FormOuterContextProps>(
   {} as FormOuterContextProps
 );
+
+/**
+ * Hooks to use the form context
+ */
 
 export const useFormContext = () => {
   const context = React.useContext(FormContext);
@@ -65,6 +72,11 @@ export const useCatalogFormContext = () => {
   }
   return context;
 };
+
+/**
+ *
+ * Hooks to use the outer form context
+ */
 
 export const useFormOuterContext = () => {
   const context = React.useContext(FormOuterContext);

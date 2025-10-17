@@ -187,20 +187,29 @@ export default {
   'models.form.chunkSize': 'Размер чанков кэша',
   'models.form.maxCPUSize': 'Максимальный размер CPU кэша (ГиБ)',
   'models.form.remoteURL': 'URL удаленного хранилища',
-  'models.form.runCommandPlaceholder': 'напр., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
+  'models.form.runCommandPlaceholder':
+    'напр., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
   'models.accessSettings.public': 'Публичный',
   'models.accessSettings.authed': 'Аутентифицированный',
   'models.accessSettings.allowedUsers': 'Разрешенные пользователи',
-  'models.accessSettings.public.tips': 'При публичном доступе любой пользователь может получить доступ к модели без аутентификации, что может привести к риску утечки данных.',
+  'models.accessSettings.public.tips':
+    'При публичном доступе любой пользователь может получить доступ к модели без аутентификации, что может привести к риску утечки данных.',
   'models.table.button.deploy': 'Развернуть сейчас',
   'models.form.backendVersion.holder': 'Введите или выберите версию',
   'models.form.gpusperreplica': 'GPU на реплику',
   'models.form.gpusAllocationType': 'Тип распределения GPU',
   'models.form.gpusAllocationType.auto': 'Авто',
   'models.form.gpusAllocationType.custom': 'Вручную',
-  'models.form.gpusAllocationType.auto.tips': 'Система автоматически рассчитывает количество GPU на реплику.',
-  'models.form.gpusAllocationType.custom.tips': 'Вы можете указать точное количество GPU на реплику.'
+  'models.form.gpusAllocationType.auto.tips':
+    'Система автоматически рассчитывает количество GPU на реплику.',
+  'models.form.gpusAllocationType.custom.tips':
+    'Вы можете указать точное количество GPU на реплику.',
+  'models.form.flavor.throughput.tips':
+    'optimized for high throughput under high request concurrency.',
+  'models.form.flavor.latency.tips':
+    'optimized for low latency under low request concurrency.',
+  'models.form.flavor.reference.tips':
+    'the most compatible option with full precision.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-

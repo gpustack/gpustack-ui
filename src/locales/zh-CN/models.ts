@@ -191,5 +191,11 @@ export default {
   'models.form.gpusAllocationType.custom': '自定义',
   'models.form.gpusAllocationType.auto.tips':
     '系统自动计算每个副本的 GPU 数量。',
-  'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量'
+  'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量',
+  'models.form.flavor.throughput.tips':
+    'optimized for high throughput under high request concurrency.',
+  'models.form.flavor.latency.tips':
+    'optimized for low latency under low request concurrency.',
+  'models.form.flavor.reference.tips':
+    'the most compatible option with full precision.'
 };

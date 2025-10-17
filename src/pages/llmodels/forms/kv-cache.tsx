@@ -12,18 +12,15 @@ const KVCacheForm = () => {
 
   return (
     <>
-      <div style={{ paddingBottom: 22 }}>
-        <Form.Item<FormData>
-          data-field="extended_kv_cache.enabled"
-          name={['extended_kv_cache', 'enabled']}
-          valuePropName="checked"
-          style={{ padding: '0 10px', marginBottom: 0 }}
-        >
-          <CheckboxField
-            label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
-          ></CheckboxField>
-        </Form.Item>
-      </div>
+      <Form.Item<FormData>
+        name={['extended_kv_cache', 'enabled']}
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+      >
+        <CheckboxField
+          label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
+        ></CheckboxField>
+      </Form.Item>
       {kvCacheEnabled && (
         <>
           <Form.Item<FormData>

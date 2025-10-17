@@ -40,7 +40,7 @@ const Workers: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryWorkersList,
     deleteAPI: deleteWorker,
-    contentForDelete: 'worker',
+    contentForDelete: 'resources.worker',
     watch: true,
     API: WORKERS_API
   });
@@ -240,7 +240,7 @@ const Workers: React.FC = () => {
           />
         ]}
         header={{
-          title: 'Workers',
+          title: intl.formatMessage({ id: 'resources.nodes' }),
           style: {
             paddingInline: 'var(--layout-content-header-inlinepadding)'
           },

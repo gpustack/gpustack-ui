@@ -107,7 +107,19 @@ export const getGpuColor = (gpuType: string) => {
   return 'default';
 };
 
-export const customIcons = ['∑', '∏', '∫', '∂', '∞', 'θ', '∆', '∇'];
+export const customIcons = [
+  '∑',
+  '∏',
+  '∫',
+  '∂',
+  '∞',
+  'π',
+  'θ',
+  '∆',
+  '∇',
+  '≤',
+  '≥'
+];
 
 export const backendFields = [
   'description',

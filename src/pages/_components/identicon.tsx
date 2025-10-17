@@ -1,4 +1,4 @@
-import jdenticon from 'jdenticon';
+import { update } from 'jdenticon';
 import React, { useEffect, useRef } from 'react';
 
 interface IdenticonProps {
@@ -13,7 +13,7 @@ const Identicon: React.FC<IdenticonProps> = ({
   const icon = useRef<any>(null);
 
   useEffect(() => {
-    jdenticon?.update(icon.current, 'value');
+    update(icon.current, value);
   }, [value]);
 
   return (

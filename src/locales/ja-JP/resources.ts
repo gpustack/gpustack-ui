@@ -94,7 +94,8 @@ export default {
   'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
   'resource.register.windows.support': 'win 10, win 11',
   'resources.model.instance': 'Model Instance',
-  'resources.worker.download.privatekey': 'Download Private Key'
+  'resources.worker.download.privatekey': 'Download Private Key',
+  'resources.worker': 'Worker'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -111,5 +112,6 @@ export default {
 // 11. 'resource.register.windows.support': 'win 10, win 11',
 // 12. 'resources.filter.status': 'Filter by Status',
 // 13. 'resources.model.instance': 'Model Instance',
-// 14. 'resources.worker.download.privatekey': 'Download Private Key'
+// 14. 'resources.worker.download.privatekey': 'Download Private Key',
+// 15. 'resources.worker': 'Worker',
 // ========== End of To-Do List ==========

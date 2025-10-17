@@ -10,7 +10,7 @@ export default {
   'clusters.edit.cluster': '编辑 {cluster}',
   'clusters.provider.custom': '自定义',
   'clusters.button.register': '注册集群',
-  'clusters.button.addNodePool': '添加 Worker Pool',
+  'clusters.button.addNodePool': '添加节点池',
   'clusters.button.add.credential': '添加 {provider} 凭证',
   'clusters.credential.title': '凭证',
   'clusters.credential.token': '访问令牌',
@@ -23,7 +23,7 @@ export default {
   'clusters.workerpool.volumes': '存储卷',
   'clusters.workerpool.format': '文件系统格式',
   'clusters.workerpool.size': '容量（GiB）',
-  'clusters.workerpool.title': 'Worker Pools',
+  'clusters.workerpool.title': '节点池',
   'clusters.workerpool.cloudOptions': '添加云配置',
   'clusters.workerpool.volumes.add': '添加存储卷',
   'clusters.create.provider.self': '自建环境',
@@ -36,11 +36,11 @@ export default {
   'clusters.create.noImages': '无可用的镜像',
   'clusters.create.noInstanceTypes': '无可用的实例类型',
   'clusters.create.noRegions': '无可用的区域',
-  'clusters.workerpool.batchSize.desc': 'Worker 池中同时创建的 worker 数量',
+  'clusters.workerpool.batchSize.desc': '节点池中同时创建的节点数量',
   'clusters.create.addworker.tips':
     '在执行以下命令之前，请确保已满足 <a href={link} target="_blank">{label}</a> 的先决条件。',
   'clusters.create.addCommand.tips':
-    ' 在需要添加的 Worker 上运行以下命令，将其加入到集群中',
+    ' 在需要添加的节点上运行以下命令，将其加入到集群中',
   'clusters.create.register.tips':
     ' 在需要添加的 Kubernetes 集群上运行以下命令，将其中的节点加入到集群中',
   'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当',

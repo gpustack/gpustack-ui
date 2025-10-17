@@ -118,7 +118,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
           rules={[
             {
               required: true,
-              message: getRuleMessage('select', 'worker', false)
+              message: getRuleMessage('select', 'resources.worker')
             }
           ]}
         >
@@ -133,7 +133,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
               }
             }}
             maxTagCount={1}
-            label="Worker"
+            label={intl.formatMessage({ id: 'resources.worker' })}
             options={workerOptions}
             showCheckedStrategy="SHOW_CHILD"
             getPopupContainer={(triggerNode) => triggerNode.parentNode}

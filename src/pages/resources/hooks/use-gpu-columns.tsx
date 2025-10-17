@@ -73,7 +73,7 @@ const useGPUColumns = (props: {
         )
       },
       {
-        title: 'Worker',
+        title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_name',
         ellipsis: {
           showTitle: false

@@ -50,9 +50,9 @@ export default {
   'models.form.scheduletype.manual': 'GPUを指定',
   'models.form.scheduletype.gpuType': 'GPUタイプを指定',
   'models.form.scheduletype.auto.tips':
-    '現在のリソース状況に基づいて、モデルインスタンスを適切なGPU/ワーカーに自動的にデプロイします。',
+    '現在のリソース状況に基づいて、モデルインスタンスを適切なGPUに自動的にデプロイします。',
   'models.form.scheduletype.manual.tips':
-    'モデルインスタンスをデプロイするGPU/ワーカーを手動で指定できます。',
+    'モデルインスタンスをデプロイするGPUを手動で指定できます。',
   'models.form.manual.schedule': '手動スケジュール',
   'models.table.gpuindex': 'GPUインデックス',
   'models.table.backend': 'バックエンド',

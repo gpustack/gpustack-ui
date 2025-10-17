@@ -36,6 +36,16 @@ export default [
     group: 'clusters.create.provider.cloud'
   },
   {
+    label: 'AWS',
+    locale: false,
+    disabled: true,
+    value: ProviderValueMap.AWS,
+    key: ProviderValueMap.AWS,
+    icon: icons.AWS,
+    description: 'cluster.provider.comingsoon',
+    group: 'clusters.create.provider.cloud'
+  },
+  {
     label: 'Alibaba Cloud',
     locale: false,
     disabled: true,
@@ -52,16 +62,6 @@ export default [
     value: ProviderValueMap.TencentCloud,
     key: ProviderValueMap.TencentCloud,
     icon: icons.TencentCloud,
-    description: 'cluster.provider.comingsoon',
-    group: 'clusters.create.provider.cloud'
-  },
-  {
-    label: 'AWS',
-    locale: false,
-    disabled: true,
-    value: ProviderValueMap.AWS,
-    key: ProviderValueMap.AWS,
-    icon: icons.AWS,
     description: 'cluster.provider.comingsoon',
     group: 'clusters.create.provider.cloud'
   }

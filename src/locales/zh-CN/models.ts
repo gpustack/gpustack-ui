@@ -220,5 +220,6 @@ export default {
   'models.form.mode.reference': '参考',
   'models.form.mode.throughput.tips': '在高并发请求下优化吞吐性能。',
   'models.form.mode.latency.tips': '在低并发请求下优化响应延迟。',
-  'models.form.mode.reference.tips': '最兼容且保留完整精度的选项。'
+  'models.form.mode.reference.tips':
+    '以完整（原始）精度运行，并优先保证兼容性。'
 };

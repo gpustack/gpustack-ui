@@ -121,9 +121,9 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
           className={`${tagProps.className || ''} ${filled ? 'tag-filled' : ''}`}
           ref={contentRef}
           style={{
-            ...tagStyle,
             paddingInline: tagProps.closable ? '8px 22px' : 8,
-            borderRadius: radius
+            borderRadius: radius,
+            ...tagStyle
           }}
           closeIcon={
             tagProps.closable ? (

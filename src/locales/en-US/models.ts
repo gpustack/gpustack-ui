@@ -204,10 +204,19 @@ export default {
     'System calculates GPUs per replica automatically.',
   'models.form.gpusAllocationType.custom.tips':
     'You can specify the exact number of GPUs per replica.',
-  'models.form.flavor.throughput.tips':
+  'models.form.mode': 'Mode',
+  'models.form.algorithm': 'Algorithm',
+  'models.form.draftModel': 'Draft Model',
+  'models.form.numDraftTokens': 'Number of Draft Tokens',
+  'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
+  'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
+  'models.form.mode.throughput': 'Throughput',
+  'models.form.mode.latency': 'Latency',
+  'models.form.mode.reference': 'Reference',
+  'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',
-  'models.form.flavor.latency.tips':
+  'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
-  'models.form.flavor.reference.tips':
+  'models.form.mode.reference.tips':
     'the most compatible option with full precision.'
 };

@@ -67,7 +67,9 @@ const SpeculativeDecode = () => {
         style={{ marginBottom: 8 }}
       >
         <CheckboxField
-          label={'Enable Speculative Decoding'}
+          label={intl.formatMessage({
+            id: 'models.form.enableSpeculativeDecoding'
+          })}
           onChange={handleSpeculativeEnabledChange}
         ></CheckboxField>
       </Form.Item>
@@ -78,13 +80,17 @@ const SpeculativeDecode = () => {
             rules={[
               {
                 required: true,
-                message: getRuleMessage('select', 'Algorithm', false)
+                message: getRuleMessage(
+                  'select',
+                  'models.form.algorithm',
+                  false
+                )
               }
             ]}
           >
             <SealSelect
               required
-              label={'Algorithm'}
+              label={intl.formatMessage({ id: 'models.form.algorithm' })}
               options={[
                 { label: 'Eagle3', value: AlgorithmMap.Eagle3 },
                 { label: 'MTP', value: AlgorithmMap.MTP },
@@ -98,13 +104,13 @@ const SpeculativeDecode = () => {
               rules={[
                 {
                   required: true,
-                  message: getRuleMessage('select', 'Draft Model', false)
+                  message: getRuleMessage('select', 'models.form.draftModel')
                 }
               ]}
             >
               <SealSelect
                 required
-                label={'Draft Model'}
+                label={intl.formatMessage({ id: 'models.form.draftModel' })}
                 options={draftModelList}
               ></SealSelect>
             </Form.Item>
@@ -113,7 +119,7 @@ const SpeculativeDecode = () => {
             name={['speculative_config', 'num_draft_tokens']}
           >
             <SealInputNumber
-              label={'Number of Draft Tokens'}
+              label={intl.formatMessage({ id: 'models.form.numDraftTokens' })}
               min={1}
               step={1}
               precision={0}
@@ -125,7 +131,9 @@ const SpeculativeDecode = () => {
                 name={['speculative_config', 'ngram_min_match_length']}
               >
                 <SealInputNumber
-                  label={'Minimum N-gram Match Length'}
+                  label={intl.formatMessage({
+                    id: 'models.form.ngramMinMatchLength'
+                  })}
                   min={1}
                   step={1}
                 />
@@ -134,7 +142,9 @@ const SpeculativeDecode = () => {
                 name={['speculative_config', 'ngram_max_match_length']}
               >
                 <SealInput.Input
-                  label={'Maximum N-gram Match Length'}
+                  label={intl.formatMessage({
+                    id: 'models.form.ngramMaxMatchLength'
+                  })}
                   min={2}
                   step={1}
                 />

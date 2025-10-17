@@ -82,6 +82,14 @@ export interface FormData {
     ram_ratio: number;
     ram_size: number;
   };
+  speculative_config: {
+    enabled: boolean;
+    algorithm: string;
+    draft_model_name: string;
+    num_draft_tokens: number;
+    ngram_min_match_length: number;
+    ngram_max_match_length: number;
+  };
 }
 
 interface ComputedResourceClaim {
@@ -168,7 +176,8 @@ export interface CatalogItem {
   icon: string;
   categories: string[];
   capabilities: string[];
-  sizes: number[];
+  size: number;
+  activated_size: number;
   licenses: string[];
   release_date: string;
 }
@@ -278,4 +287,16 @@ export interface BackendItem {
     version: string;
     is_deprecated: boolean;
   }[];
+}
+
+export interface DraftModelItem {
+  source: string;
+  huggingface_repo_id: string;
+  huggingface_filename: string;
+  ollama_library_model_name: string;
+  model_scope_model_id: string;
+  model_scope_file_path: string;
+  local_path: string;
+  name: string;
+  algorithm: string;
 }

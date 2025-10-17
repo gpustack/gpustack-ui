@@ -540,8 +540,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     >
       <CatalogFormContext.Provider
         value={{
-          sizeOptions: sizeOptions,
-          quantizationOptions: quantizationOptions,
+          sizeOptions: [],
+          quantizationOptions: [],
           onSizeChange: handleOnSizeChange,
           onQuantizationChange: handleOnQuantizationChange
         }}

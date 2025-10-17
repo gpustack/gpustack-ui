@@ -49,32 +49,30 @@ const KVCacheForm = () => {
 
   return (
     <>
-      <div style={{ paddingBottom: 22 }}>
-        <Form.Item<FormData>
-          data-field="extended_kv_cache.enabled"
-          name={['extended_kv_cache', 'enabled']}
-          valuePropName="checked"
-          style={{ padding: '0 10px', marginBottom: 0 }}
-          extra={
-            !builtInBackend && (
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: intl.formatMessage({ id: 'models.form.kvCache.tips' })
-                }}
-              ></span>
-            )
-          }
-        >
-          <CheckboxField
-            description={intl.formatMessage({
-              id: 'models.form.kvCache.tips2'
-            })}
-            disabled={!builtInBackend}
-            onChange={handleOnChange}
-            label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
-          ></CheckboxField>
-        </Form.Item>
-      </div>
+      <Form.Item<FormData>
+        data-field="extended_kv_cache.enabled"
+        name={['extended_kv_cache', 'enabled']}
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+        extra={
+          !builtInBackend && (
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({ id: 'models.form.kvCache.tips' })
+              }}
+            ></span>
+          )
+        }
+      >
+        <CheckboxField
+          description={intl.formatMessage({
+            id: 'models.form.kvCache.tips2'
+          })}
+          disabled={!builtInBackend}
+          onChange={handleOnChange}
+          label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
+        ></CheckboxField>
+      </Form.Item>
       {kvCacheEnabled && (
         <>
           <Form.Item<FormData> name={['extended_kv_cache', 'ram_ratio']}>

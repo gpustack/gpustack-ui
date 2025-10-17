@@ -218,5 +218,11 @@ export default {
   'models.form.ramRatio.tips':
     'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
   'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
+  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.',
+  'models.form.flavor.throughput.tips':
+    'optimized for high throughput under high request concurrency.',
+  'models.form.flavor.latency.tips':
+    'optimized for low latency under low request concurrency.',
+  'models.form.flavor.reference.tips':
+    'the most compatible option with full precision.'
 };

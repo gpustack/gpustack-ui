@@ -198,11 +198,26 @@ export interface CatalogSpec {
   categories: any[];
   placement_strategy: string;
   cpu_offloading: boolean;
+  mode: string;
   distributed_inference_across_workers: boolean;
   worker_selector: Record<string, any>;
   gpu_selector: {
     gpu_ids: string[];
     gpus_per_replica: number;
+  };
+  extended_kv_cache: {
+    enabled: boolean;
+    chunk_size: number;
+    max_local_cpu_size: number;
+    remote_url: string;
+  };
+  speculative_config: {
+    enabled: boolean;
+    algorithm: string;
+    draft_model_name: string;
+    num_draft_tokens: number;
+    ngram_min_match_length: number;
+    ngram_max_match_length: number;
   };
   backend: string;
   backend_version: string;

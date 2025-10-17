@@ -25,12 +25,28 @@ import { useCheckCompatibility } from '../hooks';
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import CompatibilityAlert from './compatible-alert';
 
+const ModesMap: Record<string, string> = {
+  latency: 'models.form.mode.latency',
+  reference: 'models.form.mode.reference',
+  throughput: 'models.form.mode.throughput'
+};
+
+const ModesTipsMap: Record<string, string> = {
+  latency: 'models.form.mode.latency.tips',
+  reference: 'models.form.mode.reference.tips',
+  throughput: 'models.form.mode.throughput.tips'
+};
+
 const pickFieldsFromSpec = [
-  'backend_version',
-  'backend_parameters',
   'env',
   'size',
-  'quantization'
+  'source',
+  'quantization',
+  'backend_version',
+  'backend_parameters',
+  'backend',
+  'extended_kv_cache',
+  'speculative_config'
 ];
 
 type AddModalProps = {
@@ -115,6 +131,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [quantizationOptions, setQuantizationOptions] = useState<
     Global.BaseOption<string>[]
   >([]);
+  const [modeList, setModeList] = useState<Global.BaseOption<string>[]>([]);
   const sourceGroupMap = useRef<any>({});
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
@@ -167,32 +184,37 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const getModelSpec = (data: {
+    mode?: string;
     backend: string;
     size: number;
     quantization: string;
   }) => {
-    const spec = _.find(specListRef.current, (item: CatalogSpec) => {
-      if (data.size && data.quantization) {
-        return (
-          item.size === data.size &&
-          item.backend === data.backend &&
-          item.quantization === data.quantization
-        );
-      }
-      if (data.size) {
-        return item.size === data.size && item.backend === data.backend;
-      }
-      if (data.quantization) {
-        return (
-          item.quantization === data.quantization &&
-          item.backend === data.backend
-        );
-      }
-      return item.backend === data.backend;
-    });
-    selectSpecRef.current = spec;
+    // const spec = _.find(specListRef.current, (item: CatalogSpec) => {
+    //   if (data.size && data.quantization) {
+    //     return (
+    //       item.size === data.size &&
+    //       item.backend === data.backend &&
+    //       item.quantization === data.quantization
+    //     );
+    //   }
+    //   if (data.size) {
+    //     return item.size === data.size && item.backend === data.backend;
+    //   }
+    //   if (data.quantization) {
+    //     return (
+    //       item.quantization === data.quantization &&
+    //       item.backend === data.backend
+    //     );
+    //   }
+    //   return item.backend === data.backend;
+    // });
+    const defaultSpec = _.find(
+      specListRef.current,
+      (item: CatalogSpec) => item.mode === data.mode
+    );
+    selectSpecRef.current = defaultSpec;
     return {
-      ..._.pick(spec, pickFieldsFromSpec),
+      ..._.pick(defaultSpec, pickFieldsFromSpec),
       categories: _.get(current, 'categories.0', null)
     };
   };
@@ -242,6 +264,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       };
     });
     const result = _.uniqBy(quantizationList, 'value');
+    console.log('quantization options:', result);
     setQuantizationOptions(result);
     return result;
   };
@@ -376,6 +399,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         }
       );
       const groupList = _.groupBy(res.items, 'source');
+      const modes = _.groupBy(res.items, 'mode');
+
+      const modeDataList = _.map(modes, (item: CatalogSpec, key: string) => {
+        return {
+          label: ModesMap[key] || key,
+          isBuiltIn: ModesMap[key] ? true : false,
+          value: key,
+          tips: ModesTipsMap[key] || ''
+        };
+      });
 
       sourceGroupMap.current = groupList;
 
@@ -387,20 +420,21 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       const list = _.sortBy(res.items, 'size');
 
+      console.log('spec items:', res.items);
       hasF16Ref.current = _.some(res.items, (item: CatalogSpec) => {
         return AscendNPUQuant_F16.includes(_.toUpper(item.quantization));
       });
 
-      const defaultSpec =
-        _.find(list, (item: CatalogSpec) => {
-          return getDefaultQuant({
-            category: _.get(current, 'categories.0', ''),
-            quantOption: item.quantization,
-            backend: item.backend
-          });
-        }) || _.get(res.items, `0`, {});
+      const defaultSpec = _.find(
+        list,
+        (item: CatalogSpec) => item.mode === modeDataList[0]?.value
+      );
+
+      console.log('default spec:', defaultSpec);
 
       selectSpecRef.current = defaultSpec;
+
+      setModeList(modeDataList);
       setSourceList(sources);
       handleSetBackendOptions();
       handleSetSizeOptions({
@@ -467,6 +501,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     // set form data
     form.current.setFieldsValue({
       ...defaultFormValues,
+      ...data
+    });
+    handleCheckFormData();
+  };
+
+  const handleOnModeChange = (val: string) => {
+    const data = getModelSpec({
+      mode: val,
+      backend: form.current.getFieldValue('backend'),
+      size: 0,
+      quantization: ''
+    });
+
+    console.log('mode change data:', data);
+
+    form.current.setFieldsValue({
       ...data
     });
     handleCheckFormData();
@@ -542,6 +592,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         value={{
           sizeOptions: [],
           quantizationOptions: [],
+          modeList: modeList,
+          onModeChange: handleOnModeChange,
           onSizeChange: handleOnSizeChange,
           onQuantizationChange: handleOnQuantizationChange
         }}

@@ -3,11 +3,11 @@ import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
 import { request } from '@umijs/max';
 import qs from 'query-string';
+import testSpecs from '../config/test';
 import {
   AccessControlFormData,
   BackendItem,
   CatalogItem,
-  CatalogSpec,
   DraftModelItem,
   EvaluateResult,
   EvaluateSpec,
@@ -370,14 +370,15 @@ export async function queryCatalogItemSpec(
   params: { id: number },
   options?: any
 ) {
-  return await request<Global.PageResponse<CatalogSpec>>(
-    `/model-sets/${params.id}/specs`,
-    {
-      method: 'GET',
-      ...options,
-      params
-    }
-  );
+  // return await request<Global.PageResponse<CatalogSpec>>(
+  //   `/model-sets/${params.id}/specs`,
+  //   {
+  //     method: 'GET',
+  //     ...options,
+  //     params
+  //   }
+  // );
+  return testSpecs;
 }
 
 export async function evaluationsModelSpec(

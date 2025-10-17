@@ -185,5 +185,11 @@ export default {
   'models.accessSettings.public.tips':
     '公开后，任何人无需认证即可访问，可能存在数据泄露风险。',
   'models.table.button.deploy': '立即部署',
-  'models.form.backendVersion.holder': '输入或选择一个版本'
+  'models.form.backendVersion.holder': '输入或选择一个版本',
+  'models.form.flavor.throughput.tips':
+    'optimized for high throughput under high request concurrency.',
+  'models.form.flavor.latency.tips':
+    'optimized for low latency under low request concurrency.',
+  'models.form.flavor.reference.tips':
+    'the most compatible option with full precision.'
 };

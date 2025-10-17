@@ -195,5 +195,11 @@ export default {
   'models.accessSettings.public.tips':
     'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
   'models.table.button.deploy': 'Deploy Now',
-  'models.form.backendVersion.holder': 'Enter or select a version'
+  'models.form.backendVersion.holder': 'Enter or select a version',
+  'models.form.flavor.throughput.tips':
+    'optimized for high throughput under high request concurrency.',
+  'models.form.flavor.latency.tips':
+    'optimized for low latency under low request concurrency.',
+  'models.form.flavor.reference.tips':
+    'the most compatible option with full precision.'
 };

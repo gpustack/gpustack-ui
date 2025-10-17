@@ -1,16 +1,16 @@
 import fallbackImg from '@/assets/images/img.png';
 import AutoTooltip from '@/components/auto-tooltip';
 import IconFont from '@/components/icon-font';
-import TagWrapper from '@/components/tags-wrapper';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import { useIntl } from '@umijs/max';
 import { Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { modelCategories } from '../config';
 import { CatalogItem as CatalogItemType } from '../config/types';
 import '../style/catalog-item.less';
+import { categoryConfig } from './model-tag';
 
 const COLORS = ['blue', 'purple', 'orange'];
 interface CatalogItemProps {
@@ -47,10 +47,52 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
           height: 22
         }}
       >
-        {sItem}B
+        {sItem.label}
       </ThemeTag>
     );
   };
+  const description = useMemo(() => {
+    return (
+      <Typography.Paragraph
+        className="desc"
+        ellipsis={{
+          rows: 2,
+          tooltip: (
+            <div
+              className="custome-scrollbar"
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                maxHeight: 300,
+                maxWidth: 300,
+                overflow: 'auto'
+              }}
+            >
+              {data.description}
+            </div>
+          )
+        }}
+      >
+        {data.description}
+      </Typography.Paragraph>
+    );
+  }, [data.description]);
+
+  const sizeList = useMemo(() => {
+    if (!data.size && !data.activated_size) return [];
+    const sizes = [];
+    if (data.size)
+      sizes.push({
+        label: `Size: ${data.size}B`,
+        value: data.size
+      });
+    if (data.activated_size)
+      sizes.push({
+        label: `Activated Size: ${data.activated_size}B`,
+        value: data.activated_size
+      });
+    return sizes;
+  }, [data.size, data.activated_size]);
 
   return (
     <div
@@ -66,32 +108,8 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
               onError={handleOnError}
             />
           </div>
-          <AutoTooltip ghost style={{ flex: 1 }}>
-            {data.name}
-          </AutoTooltip>
+          <AutoTooltip ghost>{data.name}</AutoTooltip>
         </div>
-        <Typography.Paragraph
-          className="desc"
-          ellipsis={{
-            rows: 2,
-            tooltip: (
-              <div
-                className="custome-scrollbar"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  maxHeight: 300,
-                  maxWidth: 300,
-                  overflow: 'auto'
-                }}
-              >
-                {data.description}
-              </div>
-            )
-          }}
-        >
-          {data.description}
-        </Typography.Paragraph>
       </div>
       <div className="item-footer">
         <div className="update-time">
@@ -121,9 +139,10 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
           {data.categories.map((sItem, i) => {
             return (
               <ThemeTag
+                icon={categoryConfig[sItem]?.icon}
                 key={sItem}
                 className="tag-item"
-                color="blue"
+                color={categoryConfig[sItem]?.color || 'blue'}
                 opacity={0.7}
               >
                 {_.find(modelCategories, { value: sItem })?.label || sItem}
@@ -147,22 +166,16 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
                 </ThemeTag>
               );
             })}
-          {data.sizes?.length > 0 && (
-            <>
-              <span className="dot"></span>
-              <div className="box">
-                <TagWrapper
-                  gap={8}
-                  dataList={data.sizes}
-                  renderTag={renderTag}
-                ></TagWrapper>
-              </div>
-            </>
-          )}
+          <span className="dot"></span>
+          <ThemeTag>
+            {data.activated_size
+              ? `${data.size}B-A${data.activated_size}B`
+              : `${data.size}B`}
+          </ThemeTag>
         </div>
       </div>
     </div>
   );
 };
 
-export default React.memo(CatalogItem);
+export default CatalogItem;

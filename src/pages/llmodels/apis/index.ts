@@ -8,6 +8,7 @@ import {
   BackendItem,
   CatalogItem,
   CatalogSpec,
+  DraftModelItem,
   EvaluateResult,
   EvaluateSpec,
   FormData,
@@ -26,6 +27,8 @@ export const MODEL_EVALUATIONS = '/model-evaluations';
 export const BACKEND_LIST_API = '/inference-backends/list';
 
 export const MY_MODELS_API = '/my-models';
+
+export const DRAFT_MODELS_API = '/draft-models';
 
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
@@ -441,5 +444,12 @@ export async function queryMyModels(params: Global.SearchParams) {
 export async function queryMyModelDetail(id: number) {
   return request(`${MY_MODELS_API}/${id}`, {
     method: 'GET'
+  });
+}
+
+export async function queryDraftModelList(params?: Global.SearchParams) {
+  return request<{ items: DraftModelItem[] }>(DRAFT_MODELS_API, {
+    method: 'GET',
+    params
   });
 }

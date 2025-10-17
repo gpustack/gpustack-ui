@@ -81,41 +81,35 @@ const AdvanceConfig = () => {
         [backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
           backend
         ) && (
-          <div style={{ paddingBottom: 22 }}>
-            <Form.Item<FormData>
-              name="distributed_inference_across_workers"
-              valuePropName="checked"
-              style={{ padding: '0 10px', marginBottom: 0 }}
-              noStyle
-            >
-              <CheckboxField
-                description={intl.formatMessage({
-                  id: 'models.form.distribution.tips'
-                })}
-                label={intl.formatMessage({
-                  id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-                })}
-              ></CheckboxField>
-            </Form.Item>
-          </div>
+          <Form.Item<FormData>
+            name="distributed_inference_across_workers"
+            valuePropName="checked"
+            style={{ marginBottom: 8 }}
+          >
+            <CheckboxField
+              description={intl.formatMessage({
+                id: 'models.form.distribution.tips'
+              })}
+              label={intl.formatMessage({
+                id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+              })}
+            ></CheckboxField>
+          </Form.Item>
         )}
-      <div style={{ paddingBottom: 22 }}>
-        <Form.Item<FormData>
-          name="restart_on_error"
-          valuePropName="checked"
-          style={{ padding: '0 10px', marginBottom: 0 }}
-          noStyle
-        >
-          <CheckboxField
-            description={intl.formatMessage({
-              id: 'models.form.restart.onerror.tips'
-            })}
-            label={intl.formatMessage({
-              id: 'models.form.restart.onerror'
-            })}
-          ></CheckboxField>
-        </Form.Item>
-      </div>
+      <Form.Item<FormData>
+        name="restart_on_error"
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+      >
+        <CheckboxField
+          description={intl.formatMessage({
+            id: 'models.form.restart.onerror.tips'
+          })}
+          label={intl.formatMessage({
+            id: 'models.form.restart.onerror'
+          })}
+        ></CheckboxField>
+      </Form.Item>
     </>
   );
 };

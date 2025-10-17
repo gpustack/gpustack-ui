@@ -366,11 +366,20 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           categories: null,
           restart_on_error: true,
           distributed_inference_across_workers: true,
+          mode: 'throughput',
           extended_kv_cache: {
             enabled: false,
             chunk_size: null,
             ram_ratio: 1.2,
             ram_size: null
+          },
+          speculative_config: {
+            enabled: false,
+            algorithm: '',
+            draft_model_name: null,
+            num_draft_tokens: 3,
+            ngram_min_match_length: 1,
+            ngram_max_match_length: 10
           },
           ...initialValues
         }}

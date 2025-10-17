@@ -10,7 +10,7 @@ import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Input, Pagination, Space, message } from 'antd';
+import { Button, Input, Space, message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -159,17 +159,6 @@ const Catalog: React.FC = () => {
     [openDeployModal]
   );
 
-  const handleOnPageChange = useCallback(
-    (page: number, pageSize?: number) => {
-      setQueryParams({
-        ...queryParams,
-        page,
-        perPage: pageSize || 10
-      });
-    },
-    [queryParams]
-  );
-
   const handleSearch = (e: any) => {
     fetchData({
       ...queryParams,
@@ -312,17 +301,6 @@ const Catalog: React.FC = () => {
           subTitle={intl.formatMessage({ id: 'noresult.catalog.subTitle' })}
         ></NoResult>
       </ScrollerContext.Provider>
-      <PageWrapper>
-        <Pagination
-          hideOnSinglePage={queryParams.perPage === 100}
-          align="end"
-          defaultCurrent={1}
-          total={dataSource.total}
-          pageSize={queryParams.perPage}
-          showSizeChanger
-          onChange={handleOnPageChange}
-        />
-      </PageWrapper>
       <DelopyBuiltInModal
         open={openDeployModal.show}
         action={PageAction.CREATE}

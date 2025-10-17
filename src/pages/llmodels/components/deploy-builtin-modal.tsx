@@ -131,7 +131,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [quantizationOptions, setQuantizationOptions] = useState<
     Global.BaseOption<string>[]
   >([]);
-  const [modeList, setModeList] = useState<Global.BaseOption<string>[]>([]);
+  const [modeList, setModeList] = useState<
+    Global.BaseOption<string, { isBuiltIn: boolean; tips: string }>[]
+  >([]);
   const sourceGroupMap = useRef<any>({});
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
@@ -346,35 +348,35 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = (backend: string) => {
-    if (backend === backendOptionsMap.llamaBox) {
-      setIsGGUF(true);
-    } else {
-      setIsGGUF(false);
-    }
+    // if (backend === backendOptionsMap.llamaBox) {
+    //   setIsGGUF(true);
+    // } else {
+    //   setIsGGUF(false);
+    // }
 
-    const sizeList = handleSetSizeOptions({
-      backend: backend
-    });
+    // const sizeList = handleSetSizeOptions({
+    //   backend: backend
+    // });
 
-    const size = checkSize(sizeList);
+    // const size = checkSize(sizeList);
 
-    const quantizaList = handleSetQuantizationOptions({
-      size: size,
-      backend: backend
-    });
+    // const quantizaList = handleSetQuantizationOptions({
+    //   size: size,
+    //   backend: backend
+    // });
 
-    const quantization = checkQuantization(quantizaList);
+    // const quantization = checkQuantization(quantizaList);
 
-    const data = getModelSpec({
-      backend: backend,
-      size: size,
-      quantization: quantization
-    });
+    // const data = getModelSpec({
+    //   backend: backend,
+    //   size: size,
+    //   quantization: quantization
+    // });
 
-    form.current.setFieldsValue({
-      ...defaultFormValues,
-      ...data
-    });
+    // form.current.setFieldsValue({
+    //   ...defaultFormValues,
+    //   ...data
+    // });
     handleCheckFormData();
   };
 
@@ -399,14 +401,17 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         }
       );
       const groupList = _.groupBy(res.items, 'source');
-      const modes = _.groupBy(res.items, 'mode');
 
-      const modeDataList = _.map(modes, (item: CatalogSpec, key: string) => {
+      const modes: string[] = res.items?.map((item: CatalogSpec) => {
+        return item.mode;
+      });
+
+      const modeDataList = [...new Set(modes)].map((key: string) => {
         return {
-          label: ModesMap[key] || key,
+          label: _.get(ModesMap, key, key || ''),
           isBuiltIn: ModesMap[key] ? true : false,
           value: key,
-          tips: ModesTipsMap[key] || ''
+          tips: _.get(ModesTipsMap, key, '')
         };
       });
 
@@ -420,7 +425,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       const list = _.sortBy(res.items, 'size');
 
-      console.log('spec items:', res.items);
       hasF16Ref.current = _.some(res.items, (item: CatalogSpec) => {
         return AscendNPUQuant_F16.includes(_.toUpper(item.quantization));
       });

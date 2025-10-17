@@ -37,7 +37,7 @@ const Performance: React.FC = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const { formKey } = useFormContext();
-  const { modeList, onModeChange } = useCatalogFormContext();
+  const { modeList = [], onModeChange } = useCatalogFormContext();
 
   return (
     <>
@@ -49,15 +49,19 @@ const Performance: React.FC = () => {
             description={<TooltipList list={modeTipsList}></TooltipList>}
             label={intl.formatMessage({ id: 'models.form.mode' })}
           >
-            {modeList.map((item: any) => (
+            {modeList?.map((item: any) => (
               <Select.Option key={item.value} value={item.value}>
                 <AutoTooltip
                   showTitle={item.isBuiltIn}
                   ghost
-                  title={intl.formatMessage({ id: item.tips })}
+                  title={
+                    item?.tips
+                      ? intl.formatMessage({ id: item?.tips || '' })
+                      : false
+                  }
                 >
                   {item.isBuiltIn
-                    ? intl.formatMessage({ id: item.label })
+                    ? intl.formatMessage({ id: item?.label || '' })
                     : item.label}
                 </AutoTooltip>
               </Select.Option>

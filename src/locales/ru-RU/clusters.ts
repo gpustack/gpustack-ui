@@ -36,20 +36,14 @@ export default {
   'clusters.create.noImages': 'Нет доступных образов',
   'clusters.create.noInstanceTypes': 'Нет доступных типов инстансов',
   'clusters.create.noRegions': 'Нет доступных регионов',
-  'clusters.workerpool.batchSize.desc':
-    'Количество воркеров, создаваемых одновременно в пуле воркеров',
-  'clusters.create.addworker.tips':
-    'Перед выполнением следующей команды убедитесь, что выполнены предварительные требования для <a href={link} target="_blank">{label}</a>.',
-  'clusters.create.addCommand.tips':
-    'На воркере, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
-  'cluster.create.checkEnv.tips':
-    'Используйте следующую команду для проверки готовности окружения',
-  'clusters.create.register.tips':
-    ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
-  'cluster.provider.comingsoon': 'Coming soon'
+  'clusters.workerpool.batchSize.desc': 'Количество воркеров, создаваемых одновременно в пуле воркеров',
+  'clusters.create.addworker.tips': 'Перед выполнением следующей команды убедитесь, что выполнены предварительные требования для <a href={link} target="_blank">{label}</a>.',
+  'clusters.create.addCommand.tips': 'На воркере, который необходимо добавить, выполните следующую команду, чтобы присоединить его к кластеру.',
+  'cluster.create.checkEnv.tips': 'Используйте следующую команду для проверки готовности окружения',
+  'clusters.create.register.tips': 'На Kubernetes кластере, который необходимо добавить, выполните следующую команду, чтобы присоединить его узлы к кластеру.',
+  'cluster.provider.comingsoon': 'Скоро будет'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
-// 2. 'cluster.provider.comingsoon': 'Coming soon'
+
 // ========== End of To-Do List ==========

@@ -32,9 +32,9 @@ export default {
   'menu.models.userModels': 'Мои модели',
   'menu.clusterManagement.clusterDetail': 'Детали кластера',
   'menu.clusterManagement.clusterCreate': 'Создать кластер',
-  'menu.resources.backendsList': 'Inference Backends'
+  'menu.resources.backendsList': 'Инференс бэкендов запуска'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 14. 'menu.resources.backendsList': 'Inference Backends'
+
 // ========== End of To-Do List ==========

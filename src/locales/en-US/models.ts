@@ -225,8 +225,8 @@ export default {
   'models.form.numDraftTokens': 'Number of Draft Tokens',
   'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
   'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
-  'models.form.mode.throughput': 'Throughput',
-  'models.form.mode.latency': 'Latency',
+  'models.form.mode.throughput': 'High-Throughput',
+  'models.form.mode.latency': 'Low-Latency',
   'models.form.mode.reference': 'Reference',
   'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',

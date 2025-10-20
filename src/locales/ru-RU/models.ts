@@ -195,7 +195,15 @@ export default {
   'models.accessSettings.public.tips':
     'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
   'models.table.button.deploy': 'Deploy Now',
-  'models.form.backendVersion.holder': 'Enter or select a version'
+  'models.form.backendVersion.holder': 'Enter or select a version',
+  'models.form.gpusperreplica': 'GPUs per Replica',
+  'models.form.gpusAllocationType': 'GPU Allocation Type',
+  'models.form.gpusAllocationType.auto': 'Auto',
+  'models.form.gpusAllocationType.custom': 'Custom',
+  'models.form.gpusAllocationType.auto.tips':
+    'System calculates GPUs per replica automatically.',
+  'models.form.gpusAllocationType.custom.tips':
+    'You can specify the exact number of GPUs per replica.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -221,5 +229,11 @@ export default {
 // 21. 'models.accessSettings.allowedUsers': 'Allowed users',
 // 22. 'models.accessSettings.public.tips': 'When set to public, anyone can access this model without authentication, which may lead to data exposure risks.',
 // 23. 'models.table.button.deploy': 'Deploy Now',
-// 24. 'models.form.backendVersion.holder': 'Enter or select a version'
+// 24. 'models.form.backendVersion.holder': 'Enter or select a version',
+// 25.  'models.form.gpusperreplica': 'GPUs per Replica',
+// 26.  'models.form.gpusAllocationType': 'GPU Allocation Type',
+// 27.  'models.form.gpusAllocationType.auto': 'Auto',
+// 28.  'models.form.gpusAllocationType.custom': 'Custom',
+// 29.  'models.form.gpusAllocationType.auto.tips': 'System calculates GPUs per replica automatically.',
+// 30.  'models.form.gpusAllocationType.custom.tips': 'You can specify the exact number of GPUs per replica.'
 // ========== End of To-Do List ==========

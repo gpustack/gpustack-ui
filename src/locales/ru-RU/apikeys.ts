@@ -13,14 +13,11 @@ export default {
   'apikeys.form.expiration.6months': '6 месяцев',
   'apikeys.form.expiration.never': 'Без срока действия',
   'apikeys.table.bindModels': 'Доступ к моделям',
-  'apikeys.models.all': 'All models',
-  'apikeys.models.selected': 'Allowed models',
-  'apikeys.models.noModelsFound': 'No models found'
+  'apikeys.models.all': 'Все модели',
+  'apikeys.models.selected': 'Разрешенные модели',
+  'apikeys.models.noModelsFound': 'Модели не найдены'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'apikeys.table.bindModels': 'Model Access',
-// 2. 'apikeys.models.all': 'All models',
-// 3. 'apikeys.models.selected': 'Allowed models',
-// 4. 'apikeys.models.noModelsFound': 'No models found'
+
 // ========== End of To-Do List ==========

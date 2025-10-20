@@ -91,20 +91,14 @@ export const gpuColorMap: Record<string, string> = {
   rocm: 'volcano',
   dtk: 'magenta',
   musa: 'cyan',
-  corex: 'purple'
+  corex: 'purple',
+  maca: 'geekblue'
 };
 
 export const getGpuColor = (gpuType: string) => {
   if (!gpuType) return 'default';
 
-  if (gpuType.includes('cann')) return gpuColorMap['cann'];
-  if (gpuType.includes('cuda')) return gpuColorMap['cuda'];
-  if (gpuType.includes('rocm')) return gpuColorMap['rocm'];
-  if (gpuType.includes('dtk')) return gpuColorMap['dtk'];
-  if (gpuType.includes('musa')) return gpuColorMap['musa'];
-  if (gpuType.includes('corex')) return gpuColorMap['corex'];
-
-  return 'default';
+  return gpuColorMap[gpuType] || 'default';
 };
 
 export const customIcons = [

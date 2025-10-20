@@ -13,9 +13,10 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
   currentGPU
 }) => {
   const code = React.useMemo(() => {
-    const command = addWorkerGuide['cuda'];
-    return command.checkEnvCommand[provider || ''];
-  }, [provider]);
+    const configs = addWorkerGuide['all'];
+    const command = configs.checkEnvCommand(currentGPU);
+    return command[provider || ''];
+  }, [provider, currentGPU]);
 
   return (
     <HighlightCode

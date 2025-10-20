@@ -72,10 +72,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // voxbox is not support multi gpu
   const updateGPUSelector = (backend: string) => {
     const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
+    const gpusPerReplicas =
+      form.getFieldValue(['gpu_selector', 'gpus_per_replica']) || null;
 
     if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
       return {
-        gpu_selector: { gpu_ids: [gpuids[0]] }
+        gpusCountType: gpusCountTypeMap.Auto,
+        gpu_selector: {
+          gpu_ids: [gpuids[0]]
+        }
       };
     }
     return {
@@ -131,9 +136,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
     if (scheduleType === ScheduleValueMap.Manual) {
-      form.setFieldsValue({
-        gpu_selector: { gpu_ids: [] }
-      });
+      form.setFieldValue(['gpu_selector', 'gpu_ids'], []);
     }
   };
 

@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropDownActions from '@/components/drop-down-actions';
 import IconFont from '@/components/icon-font';
+import TagWrapper from '@/components/tags-wrapper';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
 import { useIntl } from '@umijs/max';
@@ -89,6 +90,7 @@ const Content = styled.div`
 
 const InfoItem = styled.div`
   display: grid;
+  width: 100%;
   grid-template-columns: max-content 1fr;
   align-items: center;
   gap: 8px;
@@ -101,12 +103,6 @@ const InfoItem = styled.div`
     align-items: center;
     gap: 4px;
   }
-`;
-
-const BackendBox = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
 `;
 
 interface BackendCardProps {
@@ -151,6 +147,25 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     e.stopPropagation();
   };
 
+  const renderTag = (item: any) => {
+    return (
+      <AutoTooltip
+        ghost
+        minWidth={20}
+        showTitle
+        title={_.join(data.framework_index_map?.[item], ', ') || false}
+      >
+        <ThemeTag
+          key={item}
+          style={{ marginRight: 0 }}
+          color={getGpuColor(item)}
+        >
+          {item}
+        </ThemeTag>
+      </AutoTooltip>
+    );
+  };
+
   const renderFrameworks = () => {
     const frameworks = _.keys(data.framework_index_map || {});
 
@@ -162,31 +177,11 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
             {intl.formatMessage({ id: 'backend.availableFrameworks' })}:{' '}
           </span>
         </span>
-
-        <BackendBox>
-          {_.take(frameworks, 3).map((item: string) => {
-            return (
-              <div key={item}>
-                <AutoTooltip
-                  ghost
-                  minWidth={20}
-                  showTitle
-                  title={
-                    _.join(data.framework_index_map?.[item], ', ') || false
-                  }
-                >
-                  <ThemeTag
-                    key={item}
-                    style={{ marginRight: 0 }}
-                    color={getGpuColor(item)}
-                  >
-                    {item}
-                  </ThemeTag>
-                </AutoTooltip>
-              </div>
-            );
-          })}
-        </BackendBox>
+        <TagWrapper
+          gap={8}
+          dataList={frameworks}
+          renderTag={renderTag}
+        ></TagWrapper>
       </InfoItem>
     );
   };

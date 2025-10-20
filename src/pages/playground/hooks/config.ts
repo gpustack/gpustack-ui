@@ -34,9 +34,9 @@ export const llmInitialValues = {
   stop: null,
   temperature: 1,
   top_p: 1,
-  max_tokens: null,
-  frequency_penalty: null,
-  presence_penalty: null
+  max_tokens: 1024,
+  frequency_penalty: 0,
+  presence_penalty: 0
 };
 
 export const advancedFieldsDefaultValus = {

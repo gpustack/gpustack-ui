@@ -52,7 +52,6 @@ const ScheduleTypeForm: React.FC = () => {
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
   const gpusCountType = Form.useWatch('gpusCountType', form);
-  const gpuSelectorIds = Form.useWatch(['gpu_selector', 'gpu_ids'], form);
 
   const handleScheduleTypeChange = (value: string) => {
     if (value === ScheduleValueMap.Auto) {
@@ -61,9 +60,10 @@ const ScheduleTypeForm: React.FC = () => {
   };
 
   const handleGpusCountTypeChange = (val: string) => {
-    if (val === 'custom') {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 2);
+    if (val === gpusCountTypeMap.Custom) {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 1);
     }
+
     onValuesChange?.({}, form.getFieldsValue());
   };
 
@@ -89,6 +89,12 @@ const ScheduleTypeForm: React.FC = () => {
     }
     form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
     onValuesChange?.({}, form.getFieldsValue());
+  };
+
+  const handleOnStepReplica = (value: number | null) => {
+    if (value === null) {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 1);
+    }
   };
 
   return (
@@ -187,6 +193,7 @@ const ScheduleTypeForm: React.FC = () => {
                   })}
                   min={1}
                   step={1}
+                  onChange={handleOnStepReplica}
                   onStep={handleOnStepReplicaStep}
                 />
               </Form.Item>

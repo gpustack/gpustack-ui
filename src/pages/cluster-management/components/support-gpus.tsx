@@ -26,6 +26,49 @@ interface SupportedHardwareProps {
   clickable?: boolean;
 }
 
+const GPUsConfigs = {
+  cuda: {
+    label: 'NVIDIA',
+    value: 'cuda',
+    runtime: 'nvidia'
+  },
+  rocm: {
+    label: 'AMD',
+    value: 'rocm',
+    runtime: 'rocm'
+  },
+  npu: {
+    label: 'Ascend',
+    value: 'npu',
+    runtime: 'ascend'
+  },
+  dcu: {
+    label: 'Hygon',
+    value: 'dcu',
+    runtime: 'dcu'
+  },
+  musa: {
+    label: 'Moore Threads',
+    value: 'musa',
+    runtime: 'musa'
+  },
+  corex: {
+    label: 'Iluvatar',
+    value: 'corex',
+    runtime: 'corex'
+  },
+  cambricon: {
+    label: 'Cambricon',
+    value: 'cambricon',
+    runtime: 'cambricon'
+  },
+  metax: {
+    label: 'MetaX',
+    value: 'metax',
+    runtime: 'metax'
+  }
+};
+
 const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   onSelect,
   clickable,

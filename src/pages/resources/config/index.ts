@@ -34,6 +34,57 @@ export const status: any = {
   [WorkerStatusMap.initializing]: StatusMaps.transitioning
 };
 
+export const GPUsConfigs: Record<string, any> = {
+  cuda: {
+    label: 'NVIDIA',
+    value: 'cuda',
+    runtime: 'nvidia',
+    driver: 'nvidia-smi'
+  },
+  rocm: {
+    label: 'AMD',
+    value: 'rocm',
+    runtime: 'rocm',
+    driver: 'rocm-smi'
+  },
+  npu: {
+    label: 'Ascend',
+    value: 'npu',
+    runtime: 'ascend',
+    driver: 'npu-smi'
+  },
+  dcu: {
+    label: 'Hygon',
+    value: 'dcu',
+    runtime: 'dcu', // TODO: confirm runtime name
+    driver: 'hy-smi'
+  },
+  musa: {
+    label: 'Moore Threads',
+    value: 'musa',
+    runtime: 'mthreads',
+    driver: 'mthreads-gmi'
+  },
+  corex: {
+    label: 'Iluvatar',
+    value: 'corex',
+    runtime: 'corex', // TODO: confirm runtime name
+    driver: 'ixsmi'
+  },
+  cambricon: {
+    label: 'Cambricon',
+    value: 'cambricon',
+    runtime: 'cambricon',
+    driver: 'cnmon'
+  },
+  metax: {
+    label: 'MetaX',
+    value: 'metax',
+    runtime: 'metax',
+    driver: 'mx-smi'
+  }
+};
+
 export const addWorkerGuide: Record<string, any> = {
   mac: {
     getToken: 'cat /var/lib/gpustack/token',
@@ -48,7 +99,7 @@ export const addWorkerGuide: Record<string, any> = {
       return `Invoke-Expression "& { $((Invoke-WebRequest -Uri 'https://get.gpustack.ai' -UseBasicParsing).Content) } --server-url '${params.server}' --registration-token '${params.token}'"`;
     }
   },
-  cuda: {
+  all: {
     getToken:
       'Get-Content -Path (Join-Path -Path $env:APPDATA -ChildPath "gpustack\\token") -Raw',
     registerWorker(params: {
@@ -69,10 +120,12 @@ export const addWorkerGuide: Record<string, any> = {
     --registration-token ${params.token} \\
     --worker-ip ${params.workerip}`;
     },
-    checkEnvCommand: {
-      [ProviderValueMap.Docker]: `nvidia-smi >/dev/null 2>&1 && echo "NVIDIA driver OK" || (echo "NVIDIA driver issue"; exit 1) && docker info 2>/dev/null | grep -q "Default Runtime: nvidia" && echo "NVIDIA Container Toolkit OK" || (echo "NVIDIA Container Toolkit not configured"; exit 1)`,
-      [ProviderValueMap.Kubernetes]:
-        'kubectl get runtimeclass nvidia > /dev/null 2>&1  && echo "NVIDIA runtimeclass registered" || (echo "NVIDIA runtimeclass issue"; exit 1)'
+    checkEnvCommand(gpu: string) {
+      const config = GPUsConfigs[gpu];
+      return {
+        [ProviderValueMap.Docker]: `${config.driver} >/dev/null 2>&1 && echo "${config.label} driver OK" || (echo "${config.label} driver issue"; exit 1) && docker info 2>/dev/null | grep -q "Default Runtime: ${config.runtime}" && echo "${config.label} Container Toolkit OK" || (echo "${config.label} Container Toolkit not configured"; exit 1)`,
+        [ProviderValueMap.Kubernetes]: `kubectl get runtimeclass ${config.runtime} > /dev/null 2>&1  && echo "${config.label} runtimeclass registered" || (echo "${config.label} runtimeclass issue"; exit 1)`
+      };
     }
   },
   npu: {

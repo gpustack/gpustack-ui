@@ -12,7 +12,7 @@ type ViewModalProps = {
 
 const AddWorkerCommand: React.FC<ViewModalProps> = ({ registrationInfo }) => {
   const code = React.useMemo(() => {
-    const commandCode = addWorkerGuide['cuda'];
+    const commandCode = addWorkerGuide['all'];
     return commandCode?.registerWorker({
       server: registrationInfo.server_url || origin,
       tag: '',

@@ -155,7 +155,7 @@ const DeleteModal = forwardRef((props, ref) => {
               ? intl.formatMessage({ id: config.cancelText })
               : intl.formatMessage({ id: 'common.button.cancel' })}
           </Button>
-          <Button type="primary" onClick={handleOk} size="middle">
+          <Button type="primary" onClick={handleOk} size="middle" danger>
             {config.okText
               ? intl.formatMessage({ id: config.okText })
               : intl.formatMessage({ id: 'common.button.delete' })}

@@ -194,6 +194,11 @@ export const ScheduleValueMap = {
   SpecificGPUType: 'specific_gpu_type'
 };
 
+export const gpusCountTypeMap = {
+  Auto: 'auto',
+  Custom: 'custom'
+};
+
 export const scheduleList = [
   {
     label: 'models.form.scheduletype.auto',
@@ -324,6 +329,7 @@ export const excludeFields = [
   'backend_version',
   'ollama_library_model_name',
   'scheduleType',
+  'gpusCountType',
   'placement_strategy',
   'backend',
   'gpu_selector',

@@ -27,6 +27,7 @@ export interface ListItem {
   access_policy: 'public' | 'authed' | 'allowed_users';
   gpu_selector?: {
     gpu_ids: string[];
+    gpus_per_replica?: number;
   };
   worker_selector?: object;
 }
@@ -63,11 +64,13 @@ export interface FormData {
     gpu_ids?: string[];
     gpu_type?: string;
     gpu_count?: number;
+    gpus_per_replica?: number;
   };
   placement_strategy?: string;
   cpu_offloading?: boolean;
   worker_selector?: object;
   scheduleType?: string;
+  gpusCountType?: string;
   name: string;
   replicas: number;
   description: string;
@@ -191,6 +194,7 @@ export interface CatalogSpec {
   worker_selector: Record<string, any>;
   gpu_selector: {
     gpu_ids: string[];
+    gpus_per_replica: number;
   };
   backend: string;
   backend_version: string;
@@ -220,6 +224,7 @@ export interface EvaluateSpec {
   worker_selector?: Record<string, any>;
   gpu_selector?: {
     gpu_ids: string[];
+    gpus_per_replica: number;
   };
   backend?: string;
   backend_version?: string;

@@ -10,7 +10,7 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { queryGPUList } from '../apis';
-import { ScheduleValueMap } from '../config';
+import { gpusCountTypeMap, ScheduleValueMap } from '../config';
 import { GPUListItem, ListItem } from '../config/types';
 
 type EmptyObject = Record<never, never>;
@@ -226,13 +226,22 @@ export default function useFormInitialValues() {
     }
   };
 
+  /**
+   * before set the form initial values, generate the form values
+   * @param data
+   * @param gpuOptions
+   * @returns
+   */
   const generateFormValues = (data: ListItem, gpuOptions: any[]) => {
     const formData = {
       ...data,
       categories: data?.categories?.length ? data.categories[0] : null,
       scheduleType: data?.gpu_selector
         ? ScheduleValueMap.Manual
-        : ScheduleValueMap.Auto
+        : ScheduleValueMap.Auto,
+      gpusCountType: data?.gpu_selector?.gpus_per_replica
+        ? gpusCountTypeMap.Custom
+        : gpusCountTypeMap.Auto
     };
     return formData;
   };

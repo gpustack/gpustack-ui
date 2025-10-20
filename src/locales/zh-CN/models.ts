@@ -184,5 +184,12 @@ export default {
   'models.accessSettings.public.tips':
     '公开后，任何人无需认证即可访问，可能存在数据泄露风险。',
   'models.table.button.deploy': '立即部署',
-  'models.form.backendVersion.holder': '输入或选择一个版本'
+  'models.form.backendVersion.holder': '输入或选择一个版本',
+  'models.form.gpusperreplica': '每副本 GPU 数量',
+  'models.form.gpusAllocationType': 'GPU 分配方式',
+  'models.form.gpusAllocationType.auto': '自动',
+  'models.form.gpusAllocationType.custom': '自定义',
+  'models.form.gpusAllocationType.auto.tips':
+    '系统自动计算每个副本的 GPU 数量。',
+  'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量'
 };

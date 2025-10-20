@@ -5,7 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { excludeFields, ScheduleValueMap } from '../config';
+import { excludeFields, gpusCountTypeMap, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import {
@@ -120,7 +120,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     data.categories = data.categories ? [data.categories] : [];
     const gpuSelector = generateGPUIds(data);
     const allValues = {
-      ..._.omit(data, ['scheduleType']),
+      ..._.omit(data, ['scheduleType', 'gpusCountType']),
       ...gpuSelector
     };
 
@@ -250,6 +250,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           placement_strategy: 'spread',
           cpu_offloading: true,
           scheduleType: ScheduleValueMap.Auto,
+          gpusCountType: gpusCountTypeMap.Auto,
           categories: null,
           restart_on_error: true,
           distributed_inference_across_workers: true,

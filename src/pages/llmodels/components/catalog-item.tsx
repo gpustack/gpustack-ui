@@ -30,7 +30,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
     e.target.src = fallbackImg;
   };
 
-  const renderTag = (sItem: any) => {
+  const renderTag = useCallback((sItem: any) => {
     return (
       <ThemeTag
         key={sItem}
@@ -50,7 +50,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
         {sItem}B
       </ThemeTag>
     );
-  };
+  }, []);
 
   return (
     <div

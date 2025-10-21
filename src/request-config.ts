@@ -13,7 +13,10 @@ export const requestConfig: RequestConfig = {
     },
     errorHandler: (error: any, opts: any) => {
       const { message: errorMessage, response } = error;
-      const errMsg = response?.data?.message || errorMessage;
+      const errMsg =
+        response?.data?.error?.message ||
+        response?.data?.message ||
+        errorMessage;
 
       if (!opts?.skipErrorHandler && response?.status) {
         message.error(errMsg);

@@ -9,6 +9,7 @@ interface LabelSelectorProps {
   btnText?: string;
   description?: React.ReactNode;
   disabled?: boolean;
+  isAutoComplete?: boolean;
   onChange?: (labels: Record<string, any>) => void;
   onBlur?: (e: any, type: string, index: number) => void;
   onDelete?: (index: number) => void;
@@ -22,7 +23,8 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   disabled,
   label,
   btnText,
-  description
+  description,
+  isAutoComplete
 }) => {
   const intl = useIntl();
   const [labelsData, setLabelsData] = useState({});
@@ -89,6 +91,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
       description={
         description ?? intl.formatMessage({ id: 'models.form.keyvalue.paste' })
       }
+      isAutoComplete={isAutoComplete}
       labels={labelsData}
       labelList={labelList}
       onChange={handleLabelsChange}

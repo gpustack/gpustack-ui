@@ -38,6 +38,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   return (
     <>
       <Form.Item<FormData>
+        data-field="name"
         name="name"
         rules={[
           {

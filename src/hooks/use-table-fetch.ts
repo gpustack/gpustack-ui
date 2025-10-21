@@ -129,6 +129,12 @@ export default function useTableFetch<T>(
         ..._.pickBy(query || queryParams, (val: any) => !!val)
       };
       const res = await fetchAPI(params);
+      if (!dataSource.loadend) {
+        // add a delay to avoid flash
+        await new Promise((resolve) => {
+          setTimeout(resolve, 200);
+        });
+      }
       if (
         !res.items.length &&
         params.page > res.pagination.totalPage &&
@@ -139,6 +145,7 @@ export default function useTableFetch<T>(
           page: res.pagination.totalPage
         };
         const newRes = await fetchAPI(newParams);
+
         setDataSource({
           dataList: loadmore
             ? [...dataSource.dataList, ...(newRes.items || [])]

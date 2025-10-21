@@ -2,12 +2,24 @@ import { PageActionType } from '@/config/types';
 import React from 'react';
 import { BackendOption, DeployFormKey } from './types';
 
+type EmptyObject = Record<never, never>;
+
+type CascaderOption<T extends object = EmptyObject> = {
+  label: string;
+  value: string | number;
+  parent?: boolean;
+  disabled?: boolean;
+  index?: number;
+  children?: CascaderOption<T>[];
+} & Partial<T>;
+
 interface FormContextProps {
   isGGUF?: boolean;
   formKey: DeployFormKey;
   source: string;
   pageAction: PageActionType;
-  gpuOptions: any[];
+  gpuOptions: CascaderOption[];
+  workerLabelOptions: CascaderOption[];
   backendOptions: BackendOption[];
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onBackendChange: (backend: string, option: any) => void;

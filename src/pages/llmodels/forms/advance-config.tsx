@@ -1,4 +1,5 @@
 import LabelSelector from '@/components/label-selector';
+import { LabelSelectorContext } from '@/components/label-selector/context';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
@@ -36,7 +37,7 @@ const AdvanceConfig = () => {
   const EnviromentVars = Form.useWatch('env', form);
   const scheduleType = Form.useWatch('scheduleType', form);
   const backend = Form.useWatch('backend', form);
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, workerLabelOptions } = useFormContext();
 
   const handleWorkerLabelsChange = useCallback(
     (labels: Record<string, any>) => {
@@ -104,52 +105,57 @@ const AdvanceConfig = () => {
               }
             ></SealSelect>
           </Form.Item>
-          <Form.Item<FormData>
-            name="worker_selector"
-            rules={[
-              ({ getFieldValue }) => ({
-                validator(rule, value) {
-                  if (
-                    getFieldValue('scheduleType') === ScheduleValueMap.Auto &&
-                    _.keys(value).length > 0
-                  ) {
-                    if (_.some(_.keys(value), (k: string) => !value[k])) {
-                      return Promise.reject(
-                        intl.formatMessage(
-                          {
-                            id: 'common.validate.value'
-                          },
-                          {
-                            name: intl.formatMessage({
-                              id: 'models.form.selector'
-                            })
-                          }
-                        )
-                      );
-                    }
-                  }
-                  return Promise.resolve();
-                }
-              })
-            ]}
+          <LabelSelectorContext.Provider
+            value={{ options: workerLabelOptions }}
           >
-            <LabelSelector
-              label={intl.formatMessage({
-                id: 'resources.form.workerSelector'
-              })}
-              labels={wokerSelector}
-              onChange={handleWorkerLabelsChange}
-              onBlur={handleSelectorOnBlur}
-              onDelete={handleDeleteWorkerSelector}
-              description={
-                <span>
-                  {intl.formatMessage({
-                    id: 'resources.form.workerSelector.description'
-                  })}
-                </span>
-              }
-            ></LabelSelector>
-          </Form.Item>
+            <Form.Item<FormData>
+              name="worker_selector"
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(rule, value) {
+                    if (
+                      getFieldValue('scheduleType') === ScheduleValueMap.Auto &&
+                      _.keys(value).length > 0
+                    ) {
+                      if (_.some(_.keys(value), (k: string) => !value[k])) {
+                        return Promise.reject(
+                          intl.formatMessage(
+                            {
+                              id: 'common.validate.value'
+                            },
+                            {
+                              name: intl.formatMessage({
+                                id: 'models.form.selector'
+                              })
+                            }
+                          )
+                        );
+                      }
+                    }
+                    return Promise.resolve();
+                  }
+                })
+              ]}
+            >
+              <LabelSelector
+                isAutoComplete
+                label={intl.formatMessage({
+                  id: 'resources.form.workerSelector'
+                })}
+                labels={wokerSelector}
+                onChange={handleWorkerLabelsChange}
+                onBlur={handleSelectorOnBlur}
+                onDelete={handleDeleteWorkerSelector}
+                description={
+                  <span>
+                    {intl.formatMessage({
+                      id: 'resources.form.workerSelector.description'
+                    })}
+                  </span>
+                }
+              ></LabelSelector>
+            </Form.Item>
+          </LabelSelectorContext.Provider>
         </>
       )}
 

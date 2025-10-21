@@ -54,7 +54,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk
   } = props;
   const { backendOptions, getBackendOptions } = useQueryBackends();
-  const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
+  const { getGPUOptionList, gpuOptions, workerLabelOptions } =
+    useGenerateGPUOptions();
   const [form] = Form.useForm();
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
@@ -208,6 +209,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         pageAction: action,
         gpuOptions: gpuOptions,
         backendOptions: backendOptions,
+        workerLabelOptions: workerLabelOptions,
         onValuesChange: onValuesChange,
         onBackendChange: handleBackendChange
       }}

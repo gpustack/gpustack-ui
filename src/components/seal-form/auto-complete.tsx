@@ -17,6 +17,7 @@ const SealAutoComplete: React.FC<
     trim = true,
     onSelect,
     onBlur,
+    checkStatus,
     extra,
     style,
     addAfter,
@@ -83,7 +84,7 @@ const SealAutoComplete: React.FC<
     <SelectWrapper style={style}>
       <Wrapper
         className="seal-select-wrapper"
-        status={status}
+        status={checkStatus || status}
         extra={extra}
         label={label}
         isFocus={isFocus}
@@ -103,6 +104,8 @@ const SealAutoComplete: React.FC<
               ''
             )
           }
+          // @ts-ignore
+          status={checkStatus || status}
           onSelect={handleOnSelect}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}

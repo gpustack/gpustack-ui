@@ -26,6 +26,9 @@ type CascaderOption<T extends object = EmptyObject> = {
 
 export const useGenerateGPUOptions = () => {
   const [gpuOptions, setGpuOptions] = useState<CascaderOption[]>([]);
+  const [workerLabelOptions, setWorkerLabelOptions] = useState<
+    CascaderOption[]
+  >([]);
 
   const generateCascaderGPUOptions = (
     gpuList: GPUListItem[],
@@ -80,7 +83,34 @@ export const useGenerateGPUOptions = () => {
     return gpuSelectorList;
   };
 
-  const generateWorkerSelectorOptions = (workerList: WorkerListItem[]) => {};
+  const generateWorkerSelectorOptions = (workerList: WorkerListItem[]) => {
+    // each worker may have multiple labels,the labels is object as: {key: value, key2: value2}
+    // different workers may have a same label key but different values
+    // we need to extract a list as: [{label: key, value: key, children: [{label: value, value: value}]}]
+    const labelMap = new Map<string, Set<string>>();
+    workerList.forEach((worker) => {
+      const labels = worker.labels || {};
+      Object.entries(labels).forEach(([key, value]) => {
+        if (!labelMap.has(key)) {
+          labelMap.set(key, new Set());
+        }
+        labelMap.get(key)!.add(value);
+      });
+    });
+
+    const labelOptions: CascaderOption[] = Array.from(labelMap.entries()).map(
+      ([key, values]) => ({
+        label: key,
+        value: key,
+        parent: true,
+        children: Array.from(values).map((value) => ({
+          label: value,
+          value: value
+        }))
+      })
+    );
+    return labelOptions;
+  };
 
   const getGPUOptionList = async (params?: {
     clusterId: number;
@@ -99,13 +129,16 @@ export const useGenerateGPUOptions = () => {
       })
     ]);
     const gpuList = generateCascaderGPUOptions(gpuData.items, workerData.items);
+    const labelOptions = generateWorkerSelectorOptions(workerData.items);
     setGpuOptions(gpuList);
+    setWorkerLabelOptions(labelOptions);
     return gpuList;
   };
 
   return {
     getGPUOptionList,
-    gpuOptions
+    gpuOptions,
+    workerLabelOptions
   };
 };
 

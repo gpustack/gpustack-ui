@@ -52,7 +52,7 @@ export async function getInitialState(): Promise<{
   const fetchUserInfo = async (): Promise<Global.UserInfo> => {
     try {
       const data = await queryCurrentUserState({
-        skipErrorHandler: false
+        skipErrorHandler: true
       });
       if (data.is_admin) {
         getUpdateCheck();

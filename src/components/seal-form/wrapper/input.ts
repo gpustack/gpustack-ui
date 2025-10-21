@@ -163,6 +163,12 @@ const InputWrapper = styled.div`
   .seal-textarea-wrapper {
     height: auto;
     padding-right: 10px;
+    .ant-input-outlined {
+      height: auto !important;
+    }
+    textarea {
+      overflow-y: auto !important;
+    }
   }
   .ant-input-textarea-allow-clear.ant-input-affix-wrapper {
     padding: 0;

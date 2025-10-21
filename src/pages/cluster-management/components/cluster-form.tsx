@@ -1,4 +1,5 @@
 import SealInput from '@/components/seal-form/seal-input';
+import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -85,9 +86,10 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
           ></CloudProvider>
         )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
-          <SealInput.TextArea
+          <SealTextArea
+            autoSize={{ minRows: 4, maxRows: 6 }}
             label={intl.formatMessage({ id: 'common.table.description' })}
-          ></SealInput.TextArea>
+          ></SealTextArea>
         </Form.Item>
       </Form>
     );

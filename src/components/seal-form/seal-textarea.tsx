@@ -24,6 +24,7 @@ const LabelWrapper = styled.div.attrs({
 
 interface InputTextareaProps extends TextAreaProps {
   scaleSize?: boolean;
+  alwaysFocus?: boolean;
 }
 
 const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
@@ -45,6 +46,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
     addAfter,
     trim,
     scaleSize,
+    alwaysFocus,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -119,7 +121,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
       <Wrapper
         status={status}
         label={<LabelWrapper>{label}</LabelWrapper>}
-        isFocus={isFocus}
+        isFocus={alwaysFocus || isFocus}
         required={required}
         description={description}
         className="seal-textarea-wrapper"
@@ -134,7 +136,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
           spellCheck={rest.spellCheck ?? false}
           autoSize={autoSize}
           ref={inputRef}
-          style={{ minHeight: '80px', ...style }}
+          style={{ ...style }}
           className="seal-textarea"
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}

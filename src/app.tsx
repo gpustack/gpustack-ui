@@ -13,6 +13,7 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import { RequestConfig, history } from '@umijs/max';
+import { message } from 'antd';
 
 const loginPath = '/login';
 
@@ -51,13 +52,26 @@ export async function getInitialState(): Promise<{
   const fetchUserInfo = async (): Promise<Global.UserInfo> => {
     try {
       const data = await queryCurrentUserState({
-        skipErrorHandler: true
+        skipErrorHandler: false
       });
       if (data.is_admin) {
         getUpdateCheck();
       }
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      const data = error?.response?.data;
+      if (data?.code === 401) {
+        message.error({
+          content: (
+            <div>
+              <span>{data?.message || 'Please login again.'}</span>
+              <br />
+              <div>Please contact the administrator.</div>
+            </div>
+          ),
+          duration: 5
+        });
+      }
       history.push(loginPath);
     }
     return {} as Global.UserInfo;

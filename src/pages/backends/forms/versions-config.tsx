@@ -317,6 +317,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                     style={{ marginBottom: 0 }}
                   >
                     <SealInput.TextArea
+                      allowClear
                       label={intl.formatMessage({ id: 'backend.runCommand' })}
                     ></SealInput.TextArea>
                   </Form.Item>

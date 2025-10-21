@@ -2,6 +2,7 @@ import IconFont from '@/components/icon-font';
 import AutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import SealTextArea from '@/components/seal-form/seal-textarea';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
@@ -127,7 +128,6 @@ const BackendFields: React.FC = () => {
             <SealInput.Input
               required
               allowClear
-              scaleSize={true}
               label={intl.formatMessage({ id: 'backend.imageName' })}
             ></SealInput.Input>
           </Form.Item>
@@ -140,15 +140,17 @@ const BackendFields: React.FC = () => {
               }
             ]}
           >
-            <SealInput.TextArea
+            <SealTextArea
+              allowClear
               required
               scaleSize={true}
-              allowClear
+              alwaysFocus={true}
+              autoSize={{ minRows: 2, maxRows: 4 }}
               label={intl.formatMessage({ id: 'backend.runCommand' })}
               placeholder={intl.formatMessage({
                 id: 'models.form.runCommandPlaceholder'
               })}
-            ></SealInput.TextArea>
+            ></SealTextArea>
           </Form.Item>
         </>
       )}

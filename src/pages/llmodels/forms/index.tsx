@@ -1,6 +1,5 @@
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
-import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -54,7 +53,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onValuesChange,
     onOk
   } = props;
-  const { scrollToTarget, scrollToBottom } = useWrapperContext();
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
   const [form] = Form.useForm();

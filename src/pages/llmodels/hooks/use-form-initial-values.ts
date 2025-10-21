@@ -80,6 +80,8 @@ export const useGenerateGPUOptions = () => {
     return gpuSelectorList;
   };
 
+  const generateWorkerSelectorOptions = (workerList: WorkerListItem[]) => {};
+
   const getGPUOptionList = async (params?: {
     clusterId: number;
   }): Promise<CascaderOption[]> => {

@@ -265,7 +265,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     // evaluate the form data when select a model file
     // TODO: reset backend related fields when select a GGUF file
     if (item.fakeName) {
-      // onSelectFile(item, modelInfo, manual);
+      onSelectFile(item, modelInfo, manual);
     }
   };
 

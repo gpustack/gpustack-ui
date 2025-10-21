@@ -52,11 +52,18 @@ export default function useChatCompletion(
       return;
     }
 
-    reasonContentRef.current =
-      reasonContentRef.current +
-      _.get(chunk, 'choices.0.delta.reasoning_content', '');
-    contentRef.current =
-      contentRef.current + _.get(chunk, 'choices.0.delta.content', '');
+    const deltaReasoningContent =
+      _.get(chunk, 'choices.0.delta.reasoning_content', '') === null
+        ? ''
+        : _.get(chunk, 'choices.0.delta.reasoning_content', '');
+
+    const deltaContent =
+      _.get(chunk, 'choices.0.delta.content', '') === null
+        ? ''
+        : _.get(chunk, 'choices.0.delta.content', '');
+
+    reasonContentRef.current = reasonContentRef.current + deltaReasoningContent;
+    contentRef.current = contentRef.current + deltaContent;
 
     const content = formatContent({
       content: contentRef.current,

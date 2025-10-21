@@ -81,7 +81,13 @@ const AdvanceConfig = () => {
 
   return (
     <>
-      <Form.Item<FormData> name="categories">
+      <Form.Item<FormData>
+        name="categories"
+        data-field="categories"
+        style={{
+          scrollMarginTop: 200
+        }}
+      >
         <SealSelect
           allowNull
           label={intl.formatMessage({

@@ -1,9 +1,10 @@
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Segmented } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle } from 'react';
+import styled from 'styled-components';
 import { excludeFields, gpusCountTypeMap, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
@@ -14,13 +15,35 @@ import {
   SourceType
 } from '../config/types';
 import { generateGPUIds } from '../config/utils';
+import useFieldScroll from '../hooks/use-field-scroll';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import Performance from './performance';
 
-const requiredFields = ['gpu_selector', 'backend'];
+const advancedRequiredFields = [
+  'gpu_selector',
+  'backend',
+  'image_name',
+  'run_command'
+];
+const performanceRequiredFields = ['speculative_config'];
+
+const SegmentedInner = styled(Segmented)`
+  width: 100%;
+  border-radius: 0;
+  .ant-segmented-item {
+    flex: 1;
+  }
+`;
+
+const SegmentedHeader = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 16px;
+`;
 
 interface DataFormProps {
   initialValues?: any;
@@ -63,6 +86,31 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [target, setTarget] = React.useState<string>('basic');
   const performanceRef = React.useRef<HTMLDivElement>(null);
   const advanceRef = React.useRef<HTMLDivElement>(null);
+
+  const segmentOptions = [
+    {
+      value: 'basic',
+      label: intl.formatMessage({ id: 'common.title.basicInfo' }),
+      field: 'name'
+    },
+    {
+      value: 'performance',
+      label: intl.formatMessage({ id: 'models.form.performance' }),
+      field: 'extended_kv_cache.enabled'
+    },
+    {
+      value: 'advanced',
+      label: intl.formatMessage({ id: 'resources.form.advanced' }),
+      field: 'categories'
+    }
+  ];
+
+  const { scrollToSegment } = useFieldScroll({
+    form,
+    activeKey,
+    setActiveKey,
+    segmentOptions
+  });
 
   const handleSumit = () => {
     form.submit();
@@ -155,21 +203,34 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleOnFinishFailed = (errorInfo: any) => {
     const { errorFields } = errorInfo;
     if (errorFields && errorFields.length > 0) {
+      const collapseKeys: string[] = [];
       const names = errorFields.map((item: any) => item.name[0]);
-      const isRequired = names.some((name: string) =>
-        requiredFields.includes(name)
+      const isAdvancedRequired = names.some((name: string) =>
+        advancedRequiredFields.includes(name)
       );
-      if (isRequired) {
-        setActiveKey(['advanced']);
+
+      const isPerformanceRequired = names.some((name: string) =>
+        performanceRequiredFields.includes(name)
+      );
+
+      if (isPerformanceRequired) {
+        collapseKeys.push('performance');
       }
+
+      if (isAdvancedRequired) {
+        collapseKeys.push('advanced');
+      }
+
+      setActiveKey((prev: string[]) => [
+        ...new Set([...prev, ...collapseKeys])
+      ]);
     }
   };
 
-  const handleTargetChange = (val: string) => {
-    form.scrollToField(val, {
-      behavior: 'smooth',
-      block: 'center'
-    });
+  const handleTargetChange = async (val: any) => {
+    setTarget(val);
+
+    await scrollToSegment(val, { offsetTop: 96 });
   };
 
   useImperativeHandle(ref, () => {
@@ -214,30 +275,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         onBackendChange: handleBackendChange
       }}
     >
-      {/* <div
-        className="m-b-8"
-        style={{ position: 'sticky', top: 0, zIndex: 100 }}
-      >
-        <Segmented
+      <SegmentedHeader>
+        <SegmentedInner
+          defaultValue="basic"
           value={target}
-          defaultValue="Basic"
           onChange={handleTargetChange}
-          options={[
-            {
-              value: 'name',
-              label: 'Basic'
-            },
-            {
-              value: 'categories',
-              label: 'Performance'
-            },
-            {
-              value: 'categories',
-              label: 'Advanced'
-            }
-          ]}
+          options={segmentOptions}
         />
-      </div> */}
+      </SegmentedHeader>
       <Form
         name="deployModel"
         form={form}

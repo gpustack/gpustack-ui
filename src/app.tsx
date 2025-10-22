@@ -64,9 +64,7 @@ export async function getInitialState(): Promise<{
         message.error({
           content: (
             <div>
-              <span>{data?.message || 'Please login again.'}</span>
-              <br />
-              <div>Please contact the administrator.</div>
+              <span>{data?.message}</span>
             </div>
           ),
           duration: 5

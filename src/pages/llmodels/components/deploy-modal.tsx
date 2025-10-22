@@ -3,7 +3,7 @@ import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import useDeferredRequest from '@/hooks/use-deferred-request';
-import { ProviderValueMap } from '@/pages/cluster-management/config';
+import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
@@ -440,8 +440,8 @@ const AddModal: FC<AddModalProps> = (props) => {
       return initialValues.cluster_id;
     }
     const cluster_id =
-      clusterList?.find((item) => item.provider === ProviderValueMap.Docker)
-        ?.value || clusterList?.[0]?.value;
+      clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
+        ?.value || '';
 
     return cluster_id;
   };

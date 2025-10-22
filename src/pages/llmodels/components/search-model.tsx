@@ -320,7 +320,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
         return {
           ...pre,
           loading: false,
-          repoOptions: resultList
+          dataList: resultList
         };
       });
       // current selected item

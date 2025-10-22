@@ -3,9 +3,15 @@ import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useIntl } from '@umijs/max';
 import { Form, Segmented } from 'antd';
 import _ from 'lodash';
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
 import styled from 'styled-components';
-import { excludeFields, gpusCountTypeMap, ScheduleValueMap } from '../config';
+import {
+  deployFormKeyMap,
+  excludeFields,
+  gpusCountTypeMap,
+  modelSourceMap,
+  ScheduleValueMap
+} from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import {
@@ -38,11 +44,12 @@ const SegmentedInner = styled(Segmented)`
   }
 `;
 
-const SegmentedHeader = styled.div`
+const SegmentedHeader = styled.div<{ $top?: number }>`
   position: sticky;
-  top: 0;
+  top: ${(props) => props.$top || 0}px;
   z-index: 10;
-  margin-bottom: 16px;
+  padding-bottom: 16px;
+  background-color: var(--ant-color-bg-elevated);
 `;
 
 interface DataFormProps {
@@ -67,6 +74,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     action,
     isGGUF,
     formKey,
+    source,
     initialValues,
     sourceDisable = true,
     sourceList,
@@ -111,6 +119,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey,
     segmentOptions
   });
+
+  const SegmentedTop = useMemo(() => {
+    if (
+      [
+        modelSourceMap.huggingface_value,
+        modelSourceMap.modelscope_value
+      ].includes(source) &&
+      formKey === deployFormKeyMap.deployment
+    ) {
+      return {
+        top: 50,
+        offsetTop: 146
+      };
+    }
+    return {
+      top: 0,
+      offsetTop: 96
+    };
+  }, [source, formKey]);
 
   const handleSumit = () => {
     form.submit();
@@ -230,7 +257,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleTargetChange = async (val: any) => {
     setTarget(val);
 
-    await scrollToSegment(val, { offsetTop: 96 });
+    await scrollToSegment(val, { offsetTop: SegmentedTop.offsetTop });
   };
 
   useImperativeHandle(ref, () => {
@@ -275,7 +302,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         onBackendChange: handleBackendChange
       }}
     >
-      <SegmentedHeader>
+      <SegmentedHeader $top={SegmentedTop.top}>
         <SegmentedInner
           defaultValue="basic"
           value={target}

@@ -29,8 +29,7 @@ const SegmentedInner = styled(Segmented)`
 `;
 
 const SegmentedHeader = styled.div`
-  margin-top: 16px;
-  padding: 0 24px;
+  padding: 16px 24px;
 `;
 
 interface AddModalProps {
@@ -198,6 +197,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       </SegmentedHeader>
       <ColumnWrapper
         maxHeight={'calc(100vh - 123px)'}
+        styles={{
+          container: {
+            paddingTop: 0
+          }
+        }}
         footer={
           <ModalFooter
             onCancel={onClose}

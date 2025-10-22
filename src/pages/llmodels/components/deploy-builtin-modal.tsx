@@ -2,7 +2,7 @@ import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
-import { ProviderValueMap } from '@/pages/cluster-management/config';
+import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
@@ -356,10 +356,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   const initClusterId = () => {
     const cluster_id =
-      clusterList?.find((item) => item.provider === ProviderValueMap.Docker)
-        ?.value || clusterList?.[0]?.value;
+      clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
+        ?.value || '';
 
-    console.log('cluster_id:', cluster_id);
     return cluster_id;
   };
 

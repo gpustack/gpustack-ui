@@ -9,7 +9,7 @@ export interface CredentialFormData {
   id?: number;
 }
 
-export type ClusterStatusType = 0 | 1 | 3;
+export type ClusterStatusType = 'provisioning' | 'provisioned' | 'ready';
 
 export interface CredentialListItem {
   id: number;

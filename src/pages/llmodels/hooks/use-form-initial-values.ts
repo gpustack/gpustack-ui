@@ -1,5 +1,9 @@
 import { clusterListAtom } from '@/atoms/models';
 import { queryClusterList } from '@/pages/cluster-management/apis';
+import {
+  ClusterStatusLabelMap,
+  ClusterStatusValueMap
+} from '@/pages/cluster-management/config';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import { queryWorkersList } from '@/pages/resources/apis';
 import {
@@ -245,8 +249,12 @@ export default function useFormInitialValues() {
         perPage: 100
       });
       const list = response.items.map((item) => ({
-        label: item.name,
+        label:
+          item.state === ClusterStatusValueMap.Ready
+            ? item.name
+            : `${item.name} [${ClusterStatusLabelMap[item.state]}]`,
         value: item.id,
+        disabled: item.state !== ClusterStatusValueMap.Ready,
         provider: item.provider as string,
         state: item.state
       }));

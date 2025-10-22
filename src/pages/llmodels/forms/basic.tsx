@@ -1,8 +1,13 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
+import {
+  ClusterStatusLabelMap,
+  ClusterStatusValueMap
+} from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { useMemo } from 'react';
 import { sourceOptions } from '../config';
 import { FormData } from '../config/types';
 import CatalogFrom from './catalog';
@@ -13,7 +18,7 @@ interface BasicFormProps {
   fields?: string[];
   sourceDisable?: boolean;
   sourceList?: Global.BaseOption<string>[];
-  clusterList: Global.BaseOption<number>[];
+  clusterList: Global.BaseOption<number, { provider: string; state: string }>[];
   handleClusterChange: (value: number) => void;
   onSourceChange?: (value: string) => void;
 }
@@ -34,6 +39,19 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   const handleOnSourceChange = (val: string) => {
     onSourceChange?.(val);
   };
+
+  const clusterOptions = useMemo(() => {
+    return clusterList?.map((item) => {
+      return {
+        label:
+          item.state === ClusterStatusValueMap.Ready
+            ? item.label
+            : `${item.label} [${ClusterStatusLabelMap[item.state as string]}]`,
+        disabled: item.state !== ClusterStatusValueMap.Ready,
+        value: item.value
+      };
+    });
+  }, [clusterList]);
 
   return (
     <>
@@ -93,7 +111,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           <SealSelect
             onChange={handleClusterChange}
             label={intl.formatMessage({ id: 'clusters.title' })}
-            options={clusterList}
+            options={clusterOptions}
             required
           ></SealSelect>
         }

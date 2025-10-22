@@ -71,11 +71,15 @@ const BackendList = () => {
       if (openModalStatus.action === 'create') {
         await createBackend({ data: values });
       } else {
+        const omitFields = openModalStatus.currentData?.is_built_in
+          ? ['built_in_version_configs', 'default_version']
+          : ['built_in_version_configs'];
+
         await updateBackend(openModalStatus.currentData!.id!, {
           data: {
             built_in_version_configs:
               openModalStatus.currentData?.built_in_version_configs,
-            ..._.omit(values, ['built_in_version_configs']),
+            ..._.omit(values, omitFields),
             health_check_path: values.health_check_path || null
           }
         });

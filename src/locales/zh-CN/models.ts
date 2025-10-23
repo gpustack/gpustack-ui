@@ -217,9 +217,8 @@ export default {
   'models.form.ngramMaxMatchLength': 'N-gram 最大匹配长度',
   'models.form.mode.throughput': '高吞吐',
   'models.form.mode.latency': '低延迟',
-  'models.form.mode.reference': '参考',
+  'models.form.mode.baseline': '标准',
   'models.form.mode.throughput.tips': '在高并发请求下优化吞吐性能。',
   'models.form.mode.latency.tips': '在低并发请求下优化响应延迟。',
-  'models.form.mode.reference.tips':
-    '以完整（原始）精度运行，并优先保证兼容性。'
+  'models.form.mode.baseline.tips': '以完整（原始）精度运行，并优先保证兼容性。'
 };

@@ -3,7 +3,8 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import icons from '@/components/icon-font/icons';
-import { useIntl } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Tag } from 'antd';
 import type { SortOrder } from 'antd/es/table/interface';
 import { ColumnsType } from 'antd/lib/table';
@@ -35,6 +36,16 @@ const useUsersColumns = ({
   sortOrder
 }: ColumnsHookProps): ColumnsType<ListItem> => {
   const intl = useIntl();
+  const { initialState } = useModel('@@initialState') || {};
+
+  const setActions = useMemoizedFn((record: ListItem) => {
+    return actionList.filter((action) => {
+      if (initialState?.currentUser?.id === record.id) {
+        return action.key !== 'delete';
+      }
+      return true;
+    });
+  });
 
   return useMemo(() => {
     return [
@@ -168,13 +179,13 @@ const useUsersColumns = ({
         span: 3,
         render: (text, record) => (
           <DropdownButtons
-            items={actionList}
+            items={setActions(record)}
             onSelect={(val) => handleSelect(val, record)}
           />
         )
       }
     ];
-  }, [sortOrder, intl, handleSelect]);
+  }, [sortOrder, intl, handleSelect, setActions]);
 };
 
 export default useUsersColumns;

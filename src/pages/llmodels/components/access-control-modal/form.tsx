@@ -186,11 +186,11 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                 item.title.toLowerCase().includes(inputValue.toLowerCase())
               }
               render={(item) => (
-                <span className="flex-center gap-8">
+                <span className="flex-center gap-4">
                   <span>{item.title}</span>
                   <span className="text-tertiary">
                     {item.is_admin
-                      ? `(${intl.formatMessage({ id: 'models.table.admin' })})`
+                      ? `[${intl.formatMessage({ id: 'models.table.admin' })}]`
                       : ''}
                   </span>
                 </span>

@@ -5,10 +5,10 @@ import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { PageContainer } from '@ant-design/pro-components';
-import { useIntl } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, ConfigProvider, message, Table } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import NoResult from '../_components/no-result';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
@@ -35,6 +35,7 @@ const Users: React.FC = () => {
     contentForDelete: 'users.table.user'
   });
 
+  const { initialState } = useModel('@@initialState') || {};
   const intl = useIntl();
   const [openAddModalStatus, setOpenAddModalStatus] = useState<{
     action: PageActionType;
@@ -155,6 +156,13 @@ const Users: React.FC = () => {
     sortOrder
   });
 
+  const dataList = useMemo(() => {
+    return dataSource.dataList.map((item) => ({
+      ...item,
+      disabled: initialState?.currentUser?.id === item.id
+    }));
+  }, [dataSource.dataList, initialState?.currentUser?.id]);
+
   return (
     <>
       <PageContainer
@@ -182,7 +190,7 @@ const Users: React.FC = () => {
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             columns={columns}
-            dataSource={dataSource.dataList}
+            dataSource={dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
             rowKey="id"

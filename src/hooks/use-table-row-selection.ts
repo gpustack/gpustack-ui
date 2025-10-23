@@ -41,6 +41,9 @@ export default function useTableRowSelection() {
     selectedRowKeys,
     selectedRows,
     enableSelection: true,
+    getCheckboxProps: (record: Record<string, any>) => ({
+      disabled: record.disabled
+    }),
     clearSelections,
     onChange: onSelectChange,
     removeSelectedKeys,

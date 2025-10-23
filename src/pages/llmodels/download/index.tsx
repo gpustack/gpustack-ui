@@ -22,6 +22,7 @@ type AddModalProps = {
   width?: string | number;
   hasLinuxWorker?: boolean;
   workerOptions: any[];
+  workersList?: any[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
 };
@@ -47,7 +48,8 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     hasLinuxWorker,
     source,
     width = 600,
-    workerOptions
+    workerOptions,
+    workersList
   } = props || {};
   const SEARCH_SOURCE = [
     modelSourceMap.huggingface_value,
@@ -66,7 +68,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     if (source === modelSourceMap.huggingface_value) {
       const huggingFaceModel = {
         huggingface_repo_id: selectedModel.name,
-        huggingface_filename: null
+        huggingface_filename: fileName || null
       };
       return huggingFaceModel;
     }
@@ -74,7 +76,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     if (source === modelSourceMap.modelscope_value) {
       const modelScopeModel = {
         model_scope_model_id: selectedModel.name,
-        model_scope_file_path: null
+        model_scope_file_path: fileName || null
       };
       return modelScopeModel;
     }
@@ -238,6 +240,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 ref={form}
                 onOk={handleOk}
                 source={source}
+                selectedModel={selectedModel}
+                fileName={fileName}
+                workersList={workersList}
                 workerOptions={workerOptions}
               ></TargetForm>
             </>

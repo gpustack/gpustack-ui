@@ -15,7 +15,7 @@ import { GPUListItem, ListItem } from '../config/types';
 
 type EmptyObject = Record<never, never>;
 
-type CascaderOption<T extends object = EmptyObject> = {
+export type CascaderOption<T extends object = EmptyObject> = {
   label: string;
   value: string | number;
   parent?: boolean;
@@ -210,7 +210,10 @@ export const useGenerateWorkerOptions = () => {
         cluster_id: item.cluster_id,
         state: item.state,
         label: item.name,
-        value: item.id
+        value: item.id,
+        id: item.id,
+        labels: item.labels || {},
+        name: item.name
       }))
     );
     setClusterList(

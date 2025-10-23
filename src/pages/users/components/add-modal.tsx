@@ -6,7 +6,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import SealSwitch from '@/components/seal-form/seal-switch';
 import { PageAction, PasswordReg } from '@/config';
 import { PageActionType } from '@/config/types';
-import { useIntl } from '@umijs/max';
+import { useIntl, useModel } from '@umijs/max';
 import { Form, Select } from 'antd';
 import { useEffect } from 'react';
 import { UserRoles, UserRolesOptions } from '../config';
@@ -28,6 +28,7 @@ const AddModal: React.FC<AddModalProps> = ({
   data,
   onCancel
 }) => {
+  const { initialState } = useModel('@@initialState') || {};
   const [form] = Form.useForm();
   const intl = useIntl();
 
@@ -125,20 +126,23 @@ const AddModal: React.FC<AddModalProps> = ({
               </SealSelect>
             </Form.Item>
           </div>
-          <div style={{ flex: 1 }}>
-            <Form.Item<FormData>
-              name="is_active"
-              rules={[{ required: false }]}
-              valuePropName="checked"
-            >
-              <SealSwitch
-                label={intl.formatMessage({ id: 'users.form.active' })}
-                description={intl.formatMessage({
-                  id: 'users.form.active.description'
-                })}
-              />
-            </Form.Item>
-          </div>
+          {(data?.id !== initialState?.currentUser?.id ||
+            action === PageAction.CREATE) && (
+            <div style={{ flex: 1 }}>
+              <Form.Item<FormData>
+                name="is_active"
+                rules={[{ required: false }]}
+                valuePropName="checked"
+              >
+                <SealSwitch
+                  label={intl.formatMessage({ id: 'users.form.active' })}
+                  description={intl.formatMessage({
+                    id: 'users.form.active.description'
+                  })}
+                />
+              </Form.Item>
+            </div>
+          )}
         </div>
 
         <Form.Item<FormData>

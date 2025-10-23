@@ -349,6 +349,7 @@ const ModelFiles = () => {
           width={downloadModalStatus.width}
           hasLinuxWorker={downloadModalStatus.hasLinuxWorker}
           workerOptions={readyWorkers}
+          workersList={workersList}
         ></DownloadModal>
         <DeployModal
           deploymentType="modelFiles"

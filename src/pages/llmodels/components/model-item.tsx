@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { modelCategories, modelCategoriesMap, modelSourceMap } from '../config';
 import { categoryToPathMap } from '../config/button-actions';
+import { categoryConfig } from './model-tag';
 
 const MyModelsStatusValueMap = {
   Inactive: 'Inactive',
@@ -198,10 +199,21 @@ const ModelItem: React.FC<{
           <div className="content">
             <div className="footer">
               <div className="extra-info">
-                <ThemeTag className="tag-item" color="blue">
-                  {_.find(modelCategories, { value: model.categories?.[0] })
-                    ?.label || model.categories?.[0]}
-                </ThemeTag>
+                {model.categories?.length > 0 &&
+                  model.categories.map((sItem: string) => {
+                    return (
+                      <ThemeTag
+                        icon={categoryConfig[sItem]?.icon}
+                        key={sItem}
+                        className="tag-item"
+                        color={categoryConfig[sItem]?.color || 'blue'}
+                        opacity={0.7}
+                      >
+                        {_.find(modelCategories, { value: sItem })?.label ||
+                          sItem}
+                      </ThemeTag>
+                    );
+                  })}
                 {maxToken > 0 && (
                   <ThemeTag className="tag-item" color="purple">
                     {maxToken}K context

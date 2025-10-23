@@ -7,21 +7,63 @@ import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
+import { minimatch } from 'minimatch';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo
+} from 'react';
 import { localPathTipsList, modelSourceMap, sourceOptions } from '../config';
+import { useGenerateWorkersModelFileOptions } from '../hooks';
+
+type EmptyObject = Record<never, never>;
+
+type CascaderOption<T extends object = EmptyObject> = {
+  label: string;
+  value: string | number;
+  parent?: boolean;
+  disabled?: boolean;
+  index?: number;
+  children?: CascaderOption<T>[];
+} & Partial<T>;
 
 interface TargetFormProps {
   ref?: any;
   source: string;
-  workerOptions: any[];
+  workerOptions: CascaderOption<{ state: string }>[];
+  workersList?: Global.BaseOption<
+    number,
+    { state: string; labels: Record<string, string>; cluster_id: number }
+  >[];
+  selectedModel?: Record<string, any>;
+  fileName?: string;
   onOk: (values: any) => void;
 }
 
 const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
-  const { onOk, source, workerOptions } = props;
+  const {
+    modelFileOptions,
+    getModelFileList,
+    generateWorkersModelFileOptions
+  } = useGenerateWorkersModelFileOptions();
+  const { onOk, source, workerOptions, workersList, selectedModel, fileName } =
+    props;
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        if (workersList && workersList?.length > 0) {
+          const modelFiles = await getModelFileList();
+          generateWorkersModelFileOptions(modelFiles, workersList || []);
+        }
+      } catch (error) {}
+    };
+    init();
+  }, [workersList]);
 
   useImperativeHandle(ref, () => ({
     form
@@ -30,10 +72,6 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
   const handleOk = (values: any) => {
     const data = _.pickBy(values, (val: string) => val);
     onOk({
-      ...data,
-      worker_id: data.worker_id?.[1]
-    });
-    console.log('Form Data: ', {
       ...data,
       worker_id: data.worker_id?.[1]
     });
@@ -47,6 +85,32 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
     form.setFieldsValue({
       local_path: value
     });
+  };
+
+  const renderOptionNode = (props: { data: any }) => {
+    const { data } = props;
+    const currentWorker = modelFileOptions.find(
+      (item) => item.value === data.value
+    );
+
+    const isExisting = currentWorker?.children?.some((child) => {
+      const isSameFile =
+        child.fileName === (fileName || '') ||
+        minimatch(child.fileName || '', fileName || '');
+
+      return child.repoId === selectedModel?.name && isSameFile;
+    });
+
+    return (
+      <span>
+        {data.label}
+        {isExisting && (
+          <span className="text-tertiary m-l-4">
+            ({intl.formatMessage({ id: 'resources.modelfiles.form.exsting' })})
+          </span>
+        )}
+      </span>
+    );
   };
 
   const renderLocalPathFields = () => {
@@ -136,6 +200,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
             label={intl.formatMessage({ id: 'resources.worker' })}
             options={workerOptions}
             showCheckedStrategy="SHOW_CHILD"
+            optionNode={renderOptionNode}
             getPopupContainer={(triggerNode) => triggerNode.parentNode}
           ></SealCascader>
         </Form.Item>

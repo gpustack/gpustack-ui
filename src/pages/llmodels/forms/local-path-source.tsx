@@ -98,7 +98,6 @@ const LocalPathForm: React.FC = () => {
         <SealInput.Input
           allowClear
           required
-          onBlur={handleOnBlur}
           onFocus={handleOnFocus}
           label={intl.formatMessage({ id: 'models.form.filePath' })}
           description={<TooltipList list={localPathTipsList}></TooltipList>}

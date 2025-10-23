@@ -7,7 +7,7 @@ import {
 import { Tag } from 'antd';
 import { modelCategoriesMap } from '../config';
 
-const categoryConfig = {
+export const categoryConfig = {
   [modelCategoriesMap.reranker]: {
     icon: <IconFont type="icon-rank1" />,
     color: 'cyan',

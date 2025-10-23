@@ -139,7 +139,7 @@ const SelectPanel: React.FC<SelectPanelProps> = ({
           </Button>
         </Header>
         <SelectedList
-          maxHeight={height - 40}
+          maxHeight={height - 50}
           selectedList={options.filter((item) =>
             selectedKeys.includes(item.key)
           )}
@@ -194,7 +194,7 @@ const SelectPanel: React.FC<SelectPanelProps> = ({
         </Header>
         {showOptions.length > 0 ? (
           <List
-            maxHeight={height - 40}
+            maxHeight={height - 50}
             dataList={showOptions}
             selectedKeys={selectedKeys}
             onSelectChange={handleSelectChange}

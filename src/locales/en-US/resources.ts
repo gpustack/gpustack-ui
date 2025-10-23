@@ -95,5 +95,6 @@ export default {
   'resource.register.windows.support': 'win 10, win 11',
   'resources.model.instance': 'Model Instance',
   'resources.worker.download.privatekey': 'Download Private Key',
-  'resources.modelfiles.form.exsting': 'Existing'
+  'resources.modelfiles.form.exsting': 'Downloaded',
+  'resources.modelfiles.form.added': 'Added'
 };

@@ -133,6 +133,7 @@ const ModelFiles = () => {
       ).pop()
     );
 
+    // select the worker current model file is downloaded to.
     const targetWorker = _.find(workersList, { value: record.worker_id })
       ?.labels?.['worker-name'];
 

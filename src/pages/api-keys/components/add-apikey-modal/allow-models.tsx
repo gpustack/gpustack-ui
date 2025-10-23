@@ -2,7 +2,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import SelectPanel from '@/pages/_components/select-panel';
-import { queryModelsList } from '@/pages/llmodels/apis';
+import { queryMyModels } from '@/pages/llmodels/apis';
 import { useIntl } from '@umijs/max';
 import { Divider, Form, Radio } from 'antd';
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ const AllowModelsForm: React.FC<{
 
   const getModelList = async () => {
     try {
-      const res = await queryModelsList(queryParams);
+      const res = await queryMyModels(queryParams);
       const options = res.items.map((item) => item.name);
       if (action === PageAction.EDIT && currentData) {
         const list = new Set([

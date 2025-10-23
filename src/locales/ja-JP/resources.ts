@@ -96,7 +96,8 @@ export default {
   'resources.model.instance': 'Model Instance',
   'resources.worker.download.privatekey': 'Download Private Key',
   'resources.worker': 'Worker',
-  'resources.modelfiles.form.exsting': 'Existing'
+  'resources.modelfiles.form.exsting': 'Downloaded',
+  'resources.modelfiles.form.added': 'Added'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -115,5 +116,6 @@ export default {
 // 13. 'resources.model.instance': 'Model Instance',
 // 14. 'resources.worker.download.privatekey': 'Download Private Key',
 // 15. 'resources.worker': 'Worker',
-// 16. 'resources.modelfiles.form.exsting': 'Existing'
+// 16. 'resources.modelfiles.form.exsting': 'Downloaded',
+// 17. 'resources.modelfiles.form.added': 'Added'
 // ========== End of To-Do List ==========

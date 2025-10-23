@@ -52,6 +52,7 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
   const { getRuleMessage } = useAppUtils();
   const intl = useIntl();
   const [form] = Form.useForm();
+  const localPath = Form.useWatch('local_path', form);
 
   useEffect(() => {
     const init = async () => {
@@ -95,18 +96,22 @@ const TargetForm: React.FC<TargetFormProps> = forwardRef((props, ref) => {
 
     const isExisting = currentWorker?.children?.some((child) => {
       const isSameFile =
-        child.fileName === (fileName || '') ||
+        child.fileName === (fileName || localPath || '') ||
         minimatch(child.fileName || '', fileName || '');
 
-      return child.repoId === selectedModel?.name && isSameFile;
+      return child.repoId === (selectedModel?.name || '') && isSameFile;
     });
+
+    const localeId = localPath
+      ? 'resources.modelfiles.form.added'
+      : 'resources.modelfiles.form.exsting';
 
     return (
       <span>
         {data.label}
         {isExisting && (
           <span className="text-tertiary m-l-4">
-            ({intl.formatMessage({ id: 'resources.modelfiles.form.exsting' })})
+            [{intl.formatMessage({ id: localeId })}]
           </span>
         )}
       </span>

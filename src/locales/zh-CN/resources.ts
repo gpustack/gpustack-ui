@@ -93,5 +93,6 @@ export default {
   'resource.register.windows.support': 'win 10, win 11',
   'resources.model.instance': '模型实例',
   'resources.worker.download.privatekey': '下载私钥',
-  'resources.modelfiles.form.exsting': '已存在'
+  'resources.modelfiles.form.exsting': '已下载',
+  'resources.modelfiles.form.added': '已添加'
 };

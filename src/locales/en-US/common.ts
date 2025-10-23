@@ -147,7 +147,7 @@ export default {
   'common.copy.notSupport': 'Your browser does not support Clipboard API',
   'common.title.basicInfo': 'Basic',
   'common.help.need': 'Need help?',
-  'common.help.eg': 'e.g.,',
+  'common.help.eg': 'e.g., {content}',
   'common.filter.label': 'Filters',
   'common.filter.isrequired.holder': 'Optional',
   'common.filter.isrequired.true': 'Required',
@@ -260,5 +260,6 @@ export default {
     'Single sign-on is not enabled on this system. Please contact your administrator.',
   'common.button.edit.item': 'Edit {name}',
   'common.button.terminal': 'Terminal',
-  'common.button.addItem': 'Add Item'
+  'common.button.addItem': 'Add Item',
+  'common.help.default': 'Default: {content}'
 };

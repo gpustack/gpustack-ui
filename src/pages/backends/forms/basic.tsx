@@ -1,5 +1,6 @@
 import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
+import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
@@ -40,16 +41,27 @@ const BasicForm: React.FC<AddModalProps> = ({ action }) => {
       >
         <SealInput.Input
           trim
+          placeholder={intl.formatMessage(
+            { id: 'common.help.default' },
+            { content: '/v1/models' }
+          )}
           label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
         ></SealInput.Input>
       </Form.Item>
 
       <Form.Item name="default_run_command">
-        <SealInput.TextArea
+        <SealTextArea
+          scaleSize={true}
+          alwaysFocus={true}
+          placeholder={intl.formatMessage(
+            { id: 'common.help.eg' },
+            { content: 'vllm serve {{model}} --port {{port}}' }
+          )}
+          autoSize={{ minRows: 2, maxRows: 4 }}
           label={intl.formatMessage({
             id: 'backend.form.defaultExecuteCommand'
           })}
-        ></SealInput.TextArea>
+        ></SealTextArea>
       </Form.Item>
 
       <Form.Item<FormData>

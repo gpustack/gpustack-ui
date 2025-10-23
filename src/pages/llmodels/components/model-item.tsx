@@ -148,7 +148,7 @@ const ModelItem: React.FC<{
       max_tokens = max_total_tokens;
     }
 
-    return max_tokens / 1024;
+    return _.round(max_tokens / 1024);
   }, [model]);
 
   const status = useMemo(() => {

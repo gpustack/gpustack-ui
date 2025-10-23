@@ -6,7 +6,7 @@ import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Empty, Form, Tag } from 'antd';
+import { Button, Form, Tag } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { frameworks } from '../config';
@@ -172,13 +172,14 @@ const VersionsForm: React.FC<AddModalProps> = ({
             }
             value={defaultVersion}
             notFoundContent={
-              <Empty
-                style={{ marginBlock: 8 }}
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={intl.formatMessage({
+              <div
+                className="justify-center"
+                style={{ paddingBlock: '8px 7px' }}
+              >
+                {intl.formatMessage({
                   id: 'backend.form.noVersion'
                 })}
-              />
+              </div>
             }
             placeholder={intl.formatMessage({ id: 'backend.version' })}
             options={validVersions}

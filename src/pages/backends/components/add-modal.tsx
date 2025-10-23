@@ -196,7 +196,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         />
       </SegmentedHeader>
       <ColumnWrapper
-        maxHeight={'calc(100vh - 123px)'}
+        maxHeight={'calc(100vh - 140px)'}
         styles={{
           container: {
             paddingTop: 0

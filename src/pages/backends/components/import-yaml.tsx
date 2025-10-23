@@ -137,7 +137,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
           actionStatus={actionStatus}
           theme={userSettings?.isDarkTheme ? 'vs-dark' : 'vs-light'}
           value={fileContent}
-          height={'calc(100vh - 255px)'}
+          height={'calc(100vh - 260px)'}
           header={renderHeader()}
         ></YamlEditor>
         {error && <ErrorText type="danger">{error}</ErrorText>}

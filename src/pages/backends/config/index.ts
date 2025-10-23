@@ -153,14 +153,14 @@ export const yamlTemplate = `# backend configuration template
 backend_name: my-backend
 description: this is my-backend
 default_version: v0.5.1
-health_check_path: /health
+health_check_path: /v1/models
 default_backend_param:
   - --host
-default_run_command: myBackend serve {model} --port {port}
+default_run_command: myBackend serve {{model}} --port {{port}}
 version_configs:
   v0.0.1:
     image_name: lm/mybackend:latest
-    run_command: myBackend serve {model} --port {port}
+    run_command: myBackend serve {{model}} --port {{port}}
     custom_framework: cuda
   v0.0.2:
     image_name: lm/mybackend:test

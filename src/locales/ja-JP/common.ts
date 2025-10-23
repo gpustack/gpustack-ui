@@ -148,7 +148,7 @@ export default {
     'お使いのブラウザはクリップボードAPIをサポートしていません',
   'common.title.basicInfo': '基本情報',
   'common.help.need': 'ヘルプが必要ですか？',
-  'common.help.eg': '例:',
+  'common.help.eg': '例: {content}',
   'common.filter.label': 'フィルタ',
   'common.filter.isrequired.holder': '任意',
   'common.filter.isrequired.true': '必須',
@@ -260,7 +260,8 @@ export default {
     'Single sign-on is not enabled on this system. Please contact your administrator.',
   'common.button.edit.item': 'Edit {name}',
   'common.button.terminal': 'Terminal',
-  'common.button.addItem': 'Add Item'
+  'common.button.addItem': 'Add Item',
+  'common.help.default': 'Default: {content}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -286,5 +287,6 @@ export default {
 // 20. 'common.sso.noConfig': 'Single sign-on is not enabled on this system. Please contact your administrator.'
 // 21.  'common.button.edit.item': 'Edit {name}',
 // 22. 'common.button.terminal': 'Terminal',
-// 23. 'common.button.addItem': 'Add Item'
+// 23. 'common.button.addItem': 'Add Item',
+// 24. 'common.help.default': 'Default: {content}'
 // ========== End of To-Do List ==========

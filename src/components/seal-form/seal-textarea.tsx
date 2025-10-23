@@ -24,7 +24,7 @@ const LabelWrapper = styled.div.attrs({
 
 interface InputTextareaProps extends TextAreaProps {
   scaleSize?: boolean;
-  alwaysFocus?: boolean;
+  alwaysFocus?: boolean; // it's order to display the placeholder
 }
 
 const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (

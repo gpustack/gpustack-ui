@@ -141,7 +141,7 @@ export default {
   'common.copy.notSupport': '您的浏览器不支持剪贴板 API',
   'common.title.basicInfo': '基本信息',
   'common.help.need': '需要帮助？',
-  'common.help.eg': '例如:',
+  'common.help.eg': '例如: {content}',
   'common.filter.label': '筛选',
   'common.filter.isrequired.holder': '是否必填',
   'common.filter.isrequired.true': '必填',
@@ -252,5 +252,6 @@ export default {
   'common.sso.noConfig': '该系统未启用单点登录，请联系管理员。',
   'common.button.edit.item': '编辑 {name}',
   'common.button.terminal': '终端',
-  'common.button.addItem': '添加项'
+  'common.button.addItem': '添加项',
+  'common.help.default': '默认: {content}'
 };

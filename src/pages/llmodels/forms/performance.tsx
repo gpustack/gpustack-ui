@@ -1,6 +1,5 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import SealSelect from '@/components/seal-form/seal-select';
-import TooltipList from '@/components/tooltip-list';
 import { useIntl } from '@umijs/max';
 import { Form, Select } from 'antd';
 import React from 'react';
@@ -26,10 +25,10 @@ const modeTipsList = [
   },
   {
     title: {
-      text: 'models.form.mode.reference',
+      text: 'models.form.mode.baseline',
       locale: true
     },
-    tips: 'models.form.mode.reference.tips'
+    tips: 'models.form.mode.baseline.tips'
   }
 ];
 
@@ -46,7 +45,6 @@ const Performance: React.FC = () => {
         <Form.Item name="mode">
           <SealSelect
             onChange={onModeChange}
-            description={<TooltipList list={modeTipsList}></TooltipList>}
             label={intl.formatMessage({ id: 'models.form.mode' })}
           >
             {modeList?.map((item: any) => (

@@ -227,11 +227,11 @@ export default {
   'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
   'models.form.mode.throughput': 'High-Throughput',
   'models.form.mode.latency': 'Low-Latency',
-  'models.form.mode.reference': 'Reference',
+  'models.form.mode.baseline': 'Baseline',
   'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',
   'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
-  'models.form.mode.reference.tips':
+  'models.form.mode.baseline.tips':
     'Runs at full (original) precision and prioritizes compatibility.'
 };

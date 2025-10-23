@@ -8,13 +8,13 @@ import '../style/gpu-card.less';
 
 const CardWrapper = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   width: 100%;
   border-bottom: 1px solid var(--ant-color-split);
-  padding-bottom: 10px;
+  padding-bottom: 5px;
 `;
 
 const Header = styled.div`
@@ -25,7 +25,7 @@ const Description = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   color: var(--ant-color-text-tertiary);
 `;
 

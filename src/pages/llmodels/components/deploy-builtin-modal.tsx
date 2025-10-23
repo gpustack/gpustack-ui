@@ -547,6 +547,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       >
         <FormWrapper>
           <ColumnWrapper
+            styles={{
+              container: {
+                paddingTop: 0
+              }
+            }}
             paddingBottom={
               warningStatus.show
                 ? Array.isArray(warningStatus.message)

@@ -94,6 +94,14 @@ const ScheduleTypeForm: React.FC = () => {
   const handleOnStepReplica = (value: number | null) => {
     if (value === null) {
       form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 1);
+      return;
+    }
+
+    const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0 && n !== 0; // check power of two
+    if (!isPowerOfTwo(value)) {
+      const newValue = Math.pow(2, Math.round(Math.log2(value)));
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
+      onValuesChange?.({}, form.getFieldsValue());
     }
   };
 

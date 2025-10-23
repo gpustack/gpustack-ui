@@ -94,5 +94,6 @@ export default {
   'resource.register.maos.support': 'Apple Silicon (M series), macOS 14+',
   'resource.register.windows.support': 'win 10, win 11',
   'resources.model.instance': 'Model Instance',
-  'resources.worker.download.privatekey': 'Download Private Key'
+  'resources.worker.download.privatekey': 'Download Private Key',
+  'resources.modelfiles.form.exsting': 'Existing'
 };

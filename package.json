@@ -55,6 +55,7 @@
     "lodash": "^4.17.21",
     "mammoth": "^1.8.0",
     "marked": "^14.1.0",
+    "minimatch": "^10.0.3",
     "ml-dataset-iris": "^1.2.1",
     "ml-pca": "^4.1.1",
     "monaco-editor": "^0.53.0",

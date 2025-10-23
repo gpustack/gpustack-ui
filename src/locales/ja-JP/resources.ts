@@ -95,7 +95,8 @@ export default {
   'resource.register.windows.support': 'win 10, win 11',
   'resources.model.instance': 'Model Instance',
   'resources.worker.download.privatekey': 'Download Private Key',
-  'resources.worker': 'Worker'
+  'resources.worker': 'Worker',
+  'resources.modelfiles.form.exsting': 'Existing'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -114,4 +115,5 @@ export default {
 // 13. 'resources.model.instance': 'Model Instance',
 // 14. 'resources.worker.download.privatekey': 'Download Private Key',
 // 15. 'resources.worker': 'Worker',
+// 16. 'resources.modelfiles.form.exsting': 'Existing'
 // ========== End of To-Do List ==========

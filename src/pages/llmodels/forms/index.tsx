@@ -1,3 +1,4 @@
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useIntl } from '@umijs/max';
@@ -122,22 +123,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const SegmentedTop = useMemo(() => {
     if (
-      [
-        modelSourceMap.huggingface_value,
-        modelSourceMap.modelscope_value
-      ].includes(source) &&
-      formKey === deployFormKeyMap.deployment
+      modelSourceMap.local_path_value === source ||
+      action === PageAction.EDIT ||
+      formKey === deployFormKeyMap.catalog
     ) {
       return {
-        top: 50,
-        offsetTop: 146
+        top: 0,
+        offsetTop: 96
       };
     }
+
     return {
-      top: 0,
-      offsetTop: 96
+      top: 50,
+      offsetTop: 146
     };
-  }, [source, formKey]);
+  }, [source, formKey, action]);
 
   const handleSumit = () => {
     form.submit();

@@ -161,6 +161,7 @@ const getModelInfo = (record: ListItem) => {
       filename: record.huggingface_filename || record.huggingface_repo_id
     };
   }
+
   if (record.source === modelSourceMap.modelscope_value) {
     return {
       source: `${source}/${record.model_scope_model_id}`,
@@ -169,14 +170,7 @@ const getModelInfo = (record: ListItem) => {
       filename: record.model_scope_file_path || record.model_scope_model_id
     };
   }
-  if (record.source === modelSourceMap.ollama_library_value) {
-    return {
-      source: `${source}/${record.ollama_library_model_name}`,
-      repo_id: record.ollama_library_model_name,
-      title: record.ollama_library_model_name,
-      filename: record.ollama_library_model_name
-    };
-  }
+
   return {
     source: `${source}${record.local_path}`,
     repo_id: record.local_path,
@@ -275,7 +269,7 @@ const useFilesColumns = (props: {
         },
         render: (text: string, record: ListItem) => {
           const modelInfo = getModelInfo(record);
-          const { repo_id, source } = modelInfo;
+          const { source } = modelInfo;
           return (
             <TextWrapper style={{ paddingRight: 8 }}>
               <AutoTooltip ghost title={source}>

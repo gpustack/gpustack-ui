@@ -25,12 +25,27 @@ export type MessageStatus = {
   evaluateResult?: EvaluateResult;
 };
 
+export interface ModelFileOption {
+  label: string;
+  value: number;
+  labels?: Record<string, string>;
+  parent: boolean;
+  repoId?: string;
+  fileName?: string;
+  [key: string]: any;
+  children?: ModelFileOption[];
+}
+
 export type WarningStausOptions = {
   lockAfterUpdate?: boolean;
   override?: boolean;
 };
 
-export const useGenerateModelFileOptions = () => {
+export const useGenerateWorkersModelFileOptions = () => {
+  const [modelFileOptions, setModelFileOptions] = useState<ModelFileOption[]>(
+    []
+  );
+
   const getModelFileList = async () => {
     try {
       const res = await queryModelFilesList({ page: 1, perPage: 100 });
@@ -42,7 +57,7 @@ export const useGenerateModelFileOptions = () => {
     }
   };
 
-  const generateModelFileOptions = (list: any[], workerList: any[]) => {
+  const generateWorkersModelFileOptions = (list: any[], workerList: any[]) => {
     const workerFields = new Set(['name', 'id', 'ip', 'status']);
     const workersMap = new Map<number, WorkerListItem>();
 
@@ -54,7 +69,7 @@ export const useGenerateModelFileOptions = () => {
 
     const result = Array.from(workersMap.values()).map((worker) => ({
       label: worker.name,
-      value: worker.name,
+      value: worker.id,
       labels: worker.labels,
       parent: true,
       children: list
@@ -63,18 +78,16 @@ export const useGenerateModelFileOptions = () => {
             item.worker_id === worker.id && !!item.resolved_paths?.length
         )
         .map((item) => {
-          const resolved_paths =
-            Array.isArray(item.resolved_paths) && item.resolved_paths.length
-              ? item.resolved_paths[0].split('/')
-              : [];
-          const label =
-            resolved_paths.length > 0 ? resolved_paths.pop() : 'Unknown File';
           return {
             label: item.resolved_paths[0] || '',
             value: item.resolved_paths[0] || '',
-            worker_labels: worker.labels,
-            worker_name: worker.name,
             parent: false,
+            repoId: item.huggingface_repo_id || item.model_scope_model_id || '',
+            fileName:
+              item.huggingface_filename ||
+              item.model_scope_file_path ||
+              item.local_path ||
+              '',
             ...item
           };
         }),
@@ -95,12 +108,15 @@ export const useGenerateModelFileOptions = () => {
       return acc;
     }, []);
 
+    setModelFileOptions(result);
+
     return childrenList;
   };
 
   return {
     getModelFileList,
-    generateModelFileOptions
+    modelFileOptions,
+    generateWorkersModelFileOptions
   };
 };
 

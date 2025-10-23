@@ -109,20 +109,37 @@ const useUsersColumns = ({
         render: (text: string, record: ListItem) => {
           return (
             <>
-              <Tag
-                style={{
-                  marginRight: 0,
-                  paddingInline: 12,
-                  borderRadius: 12
-                }}
-                color={record.is_active ? 'success' : 'default'}
-              >
-                {intl.formatMessage({
-                  id: record.is_active
-                    ? 'users.status.active'
-                    : 'users.status.inactive'
-                })}
-              </Tag>
+              {record.is_active ? (
+                <Tag
+                  style={{
+                    marginRight: 0,
+                    paddingInline: 12,
+                    borderRadius: 12,
+                    background: 'unset',
+                    borderColor: 'var(--ant-color-success)'
+                  }}
+                  color="success"
+                >
+                  {intl.formatMessage({
+                    id: 'users.status.active'
+                  })}
+                </Tag>
+              ) : (
+                <Tag
+                  style={{
+                    marginRight: 0,
+                    paddingInline: 12,
+                    borderRadius: 12,
+                    background: 'unset',
+                    color: 'var(--ant-color-text-description)'
+                  }}
+                  color="default"
+                >
+                  {intl.formatMessage({
+                    id: 'users.status.inactive'
+                  })}
+                </Tag>
+              )}
             </>
           );
         }

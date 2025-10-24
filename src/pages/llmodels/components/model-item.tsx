@@ -1,30 +1,23 @@
 import IconFont from '@/components/icon-font';
 import StatusTag from '@/components/status-tag';
+import TagWrapper from '@/components/tags-wrapper';
 import ThemeTag from '@/components/tags-wrapper/theme-tag';
 import Card from '@/components/templates/card';
-import { StatusMaps } from '@/config';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { modelCategories, modelCategoriesMap, modelSourceMap } from '../config';
+import {
+  modelCategories,
+  modelCategoriesMap,
+  modelSourceMap,
+  MyModelsStatusLabelMap,
+  MyModelsStatusMap,
+  MyModelsStatusValueMap
+} from '../config';
 import { categoryToPathMap } from '../config/button-actions';
 import { categoryConfig } from './model-tag';
-
-const MyModelsStatusValueMap = {
-  Inactive: 'Inactive',
-  Starting: 'Starting',
-  Degrade: 'Degrade',
-  Active: 'Active'
-};
-
-const MyModelsStatusMap = {
-  [MyModelsStatusValueMap.Inactive]: StatusMaps.inactive,
-  [MyModelsStatusValueMap.Starting]: StatusMaps.transitioning,
-  [MyModelsStatusValueMap.Degrade]: StatusMaps.warning,
-  [MyModelsStatusValueMap.Active]: StatusMaps.success
-};
 
 const CardWrapper = styled.div`
   &:hover {
@@ -34,6 +27,14 @@ const CardWrapper = styled.div`
       }
     }
   }
+`;
+
+const Dot = styled.span`
+  background-color: var(--ant-color-text-quaternary);
+  border-radius: 50%;
+  flex: none;
+  height: 3px;
+  width: 3px;
 `;
 
 const ModelItemContent = styled.div`
@@ -63,6 +64,7 @@ const ModelItemContent = styled.div`
     font-weight: 400;
   }
   .extra-info {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -103,6 +105,14 @@ const sourceIconMap = {
   [modelSourceMap.local_path_value]: 'icon-hard-disk',
   [modelSourceMap.huggingface_value]: 'icon-huggingface',
   [modelSourceMap.modelscope_value]: 'icon-tu2'
+};
+
+const renderTag = (item: any, index = 0) => {
+  return (
+    <ThemeTag key={item} className="tag-item" color="purple">
+      {item}
+    </ThemeTag>
+  );
 };
 
 const ModelItem: React.FC<{
@@ -155,16 +165,15 @@ const ModelItem: React.FC<{
     if (!model.replicas && !model.ready_replicas) {
       return MyModelsStatusValueMap.Inactive;
     }
+
     if (model.replicas > 0 && !model.ready_replicas) {
-      return MyModelsStatusValueMap.Starting;
-    }
-    if (model.replicas > 1 && model.replicas !== model.ready_replicas) {
       return MyModelsStatusValueMap.Degrade;
     }
+
     if (model.replicas === model.ready_replicas && model.replicas > 0) {
       return MyModelsStatusValueMap.Active;
     }
-    return MyModelsStatusValueMap.Inactive;
+    return MyModelsStatusValueMap.Degrade;
   }, [model]);
 
   return (
@@ -177,18 +186,20 @@ const ModelItem: React.FC<{
         ghost
         header={
           <Header>
-            <span className="text">
+            <span className="text gap-8">
               <IconFont
                 type={sourceIconMap[model.source]}
-                style={{ marginRight: 8, fontSize: 24 }}
+                style={{ fontSize: 24 }}
               />
               <span>{model.name}</span>
             </span>
             <StatusTag
               maxTooltipWidth={400}
               statusValue={{
-                status: MyModelsStatusMap[status],
-                text: status,
+                status: MyModelsStatusMap[model.status],
+                text: intl.formatMessage({
+                  id: MyModelsStatusLabelMap[model.status]
+                }),
                 message: model.state_message
               }}
             ></StatusTag>
@@ -214,16 +225,27 @@ const ModelItem: React.FC<{
                       </ThemeTag>
                     );
                   })}
+
                 {maxToken > 0 && (
-                  <ThemeTag className="tag-item" color="purple">
-                    {maxToken}K context
-                  </ThemeTag>
+                  <>
+                    <Dot></Dot>
+                    <ThemeTag className="tag-item" color="purple">
+                      {maxToken}K context
+                    </ThemeTag>
+                  </>
+                )}
+                {model.meta?.voices?.length > 0 && (
+                  <>
+                    <Dot></Dot>
+                    <TagWrapper
+                      gap={8}
+                      dataList={model.meta?.voices}
+                      renderTag={renderTag}
+                    ></TagWrapper>
+                  </>
                 )}
               </div>
-              {[
-                MyModelsStatusValueMap.Active,
-                MyModelsStatusValueMap.Degrade
-              ].includes(status) && (
+              {[MyModelsStatusValueMap.Active].includes(model.status) && (
                 <Button
                   size="middle"
                   className="btn"

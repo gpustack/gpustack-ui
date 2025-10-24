@@ -9,13 +9,40 @@ import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
 import NoResult from '../_components/no-result';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import ModelItem from './components/model-item';
-import { categoryOptions, modelCategoriesMap } from './config';
+import {
+  categoryOptions,
+  modelCategoriesMap,
+  MyModelsStatusValueMap
+} from './config';
 import { categoryToPathMap } from './config/button-actions';
+
+const Dot = ({ color }: { color: string }) => {
+  return (
+    <span
+      style={{
+        backgroundColor: color,
+        borderRadius: '50%',
+        height: 8,
+        width: 8,
+        display: 'flex'
+      }}
+    ></span>
+  );
+};
+
+const optionRender = (item: any) => {
+  return (
+    <span className="flex-center gap-8">
+      <Dot color={item.data?.color}></Dot>
+      {item.label}
+    </span>
+  );
+};
 
 const UserModels: React.FC = () => {
   const navigate = useNavigate();
@@ -36,6 +63,33 @@ const UserModels: React.FC = () => {
     }
   });
   const intl = useIntl();
+  const [status, setStatus] = React.useState<string | undefined>(undefined);
+
+  const statusOptions = useMemo(() => {
+    return [
+      {
+        value: MyModelsStatusValueMap.Active,
+        color: 'var(--ant-color-success)',
+        label: intl.formatMessage({
+          id: 'models.mymodels.status.active'
+        })
+      },
+      {
+        value: MyModelsStatusValueMap.Inactive,
+        color: 'var(--ant-color-fill)',
+        label: intl.formatMessage({
+          id: 'models.mymodels.status.inactive'
+        })
+      },
+      {
+        value: MyModelsStatusValueMap.Degrade,
+        color: 'var(--ant-color-error)',
+        label: intl.formatMessage({
+          id: 'models.mymodels.status.degrade'
+        })
+      }
+    ];
+  }, [intl]);
 
   const handleCategoryChange = (value: string) => {
     handleQueryChange({
@@ -77,6 +131,46 @@ const UserModels: React.FC = () => {
     });
   });
 
+  const handleStatusChange = (value: string) => {
+    setStatus(value);
+  };
+
+  const labelRender = (item: any) => {
+    const current = statusOptions.find((option) => option.value === item.value);
+    return (
+      <span className="flex-center gap-8">
+        <Dot color={current!.color}></Dot>
+        {item.label}
+      </span>
+    );
+  };
+
+  const getStatus = useCallback((model: any) => {
+    if (!model.replicas && !model.ready_replicas) {
+      return MyModelsStatusValueMap.Inactive;
+    }
+
+    if (model.replicas > 0 && !model.ready_replicas) {
+      return MyModelsStatusValueMap.Degrade;
+    }
+
+    if (model.replicas === model.ready_replicas && model.replicas > 0) {
+      return MyModelsStatusValueMap.Active;
+    }
+    return MyModelsStatusValueMap.Degrade;
+  }, []);
+
+  const dataList = useMemo(() => {
+    const result = dataSource.dataList.map((item) => {
+      return {
+        ...item,
+        status: getStatus(item)
+      };
+    });
+    if (!status) return result;
+    return result.filter((item) => item.status === status);
+  }, [dataSource.dataList, status]);
+
   return (
     <PageContainer
       ghost
@@ -117,6 +211,18 @@ const UserModels: React.FC = () => {
               options={categoryOptions}
               onChange={handleCategoryChange}
             ></BaseSelect>
+            <BaseSelect
+              allowClear
+              showSearch={false}
+              placeholder={intl.formatMessage({ id: 'common.filter.status' })}
+              style={{ width: 180 }}
+              size="large"
+              maxTagCount={1}
+              optionRender={optionRender}
+              labelRender={labelRender}
+              options={statusOptions}
+              onChange={handleStatusChange}
+            ></BaseSelect>
             <Button
               type="text"
               style={{ color: 'var(--ant-color-text-tertiary)' }}
@@ -135,7 +241,7 @@ const UserModels: React.FC = () => {
         }}
       >
         <CardList
-          dataList={dataSource.dataList}
+          dataList={dataList}
           loading={dataSource.loading}
           activeId={false}
           isFirst={!dataSource.loadend}
@@ -145,9 +251,9 @@ const UserModels: React.FC = () => {
         <NoResult
           loading={dataSource.loading}
           loadend={dataSource.loadend}
-          dataSource={dataSource.dataList}
+          dataSource={dataList}
           image={<IconFont type="icon-models" />}
-          filters={queryParams}
+          filters={{ ...queryParams, status: status }}
           noFoundText={intl.formatMessage({
             id: 'noresult.mymodels.nofound'
           })}

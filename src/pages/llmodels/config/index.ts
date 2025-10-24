@@ -188,6 +188,24 @@ export const status: any = {
   [InstanceStatusMap.Unreachable]: StatusMaps.error
 };
 
+export const MyModelsStatusValueMap = {
+  Inactive: 'Inactive',
+  Degrade: 'Degrade',
+  Active: 'Active'
+};
+
+export const MyModelsStatusMap = {
+  [MyModelsStatusValueMap.Inactive]: StatusMaps.inactive,
+  [MyModelsStatusValueMap.Degrade]: StatusMaps.error,
+  [MyModelsStatusValueMap.Active]: StatusMaps.success
+};
+
+export const MyModelsStatusLabelMap = {
+  [MyModelsStatusValueMap.Inactive]: 'models.mymodels.status.inactive',
+  [MyModelsStatusValueMap.Degrade]: 'models.mymodels.status.degrade',
+  [MyModelsStatusValueMap.Active]: 'models.mymodels.status.active'
+};
+
 export const ScheduleValueMap = {
   Auto: 'auto',
   Manual: 'manual',
@@ -334,7 +352,8 @@ export const excludeFields = [
   'backend',
   'gpu_selector',
   'run_command',
-  'image_name'
+  'image_name',
+  'extended_kv_cache.enabled'
 ];
 
 // ingore fields when compare old and new data
@@ -357,7 +376,8 @@ export const updateExcludeFields = [
   'gpu_selector',
   'categories',
   'env',
-  'replicas'
+  'replicas',
+  'extended_kv_cache.enabled'
 ];
 
 export const formFields = [

@@ -191,5 +191,8 @@ export default {
   'models.form.gpusAllocationType.custom': '自定义',
   'models.form.gpusAllocationType.auto.tips':
     '系统自动计算每个副本的 GPU 数量。',
-  'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量'
+  'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量',
+  'models.mymodels.status.inactive': '已停止',
+  'models.mymodels.status.degrade': '异常',
+  'models.mymodels.status.active': '可用'
 };

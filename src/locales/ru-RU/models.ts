@@ -187,20 +187,30 @@ export default {
   'models.form.chunkSize': 'Размер чанков кэша',
   'models.form.maxCPUSize': 'Максимальный размер CPU кэша (ГиБ)',
   'models.form.remoteURL': 'URL удаленного хранилища',
-  'models.form.runCommandPlaceholder': 'напр., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
+  'models.form.runCommandPlaceholder':
+    'напр., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
   'models.accessSettings.public': 'Публичный',
   'models.accessSettings.authed': 'Аутентифицированный',
   'models.accessSettings.allowedUsers': 'Разрешенные пользователи',
-  'models.accessSettings.public.tips': 'При публичном доступе любой пользователь может получить доступ к модели без аутентификации, что может привести к риску утечки данных.',
+  'models.accessSettings.public.tips':
+    'При публичном доступе любой пользователь может получить доступ к модели без аутентификации, что может привести к риску утечки данных.',
   'models.table.button.deploy': 'Развернуть сейчас',
   'models.form.backendVersion.holder': 'Введите или выберите версию',
   'models.form.gpusperreplica': 'GPU на реплику',
   'models.form.gpusAllocationType': 'Тип распределения GPU',
   'models.form.gpusAllocationType.auto': 'Авто',
   'models.form.gpusAllocationType.custom': 'Вручную',
-  'models.form.gpusAllocationType.auto.tips': 'Система автоматически рассчитывает количество GPU на реплику.',
-  'models.form.gpusAllocationType.custom.tips': 'Вы можете указать точное количество GPU на реплику.'
+  'models.form.gpusAllocationType.auto.tips':
+    'Система автоматически рассчитывает количество GPU на реплику.',
+  'models.form.gpusAllocationType.custom.tips':
+    'Вы можете указать точное количество GPU на реплику.',
+  'models.mymodels.status.inactive': 'Stopped',
+  'models.mymodels.status.degrade': 'Abnormal',
+  'models.mymodels.status.active': 'Active'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.mymodels.status.inactive': 'Stopped',
+// 3. 'models.mymodels.status.degrade': 'Abnormal',
+// 4. 'models.mymodels.status.active': 'Active'
+// ========== End of To-Do List ==========

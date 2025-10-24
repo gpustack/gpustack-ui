@@ -260,9 +260,10 @@ export default {
   'common.button.edit.item': 'Редактировать {name}',
   'common.button.terminal': 'Терминал',
   'common.button.addItem': 'Добавить элемент',
-  'common.help.default': 'По умолчанию: {content}'
+  'common.help.default': 'По умолчанию: {content}',
+  'common.filter.status': 'Filter by status'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'common.filter.status': 'Filter by status'
 // ========== End of To-Do List ==========

@@ -13,6 +13,7 @@ import {
   writeState
 } from '@/utils/localstore/index';
 import { RequestConfig, history } from '@umijs/max';
+import { message } from 'antd';
 
 const loginPath = '/login';
 
@@ -53,13 +54,24 @@ export async function getInitialState(): Promise<{
   }): Promise<Global.UserInfo> => {
     try {
       const data = await queryCurrentUserState({
-        skipErrorHandler: config?.skipErrorHandler ?? false
+        skipErrorHandler: true
       });
       if (data.is_admin) {
         getUpdateCheck();
       }
       return data;
     } catch (error: any) {
+      const data = error?.response?.data;
+      if (data?.code === 401 && data?.message.includes('deactivate')) {
+        message.error({
+          content: (
+            <div>
+              <span>{data?.message}</span>
+            </div>
+          ),
+          duration: 5
+        });
+      }
       history.push(loginPath);
     }
     return {} as Global.UserInfo;
@@ -81,9 +93,7 @@ export async function getInitialState(): Promise<{
   getAppVersionInfo();
 
   if (![loginPath].includes(location.pathname)) {
-    const userInfo = await fetchUserInfo({
-      skipErrorHandler: location.pathname === '/'
-    });
+    const userInfo = await fetchUserInfo();
     checkDefaultPage(userInfo);
     return {
       fetchUserInfo,

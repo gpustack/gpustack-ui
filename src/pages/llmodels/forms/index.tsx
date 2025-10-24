@@ -214,8 +214,19 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   };
 
+  const getFieldPaths = (obj: Record<string, any>, prefix = ''): string => {
+    const result = Object.entries(obj).flatMap(([key, value]) => {
+      const path = prefix ? `${prefix}.${key}` : key;
+      return typeof value === 'object' && value !== null
+        ? getFieldPaths(value, path)
+        : [path];
+    });
+
+    return result[0] || '';
+  };
+
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    const fieldName = Object.keys(changedValues)[0];
+    const fieldName = getFieldPaths(changedValues);
 
     if (excludeFields.includes(fieldName)) {
       return;

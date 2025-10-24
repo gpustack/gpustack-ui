@@ -34,12 +34,8 @@ const LocalPathForm: React.FC = () => {
   }
 
   const handleOnBlur = (e: any) => {
-    form.setFieldsValue({
-      backend_parameters: [],
-      backend_version: '',
-      backend: '',
-      env: {}
-    });
+    const value = e.target.value;
+    onValuesChange?.({ local_path: value }, form.getFieldsValue());
   };
 
   const handleLocalPathBlur = async (e: any) => {
@@ -99,6 +95,7 @@ const LocalPathForm: React.FC = () => {
           allowClear
           required
           onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
           label={intl.formatMessage({ id: 'models.form.filePath' })}
           description={<TooltipList list={localPathTipsList}></TooltipList>}
         ></SealInput.Input>

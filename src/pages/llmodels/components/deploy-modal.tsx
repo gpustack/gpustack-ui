@@ -197,6 +197,16 @@ const AddModal: FC<AddModalProps> = (props) => {
     return categories || null;
   };
 
+  const { run: onClickModel } = useDeferredRequest(async () => {
+    const allValues = form.current?.form?.getFieldsValue?.();
+
+    handleOnValuesChangeBefore({
+      changedValues: {},
+      allValues: allValues,
+      source: props.source
+    });
+  }, 100);
+
   const { run: onSelectFile } = useDeferredRequest(
     async (item: any, modelInfo: any, manual?: boolean) => {
       unlockWarningStatus();
@@ -342,7 +352,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (manual) {
       form.current?.resetFields(resetFields);
     }
-    console.log('isgguf==================> select 2', item.isGGUF);
     // If the item is empty
     setIsGGUF(item.isGGUF);
     updateSelectedModel(item);
@@ -371,20 +380,13 @@ const AddModal: FC<AddModalProps> = (props) => {
         categories: getCategory(item)
       };
 
-      console.log('newFormValues:', newFormValues);
-
       form.current?.form?.setFieldsValue?.(newFormValues);
 
-      handleOnValuesChangeBefore({
-        changedValues: {},
-        allValues: newFormValues,
-        source: props.source
-      });
+      onClickModel();
     }
   };
 
   const handleOnOk = async (allValues: FormData) => {
-    console.log('handleOnOk:', allValues);
     onOk(allValues);
   };
 
@@ -408,19 +410,13 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (res.show) {
       return;
     }
-    if (data.local_path || props.source !== modelSourceMap.local_path_value) {
-      // TODO confirm whether it is gguf by model file not by backend
-      handleOnValuesChange?.({
-        changedValues: {},
-        allValues: isGGUF
-          ? data
-          : _.omit(data, [
-              'cpu_offloading',
-              'distributed_inference_across_workers'
-            ]),
-        source: props.source
-      });
-    }
+
+    // TODO: confirm gguf change backend behavior
+    handleOnValuesChange?.({
+      changedValues: {},
+      allValues: data,
+      source: props.source
+    });
   };
 
   const onValuesChange = async (changedValues: any, allValues: any) => {

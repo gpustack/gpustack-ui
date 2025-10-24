@@ -81,6 +81,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sourceList,
     clusterList = [],
     fields = ['source'],
+    onBackendChange,
     onSourceChange,
     onValuesChange,
     onOk
@@ -190,7 +191,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       backend_parameters: option.default_backend_param || [],
       ...updateGPUSelector(val)
     });
-    props.onBackendChange?.(val);
+    onBackendChange?.(val);
   };
 
   // generate the data is available for the backend including the gpu_ids

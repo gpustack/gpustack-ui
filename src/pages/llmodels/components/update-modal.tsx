@@ -8,7 +8,6 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import ColumnWrapper from '../../_components/column-wrapper';
 import {
   deployFormKeyMap,
-  modelSourceMap,
   ScheduleValueMap,
   updateIgnoreFields
 } from '../config';
@@ -133,19 +132,11 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     if (res.show) {
       return;
     }
-    if (data.local_path || data.source !== modelSourceMap.local_path_value) {
-      handleOnValuesChange?.({
-        changedValues: {},
-        allValues:
-          backend === backendOptionsMap.llamaBox
-            ? data
-            : _.omit(data, [
-                'cpu_offloading',
-                'distributed_inference_across_workers'
-              ]),
-        source: data.source
-      });
-    }
+    handleOnValuesChange?.({
+      changedValues: {},
+      allValues: data,
+      source: data.source
+    });
   };
 
   const handleAsyncBackendChange = (backend: string) => {

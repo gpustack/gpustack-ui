@@ -1,5 +1,4 @@
 import IconFont from '@/components/icon-font';
-import AutoComplete from '@/components/seal-form/auto-complete';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import SealTextArea from '@/components/seal-form/seal-textarea';
@@ -71,7 +70,7 @@ const BackendFields: React.FC = () => {
       </Form.Item>
       {backendOptionsMap.custom !== backend && (
         <Form.Item name="backend_version">
-          <AutoComplete
+          <SealSelect
             options={backendVersions}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'
@@ -111,7 +110,7 @@ const BackendFields: React.FC = () => {
                 )
               }
             )}
-          ></AutoComplete>
+          ></SealSelect>
         </Form.Item>
       )}
       {backend === backendOptionsMap.custom && (

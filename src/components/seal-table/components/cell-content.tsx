@@ -135,7 +135,11 @@ const CellContent: React.FC<CellContentProps> = (props) => {
         ...row,
         [dataIndex]: current
       },
-      dataIndex
+      {
+        dataIndex,
+        newValue: current,
+        oldValue: row[dataIndex]
+      }
     );
     setIsEditing(false);
   };

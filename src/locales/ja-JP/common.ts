@@ -261,7 +261,8 @@ export default {
   'common.button.edit.item': 'Edit {name}',
   'common.button.terminal': 'Terminal',
   'common.button.addItem': 'Add Item',
-  'common.help.default': 'Default: {content}'
+  'common.help.default': 'Default: {content}',
+  'common.filter.status': 'Filter by status'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -288,5 +289,6 @@ export default {
 // 21.  'common.button.edit.item': 'Edit {name}',
 // 22. 'common.button.terminal': 'Terminal',
 // 23. 'common.button.addItem': 'Add Item',
-// 24. 'common.help.default': 'Default: {content}'
+// 24. 'common.help.default': 'Default: {content}',
+// 25. 'common.filter.status': 'Filter by status'
 // ========== End of To-Do List ==========

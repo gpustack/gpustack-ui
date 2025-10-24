@@ -253,5 +253,6 @@ export default {
   'common.button.edit.item': '编辑 {name}',
   'common.button.terminal': '终端',
   'common.button.addItem': '添加项',
-  'common.help.default': '默认: {content}'
+  'common.help.default': '默认: {content}',
+  'common.filter.status': '按状态筛选'
 };

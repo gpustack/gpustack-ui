@@ -200,7 +200,10 @@ export default {
   'models.form.gpusAllocationType.auto.tips':
     'System calculates GPUs per replica automatically.',
   'models.form.gpusAllocationType.custom.tips':
-    'You can specify the exact number of GPUs per replica.'
+    'You can specify the exact number of GPUs per replica.',
+  'models.mymodels.status.inactive': 'Stopped',
+  'models.mymodels.status.degrade': 'Abnormal',
+  'models.mymodels.status.active': 'Active'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -240,6 +243,9 @@ export default {
 // 35.  'models.form.gpusAllocationType.auto': 'Auto',
 // 36.  'models.form.gpusAllocationType.custom': 'Custom',
 // 37.  'models.form.gpusAllocationType.auto.tips': 'System calculates GPUs per replica automatically.',
-// 38.  'models.form.gpusAllocationType.custom.tips': 'You can specify the exact number of GPUs per replica.'
+// 38.  'models.form.gpusAllocationType.custom.tips': 'You can specify the exact number of GPUs per replica.',
+// 39.  'models.mymodels.status.inactive': 'Stopped',
+// 41.  'models.mymodels.status.degrade': 'Abnormal',
+// 42.  'models.mymodels.status.active': 'Active'
 
 // ========== End of To-Do List ==========

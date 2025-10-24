@@ -203,5 +203,8 @@ export default {
   'models.form.gpusAllocationType.auto.tips':
     'System calculates GPUs per replica automatically.',
   'models.form.gpusAllocationType.custom.tips':
-    'You can specify the exact number of GPUs per replica.'
+    'You can specify the exact number of GPUs per replica.',
+  'models.mymodels.status.inactive': 'Stopped',
+  'models.mymodels.status.degrade': 'Abnormal',
+  'models.mymodels.status.active': 'Active'
 };

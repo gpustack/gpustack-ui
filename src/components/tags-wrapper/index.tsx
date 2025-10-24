@@ -8,7 +8,7 @@ import './index.less';
 interface TagsWrapperProps {
   gap?: number;
   dataList: any[];
-  renderTag: (item: any) => React.ReactNode;
+  renderTag: (item: any, index?: number) => React.ReactNode;
 }
 
 const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
@@ -94,7 +94,7 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
             {_.map(
               _.slice(dataList, hiddenIndices.start, hiddenIndices.end),
               (item: any, index: number) => {
-                return <span key={index}>{renderTag?.(item)}</span>;
+                return <span key={index}>{renderTag?.(item, index)}</span>;
               }
             )}
           </div>
@@ -108,7 +108,7 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
                 _.slice(dataList, hiddenIndices.end),
                 (item: any, index: number) => {
                   return {
-                    label: renderTag?.(item),
+                    label: renderTag?.(item, index),
                     key: index,
                     onClick: handleClick
                   };

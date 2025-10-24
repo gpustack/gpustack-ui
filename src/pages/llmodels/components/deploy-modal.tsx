@@ -447,6 +447,15 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleOnOpen = async () => {
+    const [backendOptions, gpuOptions] = await Promise.all([
+      form.current?.getBackendOptions?.({
+        cluster_id: initClusterId()
+      }),
+      form.current?.getGPUOptionList?.({
+        clusterId: initClusterId()
+      })
+    ]);
+
     if (props.deploymentType === 'modelFiles') {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
@@ -459,14 +468,6 @@ const AddModal: FC<AddModalProps> = (props) => {
         source: source
       });
     } else {
-      const [backendOptions, gpuOptions] = await Promise.all([
-        form.current?.getBackendOptions?.({
-          cluster_id: initClusterId()
-        }),
-        form.current?.getGPUOptionList?.({
-          clusterId: initClusterId()
-        })
-      ]);
       let backend = checkOnlyAscendNPU(gpuOptions)
         ? backendOptionsMap.ascendMindie
         : backendOptionsMap.vllm;
@@ -479,11 +480,6 @@ const AddModal: FC<AddModalProps> = (props) => {
           default_version: string;
           versions: { label: string; value: string }[];
         }) => item.value === backend
-      );
-      console.log(
-        'currentDefaultBackend:',
-        currentDefaultBackend,
-        props.initialValues
       );
       form.current?.setFieldsValue?.({
         backend,

@@ -218,14 +218,17 @@ const Models: React.FC<ModelsProps> = ({
     setSortOrder(order);
   };
 
-  const handleOnCell = useCallback(async (record: any) => {
+  const handleOnCell = useMemoizedFn(async (record: any, extra: any) => {
     try {
       await updateModel(getFormattedData(record));
       message.success(intl.formatMessage({ id: 'common.message.success' }));
+      if (extra.newValue > extra.oldValue) {
+        updateExpandedRowKeys([record.id, ...expandedRowKeys]);
+      }
     } catch (error) {
       // ignore
     }
-  }, []);
+  });
 
   const handleStartModel = async (row: ListItem) => {
     await updateModel(getFormattedData(row, { replicas: 1 }));
@@ -236,23 +239,23 @@ const Models: React.FC<ModelsProps> = ({
     removeExpandedRowKey([row.id]);
   };
 
-  const handleModalOk = useCallback(
-    async (data: FormData) => {
-      try {
-        await updateModel({
-          data,
-          id: currentData.current?.id as number
-        });
-        setOpenAddModal(false);
-        message.success(intl.formatMessage({ id: 'common.message.success' }));
-        setTimeout(() => {
-          handleSearch();
-        }, 150);
-        restoreScrollHeight();
-      } catch (error) {}
-    },
-    [handleSearch]
-  );
+  const handleModalOk = async (data: FormData) => {
+    try {
+      await updateModel({
+        data,
+        id: currentData.current?.id as number
+      });
+      setOpenAddModal(false);
+      message.success(intl.formatMessage({ id: 'common.message.success' }));
+      if (data.replicas > currentData.current?.replicas) {
+        updateExpandedRowKeys([currentData.current?.id, ...expandedRowKeys]);
+      }
+      setTimeout(() => {
+        handleSearch();
+      }, 150);
+      restoreScrollHeight();
+    } catch (error) {}
+  };
 
   const handleModalCancel = useCallback(() => {
     setOpenAddModal(false);

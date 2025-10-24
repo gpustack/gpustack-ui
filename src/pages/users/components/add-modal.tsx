@@ -102,6 +102,10 @@ const AddModal: React.FC<AddModalProps> = ({
             <Form.Item<FormData> name="is_admin" rules={[{ required: false }]}>
               <SealSelect
                 label={intl.formatMessage({ id: 'users.table.role' })}
+                disabled={
+                  data?.id === initialState?.currentUser?.id &&
+                  action === PageAction.EDIT
+                }
               >
                 {UserRolesOptions.map((item) => {
                   return (

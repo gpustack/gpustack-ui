@@ -209,7 +209,8 @@ export default {
   'models.form.kvCache.tips':
     'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.',
   'models.form.kvCache.tips2':
-    'KV cache is only supported when using built-in inference backends (vLLM or SGLang).'
+    'KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
+  'models.form.scheduling': 'Scheduling'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -255,5 +256,6 @@ export default {
 // 42.  'models.mymodels.status.active': 'Active'
 // 43. 'models.form.remoteURL.tips': 'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
 // 44. 'models.form.kvCache.tips': 'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.'
-// 45. 'models.form.kvCache.tips2': 'KV cache is only supported when using built-in inference backends (vLLM or SGLang).'
+// 45. 'models.form.kvCache.tips2': 'KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
+// 46. 'models.form.scheduling': 'Scheduling'
 // ========== End of To-Do List ==========

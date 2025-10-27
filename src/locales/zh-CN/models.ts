@@ -200,5 +200,6 @@ export default {
   'models.form.kvCache.tips':
     '仅在内置后端（vLLM / SGLang）可用 —— 请在<span class="bold-text">高级</span>配置中切换后端以启用。',
   'models.form.kvCache.tips2':
-    '仅在使用内置推理后端（vLLM 或 SGLang）时支持 KV 缓存。'
+    '仅在使用内置推理后端（vLLM 或 SGLang）时支持 KV 缓存。',
+  'models.form.scheduling': '调度'
 };

@@ -28,6 +28,7 @@ import useQueryBackends from '../hooks/use-query-backends';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import Performance from './performance';
+import ScheduleTypeForm from './schedule-type';
 
 const advancedRequiredFields = [
   'gpu_selector',
@@ -102,6 +103,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       value: 'basic',
       label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       field: 'name'
+    },
+    {
+      value: 'scheduling',
+      label: intl.formatMessage({ id: 'models.form.scheduling' }),
+      field: 'scheduleType'
     },
     {
       value: 'performance',
@@ -379,17 +385,21 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           onChange={handleOnCollapseChange}
           items={[
             {
+              key: 'scheduling',
+              label: intl.formatMessage({ id: 'models.form.scheduling' }),
+              forceRender: true,
+              children: <ScheduleTypeForm></ScheduleTypeForm>
+            },
+            {
               key: 'performance',
               label: intl.formatMessage({ id: 'models.form.performance' }),
               forceRender: true,
-              extra: <div ref={performanceRef}></div>,
               children: <Performance></Performance>
             },
             {
               key: 'advanced',
               label: intl.formatMessage({ id: 'resources.form.advanced' }),
               forceRender: true,
-              extra: <div ref={advanceRef}></div>,
               children: <AdvanceConfig></AdvanceConfig>
             }
           ]}

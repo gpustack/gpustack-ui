@@ -68,9 +68,9 @@ export default {
   'models.form.ollamalink':
     'Больше моделей в библиотеке <a href="https://www.ollama.com/library" target="_blank">Ollama</a>',
   'models.form.backend_parameters.llamabox.placeholder':
-    'например: --ctx-size=8192',
+    'например: --ctx-size=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.vllm.placeholder':
-    'например: --max-model-len=8192',
+    'например: --max-model-len=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.vllm.tips':
     'Подробнее о параметрах {backend}',
   'models.logs.pagination.prev': 'Предыдущие {lines} строк',
@@ -85,12 +85,9 @@ export default {
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
-  'models.form.backend.vllm':
-    'Для моделей не-GGUF формата, поддерживается только в Linux.',
-  'models.form.backend.voxbox':
-    'Для аудиомоделей не-GGUF формата, поддерживается только на GPU NVIDIA и CPU.',
-  'models.form.backend.mindie':
-    'Для моделей не-GGUF формата, поддерживается только на Ascend 910B и 310P.',
+  'models.form.backend.vllm': 'Поддерживается только в Linux.',
+  'models.form.backend.voxbox': 'Поддерживается только на GPU NVIDIA и CPU.',
+  'models.form.backend.mindie': 'Поддерживается только на Ascend 910B и 310P.',
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',

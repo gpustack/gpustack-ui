@@ -68,9 +68,9 @@ export default {
   'models.form.ollamalink':
     'Find More in  <a href="https://www.ollama.com/library" target="_blank">Ollama Library</a>.',
   'models.form.backend_parameters.llamabox.placeholder':
-    'e.g., --ctx-size=8192',
+    'e.g., --ctx-size=8192 (use = to separate name and value)',
   'models.form.backend_parameters.vllm.placeholder':
-    'e.g., --max-model-len=8192',
+    'e.g., --max-model-len=8192 (use = to separate name and value)',
   'models.form.backend_parameters.vllm.tips':
     'More {backend} parameter details',
   'models.logs.pagination.prev': 'Previous {lines} Lines',
@@ -85,12 +85,9 @@ export default {
   'models.form.gpuselector': 'GPU Selector',
   'models.form.backend.llamabox':
     'For GGUF format models, supports Linux, macOS, and Windows.',
-  'models.form.backend.vllm':
-    'For non-GGUF format models, supported only on Linux.',
-  'models.form.backend.voxbox':
-    'For non-GGUF format audio models, supported only on NVIDIA GPUs and CPUs.',
-  'models.form.backend.mindie':
-    'For non-GGUF format models, supported only on Ascend 910B and 310P.',
+  'models.form.backend.vllm': 'Supported only on Linux.',
+  'models.form.backend.voxbox': 'Supported only on NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie': 'Supported only on Ascend 910B and 310P.',
   'models.form.search.gguftips':
     'If using macOS or Windows as a worker, check GGUF (uncheck for audio models).',
   'models.form.button.addlabel': 'Add Label',

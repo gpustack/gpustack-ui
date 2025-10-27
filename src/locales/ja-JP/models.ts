@@ -69,8 +69,10 @@ export default {
     '音声モデルをデプロイするには、GGUFチェックボックスをオフにしてください。',
   'models.form.ollamalink':
     '<a href="https://www.ollama.com/library" target="_blank">Ollamaライブラリ</a>でさらに探す',
-  'models.form.backend_parameters.llamabox.placeholder': '例: --ctx-size=8192',
-  'models.form.backend_parameters.vllm.placeholder': '例: --max-model-len=8192',
+  'models.form.backend_parameters.llamabox.placeholder':
+    '例: --ctx-size=8192（=で名前と値を分ける）',
+  'models.form.backend_parameters.vllm.placeholder':
+    '例: --max-model-len=8192（=で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips': '詳細な{backend}パラメータ情報',
   'models.logs.pagination.prev': '前の{lines}行',
   'models.logs.pagination.next': '次の{lines}行',
@@ -84,11 +86,9 @@ export default {
   'models.form.gpuselector': 'GPUセレクター',
   'models.form.backend.llamabox':
     'GGUF形式のモデル用（Linux、macOS、Windowsをサポート）。',
-  'models.form.backend.vllm': '非GGUF形式のモデル用。Linux のみ対応。',
-  'models.form.backend.voxbox':
-    '非GGUF形式の音声モデル用。NVIDIA GPUおよびCPUのみ対応。',
-  'models.form.backend.mindie':
-    '非GGUF形式のモデル用。Ascend 910Bおよび310Pのみ対応。',
+  'models.form.backend.vllm': 'Linux のみ対応。',
+  'models.form.backend.voxbox': 'NVIDIA GPUおよびCPUのみ対応。',
+  'models.form.backend.mindie': 'Ascend 910Bおよび310Pのみ対応。',
   'models.form.search.gguftips':
     'macOSまたはWindowsをワーカーとして使用する場合、GGUFをチェックしてください（音声モデルの場合はオフにしてください）。',
   'models.form.button.addlabel': 'ラベルを追加',

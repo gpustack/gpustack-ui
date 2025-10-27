@@ -84,7 +84,7 @@ const BackendFields: React.FC = () => {
               {
                 backend: backendLabelMap[backend],
                 version: backendParamsTips?.version
-                  ? `(${intl.formatMessage({ id: 'common.help.eg' })} ${backendParamsTips?.version})`
+                  ? `(${intl.formatMessage({ id: 'common.help.eg' }, { content: '' })} ${backendParamsTips?.version})`
                   : '',
                 link: backendParamsTips?.releases && (
                   <span

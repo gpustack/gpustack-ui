@@ -95,8 +95,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const scheduleType = Form.useWatch('scheduleType', form);
   const [target, setTarget] = React.useState<string>('basic');
-  const performanceRef = React.useRef<HTMLDivElement>(null);
-  const advanceRef = React.useRef<HTMLDivElement>(null);
 
   const segmentOptions = [
     {
@@ -153,8 +151,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   // voxbox is not support multi gpu
   const updateGPUSelector = (backend: string) => {
     const gpuids = form.getFieldValue(['gpu_selector', 'gpu_ids']) || [];
-    const gpusPerReplicas =
-      form.getFieldValue(['gpu_selector', 'gpus_per_replica']) || null;
 
     if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
       return {

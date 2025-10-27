@@ -50,7 +50,7 @@ export default {
   'models.form.scheduletype.gpuType': '指定 GPU 类型',
   'models.form.scheduletype.auto.tips':
     '自动根据当前资源情况部署模型实例到合适的 GPU 上。',
-  'models.form.scheduletype.manual.tips': '手动调度可指定模型实例部署的 GPU。',
+  'models.form.scheduletype.manual.tips': '可指定模型实例部署的 GPU。',
   'models.form.manual.schedule': '手动调度',
   'models.table.gpuindex': 'GPU 序号',
   'models.table.backend': '后端',
@@ -67,9 +67,9 @@ export default {
   'models.form.ollamalink':
     '在 <a href="https://www.ollama.com/library" target="_blank">Ollama Library</a> 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
-    '例如，--ctx-size=8192',
+    '例如，--ctx-size=8192（参数名和值用 = 号分隔）',
   'models.form.backend_parameters.vllm.placeholder':
-    '例如，--max-model-len=8192',
+    '例如，--max-model-len=8192（参数名和值用 = 号分隔）',
   'models.form.backend_parameters.vllm.tips': '更多 {backend} 参数说明查看',
   'models.logs.pagination.prev': '上一 {lines} 行',
   'models.logs.pagination.next': '下一 {lines} 行',
@@ -83,11 +83,9 @@ export default {
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows。',
-  'models.form.backend.vllm': '用于非 GGUF 格式模型，仅支持 Linux。',
-  'models.form.backend.voxbox':
-    '用于非 GGUF 格式的语音模型，仅支持 NVIDIA GPU 与 CPU。',
-  'models.form.backend.mindie':
-    '用于非 GGUF 格式模型，仅支持昇腾 910B 和 310P。',
+  'models.form.backend.vllm': '仅支持 Linux。',
+  'models.form.backend.voxbox': '仅支持 NVIDIA GPU 与 CPU。',
+  'models.form.backend.mindie': '仅支持昇腾 910B 和 310P。',
   'models.form.search.gguftips':
     '当 macOS 或 Windows 作节点时勾选 GGUF（搜索语音模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',

@@ -24,5 +24,12 @@ export default {
   'backend.form.addParameter': 'Добавить параметр',
   'backend.form.noVersion': 'Версии не добавлены',
   'backend.noVersion': 'Версии не найдены',
-  'backend.versionInfo.autoImage': 'Автоматически выбор во время запуска'
+  'backend.versionInfo.autoImage': 'Автоматически выбор во время запуска',
+  'backend.version.rules.builtin': 'Должен заканчиваться на "-custom"',
+  'backend.version.no.tips':
+    'Built-in backend versions must end with "-custom".'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'backend.version.no.tips': 'Built-in backend versions must end with "-custom".'
+// ========== End of To-Do List ==========

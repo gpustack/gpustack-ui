@@ -56,7 +56,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const onOk = () => {
     if (activeKey === 'yaml') {
       const content = editorRef.current?.getContent();
-      onSubmitYaml({ content: content });
+      if (content) {
+        onSubmitYaml({ content: content });
+      }
     } else {
       formRef.current?.submit();
     }

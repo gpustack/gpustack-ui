@@ -7,7 +7,8 @@ export const backendOptionsMap = {
   vllm: 'vLLM',
   voxBox: 'VoxBox',
   ascendMindie: 'MindIE',
-  custom: 'Custom'
+  custom: 'Custom',
+  SGLang: 'SGLang'
 };
 
 export interface BackendParameter {
@@ -36,5 +37,6 @@ export default {
   [backendOptionsMap.vllm]: generateBackendParameters(vllmParameters),
   [backendOptionsMap.ascendMindie]: generateBackendParameters(mindieParameters),
   [backendOptionsMap.voxBox]: [],
-  [backendOptionsMap.custom]: []
+  [backendOptionsMap.custom]: [],
+  [backendOptionsMap.SGLang]: []
 };

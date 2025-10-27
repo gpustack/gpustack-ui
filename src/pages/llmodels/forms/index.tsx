@@ -184,11 +184,26 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   };
 
+  const updateKVCacheConfig = (backend: string, option: BackendOption) => {
+    if (
+      !option.isBuiltIn &&
+      [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(backend)
+    ) {
+      return {
+        extended_kv_cache: {
+          enabled: false
+        }
+      };
+    }
+    return {};
+  };
+
   const handleBackendChange = async (val: string, option: BackendOption) => {
     form.setFieldsValue({
       env: null,
       backend_version: option.default_version || '',
       backend_parameters: option.default_backend_param || [],
+      ...updateKVCacheConfig(val, option),
       ...updateGPUSelector(val)
     });
     onBackendChange?.(val);

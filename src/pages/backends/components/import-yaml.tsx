@@ -101,7 +101,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
     const renderHeader = () => {
       return (
         <Header>
-          <span className="title">YAML Editor</span>
+          <span className="title">YAML</span>
           <Upload
             name="file"
             multiple={false}
@@ -110,7 +110,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
             accept=".yaml,.yml,text/yaml,application/x-yaml"
           >
             <Button icon={<ImportOutlined />} type="text" size="small">
-              Import
+              {intl.formatMessage({ id: 'common.button.import' })}
             </Button>
           </Upload>
         </Header>

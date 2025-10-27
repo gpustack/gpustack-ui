@@ -176,6 +176,8 @@ export default {
   'models.form.chunkSize': '缓存分块大小',
   'models.form.maxCPUSize': 'CPU 缓存最大占用 (GiB)',
   'models.form.remoteURL': '远程存储地址',
+  'models.form.remoteURL.tips':
+    '参考 <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">配置文档</a> 配置',
   'models.form.runCommandPlaceholder':
     '例如，vllm serve Qwen/Qwen2.5-1.5B-Instruct',
   'models.accessSettings.public': '公开',
@@ -194,5 +196,9 @@ export default {
   'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量',
   'models.mymodels.status.inactive': '已停止',
   'models.mymodels.status.degrade': '异常',
-  'models.mymodels.status.active': '可用'
+  'models.mymodels.status.active': '可用',
+  'models.form.kvCache.tips':
+    '仅在内置后端（vLLM / SGLang）可用 —— 请在<span class="bold-text">高级</span>配置中切换后端以启用。',
+  'models.form.kvCache.tips2':
+    '仅在使用内置推理后端（vLLM 或 SGLang）时支持 KV 缓存。'
 };

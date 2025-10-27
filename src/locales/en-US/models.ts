@@ -212,5 +212,6 @@ export default {
   'models.form.kvCache.tips':
     'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.',
   'models.form.kvCache.tips2':
-    'KV cache is only supported when using built-in inference backends (vLLM or SGLang).'
+    'KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
+  'models.form.scheduling': 'Scheduling'
 };

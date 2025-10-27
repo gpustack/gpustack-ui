@@ -12,7 +12,7 @@ import React, {
   useState
 } from 'react';
 import styled from 'styled-components';
-import { yamlTemplate } from '../config';
+import { yaml2Json, yamlTemplate } from '../config';
 import YamlEditor from './yaml-editor';
 
 const { Text } = Typography;
@@ -98,6 +98,26 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
       return markers.length === 0;
     };
 
+    const getContent = () => {
+      try {
+        const content = editorRef.current?.getValue();
+        if (actionStatus.isBuiltIn) {
+          const jsonData = yaml2Json(content);
+          const exsistingVersions = Object.keys(jsonData.version_configs || {});
+          const invalidVersion = exsistingVersions.find(
+            (v) => !v.endsWith('-custom')
+          );
+          if (invalidVersion) {
+            setError(intl.formatMessage({ id: 'backend.version.no.tips' }));
+            return false;
+          }
+        }
+        return content;
+      } catch (error) {
+        return false;
+      }
+    };
+
     const renderHeader = () => {
       return (
         <Header>
@@ -119,7 +139,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
 
     useImperativeHandle(ref, () => ({
       getContent: () => {
-        return editorRef.current?.getValue();
+        return getContent();
       },
       setContent: (val: string) => {
         editorRef.current?.setValue?.(val);

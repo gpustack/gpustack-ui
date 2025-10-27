@@ -19,7 +19,7 @@ export default {
   'resources.form.spread.tips':
     '使得集群整体的资源在所有节点之间分配得相对均匀。可能会在单个节点上产生较多资源碎片。',
   'resources.form.binpack.tips':
-    '优先考虑整体集群的资源最大化利用，减少 GPU/节点 上的资源碎片。',
+    '优先考虑整体集群的资源最大化利用，减少 GPU/节点上的资源碎片。',
   'resources.form.workerSelector.description':
     '系统在部署模型实例时，会根据预定义的标签来选择最符合要求的节点。',
   'resources.table.ip': 'IP',

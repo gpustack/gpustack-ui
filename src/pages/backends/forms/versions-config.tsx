@@ -12,11 +12,14 @@ import styled from 'styled-components';
 import { frameworks } from '../config';
 import { ListItem } from '../config/types';
 
+// version must be endwith '-custom'
+
+const pattern = /-custom$/;
+
 const Box = styled.div`
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 180px 1fr;
   gap: 16px;
-  align-items: center;
 `;
 
 const Label = styled.span`
@@ -152,6 +155,10 @@ const VersionsForm: React.FC<AddModalProps> = ({
     }
   }, [currentData?.default_version]);
 
+  const handleVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Version changed:', e.target.value);
+  };
+
   return (
     <>
       <Title>
@@ -273,11 +280,27 @@ const VersionsForm: React.FC<AddModalProps> = ({
                         {
                           required: true,
                           message: getRuleMessage(`input`, 'backend.version')
-                        }
+                        },
+                        currentData?.is_built_in
+                          ? {
+                              pattern: pattern,
+                              message: intl.formatMessage({
+                                id: 'backend.version.rules.builtin'
+                              })
+                            }
+                          : {}
                       ]}
                     >
                       <SealInput.Input
                         trim
+                        description={
+                          currentData?.is_built_in
+                            ? intl.formatMessage({
+                                id: 'backend.version.no.tips'
+                              })
+                            : ''
+                        }
+                        onChange={handleVersionChange}
                         label={intl.formatMessage({ id: 'backend.version' })}
                         required
                       ></SealInput.Input>

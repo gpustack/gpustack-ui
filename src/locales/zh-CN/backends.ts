@@ -24,5 +24,7 @@ export default {
   'backend.form.addParameter': '添加参数',
   'backend.form.noVersion': '未添加版本',
   'backend.noVersion': '未找到版本',
-  'backend.versionInfo.autoImage': '运行时自动选择'
+  'backend.versionInfo.autoImage': '运行时自动选择',
+  'backend.version.rules.builtin': '须以 "-custom" 结尾',
+  'backend.version.no.tips': '内置的后端版本须以 "-custom" 结尾。'
 };

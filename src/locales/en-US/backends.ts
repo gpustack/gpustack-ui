@@ -24,5 +24,8 @@ export default {
   'backend.form.addParameter': 'Add Parameter',
   'backend.form.noVersion': 'No versions added',
   'backend.noVersion': 'No versions found',
-  'backend.versionInfo.autoImage': 'Automatically selected at runtime'
+  'backend.versionInfo.autoImage': 'Automatically selected at runtime',
+  'backend.version.rules.builtin': 'Must end with "-custom"',
+  'backend.version.no.tips':
+    'Built-in backend versions must end with "-custom".'
 };

@@ -187,6 +187,8 @@ export default {
   'models.form.chunkSize': 'Size Of Cache Chunks',
   'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
   'models.form.remoteURL': 'Remote Storage URL',
+  'models.form.remoteURL.tips':
+    'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
   'models.form.runCommandPlaceholder':
     'e.g., vllm serve Qwen/Qwen2.5-1.5B-Instruct',
   'models.accessSettings.public': 'Public',
@@ -206,5 +208,9 @@ export default {
     'You can specify the exact number of GPUs per replica.',
   'models.mymodels.status.inactive': 'Stopped',
   'models.mymodels.status.degrade': 'Abnormal',
-  'models.mymodels.status.active': 'Active'
+  'models.mymodels.status.active': 'Active',
+  'models.form.kvCache.tips':
+    'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.',
+  'models.form.kvCache.tips2':
+    'KV cache is only supported when using built-in inference backends (vLLM or SGLang).'
 };

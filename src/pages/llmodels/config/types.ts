@@ -260,6 +260,7 @@ export interface BackendOption {
   label: string;
   default_backend_param: string[];
   default_version: string;
+  isBuiltIn: boolean;
   versions: { label: string; value: string }[];
 }
 
@@ -273,6 +274,7 @@ export interface BackendItem {
   from_config: boolean;
   default_version: string;
   default_backend_param: string[];
+  is_built_in: boolean;
   versions: {
     version: string;
     is_deprecated: boolean;

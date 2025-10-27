@@ -14,6 +14,7 @@ export default function useQueryBackends() {
           label: item.backend_name,
           default_backend_param: item.default_backend_param || [],
           default_version: item.default_version,
+          isBuiltIn: item.is_built_in,
           versions: (item.versions || []).map((vItem) => ({
             label: vItem.version,
             value: vItem.version

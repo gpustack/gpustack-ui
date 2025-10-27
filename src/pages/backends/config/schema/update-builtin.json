@@ -23,7 +23,7 @@
     "version_configs": {
       "type": "object",
       "patternProperties": {
-        "^[a-zA-Z0-9._-]+-custom$": {
+        "^[a-zA-Z0-9._-]+$": {
           "type": "object",
           "properties": {
             "image_name": {
@@ -44,7 +44,7 @@
         }
       },
       "additionalProperties": false,
-      "description": "multiple backend versions ending with -custom"
+      "description": "multiple backend versions"
     }
   },
   "required": ["version_configs"],

@@ -3,14 +3,17 @@ import SealInputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { useMemo } from 'react';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const KVCacheForm = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, backendOptions } = useFormContext();
   const kvCacheEnabled = Form.useWatch(['extended_kv_cache', 'enabled'], form);
+  const backend = Form.useWatch('backend', form);
 
   const handleOnChange = async (e: any) => {
     if (e.target.checked) {
@@ -29,6 +32,19 @@ const KVCacheForm = () => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
+  const builtInBackend = useMemo(() => {
+    const currentBackend = backendOptions.find(
+      (item) => item.value === backend
+    );
+
+    return (
+      currentBackend?.isBuiltIn &&
+      [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(
+        backend as string
+      )
+    );
+  }, [backend, backendOptions]);
+
   return (
     <>
       <div style={{ paddingBottom: 22 }}>
@@ -37,8 +53,21 @@ const KVCacheForm = () => {
           name={['extended_kv_cache', 'enabled']}
           valuePropName="checked"
           style={{ padding: '0 10px', marginBottom: 0 }}
+          extra={
+            !builtInBackend && (
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: intl.formatMessage({ id: 'models.form.kvCache.tips' })
+                }}
+              ></span>
+            )
+          }
         >
           <CheckboxField
+            description={intl.formatMessage({
+              id: 'models.form.kvCache.tips2'
+            })}
+            disabled={!builtInBackend}
             onChange={handleOnChange}
             label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
           ></CheckboxField>
@@ -65,6 +94,15 @@ const KVCacheForm = () => {
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'remote_url']}>
             <SealInput.Input
+              description={
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: intl.formatMessage({
+                      id: 'models.form.remoteURL.tips'
+                    })
+                  }}
+                ></span>
+              }
               label={intl.formatMessage({ id: 'models.form.remoteURL' })}
               min={0}
               step={1}

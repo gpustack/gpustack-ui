@@ -2,6 +2,7 @@ import MindIELogo from '@/assets/logo/ascend.png';
 import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
 import icons from '@/components/icon-font/icons';
+import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
 import jsYaml from 'js-yaml';
 import { trim } from 'lodash';
 
@@ -16,18 +17,11 @@ const SealYamlType = new jsYaml.Type('!seal', {
 
 const SEAL_SCHEMA = jsYaml.DEFAULT_SCHEMA.extend([SealYamlType]);
 
-export const builtInBackends = {
-  SGLang: 'SGLang',
-  vLLM: 'vLLM',
-  MindIE: 'MindIE',
-  VoxBox: 'voxbox'
-};
-
 export const builtInBackendLogos: Record<string, string> = {
-  [builtInBackends.SGLang]: SGLangLogo,
-  [builtInBackends.vLLM]: vLLMLogo,
-  [builtInBackends.MindIE]: MindIELogo,
-  [builtInBackends.VoxBox]: ''
+  [backendOptionsMap.SGLang]: SGLangLogo,
+  [backendOptionsMap.vllm]: vLLMLogo,
+  [backendOptionsMap.ascendMindie]: MindIELogo,
+  [backendOptionsMap.voxBox]: ''
 };
 
 export const backendActions = [

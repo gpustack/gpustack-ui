@@ -136,15 +136,6 @@ export default [
         component: './resources/components/gpus'
       },
       {
-        name: 'modelfiles',
-        path: '/resources/modelfiles',
-        key: 'modelfiles',
-        icon: 'icon-files',
-        selectedIcon: 'icon-files-filled',
-        defaultIcon: 'icon-files',
-        component: './resources/components/model-files'
-      },
-      {
         name: 'backendsList',
         path: '/resources/backends',
         key: 'backendsList',
@@ -153,6 +144,15 @@ export default [
         defaultIcon: 'icon-backend',
         access: 'canSeeAdmin',
         component: './backends/index'
+      },
+      {
+        name: 'modelfiles',
+        path: '/resources/modelfiles',
+        key: 'modelfiles',
+        icon: 'icon-files',
+        selectedIcon: 'icon-files-filled',
+        defaultIcon: 'icon-files',
+        component: './resources/components/model-files'
       }
     ]
   },

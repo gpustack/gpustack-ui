@@ -30,6 +30,7 @@ export const backendOptionsAtom = atom<
     label: string;
     default_backend_param: string[];
     default_version: string;
+    isBuiltIn: boolean;
     versions: { label: string; value: string }[];
   }[]
 >([]);

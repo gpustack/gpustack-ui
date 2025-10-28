@@ -4,6 +4,7 @@ import SealInputNumber from '@/components/seal-form/input-number';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
+import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
@@ -67,7 +68,13 @@ const gpuAllocateTypeTips = [
 
 const ScheduleTypeForm: React.FC = () => {
   const intl = useIntl();
-  const { onValuesChange, gpuOptions, workerLabelOptions } = useFormContext();
+  const {
+    onValuesChange,
+    action,
+    gpuOptions,
+    workerLabelOptions,
+    initialValues
+  } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
@@ -88,39 +95,41 @@ const ScheduleTypeForm: React.FC = () => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
-  const handleBeforeGpuSelectorChange = (gpuIds: any[]) => {};
-
   const handleGpuSelectorChange = (value: any[]) => {
-    handleBeforeGpuSelectorChange(value);
-    onValuesChange?.({}, form.getFieldsValue());
+    if (value.length > 0) {
+      onValuesChange?.({}, form.getFieldsValue());
+    }
   };
 
   const handleOnStepReplicaStep = (
-    value: number,
-    info: { offset: number; type: 'up' | 'down' }
+    value: number | string | null,
+    info: { offset: number | string | null; type: 'up' | 'down' }
   ) => {
     let newValue = value;
     const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0 && n !== 0; // check power of two
-    if (!isPowerOfTwo(value)) {
+    if (!isPowerOfTwo(value as number)) {
       if (info.type === 'up') {
-        newValue = Math.pow(2, Math.ceil(Math.log2(value)));
+        newValue = Math.pow(2, Math.ceil(Math.log2(value as number)));
       } else {
-        newValue = Math.pow(2, Math.floor(Math.log2(value)));
+        newValue = Math.pow(2, Math.floor(Math.log2(value as number)));
       }
     }
     form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
     onValuesChange?.({}, form.getFieldsValue());
   };
 
-  const handleOnStepReplica = (value: number | null) => {
+  const handleOnStepReplica = async (value: number | string | null) => {
     if (value === null) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 200);
+      });
       form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 1);
       return;
     }
 
     const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0 && n !== 0; // check power of two
-    if (!isPowerOfTwo(value)) {
-      const newValue = Math.pow(2, Math.round(Math.log2(value)));
+    if (!isPowerOfTwo(value as number)) {
+      const newValue = Math.pow(2, Math.round(Math.log2(value as number)));
       form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
       onValuesChange?.({}, form.getFieldsValue());
     }
@@ -212,7 +221,13 @@ const ScheduleTypeForm: React.FC = () => {
                 onChange={handleGpuSelectorChange}
               ></SealCascader>
             </Form.Item>
-            <Form.Item name="gpusCountType">
+            <Form.Item
+              name="gpusCountType"
+              hidden={
+                action === PageAction.EDIT &&
+                !!initialValues?.gpu_selector?.gpus_per_replica
+              }
+            >
               <SealSelect
                 onChange={handleGpusCountTypeChange}
                 label={intl.formatMessage({

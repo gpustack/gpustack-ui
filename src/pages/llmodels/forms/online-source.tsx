@@ -13,7 +13,7 @@ const HuggingFaceForm: React.FC = () => {
   const formInstance = Form.useFormInstance();
   const formCtx = useFormContext();
   const { getRuleMessage } = useAppUtils();
-  const { formKey, pageAction, isGGUF, onValuesChange } = formCtx;
+  const { formKey, action, isGGUF, onValuesChange } = formCtx;
   const source = Form.useWatch('source');
 
   if (
@@ -47,7 +47,7 @@ const HuggingFaceForm: React.FC = () => {
             <SealInput.Input
               label={intl.formatMessage({ id: 'models.form.repoid' })}
               required
-              disabled={pageAction === PageAction.CREATE}
+              disabled={action === PageAction.CREATE}
               onBlur={handleOnBlur}
             ></SealInput.Input>
           </Form.Item>
@@ -58,7 +58,7 @@ const HuggingFaceForm: React.FC = () => {
             >
               <SealInput.Input
                 label={intl.formatMessage({ id: 'models.form.filename' })}
-                disabled={pageAction === PageAction.CREATE}
+                disabled={action === PageAction.CREATE}
               ></SealInput.Input>
             </Form.Item>
           )}
@@ -78,7 +78,7 @@ const HuggingFaceForm: React.FC = () => {
             <SealInput.Input
               required
               label={intl.formatMessage({ id: 'models.form.repoid' })}
-              disabled={pageAction === PageAction.CREATE}
+              disabled={action === PageAction.CREATE}
               onBlur={handleOnBlur}
             ></SealInput.Input>
           </Form.Item>
@@ -89,7 +89,7 @@ const HuggingFaceForm: React.FC = () => {
             >
               <SealInput.Input
                 label={intl.formatMessage({ id: 'models.form.filename' })}
-                disabled={pageAction === PageAction.CREATE}
+                disabled={action === PageAction.CREATE}
               ></SealInput.Input>
             </Form.Item>
           )}

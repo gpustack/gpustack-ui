@@ -23,7 +23,7 @@ const BackendFields: React.FC = () => {
   const {
     isGGUF,
     formKey,
-    pageAction: action,
+    action,
     source,
     gpuOptions,
     onValuesChange,

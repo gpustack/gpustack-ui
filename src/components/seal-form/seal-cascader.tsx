@@ -60,8 +60,7 @@ const OptionNodes = (props: {
     );
   }
   let width: any = {
-    maxWidth: 140,
-    minWidth: 140
+    maxWidth: 140
   };
   if (!data.parent) {
     width = undefined;

@@ -21,6 +21,12 @@ const Header = styled.div`
   width: 100%;
 `;
 
+const ItemInfo = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  white-space: break-spaces;
+`;
+
 const Description = styled.div`
   display: flex;
   flex-direction: column;
@@ -60,7 +66,7 @@ const GPUCard: React.FC<{
       description={
         info || (
           <>
-            <span>
+            <ItemInfo>
               {intl.formatMessage({ id: 'resources.table.vram' })}(
               {intl.formatMessage({ id: 'resources.table.used' })}/
               {intl.formatMessage({ id: 'resources.table.total' })}):{' '}
@@ -70,8 +76,8 @@ const GPUCard: React.FC<{
                 )}{' '}
                 / {convertFileSize(data?.memory?.total || 0)}
               </span>
-            </span>
-            <span>
+            </ItemInfo>
+            <ItemInfo>
               <span>
                 {intl.formatMessage({ id: 'resources.table.gpuutilization' })}
                 :{' '}
@@ -80,7 +86,7 @@ const GPUCard: React.FC<{
                 ? _.round(data?.memory?.utilization_rate || 0, 2)
                 : _.round(data.memory?.allocated / data.memory?.total, 2) * 100}
               %
-            </span>
+            </ItemInfo>
           </>
         )
       }

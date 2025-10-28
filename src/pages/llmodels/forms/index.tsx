@@ -55,7 +55,7 @@ const SegmentedHeader = styled.div<{ $top?: number }>`
 `;
 
 interface DataFormProps {
-  initialValues?: any;
+  initialValues?: FormData;
   ref?: any;
   source: SourceType;
   action: PageActionType;
@@ -323,10 +323,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         isGGUF: isGGUF,
         formKey: formKey,
         source: props.source,
-        pageAction: action,
+        action: action,
         gpuOptions: gpuOptions,
         backendOptions: backendOptions,
         workerLabelOptions: workerLabelOptions,
+        initialValues: initialValues,
         onValuesChange: onValuesChange,
         onBackendChange: handleBackendChange
       }}

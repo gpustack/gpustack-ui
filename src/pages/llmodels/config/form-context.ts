@@ -1,6 +1,6 @@
 import { PageActionType } from '@/config/types';
 import React from 'react';
-import { BackendOption, DeployFormKey } from './types';
+import { BackendOption, DeployFormKey, FormData } from './types';
 
 type EmptyObject = Record<never, never>;
 
@@ -17,10 +17,11 @@ interface FormContextProps {
   isGGUF?: boolean;
   formKey: DeployFormKey;
   source: string;
-  pageAction: PageActionType;
+  action: PageActionType;
   gpuOptions: CascaderOption[];
   workerLabelOptions: CascaderOption[];
   backendOptions: BackendOption[];
+  initialValues?: FormData; // for editing model
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onBackendChange: (backend: string, option: any) => void;
 }

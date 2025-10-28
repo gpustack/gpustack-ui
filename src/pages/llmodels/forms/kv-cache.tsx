@@ -16,13 +16,14 @@ const KVCacheForm = () => {
   const backend = Form.useWatch('backend', form);
 
   const handleOnChange = async (e: any) => {
+    const extendedKVCache = form.getFieldValue('extended_kv_cache');
     if (e.target.checked) {
       form.setFieldsValue({
         extended_kv_cache: {
           enabled: true,
-          chunk_size: 256,
-          max_local_cpu_size: 10,
-          remote_url: ''
+          chunk_size: extendedKVCache?.chunk_size || 256,
+          max_local_cpu_size: extendedKVCache?.max_local_cpu_size || 10,
+          remote_url: extendedKVCache?.remote_url || ''
         }
       });
     }

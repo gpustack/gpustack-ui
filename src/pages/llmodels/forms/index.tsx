@@ -9,7 +9,6 @@ import styled from 'styled-components';
 import {
   deployFormKeyMap,
   excludeFields,
-  gpusCountTypeMap,
   modelSourceMap,
   ScheduleValueMap
 } from '../config';
@@ -65,6 +64,7 @@ interface DataFormProps {
   sourceList?: Global.BaseOption<string>[];
   clusterList: Global.BaseOption<number>[];
   fields?: string[];
+  clearCacheFormValues?: () => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
@@ -82,6 +82,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     sourceList,
     clusterList = [],
     fields = ['source'],
+    clearCacheFormValues,
     onBackendChange,
     onSourceChange,
     onValuesChange,
@@ -154,9 +155,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
     if (backend === backendOptionsMap.voxBox && gpuids.length > 0) {
       return {
-        gpusCountType: gpusCountTypeMap.Auto,
         gpu_selector: {
-          gpu_ids: [gpuids[0]]
+          gpu_ids: [gpuids[0]],
+          gpus_per_replica: -1
         }
       };
     }
@@ -217,7 +218,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     data.categories = data.categories ? [data.categories] : [];
     const gpuSelector = generateGPUIds(data);
     const allValues = {
-      ..._.omit(data, ['scheduleType', 'gpusCountType']),
+      ..._.omit(data, ['scheduleType']),
       ...gpuSelector
     };
 
@@ -235,7 +236,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const getFieldPaths = (obj: Record<string, any>, prefix = ''): string => {
     const result = Object.entries(obj).flatMap(([key, value]) => {
       const path = prefix ? `${prefix}.${key}` : key;
-      return typeof value === 'object' && value !== null
+      return typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value)
         ? getFieldPaths(value, path)
         : [path];
     });
@@ -328,6 +331,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         backendOptions: backendOptions,
         workerLabelOptions: workerLabelOptions,
         initialValues: initialValues,
+        clearCacheFormValues: clearCacheFormValues,
         onValuesChange: onValuesChange,
         onBackendChange: handleBackendChange
       }}
@@ -344,7 +348,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         name="deployModel"
         form={form}
         onFinish={handleOk}
-        preserve={false}
+        preserve={true}
         clearOnDestroy={true}
         onValuesChange={handleOnValuesChange}
         onFinishFailed={handleOnFinishFailed}
@@ -355,7 +359,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           placement_strategy: 'spread',
           cpu_offloading: true,
           scheduleType: ScheduleValueMap.Auto,
-          gpusCountType: gpusCountTypeMap.Auto,
           categories: null,
           restart_on_error: true,
           distributed_inference_across_workers: true,

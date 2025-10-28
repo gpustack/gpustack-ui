@@ -1,18 +1,16 @@
 import LabelSelector from '@/components/label-selector';
 import { LabelSelectorContext } from '@/components/label-selector/context';
-import SealInputNumber from '@/components/seal-form/input-number';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
-import { PageAction } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
 import React from 'react';
+import styled from 'styled-components';
 import GPUCard from '../components/gpu-card';
 import {
-  gpusCountTypeMap,
   placementStrategyOptions,
   scheduleList,
   ScheduleValueMap
@@ -20,6 +18,10 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+
+const InputWrapper = styled.div`
+  padding: 8px 4px;
+`;
 
 const placementStrategyTips = [
   {
@@ -73,24 +75,30 @@ const ScheduleTypeForm: React.FC = () => {
     action,
     gpuOptions,
     workerLabelOptions,
+    clearCacheFormValues,
     initialValues
   } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
-  const gpusCountType = Form.useWatch('gpusCountType', form);
-  const wokerSelector = Form.useWatch('worker_selector', form);
+  const workerSelector = Form.useWatch('worker_selector', form);
+  const GPUsPerReplicas = Form.useWatch(
+    ['gpu_selector', 'gpus_per_replica'],
+    form
+  );
 
   const handleScheduleTypeChange = (value: string) => {
     if (value === ScheduleValueMap.Auto) {
       onValuesChange?.({}, form.getFieldsValue());
+      return;
+    }
+    if (value === ScheduleValueMap.Manual) {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], -1);
     }
   };
 
-  const handleGpusCountTypeChange = (val: string) => {
-    if (val === gpusCountTypeMap.Custom) {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 1);
-    }
+  const handleGpusPerReplicasChange = (val: string | number | null) => {
+    form.setFieldValue(['gpu_selector', 'gpus_per_replica'], val);
 
     onValuesChange?.({}, form.getFieldsValue());
   };
@@ -98,6 +106,8 @@ const ScheduleTypeForm: React.FC = () => {
   const handleGpuSelectorChange = (value: any[]) => {
     if (value.length > 0) {
       onValuesChange?.({}, form.getFieldsValue());
+    } else {
+      clearCacheFormValues?.();
     }
   };
 
@@ -221,50 +231,41 @@ const ScheduleTypeForm: React.FC = () => {
                 onChange={handleGpuSelectorChange}
               ></SealCascader>
             </Form.Item>
-            <Form.Item
-              name="gpusCountType"
-              hidden={
-                action === PageAction.EDIT &&
-                !!initialValues?.gpu_selector?.gpus_per_replica
-              }
-            >
+            <Form.Item name={['gpu_selector', 'gpus_per_replica']}>
               <SealSelect
-                onChange={handleGpusCountTypeChange}
                 label={intl.formatMessage({
-                  id: 'models.form.gpusAllocationType'
+                  id: 'models.form.gpusperreplica'
                 })}
-                description={
-                  <TooltipList list={gpuAllocateTypeTips}></TooltipList>
-                }
                 options={[
                   {
-                    label: intl.formatMessage({
-                      id: 'models.form.gpusAllocationType.auto'
-                    }),
-                    value: gpusCountTypeMap.Auto
+                    label: intl.formatMessage({ id: 'common.options.auto' }),
+                    value: -1
                   },
-                  {
-                    label: intl.formatMessage({
-                      id: 'models.form.gpusAllocationType.custom'
-                    }),
-                    value: gpusCountTypeMap.Custom
-                  }
+                  { label: '1', value: 1 },
+                  { label: '2', value: 2 },
+                  { label: '4', value: 4 },
+                  { label: '8', value: 8 }
                 ]}
-              ></SealSelect>
+                popupRender={(originNode) => (
+                  <div>
+                    {originNode}
+                    <InputWrapper>
+                      <InputNumber
+                        step={1}
+                        style={{ width: '100%' }}
+                        defaultValue={
+                          GPUsPerReplicas === null ? -1 : GPUsPerReplicas
+                        }
+                        value={GPUsPerReplicas === -1 ? null : GPUsPerReplicas}
+                        onChange={handleGpusPerReplicasChange}
+                        onStep={handleOnStepReplicaStep}
+                      />
+                    </InputWrapper>
+                  </div>
+                )}
+                onChange={handleOnStepReplica}
+              />
             </Form.Item>
-            {gpusCountType === gpusCountTypeMap.Custom && (
-              <Form.Item name={['gpu_selector', 'gpus_per_replica']}>
-                <SealInputNumber
-                  label={intl.formatMessage({
-                    id: 'models.form.gpusperreplica'
-                  })}
-                  min={1}
-                  step={1}
-                  onChange={handleOnStepReplica}
-                  onStep={handleOnStepReplicaStep}
-                />
-              </Form.Item>
-            )}
           </>
         )}
       {scheduleType === ScheduleValueMap.Auto && (
@@ -317,7 +318,7 @@ const ScheduleTypeForm: React.FC = () => {
                 label={intl.formatMessage({
                   id: 'resources.form.workerSelector'
                 })}
-                labels={wokerSelector}
+                labels={workerSelector}
                 onChange={handleWorkerLabelsChange}
                 onBlur={handleSelectorOnBlur}
                 onDelete={handleDeleteWorkerSelector}

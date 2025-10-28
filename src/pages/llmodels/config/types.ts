@@ -70,7 +70,6 @@ export interface FormData {
   cpu_offloading?: boolean;
   worker_selector?: object;
   scheduleType?: string;
-  gpusCountType?: string;
   name: string;
   replicas: number;
   description: string;

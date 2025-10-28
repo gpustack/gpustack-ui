@@ -22,6 +22,7 @@ interface FormContextProps {
   workerLabelOptions: CascaderOption[];
   backendOptions: BackendOption[];
   initialValues?: FormData; // for editing model
+  clearCacheFormValues?: () => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onBackendChange: (backend: string, option: any) => void;
 }

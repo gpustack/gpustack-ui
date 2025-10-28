@@ -375,7 +375,7 @@ export const useCheckCompatibility = () => {
     return null;
   };
 
-  const clearCahceFormValues = () => {
+  const clearCacheFormValues = () => {
     cacheFormValuesRef.current = {};
   };
 
@@ -437,7 +437,7 @@ export const useCheckCompatibility = () => {
   useEffect(() => {
     return () => {
       cancelEvaluate();
-      clearCahceFormValues();
+      clearCacheFormValues();
     };
   }, []);
 
@@ -452,7 +452,7 @@ export const useCheckCompatibility = () => {
     handleBackendChangeBefore,
     handleOnValuesChange: handleOnValuesChange,
     handleEvaluateOnChange: handleOnValuesChange,
-    clearCahceFormValues,
+    clearCacheFormValues,
     warningStatus,
     checkTokenRef,
     submitAnyway

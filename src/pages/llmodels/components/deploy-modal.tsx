@@ -116,7 +116,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     cancelEvaluate,
     unlockWarningStatus,
     handleOnValuesChange: handleOnValuesChangeBefore,
-    clearCahceFormValues,
+    clearCacheFormValues,
     warningStatus,
     submitAnyway
   } = useCheckCompatibility();
@@ -314,7 +314,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
     console.log('handleOnSelectModel:', item, selectedModel);
     setIsGGUF(item.isGGUF);
-    clearCahceFormValues();
+    clearCacheFormValues();
     unlockWarningStatus();
     setEvaluteState({
       state: EvaluateProccess.model,
@@ -511,7 +511,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       handleOnOpen();
     } else {
       cancelEvaluate();
-      clearCahceFormValues();
+      clearCacheFormValues();
     }
     return () => {
       setSelectedModel({});
@@ -645,6 +645,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                 isGGUF={isGGUF}
                 onBackendChange={handleBackendChange}
                 onValuesChange={onValuesChange}
+                clearCacheFormValues={clearCacheFormValues}
               ></DataForm>
             </>
           </ColumnWrapper>

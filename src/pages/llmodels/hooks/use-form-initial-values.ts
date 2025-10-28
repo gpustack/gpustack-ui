@@ -10,7 +10,7 @@ import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { queryGPUList } from '../apis';
-import { gpusCountTypeMap, ScheduleValueMap } from '../config';
+import { ScheduleValueMap } from '../config';
 import { GPUListItem, ListItem } from '../config/types';
 
 type EmptyObject = Record<never, never>;
@@ -276,10 +276,7 @@ export default function useFormInitialValues() {
       categories: data?.categories?.length ? data.categories[0] : null,
       scheduleType: data?.gpu_selector
         ? ScheduleValueMap.Manual
-        : ScheduleValueMap.Auto,
-      gpusCountType: data?.gpu_selector?.gpus_per_replica
-        ? gpusCountTypeMap.Custom
-        : gpusCountTypeMap.Auto
+        : ScheduleValueMap.Auto
     };
     return formData;
   };

@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { gpusCountTypeMap } from '.';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormData } from './types';
 
@@ -60,17 +59,14 @@ export const generateGPUIds = (data: FormData) => {
     },
     []
   );
-  if (gpusCountTypeMap.Auto === data.gpusCountType) {
-    return {
-      gpu_selector: {
-        gpu_ids: result || []
-      }
-    };
-  }
+
   return {
     gpu_selector: {
       gpu_ids: result || [],
-      gpus_per_replica: data.gpu_selector?.gpus_per_replica || null
+      gpus_per_replica:
+        data.gpu_selector?.gpus_per_replica === -1
+          ? null
+          : data.gpu_selector?.gpus_per_replica
     }
   };
 };

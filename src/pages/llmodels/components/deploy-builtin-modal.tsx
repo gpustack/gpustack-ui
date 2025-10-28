@@ -98,6 +98,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     setWarningStatus,
     handleDoEvalute,
     cancelEvaluate,
+    clearCacheFormValues,
     submitAnyway,
     handleOnValuesChange,
     warningStatus
@@ -609,6 +610,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 onBackendChange={handleBackendChange}
                 onSourceChange={handleSourceChange}
                 onValuesChange={onValuesChange}
+                clearCacheFormValues={clearCacheFormValues}
               ></DataForm>
             </>
           </ColumnWrapper>

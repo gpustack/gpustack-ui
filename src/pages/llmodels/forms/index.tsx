@@ -8,7 +8,8 @@ import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
 import styled from 'styled-components';
 import {
   deployFormKeyMap,
-  excludeFields,
+  DO_NOT_NOTIFY_RECREATE,
+  DO_NOT_TRIGGER_CHECK_COMPATIBILITY,
   modelSourceMap,
   ScheduleValueMap
 } from '../config';
@@ -249,7 +250,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
     const fieldName = getFieldPaths(changedValues);
 
-    if (excludeFields.includes(fieldName)) {
+    if (
+      DO_NOT_TRIGGER_CHECK_COMPATIBILITY.includes(fieldName) ||
+      (DO_NOT_NOTIFY_RECREATE.includes(fieldName) && action === PageAction.EDIT)
+    ) {
       return;
     }
     onValuesChange?.(changedValues, allValues);

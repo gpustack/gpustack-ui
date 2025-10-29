@@ -1,6 +1,8 @@
-import llamaParameters from './llama-parameters';
-import mindieParameters from './mindie-parameters';
-import vllmParameters from './vllm-parameters';
+// preset backend parameters for built-in backends
+import llamaParameters from './llama';
+import mindieParameters from './mindie';
+import sglangParameters from './sglang';
+import vllmParameters from './vllm';
 
 export const backendOptionsMap = {
   llamaBox: 'llama-box',
@@ -38,5 +40,5 @@ export default {
   [backendOptionsMap.ascendMindie]: generateBackendParameters(mindieParameters),
   [backendOptionsMap.voxBox]: [],
   [backendOptionsMap.custom]: [],
-  [backendOptionsMap.SGLang]: []
+  [backendOptionsMap.SGLang]: generateBackendParameters(sglangParameters)
 };

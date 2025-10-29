@@ -130,7 +130,7 @@ export default {
   'models.form.check.claims2': '该模型大约需要消耗 {vram} 显存。',
   'models.form.check.claims3': '该模型大约需要消耗 {ram} 内存。',
   'models.form.update.tips': '更改仅在删除并重新创建实例后生效。',
-  'models.table.download.progress': '下载进度',
+  'models.table.download.progress': '进度',
   'models.table.button.apiAccessInfo': 'API 接入信息',
   'models.table.button.apiAccessInfo.tips': `当您需要将本模型与第三方应用集成时，请使用以下信息：接入地址、模型名称和 API 密钥。这些信息是确保外部系统能正确连接并调用模型服务的关键凭证。`,
   'models.table.apiAccessInfo.endpoint': '接入地址',
@@ -220,5 +220,9 @@ export default {
   'models.form.mode.baseline': '标准',
   'models.form.mode.throughput.tips': '在高并发请求下优化吞吐性能。',
   'models.form.mode.latency.tips': '在低并发请求下优化响应延迟。',
-  'models.form.mode.baseline.tips': '以完整（原始）精度运行，并优先保证兼容性。'
+  'models.form.mode.baseline.tips':
+    '以完整（原始）精度运行，并优先保证兼容性。',
+  'models.form.draftModel.placeholder': '请选择或输入草稿模型',
+  'models.form.draftModel.tips':
+    '可填写本地路径（如 /path/to/model），或从 Hugging Face、ModelScope 选择模型（如 Tengyunw/qwen3_8b_eagle3）。系统将根据主模型来源自动匹配。'
 };

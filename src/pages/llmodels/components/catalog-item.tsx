@@ -120,7 +120,7 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
             })}
           </span>
         </div>
-        <div className="tags">
+        <div className="tags gap-6">
           {data.categories.map((sItem, i) => {
             return (
               <ThemeTag

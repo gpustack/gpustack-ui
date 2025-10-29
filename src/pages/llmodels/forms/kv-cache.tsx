@@ -28,10 +28,6 @@ const KVCacheForm = () => {
     } else {
       configCacheRef.current = form.getFieldValue('extended_kv_cache');
     }
-    await new Promise((resolve) => {
-      setTimeout(resolve, 200);
-    });
-    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const builtInBackend = useMemo(() => {

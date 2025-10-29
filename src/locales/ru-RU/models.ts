@@ -139,7 +139,7 @@ export default {
   'models.form.check.claims3': 'Модель требует примерно {ram} RAM.',
   'models.form.update.tips':
     'Изменения вступят в силу только после удаления и повторного создания инстанса.',
-  'models.table.download.progress': 'Прогресс загрузки',
+  'models.table.download.progress': 'Прогресс',
   'models.table.button.apiAccessInfo': 'Доступ к API',
   'models.table.button.apiAccessInfo.tips': `Для интеграции этой модели со сторонними приложениями используйте следующие данные: URL доступа, имя модели и ключ API. Эти учетные данные необходимы для обеспечения правильного подключения и использования сервиса модели.`, // Translated
   'models.table.apiAccessInfo.endpoint': 'URL доступа',
@@ -227,13 +227,16 @@ export default {
   'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
   'models.form.mode.throughput': 'Throughput',
   'models.form.mode.latency': 'Latency',
-  'models.form.mode.baseline': 'Baseline',
+  'models.form.mode.baseline': 'Standard',
   'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',
   'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
   'models.form.mode.baseline.tips':
-    'the most compatible option with full precision.'
+    'the most compatible option with full precision.',
+  'models.form.draftModel.placeholder': 'Please select or enter a draft model',
+  'models.form.draftModel.tips':
+    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -257,8 +260,10 @@ export default {
 // 30. 'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
 // 31. 'models.form.mode.throughput': 'Throughput',
 // 32. 'models.form.mode.latency': 'Latency',
-// 33. 'models.form.mode.baseline': 'Baseline',
+// 33. 'models.form.mode.baseline': 'Standard',
 // 34. 'models.form.mode.throughput.tips': 'optimized for high throughput under high request concurrency.',
 // 35. 'models.form.mode.latency.tips': 'optimized for low latency under low request concurrency.',
 // 36. 'models.form.mode.baseline.tips': 'the most compatible option with full precision.'
+// 37. 'models.form.draftModel.placeholder': 'Please select or enter a draft model',
+// 38. 'models.form.draftModel.tips': 'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
 // ========== End of To-Do List ==========

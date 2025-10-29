@@ -376,7 +376,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           speculative_config: {
             enabled: false,
             algorithm: '',
-            draft_model_name: null,
+            draft_model: null,
             num_draft_tokens: 3,
             ngram_min_match_length: 1,
             ngram_max_match_length: 10

@@ -12,6 +12,7 @@ const TagWrapper = styled(Tag)`
   font-size: 12px;
   height: 22px;
   opacity: 0.7;
+  margin: 0;
 `;
 
 const ThemeTag: React.FC<TagProps & { opacity?: number }> = ({

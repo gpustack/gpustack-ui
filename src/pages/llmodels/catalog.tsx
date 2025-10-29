@@ -257,7 +257,7 @@ const Catalog: React.FC = () => {
               allowClear
               showSearch={false}
               placeholder={intl.formatMessage({ id: 'models.filter.category' })}
-              style={{ width: 180 }}
+              style={{ width: 200 }}
               size="large"
               maxTagCount={1}
               onChange={handleCategoryChange}

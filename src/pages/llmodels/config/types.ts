@@ -85,7 +85,7 @@ export interface FormData {
   speculative_config: {
     enabled: boolean;
     algorithm: string;
-    draft_model_name: string;
+    draft_model: string;
     num_draft_tokens: number;
     ngram_min_match_length: number;
     ngram_max_match_length: number;
@@ -135,6 +135,16 @@ export interface ModelInstanceListItem {
   id: number;
   created_at: string;
   updated_at: string;
+  draft_model_source: {
+    source: string;
+    huggingface_repo_id: string;
+    huggingface_filename: string;
+    model_scope_model_id: string;
+    model_scope_file_path: string;
+    local_path: string;
+  };
+  draft_model_download_progress: 0;
+  draft_model_resolved_path: string;
 }
 
 export interface ModelInstanceFormData {
@@ -214,7 +224,7 @@ export interface CatalogSpec {
   speculative_config: {
     enabled: boolean;
     algorithm: string;
-    draft_model_name: string;
+    draft_model: string;
     num_draft_tokens: number;
     ngram_min_match_length: number;
     ngram_max_match_length: number;

@@ -262,7 +262,8 @@ export default {
   'common.button.terminal': 'Terminal',
   'common.button.addItem': 'Add Item',
   'common.help.default': 'Default: {content}',
-  'common.filter.status': 'Filter by status'
+  'common.filter.status': 'Filter by status',
+  'common.form.rule.selectInput': 'Please select or enter a {name}'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -291,4 +292,5 @@ export default {
 // 23. 'common.button.addItem': 'Add Item',
 // 24. 'common.help.default': 'Default: {content}',
 // 25. 'common.filter.status': 'Filter by status'
+// 26. 'common.form.rule.selectInput': 'Please select or enter a {name}'
 // ========== End of To-Do List ==========

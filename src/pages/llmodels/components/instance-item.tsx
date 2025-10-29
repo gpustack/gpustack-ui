@@ -27,6 +27,7 @@ import styled from 'styled-components';
 import { MODEL_INSTANCE_API } from '../apis';
 import { InstanceStatusMap, InstanceStatusMapValue, status } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
+import { generateSource } from '../config/button-actions';
 import {
   DistributedServerItem,
   DistributedServers,
@@ -55,12 +56,7 @@ const fieldList = [
   }
 ];
 
-const downloadList: ColumnProps[] = [
-  {
-    title: 'Worker',
-    key: 'worker_name',
-    width: 200
-  },
+const statusColumn: ColumnProps[] = [
   {
     title: 'models.table.download.progress',
     locale: true,
@@ -82,6 +78,25 @@ const downloadList: ColumnProps[] = [
       );
     }
   }
+];
+const downloadList: ColumnProps[] = [
+  {
+    title: 'resources.worker',
+    locale: true,
+    key: 'worker_name',
+    width: 280
+  },
+  ...statusColumn
+];
+
+const draftModelDownloadList: ColumnProps[] = [
+  {
+    title: 'models.form.draftModel',
+    locale: true,
+    key: 'draft_model',
+    width: 280
+  },
+  ...statusColumn
 ];
 
 const WorkerInfo = (props: {
@@ -128,7 +143,7 @@ const RenderRayactorDownloading = (props: {
   workerList: WorkerListItem[];
 }) => {
   const { severList, instanceData, workerList } = props;
-  if (!severList.length) {
+  if (!severList.length && !instanceData.draft_model_download_progress) {
     return null;
   }
   const list = _.map(severList, (item: any) => {
@@ -148,14 +163,33 @@ const RenderRayactorDownloading = (props: {
     }
   ];
 
+  const draftModelList = [];
+  if (instanceData.draft_model_download_progress > 0) {
+    draftModelList.push({
+      draft_model: generateSource(instanceData.draft_model_source),
+      download_progress: _.round(instanceData.draft_model_download_progress, 2)
+    });
+  }
+
   return (
     <div>
-      <SimpleTabel
-        columns={downloadList}
-        dataSource={[...mainWorker, ...list]}
-        rowKey="worker_name"
-        theme="light"
-      ></SimpleTabel>
+      {severList.length > 0 && (
+        <SimpleTabel
+          columns={downloadList}
+          dataSource={[...mainWorker, ...list]}
+          rowKey="worker_name"
+          theme="light"
+        ></SimpleTabel>
+      )}
+
+      {draftModelList.length > 0 && (
+        <SimpleTabel
+          columns={draftModelDownloadList}
+          dataSource={[...draftModelList]}
+          rowKey="worker_name"
+          theme="light"
+        ></SimpleTabel>
+      )}
     </div>
   );
 };
@@ -171,11 +205,12 @@ const RenderWorkerDownloading = (props: {
   const severList: DistributedServerItem[] =
     distributed_servers?.subordinate_workers || [];
 
-  if (
+  const isWorkerNotDownloading =
     instanceData.state !== InstanceStatusMap.Downloading ||
     !severList.length ||
-    backend === backendOptionsMap.llamaBox
-  ) {
+    backend === backendOptionsMap.llamaBox;
+
+  if (isWorkerNotDownloading && !instanceData.draft_model_download_progress) {
     return null;
   }
   return (
@@ -183,7 +218,7 @@ const RenderWorkerDownloading = (props: {
       arrow={true}
       styles={{
         body: {
-          width: 300,
+          width: 360,
           backgroundColor: 'var(--color-spotlight-bg)'
         }
       }}
@@ -204,8 +239,10 @@ const RenderWorkerDownloading = (props: {
         size={16}
         strokeColor="var(--ant-color-success)"
         percent={
+          instanceData.draft_model_download_progress ||
           _.find(severList, (item: any) => item.download_progress < 100)
-            ?.download_progress || 0
+            ?.download_progress ||
+          0
         }
       />
     </Tooltip>
@@ -543,6 +580,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
   const renderOffloadInfo = useMemo(() => {
     const total_layers = instanceData.computed_resource_claim?.total_layers;
     const offload_layers = instanceData.computed_resource_claim?.offload_layers;
+
     if (total_layers === offload_layers || !total_layers) {
       return null;
     }
@@ -640,7 +678,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
                 style={{
                   paddingLeft: '58px',
                   flexWrap: 'wrap',
-                  gap: '5px'
+                  gap: '8px'
                 }}
                 className="flex align-center"
               >

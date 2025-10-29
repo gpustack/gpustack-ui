@@ -139,7 +139,7 @@ export default {
   'models.form.check.claims3': 'このモデルには約{ram}のメモリが必要です。',
   'models.form.update.tips':
     '変更はインスタンスを削除して再作成した後にのみ適用されます。',
-  'models.table.download.progress': 'ダウンロード進行状況',
+  'models.table.download.progress': '進行状況',
   'models.table.button.apiAccessInfo': 'APIアクセス情報',
   'models.table.button.apiAccessInfo.tips':
     'このモデルをサードパーティアプリケーションと統合するには、以下の詳細を使用してください: アクセスURL、モデル名、APIキー。これらの資格情報は、モデルサービスの適切な接続と使用を確保するために必要です。',
@@ -227,13 +227,16 @@ export default {
   'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
   'models.form.mode.throughput': 'Throughput',
   'models.form.mode.latency': 'Latency',
-  'models.form.mode.baseline': 'Baseline',
+  'models.form.mode.baseline': 'Standard',
   'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',
   'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
   'models.form.mode.baseline.tips':
-    'the most compatible option with full precision.'
+    'the most compatible option with full precision.',
+  'models.form.draftModel.placeholder': 'Please select or enter a draft model',
+  'models.form.draftModel.tips':
+    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -294,9 +297,11 @@ export default {
 // 38. 'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
 // 39. 'models.form.mode.throughput': 'Throughput',
 // 40. 'models.form.mode.latency': 'Latency',
-// 41. 'models.form.mode.baseline': 'Baseline',
+// 41. 'models.form.mode.baseline': 'Standard',
 // 42. 'models.form.mode.throughput.tips': 'optimized for high throughput under high request concurrency.',
 // 43. 'models.form.mode.latency.tips': 'optimized for low latency under low request concurrency.',
-// 44. 'models.form.mode.baseline.tips': 'the most compatible option with full precision
+// 44. 'models.form.mode.baseline.tips': 'the most compatible option with full precision,
+// 45. 'models.form.draftModel.placeholder': 'Please select or enter a draft model',
+// 46. 'models.form.draftModel.tips': 'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
 
 // ========== End of To-Do List ==========

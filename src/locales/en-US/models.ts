@@ -140,7 +140,7 @@ export default {
     'The model will consume approximately {ram} RAM.',
   'models.form.update.tips':
     'Changes will only apply after you delete and recreate the instance.',
-  'models.table.download.progress': 'Download Progress',
+  'models.table.download.progress': 'Progress',
   'models.table.button.apiAccessInfo': 'API Access Info',
   'models.table.button.apiAccessInfo.tips': `To integrate this model with third-party applications, use the following details: access URL, model name, and API key. These credentials are required to ensure proper connection and usage of the model service.`,
   'models.table.apiAccessInfo.endpoint': 'Access URL',
@@ -227,11 +227,14 @@ export default {
   'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
   'models.form.mode.throughput': 'High-Throughput',
   'models.form.mode.latency': 'Low-Latency',
-  'models.form.mode.baseline': 'Baseline',
+  'models.form.mode.baseline': 'Standard',
   'models.form.mode.throughput.tips':
     'optimized for high throughput under high request concurrency.',
   'models.form.mode.latency.tips':
     'optimized for low latency under low request concurrency.',
   'models.form.mode.baseline.tips':
-    'Runs at full (original) precision and prioritizes compatibility.'
+    'Runs at full (original) precision and prioritizes compatibility.',
+  'models.form.draftModel.placeholder': 'Please select or enter a draft model',
+  'models.form.draftModel.tips':
+    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
 };

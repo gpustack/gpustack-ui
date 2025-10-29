@@ -1,3 +1,4 @@
+import AutoComlete from '@/components/seal-form/auto-complete';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInputNumber from '@/components/seal-form/input-number';
 import SealInput from '@/components/seal-form/seal-input';
@@ -41,14 +42,16 @@ const SpeculativeDecode = () => {
   };
 
   const handleSpeculativeEnabledChange = (e: any) => {
+    const speculativeConfig = form.getFieldValue('speculative_config');
+
     if (e.target.checked) {
       form.setFieldValue('speculative_config', {
         enabled: true,
-        algorithm: AlgorithmMap.Eagle3,
-        draft_model_name: null,
-        num_draft_tokens: 3,
-        ngram_min_match_length: 1,
-        ngram_max_match_length: 10
+        algorithm: speculativeConfig.algorithm || AlgorithmMap.Eagle3,
+        draft_model: speculativeConfig.draft_model || '',
+        num_draft_tokens: speculativeConfig.num_draft_tokens || 3,
+        ngram_min_match_length: speculativeConfig.ngram_min_match_length || 1,
+        ngram_max_match_length: speculativeConfig.ngram_max_match_length || 10
       });
     }
   };
@@ -100,19 +103,29 @@ const SpeculativeDecode = () => {
           </Form.Item>
           {algorithm === AlgorithmMap.Eagle3 && (
             <Form.Item<FormData>
-              name={['speculative_config', 'draft_model_name']}
+              name={['speculative_config', 'draft_model']}
               rules={[
                 {
                   required: true,
-                  message: getRuleMessage('select', 'models.form.draftModel')
+                  message: getRuleMessage(
+                    ['select', 'input'],
+                    'models.form.draftModel'
+                  )
                 }
               ]}
             >
-              <SealSelect
+              <AutoComlete
                 required
+                allowClear
                 label={intl.formatMessage({ id: 'models.form.draftModel' })}
+                placeholder={intl.formatMessage({
+                  id: 'models.form.draftModel.placeholder'
+                })}
+                description={intl.formatMessage({
+                  id: 'models.form.draftModel.tips'
+                })}
                 options={draftModelList}
-              ></SealSelect>
+              ></AutoComlete>
             </Form.Item>
           )}
           <Form.Item<FormData>

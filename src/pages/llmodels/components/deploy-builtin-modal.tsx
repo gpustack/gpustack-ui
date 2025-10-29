@@ -27,13 +27,13 @@ import CompatibilityAlert from './compatible-alert';
 
 const ModesMap: Record<string, string> = {
   latency: 'models.form.mode.latency',
-  baseline: 'models.form.mode.baseline',
+  standard: 'models.form.mode.baseline',
   throughput: 'models.form.mode.throughput'
 };
 
 const ModesTipsMap: Record<string, string> = {
   latency: 'models.form.mode.latency.tips',
-  baseline: 'models.form.mode.baseline.tips',
+  standard: 'models.form.mode.baseline.tips',
   throughput: 'models.form.mode.throughput.tips'
 };
 

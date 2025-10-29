@@ -84,7 +84,7 @@ export default {
       speculative_config: {
         enabled: true,
         algorithm: 'eagle3',
-        draft_model_name: 'Qwen3-30B-A3B-EAGLE3',
+        draft_model: 'Qwen3-30B-A3B-EAGLE3',
         num_draft_tokens: 8,
         ngram_min_match_length: null,
         ngram_max_match_length: null

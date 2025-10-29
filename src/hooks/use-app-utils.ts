@@ -1,23 +1,35 @@
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
 
+type MessageType = 'input' | 'select';
+
 const useAppUtils = () => {
   const intl = useIntl();
   const [messageApi, contextHolder] = message.useMessage();
 
   const getRuleMessage = (
-    type: 'input' | 'select',
+    type: MessageType | MessageType[],
     name: string,
     locale = true
   ) => {
     const nameStr = locale ? intl.formatMessage({ id: name }) : name;
+    // transform type to array
+    const typeList = Array.isArray(type) ? type : [type];
 
-    if (type === 'input') {
+    if (typeList.includes('select') && typeList.includes('input')) {
+      return intl.formatMessage(
+        { id: 'common.form.rule.selectInput' },
+        { name: nameStr }
+      );
+    }
+
+    if (typeList.includes('input')) {
       return intl.formatMessage(
         { id: 'common.form.rule.input' },
         { name: nameStr }
       );
     }
+
     return intl.formatMessage(
       { id: 'common.form.rule.select' },
       { name: nameStr }

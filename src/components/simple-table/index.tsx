@@ -73,4 +73,4 @@ const SimpleTabel: React.FC<SimpleTableProps> = (props) => {
   );
 };
 
-export default React.memo(SimpleTabel);
+export default SimpleTabel;

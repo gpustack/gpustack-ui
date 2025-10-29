@@ -15,6 +15,7 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import BackendParametersList from './backend-parameters-list';
 
 const BackendFields: React.FC = () => {
   const intl = useIntl();
@@ -153,6 +154,7 @@ const BackendFields: React.FC = () => {
           </Form.Item>
         </>
       )}
+      <BackendParametersList></BackendParametersList>
     </>
   );
 };

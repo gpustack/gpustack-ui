@@ -437,6 +437,15 @@ export const getBackendParamsTips = (backend: string) => {
     };
   }
 
+  if (backend === backendOptionsMap.SGLang) {
+    return {
+      backend: 'SGLang',
+      releases: '',
+      link: 'https://docs.sglang.ai/advanced_features/server_arguments.html',
+      version: 'v0.5.4'
+    };
+  }
+
   return {
     backend: 'vox-box',
     releases: 'https://github.com/gpustack/vox-box/releases',

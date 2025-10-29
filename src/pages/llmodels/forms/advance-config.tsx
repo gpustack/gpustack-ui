@@ -9,8 +9,7 @@ import { modelCategories, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import Backend from '../forms/backend';
-import BackendParametersList from '../forms/backend-parameters-list';
+import Backend from './backend';
 
 const AdvanceConfig = () => {
   const intl = useIntl();
@@ -64,7 +63,7 @@ const AdvanceConfig = () => {
         ></SealSelect>
       </Form.Item>
       <Backend></Backend>
-      <BackendParametersList></BackendParametersList>
+
       <Form.Item<FormData> name="env">
         <LabelSelector
           label={intl.formatMessage({

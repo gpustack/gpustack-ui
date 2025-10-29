@@ -322,13 +322,12 @@ export const modelLabels = [
   { label: 'Embedding', value: 'embedding_only' }
 ];
 
-// do not trigger form check compatibility
-export const excludeFields = [
+// do not trigger form check compatibility when these fields change
+export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'model_scope_model_id',
   'huggingface_repo_id',
   'huggingface_filename',
   'model_scope_file_path',
-  'replicas',
   'name',
   'description',
   'env',
@@ -350,11 +349,11 @@ export const excludeFields = [
   'extended_kv_cache.enabled'
 ];
 
-// ingore fields when compare old and new data
-export const updateIgnoreFields = ['categories', 'replicas', 'description'];
+// ignore to compare old and new data when these fields change in updating model
+export const DO_NOT_NOTIFY_RECREATE = ['categories', 'replicas', 'description'];
 
 // if some fields need to trigger manual check, add them here
-export const updateExcludeFields = [
+export const TRIGGER_CHECK_MANUAL = [
   'model_scope_model_id',
   'huggingface_repo_id',
   'huggingface_filename',

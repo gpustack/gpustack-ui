@@ -8,8 +8,8 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import ColumnWrapper from '../../_components/column-wrapper';
 import {
   deployFormKeyMap,
-  ScheduleValueMap,
-  updateIgnoreFields
+  DO_NOT_NOTIFY_RECREATE,
+  ScheduleValueMap
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormData } from '../config/types';
@@ -65,6 +65,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   const setOriginalFormData = () => {
     if (!originFormData.current) {
       originFormData.current = _.cloneDeep(formData);
+      if (!originFormData.current.extended_kv_cache?.enabled) {
+        originFormData.current.extended_kv_cache = {
+          enabled: false
+        };
+      }
+      // TODO: set speculative_config
     }
   };
 
@@ -80,6 +86,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     return undefined;
   };
 
+  // this function is used compare form data changes in updating model, and show warning if needed
   const handleOnValuesChange = _.debounce((data: any) => {
     const formdata = formRef.current?.getFieldsValue?.();
     console.log('handleOnValuesChange:', formdata);
@@ -103,13 +110,13 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
     }
 
     const originalData = _.pick(originFormData.current, Object.keys(alldata));
-    console.log('alldata:', formdata, alldata, originalData);
 
     const isEqual = _.isEqualWith(
-      _.omit(alldata, updateIgnoreFields),
-      _.omit(originalData, updateIgnoreFields),
+      _.omit(alldata, DO_NOT_NOTIFY_RECREATE),
+      _.omit(originalData, DO_NOT_NOTIFY_RECREATE),
       customizer
     );
+
     if (isEqual) {
       setWarningStatus({
         show: false,
@@ -175,7 +182,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleManulOnValuesChange = (changedValues: any, allValues: any) => {
-    console.log('handleManulOnValuesChange:', { changedValues, allValues });
     handleOnValuesChange({
       changedValues,
       allValues,

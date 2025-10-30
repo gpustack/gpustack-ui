@@ -4,7 +4,7 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
-import { deployFormKeyMap, modelSourceMap } from '../config';
+import { DeployFormKeyMap, modelSourceMap } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -21,7 +21,7 @@ const HuggingFaceForm: React.FC = () => {
       modelSourceMap.huggingface_value,
       modelSourceMap.modelscope_value
     ].includes(source) ||
-    formKey === deployFormKeyMap.catalog
+    formKey === DeployFormKeyMap.CATALOG
   ) {
     return null;
   }

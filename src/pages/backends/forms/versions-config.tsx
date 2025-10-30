@@ -14,11 +14,9 @@ import { ListItem } from '../config/types';
 
 // version must be endwith '-custom'
 
-const pattern = /-custom$/;
-
 const Box = styled.div`
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 200px 1fr;
   gap: 16px;
 `;
 
@@ -280,26 +278,12 @@ const VersionsForm: React.FC<AddModalProps> = ({
                         {
                           required: true,
                           message: getRuleMessage(`input`, 'backend.version')
-                        },
-                        currentData?.is_built_in
-                          ? {
-                              pattern: pattern,
-                              message: intl.formatMessage({
-                                id: 'backend.version.rules.builtin'
-                              })
-                            }
-                          : {}
+                        }
                       ]}
                     >
                       <SealInput.Input
                         trim
-                        description={
-                          currentData?.is_built_in
-                            ? intl.formatMessage({
-                                id: 'backend.version.no.tips'
-                              })
-                            : ''
-                        }
+                        addAfter="-custom"
                         onChange={handleVersionChange}
                         label={intl.formatMessage({ id: 'backend.version' })}
                         required

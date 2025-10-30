@@ -2,7 +2,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
 import { Form } from 'antd';
 import React from 'react';
-import { deployFormKeyMap } from '../config';
+import { DeployFormKeyMap } from '../config';
 import { useCatalogFormContext, useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
@@ -19,7 +19,7 @@ const CatalogForm: React.FC = () => {
   } = catalogFormCtx;
 
   if (
-    formKey !== deployFormKeyMap.catalog &&
+    formKey !== DeployFormKeyMap.CATALOG &&
     !sizeOptions?.length &&
     !quantizationOptions?.length
   ) {

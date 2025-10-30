@@ -53,6 +53,20 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [yamlContent, setYamlContent] = useState<string>('');
   const [formContent, setFormContent] = useState<FormData>({} as FormData);
 
+  const genertateCurrentData = (values: ListItem): ListItem => {
+    const data = { ...values };
+    data.version_configs = Object.entries(data.version_configs || {}).reduce(
+      (acc, [key, value]) => {
+        const version = key.replace(/-custom$/, '');
+        acc[version] = { ...value };
+        return acc;
+      },
+      {} as any
+    );
+
+    return data;
+  };
+
   const onOk = () => {
     if (activeKey === 'yaml') {
       const content = editorRef.current?.getContent();
@@ -90,9 +104,12 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   useEffect(() => {
-    const iniFormContent = (values: any) => {
+    const iniFormContent = (data: ListItem) => {
+      const values: any = genertateCurrentData(data);
+
+      // custom versions
       const versionConfigs = Object.keys(values.version_configs || {}).map(
-        (key) => ({
+        (key: string) => ({
           version_no: key,
           image_name: values.version_configs?.[key]?.image_name,
           run_command: values.version_configs?.[key]?.run_command,
@@ -101,6 +118,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         })
       );
 
+      // built-in versions
       const builtInVersions = Object.keys(
         values.built_in_version_configs || {}
       ).map((key) => ({

@@ -19,6 +19,8 @@ export default {
   'backend.mode.yaml': 'YAML Mode',
   'backend.form.healthCheckPath': 'Health Check Path',
   'backend.form.defaultExecuteCommand': 'Default Execution Command',
+  'backend.form.defaultExecuteCommand.tips':
+    '{{model_path}} is the model path, and {{port}} is the service port. These variable names cannot be modified.',
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',
   'backend.form.versionConfig': 'Versions Config',
   'backend.form.addParameter': 'Add Parameter',
@@ -27,5 +29,5 @@ export default {
   'backend.versionInfo.autoImage': 'Automatically selected at runtime',
   'backend.version.rules.builtin': 'Must end with "-custom"',
   'backend.version.no.tips':
-    'Built-in backend versions must end with "-custom".'
+    'The name of a custom version must end with "-custom."'
 };

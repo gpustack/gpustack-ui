@@ -7,7 +7,7 @@ import _ from 'lodash';
 import React, { useEffect, useMemo, useRef } from 'react';
 import ColumnWrapper from '../../_components/column-wrapper';
 import {
-  deployFormKeyMap,
+  DeployFormKeyMap,
   DO_NOT_NOTIFY_RECREATE,
   ScheduleValueMap
 } from '../config';
@@ -290,7 +290,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
         }
       >
         <DataForm
-          formKey={deployFormKeyMap.deployment}
+          formKey={DeployFormKeyMap.DEPLOYMENT}
           initialValues={formData}
           source={formData.source || ''}
           action={action}

@@ -33,6 +33,21 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
       }
     };
 
+    const handleOnFinish = (values: FormData) => {
+      const data = { ...values };
+      data.version_configs = data.version_configs?.map((item) => {
+        if (item.version_no) {
+          return {
+            ...item,
+            version_no: `${item.version_no}-custom`
+          };
+        }
+        return item;
+      });
+
+      onFinish(data);
+    };
+
     useEffect(() => {
       if (currentData) {
         form.setFieldsValue(currentData);
@@ -61,7 +76,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
       <Form
         name="basicForm"
         form={form}
-        onFinish={onFinish}
+        onFinish={handleOnFinish}
         preserve={false}
         scrollToFirstError={true}
         initialValues={_.omit(currentData, ['version_configs'])}

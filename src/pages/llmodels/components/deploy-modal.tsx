@@ -11,15 +11,15 @@ import _ from 'lodash';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
-import { defaultFormValues, deployFormKeyMap, modelSourceMap } from '../config';
+import { defaultFormValues, DeployFormKeyMap, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormData, SourceType } from '../config/types';
 import DataForm from '../forms';
 import {
   MessageStatus,
-  WarningStausOptions,
   useCheckCompatibility,
-  useSelectModel
+  useSelectModel,
+  WarningStausOptions
 } from '../hooks';
 import useCheckBackend from '../hooks/use-check-backend';
 import CompatibilityAlert from './compatible-alert';
@@ -635,7 +635,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                   </TitleWrapper>
                 )}
               <DataForm
-                formKey={deployFormKeyMap.deployment}
+                formKey={DeployFormKeyMap.DEPLOYMENT}
                 initialValues={initialValues}
                 source={source}
                 action={action}

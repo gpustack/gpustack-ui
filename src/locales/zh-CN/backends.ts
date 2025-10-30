@@ -19,6 +19,8 @@ export default {
   'backend.mode.yaml': 'YAML 模式',
   'backend.form.healthCheckPath': '健康检查路径',
   'backend.form.defaultExecuteCommand': '默认执行命令',
+  'backend.form.defaultExecuteCommand.tips':
+    '{{model_path}} 为模型文件路径，{{port}} 为服务端口，这两个变量名不可更改。',
   'backend.form.defaultBackendParameters': '默认后端参数',
   'backend.form.versionConfig': '版本配置',
   'backend.form.addParameter': '添加参数',
@@ -26,5 +28,5 @@ export default {
   'backend.noVersion': '未找到版本',
   'backend.versionInfo.autoImage': '运行时自动选择',
   'backend.version.rules.builtin': '须以 "-custom" 结尾',
-  'backend.version.no.tips': '内置的后端版本须以 "-custom" 结尾。'
+  'backend.version.no.tips': '自定义版本名称必须以 "-custom" 结尾。'
 };

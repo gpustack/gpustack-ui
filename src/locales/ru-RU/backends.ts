@@ -19,6 +19,8 @@ export default {
   'backend.mode.yaml': 'Режим YAML',
   'backend.form.healthCheckPath': 'Путь проверки здоровья',
   'backend.form.defaultExecuteCommand': 'Команда выполнения по умолчанию',
+  'backend.form.defaultExecuteCommand.tips':
+    '{{model_path}} is the model path, and {{port}} is the service port. These variable names cannot be modified.',
   'backend.form.defaultBackendParameters': 'Параметры бэкенда по умолчанию',
   'backend.form.versionConfig': 'Конфигурация версий',
   'backend.form.addParameter': 'Добавить параметр',
@@ -27,9 +29,10 @@ export default {
   'backend.versionInfo.autoImage': 'Автоматически выбор во время запуска',
   'backend.version.rules.builtin': 'Должен заканчиваться на "-custom"',
   'backend.version.no.tips':
-    'Built-in backend versions must end with "-custom".'
+    'The name of a custom version must end with "-custom."'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'backend.version.no.tips': 'Built-in backend versions must end with "-custom".'
+// 1. 'backend.form.defaultExecuteCommand.tips': '{{model_path}} is the model path, and {{port}} is the service port. These variable names cannot be modified.'
+// 2. 'backend.version.no.tips': 'The name of a custom version must end with "-custom."'
 // ========== End of To-Do List ==========

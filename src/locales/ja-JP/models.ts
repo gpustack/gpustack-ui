@@ -73,6 +73,8 @@ export default {
     '例: --ctx-size=8192（=で名前と値を分ける）',
   'models.form.backend_parameters.vllm.placeholder':
     '例: --max-model-len=8192（=で名前と値を分ける）',
+  'models.form.backend_parameters.sglang.placeholder':
+    '例: --max-total-tokens=8192（=で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips': '詳細な{backend}パラメータ情報',
   'models.logs.pagination.prev': '前の{lines}行',
   'models.logs.pagination.next': '次の{lines}行',

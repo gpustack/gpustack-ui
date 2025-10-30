@@ -12,7 +12,7 @@ import ColumnWrapper from '../../_components/column-wrapper';
 import { queryCatalogItemSpec } from '../apis';
 import {
   defaultFormValues,
-  deployFormKeyMap,
+  DeployFormKeyMap,
   modelCategoriesMap,
   sourceOptions
 } from '../config';
@@ -603,7 +603,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 onOk={handleOk}
                 ref={form}
                 isGGUF={isGGUF}
-                formKey={deployFormKeyMap.catalog}
+                formKey={DeployFormKeyMap.CATALOG}
                 sourceDisable={false}
                 sourceList={sourceList}
                 clusterList={clusterList}

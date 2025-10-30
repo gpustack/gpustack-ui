@@ -53,9 +53,12 @@ const BasicForm: React.FC<AddModalProps> = ({ action }) => {
         <SealTextArea
           scaleSize={true}
           alwaysFocus={true}
+          description={intl.formatMessage({
+            id: 'backend.form.defaultExecuteCommand.tips'
+          })}
           placeholder={intl.formatMessage(
             { id: 'common.help.eg' },
-            { content: 'vllm serve {{model}} --port {{port}}' }
+            { content: 'vllm serve {{model_path}} --port {{port}}' }
           )}
           autoSize={{ minRows: 2, maxRows: 4 }}
           label={intl.formatMessage({

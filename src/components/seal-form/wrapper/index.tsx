@@ -170,9 +170,13 @@ const Extra = styled.div`
 
 const AddAfter = styled.div`
   position: relative;
-  color: var(--ant-color-text-quaternary);
+  color: var(--ant-color-text-tertiary);
   font-size: var(--font-size-base);
-  padding-right: calc(var(--ant-padding-sm) - 1px);
+  padding-inline: calc(var(--ant-padding-sm) - 1px);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: var(--ant-color-fill-secondary);
 `;
 
 // for wrapper

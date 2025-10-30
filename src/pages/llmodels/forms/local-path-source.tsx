@@ -5,7 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, { useRef } from 'react';
-import { deployFormKeyMap, localPathTipsList, modelSourceMap } from '../config';
+import { DeployFormKeyMap, localPathTipsList, modelSourceMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -28,7 +28,7 @@ const LocalPathForm: React.FC = () => {
 
   if (
     ![modelSourceMap.local_path_value].includes(source) ||
-    formKey === deployFormKeyMap.catalog
+    formKey === DeployFormKeyMap.CATALOG
   ) {
     return null;
   }

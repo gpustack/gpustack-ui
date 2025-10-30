@@ -7,7 +7,7 @@ import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
 import styled from 'styled-components';
 import {
-  deployFormKeyMap,
+  DeployFormKeyMap,
   DO_NOT_NOTIFY_RECREATE,
   DO_NOT_TRIGGER_CHECK_COMPATIBILITY,
   modelSourceMap,
@@ -132,7 +132,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     if (
       modelSourceMap.local_path_value === source ||
       action === PageAction.EDIT ||
-      formKey === deployFormKeyMap.catalog
+      formKey === DeployFormKeyMap.CATALOG
     ) {
       return {
         top: 0,

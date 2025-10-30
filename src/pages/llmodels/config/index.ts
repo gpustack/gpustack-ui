@@ -1,7 +1,6 @@
 import { StatusMaps } from '@/config';
 import { EditOutlined } from '@ant-design/icons';
 import { backendOptionsMap } from './backend-parameters';
-import { DeployFormKey } from './types';
 
 export const backendTipsList = [
   {
@@ -357,30 +356,6 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
 // ignore to compare old and new data when these fields change in updating model
 export const DO_NOT_NOTIFY_RECREATE = ['categories', 'replicas', 'description'];
 
-export const formFields = [
-  'name',
-  'model_scope_model_id',
-  'huggingface_repo_id',
-  'huggingface_filename',
-  'model_scope_file_path',
-  'local_path',
-  'ollama_library_model_name',
-  'backend',
-  'replicas',
-  'source',
-  'description',
-  'worker_selector',
-  'cpu_offloading',
-  'distributed_inference_across_workers',
-  'gpu_selector',
-  'gpu_ids',
-  'categories',
-  'backend_version',
-  'env',
-  'scheduleType',
-  'restart_on_error'
-];
-
 export const defaultFormValues = {
   replicas: 1,
   description: '',
@@ -455,7 +430,8 @@ export const scheduleTypeTips = [
   }
 ];
 
-export const deployFormKeyMap: Record<string, DeployFormKey> = {
-  deployment: 'deployment',
-  catalog: 'catalog'
-};
+// transform to enum type
+export enum DeployFormKeyMap {
+  DEPLOYMENT = 'deployment',
+  CATALOG = 'catalog'
+}

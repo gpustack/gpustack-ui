@@ -101,17 +101,17 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
     const getContent = () => {
       try {
         const content = editorRef.current?.getValue();
-        if (actionStatus.isBuiltIn) {
-          const jsonData = yaml2Json(content);
-          const exsistingVersions = Object.keys(jsonData.version_configs || {});
-          const invalidVersion = exsistingVersions.find(
-            (v) => !v.endsWith('-custom')
-          );
-          if (invalidVersion) {
-            setError(intl.formatMessage({ id: 'backend.version.no.tips' }));
-            return false;
-          }
+
+        const jsonData = yaml2Json(content);
+        const exsistingVersions = Object.keys(jsonData.version_configs || {});
+        const invalidVersion = exsistingVersions.find(
+          (v) => !v.endsWith('-custom')
+        );
+        if (invalidVersion) {
+          setError(intl.formatMessage({ id: 'backend.version.no.tips' }));
+          return false;
         }
+
         return content;
       } catch (error) {
         return false;

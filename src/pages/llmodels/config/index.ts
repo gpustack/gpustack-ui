@@ -59,6 +59,10 @@ export const backendParamsHolderTips = {
     holder: 'models.form.backend_parameters.vllm.placeholder',
     tooltip: 'models.form.backend_parameters.vllm.tips'
   },
+  [backendOptionsMap.SGLang]: {
+    holder: 'models.form.backend_parameters.sglang.placeholder',
+    tooltip: ''
+  },
   [backendOptionsMap.voxBox]: null
 };
 

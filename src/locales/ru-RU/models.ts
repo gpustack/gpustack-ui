@@ -71,6 +71,8 @@ export default {
     'например: --ctx-size=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.vllm.placeholder':
     'например: --max-model-len=8192（параметр и значение разделены знаком =）',
+  'models.form.backend_parameters.sglang.placeholder':
+    'например: --max-total-tokens=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.vllm.tips':
     'Подробнее о параметрах {backend}',
   'models.logs.pagination.prev': 'Предыдущие {lines} строк',

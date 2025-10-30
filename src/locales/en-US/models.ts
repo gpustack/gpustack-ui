@@ -71,6 +71,8 @@ export default {
     'e.g., --ctx-size=8192 (use = to separate name and value)',
   'models.form.backend_parameters.vllm.placeholder':
     'e.g., --max-model-len=8192 (use = to separate name and value)',
+  'models.form.backend_parameters.sglang.placeholder':
+    'e.g., --max-total-tokens=8192 (use = to separate name and value)',
   'models.form.backend_parameters.vllm.tips':
     'More {backend} parameter details',
   'models.logs.pagination.prev': 'Previous {lines} Lines',

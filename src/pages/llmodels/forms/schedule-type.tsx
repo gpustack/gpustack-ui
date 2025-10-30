@@ -51,20 +51,13 @@ const scheduleTypeTips = [
   }
 ];
 
-const gpuAllocateTypeTips = [
+const GPUsPerReplicaTips = [
   {
     title: {
-      text: 'models.form.gpusAllocationType.auto',
+      text: 'common.options.auto',
       locale: true
     },
     tips: 'models.form.gpusAllocationType.auto.tips'
-  },
-  {
-    title: {
-      text: 'models.form.gpusAllocationType.custom',
-      locale: true
-    },
-    tips: 'models.form.gpusAllocationType.custom.tips'
   }
 ];
 
@@ -98,7 +91,11 @@ const ScheduleTypeForm: React.FC = () => {
   };
 
   const handleGpusPerReplicasChange = (val: string | number | null) => {
-    form.setFieldValue(['gpu_selector', 'gpus_per_replica'], val);
+    if (val === null) {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], -1);
+    } else {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], val);
+    }
 
     onValuesChange?.({}, form.getFieldsValue());
   };
@@ -126,23 +123,6 @@ const ScheduleTypeForm: React.FC = () => {
     }
     form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
     onValuesChange?.({}, form.getFieldsValue());
-  };
-
-  const handleOnStepReplica = async (value: number | string | null) => {
-    if (value === null) {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 200);
-      });
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], 1);
-      return;
-    }
-
-    const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0 && n !== 0; // check power of two
-    if (!isPowerOfTwo(value as number)) {
-      const newValue = Math.pow(2, Math.round(Math.log2(value as number)));
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
-      onValuesChange?.({}, form.getFieldsValue());
-    }
   };
 
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {
@@ -246,15 +226,19 @@ const ScheduleTypeForm: React.FC = () => {
                   { label: '4', value: 4 },
                   { label: '8', value: 8 }
                 ]}
+                description={
+                  <TooltipList list={GPUsPerReplicaTips}></TooltipList>
+                }
                 popupRender={(originNode) => (
                   <div>
                     {originNode}
                     <InputWrapper>
                       <InputNumber
+                        min={1}
                         step={1}
                         style={{ width: '100%' }}
                         defaultValue={
-                          GPUsPerReplicas === null ? -1 : GPUsPerReplicas
+                          GPUsPerReplicas === -1 ? null : GPUsPerReplicas
                         }
                         value={GPUsPerReplicas === -1 ? null : GPUsPerReplicas}
                         onChange={handleGpusPerReplicasChange}
@@ -263,7 +247,6 @@ const ScheduleTypeForm: React.FC = () => {
                     </InputWrapper>
                   </div>
                 )}
-                onChange={handleOnStepReplica}
               />
             </Form.Item>
           </>

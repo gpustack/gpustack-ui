@@ -9,6 +9,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
 import { sourceOptions } from '../config';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import CatalogFrom from './catalog';
 import LocalPathSource from './local-path-source';
@@ -34,10 +35,17 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
   } = props;
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
+  const { onValuesChange } = useFormContext();
   const form = Form.useFormInstance();
 
   const handleOnSourceChange = (val: string) => {
     onSourceChange?.(val);
+  };
+
+  const handleReplicasChange = (val: number) => {
+    if (val > 0) {
+      onValuesChange?.({}, form.getFieldsValue());
+    }
   };
 
   const clusterOptions = useMemo(() => {
@@ -126,6 +134,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
         ]}
       >
         <SealInput.Number
+          onChange={handleReplicasChange}
           style={{ width: '100%' }}
           label={intl.formatMessage({
             id: 'models.form.replicas'

@@ -326,12 +326,13 @@ export const modelLabels = [
   { label: 'Embedding', value: 'embedding_only' }
 ];
 
-// do not trigger form check compatibility when these fields change
+// do not trigger form check compatibility when these fields change, maybe triggered manually
 export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'model_scope_model_id',
   'huggingface_repo_id',
   'huggingface_filename',
   'model_scope_file_path',
+  'replicas',
   'name',
   'description',
   'env',
@@ -355,27 +356,6 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
 
 // ignore to compare old and new data when these fields change in updating model
 export const DO_NOT_NOTIFY_RECREATE = ['categories', 'replicas', 'description'];
-
-// if some fields need to trigger manual check, add them here
-export const TRIGGER_CHECK_MANUAL = [
-  'model_scope_model_id',
-  'huggingface_repo_id',
-  'huggingface_filename',
-  'model_scope_file_path',
-  'description',
-  'source',
-  'worker_selector',
-  'backend_parameters',
-  'local_path',
-  'backend_version',
-  'ollama_library_model_name',
-  'backend',
-  'gpu_selector',
-  'categories',
-  'env',
-  'replicas',
-  'extended_kv_cache.enabled'
-];
 
 export const formFields = [
   'name',

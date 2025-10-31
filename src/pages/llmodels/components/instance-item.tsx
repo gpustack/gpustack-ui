@@ -210,7 +210,7 @@ const RenderWorkerDownloading = (props: {
     !severList.length ||
     backend === backendOptionsMap.llamaBox;
 
-  if (isWorkerNotDownloading && !instanceData.draft_model_download_progress) {
+  if (isWorkerNotDownloading) {
     return null;
   }
   return (
@@ -239,10 +239,8 @@ const RenderWorkerDownloading = (props: {
         size={16}
         strokeColor="var(--ant-color-success)"
         percent={
-          instanceData.draft_model_download_progress ||
           _.find(severList, (item: any) => item.download_progress < 100)
-            ?.download_progress ||
-          0
+            ?.download_progress || 0
         }
       />
     </Tooltip>

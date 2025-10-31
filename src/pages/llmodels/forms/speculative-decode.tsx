@@ -6,7 +6,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { queryDraftModelList } from '../apis';
 import { FormData } from '../config/types';
 
@@ -28,6 +28,7 @@ const SpeculativeDecode = () => {
   const [draftModelList, setDraftModelList] = useState<
     Global.BaseOption<string>[]
   >([]);
+  const speculativeConfigRef = useRef<any>({});
 
   const fetchDraftModels = async () => {
     const response = await queryDraftModelList({
@@ -42,17 +43,20 @@ const SpeculativeDecode = () => {
   };
 
   const handleSpeculativeEnabledChange = (e: any) => {
-    const speculativeConfig = form.getFieldValue('speculative_config');
-
     if (e.target.checked) {
       form.setFieldValue('speculative_config', {
         enabled: true,
-        algorithm: speculativeConfig.algorithm || AlgorithmMap.Eagle3,
-        draft_model: speculativeConfig.draft_model || '',
-        num_draft_tokens: speculativeConfig.num_draft_tokens || 3,
-        ngram_min_match_length: speculativeConfig.ngram_min_match_length || 1,
-        ngram_max_match_length: speculativeConfig.ngram_max_match_length || 10
+        algorithm:
+          speculativeConfigRef.current.algorithm || AlgorithmMap.Eagle3,
+        draft_model: speculativeConfigRef.current.draft_model || '',
+        num_draft_tokens: speculativeConfigRef.current.num_draft_tokens || 3,
+        ngram_min_match_length:
+          speculativeConfigRef.current.ngram_min_match_length || 1,
+        ngram_max_match_length:
+          speculativeConfigRef.current.ngram_max_match_length || 10
       });
+    } else {
+      speculativeConfigRef.current = form.getFieldValue('speculative_config');
     }
   };
 

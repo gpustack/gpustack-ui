@@ -70,7 +70,12 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
           enabled: false
         };
       }
-      // TODO: set speculative_config
+
+      if (!originFormData.current.speculative_config?.enabled) {
+        originFormData.current.speculative_config = {
+          enabled: false
+        };
+      }
     }
   };
 

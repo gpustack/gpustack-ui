@@ -392,9 +392,11 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const { allValues, source } = params;
+    console.log('handleOnValuesChange', allValues);
     if (
       _.isEqual(cacheFormValuesRef.current, allValues) ||
-      noLocalPathValue(allValues)
+      noLocalPathValue(allValues) ||
+      !allValues.replicas
     ) {
       console.log('No changes detected, skipping evaluation.');
       return;

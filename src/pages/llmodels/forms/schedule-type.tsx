@@ -81,39 +81,12 @@ const ScheduleTypeForm: React.FC = () => {
     }
   };
 
-  const handleGpusPerReplicasChange = (val: string | number | null) => {
-    if (val === null) {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], -1);
-    } else {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], val);
-    }
-
-    onValuesChange?.({}, form.getFieldsValue());
-  };
-
   const handleGpuSelectorChange = (value: any[]) => {
     if (value.length > 0) {
       onValuesChange?.({}, form.getFieldsValue());
     } else {
       clearCacheFormValues?.();
     }
-  };
-
-  const handleOnStepReplicaStep = (
-    value: number | string | null,
-    info: { offset: number | string | null; type: 'up' | 'down' }
-  ) => {
-    let newValue = value;
-    const isPowerOfTwo = (n: number) => (n & (n - 1)) === 0 && n !== 0; // check power of two
-    if (!isPowerOfTwo(value as number)) {
-      if (info.type === 'up') {
-        newValue = Math.pow(2, Math.ceil(Math.log2(value as number)));
-      } else {
-        newValue = Math.pow(2, Math.floor(Math.log2(value as number)));
-      }
-    }
-    form.setFieldValue(['gpu_selector', 'gpus_per_replica'], newValue);
-    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {

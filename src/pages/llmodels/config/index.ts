@@ -331,7 +331,6 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'huggingface_repo_id',
   'huggingface_filename',
   'model_scope_file_path',
-  'replicas',
   'name',
   'description',
   'env',

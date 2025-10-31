@@ -77,7 +77,7 @@ const ScheduleTypeForm: React.FC = () => {
       return;
     }
     if (value === ScheduleValueMap.Manual) {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], -1);
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
     }
   };
 
@@ -180,10 +180,11 @@ const ScheduleTypeForm: React.FC = () => {
                 label={intl.formatMessage({
                   id: 'models.form.gpusperreplica'
                 })}
+                allowNull
                 options={[
                   {
                     label: intl.formatMessage({ id: 'common.options.auto' }),
-                    value: -1
+                    value: null
                   },
                   { label: '1', value: 1 },
                   { label: '2', value: 2 },

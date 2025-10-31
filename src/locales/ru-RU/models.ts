@@ -211,15 +211,14 @@ export default {
   'models.form.kvCache.tips':
     'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.',
   'models.form.kvCache.tips2':
-    'KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
+    'Extended KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
   'models.form.scheduling': 'Scheduling',
   'models.form.ramRatio': 'RAM-to-VRAM Ratio',
   'models.form.ramSize': 'Maximum RAM Size (GiB)',
   'models.form.ramRatio.tips':
     'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
   'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-  'models.form.chunkSize.tips':
-    'Number of tokens per KV cache chunk. A larger chunk size may improve throughput but increase memory usage.'
+  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -228,11 +227,11 @@ export default {
 // 4. 'models.mymodels.status.active': 'Active'
 // 5. 'models.form.remoteURL.tips': 'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
 // 6. 'models.form.kvCache.tips': 'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.'
-// 7. 'models.form.kvCache.tips2': 'KV cache is only supported when using built-in inference backends (vLLM or SGLang).';
+// 7. 'models.form.kvCache.tips2': 'Extended KV cache is only supported when using built-in inference backends (vLLM or SGLang).';
 // 8. 'models.form.scheduling': 'Scheduling',
 // 9. 'models.form.ramRatio': 'RAM-to-VRAM Ratio',
 // 10. 'models.form.ramSize': 'Maximum RAM Size (GiB)',
 // 11. 'models.form.ramRatio.tips': 'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
 // 12. 'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-// 13. 'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk. A larger chunk size may improve throughput but increase memory usage.'
+// 13. 'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
 // ========== End of To-Do List ==========

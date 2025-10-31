@@ -158,7 +158,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       return {
         gpu_selector: {
           gpu_ids: [gpuids[0]],
-          gpus_per_replica: -1
+          gpus_per_replica: null
         }
       };
     }
@@ -352,7 +352,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         name="deployModel"
         form={form}
         onFinish={handleOk}
-        preserve={true}
+        preserve={false}
         clearOnDestroy={true}
         onValuesChange={handleOnValuesChange}
         onFinishFailed={handleOnFinishFailed}

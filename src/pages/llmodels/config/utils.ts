@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormData } from './types';
 
+// generate the gpu_selector field for form initial values, when eidting a model
 export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
   const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
   if (gpu_ids.length === 0) {
@@ -34,13 +35,13 @@ export const generateGPUSelector = (data: any, gpuOptions: any[]) => {
 };
 
 /**
- * before submit the form, generate the gpu_selector field
+ * before submit the form, generate the gpu_selector field, and clear worker_selector if needed
  * @param data
  * @returns
  */
 export const generateGPUIds = (data: FormData) => {
   const gpu_ids = _.get(data, 'gpu_selector.gpu_ids', []);
-  console.log('generateGPUIds', gpu_ids);
+
   if (!gpu_ids.length) {
     return {
       gpu_selector: null
@@ -63,10 +64,8 @@ export const generateGPUIds = (data: FormData) => {
   return {
     gpu_selector: {
       gpu_ids: result || [],
-      gpus_per_replica:
-        data.gpu_selector?.gpus_per_replica === -1
-          ? null
-          : data.gpu_selector?.gpus_per_replica
-    }
+      gpus_per_replica: data.gpu_selector?.gpus_per_replica || null
+    },
+    worker_selector: null
   };
 };

@@ -2,7 +2,7 @@ import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInputNumber from '@/components/seal-form/input-number';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -13,18 +13,20 @@ const KVCacheForm = () => {
   const { onValuesChange, backendOptions } = useFormContext();
   const kvCacheEnabled = Form.useWatch(['extended_kv_cache', 'enabled'], form);
   const backend = Form.useWatch('backend', form);
+  const configCacheRef = useRef<any>({});
 
   const handleOnChange = async (e: any) => {
-    const extendedKVCache = form.getFieldValue('extended_kv_cache');
     if (e.target.checked) {
       form.setFieldsValue({
         extended_kv_cache: {
           enabled: true,
-          chunk_size: extendedKVCache?.chunk_size,
-          ram_ratio: extendedKVCache?.ram_ratio || 1.2,
-          ram_size: extendedKVCache?.ram_size
+          chunk_size: configCacheRef.current?.chunk_size,
+          ram_ratio: configCacheRef.current?.ram_ratio || 1.2,
+          ram_size: configCacheRef.current?.ram_size
         }
       });
+    } else {
+      configCacheRef.current = form.getFieldValue('extended_kv_cache');
     }
     await new Promise((resolve) => {
       setTimeout(resolve, 200);

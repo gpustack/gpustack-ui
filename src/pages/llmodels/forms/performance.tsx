@@ -3,7 +3,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { useIntl } from '@umijs/max';
 import { Form, Select } from 'antd';
 import React from 'react';
-import { deployFormKeyMap } from '../config';
+import { DeployFormKeyMap } from '../config';
 import { useCatalogFormContext, useFormContext } from '../config/form-context';
 import KVCacheForm from './kv-cache';
 import SpeculativeDecode from './speculative-decode';
@@ -41,7 +41,7 @@ const Performance: React.FC = () => {
   return (
     <>
       <div data-field="extended_kv_cache.enabled"></div>
-      {formKey === deployFormKeyMap.catalog && (
+      {formKey === DeployFormKeyMap.CATALOG && (
         <Form.Item name="mode">
           <SealSelect
             onChange={onModeChange}

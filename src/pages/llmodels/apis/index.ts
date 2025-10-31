@@ -255,20 +255,22 @@ export async function queryModelScopeModelFiles(
 // list models from huggingface
 export async function queryHuggingfaceModels(
   params: {
+    limit?: number;
     search: {
       query: string;
-      tags: string[];
+      tags?: string[];
       sort?: string;
       task?: PipelineType;
     };
   },
   options?: any
 ) {
+  console.log('params', params);
   const result = [];
   for await (const model of listModels({
     ...params,
     ...options,
-    limit: 500,
+    limit: params.limit || 500,
     additionalFields: ['sha', 'tags'],
     fetch(_url: string, config: any) {
       const url = params.search.sort

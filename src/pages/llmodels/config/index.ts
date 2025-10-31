@@ -349,7 +349,8 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'gpu_selector.gpu_ids',
   'run_command',
   'image_name',
-  'extended_kv_cache.enabled'
+  'extended_kv_cache.enabled',
+  'speculative_config.draft_model'
 ];
 
 // ignore to compare old and new data when these fields change in updating model

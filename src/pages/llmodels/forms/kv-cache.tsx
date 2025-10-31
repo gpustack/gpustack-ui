@@ -1,6 +1,5 @@
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInputNumber from '@/components/seal-form/input-number';
-import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
@@ -21,9 +20,9 @@ const KVCacheForm = () => {
       form.setFieldsValue({
         extended_kv_cache: {
           enabled: true,
-          chunk_size: extendedKVCache?.chunk_size || 256,
-          max_local_cpu_size: extendedKVCache?.max_local_cpu_size || 10,
-          remote_url: extendedKVCache?.remote_url || ''
+          chunk_size: extendedKVCache?.chunk_size,
+          ram_ratio: extendedKVCache?.ram_ratio || 1.2,
+          ram_size: extendedKVCache?.ram_size
         }
       });
     }
@@ -76,11 +75,26 @@ const KVCacheForm = () => {
       </div>
       {kvCacheEnabled && (
         <>
-          <Form.Item<FormData>
-            name={['extended_kv_cache', 'max_local_cpu_size']}
-          >
+          <Form.Item<FormData> name={['extended_kv_cache', 'ram_ratio']}>
             <SealInputNumber
-              label={intl.formatMessage({ id: 'models.form.maxCPUSize' })}
+              label={intl.formatMessage({ id: 'models.form.ramRatio' })}
+              description={intl.formatMessage({
+                id: 'models.form.ramRatio.tips'
+              })}
+              min={0}
+              step={0.1}
+              precision={1}
+            />
+          </Form.Item>
+          <Form.Item<FormData> name={['extended_kv_cache', 'ram_size']}>
+            <SealInputNumber
+              label={intl.formatMessage({ id: 'models.form.ramSize' })}
+              description={intl.formatMessage(
+                {
+                  id: 'models.form.ramSize.tips'
+                },
+                { content: intl.formatMessage({ id: 'models.form.ramRatio' }) }
+              )}
               min={0}
               step={1}
               precision={0}
@@ -89,25 +103,11 @@ const KVCacheForm = () => {
           <Form.Item<FormData> name={['extended_kv_cache', 'chunk_size']}>
             <SealInputNumber
               label={intl.formatMessage({ id: 'models.form.chunkSize' })}
+              description={intl.formatMessage({
+                id: 'models.form.chunkSize.tips'
+              })}
               min={0}
               step={1}
-            />
-          </Form.Item>
-          <Form.Item<FormData> name={['extended_kv_cache', 'remote_url']}>
-            <SealInput.Input
-              description={
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: intl.formatMessage({
-                      id: 'models.form.remoteURL.tips'
-                    })
-                  }}
-                ></span>
-              }
-              label={intl.formatMessage({ id: 'models.form.remoteURL' })}
-              min={0}
-              step={1}
-              placeholder="protocol://host:port"
             />
           </Form.Item>
         </>

@@ -368,9 +368,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           distributed_inference_across_workers: true,
           extended_kv_cache: {
             enabled: false,
-            chunk_size: 256,
-            max_local_cpu_size: 10,
-            remote_url: ''
+            chunk_size: null,
+            ram_ratio: 1.2,
+            ram_size: null
           },
           ...initialValues
         }}

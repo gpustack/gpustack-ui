@@ -79,8 +79,8 @@ export interface FormData {
   extended_kv_cache: {
     enabled: boolean;
     chunk_size: number;
-    max_local_cpu_size: number;
-    remote_url: string;
+    ram_ratio: number;
+    ram_size: number;
   };
 }
 

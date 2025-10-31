@@ -212,5 +212,12 @@ export default {
     'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.',
   'models.form.kvCache.tips2':
     'KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
-  'models.form.scheduling': 'Scheduling'
+  'models.form.scheduling': 'Scheduling',
+  'models.form.ramRatio': 'RAM-to-VRAM Ratio',
+  'models.form.ramSize': 'Maximum RAM Size (GiB)',
+  'models.form.ramRatio.tips':
+    'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
+  'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
+  'models.form.chunkSize.tips':
+    'Number of tokens per KV cache chunk. A larger chunk size may improve throughput but increase memory usage.'
 };

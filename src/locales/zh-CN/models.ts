@@ -201,5 +201,12 @@ export default {
     '仅在内置后端（vLLM / SGLang）可用 —— 请在<span class="bold-text">高级</span>配置中切换后端以启用。',
   'models.form.kvCache.tips2':
     '仅在使用内置推理后端（vLLM 或 SGLang）时支持 KV 缓存。',
-  'models.form.scheduling': '调度'
+  'models.form.scheduling': '调度',
+  'models.form.ramRatio': '内存与显存比例',
+  'models.form.ramSize': '内存最大占用 (GiB)',
+  'models.form.ramRatio.tips':
+    'KV 缓存在系统内存与 GPU 显存之间的比例。例如设置为 2.0 表示系统内存中可缓存的数据量是显存的两倍。',
+  'models.form.ramSize.tips': `KV 缓存在系统内存中的最大值。当设置该值时，将覆盖 "{content}" 的配置。`,
+  'models.form.chunkSize.tips':
+    '每个 KV 缓存块包含的 token 数量。数值越大可提升吞吐量，但也会增加内存占用。'
 };

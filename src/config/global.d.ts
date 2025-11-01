@@ -39,6 +39,11 @@ declare namespace Global {
     meta?: Record<string, any>;
   } & Partial<U>;
 
+  type BaseOptionGroup<T, U extends object = EmptyObject> = {
+    label: string;
+    options?: BaseOption<T, U>[];
+  };
+
   interface HintOptions {
     label: string;
     value: string;

@@ -5,6 +5,7 @@ import { Form } from 'antd';
 import { cloneDeep } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import BaseSelect from './base/select';
+import NotFoundContent from './components/not-found-content';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import SelectWrapper from './wrapper/select';
@@ -20,6 +21,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     allowNull,
     isInFormItems = true,
     notFoundContent = null,
+    loading,
     ...rest
   } = props;
   const intl = useIntl();
@@ -107,7 +109,12 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
           onChange={handleChange}
-          notFoundContent={notFoundContent}
+          notFoundContent={
+            <NotFoundContent
+              loading={loading}
+              notFoundContent={notFoundContent}
+            />
+          }
         >
           {children}
         </BaseSelect>

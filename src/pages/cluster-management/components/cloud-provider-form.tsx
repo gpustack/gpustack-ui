@@ -3,7 +3,6 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
-import { LoadingOutlined } from '@ant-design/icons';
 import { Link, useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useAtom } from 'jotai';
@@ -12,13 +11,6 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ClusterFormData as FormData } from '../config/types';
 import { useProviderRegions } from '../hooks/use-provider-regions';
-
-type OptionData = {
-  label: string;
-  datacenter: string;
-  value: string | number;
-  icon: string;
-};
 
 const OptionItem = styled.div`
   display: flex;
@@ -42,35 +34,12 @@ const OptionItem = styled.div`
   }
 `;
 
-const NoContent = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-block: 12px;
-`;
-
 interface CloudProviderProps {
   provider: string; // 'kubernetes' | 'digitalocean';
   credentialList: Global.BaseOption<number>[];
   action: PageActionType;
   credentialID?: number;
 }
-
-const NotFoundContent: React.FC<{ loading: boolean }> = ({ loading }) => {
-  const intl = useIntl();
-  if (loading) {
-    return (
-      <NoContent>
-        <LoadingOutlined />
-      </NoContent>
-    );
-  }
-  return (
-    <NoContent>
-      {intl.formatMessage({ id: 'clusters.create.noRegions' })}
-    </NoContent>
-  );
-};
 
 const NotFoundCredentialContent: React.FC = () => {
   const [, setFromClusterCreation] = useAtom(fromClusterCreationAtom);
@@ -81,11 +50,9 @@ const NotFoundCredentialContent: React.FC = () => {
   };
 
   return (
-    <NoContent>
-      <Link to={'/cluster-management/credentials'} onClick={handleOnClick}>
-        {intl.formatMessage({ id: 'clusters.button.addCredential' })}
-      </Link>
-    </NoContent>
+    <Link to={'/cluster-management/credentials'} onClick={handleOnClick}>
+      {intl.formatMessage({ id: 'clusters.button.addCredential' })}
+    </Link>
   );
 };
 
@@ -204,7 +171,9 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
           labelRender={labelRender}
           optionRender={optionRender}
           onChange={handleRegionChange}
-          notFoundContent={<NotFoundContent loading={loading} />}
+          notFoundContent={intl.formatMessage({
+            id: 'clusters.create.noRegions'
+          })}
         ></SealSelect>
       </Form.Item>
     </>

@@ -236,5 +236,6 @@ export default {
     'Runs at full (original) precision and prioritizes compatibility.',
   'models.form.draftModel.placeholder': 'Please select or enter a draft model',
   'models.form.draftModel.tips':
-    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
+    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
+  'models.form.quantization': 'Quantization'
 };

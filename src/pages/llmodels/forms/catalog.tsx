@@ -1,5 +1,6 @@
-import SealSelect from '@/components/seal-form/seal-select';
+import SealInput from '@/components/seal-form/seal-input';
 import useAppUtils from '@/hooks/use-app-utils';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { DeployFormKeyMap } from '../config';
@@ -7,6 +8,7 @@ import { useCatalogFormContext, useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const CatalogForm: React.FC = () => {
+  const intl = useIntl();
   const formCtx = useFormContext();
   const catalogFormCtx = useCatalogFormContext();
   const { getRuleMessage } = useAppUtils();
@@ -18,11 +20,7 @@ const CatalogForm: React.FC = () => {
     onQuantizationChange
   } = catalogFormCtx;
 
-  if (
-    formKey !== DeployFormKeyMap.CATALOG &&
-    !sizeOptions?.length &&
-    !quantizationOptions?.length
-  ) {
+  if (formKey !== DeployFormKeyMap.CATALOG) {
     return null;
   }
 
@@ -35,50 +33,21 @@ const CatalogForm: React.FC = () => {
   };
   return (
     <>
-      {sizeOptions && sizeOptions?.length > 0 && (
-        <Form.Item<FormData>
-          name="size"
-          key="size"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('input', 'size', false)
-            }
-          ]}
-        >
-          <SealSelect
-            filterOption
-            onChange={handleSizeChange}
-            defaultActiveFirstOption
-            disabled={false}
-            options={sizeOptions}
-            label="Size"
-            required
-          ></SealSelect>
-        </Form.Item>
-      )}
-      {quantizationOptions && quantizationOptions?.length > 0 && (
-        <Form.Item<FormData>
-          name="quantization"
-          key="quantization"
-          rules={[
-            {
-              required: true,
-              message: getRuleMessage('select', 'quantization', false)
-            }
-          ]}
-        >
-          <SealSelect
-            filterOption
-            defaultActiveFirstOption
-            disabled={false}
-            options={quantizationOptions}
-            onChange={handleOnQuantizationChange}
-            label="Quantization"
-            required
-          ></SealSelect>
-        </Form.Item>
-      )}
+      <Form.Item<FormData>
+        name="quantization"
+        key="quantization"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('select', 'models.form.quantization', false)
+          }
+        ]}
+      >
+        <SealInput.Input
+          label={intl.formatMessage({ id: 'models.form.quantization' })}
+          disabled
+        ></SealInput.Input>
+      </Form.Item>
     </>
   );
 };

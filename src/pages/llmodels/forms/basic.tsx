@@ -10,7 +10,6 @@ import { Form } from 'antd';
 import { useMemo } from 'react';
 import { sourceOptions } from '../config';
 import { FormData } from '../config/types';
-import CatalogFrom from './catalog';
 import LocalPathSource from './local-path-source';
 import OnlineSource from './online-source';
 
@@ -138,7 +137,6 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           min={0}
         ></SealInput.Number>
       </Form.Item>
-      <CatalogFrom></CatalogFrom>
       <Form.Item<FormData> name="description">
         <SealInput.TextArea
           scaleSize={true}

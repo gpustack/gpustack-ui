@@ -236,7 +236,8 @@ export default {
     'the most compatible option with full precision.',
   'models.form.draftModel.placeholder': 'Please select or enter a draft model',
   'models.form.draftModel.tips':
-    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
+    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
+  'models.form.quantization': 'Quantization'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -303,5 +304,5 @@ export default {
 // 44. 'models.form.mode.baseline.tips': 'the most compatible option with full precision,
 // 45. 'models.form.draftModel.placeholder': 'Please select or enter a draft model',
 // 46. 'models.form.draftModel.tips': 'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
-
+// 47. 'models.form.quantization': 'Quantization'
 // ========== End of To-Do List ==========

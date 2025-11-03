@@ -3,6 +3,7 @@ import { addWorkerGuide } from '@/pages/resources/config';
 import React from 'react';
 
 type ViewModalProps = {
+  currentGPU?: string;
   registrationInfo: {
     token: string;
     image: string;
@@ -10,17 +11,20 @@ type ViewModalProps = {
   };
 };
 
-const AddWorkerCommand: React.FC<ViewModalProps> = ({ registrationInfo }) => {
+const AddWorkerCommand: React.FC<ViewModalProps> = ({
+  registrationInfo,
+  currentGPU
+}) => {
   const code = React.useMemo(() => {
     const commandCode = addWorkerGuide['all'];
     return commandCode?.registerWorker({
+      gpu: currentGPU || '',
       server: registrationInfo.server_url || origin,
       tag: '',
       image: registrationInfo.image,
-      token: registrationInfo.token || '${token}',
-      workerip: '${workerip}'
+      token: registrationInfo.token || '${token}'
     });
-  }, [registrationInfo]);
+  }, [registrationInfo, currentGPU]);
 
   return (
     <HighlightCode

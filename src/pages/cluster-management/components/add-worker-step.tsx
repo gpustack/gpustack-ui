@@ -124,7 +124,10 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
           <div className="command-info">
             2. {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
           </div>
-          <AddWorkerCommand registrationInfo={registrationInfo} />
+          <AddWorkerCommand
+            registrationInfo={registrationInfo}
+            currentGPU={currentGPU}
+          />
         </>
       )}
     </Container>

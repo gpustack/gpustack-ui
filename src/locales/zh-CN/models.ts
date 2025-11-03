@@ -224,5 +224,6 @@ export default {
     '以完整（原始）精度运行，并优先保证兼容性。',
   'models.form.draftModel.placeholder': '请选择或输入草稿模型',
   'models.form.draftModel.tips':
-    '可填写本地路径（如 /path/to/model），或从 Hugging Face、ModelScope 选择模型（如 Tengyunw/qwen3_8b_eagle3）。系统将根据主模型来源自动匹配。'
+    '可填写本地路径（如 /path/to/model），或从 Hugging Face、ModelScope 选择模型（如 Tengyunw/qwen3_8b_eagle3）。系统将根据主模型来源自动匹配。',
+  'models.form.quantization': '量化'
 };

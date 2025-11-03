@@ -131,6 +131,7 @@ const SpeculativeDecode = () => {
               ></AutoComlete>
             </Form.Item>
           )}
+
           <Form.Item<FormData>
             name={['speculative_config', 'num_draft_tokens']}
           >

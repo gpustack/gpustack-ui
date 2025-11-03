@@ -5,6 +5,7 @@ import { Form, Select } from 'antd';
 import React from 'react';
 import { DeployFormKeyMap } from '../config';
 import { useCatalogFormContext, useFormContext } from '../config/form-context';
+import CatalogFrom from './catalog';
 import KVCacheForm from './kv-cache';
 import SpeculativeDecode from './speculative-decode';
 
@@ -67,6 +68,7 @@ const Performance: React.FC = () => {
           </SealSelect>
         </Form.Item>
       )}
+      <CatalogFrom></CatalogFrom>
       <KVCacheForm></KVCacheForm>
       <SpeculativeDecode></SpeculativeDecode>
     </>

@@ -92,11 +92,9 @@ const SpeculativeDecode = () => {
               onChange={handleAlgorithemChange}
               label={intl.formatMessage({ id: 'models.form.algorithm' })}
               options={[
-                [
-                  { label: 'Eagle3', value: AlgorithmMap.Eagle3 },
-                  { label: 'MTP', value: AlgorithmMap.MTP },
-                  { label: 'N-gram', value: AlgorithmMap.Ngram }
-                ]
+                { label: 'Eagle3', value: AlgorithmMap.Eagle3 },
+                { label: 'MTP', value: AlgorithmMap.MTP },
+                { label: 'N-gram', value: AlgorithmMap.Ngram }
               ]}
             ></SealSelect>
           </Form.Item>

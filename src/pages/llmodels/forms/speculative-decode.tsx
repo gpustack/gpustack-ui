@@ -6,6 +6,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import { useRef } from 'react';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -19,7 +20,7 @@ const AlgorithmMap = {
 
 const SpeculativeDecode = () => {
   const intl = useIntl();
-  const { source } = useFormContext();
+  const { source, onValuesChange } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const speculativeEnabled = Form.useWatch(
@@ -33,6 +34,11 @@ const SpeculativeDecode = () => {
     useQueryDraftModels({
       source
     });
+
+  const onValuesChangeDebounced = _.debounce(() => {
+    const allValues = form.getFieldsValue();
+    onValuesChange?.({}, allValues);
+  }, 200);
 
   const handleSpeculativeEnabledChange = (e: any) => {
     if (e.target.checked) {
@@ -49,6 +55,7 @@ const SpeculativeDecode = () => {
       });
     } else {
       speculativeConfigRef.current = form.getFieldValue('speculative_config');
+      onValuesChangeDebounced();
     }
   };
 

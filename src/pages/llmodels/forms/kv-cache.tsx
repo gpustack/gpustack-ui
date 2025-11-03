@@ -36,6 +36,7 @@ const KVCacheForm = () => {
       (item) => item.value === backend
     );
 
+    // FIXME：remove formKey check after all built-in backends support KV cache
     return (
       (currentBackend?.isBuiltIn || formKey === DeployFormKeyMap.CATALOG) &&
       [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(

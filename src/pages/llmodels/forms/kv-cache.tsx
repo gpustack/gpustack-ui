@@ -20,9 +20,9 @@ const KVCacheForm = () => {
       form.setFieldsValue({
         extended_kv_cache: {
           enabled: true,
-          chunk_size: configCacheRef.current?.chunk_size,
+          chunk_size: configCacheRef.current?.chunk_size || null,
           ram_ratio: configCacheRef.current?.ram_ratio || 1.2,
-          ram_size: configCacheRef.current?.ram_size
+          ram_size: configCacheRef.current?.ram_size || null
         }
       });
     } else {

@@ -3,6 +3,7 @@ import SealInputNumber from '@/components/seal-form/input-number';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo, useRef } from 'react';
+import { DeployFormKeyMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -10,7 +11,7 @@ import { FormData } from '../config/types';
 const KVCacheForm = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
-  const { onValuesChange, backendOptions } = useFormContext();
+  const { onValuesChange, backendOptions, formKey } = useFormContext();
   const kvCacheEnabled = Form.useWatch(['extended_kv_cache', 'enabled'], form);
   const backend = Form.useWatch('backend', form);
   const configCacheRef = useRef<any>({});
@@ -36,7 +37,7 @@ const KVCacheForm = () => {
     );
 
     return (
-      currentBackend?.isBuiltIn &&
+      (currentBackend?.isBuiltIn || formKey === DeployFormKeyMap.CATALOG) &&
       [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(
         backend as string
       )

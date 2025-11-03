@@ -350,6 +350,7 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'run_command',
   'image_name',
   'extended_kv_cache.enabled',
+  'speculative_config.enabled',
   'speculative_config.draft_model'
 ];
 

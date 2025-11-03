@@ -222,7 +222,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       ..._.omit(data, ['scheduleType']),
       ...gpuSelector
     };
-
     onOk(allValues);
   };
 

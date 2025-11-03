@@ -5,6 +5,7 @@ import iluvatarWEBP from '@/assets/logo/Iluvatar.png';
 import metaxLogo from '@/assets/logo/metax.png';
 import moorePNG from '@/assets/logo/moore _threads.png';
 import IconFont from '@/components/icon-font';
+import { GPUDriverMap } from '@/pages/resources/config/gpu-driver';
 import { useIntl } from '@umijs/max';
 import ProviderCatalog from './provider-catalog';
 
@@ -26,49 +27,6 @@ interface SupportedHardwareProps {
   clickable?: boolean;
 }
 
-const GPUsConfigs = {
-  cuda: {
-    label: 'NVIDIA',
-    value: 'cuda',
-    runtime: 'nvidia'
-  },
-  rocm: {
-    label: 'AMD',
-    value: 'rocm',
-    runtime: 'rocm'
-  },
-  npu: {
-    label: 'Ascend',
-    value: 'npu',
-    runtime: 'ascend'
-  },
-  dcu: {
-    label: 'Hygon',
-    value: 'dcu',
-    runtime: 'dcu'
-  },
-  musa: {
-    label: 'Moore Threads',
-    value: 'musa',
-    runtime: 'musa'
-  },
-  corex: {
-    label: 'Iluvatar',
-    value: 'corex',
-    runtime: 'corex'
-  },
-  cambricon: {
-    label: 'Cambricon',
-    value: 'cambricon',
-    runtime: 'cambricon'
-  },
-  metax: {
-    label: 'MetaX',
-    value: 'metax',
-    runtime: 'metax'
-  }
-};
-
 const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   onSelect,
   clickable,
@@ -79,9 +37,9 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   const supportedHardPlatforms = [
     {
       label: 'NVIDIA',
-      value: 'cuda',
+      value: GPUDriverMap.NVIDIA,
       description: '',
-      key: 'cuda',
+      key: GPUDriverMap.NVIDIA,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda',
       icon: <IconFont type="icon-nvidia2" style={{ fontSize: 32 }} />
@@ -89,8 +47,8 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: 'AMD',
       description: '',
-      value: 'rocm',
-      key: 'rocm',
+      value: GPUDriverMap.AMD,
+      key: GPUDriverMap.AMD,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#amd-rocm',
       icon: (
@@ -103,8 +61,8 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.ascend' }),
       description: '',
-      value: 'npu',
-      key: 'npu',
+      value: GPUDriverMap.ASCEND,
+      key: GPUDriverMap.ASCEND,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#ascend-cann',
       icon: <ProviderImage src={ascendLogo} showBg />
@@ -112,8 +70,8 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.hygon' }),
       description: '',
-      value: 'dcu',
-      key: 'dcu',
+      value: GPUDriverMap.HYGON,
+      key: GPUDriverMap.HYGON,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#hygon-dtk',
       icon: <ProviderImage src={hyponPNG} />
@@ -121,8 +79,8 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.moorthreads' }),
       description: '',
-      value: 'musa',
-      key: 'musa',
+      value: GPUDriverMap.MOORE_THREADS,
+      key: GPUDriverMap.MOORE_THREADS,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#moore-threads-musa',
       icon: <ProviderImage src={moorePNG} />
@@ -130,24 +88,24 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.iluvatar' }),
       description: '',
-      value: 'corex',
-      key: 'corex',
+      value: GPUDriverMap.ILUVATAR,
+      key: GPUDriverMap.ILUVATAR,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#iluvatar-corex',
       icon: <ProviderImage src={iluvatarWEBP} showBg />
     },
     {
       label: intl.formatMessage({ id: 'vendor.cambricon' }),
-      value: 'cambricon',
-      key: 'cambricon',
+      value: GPUDriverMap.CAMBRICON,
+      key: GPUDriverMap.CAMBRICON,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#cambricon-mlu',
       icon: <ProviderImage src={CambriconPNG} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.metax' }),
-      value: 'metax',
-      key: 'metax',
+      value: GPUDriverMap.METAX,
+      key: GPUDriverMap.METAX,
       locale: false,
       icon: <ProviderImage src={metaxLogo} showBg />
     }

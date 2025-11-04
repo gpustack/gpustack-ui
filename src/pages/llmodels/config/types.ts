@@ -288,13 +288,19 @@ export interface EvaluateResult {
   };
 }
 
-export interface BackendOption {
+export interface BackendGroupOption {
   value: string;
   label: string;
+  title?: string;
   default_backend_param: string[];
   default_version: string;
   isBuiltIn: boolean;
-  versions: { label: string; value: string }[];
+  versions: { label: string; value: string; title?: string }[];
+}
+
+export interface BackendOption {
+  label: string;
+  options: BackendGroupOption[];
 }
 
 export interface AccessControlFormData {

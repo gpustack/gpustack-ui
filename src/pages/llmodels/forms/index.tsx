@@ -16,7 +16,7 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import {
-  BackendOption,
+  BackendGroupOption,
   DeployFormKey,
   FormData,
   SourceType
@@ -188,7 +188,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   };
 
-  const updateKVCacheConfig = (backend: string, option: BackendOption) => {
+  const updateKVCacheConfig = (backend: string, option: BackendGroupOption) => {
     if (
       !option.isBuiltIn &&
       [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(backend)
@@ -202,7 +202,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return {};
   };
 
-  const handleBackendChange = async (val: string, option: BackendOption) => {
+  const handleBackendChange = async (
+    val: string,
+    option: BackendGroupOption
+  ) => {
+    console.log('handleBackendChange option===>', val, option);
+    const isGGUF = checkIsGGUF();
     form.setFieldsValue({
       env: null,
       backend_version: option.default_version || '',

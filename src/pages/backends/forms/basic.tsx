@@ -7,12 +7,13 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
-import { FormData } from '../config/types';
+import { FormData, ListItem } from '../config/types';
 
 type AddModalProps = {
   action: PageActionType;
+  currentData?: ListItem;
 };
-const BasicForm: React.FC<AddModalProps> = ({ action }) => {
+const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
   const form = Form.useFormInstance();
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
@@ -30,6 +31,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action }) => {
       >
         <SealInput.Input
           trim
+          addAfter={currentData?.is_built_in ? null : '-custom'}
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'common.table.name' })}
           required

@@ -104,11 +104,20 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
 
         const jsonData = yaml2Json(content);
         const exsistingVersions = Object.keys(jsonData.version_configs || {});
-        const invalidVersion = exsistingVersions.find(
-          (v) => !v.endsWith('-custom')
-        );
-        if (invalidVersion) {
+
+        if (
+          actionStatus.isBuiltIn &&
+          exsistingVersions.find((v) => !v.endsWith('-custom'))
+        ) {
           setError(intl.formatMessage({ id: 'backend.version.no.tips' }));
+          return false;
+        }
+        if (
+          !actionStatus.isBuiltIn &&
+          actionStatus.action === PageAction.CREATE &&
+          !jsonData.backend_name.endsWith('-custom')
+        ) {
+          setError(intl.formatMessage({ id: 'backend.backend.rules.custom' }));
           return false;
         }
 

@@ -29,5 +29,8 @@ export default {
   'backend.versionInfo.autoImage': 'Automatically selected at runtime',
   'backend.version.rules.builtin': 'Must end with "-custom"',
   'backend.version.no.tips':
-    'The name of a custom version must end with "-custom."'
+    'The built-in backend’s custom version name must end with "-custom".',
+  'backend.backend.rules.custom':
+    'The custom backend name must end with "-custom".',
+  'backend.quickConfig': 'Quick Config'
 };

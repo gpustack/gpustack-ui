@@ -28,5 +28,7 @@ export default {
   'backend.noVersion': '未找到版本',
   'backend.versionInfo.autoImage': '运行时自动选择',
   'backend.version.rules.builtin': '须以 "-custom" 结尾',
-  'backend.version.no.tips': '自定义版本名称必须以 "-custom" 结尾。'
+  'backend.version.no.tips': '内置后端自定义版本名称必须以 "-custom" 结尾。',
+  'backend.backend.rules.custom': '自定义后端名称须以 "-custom" 结尾。',
+  'backend.quickConfig': '快速配置'
 };

@@ -8,8 +8,10 @@ import {
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
-import { sourceOptions } from '../config';
+import { DeployFormKeyMap, sourceOptions } from '../config';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+import BackendForm from './backend';
 import LocalPathSource from './local-path-source';
 import OnlineSource from './online-source';
 
@@ -32,6 +34,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
     onSourceChange
   } = props;
   const intl = useIntl();
+  const { formKey } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
 
@@ -115,6 +118,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           ></SealSelect>
         }
       </Form.Item>
+      {formKey === DeployFormKeyMap.DEPLOYMENT && <BackendForm></BackendForm>}
       <Form.Item<FormData>
         name="replicas"
         rules={[

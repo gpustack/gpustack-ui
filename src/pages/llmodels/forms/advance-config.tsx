@@ -5,7 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { useCallback } from 'react';
-import { DeployFormKeyMap, modelCategories, ScheduleValueMap } from '../config';
+import { DeployFormKeyMap, modelCategories } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -85,25 +85,24 @@ const AdvanceConfig = () => {
         ></LabelSelector>
       </Form.Item>
 
-      {scheduleType === ScheduleValueMap.Auto &&
-        [backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
-          backend
-        ) && (
-          <Form.Item<FormData>
-            name="distributed_inference_across_workers"
-            valuePropName="checked"
-            style={{ marginBottom: 8 }}
-          >
-            <CheckboxField
-              description={intl.formatMessage({
-                id: 'models.form.distribution.tips'
-              })}
-              label={intl.formatMessage({
-                id: 'resources.form.enableDistributedInferenceAcrossWorkers'
-              })}
-            ></CheckboxField>
-          </Form.Item>
-        )}
+      {[backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
+        backend
+      ) && (
+        <Form.Item<FormData>
+          name="distributed_inference_across_workers"
+          valuePropName="checked"
+          style={{ marginBottom: 8 }}
+        >
+          <CheckboxField
+            description={intl.formatMessage({
+              id: 'models.form.distribution.tips'
+            })}
+            label={intl.formatMessage({
+              id: 'resources.form.enableDistributedInferenceAcrossWorkers'
+            })}
+          ></CheckboxField>
+        </Form.Item>
+      )}
       <Form.Item<FormData>
         name="restart_on_error"
         valuePropName="checked"

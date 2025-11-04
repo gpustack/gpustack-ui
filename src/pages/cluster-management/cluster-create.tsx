@@ -1,10 +1,11 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import { PageContainer } from '@ant-design/pro-components';
+import PageBreadcrumb from '@/pages/_components/page-breadcrumb';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { PageContainerInner } from '../_components/page-box';
 import { createCluster, queryClusterToken, queryCredentialList } from './apis';
 import ClusterSteps from './components/cluster-steps';
 import FooterButtons from './components/footer-buttons';
@@ -25,7 +26,6 @@ const Container = styled.div`
 const Nav = styled.div`
   display: flex;
   align-items: center;
-  height: 72px;
   font-weight: 400;
   font-size: 20px;
   color: var(--ant-color-text-tertiary);
@@ -280,9 +280,18 @@ const ClusterCreate = () => {
     navigate(-1);
   };
 
+  const breadcrumbItems = [
+    {
+      title: <a>{intl.formatMessage({ id: 'clusters.title' })}</a>,
+      onClick: () => navigate(-1)
+    },
+    {
+      title: intl.formatMessage({ id: 'common.button.create' })
+    }
+  ];
+
   return (
-    <PageContainer
-      ghost
+    <PageContainerInner
       footer={[
         <FooterButtons
           key="buttons"
@@ -294,38 +303,14 @@ const ClusterCreate = () => {
         />
       ]}
       header={{
-        title: false,
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
+        title: <PageBreadcrumb items={breadcrumbItems} />
       }}
-      pageHeaderRender={() => (
-        <HeaderContainer>
-          <Nav>
-            <span className="level-1">
-              {intl.formatMessage({ id: 'clusters.title' })}
-            </span>
-            <span
-              style={{
-                marginInline: 20,
-                color: 'var(--ant-color-split)'
-              }}
-            >
-              /
-            </span>
-            <span className="level-2">
-              {intl.formatMessage({ id: 'common.button.create' })}
-            </span>
-          </Nav>
-          <ClusterSteps
-            steps={steps}
-            currentStep={currentStep}
-            onChange={handleStepChange}
-          ></ClusterSteps>
-        </HeaderContainer>
-      )}
     >
+      <ClusterSteps
+        steps={steps}
+        currentStep={currentStep}
+        onChange={handleStepChange}
+      ></ClusterSteps>
       {currentStep === startStep && (
         <ProviderCatalog
           dataList={providerList}
@@ -339,7 +324,7 @@ const ClusterCreate = () => {
       <Container>
         <Content>{renderForms()}</Content>
       </Container>
-    </PageContainer>
+    </PageContainerInner>
   );
 };
 

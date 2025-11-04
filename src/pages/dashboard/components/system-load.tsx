@@ -55,6 +55,7 @@ const SystemLoad = () => {
               <Row style={{ height: largeChartHeight }}>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <GaugeChart
+                    name="GPU"
                     height={smallChartHeight}
                     value={chartData.gpu.data}
                     title={intl.formatMessage({
@@ -64,6 +65,7 @@ const SystemLoad = () => {
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <GaugeChart
+                    name="VRAM"
                     title={intl.formatMessage({
                       id: 'dashboard.vramutilization'
                     })}
@@ -73,6 +75,7 @@ const SystemLoad = () => {
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <GaugeChart
+                    name="CPU"
                     title={intl.formatMessage({
                       id: 'dashboard.cpuutilization'
                     })}
@@ -82,6 +85,7 @@ const SystemLoad = () => {
                 </Col>
                 <Col span={12} style={{ height: smallChartHeight }}>
                   <GaugeChart
+                    name="RAM"
                     title={intl.formatMessage({
                       id: 'dashboard.memoryutilization'
                     })}

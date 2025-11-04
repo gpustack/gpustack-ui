@@ -1,9 +1,9 @@
 import useTabActive from '@/hooks/use-tab-active';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useModel } from '@umijs/max';
-import { TabsProps } from 'antd';
+import { Tabs, TabsProps } from 'antd';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import PageBox from '../_components/page-box';
 import Appearance from './components/appearance';
 import ModifyPasswordn from './components/modify-password';
 
@@ -53,27 +53,14 @@ const Profile: React.FC = () => {
   }, []);
 
   return (
-    <Wrapper>
-      <PageContainer
-        ghost
-        header={{
-          title: intl.formatMessage({ id: 'users.settings.title' }),
-          style: {
-            paddingInline: 'var(--layout-content-inlinepadding)'
-          }
-        }}
-        tabList={items}
-        onTabChange={handleChangeTab}
-        tabActiveKey={activeKey}
-        tabProps={{
-          type: 'card',
-          style: {
-            marginTop: 78
-          }
-        }}
-        extra={[]}
-      ></PageContainer>
-    </Wrapper>
+    <PageBox>
+      <Tabs
+        activeKey={activeKey}
+        onChange={handleChangeTab}
+        items={items}
+        type="card"
+      />
+    </PageBox>
   );
 };
 

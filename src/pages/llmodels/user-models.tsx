@@ -5,13 +5,13 @@ import CardList from '@/components/templates/card-list';
 import CardSkeleton from '@/components/templates/card-skelton';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, Input, Space } from 'antd';
 import React, { useCallback, useMemo } from 'react';
 import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import { MY_MODELS_API, queryMyModels } from './apis';
 import ModelItem from './components/model-item';
 import {
@@ -172,7 +172,7 @@ const UserModels: React.FC = () => {
   }, [dataSource.dataList, status]);
 
   return (
-    <PageContainer
+    <PageBox
       ghost
       header={{
         title: intl.formatMessage({ id: 'menu.models.userModels' }),
@@ -261,7 +261,7 @@ const UserModels: React.FC = () => {
           subTitle={intl.formatMessage({ id: 'noresult.mymodels.subTitle' })}
         ></NoResult>
       </ScrollerContext.Provider>
-    </PageContainer>
+    </PageBox>
   );
 };
 

@@ -1,30 +1,33 @@
-import { PageContainer } from '@ant-design/pro-components';
-import { useSearchParams } from '@umijs/max';
+import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
+import { PageContainerInner } from '../_components/page-box';
+import PageBreadcrumb from '../_components/page-breadcrumb';
 import ClusterMetrics from './components/cluster-metrics';
 
 const ClusterDetailModal = () => {
+  const navigate = useNavigate();
+  const intl = useIntl();
   const [searchParams] = useSearchParams();
   const provider = searchParams.get('provider');
   const clusterName = searchParams.get('name');
+
+  const breadcrumbItems = [
+    {
+      title: <a>{intl.formatMessage({ id: 'clusters.title' })}</a>,
+      onClick: () => navigate(-1)
+    },
+    {
+      title: clusterName
+    }
+  ];
+
   return (
-    <PageContainer
-      ghost
+    <PageContainerInner
       header={{
-        title: (
-          <span className="flex-center">
-            <span>{clusterName}</span>
-          </span>
-        ),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
+        title: <PageBreadcrumb items={breadcrumbItems} />
       }}
-      extra={[]}
     >
       <ClusterMetrics />
-      {/* {provider === ProviderValueMap.DigitalOcean && <WorkerPools />} */}
-    </PageContainer>
+    </PageContainerInner>
   );
 };
 

@@ -5,6 +5,7 @@ import AudioPlayer from '@/components/audio-player';
 import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
+import { HEADER_HEIGHT } from '@/config/constants';
 import routeCachekey from '@/config/route-cachekey';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { useCancelToken } from '@/hooks/use-request-token';
@@ -13,7 +14,6 @@ import { SendOutlined } from '@ant-design/icons';
 import { useIntl, useSearchParams } from '@umijs/max';
 import { Button, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
-import 'overlayscrollbars/overlayscrollbars.css';
 import React, {
   forwardRef,
   useCallback,
@@ -289,7 +289,7 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
     <div
       className="ground-left-wrapper"
       style={{
-        height: 'calc(100vh - 72px)'
+        height: `calc(100vh - ${HEADER_HEIGHT}px)`
       }}
     >
       <div className="ground-left">

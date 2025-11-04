@@ -14,10 +14,10 @@ import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useTableSort from '@/hooks/use-table-sort';
 import NoResult from '@/pages/_components/no-result';
+import PageBox from '@/pages/_components/page-box';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Input, Space, message } from 'antd';
@@ -596,20 +596,10 @@ const Models: React.FC<ModelsProps> = ({
 
   return (
     <>
-      <PageContainer
-        className="models-page-container"
-        ghost
-        header={{
-          title: intl.formatMessage({ id: 'menu.models.deployment' }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <PageTools
           marginBottom={22}
+          marginTop={0}
           left={
             <Space>
               <Input
@@ -742,7 +732,7 @@ const Models: React.FC<ModelsProps> = ({
             onChange: handlePageChange
           }}
         ></SealTable>
-      </PageContainer>
+      </PageBox>
       <UpdateModelModal
         open={openAddModal}
         action={PageAction.EDIT}

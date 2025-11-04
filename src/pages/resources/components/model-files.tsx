@@ -7,6 +7,7 @@ import useAppUtils from '@/hooks/use-app-utils';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
 import NoResult from '@/pages/_components/no-result';
+import PageBox from '@/pages/_components/page-box';
 import { createModel } from '@/pages/llmodels/apis';
 import DeployModal from '@/pages/llmodels/components/deploy-modal';
 import { modelSourceMap } from '@/pages/llmodels/config';
@@ -20,7 +21,6 @@ import DownloadModal from '@/pages/llmodels/download';
 import useCheckBackend from '@/pages/llmodels/hooks/use-check-backend';
 import { useGenerateWorkerOptions } from '@/pages/llmodels/hooks/use-form-initial-values';
 import useRecognizeAudio from '@/pages/llmodels/hooks/use-recognize-audio';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
@@ -290,17 +290,7 @@ const ModelFiles = () => {
 
   return (
     <>
-      <PageContainer
-        ghost
-        header={{
-          title: intl.formatMessage({ id: 'resources.modelfiles.modelfile' }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <FilterBar
           marginBottom={22}
           marginTop={30}
@@ -365,7 +355,7 @@ const ModelFiles = () => {
           isGGUF={openDeployModal.isGGUF}
           clusterList={clusterList}
         ></DeployModal>
-      </PageContainer>
+      </PageBox>
     </>
   );
 };

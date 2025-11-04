@@ -5,13 +5,13 @@ import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, ConfigProvider, Table, message } from 'antd';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import {
   createCredential,
   deleteCredential,
@@ -178,26 +178,14 @@ const Credentials: React.FC = () => {
 
   return (
     <>
-      <PageContainer
-        ghost
-        header={{
-          title: intl.formatMessage({
-            id: 'menu.clusterManagement.credentials'
-          }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <FilterBar
           actionItems={addActions}
           actionType="dropdown"
           showSelect={false}
           showPrimaryButton={true}
           marginBottom={22}
-          marginTop={30}
+          marginTop={0}
           buttonText={intl.formatMessage({
             id: 'clusters.button.addCredential'
           })}
@@ -228,7 +216,7 @@ const Credentials: React.FC = () => {
             }}
           ></Table>
         </ConfigProvider>
-      </PageContainer>
+      </PageBox>
       <AddModal
         provider={openModalStatus.provider}
         open={openModalStatus.open}

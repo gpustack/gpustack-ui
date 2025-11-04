@@ -53,6 +53,15 @@ interface ClusterDetailProps {
   data: ClusterListItem | null;
 }
 
+const titleConfig = {
+  textStyle: {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: 600
+  },
+  top: -5
+};
+
 const gaugeConfig = {
   radius: '100%',
   progress: {
@@ -140,7 +149,10 @@ const ClusterMetrics = () => {
         <Row gutter={16} style={{ width: '100%' }}>
           <Col span={6}>
             <GaugeChart
-              title="GPU Utilization"
+              title={{
+                text: 'GPU Utilization',
+                ...titleConfig
+              }}
               value={formatValue(detailContent.current.gpu)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
@@ -148,7 +160,10 @@ const ClusterMetrics = () => {
           </Col>
           <Col span={6}>
             <GaugeChart
-              title="CPU Utilization"
+              title={{
+                text: 'CPU Utilization',
+                ...titleConfig
+              }}
               value={formatValue(detailContent.current.cpu)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
@@ -156,7 +171,10 @@ const ClusterMetrics = () => {
           </Col>
           <Col span={6}>
             <GaugeChart
-              title="RAM Utilization"
+              title={{
+                text: 'RAM Utilization',
+                ...titleConfig
+              }}
               value={formatValue(detailContent.current.ram)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}
@@ -164,7 +182,10 @@ const ClusterMetrics = () => {
           </Col>
           <Col span={6}>
             <GaugeChart
-              title="VRAM Utilization"
+              title={{
+                text: 'VRAM Utilization',
+                ...titleConfig
+              }}
               value={formatValue(detailContent.current.vram)}
               height={chartHeight}
               gaugeConfig={gaugeConfig}

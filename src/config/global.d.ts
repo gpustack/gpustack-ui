@@ -22,7 +22,7 @@ declare namespace Global {
     require_password_change: boolean;
     id: number;
     source: string;
-    avatar_url?: string;
+    avatar: string;
   }
   type EmptyObject = Record<never, never>;
 

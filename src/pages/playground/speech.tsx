@@ -2,18 +2,21 @@ import IconFont from '@/components/icon-font';
 import breakpoints from '@/config/breakpoints';
 import HotKeys from '@/config/hotkeys';
 import useWindowResize from '@/hooks/use-window-resize';
+import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import { AudioOutlined } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Button, Segmented, Space, Tabs, TabsProps } from 'antd';
+import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
+import { Divider, Segmented, Tabs, TabsProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { PageContainerInner } from '../_components/page-box';
 import { queryModelsList } from './apis';
 import GroundSTT from './components/ground-stt';
 import GroundTTS from './components/ground-tts';
+import ViewCodeButtons from './components/view-code-buttons';
 import './style/play-ground.less';
 
 const TabsValueMap = {
@@ -53,21 +56,21 @@ const Playground: React.FC = () => {
     ];
   }, [intl]);
 
-  const handleViewCode = useCallback(() => {
+  const handleViewCode = useMemoizedFn(() => {
     if (activeKey === TabsValueMap.Tab1) {
       groundTabRef1.current?.viewCode?.();
     } else if (activeKey === TabsValueMap.Tab2) {
       groundTabRef2.current?.viewCode?.();
     }
-  }, [activeKey]);
+  });
 
-  const handleToggleCollapse = useCallback(() => {
+  const handleToggleCollapse = useMemoizedFn(() => {
     if (activeKey === TabsValueMap.Tab1) {
       groundTabRef1.current?.setCollapse?.();
       return;
     }
     groundTabRef2.current?.setCollapse?.();
-  }, [activeKey]);
+  });
 
   const items: TabsProps['items'] = useMemo(() => {
     return [
@@ -160,30 +163,6 @@ const Playground: React.FC = () => {
     fetchData();
   }, []);
 
-  const renderExtra = useMemo(() => {
-    return (
-      <Space key="buttons">
-        <Button
-          size="middle"
-          onClick={handleViewCode}
-          icon={<IconFont type="icon-code" className="font-size-16"></IconFont>}
-        >
-          {intl.formatMessage({ id: 'playground.viewcode' })}
-        </Button>
-        <Button
-          size="middle"
-          onClick={handleToggleCollapse}
-          icon={
-            <IconFont
-              type="icon-a-layout6-line"
-              className="font-size-16"
-            ></IconFont>
-          }
-        ></Button>
-      </Space>
-    );
-  }, [handleToggleCollapse, handleViewCode, intl]);
-
   const header = useMemo(() => {
     return {
       title: (
@@ -201,11 +180,7 @@ const Playground: React.FC = () => {
             ></Segmented>
           }
         </div>
-      ),
-      style: {
-        paddingInline: 'var(--layout-content-header-inlinepadding)'
-      },
-      breadcrumb: {}
+      )
     };
   }, [activeKey, optionsList]);
 
@@ -220,10 +195,22 @@ const Playground: React.FC = () => {
   );
 
   return (
-    <PageContainer
-      ghost
+    <PageContainerInner
       header={header}
-      extra={renderExtra}
+      extra={[
+        <ViewCodeButtons
+          activeKey=""
+          handleViewCode={handleViewCode}
+          handleToggleCollapse={handleToggleCollapse}
+          key="view-code-buttons"
+        ></ViewCodeButtons>,
+        <Divider
+          key="divider"
+          type="vertical"
+          style={{ height: 24, marginInline: 16 }}
+        />,
+        <ExtraContent key="extra-content" />
+      ]}
       className={classNames('playground-container', {
         compare: activeKey === 'compare',
         chat: activeKey !== 'compare'
@@ -234,7 +221,7 @@ const Playground: React.FC = () => {
           <Tabs items={items} activeKey={activeKey}></Tabs>
         </div>
       </div>
-    </PageContainer>
+    </PageContainerInner>
   );
 };
 

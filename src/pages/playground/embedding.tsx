@@ -1,15 +1,17 @@
-import IconFont from '@/components/icon-font';
 import HotKeys from '@/config/hotkeys';
+import { ExtraContent } from '@/layouts/extraRender';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
-import { Button, Space } from 'antd';
+import { useMemoizedFn } from 'ahooks';
+import { Divider } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { PageContainerInner } from '../_components/page-box';
 import { queryModelsList } from './apis';
 import GroundEmbedding from './components/ground-embedding';
+import ViewCodeButtons from './components/view-code-buttons';
 import useCollapseLayout from './hooks/use-collapse-layout';
 import './style/play-ground.less';
 
@@ -27,12 +29,12 @@ const PlaygroundEmbedding: React.FC = () => {
     triggeredRef: groundLeftRef.current
   });
 
-  const handleViewCode = useCallback(() => {
+  const handleViewCode = useMemoizedFn(() => {
     groundLeftRef.current?.viewCode?.();
-  }, [groundLeftRef.current]);
-  const handleToggleCollapse = useCallback(() => {
+  });
+  const handleToggleCollapse = useMemoizedFn(() => {
     groundLeftRef.current?.setCollapse?.();
-  }, [groundLeftRef.current]);
+  });
 
   useEffect(() => {
     const getModelListByEmbedding = async () => {
@@ -66,30 +68,6 @@ const PlaygroundEmbedding: React.FC = () => {
     fetchData();
   }, []);
 
-  const renderExtra = () => {
-    return (
-      <Space key="buttons">
-        <Button
-          size="middle"
-          onClick={handleViewCode}
-          icon={<IconFont type="icon-code" className="font-size-16"></IconFont>}
-        >
-          {intl.formatMessage({ id: 'playground.viewcode' })}
-        </Button>
-        <Button
-          size="middle"
-          onClick={handleToggleCollapse}
-          icon={
-            <IconFont
-              type="icon-a-layout6-line"
-              className="font-size-16"
-            ></IconFont>
-          }
-        ></Button>
-      </Space>
-    );
-  };
-
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
@@ -101,17 +79,22 @@ const PlaygroundEmbedding: React.FC = () => {
   );
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: intl.formatMessage({ id: 'menu.playground.embedding' }),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={renderExtra()}
+    <PageContainerInner
       className={classNames('playground-container chat')}
+      extra={[
+        <ViewCodeButtons
+          activeKey=""
+          handleViewCode={handleViewCode}
+          handleToggleCollapse={handleToggleCollapse}
+          key="view-code-buttons"
+        />,
+        <Divider
+          key="divider"
+          type="vertical"
+          style={{ height: 24, marginInline: 16 }}
+        />,
+        <ExtraContent key="extra-content" />
+      ]}
     >
       <div className="play-ground">
         <div className="chat">
@@ -122,7 +105,7 @@ const PlaygroundEmbedding: React.FC = () => {
           ></GroundEmbedding>
         </div>
       </div>
-    </PageContainer>
+    </PageContainerInner>
   );
 };
 

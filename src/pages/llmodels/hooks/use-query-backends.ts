@@ -3,7 +3,7 @@ import { useIntl } from '@umijs/max';
 import { useAtom } from 'jotai';
 import { queryBackendList } from '../apis';
 import { backendOptionsMap } from '../config/backend-parameters';
-import { BackendGroupOption } from '../config/types';
+import { BackendOption } from '../config/types';
 
 export default function useQueryBackends() {
   const [backendOptions, setBackendOptions] = useAtom(backendOptionsAtom);
@@ -12,7 +12,7 @@ export default function useQueryBackends() {
   const getBackendOptions = async (params?: { cluster_id: number }) => {
     try {
       const res = await queryBackendList(params);
-      const list: BackendGroupOption[] = res?.items?.map((item) => {
+      const list: BackendOption[] = res?.items?.map((item) => {
         return {
           value: item.backend_name,
           label:
@@ -33,27 +33,9 @@ export default function useQueryBackends() {
           }))
         };
       });
-      const builtInBackends = list?.filter((item) => item.isBuiltIn);
-      const customBackends = list?.filter((item) => !item.isBuiltIn);
-
-      const options = [];
-
-      if (builtInBackends && builtInBackends.length > 0) {
-        options.push({
-          label: intl.formatMessage({ id: 'backend.builtin' }),
-          options: builtInBackends
-        });
-      }
-
-      if (customBackends && customBackends.length > 0) {
-        options.push({
-          label: intl.formatMessage({ id: 'backend.custom' }),
-          options: customBackends
-        });
-      }
 
       if (res?.items) {
-        setBackendOptions(options);
+        setBackendOptions(list);
       }
       return list || [];
     } catch (error) {

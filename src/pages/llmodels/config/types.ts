@@ -299,8 +299,13 @@ export interface BackendGroupOption {
 }
 
 export interface BackendOption {
+  value: string;
   label: string;
-  options: BackendGroupOption[];
+  title?: string;
+  default_backend_param: string[];
+  default_version: string;
+  isBuiltIn: boolean;
+  versions: { label: string; value: string; title?: string }[];
 }
 
 export interface AccessControlFormData {

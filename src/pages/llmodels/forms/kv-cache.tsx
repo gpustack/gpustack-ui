@@ -3,7 +3,6 @@ import SealInputNumber from '@/components/seal-form/input-number';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo, useRef } from 'react';
-import { DeployFormKeyMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
@@ -36,9 +35,8 @@ const KVCacheForm = () => {
       (item) => item.value === backend
     );
 
-    // FIXME：remove formKey check after all built-in backends support KV cache
     return (
-      (currentBackend?.isBuiltIn || formKey === DeployFormKeyMap.CATALOG) &&
+      currentBackend?.isBuiltIn &&
       [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(
         backend as string
       )

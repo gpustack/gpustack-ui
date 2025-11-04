@@ -37,15 +37,35 @@ const BackendFields: React.FC = () => {
     return getBackendParamsTips(backend);
   }, [backend]);
 
+  const backendGroupedOptions = useMemo(() => {
+    const builtInBackends = backendOptions?.filter((item) => item.isBuiltIn);
+    const customBackends = backendOptions?.filter((item) => !item.isBuiltIn);
+
+    const options = [];
+
+    if (builtInBackends && builtInBackends.length > 0) {
+      options.push({
+        label: intl.formatMessage({ id: 'backend.builtin' }),
+        options: builtInBackends
+      });
+    }
+
+    if (customBackends && customBackends.length > 0) {
+      options.push({
+        label: intl.formatMessage({ id: 'backend.custom' }),
+        options: customBackends
+      });
+    }
+    return options;
+  }, [backendOptions, intl]);
+
   const backendVersions = useMemo(() => {
     if (!backend || backend === backendOptionsMap.custom) {
       return [];
     }
 
     // find the backend item from backendOptions
-    const backendItem = backendOptions
-      .flatMap((group) => group.options)
-      .find((item) => item.value === backend);
+    const backendItem = backendOptions.find((item) => item.value === backend);
 
     const versions = backendItem?.versions || [];
 
@@ -105,7 +125,7 @@ const BackendFields: React.FC = () => {
           onChange={onBackendChange}
           label={intl.formatMessage({ id: 'models.form.backend' })}
           description={<TooltipList list={backendTipsList}></TooltipList>}
-          options={backendOptions}
+          options={backendGroupedOptions}
           optionRender={optionRender}
           labelRender={labelRender}
         ></SealSelect>

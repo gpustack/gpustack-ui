@@ -16,7 +16,7 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { FormContext } from '../config/form-context';
 import {
-  BackendGroupOption,
+  BackendOption,
   DeployFormKey,
   FormData,
   SourceType
@@ -188,7 +188,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   };
 
-  const updateKVCacheConfig = (backend: string, option: BackendGroupOption) => {
+  const updateKVCacheConfig = (backend: string, option: BackendOption) => {
     if (
       !option.isBuiltIn &&
       [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(backend)
@@ -202,15 +202,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return {};
   };
 
-  const handleBackendChange = async (
-    val: string,
-    option: BackendGroupOption
-  ) => {
-    console.log('handleBackendChange option===>', val, option);
-    const isGGUF = checkIsGGUF();
+  const handleBackendChange = async (val: string, option: BackendOption) => {
     form.setFieldsValue({
       env: null,
-      backend_version: option.default_version || '',
+      backend_version: '', // don't set default version here, let the user select it
       backend_parameters: option.default_backend_param || [],
       ...updateKVCacheConfig(val, option),
       ...updateGPUSelector(val)

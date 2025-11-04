@@ -156,7 +156,7 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
             {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
           </div>
           <AlertInfoBlock
-            style={{ marginBottom: 16 }}
+            style={{ marginBottom: 8 }}
             type="warning"
             icon={<ExclamationCircleFilled />}
             message={

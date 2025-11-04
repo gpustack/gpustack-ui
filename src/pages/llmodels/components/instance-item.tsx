@@ -210,7 +210,10 @@ const RenderWorkerDownloading = (props: {
     !severList.length ||
     backend === backendOptionsMap.llamaBox;
 
-  if (isWorkerNotDownloading) {
+  const isDragftModelNotDownloading =
+    instanceData.draft_model_download_progress <= 0;
+
+  if (isWorkerNotDownloading && isDragftModelNotDownloading) {
     return null;
   }
   return (
@@ -240,7 +243,9 @@ const RenderWorkerDownloading = (props: {
         strokeColor="var(--ant-color-success)"
         percent={
           _.find(severList, (item: any) => item.download_progress < 100)
-            ?.download_progress || 0
+            ?.download_progress ||
+          instanceData.draft_model_download_progress ||
+          0
         }
       />
     </Tooltip>
@@ -307,12 +312,6 @@ const childActionList = [
     ],
     icon: <IconFont type="icon-logs" />
   },
-  // {
-  //   label: 'Terminal',
-  //   locale: false,
-  //   key: 'terminal',
-  //   icon: <CodeOutlined />
-  // },
   {
     label: 'common.button.downloadLog',
     key: 'download',

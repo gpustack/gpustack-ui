@@ -3,7 +3,6 @@ import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button } from 'antd';
@@ -11,6 +10,7 @@ import _ from 'lodash';
 import { useState } from 'react';
 import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import {
   createBackend,
   createBackendFromYAML,
@@ -170,17 +170,7 @@ const BackendList = () => {
   });
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: intl.formatMessage({ id: 'menu.resources.backendsList' }),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={[]}
-    >
+    <PageBox>
       <FilterBar
         showDeleteButton={false}
         marginBottom={22}
@@ -255,7 +245,7 @@ const BackendList = () => {
         }
       ></VersionInfoModal>
       <DeleteModal ref={modalRef}></DeleteModal>
-    </PageContainer>
+    </PageBox>
   );
 };
 

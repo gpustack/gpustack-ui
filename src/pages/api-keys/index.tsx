@@ -4,12 +4,12 @@ import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Button, ConfigProvider, Table } from 'antd';
 import { useState } from 'react';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import { deleteApisKey, queryApisKeysList } from './apis';
 import AddAPIKeyModal from './components/add-apikey-modal';
 import { ListItem } from './config/types';
@@ -123,17 +123,7 @@ const APIKeys: React.FC = () => {
 
   return (
     <>
-      <PageContainer
-        ghost
-        header={{
-          title: intl.formatMessage({ id: 'apikeys.title' }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <FilterBar
           marginBottom={22}
           marginTop={30}
@@ -163,7 +153,7 @@ const APIKeys: React.FC = () => {
             }}
           ></Table>
         </ConfigProvider>
-      </PageContainer>
+      </PageBox>
       <AddAPIKeyModal
         open={openAddModal.open}
         action={openAddModal.action}

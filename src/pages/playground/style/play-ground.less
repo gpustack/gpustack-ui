@@ -1,3 +1,5 @@
+@HEADER_HEIGHT: 56px;
+
 .play-ground {
   display: flex;
   align-items: flex-start;
@@ -37,7 +39,7 @@
 
   .params {
     overflow: hidden;
-    height: calc(100vh - 72px);
+    height: calc(100vh - @HEADER_HEIGHT);
 
     .collapse {
       width: 0;
@@ -81,20 +83,19 @@
 
   .ant-page-header {
     position: relative;
-    height: 72px;
   }
 
   &.chat {
     .ant-page-header {
-      &::after {
-        position: absolute;
-        content: '';
-        left: 32px;
-        right: 32px;
-        bottom: 0;
-        height: 1px;
-        border-bottom: 1px solid var(--ant-color-split);
-      }
+      // &::after {
+      //   position: absolute;
+      //   content: '';
+      //   left: 32px;
+      //   right: 32px;
+      //   bottom: 0;
+      //   height: 1px;
+      //   border-bottom: 1px solid var(--ant-color-split);
+      // }
     }
   }
 

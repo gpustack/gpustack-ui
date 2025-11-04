@@ -33,13 +33,25 @@ import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { useEffect, useMemo, useState } from 'react';
+import { PageContainerInner } from '../pages/_components/page-box';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import ErrorBoundary from './error-boundary';
+import { ExtraContent } from './extraRender';
 import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
+
+const NO_CONTAINER_PAGES = [
+  'chat',
+  'rerank',
+  'embedding',
+  'speech',
+  'image',
+  'clusterDetail',
+  'clusterCreate'
+];
 
 const loginPath = '/login';
 
@@ -205,8 +217,6 @@ export default (props: any) => {
   const role = initialState?.currentUser?.is_admin ? 'admin' : 'user';
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes, role));
 
-  console.log('route============', route);
-
   patchRoutes({
     routes: route.children,
     initialState: initialInfo.initialState
@@ -216,6 +226,12 @@ export default (props: any) => {
     () => matchRoutes(route?.children || [], location.pathname)?.pop?.()?.route,
     [location.pathname]
   );
+
+  const isNoContainerPage = useMemo(() => {
+    return NO_CONTAINER_PAGES.includes(matchedRoute?.name);
+  }, [matchedRoute]);
+
+  console.log('matchedRoute=========', matchedRoute, route);
 
   const allRouteKeys = useMemo(() => {
     const keys = new Set<string>();
@@ -256,27 +272,6 @@ export default (props: any) => {
       window.__GPUSTACK_BODY_SCROLLER__ = ins;
     }
   }, [initialize]);
-
-  useEffect(() => {
-    const checkAndInitialize = () => {
-      const menuWrap = window.document.querySelector(
-        '.ant-menu.ant-menu-root'
-      )?.parentElement;
-      if (menuWrap) {
-        try {
-          initializeMenu(menuWrap);
-        } catch (error) {
-          console.error('Failed to initialize menu:', error);
-        }
-      } else {
-        console.warn('Menu wrapper not found.');
-      }
-    };
-
-    const timeout = setTimeout(checkAndInitialize, 500);
-
-    return () => clearTimeout(timeout);
-  }, [initializeMenu, matchedRoute, location]);
 
   const collapsed = useMemo(() => {
     return userSettings.collapsed || false;
@@ -326,7 +321,6 @@ export default (props: any) => {
   };
 
   const actionRender = (layoutProps) => {
-    console.log('actionRender', layoutProps);
     const dom = getRightRenderContent({
       runtimeConfig,
       loading,
@@ -334,8 +328,8 @@ export default (props: any) => {
       setInitialState,
       intl,
       isDarkTheme: userSettings.isDarkTheme,
-      siderWidth: layoutProps.siderWidth,
-      collapsed: layoutProps.collapsed,
+      siderWidth: layoutProps?.siderWidth,
+      collapsed: layoutProps?.collapsed,
       showUpgrade
     });
 
@@ -479,6 +473,12 @@ export default (props: any) => {
     return data;
   }, [userSettings.isDarkTheme, themeData]);
 
+  const outlet = runtimeConfig.childrenRender ? (
+    runtimeConfig.childrenRender(<Outlet />, props)
+  ) : (
+    <Outlet />
+  );
+
   return (
     <ConfigProvider
       componentSize="large"
@@ -492,6 +492,9 @@ export default (props: any) => {
     >
       <DarkMask></DarkMask>
       <ProLayout
+        fixSiderbar
+        fixedHeader
+        breadcrumbRender={false}
         route={route}
         location={location}
         title={userConfig.title}
@@ -510,6 +513,7 @@ export default (props: any) => {
         onCollapse={onCollapse}
         onMenuHeaderClick={onMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
+        extra={[<ExtraContent key="extra-content" />]}
         collapsed={userSettings.collapsed}
         onPageChange={onPageChange}
         formatMessage={formatMessage}
@@ -521,10 +525,7 @@ export default (props: any) => {
         logo={collapsed ? SLogoIcon : LogoIcon}
         menuContentRender={menuContentRender}
         disableContentMargin
-        fixSiderbar
-        fixedHeader
         {...runtimeConfig}
-        actionsRender={actionRender}
         ErrorBoundary={ErrorBoundary}
       >
         <Exception
@@ -534,10 +535,10 @@ export default (props: any) => {
           unAccessible={runtimeConfig?.unAccessible}
           noAccessible={runtimeConfig?.noAccessible}
         >
-          {runtimeConfig.childrenRender ? (
-            runtimeConfig.childrenRender(<Outlet />, props)
+          {isNoContainerPage ? (
+            outlet
           ) : (
-            <Outlet />
+            <PageContainerInner>{outlet}</PageContainerInner>
           )}
         </Exception>
       </ProLayout>

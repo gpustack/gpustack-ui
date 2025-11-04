@@ -10,13 +10,13 @@ import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
 import AddWorker from '@/pages/cluster-management/components/add-worker';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, message } from 'antd';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import {
   CLUSTERS_API,
   createWorkerPool,
@@ -327,19 +327,7 @@ const Clusters: React.FC = () => {
 
   return (
     <>
-      <PageContainer
-        ghost
-        header={{
-          title: intl.formatMessage({
-            id: 'menu.clusterManagement.clusters'
-          }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <FilterBar
           showSelect={false}
           showPrimaryButton={true}
@@ -404,7 +392,7 @@ const Clusters: React.FC = () => {
             }}
           ></SealTable>
         </TableContext.Provider>
-      </PageContainer>
+      </PageBox>
       <AddCluster
         provider={openAddModal.provider}
         open={openAddModal.open}

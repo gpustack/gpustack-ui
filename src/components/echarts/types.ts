@@ -21,7 +21,7 @@ export interface ChartProps {
   tooltipValueFormatter?: (val: any) => string;
   height: string | number;
   width?: string | number;
-  title?: string;
+  title?: string | TitleComponentOption;
   titleOptions?: {
     [K in keyof TitleComponentOption]?: TitleComponentOption[K];
   };

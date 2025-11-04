@@ -2,8 +2,8 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
+import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, ConfigProvider, Table, message } from 'antd';
@@ -227,7 +227,7 @@ const Workers: React.FC = () => {
 
   return (
     <>
-      <PageContainer
+      <PageBox
         ghost
         footer={[
           <TerminalTabs
@@ -239,14 +239,6 @@ const Workers: React.FC = () => {
             onClose={handleTerminalClose}
           />
         ]}
-        header={{
-          title: intl.formatMessage({ id: 'resources.nodes' }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
       >
         <FilterBar
           showSelect={true}
@@ -300,7 +292,7 @@ const Workers: React.FC = () => {
             setWorkerDetailStatus({ currentData: null, open: false })
           }
         />
-      </PageContainer>
+      </PageBox>
     </>
   );
 };

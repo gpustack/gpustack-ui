@@ -280,14 +280,8 @@ export const getRightRenderContent = (opts: {
 
   return (
     <>
-      <Menu {...helpMenu} style={getMenuStyle(collapsed, siderWidth)} />
-      <Menu
-        {...userMenu}
-        style={getMenuStyle(collapsed, siderWidth, {
-          marginTop: 8,
-          marginBottom: 0
-        })}
-      />
+      <Menu {...helpMenu} mode="vertical" />
+      <Menu {...userMenu} mode="vertical" />
     </>
   );
 };

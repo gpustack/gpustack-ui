@@ -4,12 +4,12 @@ import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, ConfigProvider, message, Table } from 'antd';
 import { useMemo, useState } from 'react';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
@@ -165,17 +165,7 @@ const Users: React.FC = () => {
 
   return (
     <>
-      <PageContainer
-        ghost
-        header={{
-          title: intl.formatMessage({ id: 'users.title' }),
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <FilterBar
           marginBottom={22}
           marginTop={30}
@@ -205,7 +195,7 @@ const Users: React.FC = () => {
             }}
           ></Table>
         </ConfigProvider>
-      </PageContainer>
+      </PageBox>
       <AddModal
         open={openAddModalStatus.open}
         action={openAddModalStatus.action}

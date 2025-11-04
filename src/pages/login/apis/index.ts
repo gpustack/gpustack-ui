@@ -23,7 +23,7 @@ export const login = async (
   });
 };
 
-export const logout = async (userInfo: any) => {
+export const logout = async (userInfo?: any) => {
   await request(`${AUTH_API}/logout`, {
     method: 'POST'
   });

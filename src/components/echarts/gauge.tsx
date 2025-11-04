@@ -24,8 +24,10 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
   } = useChartConfig();
   const { value, height, width, labelFormatter, title, color, gaugeConfig } =
     props;
+  const titleText = typeof title === 'string' ? title : title?.text;
+
   if (!value && value !== 0) {
-    return <EmptyData height={height} title={title}></EmptyData>;
+    return <EmptyData height={height} title={titleText}></EmptyData>;
   }
 
   const setDataOptions = () => {
@@ -41,14 +43,15 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
     return {
       title: {
         ...titleConfig,
-        text: title,
+        text: titleText,
         textStyle: {
           fontSize: 12,
           color: chartColorMap.colorSecondary,
           fontWeight: 400
         },
-        top: '0',
-        left: 'center'
+        top: 10,
+        left: 'center',
+        ...(typeof title === 'object' ? title : {})
       },
       series: [
         {
@@ -68,6 +71,10 @@ const GaugeChart: React.FC<Omit<ChartProps, 'seriesData' | 'xAxisData'>> = (
           },
           detail: {
             ...combineGaugeConfig.detail,
+            borderColor: colorValue,
+            lineHeight: 20,
+            height: 18,
+            width: 50,
             formatter: labelFormatter || gaugeItemConfig.detail.formatter
           },
           data: [{ value }]

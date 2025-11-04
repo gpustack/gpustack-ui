@@ -126,7 +126,6 @@ export default function useChartConfig() {
     type: 'bar',
     barMaxWidth: 20,
     barMinWidth: 8,
-    // stack: 'total',
     barGap: '30%',
     barCategoryGap: '50%'
   };
@@ -154,7 +153,7 @@ export default function useChartConfig() {
     progress: {
       show: true,
       roundCap: false,
-      width: 10
+      width: 12
     },
     pointer: {
       length: '80%',
@@ -166,7 +165,7 @@ export default function useChartConfig() {
     axisLine: {
       roundCap: false,
       lineStyle: {
-        width: 10,
+        width: 12,
         color: [
           [0.5, 'rgba(84, 204, 152, 80%)'],
           [0.8, 'rgba(250, 173, 20, 80%)'],
@@ -175,8 +174,8 @@ export default function useChartConfig() {
       }
     },
     axisTick: {
-      distance: -10,
-      length: 5,
+      distance: -11,
+      length: 6,
       splitNumber: 5,
       lineStyle: {
         width: 1.5,
@@ -209,13 +208,13 @@ export default function useChartConfig() {
       rich: {
         value: {
           fontSize: 16,
-          fontWeight: '600',
+          fontWeight: 500,
           color: chartColorMap.titleColor
         },
         unit: {
           fontSize: 14,
           color: chartColorMap.titleColor,
-          fontWeight: '600',
+          fontWeight: 500,
           padding: [0, 0, 0, 2]
         }
       }

@@ -1,3 +1,5 @@
+@HEADER_HEIGHT: 56px;
+
 .ground-left-wrapper {
   display: flex;
 
@@ -7,7 +9,7 @@
     width: 390px;
     border-left: 1px solid var(--ant-color-split);
     transition: width 0.3s ease;
-    height: calc(100vh - 72px);
+    height: calc(100vh - @HEADER_HEIGHT);
     padding-top: 16px;
     overflow-y: auto;
 
@@ -40,7 +42,7 @@
     justify-content: space-between;
     flex-direction: column;
     position: relative;
-    height: calc(100vh - 72px);
+    height: calc(100vh - @HEADER_HEIGHT);
     width: calc(100% - 390px);
 
     .message-list-wrap {

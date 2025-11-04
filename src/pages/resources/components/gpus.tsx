@@ -2,8 +2,8 @@ import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
 import NoResult from '@/pages/_components/no-result';
+import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -76,17 +76,7 @@ const GPUList: React.FC = () => {
 
   return (
     <>
-      <PageContainer
-        ghost
-        header={{
-          title: 'GPUs',
-          style: {
-            paddingInline: 'var(--layout-content-header-inlinepadding)'
-          },
-          breadcrumb: {}
-        }}
-        extra={[]}
-      >
+      <PageBox>
         <FilterBar
           marginBottom={22}
           marginTop={30}
@@ -116,7 +106,7 @@ const GPUList: React.FC = () => {
             }}
           ></Table>
         </ConfigProvider>
-      </PageContainer>
+      </PageBox>
     </>
   );
 };

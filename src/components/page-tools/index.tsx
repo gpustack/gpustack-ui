@@ -167,7 +167,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
   return (
     <PageTools
       marginBottom={marginBottom}
-      marginTop={marginTop}
+      marginTop={0}
       left={
         <Space>
           <Input

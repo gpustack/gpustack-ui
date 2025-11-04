@@ -7,7 +7,6 @@ import useBodyScroll from '@/hooks/use-body-scroll';
 import { ScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-components';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Input, Space, message } from 'antd';
@@ -16,6 +15,7 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import NoResult from '../_components/no-result';
+import PageBox from '../_components/page-box';
 import { createModel, queryCatalogList } from './apis';
 import CatalogList from './components/catalog-list';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
@@ -219,19 +219,10 @@ const Catalog: React.FC = () => {
   }, [fetchData]);
 
   return (
-    <PageContainer
-      ghost
-      header={{
-        title: intl.formatMessage({ id: 'menu.modelCatalog' }),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={[]}
-    >
+    <PageBox>
       <PageTools
         marginBottom={22}
+        marginTop={0}
         left={
           <Space>
             <Input
@@ -311,7 +302,7 @@ const Catalog: React.FC = () => {
         onCancel={handleDeployModalCancel}
         onOk={handleCreateModel}
       ></DelopyBuiltInModal>
-    </PageContainer>
+    </PageBox>
   );
 };
 

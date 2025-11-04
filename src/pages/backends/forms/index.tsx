@@ -34,12 +34,19 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
     };
 
     const handleOnFinish = (values: FormData) => {
-      const data = { ...values };
+      const data = {
+        ...values,
+        backend_name: currentData?.is_built_in
+          ? values.backend_name
+          : `${values.backend_name}-custom`
+      };
       data.version_configs = data.version_configs?.map((item) => {
         if (item.version_no) {
           return {
             ...item,
-            version_no: `${item.version_no}-custom`
+            version_no: currentData?.is_built_in
+              ? `${item.version_no}-custom`
+              : item.version_no
           };
         }
         return item;
@@ -82,7 +89,7 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
         initialValues={_.omit(currentData, ['version_configs'])}
         onFinishFailed={onFinishFailed}
       >
-        <BasicForm action={action}></BasicForm>
+        <BasicForm action={action} currentData={currentData}></BasicForm>
         <VersionsForm
           action={action}
           currentData={currentData}

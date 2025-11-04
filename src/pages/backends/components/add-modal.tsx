@@ -53,7 +53,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [yamlContent, setYamlContent] = useState<string>('');
   const [formContent, setFormContent] = useState<FormData>({} as FormData);
 
-  const genertateCurrentData = (values: ListItem): ListItem => {
+  // remove '-custom' suffix from version_no in currentData, when action is EDIT
+  const genertateCurrentVersionData = (values: ListItem): ListItem => {
     const data = { ...values };
     data.version_configs = Object.entries(data.version_configs || {}).reduce(
       (acc, [key, value]) => {
@@ -105,7 +106,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   useEffect(() => {
     const iniFormContent = (data: ListItem) => {
-      const values: any = genertateCurrentData(data);
+      const values: any = genertateCurrentVersionData(data);
 
       // custom versions
       const versionConfigs = Object.keys(values.version_configs || {}).map(
@@ -133,6 +134,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       return {
         ...values,
+        backend_name: values.backend_name.replace(/-custom$/, ''),
         version_configs: versionConfigs,
         built_in_version_configs: builtInVersions
       };
@@ -158,7 +160,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
     if (action === PageAction.EDIT && open) {
       const yaml = initYamlContent(currentData || {});
-      const formData = iniFormContent(currentData || {});
+      const formData = iniFormContent(currentData || ({} as ListItem));
       setYamlContent(yaml);
       setFormContent(formData);
       formRef.current?.setFieldsValue?.(formData);

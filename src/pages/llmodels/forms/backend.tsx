@@ -1,12 +1,11 @@
 import IconFont from '@/components/icon-font';
-import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import SealTextArea from '@/components/seal-form/seal-textarea';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import React, { useMemo } from 'react';
+import styled from 'styled-components';
 import {
   backendLabelMap,
   backendTipsList,
@@ -14,23 +13,20 @@ import {
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
-import { FormData } from '../config/types';
-import BackendParametersList from './backend-parameters-list';
+
+const Box = styled.div`
+  &.default-backend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+`;
 
 const BackendFields: React.FC = () => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-  const {
-    isGGUF,
-    formKey,
-    action,
-    source,
-    gpuOptions,
-    onValuesChange,
-    backendOptions,
-    onBackendChange
-  } = useFormContext();
+  const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
   const backend = Form.useWatch('backend', form);
 
   const handleBackendVersionOnBlur = () => {
@@ -45,10 +41,53 @@ const BackendFields: React.FC = () => {
     if (!backend || backend === backendOptionsMap.custom) {
       return [];
     }
-    return (
-      backendOptions.find((item) => item.value === backend)?.versions || []
+
+    // find the backend item from backendOptions
+    const backendItem = backendOptions
+      .flatMap((group) => group.options)
+      .find((item) => item.value === backend);
+
+    const versions = backendItem?.versions || [];
+
+    // if it's a custom backend,
+    if (backendItem && !backendItem.isBuiltIn) {
+      return versions;
+    }
+
+    // check the value if endts with '-custom', if true, remove the suffix  add to  "Cutom" group, if not , add to "Built-in" group
+    const builtInVersions = versions.filter(
+      (item) => !item.value?.endsWith('-custom')
     );
-  }, [backend, backendOptions]);
+    const customVersions = versions.filter((item) =>
+      item.value?.endsWith('-custom')
+    );
+
+    const options = [];
+
+    if (builtInVersions.length > 0) {
+      options.push({
+        label: intl.formatMessage({ id: 'backend.builtin' }),
+        options: builtInVersions
+      });
+    }
+
+    if (customVersions.length > 0) {
+      options.push({
+        label: intl.formatMessage({ id: 'backend.custom' }),
+        options: customVersions
+      });
+    }
+
+    return options;
+  }, [backend, backendOptions, intl]);
+
+  const optionRender = (option: any) => {
+    return option.data.title;
+  };
+
+  const labelRender = (option: any) => {
+    return option.title;
+  };
 
   return (
     <>
@@ -67,12 +106,16 @@ const BackendFields: React.FC = () => {
           label={intl.formatMessage({ id: 'models.form.backend' })}
           description={<TooltipList list={backendTipsList}></TooltipList>}
           options={backendOptions}
+          optionRender={optionRender}
+          labelRender={labelRender}
         ></SealSelect>
       </Form.Item>
       {backendOptionsMap.custom !== backend && (
         <Form.Item name="backend_version">
           <SealSelect
             options={backendVersions}
+            optionRender={optionRender}
+            labelRender={labelRender}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'
             })}
@@ -114,47 +157,6 @@ const BackendFields: React.FC = () => {
           ></SealSelect>
         </Form.Item>
       )}
-      {backend === backendOptionsMap.custom && (
-        <>
-          <Form.Item<FormData>
-            name="image_name"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'backend.imageName')
-              }
-            ]}
-          >
-            <SealInput.Input
-              required
-              allowClear
-              label={intl.formatMessage({ id: 'backend.imageName' })}
-            ></SealInput.Input>
-          </Form.Item>
-          <Form.Item<FormData>
-            name="run_command"
-            rules={[
-              {
-                required: true,
-                message: getRuleMessage('input', 'backend.runCommand')
-              }
-            ]}
-          >
-            <SealTextArea
-              allowClear
-              required
-              scaleSize={true}
-              alwaysFocus={true}
-              autoSize={{ minRows: 2, maxRows: 4 }}
-              label={intl.formatMessage({ id: 'backend.runCommand' })}
-              placeholder={intl.formatMessage({
-                id: 'models.form.runCommandPlaceholder'
-              })}
-            ></SealTextArea>
-          </Form.Item>
-        </>
-      )}
-      <BackendParametersList></BackendParametersList>
     </>
   );
 };

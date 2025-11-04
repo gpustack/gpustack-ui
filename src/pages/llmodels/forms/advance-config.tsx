@@ -5,11 +5,13 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { useCallback } from 'react';
-import { modelCategories, ScheduleValueMap } from '../config';
+import { DeployFormKeyMap, modelCategories, ScheduleValueMap } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import Backend from './backend';
+import BackendForm from './backend';
+import BackendParametersList from './backend-parameters-list';
+import CustomBackend from './custom-backend';
 
 const AdvanceConfig = () => {
   const intl = useIntl();
@@ -17,7 +19,7 @@ const AdvanceConfig = () => {
   const EnviromentVars = Form.useWatch('env', form);
   const scheduleType = Form.useWatch('scheduleType', form);
   const backend = Form.useWatch('backend', form);
-  const { onValuesChange } = useFormContext();
+  const { onValuesChange, formKey } = useFormContext();
 
   const handleEnviromentVarsChange = useCallback(
     (labels: Record<string, any>) => {
@@ -62,8 +64,9 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      <Backend></Backend>
-
+      {formKey === DeployFormKeyMap.CATALOG && <BackendForm></BackendForm>}
+      <CustomBackend></CustomBackend>
+      <BackendParametersList></BackendParametersList>
       <Form.Item<FormData> name="env">
         <LabelSelector
           label={intl.formatMessage({

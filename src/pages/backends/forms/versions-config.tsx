@@ -283,7 +283,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
                     >
                       <SealInput.Input
                         trim
-                        addAfter="-custom"
+                        addAfter={currentData?.is_built_in ? '-custom' : null}
                         onChange={handleVersionChange}
                         label={intl.formatMessage({ id: 'backend.version' })}
                         required

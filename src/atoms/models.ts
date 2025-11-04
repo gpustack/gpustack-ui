@@ -1,3 +1,4 @@
+import { BackendOption } from '@/pages/llmodels/config/types';
 import { atom, getDefaultStore } from 'jotai';
 
 // models expand keys: create, update , delete,
@@ -24,13 +25,4 @@ export const clusterListAtom = atom<
   }[]
 >([]);
 
-export const backendOptionsAtom = atom<
-  {
-    value: string;
-    label: string;
-    default_backend_param: string[];
-    default_version: string;
-    isBuiltIn: boolean;
-    versions: { label: string; value: string }[];
-  }[]
->([]);
+export const backendOptionsAtom = atom<BackendOption[]>([]);

@@ -255,5 +255,6 @@ export default {
   'common.button.addItem': '添加项',
   'common.help.default': '默认: {content}',
   'common.filter.status': '按状态筛选',
-  'common.form.rule.selectInput': '请选择或输入{name}'
+  'common.form.rule.selectInput': '请选择或输入{name}',
+  'common.tag.experimental': '实验性'
 };

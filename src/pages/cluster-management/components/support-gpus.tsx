@@ -5,9 +5,24 @@ import iluvatarWEBP from '@/assets/logo/Iluvatar.png';
 import metaxLogo from '@/assets/logo/metax.png';
 import moorePNG from '@/assets/logo/moore _threads.png';
 import IconFont from '@/components/icon-font';
-import { GPUDriverMap } from '@/pages/resources/config/gpu-driver';
+import {
+  AddWorkerDockerNotes,
+  GPUDriverMap
+} from '@/pages/resources/config/gpu-driver';
 import { useIntl } from '@umijs/max';
+import styled from 'styled-components';
 import ProviderCatalog from './provider-catalog';
+
+const Box = styled.div`
+  .template-card-wrapper {
+    .template-card-inner {
+      line-height: 1;
+      .template-card-content {
+        font-size: 13px;
+      }
+    }
+  }
+`;
 
 const ProviderImage = ({ src, showBg }: { src: string; showBg?: boolean }) => {
   return (
@@ -41,6 +56,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       description: '',
       key: GPUDriverMap.NVIDIA,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda',
       icon: <IconFont type="icon-nvidia2" style={{ fontSize: 32 }} />
     },
@@ -50,6 +66,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       value: GPUDriverMap.AMD,
       key: GPUDriverMap.AMD,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.AMD],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#amd-rocm',
       icon: (
         <IconFont
@@ -64,61 +81,72 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       value: GPUDriverMap.ASCEND,
       key: GPUDriverMap.ASCEND,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.ASCEND],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#ascend-cann',
       icon: <ProviderImage src={ascendLogo} showBg />
     },
     {
       label: intl.formatMessage({ id: 'vendor.hygon' }),
-      description: '',
+      description: 'common.tag.experimental',
       value: GPUDriverMap.HYGON,
       key: GPUDriverMap.HYGON,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.HYGON],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#hygon-dtk',
       icon: <ProviderImage src={hyponPNG} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.moorthreads' }),
-      description: '',
+      description: 'common.tag.experimental',
       value: GPUDriverMap.MOORE_THREADS,
       key: GPUDriverMap.MOORE_THREADS,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.MOORE_THREADS],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#moore-threads-musa',
       icon: <ProviderImage src={moorePNG} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.iluvatar' }),
-      description: '',
+      description: 'common.tag.experimental',
       value: GPUDriverMap.ILUVATAR,
       key: GPUDriverMap.ILUVATAR,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.ILUVATAR],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#iluvatar-corex',
       icon: <ProviderImage src={iluvatarWEBP} showBg />
     },
     {
       label: intl.formatMessage({ id: 'vendor.cambricon' }),
+      description: 'common.tag.experimental',
       value: GPUDriverMap.CAMBRICON,
       key: GPUDriverMap.CAMBRICON,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.CAMBRICON],
       link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#cambricon-mlu',
       icon: <ProviderImage src={CambriconPNG} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.metax' }),
+      description: 'common.tag.experimental',
       value: GPUDriverMap.METAX,
       key: GPUDriverMap.METAX,
       locale: false,
+      notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
       icon: <ProviderImage src={metaxLogo} showBg />
     }
   ];
+
   return (
-    <ProviderCatalog
-      onSelect={onSelect}
-      height={60}
-      current={current}
-      dataList={supportedHardPlatforms}
-      clickable={clickable}
-      cols={4}
-    />
+    <Box>
+      <ProviderCatalog
+        onSelect={onSelect}
+        height={60}
+        current={current}
+        dataList={supportedHardPlatforms}
+        clickable={clickable}
+        cols={4}
+      />
+    </Box>
   );
 };
 

@@ -203,6 +203,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleBackendChange = async (val: string, option: BackendOption) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
     form.setFieldsValue({
       env: null,
       backend_version: '', // don't set default version here, let the user select it

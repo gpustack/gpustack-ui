@@ -46,7 +46,19 @@ export default {
     'Use the following command to check if the environment is ready',
   'clusters.create.register.tips':
     ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
-  'cluster.provider.comingsoon': 'Coming soon'
+  'cluster.provider.comingsoon': 'Coming soon',
+  'clusters.addworker.nvidiaNotes-01':
+    'If the worker has multiple outbound IP addresses, enter <span class="bold-text">WORKER_IP</span> to ensure that the node uses the desired IP. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
+  'clusters.addworker.nvidiaNotes-02':
+    'If the model directory already exists on the worker, please add the <span class="bold-text">--volume</span> directive to mount it.',
+  'clusters.addworker.hygonNotes':
+    'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, please create a symbolic link pointing to the Hygon installed path: <span class="bold-text">/opt/hyhal</span>. Same as <span class="bold-text">/opt/dtk</span> directory.',
+  'clusters.addworker.corexNotes':
+    'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class="bold-text">/usr/local/corex</span> directory.',
+  'clusters.addworker.metaxNotes':
+    'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
+  'clusters.addworker.cambriconNotes':
+    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -92,6 +104,12 @@ export default {
 // 40. 'clusters.create.addCommand.tips': ' On the Worker that needs to be added, run the following command to join it to the cluster.',
 // 41. 'cluster.create.checkEnv.tips': 'Use the following command to check if the environment is ready',
 // 42. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
-// 43. 'cluster.provider.comingsoon': 'Coming soon'
+// 43. 'cluster.provider.comingsoon': 'Coming soon',
+// 44. 'clusters.addworker.nvidiaNotes-01': 'If the worker has multiple outbound IP addresses, enter <span class="bold-text">WORKER_IP</span> to ensure that the node uses the desired IP. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
+// 45. 'clusters.addworker.nvidiaNotes-02': 'If the model directory already exists on the worker, please add the <span class="bold-text">--volume</span> directive to mount it.',
+// 46. 'clusters.addworker.hygonNotes': 'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, please create a symbolic link pointing to the Hygon installed path: <span class="bold-text">/opt/hyhal</span>. Same as <span class="bold-text">/opt/dtk</span> directory.',
+// 47. 'clusters.addworker.corexNotes': 'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class
+// 48. 'clusters.addworker.metaxNotes': 'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
+// 49. 'clusters.addworker.cambriconNotes': 'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
 
 // ========== End of To-Do List ==========

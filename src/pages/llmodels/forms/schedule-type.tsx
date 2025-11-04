@@ -71,12 +71,13 @@ const ScheduleTypeForm: React.FC = () => {
   const scheduleType = Form.useWatch('scheduleType', form);
   const workerSelector = Form.useWatch('worker_selector', form);
 
-  const handleScheduleTypeChange = (value: string) => {
+  const handleScheduleTypeChange = async (value: string) => {
     if (value === ScheduleValueMap.Auto) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
       onValuesChange?.({}, form.getFieldsValue());
-      return;
-    }
-    if (value === ScheduleValueMap.Manual) {
+    } else if (value === ScheduleValueMap.Manual) {
       form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
     }
   };

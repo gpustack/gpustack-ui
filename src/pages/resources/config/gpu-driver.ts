@@ -137,20 +137,20 @@ const registerWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
-      WORKER_IP="" \\
-    docker run -d --name \${WORKER_NAME} \\
-          --restart=unless-stopped \\
-          --privileged \\
-          --net=host \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
-          -volume /var/run/docker.sock:/var/run/docker.sock \\
-          --volume gpustack-data:/var/lib/gpustack \\
-          --runtime ${config.runtime} \\
-          ${params.image} \\
-          --server-url ${params.server} \\
-          --token ${params.token} \\
-          --worker-ip \${WORKER_IP}`;
+WORKER_IP="" \\
+docker run -d --name \${WORKER_NAME} \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --net=host \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      --runtime ${config.runtime} \\
+      ${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\
+      --worker-ip \${WORKER_IP}`;
 };
 
 // avaliable for Ascend
@@ -163,21 +163,21 @@ const registerAscendWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
-      WORKER_IP="" \\
-    docker run -d --name \${WORKER_NAME} \\
-          --restart=unless-stopped \\
-          --privileged \\
-          --net=host \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
-          -volume /var/run/docker.sock:/var/run/docker.sock \\
-          --volume gpustack-data:/var/lib/gpustack \\
-          --runtime ${config.runtime} \\
-          --env "ASCEND_VISIBLE_DEVICES=$(npu-smi info -m | tail -n 1 | awk '{print $1}') \\
-          ${params.image} \\
-          --server-url ${params.server} \\
-          --token ${params.token} \\
-          --worker-ip \${WORKER_IP}`;
+WORKER_IP="" \\
+docker run -d --name \${WORKER_NAME} \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --net=host \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      --runtime ${config.runtime} \\
+      --env "ASCEND_VISIBLE_DEVICES=$(npu-smi info -m | tail -n 1 | awk '{print $1}') \\
+      ${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\
+      --worker-ip \${WORKER_IP}`;
 };
 
 const registerHygonWorker = (params: {
@@ -189,23 +189,23 @@ const registerHygonWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
-      WORKER_IP="" \\
-    docker run -d --name \${WORKER_NAME} \\
-          --restart=unless-stopped \\
-          --privileged \\
-          --net=host \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
-          -volume /var/run/docker.sock:/var/run/docker.sock \\
-          --volume gpustack-data:/var/lib/gpustack \\
-          --runtime ${config.runtime} \\
-          --volume /opt/hyhal:/opt/hyhal:ro \\
-          --volume /opt/dtk:/opt/dtk:ro \\
-          --env ROCM_PATH=/opt/dtk \\
-          ${params.image} \\
-          --server-url ${params.server} \\
-          --token ${params.token} \\
-          --worker-ip \${WORKER_IP}`;
+WORKER_IP="" \\
+docker run -d --name \${WORKER_NAME} \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --net=host \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      --runtime ${config.runtime} \\
+      --volume /opt/hyhal:/opt/hyhal:ro \\
+      --volume /opt/dtk:/opt/dtk:ro \\
+      --env ROCM_PATH=/opt/dtk \\
+      ${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\
+      --worker-ip \${WORKER_IP}`;
 };
 
 const registerIluvatarWorker = (params: {
@@ -217,22 +217,22 @@ const registerIluvatarWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
-      WORKER_IP="" \\
-    docker run -d --name \${WORKER_NAME} \\
-          --restart=unless-stopped \\
-          --privileged \\
-          --net=host \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
-          -volume /var/run/docker.sock:/var/run/docker.sock \\
-          --volume gpustack-data:/var/lib/gpustack \\
-          --volume /lib/modules:/lib/modules:ro \\
-          --volume /usr/local/corex:/usr/local/corex:ro \\
-          --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
-          ${params.image} \\
-          --server-url ${params.server} \\
-          --token ${params.token} \\
-          --worker-ip \${WORKER_IP}`;
+WORKER_IP="" \\
+docker run -d --name \${WORKER_NAME} \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --net=host \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      --volume /lib/modules:/lib/modules:ro \\
+      --volume /usr/local/corex:/usr/local/corex:ro \\
+      --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
+      ${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\
+      --worker-ip \${WORKER_IP}`;
 };
 
 const registerMetaXWorker = (params: {
@@ -244,21 +244,21 @@ const registerMetaXWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
-      WORKER_IP="" \\
-    docker run -d --name \${WORKER_NAME} \\
-          --restart=unless-stopped \\
-          --privileged \\
-          --net=host \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
-          -volume /var/run/docker.sock:/var/run/docker.sock \\
-          --volume gpustack-data:/var/lib/gpustack \\
-          --volume /opt/mxdriver:/opt/mxdriver:ro \\
-          --volume /opt/maca:/opt/maca:ro \\
-          ${params.image} \\
-          --server-url ${params.server} \\
-          --token ${params.token} \\
-          --worker-ip \${WORKER_IP}`;
+WORKER_IP="" \\
+docker run -d --name \${WORKER_NAME} \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --net=host \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      --volume /opt/mxdriver:/opt/mxdriver:ro \\
+      --volume /opt/maca:/opt/maca:ro \\
+      ${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\
+      --worker-ip \${WORKER_IP}`;
 };
 
 const registerCambriconWorker = (params: {
@@ -270,21 +270,21 @@ const registerCambriconWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
-      WORKER_IP="" \\
-    docker run -d --name \${WORKER_NAME} \\
-          --restart=unless-stopped \\
-          --privileged \\
-          --net=host \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-          --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
-          -volume /var/run/docker.sock:/var/run/docker.sock \\
-          --volume gpustack-data:/var/lib/gpustack \\
-          --volume /usr/local/neuware:/usr/local/neuware:ro \\
-          --volume /usr/bin/cnmon:/usr/bin/cnmon \\
-          ${params.image} \\
-          --server-url ${params.server} \\
-          --token ${params.token} \\
-          --worker-ip \${WORKER_IP}`;
+WORKER_IP="" \\
+docker run -d --name \${WORKER_NAME} \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --net=host \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      --volume /usr/local/neuware:/usr/local/neuware:ro \\
+      --volume /usr/bin/cnmon:/usr/bin/cnmon \\
+      ${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\
+      --worker-ip \${WORKER_IP}`;
 };
 
 export const registerAddWokerCommandMap = {
@@ -296,4 +296,24 @@ export const registerAddWokerCommandMap = {
   [GPUDriverMap.CAMBRICON]: registerCambriconWorker,
   [GPUDriverMap.METAX]: registerMetaXWorker,
   [GPUDriverMap.MOORE_THREADS]: registerWorker
+};
+
+export const AddWorkerDockerNotes: Record<string, string[]> = {
+  [GPUDriverMap.NVIDIA]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02'
+  ],
+  [GPUDriverMap.AMD]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02'
+  ],
+  [GPUDriverMap.MOORE_THREADS]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02'
+  ],
+  [GPUDriverMap.ASCEND]: [],
+  [GPUDriverMap.HYGON]: ['clusters.addworker.hygonNotes'],
+  [GPUDriverMap.ILUVATAR]: ['clusters.addworker.corexNotes'],
+  [GPUDriverMap.CAMBRICON]: ['clusters.addworker.cambriconNotes'],
+  [GPUDriverMap.METAX]: ['clusters.addworker.metaxNotes']
 };

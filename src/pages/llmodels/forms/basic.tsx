@@ -12,6 +12,7 @@ import { DeployFormKeyMap, sourceOptions } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import BackendForm from './backend';
+import CustomBackend from './custom-backend';
 import LocalPathSource from './local-path-source';
 import OnlineSource from './online-source';
 
@@ -118,7 +119,13 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           ></SealSelect>
         }
       </Form.Item>
-      {formKey === DeployFormKeyMap.DEPLOYMENT && <BackendForm></BackendForm>}
+      {formKey === DeployFormKeyMap.DEPLOYMENT && (
+        <>
+          <BackendForm></BackendForm>
+          <CustomBackend></CustomBackend>
+        </>
+      )}
+
       <Form.Item<FormData>
         name="replicas"
         rules={[

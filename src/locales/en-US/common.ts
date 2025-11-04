@@ -263,5 +263,6 @@ export default {
   'common.button.addItem': 'Add Item',
   'common.help.default': 'Default: {content}',
   'common.filter.status': 'Filter by status',
-  'common.form.rule.selectInput': 'Please select or enter a {name}'
+  'common.form.rule.selectInput': 'Please select or enter a {name}',
+  'common.tag.experimental': 'Experimental'
 };

@@ -64,8 +64,13 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      {formKey === DeployFormKeyMap.CATALOG && <BackendForm></BackendForm>}
-      <CustomBackend></CustomBackend>
+      {formKey === DeployFormKeyMap.CATALOG && (
+        <>
+          <BackendForm></BackendForm>
+          <CustomBackend></CustomBackend>
+        </>
+      )}
+
       <BackendParametersList></BackendParametersList>
       <Form.Item<FormData> name="env">
         <LabelSelector

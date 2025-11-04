@@ -1,4 +1,9 @@
-import { BulbOutlined } from '@ant-design/icons';
+import AlertInfoBlock from '@/components/alert-info/block';
+import {
+  AddWorkerDockerNotes,
+  GPUDriverMap
+} from '@/pages/resources/config/gpu-driver';
+import { BulbOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Alert } from 'antd';
 import React from 'react';
@@ -8,6 +13,26 @@ import AddWorkerCommand from './add-worker-command';
 import CheckEnvCommand from './check-env-command';
 import RegisterClusterInner from './register-cluster-inner';
 import SupportedGPUs from './support-gpus';
+
+const StyledTag = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+`;
+
+const NotesWrapper = styled.ol`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 400;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.2;
+  li {
+    margin-left: 12px !important;
+  }
+`;
 
 const Title = styled.div`
   font-size: 16px;
@@ -40,7 +65,6 @@ const Container = styled.div`
   .command-info {
     margin-top: 24px;
     margin-bottom: 8px;
-    color: var(--ant-color-text-secondary);
   }
 `;
 
@@ -63,16 +87,20 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   registrationInfo
 }) => {
   const intl = useIntl();
-  const [currentGPU, setCurrentGPU] = React.useState<string>('cuda');
-  React.useState<string>('cuda');
+  const [currentGPU, setCurrentGPU] = React.useState<string>(
+    GPUDriverMap.NVIDIA
+  );
+  React.useState<string>(GPUDriverMap.NVIDIA);
   const [workerCommand, setWorkerCommand] = React.useState<Record<string, any>>(
     {
       label: 'NVIDIA',
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda'
+      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda',
+      notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA]
     }
   );
 
   const handleSelectProvider = (value: string, item: any) => {
+    console.log('selected gpu driver:', value, item);
     setCurrentGPU(value);
     setWorkerCommand(item);
   };
@@ -108,22 +136,44 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
       </Content>
 
       <div className="command-info">
-        1. {intl.formatMessage({ id: 'cluster.create.checkEnv.tips' })}
+        <StyledTag>1.</StyledTag>
+        {intl.formatMessage({ id: 'cluster.create.checkEnv.tips' })}
       </div>
       <CheckEnvCommand provider={provider} currentGPU={currentGPU} />
 
       {provider === ProviderValueMap.Kubernetes ? (
         <>
           <div className="command-info">
-            2. {intl.formatMessage({ id: 'clusters.create.register.tips' })}
+            <StyledTag>2.</StyledTag>
+            {intl.formatMessage({ id: 'clusters.create.register.tips' })}
           </div>
           <RegisterClusterInner registrationInfo={registrationInfo} />
         </>
       ) : (
         <>
           <div className="command-info">
-            2. {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
+            <StyledTag>2.</StyledTag>
+            {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
           </div>
+          <AlertInfoBlock
+            style={{ marginBottom: 16 }}
+            type="warning"
+            icon={<ExclamationCircleFilled />}
+            message={
+              workerCommand.notes?.length > 0 ? (
+                <NotesWrapper>
+                  {workerCommand.notes.map((note: string, index: number) => (
+                    <li
+                      key={index}
+                      dangerouslySetInnerHTML={{
+                        __html: intl.formatMessage({ id: note })
+                      }}
+                    ></li>
+                  ))}
+                </NotesWrapper>
+              ) : null
+            }
+          ></AlertInfoBlock>
           <AddWorkerCommand
             registrationInfo={registrationInfo}
             currentGPU={currentGPU}

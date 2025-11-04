@@ -21,10 +21,10 @@ const tag = (props: any) => {
 const renderTag = (props: any) => {
   return (
     <AutoTooltip
-      className="m-r-4"
       closable={props.closable}
       onClose={props.onClose}
       maxWidth={240}
+      style={{ marginRight: 4 }}
       filled
     >
       {tag(props)}

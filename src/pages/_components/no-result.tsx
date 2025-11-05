@@ -86,7 +86,7 @@ const NoResult: React.FC<
           description={
             <Description>
               {!hasFilters && (
-                <Typography.Text style={{ fontSize: '18px', fontWeight: 500 }}>
+                <Typography.Text style={{ fontSize: '16px', fontWeight: 500 }}>
                   {props.title}
                 </Typography.Text>
               )}

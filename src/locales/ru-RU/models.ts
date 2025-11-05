@@ -205,69 +205,35 @@ export default {
     'Система автоматически рассчитывает количество GPU на реплику.',
   'models.form.gpusAllocationType.custom.tips':
     'Вы можете указать точное количество GPU на реплику.',
-  'models.mymodels.status.inactive': 'Stopped',
-  'models.mymodels.status.degrade': 'Abnormal',
-  'models.mymodels.status.active': 'Active',
-  'models.form.kvCache.tips':
-    'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
-  'models.form.kvCache.tips2':
-    'Only supported when using built-in inference backends (vLLM or SGLang).',
-  'models.form.scheduling': 'Scheduling',
-  'models.form.ramRatio': 'RAM-to-VRAM Ratio',
-  'models.form.ramSize': 'Maximum RAM Size (GiB)',
-  'models.form.ramRatio.tips':
-    'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
-  'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-  'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.',
-  'models.form.mode': 'Mode',
-  'models.form.algorithm': 'Algorithm',
-  'models.form.draftModel': 'Draft Model',
-  'models.form.numDraftTokens': 'Number of Draft Tokens',
-  'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
-  'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
-  'models.form.mode.throughput': 'Throughput',
-  'models.form.mode.latency': 'Latency',
-  'models.form.mode.baseline': 'Standard',
-  'models.form.mode.throughput.tips':
-    'optimized for high throughput under high request concurrency.',
-  'models.form.mode.latency.tips':
-    'optimized for low latency under low request concurrency.',
-  'models.form.mode.baseline.tips':
-    'the most compatible option with full precision.',
-  'models.form.draftModel.placeholder': 'Please select or enter a draft model',
-  'models.form.draftModel.tips':
-    'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
-  'models.form.quantization': 'Quantization',
-  'models.form.backend.custom': 'User Defined'
+  'models.mymodels.status.inactive': 'Остановлен',
+  'models.mymodels.status.degrade': 'Аномальный',
+  'models.mymodels.status.active': 'Активен',
+  'models.form.kvCache.tips': 'Расширенный KV-кэш и спекулятивное декодирование доступны только со встроенными бэкендами (vLLM / SGLang). Переключите бэкенд в <span class="bold-text">Расширенных</span> настройках, чтобы включить их.',
+  'models.form.kvCache.tips2': 'Поддерживается только при использовании встроенных бэкендов вывода (vLLM или SGLang).',
+  'models.form.scheduling': 'Планирование',
+  'models.form.ramRatio': 'Соотношение ОЗУ к VRAM',
+  'models.form.ramSize': 'Максимальный размер ОЗУ (ГиБ)',
+  'models.form.ramRatio.tips': 'Соотношение системной оперативной памяти к видеопамяти GPU, используемое для KV-кэша. Например, 2.0 означает, что кэш в ОЗУ может быть в два раза больше, чем в видеопамяти GPU.',
+  'models.form.ramSize.tips': 'Максимальный размер KV-кэша, хранящегося в системной памяти (ГиБ). Если задано, это значение переопределяет "{content}".',
+  'models.form.chunkSize.tips': 'Количество токенов на чанк KV-кэша.',
+  'models.form.mode': 'Режим',
+  'models.form.algorithm': 'Алгоритм',
+  'models.form.draftModel': 'Черновая модель',
+  'models.form.numDraftTokens': 'Количество черновых токенов',
+  'models.form.ngramMinMatchLength': 'Минимальная длина совпадения N-граммы',
+  'models.form.ngramMaxMatchLength': 'Максимальная длина совпадения N-граммы',
+  'models.form.mode.throughput': 'Пропускная способность',
+  'models.form.mode.latency': 'Задержка',
+  'models.form.mode.baseline': 'Стандартный',
+  'models.form.mode.throughput.tips': 'оптимизировано для высокой пропускной способности при высокой конкурентности запросов.',
+  'models.form.mode.latency.tips': 'оптимизировано для низкой задержки при низкой конкурентности запросов.',
+  'models.form.mode.baseline.tips': 'наиболее совместимый вариант с полной точностью.',
+  'models.form.draftModel.placeholder': 'Выберите или введите черновую модель',
+  'models.form.draftModel.tips': 'Вы можете ввести локальный путь (например, /path/to/model) или выбрать модель из Hugging Face или ModelScope (например, Tengyunw/qwen3_8b_eagle3). Система автоматически сопоставит модель на основе источника основной модели.',
+  'models.form.quantization': 'Квантование',
+  'models.form.backend.custom': 'Пользовательский'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.mymodels.status.inactive': 'Stopped',
-// 3. 'models.mymodels.status.degrade': 'Abnormal',
-// 4. 'models.mymodels.status.active': 'Active'
-// 5. 'models.form.remoteURL.tips': 'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
-// 6.  'models.form.kvCache.tips': 'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
-// 7. 'models.form.kvCache.tips2': 'Only supported when using built-in inference backends (vLLM or SGLang).';
-// 8. 'models.form.scheduling': 'Scheduling',
-// 9. 'models.form.ramRatio': 'RAM-to-VRAM Ratio',
-// 10. 'models.form.ramSize': 'Maximum RAM Size (GiB)',
-// 11. 'models.form.ramRatio.tips': 'Ratio of system RAM to GPU VRAM used for KV cache. For example, 2.0 means the cache in RAM can be twice as large as the GPU VRAM.',
-// 12. 'models.form.ramSize.tips': `Maximum size of the KV cache stored in system memory (GiB). If set, this value overrides "{content}".`,
-// 13. 'models.form.chunkSize.tips': 'Number of tokens per KV cache chunk.'
-// 25. 'models.form.mode': 'Mode',
-// 26. 'models.form.algorithm': 'Algorithm',
-// 27. 'models.form.draftModel': 'Draft Model',
-// 28. 'models.form.numDraftTokens': 'Number of Draft Tokens',
-// 29. 'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
-// 30. 'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
-// 31. 'models.form.mode.throughput': 'Throughput',
-// 32. 'models.form.mode.latency': 'Latency',
-// 33. 'models.form.mode.baseline': 'Standard',
-// 34. 'models.form.mode.throughput.tips': 'optimized for high throughput under high request concurrency.',
-// 35. 'models.form.mode.latency.tips': 'optimized for low latency under low request concurrency.',
-// 36. 'models.form.mode.baseline.tips': 'the most compatible option with full precision.'
-// 37. 'models.form.draftModel.placeholder': 'Please select or enter a draft model',
-// 38. 'models.form.draftModel.tips': 'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
-// 39. 'models.form.quantization': 'Quantization',
-// 40. 'models.form.backend.custom': 'User Defined'
+
 // ========== End of To-Do List ==========

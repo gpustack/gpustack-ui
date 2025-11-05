@@ -210,10 +210,11 @@ const RenderWorkerDownloading = (props: {
     !severList.length ||
     backend === backendOptionsMap.llamaBox;
 
-  const isDragftModelNotDownloading =
-    instanceData.draft_model_download_progress <= 0;
+  const isDraftModeNotDownloading =
+    !instanceData.draft_model_download_progress ||
+    instanceData.draft_model_download_progress >= 100;
 
-  if (isWorkerNotDownloading && isDragftModelNotDownloading) {
+  if (isWorkerNotDownloading && isDraftModeNotDownloading) {
     return null;
   }
   return (

@@ -93,13 +93,11 @@ export default {
   'resource.register.windows.support': 'Windows 10, Windows 11',
   'resources.model.instance': 'Модель экземпляра',
   'resources.worker.download.privatekey': 'Скачать приватный ключ',
-  'resources.worker': 'Worker',
-  'resources.modelfiles.form.exsting': 'Downloaded',
-  'resources.modelfiles.form.added': 'Added'
+  'resources.worker': 'Рабочий узел',
+  'resources.modelfiles.form.exsting': 'Загружено',
+  'resources.modelfiles.form.added': 'Добавлено'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'resources.worker': 'Worker',
-// 2. 'resources.modelfiles.form.exsting': 'Downloaded',
-// 3. 'resources.modelfiles.form.added': 'Added'
+
 // ========== End of To-Do List ==========

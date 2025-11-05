@@ -47,25 +47,14 @@ export default {
   'clusters.create.register.tips':
     'На Kubernetes кластере, который необходимо добавить, выполните следующую команду, чтобы присоединить его узлы к кластеру.',
   'cluster.provider.comingsoon': 'Скоро будет',
-  'clusters.addworker.nvidiaNotes-01':
-    'If the worker has multiple outbound IP addresses, enter <span class="bold-text">WORKER_IP</span> to ensure that the node uses the desired IP. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
-  'clusters.addworker.nvidiaNotes-02':
-    'If the model directory already exists on the worker, please add the <span class="bold-text">--volume</span> directive to mount it.',
-  'clusters.addworker.hygonNotes':
-    'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, please create a symbolic link pointing to the Hygon installed path: <span class="bold-text">/opt/hyhal</span>. Same as <span class="bold-text">/opt/dtk</span> directory.',
-  'clusters.addworker.corexNotes':
-    'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class="bold-text">/usr/local/corex</span> directory.',
-  'clusters.addworker.metaxNotes':
-    'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
-  'clusters.addworker.cambriconNotes':
-    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
+  'clusters.addworker.nvidiaNotes-01': 'Если рабочий узел имеет несколько исходящих IP-адресов, укажите <span class="bold-text">WORKER_IP</span>, чтобы гарантировать использование узлом нужного IP. Перепроверьте с помощью команды <span class="bold-text">hostname -I | xargs -n1</span>.',
+  'clusters.addworker.nvidiaNotes-02': 'Если директория с моделью уже существует на рабочем узле, добавьте директиву <span class="bold-text">--volume</span> для её монтирования.',
+  'clusters.addworker.hygonNotes': 'Если директория <span class="bold-text">/opt/hyhal</span> не существует, создайте символическую ссылку на путь установки Hygon: <span class="bold-text">/opt/hyhal</span>. Аналогично для директории <span class="bold-text">/opt/dtk</span>.',
+  'clusters.addworker.corexNotes': 'Если директория <span class="bold-text">/lib/modules</span> не существует, создайте символическую ссылку на путь установки Iluvatar: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Аналогично для директории <span class="bold-text">/usr/local/corex</span>.',
+  'clusters.addworker.metaxNotes': 'Если директория <span class="bold-text">/opt/mxdriver</span> не существует, создайте символическую ссылку на путь установки MetaX: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Аналогично для директории <span class="bold-text">/opt/maca</span>.',
+  'clusters.addworker.cambriconNotes': 'Если директория <span class="bold-text">/usr/local/neuware</span> не существует, создайте символическую ссылку на путь установки Cambricon: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'clusters.addworker.nvidiaNotes-01': 'If the worker has multiple outbound IP addresses, enter <span class="bold-text">WORKER_IP</span> to ensure that the node uses the desired IP. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
-// 2. 'clusters.addworker.nvidiaNotes-02': 'If the model directory already exists on the worker, please add the <span class="bold-text">--volume</span> directive to mount it.',
-// 3. 'clusters.addworker.hygonNotes': 'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, please create a symbolic link pointing to the Hygon installed path: <span class="bold-text">/opt/hyhal</span>. Same as <span class="bold-text">/opt/dtk</span> directory.',
-// 4. 'clusters.addworker.corexNotes': 'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class="bold-text">/usr/local/corex</span> directory.',
-// 5. 'clusters.addworker.metaxNotes': 'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
-// 6. 'clusters.addworker.cambriconNotes': 'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
+
 // ========== End of To-Do List ==========

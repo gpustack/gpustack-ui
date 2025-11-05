@@ -29,15 +29,12 @@ export default {
   'backend.versionInfo.autoImage': 'Автоматически выбор во время запуска',
   'backend.version.rules.builtin': 'Должен заканчиваться на "-custom"',
   'backend.version.no.tips':
-    'The built-in backend’s custom version name must end with "-custom".',
+    'Пользовательское название версии встроенного бэкенда должно оканчиваться на «-custom».',
   'backend.backend.rules.custom':
-    'The custom backend name must end with "-custom".',
-  'backend.quickConfig': 'Quick Config'
+    'Пользовательское название бэкенда должно оканчиваться на «-custom».',
+  'backend.quickConfig': 'Быстрая настройка'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'backend.form.defaultExecuteCommand.tips': '{{model_path}} is the model path, and {{port}} is the service port. These variable names cannot be modified.'
-// 2. 'backend.version.no.tips': 'The built-in backend’s custom version name must end with "-custom".'
-// 3. 'backend.backend.rules.custom': 'The custom backend name must end with "-custom".',
-// 4. 'backend.quickConfig': 'Quick Config'
+
 // ========== End of To-Do List ==========

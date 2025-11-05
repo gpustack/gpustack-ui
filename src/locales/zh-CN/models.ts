@@ -198,9 +198,8 @@ export default {
   'models.mymodels.status.degrade': '异常',
   'models.mymodels.status.active': '可用',
   'models.form.kvCache.tips':
-    '仅在内置后端（vLLM / SGLang）可用 —— 请在<span class="bold-text">高级</span>配置中切换后端以启用。',
-  'models.form.kvCache.tips2':
-    '仅在使用内置推理后端（vLLM 或 SGLang）时支持 KV 缓存。',
+    '扩展 KV 缓存和推测解码仅在内置后端（vLLM / SGLang）可用，请在<span class="bold-text">高级</span>配置中切换后端以启用。',
+  'models.form.kvCache.tips2': '仅在使用内置推理后端（vLLM 或 SGLang）时支持。',
   'models.form.scheduling': '调度',
   'models.form.ramRatio': '内存与显存比例',
   'models.form.ramSize': '内存最大占用 (GiB)',
@@ -225,5 +224,6 @@ export default {
   'models.form.draftModel.placeholder': '请选择或输入草稿模型',
   'models.form.draftModel.tips':
     '可填写本地路径（如 /path/to/model），或从 Hugging Face、ModelScope 选择模型（如 Tengyunw/qwen3_8b_eagle3）。系统将根据主模型来源自动匹配。',
-  'models.form.quantization': '量化'
+  'models.form.quantization': '量化',
+  'models.form.backend.custom': '用户定义'
 };

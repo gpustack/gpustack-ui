@@ -190,11 +190,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
 
   const updateKVCacheConfig = (backend: string, option: BackendOption) => {
     if (
-      !option.isBuiltIn &&
-      [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(backend)
+      !option.isBuiltIn ||
+      ![backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(backend)
     ) {
       return {
         extended_kv_cache: {
+          enabled: false
+        },
+        speculative_config: {
           enabled: false
         }
       };

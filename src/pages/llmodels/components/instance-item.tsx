@@ -475,7 +475,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <div className="flex-center">
           <ThunderboltFilled className="m-r-5" />
           {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
-          {modelData?.backend || ''}
+          {modelData?.backend === backendOptionsMap.custom
+            ? intl.formatMessage({ id: 'models.form.backend.custom' })
+            : modelData?.backend || ''}
           {modelData.backend_version ? `(${modelData.backend_version})` : ''}
         </div>
       </div>

@@ -50,15 +50,6 @@ const KVCacheForm = () => {
         name={['extended_kv_cache', 'enabled']}
         valuePropName="checked"
         style={{ marginBottom: 8 }}
-        extra={
-          !builtInBackend && (
-            <span
-              dangerouslySetInnerHTML={{
-                __html: intl.formatMessage({ id: 'models.form.kvCache.tips' })
-              }}
-            ></span>
-          )
-        }
       >
         <CheckboxField
           description={intl.formatMessage({

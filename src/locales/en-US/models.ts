@@ -209,9 +209,9 @@ export default {
   'models.mymodels.status.degrade': 'Abnormal',
   'models.mymodels.status.active': 'Active',
   'models.form.kvCache.tips':
-    'Available only with built-in backends (vLLM / SGLang) — switch backend in <span class="bold-text">Advanced</span> to enable.',
+    'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
   'models.form.kvCache.tips2':
-    'Extended KV cache is only supported when using built-in inference backends (vLLM or SGLang).',
+    'Only supported when using built-in inference backends (vLLM or SGLang).',
   'models.form.scheduling': 'Scheduling',
   'models.form.ramRatio': 'RAM-to-VRAM Ratio',
   'models.form.ramSize': 'Maximum RAM Size (GiB)',
@@ -237,5 +237,6 @@ export default {
   'models.form.draftModel.placeholder': 'Please select or enter a draft model',
   'models.form.draftModel.tips':
     'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
-  'models.form.quantization': 'Quantization'
+  'models.form.quantization': 'Quantization',
+  'models.form.backend.custom': 'User Defined'
 };

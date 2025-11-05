@@ -7,7 +7,8 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
+import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import useQueryDraftModels from '../hooks/use-query-draftModels';
@@ -20,9 +21,10 @@ const AlgorithmMap = {
 
 const SpeculativeDecode = () => {
   const intl = useIntl();
-  const { source, onValuesChange } = useFormContext();
+  const { source, backendOptions, onValuesChange } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
+  const backend = Form.useWatch('backend', form);
   const speculativeEnabled = Form.useWatch(
     ['speculative_config', 'enabled'],
     form
@@ -65,18 +67,44 @@ const SpeculativeDecode = () => {
     }
   };
 
+  const builtInBackend = useMemo(() => {
+    const currentBackend = backendOptions.find(
+      (item) => item.value === backend
+    );
+
+    return (
+      currentBackend?.isBuiltIn &&
+      [backendOptionsMap.SGLang, backendOptionsMap.vllm].includes(
+        backend as string
+      )
+    );
+  }, [backend, backendOptions]);
+
   return (
     <>
       <Form.Item<FormData>
         name={['speculative_config', 'enabled']}
         valuePropName="checked"
         style={{ marginBottom: 8 }}
+        extra={
+          !builtInBackend && (
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({ id: 'models.form.kvCache.tips' })
+              }}
+            ></span>
+          )
+        }
       >
         <CheckboxField
+          description={intl.formatMessage({
+            id: 'models.form.kvCache.tips2'
+          })}
           label={intl.formatMessage({
             id: 'models.form.enableSpeculativeDecoding'
           })}
           onChange={handleSpeculativeEnabledChange}
+          disabled={!builtInBackend}
         ></CheckboxField>
       </Form.Item>
       {speculativeEnabled && (

@@ -96,6 +96,9 @@ export const textToSpeech = async (params: any, options?: any) => {
   const res = await fetch(AUDIO_TEXT_TO_SPEECH_API, {
     method: 'POST',
     body: JSON.stringify(params.data),
+    headers: {
+      'Content-Type': 'application/json'
+    },
     signal: params.signal
   });
   if (!res.ok) {

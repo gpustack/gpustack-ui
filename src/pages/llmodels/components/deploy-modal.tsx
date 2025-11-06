@@ -366,8 +366,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       evaluateStateRef.current.state === EvaluateProccess.model &&
       item.evaluated
     ) {
-      handleShowCompatibleAlert(item.evaluateResult);
-
       const newFormValues = {
         ...(manual
           ? { ...defaultFormValues }

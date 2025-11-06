@@ -21,9 +21,9 @@ import SearchInput from './search-input';
 import SearchResult from './search-result';
 
 const filterOptions = [
+  { label: 'FP8', value: 'fp8' },
   { label: 'AWQ', value: 'awq' },
-  { label: 'GPTQ', value: 'gptq' },
-  { label: 'GGUF', value: 'gguf' }
+  { label: 'GPTQ', value: 'gptq' }
 ];
 const PaginationMain = styled(Pagination)`
   .ant-pagination-slash {
@@ -541,8 +541,10 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
               onChange={handleFilterChange}
               options={filterOptions}
               size="middle"
-              placeholder={intl.formatMessage({ id: 'common.input.type' })}
-              style={{ width: 120 }}
+              placeholder={intl.formatMessage({
+                id: 'models.form.quantization'
+              })}
+              style={{ width: 130 }}
             ></BaseSelect>
           </span>
           <PaginationMain

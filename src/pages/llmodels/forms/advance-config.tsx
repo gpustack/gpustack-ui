@@ -4,6 +4,7 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
+import { useMemo } from 'react';
 import { DeployFormKeyMap, modelCategories } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
@@ -17,7 +18,11 @@ const AdvanceConfig = () => {
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
-  const { onValuesChange, formKey } = useFormContext();
+  const { onValuesChange, backendOptions, formKey } = useFormContext();
+
+  const currentBackendOptions = useMemo(() => {
+    return backendOptions?.find((item) => item.value === backend);
+  }, [backend, backendOptions]);
 
   const handleEnviromentVarsChange = (labels: Record<string, any>) => {
     console.log('handleEnviromentVarsChange', labels);
@@ -80,7 +85,23 @@ const AdvanceConfig = () => {
           onChange={handleEnviromentVarsChange}
         ></LabelSelector>
       </Form.Item>
-
+      {(backend === backendOptionsMap.custom ||
+        !currentBackendOptions?.isBuiltIn) && (
+        <Form.Item<FormData>
+          name="cpu_offloading"
+          valuePropName="checked"
+          style={{ marginBottom: 8 }}
+        >
+          <CheckboxField
+            description={intl.formatMessage({
+              id: 'models.form.partialoffload.tips'
+            })}
+            label={intl.formatMessage({
+              id: 'resources.form.enablePartialOffload'
+            })}
+          ></CheckboxField>
+        </Form.Item>
+      )}
       {[backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
         backend
       ) && (

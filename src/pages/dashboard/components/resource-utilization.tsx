@@ -2,8 +2,7 @@ import LineChart from '@/components/echarts/line-chart';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { memo, useContext, useMemo } from 'react';
-import { DashboardContext } from '../config/dashboard-context';
+import { memo, useMemo } from 'react';
 
 const TypeKeyMap = {
   cpu: {
@@ -32,9 +31,27 @@ const TypeKeyMap = {
   }
 };
 
-const UtilizationOvertime: React.FC = () => {
+const UtilizationOvertime: React.FC<{
+  data: {
+    cpu: {
+      timestamp: number;
+      value: number;
+    }[];
+    ram: {
+      timestamp: number;
+      value: number;
+    }[];
+    gpu: {
+      timestamp: number;
+      value: number;
+    }[];
+    vram: {
+      timestamp: number;
+      value: number;
+    }[];
+  };
+}> = ({ data }) => {
   const intl = useIntl();
-  const data = useContext(DashboardContext)?.system_load?.history || {};
 
   const typeList = ['gpu', 'cpu', 'ram', 'vram'];
 

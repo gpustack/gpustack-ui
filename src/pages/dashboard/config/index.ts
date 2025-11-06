@@ -1,5 +1,10 @@
 export const overviewConfigs = [
   {
+    key: 'cluster_count',
+    label: 'dashboard.clusters',
+    backgroundColor: 'var(--color-white-1)'
+  },
+  {
     key: 'worker_count',
     label: 'dashboard.workers',
     backgroundColor: 'var(--color-white-1)'

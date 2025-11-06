@@ -2,6 +2,7 @@ export default {
   'dashboard.title': 'Dashboard',
   'dashboard.workers': 'Workers',
   'dashboard.models': 'Models',
+  'dashboard.clusters': 'Clusters',
   'dashboard.totalgpus': 'GPUs',
   'dashboard.allocategpus': 'Allocated GPUs',
   'dashboard.instances': 'Instances',

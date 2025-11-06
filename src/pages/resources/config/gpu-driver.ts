@@ -137,11 +137,12 @@ const registerWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
+WORKER_PORT="80" \\
 WORKER_IP="" \\
 docker run -d --name \${WORKER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
-      --net=host \\
+      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -150,7 +151,8 @@ docker run -d --name \${WORKER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-ip \${WORKER_IP}`;
+      --worker-port \${WORKER_PORT} \\
+      --advertise-address \${WORKER_IP}`;
 };
 
 // avaliable for Ascend
@@ -163,11 +165,12 @@ const registerAscendWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
+WORKER_PORT="80" \\
 WORKER_IP="" \\
 docker run -d --name \${WORKER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
-      --net=host \\
+      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -177,7 +180,8 @@ docker run -d --name \${WORKER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-ip \${WORKER_IP}`;
+      --worker-port \${WORKER_PORT} \\
+      --advertise-address \${WORKER_IP}`;
 };
 
 const registerHygonWorker = (params: {
@@ -189,11 +193,12 @@ const registerHygonWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
+WORKER_PORT="80" \\
 WORKER_IP="" \\
 docker run -d --name \${WORKER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
-      --net=host \\
+      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -205,7 +210,8 @@ docker run -d --name \${WORKER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-ip \${WORKER_IP}`;
+      --worker-port \${WORKER_PORT} \\
+      --advertise-address \${WORKER_IP}`;
 };
 
 const registerIluvatarWorker = (params: {
@@ -217,11 +223,12 @@ const registerIluvatarWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
+WORKER_PORT="80" \\
 WORKER_IP="" \\
 docker run -d --name \${WORKER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
-      --net=host \\
+      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -232,7 +239,8 @@ docker run -d --name \${WORKER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-ip \${WORKER_IP}`;
+      --worker-port \${WORKER_PORT} \\
+      --advertise-address \${WORKER_IP}`;
 };
 
 const registerMetaXWorker = (params: {
@@ -244,11 +252,12 @@ const registerMetaXWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
+WORKER_PORT="80" \\
 WORKER_IP="" \\
 docker run -d --name \${WORKER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
-      --net=host \\
+      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -258,7 +267,8 @@ docker run -d --name \${WORKER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-ip \${WORKER_IP}`;
+      --worker-port \${WORKER_PORT} \\
+      --advertise-address \${WORKER_IP}`;
 };
 
 const registerCambriconWorker = (params: {
@@ -270,11 +280,12 @@ const registerCambriconWorker = (params: {
 }) => {
   const config = GPUsConfigs[params.gpu];
   return `WORKER_NAME="gpustack-worker" \\
+WORKER_PORT="80" \\
 WORKER_IP="" \\
 docker run -d --name \${WORKER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
-      --net=host \\
+      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -284,7 +295,8 @@ docker run -d --name \${WORKER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-ip \${WORKER_IP}`;
+      --worker-port \${WORKER_PORT} \\
+      --advertise-address \${WORKER_IP}`;
 };
 
 export const registerAddWokerCommandMap = {
@@ -311,9 +323,28 @@ export const AddWorkerDockerNotes: Record<string, string[]> = {
     'clusters.addworker.nvidiaNotes-01',
     'clusters.addworker.nvidiaNotes-02'
   ],
-  [GPUDriverMap.ASCEND]: [],
-  [GPUDriverMap.HYGON]: ['clusters.addworker.hygonNotes'],
-  [GPUDriverMap.ILUVATAR]: ['clusters.addworker.corexNotes'],
-  [GPUDriverMap.CAMBRICON]: ['clusters.addworker.cambriconNotes'],
-  [GPUDriverMap.METAX]: ['clusters.addworker.metaxNotes']
+  [GPUDriverMap.ASCEND]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02'
+  ],
+  [GPUDriverMap.HYGON]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02',
+    'clusters.addworker.hygonNotes'
+  ],
+  [GPUDriverMap.ILUVATAR]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02',
+    'clusters.addworker.corexNotes'
+  ],
+  [GPUDriverMap.CAMBRICON]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02',
+    'clusters.addworker.cambriconNotes'
+  ],
+  [GPUDriverMap.METAX]: [
+    'clusters.addworker.nvidiaNotes-01',
+    'clusters.addworker.nvidiaNotes-02',
+    'clusters.addworker.metaxNotes'
+  ]
 };

@@ -30,9 +30,10 @@ export default {
   'dashboard.usage.export.date': 'Дата',
   'dashboard.usage.datePicker.last7days': 'Последние 7 Days',
   'dashboard.usage.datePicker.last30days': 'Последние 30 Days',
-  'dashboard.usage.datePicker.last60days': 'Последние 60 Days'
+  'dashboard.usage.datePicker.last60days': 'Последние 60 Days',
+  'dashboard.clusters': 'Clusters'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'dashboard.clusters': 'Clusters',
 // ========== End of To-Do List ==========

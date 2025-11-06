@@ -15,7 +15,7 @@ const KVCacheForm = () => {
   const backend = Form.useWatch('backend', form);
   const configCacheRef = useRef<any>({});
 
-  const handleOnChange = async (e: any) => {
+  const handleEnableOnChange = async (e: any) => {
     if (e.target.checked) {
       form.setFieldsValue({
         extended_kv_cache: {
@@ -28,6 +28,17 @@ const KVCacheForm = () => {
     } else {
       configCacheRef.current = form.getFieldValue('extended_kv_cache');
     }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+    onValuesChange?.(
+      {
+        extended_kv_cache: {
+          enabled: e.target.checked
+        }
+      },
+      form.getFieldsValue()
+    );
   };
 
   const builtInBackend = useMemo(() => {
@@ -56,7 +67,7 @@ const KVCacheForm = () => {
             id: 'models.form.kvCache.tips2'
           })}
           disabled={!builtInBackend}
-          onChange={handleOnChange}
+          onChange={handleEnableOnChange}
           label={intl.formatMessage({ id: 'models.form.extendedkvcache' })}
         ></CheckboxField>
       </Form.Item>

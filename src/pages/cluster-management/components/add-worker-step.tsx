@@ -28,7 +28,7 @@ const NotesWrapper = styled.ol`
   font-weight: 400;
   margin: 0 !important;
   padding: 0 !important;
-  line-height: 1.2;
+  line-height: 1.25;
   li {
     margin-left: 12px !important;
   }
@@ -156,6 +156,7 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
             {intl.formatMessage({ id: 'clusters.create.addCommand.tips' })}
           </div>
           <AlertInfoBlock
+            maxHeight={200}
             style={{ marginBottom: 8 }}
             type="warning"
             icon={<ExclamationCircleFilled />}

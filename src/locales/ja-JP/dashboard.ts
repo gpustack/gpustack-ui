@@ -30,7 +30,8 @@ export default {
   'dashboard.usage.export.date': 'Date',
   'dashboard.usage.datePicker.last7days': 'Last 7 Days',
   'dashboard.usage.datePicker.last30days': 'Last 30 Days',
-  'dashboard.usage.datePicker.last60days': 'Last 60 Days'
+  'dashboard.usage.datePicker.last60days': 'Last 60 Days',
+  'dashboard.clusters': 'Clusters'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -42,5 +43,6 @@ export default {
 // 6. 'dashboard.usage.export.date': 'Date',
 // 7. 'dashboard.usage.datePicker.last7days': 'Last 7 Days',
 // 8.'dashboard.usage.datePicker.last30days': 'Last 30 Days',
-// 9. 'dashboard.usage.datePicker.last60days': 'Last 60 Days'
+// 9. 'dashboard.usage.datePicker.last60days': 'Last 60 Days',
+// 10. 'dashboard.clusters': 'Clusters',
 // ========== End of To-Do List ==========

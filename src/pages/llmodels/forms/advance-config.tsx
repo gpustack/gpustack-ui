@@ -4,7 +4,6 @@ import SealSelect from '@/components/seal-form/seal-select';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { useCallback } from 'react';
 import { DeployFormKeyMap, modelCategories } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
@@ -17,16 +16,13 @@ const AdvanceConfig = () => {
   const intl = useIntl();
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
-  const scheduleType = Form.useWatch('scheduleType', form);
   const backend = Form.useWatch('backend', form);
   const { onValuesChange, formKey } = useFormContext();
 
-  const handleEnviromentVarsChange = useCallback(
-    (labels: Record<string, any>) => {
-      form.setFieldValue('env', labels);
-    },
-    []
-  );
+  const handleEnviromentVarsChange = (labels: Record<string, any>) => {
+    console.log('handleEnviromentVarsChange', labels);
+    form.setFieldValue('env', labels);
+  };
 
   const onSelectorChange = (field: string, allowEmpty?: boolean) => {
     const workerSelector = form.getFieldValue(field);

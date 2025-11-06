@@ -34,5 +34,7 @@ export default {
   'users.login.title': 'Log in to',
   'users.version.islatest': 'GPUStack {version} is the latest version',
   'users.version.update': 'GPUStack {version} is available',
-  'users.settings.title': 'User Settings'
+  'users.settings.title': 'User Settings',
+  'users.status.activate': 'Activate Account',
+  'users.status.deactivate': 'Deactivate Account'
 };

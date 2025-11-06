@@ -55,6 +55,20 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     onChange?.(data);
   };
 
+  const updateLabels = (list: { key: string; value: string }[]) => {
+    const newLabels = _.reduce(
+      list,
+      (result: any, item: any) => {
+        if (item.key) {
+          result[item.key] = item.value;
+        }
+        return result;
+      },
+      {}
+    );
+    onChange?.(newLabels);
+  };
+
   const handleOnPaste = (
     e: React.ClipboardEvent<HTMLTextAreaElement>,
     index: number
@@ -72,13 +86,12 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
       const [key, value] = line.split('=').map((part) => part.trim());
       return { key, value };
     });
-    console.log('onPaste', lines, parsedData);
 
-    setLabelList((prevPairs) => {
-      const newPairs = [...prevPairs];
-      newPairs.splice(index, 1, ...parsedData);
-      return newPairs;
-    });
+    const newPairs = [...labelList];
+    newPairs.splice(index, 1, ...parsedData);
+
+    updateLabels(newPairs);
+    setLabelList(newPairs);
   };
 
   return (

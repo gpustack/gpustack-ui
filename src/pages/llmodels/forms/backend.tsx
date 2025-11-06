@@ -38,8 +38,12 @@ const BackendFields: React.FC = () => {
   }, [backend]);
 
   const backendGroupedOptions = useMemo(() => {
-    const builtInBackends = backendOptions?.filter((item) => item.isBuiltIn);
-    const customBackends = backendOptions?.filter((item) => !item.isBuiltIn);
+    const builtInBackends = backendOptions?.filter(
+      (item) => item.isBuiltIn || item.value === backendOptionsMap.custom
+    );
+    const customBackends = backendOptions?.filter(
+      (item) => !item.isBuiltIn && item.value !== backendOptionsMap.custom
+    );
 
     const options = [];
 
@@ -52,7 +56,7 @@ const BackendFields: React.FC = () => {
 
     if (customBackends && customBackends.length > 0) {
       options.push({
-        label: intl.formatMessage({ id: 'backend.custom' }),
+        label: intl.formatMessage({ id: 'models.form.backend.custom' }),
         options: customBackends
       });
     }
@@ -93,7 +97,7 @@ const BackendFields: React.FC = () => {
 
     if (customVersions.length > 0) {
       options.push({
-        label: intl.formatMessage({ id: 'backend.custom' }),
+        label: intl.formatMessage({ id: 'models.form.backend.custom' }),
         options: customVersions
       });
     }

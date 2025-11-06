@@ -24,14 +24,14 @@ const actionList: Global.ActionItem[] = [
     icon: icons.EditOutlined
   },
   {
-    label: 'Active Account',
+    label: 'users.status.activate',
     key: 'active',
-    icon: icons.EditOutlined
+    icon: icons.LockOpen
   },
   {
-    label: 'Deactivate Account',
+    label: 'users.status.deactivate',
     key: 'inactive',
-    icon: icons.EditOutlined
+    icon: icons.LockPerson
   },
   {
     label: 'common.button.delete',

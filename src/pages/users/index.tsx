@@ -10,7 +10,13 @@ import { Button, ConfigProvider, message, Table } from 'antd';
 import { useMemo, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
-import { createUser, deleteUser, queryUsersList, updateUser } from './apis';
+import {
+  createUser,
+  deleteUser,
+  queryUsersList,
+  updateUser,
+  updateUserStatus
+} from './apis';
 import AddModal from './components/add-modal';
 import { FormData, ListItem } from './config/types';
 import useUsersColumns from './hooks/use-users-columns';
@@ -105,21 +111,12 @@ const Users: React.FC = () => {
     });
   };
 
-  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
-    if (val === 'edit') {
-      handleEditUser(row);
-    } else if (val === 'delete') {
-      handleDelete({ ...row, name: row.username });
-    }
-  });
-
   const handleActiveChange = async (checked: boolean, row: ListItem) => {
     try {
-      await updateUser({
+      await updateUserStatus({
+        id: row.id,
         data: {
-          ...row,
-          is_active: checked,
-          id: row?.id
+          is_active: checked
         }
       });
       handleSearch();
@@ -128,6 +125,16 @@ const Users: React.FC = () => {
       message.error(intl.formatMessage({ id: 'common.message.fail' }));
     }
   };
+
+  const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
+    if (val === 'edit') {
+      handleEditUser(row);
+    } else if (val === 'delete') {
+      handleDelete({ ...row, name: row.username });
+    } else if (val === 'active' || val === 'inactive') {
+      handleActiveChange(val === 'active', row);
+    }
+  });
 
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;

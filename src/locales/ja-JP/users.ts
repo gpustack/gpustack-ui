@@ -35,9 +35,13 @@ export default {
   'users.login.title': 'ログイン',
   'users.version.islatest': 'GPUStack {version} は最新バージョンです',
   'users.version.update': 'GPUStack {version} が利用可能です',
-  'users.settings.title': 'User Settings'
+  'users.settings.title': 'User Settings',
+  'users.status.activate': 'Activate Account',
+  'users.status.deactivate': 'Deactivate Account'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'users.settings.title': 'User Settings'
+// 1. 'users.settings.title': 'User Settings',
+// 2. 'users.status.activate': 'Activate Account',
+// 3. 'users.status.deactivate': 'Deactivate Account',
 // ========== End of To-Do List ==========

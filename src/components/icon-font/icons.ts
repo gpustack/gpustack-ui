@@ -51,7 +51,12 @@ const icons = {
   Version: React.createElement(IconFont, { type: 'icon-version' }),
   Parameter: React.createElement(IconFont, { type: 'icon-parameters' }),
   Private: React.createElement(IconFont, { type: 'icon-private' }),
-  AWS: React.createElement(IconFont, { type: 'icon-aws' })
+  AWS: React.createElement(IconFont, { type: 'icon-aws' }),
+  LockOpenRight: React.createElement(IconFont, {
+    type: 'icon-lock_open_right'
+  }),
+  LockPerson: React.createElement(IconFont, { type: 'icon-lock_person' }),
+  LockOpen: React.createElement(IconFont, { type: 'icon-lock_open' })
 };
 
 export default icons;

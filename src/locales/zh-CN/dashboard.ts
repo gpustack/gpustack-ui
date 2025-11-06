@@ -2,6 +2,7 @@ export default {
   'dashboard.title': '概览',
   'dashboard.workers': '节点',
   'dashboard.models': '模型',
+  'dashboard.clusters': '集群',
   'dashboard.totalgpus': 'GPUs',
   'dashboard.allocategpus': '已分配 GPU 数量',
   'dashboard.instances': '实例',

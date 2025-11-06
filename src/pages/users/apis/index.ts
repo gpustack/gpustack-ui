@@ -29,3 +29,13 @@ export async function deleteUser(id: number) {
     method: 'DELETE'
   });
 }
+
+export async function updateUserStatus(params: {
+  id: number;
+  data: { is_active: boolean };
+}) {
+  return request(`${USERS_API}/${params.id}/activation`, {
+    method: 'PATCH',
+    data: params.data
+  });
+}

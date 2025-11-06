@@ -1,6 +1,6 @@
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Inner from './inner';
 
 interface LabelSelectorProps {
@@ -45,12 +45,10 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     }
   }, [labels]);
 
-  const handleLabelListChange = useCallback(
-    (list: { key: string; value: string }[]) => {
-      setLabelList(list);
-    },
-    [setLabelList]
-  );
+  const handleLabelListChange = (list: { key: string; value: string }[]) => {
+    setLabelList(list);
+  };
+
   const handleLabelsChange = (data: Record<string, any>) => {
     console.log('handleLabelsChange', data);
     setLabelsData(data);
@@ -74,7 +72,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
       const [key, value] = line.split('=').map((part) => part.trim());
       return { key, value };
     });
-    console.log(lines, parsedData);
+    console.log('onPaste', lines, parsedData);
 
     setLabelList((prevPairs) => {
       const newPairs = [...prevPairs];

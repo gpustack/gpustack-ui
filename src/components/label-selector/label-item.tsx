@@ -123,4 +123,4 @@ const LabelItem: React.FC<LabelItemProps> = ({
   );
 };
 
-export default React.memo(LabelItem);
+export default LabelItem;

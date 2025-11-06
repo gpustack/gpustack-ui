@@ -24,6 +24,16 @@ const actionList: Global.ActionItem[] = [
     icon: icons.EditOutlined
   },
   {
+    label: 'Active Account',
+    key: 'active',
+    icon: icons.EditOutlined
+  },
+  {
+    label: 'Deactivate Account',
+    key: 'inactive',
+    icon: icons.EditOutlined
+  },
+  {
     label: 'common.button.delete',
     key: 'delete',
     icon: icons.DeleteOutlined,
@@ -40,8 +50,14 @@ const useUsersColumns = ({
 
   const setActions = useMemoizedFn((record: ListItem) => {
     return actionList.filter((action) => {
-      if (initialState?.currentUser?.id === record.id) {
-        return action.key !== 'delete';
+      if (action.key === 'delete') {
+        return initialState?.currentUser?.id !== record.id;
+      }
+      if (action.key === 'active') {
+        return !record.is_active && initialState?.currentUser?.id !== record.id;
+      }
+      if (action.key === 'inactive') {
+        return record.is_active && initialState?.currentUser?.id !== record.id;
       }
       return true;
     });

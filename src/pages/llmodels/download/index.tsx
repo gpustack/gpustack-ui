@@ -63,6 +63,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
   const modelFileRef = useRef<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const generateModelInfo = () => {
     if (source === modelSourceMap.huggingface_value) {
@@ -87,15 +88,20 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
     setSelectedModel(item);
   };
 
-  const handleOk = (values: any) => {
-    onOk({
+  const handleOk = async (values: any) => {
+    setLoading(true);
+    await onOk({
       ...values,
       source: source,
       ...generateModelInfo()
     });
+    setLoading(false);
   };
 
   const handleSumit = () => {
+    if (loading) {
+      return;
+    }
     form.current?.form?.submit?.();
   };
 
@@ -218,6 +224,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                 <ModalFooter
                   onCancel={handleCancel}
                   onOk={handleSumit}
+                  okBtnProps={{
+                    loading: loading
+                  }}
                   style={{
                     padding: '16px 24px',
                     display: 'flex',

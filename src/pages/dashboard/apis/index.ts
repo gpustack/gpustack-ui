@@ -6,8 +6,10 @@ export const DASHBOARD_API = '/dashboard';
 export const DASHBOARD_USAGE_API = `${DASHBOARD_API}/usage`;
 export const DASHBOARD_STATS_API = `${DASHBOARD_API}/usage/stats`;
 
-export async function queryDashboardData() {
-  return request(DASHBOARD_API);
+export async function queryDashboardData(params?: { cluster_id?: number }) {
+  return request(DASHBOARD_API, {
+    params
+  });
 }
 
 export async function queryDashboardUsageData<T>(

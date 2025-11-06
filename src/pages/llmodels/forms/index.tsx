@@ -366,7 +366,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           replicas: 1,
           source: props.source,
           placement_strategy: 'spread',
-          cpu_offloading: true,
           scheduleType: ScheduleValueMap.Auto,
           categories: null,
           restart_on_error: true,

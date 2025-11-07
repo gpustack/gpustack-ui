@@ -32,8 +32,7 @@ const AllowModelsForm: React.FC<{
     []
   );
   const [queryParams, setQueryParams] = useState<Global.SearchParams>({
-    page: 1,
-    perPage: 100
+    page: -1
   });
 
   const getModelList = async () => {

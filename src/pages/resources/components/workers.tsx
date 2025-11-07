@@ -82,8 +82,7 @@ const Workers: React.FC = () => {
   const getClusterList = async () => {
     try {
       const params = {
-        page: 1,
-        perPage: 100
+        page: -1
       };
       const res = await queryClusterList(params);
       const clusterMap = res?.items?.reduce(

@@ -20,8 +20,7 @@ export default function useQueryDraftModels({ source }: { source: string }) {
 
   const fetchDraftModels = async () => {
     const response = await queryDraftModelList({
-      page: 1,
-      perPage: 100
+      page: -1
     });
     const options = response.items.map((item) => ({
       label: item.name,

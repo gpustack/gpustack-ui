@@ -44,7 +44,7 @@ const WorkerDetailContent: React.FC<{ worker_id: number | undefined }> = ({
 
   const getClusterList = async () => {
     try {
-      const res = await queryClusterList({ page: 1, perPage: 100 });
+      const res = await queryClusterList({ page: -1 });
       const list = res.items?.map((item) => ({
         label: item.name,
         value: item.id

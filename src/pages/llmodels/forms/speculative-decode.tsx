@@ -67,6 +67,14 @@ const SpeculativeDecode = () => {
     }
   };
 
+  const handleOnDraftBlur = () => {
+    onValuesChangeDebounced();
+  };
+
+  const handleDraftSelect = (value: string) => {
+    onValuesChangeDebounced();
+  };
+
   const builtInBackend = useMemo(() => {
     const currentBackend = backendOptions.find(
       (item) => item.value === backend
@@ -161,6 +169,8 @@ const SpeculativeDecode = () => {
                 })}
                 options={draftModelList}
                 onSearch={onSearch}
+                onBlur={handleOnDraftBlur}
+                onSelect={handleDraftSelect}
               ></AutoComlete>
             </Form.Item>
           )}

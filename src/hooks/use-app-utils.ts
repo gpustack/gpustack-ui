@@ -7,6 +7,13 @@ const useAppUtils = () => {
   const intl = useIntl();
   const [messageApi, contextHolder] = message.useMessage();
 
+  /**
+   *
+   * @param type Array<'input' | 'select'>
+   * @param name
+   * @param locale boolean
+   * @returns
+   */
   const getRuleMessage = (
     type: MessageType | MessageType[],
     name: string,

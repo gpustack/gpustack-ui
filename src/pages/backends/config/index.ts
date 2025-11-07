@@ -109,13 +109,26 @@ export const customIcons = [
   '≥'
 ];
 
-export const backendFields = [
+/**
+ * custom backend fields for config yaml
+ */
+export const customBackendFields = [
   'description',
   'health_check_path',
   'default_run_command',
   'version_configs',
   'default_backend_param'
 ];
+
+/**
+ * built-in backend fields for config yaml
+ */
+export const builtInBackendFields = [
+  'description',
+  'version_configs',
+  'default_backend_param'
+];
+
 export const frameworks = [
   {
     label: 'CUDA',

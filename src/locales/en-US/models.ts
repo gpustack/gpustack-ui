@@ -238,5 +238,7 @@ export default {
   'models.form.draftModel.tips':
     'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
   'models.form.quantization': 'Quantization',
-  'models.form.backend.custom': 'User-defined'
+  'models.form.backend.custom': 'User-defined',
+  'models.form.rules.name':
+    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
 };

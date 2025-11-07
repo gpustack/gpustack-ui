@@ -1,5 +1,6 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import { modelNameReg } from '@/config';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
   ClusterStatusLabelMap,
@@ -65,10 +66,15 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           {
             required: true,
             message: getRuleMessage('input', 'common.table.name')
+          },
+          {
+            pattern: modelNameReg,
+            message: intl.formatMessage({ id: 'models.form.rules.name' })
           }
         ]}
       >
         <SealInput.Input
+          description={intl.formatMessage({ id: 'models.form.rules.name' })}
           label={intl.formatMessage({
             id: 'common.table.name'
           })}

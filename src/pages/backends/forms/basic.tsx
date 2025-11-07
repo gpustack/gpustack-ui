@@ -37,38 +37,40 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
           required
         ></SealInput.Input>
       </Form.Item>
-      <Form.Item<FormData>
-        name="health_check_path"
-        rules={[{ required: false }]}
-      >
-        <SealInput.Input
-          trim
-          placeholder={intl.formatMessage(
-            { id: 'common.help.default' },
-            { content: '/v1/models' }
-          )}
-          label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
-        ></SealInput.Input>
-      </Form.Item>
-
-      <Form.Item name="default_run_command">
-        <SealTextArea
-          scaleSize={true}
-          alwaysFocus={true}
-          description={intl.formatMessage({
-            id: 'backend.form.defaultExecuteCommand.tips'
-          })}
-          placeholder={intl.formatMessage(
-            { id: 'common.help.eg' },
-            { content: 'vllm serve {{model_path}} --port {{port}}' }
-          )}
-          autoSize={{ minRows: 2, maxRows: 4 }}
-          label={intl.formatMessage({
-            id: 'backend.form.defaultExecuteCommand'
-          })}
-        ></SealTextArea>
-      </Form.Item>
-
+      {!currentData?.is_built_in && (
+        <>
+          <Form.Item<FormData>
+            name="health_check_path"
+            rules={[{ required: false }]}
+          >
+            <SealInput.Input
+              trim
+              placeholder={intl.formatMessage(
+                { id: 'common.help.default' },
+                { content: '/v1/models' }
+              )}
+              label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
+            ></SealInput.Input>
+          </Form.Item>
+          <Form.Item name="default_run_command">
+            <SealTextArea
+              scaleSize={true}
+              alwaysFocus={true}
+              description={intl.formatMessage({
+                id: 'backend.form.defaultExecuteCommand.tips'
+              })}
+              placeholder={intl.formatMessage(
+                { id: 'common.help.eg' },
+                { content: 'vllm serve {{model_path}} --port {{port}}' }
+              )}
+              autoSize={{ minRows: 2, maxRows: 4 }}
+              label={intl.formatMessage({
+                id: 'backend.form.defaultExecuteCommand'
+              })}
+            ></SealTextArea>
+          </Form.Item>
+        </>
+      )}
       <Form.Item<FormData>
         name="default_backend_param"
         rules={[{ required: false }]}

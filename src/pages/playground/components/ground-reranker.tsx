@@ -259,11 +259,6 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
     );
   };
 
-  const handleStopConversation = () => {
-    requestToken.current?.cancel?.();
-    setLoading(false);
-  };
-
   const submitMessage = async (query: string) => {
     try {
       setIsEmptyQuery(!queryValue);
@@ -507,9 +502,12 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
             )}
           </SearchInputWrapper>
         </div>
-        <div className="center" ref={scroller}>
+        <div className="center" ref={scroller} style={{ marginTop: 16 }}>
           <div className="documents">
-            <div className="flex-between m-b-8 doc-header">
+            <div
+              className="flex-between m-b-8 doc-header"
+              style={{ marginTop: 0 }}
+            >
               <h3 className="m-l-10 flex-between flex-center font-size-14 line-24 m-b-0">
                 <span>
                   {intl.formatMessage({ id: 'playground.embedding.documents' })}

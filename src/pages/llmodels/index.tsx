@@ -3,9 +3,10 @@ import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { queryWorkersList } from '@/pages/resources/apis';
 import { ListItem as WokerListItem } from '@/pages/resources/config/types';
+import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import qs from 'query-string';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   MODELS_API,
   MODEL_INSTANCE_API,
@@ -73,7 +74,7 @@ const Models: React.FC = () => {
     setDataList: setModelInstances
   });
 
-  const getAllModelInstances = useCallback(async () => {
+  const getAllModelInstances = useMemoizedFn(async () => {
     try {
       instancesToken.current?.cancel?.();
       instancesToken.current = createAxiosToken();
@@ -89,9 +90,9 @@ const Models: React.FC = () => {
     } catch (error) {
       // ignore
     }
-  }, []);
+  });
 
-  const fetchData = useCallback(
+  const fetchData = useMemoizedFn(
     async (params?: {
       loadingVal?: boolean;
       query?: {
@@ -156,8 +157,7 @@ const Models: React.FC = () => {
           });
         }
       }
-    },
-    [queryParams]
+    }
   );
 
   const handleQueryChange = (params: any) => {
@@ -168,14 +168,13 @@ const Models: React.FC = () => {
     fetchData({ query: { ...queryParams, ...params } });
   };
 
-  const handlePageChange = useCallback(
+  const handlePageChange = useMemoizedFn(
     (page: number, pageSize: number | undefined) => {
       handleQueryChange({
         page: page,
         perPage: pageSize || 10
       });
-    },
-    [queryParams]
+    }
   );
 
   const updateHandler = (list: any) => {
@@ -191,7 +190,7 @@ const Models: React.FC = () => {
     });
   };
 
-  const createModelsChunkRequest = useCallback(
+  const createModelsChunkRequest = useMemoizedFn(
     async (params?: {
       search: string;
       categories: any[];
@@ -212,11 +211,10 @@ const Models: React.FC = () => {
       } catch (error) {
         // ignore
       }
-    },
-    [queryParams.categories, queryParams.search]
+    }
   );
 
-  const createModelsInstanceChunkRequest = useCallback(async () => {
+  const createModelsInstanceChunkRequest = useMemoizedFn(async () => {
     chunkInstanceRequedtRef.current?.current?.cancel?.();
     try {
       chunkInstanceRequedtRef.current = setModelInstanceChunkRequest({
@@ -227,18 +225,18 @@ const Models: React.FC = () => {
     } catch (error) {
       // ignore
     }
-  }, [updateInstanceHandler]);
+  });
 
-  const handleOnViewLogs = useCallback(() => {
+  const handleOnViewLogs = useMemoizedFn(() => {
     isPageHidden.current = true;
     chunkRequedtRef.current?.current?.cancel?.();
     cacheDataListRef.current = [];
     cacheInsDataListRef.current = [];
     chunkInstanceRequedtRef.current?.current?.cancel?.();
     instancesToken.current?.cancel?.();
-  }, []);
+  });
 
-  const handleOnCancelViewLogs = useCallback(async () => {
+  const handleOnCancelViewLogs = useMemoizedFn(async () => {
     isPageHidden.current = false;
     await getAllModelInstances();
     await createModelsInstanceChunkRequest();
@@ -246,23 +244,20 @@ const Models: React.FC = () => {
     fetchData({
       loadingVal: false
     });
-  }, [fetchData, createModelsChunkRequest, createModelsInstanceChunkRequest]);
+  });
 
-  const handleSearchBySilent = useCallback(async () => {
+  const handleSearchBySilent = useMemoizedFn(async () => {
     await new Promise((resolve) => {
       setTimeout(resolve, 300);
     });
     fetchData({
       loadingVal: false
     });
-  }, [fetchData]);
+  });
 
-  const handleSearch = useCallback(
-    async (params?: any) => {
-      await fetchData(params);
-    },
-    [fetchData]
-  );
+  const handleSearch = useMemoizedFn(async (params?: any) => {
+    await fetchData(params);
+  });
 
   const debounceUpdateFilter = _.debounce((e: any) => {
     handleQueryChange({
@@ -276,7 +271,7 @@ const Models: React.FC = () => {
     });
   }, 350);
 
-  const handleNameChange = useCallback(debounceUpdateFilter, [queryParams]);
+  const handleNameChange = useMemoizedFn(debounceUpdateFilter);
 
   const handleCategoryChange = async (value: any) => {
     handleQueryChange({
@@ -369,9 +364,9 @@ const Models: React.FC = () => {
     };
   }, []);
 
-  const setDisableExpand = useCallback((record: any) => {
+  const setDisableExpand = useMemoizedFn((record: any) => {
     return !record?.replicas;
-  }, []);
+  });
 
   useEffect(() => {
     const handleVisibilityChange = async () => {

@@ -40,7 +40,7 @@ const SpeculativeDecode = () => {
   const onValuesChangeDebounced = _.debounce(() => {
     const allValues = form.getFieldsValue();
     onValuesChange?.({}, allValues);
-  }, 200);
+  }, 150);
 
   const handleSpeculativeEnabledChange = (e: any) => {
     if (e.target.checked) {
@@ -57,8 +57,8 @@ const SpeculativeDecode = () => {
       });
     } else {
       speculativeConfigRef.current = form.getFieldValue('speculative_config');
-      onValuesChangeDebounced();
     }
+    onValuesChangeDebounced();
   };
 
   const handleAlgorithemChange = (value: string) => {

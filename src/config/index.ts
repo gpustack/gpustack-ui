@@ -62,3 +62,12 @@ export const specialCharacterReg = /(?=.*[\W_])/;
 export const noSpaceReg = /(?=\S+$)/;
 
 export const lengthReg = /^.{6,12}$/;
+
+/**
+ * Model name rules:
+ * 1. no more than 63 characters
+ * 2. contain only alphanumeric characters, '-', '_', and '.'
+ * 3. start and end with an alphanumeric character
+ */
+export const modelNameReg =
+  /^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,61}[A-Za-z0-9])?$/g;

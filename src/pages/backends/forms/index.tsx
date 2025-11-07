@@ -51,7 +51,6 @@ const BackendForm: React.FC<AddModalProps> = forwardRef(
         }
         return item;
       });
-
       onFinish(data);
     };
 

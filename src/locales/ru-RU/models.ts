@@ -208,13 +208,17 @@ export default {
   'models.mymodels.status.inactive': 'Остановлен',
   'models.mymodels.status.degrade': 'Аномальный',
   'models.mymodels.status.active': 'Активен',
-  'models.form.kvCache.tips': 'Расширенный KV-кэш и спекулятивное декодирование доступны только со встроенными бэкендами (vLLM / SGLang). Переключите бэкенд в <span class="bold-text">Расширенных</span> настройках, чтобы включить их.',
-  'models.form.kvCache.tips2': 'Поддерживается только при использовании встроенных бэкендов вывода (vLLM или SGLang).',
+  'models.form.kvCache.tips':
+    'Расширенный KV-кэш и спекулятивное декодирование доступны только со встроенными бэкендами (vLLM / SGLang). Переключите бэкенд в <span class="bold-text">Расширенных</span> настройках, чтобы включить их.',
+  'models.form.kvCache.tips2':
+    'Поддерживается только при использовании встроенных бэкендов вывода (vLLM или SGLang).',
   'models.form.scheduling': 'Планирование',
   'models.form.ramRatio': 'Соотношение ОЗУ к VRAM',
   'models.form.ramSize': 'Максимальный размер ОЗУ (ГиБ)',
-  'models.form.ramRatio.tips': 'Соотношение системной оперативной памяти к видеопамяти GPU, используемое для KV-кэша. Например, 2.0 означает, что кэш в ОЗУ может быть в два раза больше, чем в видеопамяти GPU.',
-  'models.form.ramSize.tips': 'Максимальный размер KV-кэша, хранящегося в системной памяти (ГиБ). Если задано, это значение переопределяет "{content}".',
+  'models.form.ramRatio.tips':
+    'Соотношение системной оперативной памяти к видеопамяти GPU, используемое для KV-кэша. Например, 2.0 означает, что кэш в ОЗУ может быть в два раза больше, чем в видеопамяти GPU.',
+  'models.form.ramSize.tips':
+    'Максимальный размер KV-кэша, хранящегося в системной памяти (ГиБ). Если задано, это значение переопределяет "{content}".',
   'models.form.chunkSize.tips': 'Количество токенов на чанк KV-кэша.',
   'models.form.mode': 'Режим',
   'models.form.algorithm': 'Алгоритм',
@@ -225,15 +229,21 @@ export default {
   'models.form.mode.throughput': 'Пропускная способность',
   'models.form.mode.latency': 'Задержка',
   'models.form.mode.baseline': 'Стандартный',
-  'models.form.mode.throughput.tips': 'оптимизировано для высокой пропускной способности при высокой конкурентности запросов.',
-  'models.form.mode.latency.tips': 'оптимизировано для низкой задержки при низкой конкурентности запросов.',
-  'models.form.mode.baseline.tips': 'наиболее совместимый вариант с полной точностью.',
+  'models.form.mode.throughput.tips':
+    'оптимизировано для высокой пропускной способности при высокой конкурентности запросов.',
+  'models.form.mode.latency.tips':
+    'оптимизировано для низкой задержки при низкой конкурентности запросов.',
+  'models.form.mode.baseline.tips':
+    'наиболее совместимый вариант с полной точностью.',
   'models.form.draftModel.placeholder': 'Выберите или введите черновую модель',
-  'models.form.draftModel.tips': 'Вы можете ввести локальный путь (например, /path/to/model) или выбрать модель из Hugging Face или ModelScope (например, Tengyunw/qwen3_8b_eagle3). Система автоматически сопоставит модель на основе источника основной модели.',
+  'models.form.draftModel.tips':
+    'Вы можете ввести локальный путь (например, /path/to/model) или выбрать модель из Hugging Face или ModelScope (например, Tengyunw/qwen3_8b_eagle3). Система автоматически сопоставит модель на основе источника основной модели.',
   'models.form.quantization': 'Квантование',
-  'models.form.backend.custom': 'Пользовательский'
+  'models.form.backend.custom': 'Пользовательский',
+  'models.form.rules.name':
+    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
 // ========== End of To-Do List ==========

@@ -9,7 +9,11 @@ import _ from 'lodash';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
-import { backendFields, json2Yaml } from '../config';
+import {
+  builtInBackendFields,
+  customBackendFields,
+  json2Yaml
+} from '../config';
 import { FormData, ListItem } from '../config/types';
 import BackendForm from '../forms';
 import ImportYAML from './import-yaml';
@@ -151,10 +155,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       );
 
       if (currentData?.is_built_in) {
-        return json2Yaml(_.pick(copyValues, backendFields));
+        return json2Yaml(_.pick(copyValues, builtInBackendFields));
       }
       return json2Yaml(
-        _.pick(copyValues, [...backendFields, 'default_version'])
+        _.pick(copyValues, [...customBackendFields, 'default_version'])
       );
     };
 

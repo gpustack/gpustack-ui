@@ -225,5 +225,7 @@ export default {
   'models.form.draftModel.tips':
     '可填写本地路径（如 /path/to/model），或从 Hugging Face、ModelScope 选择模型（如 Tengyunw/qwen3_8b_eagle3）。系统将根据主模型来源自动匹配。',
   'models.form.quantization': '量化',
-  'models.form.backend.custom': '用户定义'
+  'models.form.backend.custom': '用户定义',
+  'models.form.rules.name':
+    '长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字开头和结尾。'
 };

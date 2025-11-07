@@ -2,9 +2,11 @@ import IconFont from '@/components/icon-font';
 import type { SelectProps } from 'antd';
 import { Select } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
+import NotFoundContent from '../components/not-found-content';
 
 const BaseSelect: React.FC<SelectProps & { ref?: any }> = forwardRef(
   (props, ref) => {
+    const { notFoundContent, loading, ...restProps } = props;
     const [isFocus, setIsFocus] = React.useState(false);
     const inputRef = React.useRef<any>(null);
 
@@ -32,7 +34,13 @@ const BaseSelect: React.FC<SelectProps & { ref?: any }> = forwardRef(
 
     return (
       <Select
-        {...props}
+        {...restProps}
+        notFoundContent={
+          <NotFoundContent
+            loading={loading}
+            notFoundContent={notFoundContent}
+          />
+        }
         ref={inputRef}
         onFocus={handleFocus}
         onBlur={handleBlur}

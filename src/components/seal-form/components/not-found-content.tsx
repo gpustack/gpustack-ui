@@ -34,7 +34,10 @@ const NotFoundContent: React.FC<{
   return (
     <NoContent>
       {notFoundContent || (
-        <Empty description={intl.formatMessage({ id: 'common.data.empty' })} />
+        <Empty
+          description={intl.formatMessage({ id: 'common.data.empty' })}
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+        />
       )}
     </NoContent>
   );

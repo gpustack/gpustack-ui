@@ -30,12 +30,10 @@ import BasicForm from './basic';
 import Performance from './performance';
 import ScheduleTypeForm from './schedule-type';
 
-const advancedRequiredFields = [
-  'gpu_selector',
-  'backend',
-  'image_name',
-  'run_command'
-];
+const advancedRequiredFields = ['backend', 'image_name', 'run_command'];
+
+const scheduleRequiredFields = ['gpu_selector'];
+
 const performanceRequiredFields = ['speculative_config'];
 
 const SegmentedInner = styled(Segmented)`
@@ -280,6 +278,14 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       const isPerformanceRequired = names.some((name: string) =>
         performanceRequiredFields.includes(name)
       );
+
+      const isScheduleRequired = names.some((name: string) =>
+        scheduleRequiredFields.includes(name)
+      );
+
+      if (isScheduleRequired) {
+        collapseKeys.push('scheduling');
+      }
 
       if (isPerformanceRequired) {
         collapseKeys.push('performance');

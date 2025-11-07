@@ -226,19 +226,7 @@ const Workers: React.FC = () => {
 
   return (
     <>
-      <PageBox
-        ghost
-        footer={[
-          <TerminalTabs
-            height={300}
-            key="terminal-tabs"
-            terminals={terminals}
-            open={terminalModalStatus.open}
-            currentActive={terminalModalStatus.currentActive}
-            onClose={handleTerminalClose}
-          />
-        ]}
-      >
+      <PageBox>
         <FilterBar
           showSelect={true}
           showPrimaryButton={false}
@@ -290,6 +278,14 @@ const Workers: React.FC = () => {
           onClose={() =>
             setWorkerDetailStatus({ currentData: null, open: false })
           }
+        />
+        <TerminalTabs
+          height={300}
+          key="terminal-tabs"
+          terminals={terminals}
+          open={terminalModalStatus.open}
+          currentActive={terminalModalStatus.currentActive}
+          onClose={handleTerminalClose}
         />
       </PageBox>
     </>

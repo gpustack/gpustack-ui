@@ -172,19 +172,10 @@ const UserModels: React.FC = () => {
   }, [dataSource.dataList, status]);
 
   return (
-    <PageBox
-      ghost
-      header={{
-        title: intl.formatMessage({ id: 'menu.models.userModels' }),
-        style: {
-          paddingInline: 'var(--layout-content-header-inlinepadding)'
-        },
-        breadcrumb: {}
-      }}
-      extra={[]}
-    >
+    <PageBox>
       <PageTools
         marginBottom={22}
+        marginTop={0}
         left={
           <Space>
             <Input

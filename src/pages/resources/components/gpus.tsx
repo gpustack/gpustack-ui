@@ -18,6 +18,7 @@ const GPUList: React.FC = () => {
     extraStatus,
     handlePageChange,
     handleTableChange,
+    handleQueryChange,
     handleSearch,
     handleNameChange
   } = useTableFetch<GPUDeviceItem>({
@@ -42,6 +43,13 @@ const GPUList: React.FC = () => {
     } catch (error) {
       setClusterList([]);
     }
+  };
+
+  const handleClusterChange = (value: number) => {
+    handleQueryChange({
+      page: 1,
+      cluster_id: value
+    });
   };
 
   const renderEmpty = (type?: string) => {
@@ -79,13 +87,16 @@ const GPUList: React.FC = () => {
       <PageBox>
         <FilterBar
           marginBottom={22}
-          marginTop={30}
           buttonText={intl.formatMessage({ id: 'resources.button.create' })}
+          selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
+          handleSelectChange={handleClusterChange}
           showDeleteButton={false}
           showPrimaryButton={false}
-          width={{ input: 300 }}
+          selectOptions={clusterList}
+          showSelect
+          width={{ input: 200 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

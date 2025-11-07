@@ -118,13 +118,11 @@ export const useGenerateGPUOptions = () => {
     const { clusterId } = params || {};
     const [gpuData, workerData] = await Promise.all([
       queryGPUList({
-        page: 1,
-        perPage: 100,
+        page: -1,
         cluster_id: clusterId
       }),
       queryWorkersList({
-        page: 1,
-        perPage: 100,
+        page: -1,
         cluster_id: clusterId
       })
     ]);
@@ -188,12 +186,10 @@ export const useGenerateWorkerOptions = () => {
   > => {
     const [workerRes, clusterRes] = await Promise.all([
       queryWorkersList({
-        page: 1,
-        perPage: 100
+        page: -1
       }),
       queryClusterList({
-        page: 1,
-        perPage: 100
+        page: -1
       })
     ]);
     const workerList = workerRes.items || ([] as WorkerListItem[]);
@@ -244,8 +240,7 @@ export default function useFormInitialValues() {
   const getClusterList = async (): Promise<Global.BaseOption<number>[]> => {
     try {
       const response = await queryClusterList({
-        page: 1,
-        perPage: 100
+        page: -1
       });
       const list = response.items.map((item) => ({
         label: item.name,

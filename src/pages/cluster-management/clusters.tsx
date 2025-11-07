@@ -281,8 +281,7 @@ const Clusters: React.FC = () => {
     async (row: ClusterListItem, options?: any) => {
       const params = {
         cluster_id: row.id,
-        page: 1,
-        perPage: 100
+        page: -1
       };
       const data = await queryWorkerPools(params, {
         token: options?.token
@@ -300,7 +299,7 @@ const Clusters: React.FC = () => {
 
   useEffect(() => {
     const fetchCredentialList = async () => {
-      const data = await queryCredentialList({ page: 1, perPage: 100 });
+      const data = await queryCredentialList({ page: -1 });
       const list = data?.items?.map((item) => ({
         label: item.name,
         value: item.id

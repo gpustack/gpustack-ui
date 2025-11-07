@@ -33,8 +33,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     []
   );
   const [queryParams, setQueryParams] = useState<Global.SearchParams>({
-    page: 1,
-    perPage: 100
+    page: -1
   });
 
   const getUserList = async (query: Global.SearchParams) => {

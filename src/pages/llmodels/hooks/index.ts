@@ -48,7 +48,7 @@ export const useGenerateWorkersModelFileOptions = () => {
 
   const getModelFileList = async () => {
     try {
-      const res = await queryModelFilesList({ page: 1, perPage: 100 });
+      const res = await queryModelFilesList({ page: -1 });
       const list = res.items || [];
       return list;
     } catch (error) {

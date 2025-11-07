@@ -79,8 +79,7 @@ const Models: React.FC = () => {
       instancesToken.current?.cancel?.();
       instancesToken.current = createAxiosToken();
       const params = {
-        page: 1,
-        perPage: 100
+        page: -1
       };
       const res: any = await queryModelsInstances(params, {
         token: instancesToken.current.token
@@ -323,7 +322,7 @@ const Models: React.FC = () => {
     // get worker list
     const getWorkerList = async (): Promise<any> => {
       try {
-        const data = await queryWorkersList({ page: 1, perPage: 100 });
+        const data = await queryWorkersList({ page: -1 });
         return data;
       } catch (error) {
         // ingore

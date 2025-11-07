@@ -56,7 +56,7 @@ const SystemLoad = () => {
   useEffect(() => {
     const fetchClusters = async () => {
       try {
-        const res = await queryClusterList({ page: 1, perPage: 100 });
+        const res = await queryClusterList({ page: -1 });
         const options = res.items.map((cluster) => ({
           label: cluster.name,
           value: cluster.id

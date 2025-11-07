@@ -201,7 +201,7 @@ const ClusterCreate = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await queryCredentialList({ page: 1, perPage: 100 });
+      const res = await queryCredentialList({ page: -1 });
       const list = res.items?.map((item) => ({
         label: item.name,
         value: item.id,

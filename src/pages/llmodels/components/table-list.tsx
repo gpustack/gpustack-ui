@@ -396,8 +396,7 @@ const Models: React.FC<ModelsProps> = ({
     try {
       const params = {
         id: row.id,
-        page: 1,
-        perPage: 100
+        page: -1
       };
       const data = await queryModelInstancesList(params, {
         token: options?.token

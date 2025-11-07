@@ -30,6 +30,8 @@ import BasicForm from './basic';
 import Performance from './performance';
 import ScheduleTypeForm from './schedule-type';
 
+const baseRequiredFields = ['name', 'source'];
+
 const advancedRequiredFields = ['backend', 'image_name', 'run_command'];
 
 const scheduleRequiredFields = ['gpu_selector'];
@@ -96,24 +98,31 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const scheduleType = Form.useWatch('scheduleType', form);
   const [target, setTarget] = React.useState<string>('basic');
 
+  const TABKeysMap = {
+    BASIC: 'basic',
+    SCHEDULING: 'scheduling',
+    PERFORMANCE: 'performance',
+    ADVANCED: 'advanced'
+  };
+
   const segmentOptions = [
     {
-      value: 'basic',
+      value: TABKeysMap.BASIC,
       label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       field: 'name'
     },
     {
-      value: 'scheduling',
+      value: TABKeysMap.SCHEDULING,
       label: intl.formatMessage({ id: 'models.form.scheduling' }),
       field: 'scheduleType'
     },
     {
-      value: 'performance',
+      value: TABKeysMap.PERFORMANCE,
       label: intl.formatMessage({ id: 'models.form.performance' }),
       field: 'extended_kv_cache.enabled'
     },
     {
-      value: 'advanced',
+      value: TABKeysMap.ADVANCED,
       label: intl.formatMessage({ id: 'resources.form.advanced' }),
       field: 'categories'
     }
@@ -266,6 +275,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey(Array.isArray(keys) ? keys : [keys]);
   };
 
+  const handleTargetChange = async (val: any) => {
+    setTarget(val);
+
+    await scrollToSegment(val, { offsetTop: SegmentedTop.offsetTop });
+  };
+
   const handleOnFinishFailed = (errorInfo: any) => {
     const { errorFields } = errorInfo;
     if (errorFields && errorFields.length > 0) {
@@ -283,28 +298,41 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         scheduleRequiredFields.includes(name)
       );
 
+      const isBaseRequired = names.some((name: string) =>
+        baseRequiredFields.includes(name)
+      );
+
       if (isScheduleRequired) {
-        collapseKeys.push('scheduling');
+        collapseKeys.push(TABKeysMap.SCHEDULING);
       }
 
       if (isPerformanceRequired) {
-        collapseKeys.push('performance');
+        collapseKeys.push(TABKeysMap.PERFORMANCE);
       }
 
       if (isAdvancedRequired) {
-        collapseKeys.push('advanced');
+        collapseKeys.push(TABKeysMap.ADVANCED);
+      }
+
+      if (isBaseRequired) {
+        handleTargetChange(TABKeysMap.BASIC);
+      } else if (isScheduleRequired) {
+        handleTargetChange(TABKeysMap.SCHEDULING);
+      } else if (isPerformanceRequired) {
+        handleTargetChange(TABKeysMap.PERFORMANCE);
+      } else if (isAdvancedRequired && formKey === DeployFormKeyMap.CATALOG) {
+        handleTargetChange(TABKeysMap.ADVANCED);
+      } else if (
+        isAdvancedRequired &&
+        formKey === DeployFormKeyMap.DEPLOYMENT
+      ) {
+        handleTargetChange(TABKeysMap.BASIC);
       }
 
       setActiveKey((prev: string[]) => [
         ...new Set([...prev, ...collapseKeys])
       ]);
     }
-  };
-
-  const handleTargetChange = async (val: any) => {
-    setTarget(val);
-
-    await scrollToSegment(val, { offsetTop: SegmentedTop.offsetTop });
   };
 
   useImperativeHandle(ref, () => {
@@ -408,19 +436,19 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           onChange={handleOnCollapseChange}
           items={[
             {
-              key: 'scheduling',
+              key: TABKeysMap.SCHEDULING,
               label: intl.formatMessage({ id: 'models.form.scheduling' }),
               forceRender: true,
               children: <ScheduleTypeForm></ScheduleTypeForm>
             },
             {
-              key: 'performance',
+              key: TABKeysMap.PERFORMANCE,
               label: intl.formatMessage({ id: 'models.form.performance' }),
               forceRender: true,
               children: <Performance></Performance>
             },
             {
-              key: 'advanced',
+              key: TABKeysMap.ADVANCED,
               label: intl.formatMessage({ id: 'resources.form.advanced' }),
               forceRender: true,
               children: <AdvanceConfig></AdvanceConfig>

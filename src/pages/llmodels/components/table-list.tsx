@@ -608,7 +608,7 @@ const Models: React.FC<ModelsProps> = ({
                   ></SearchOutlined>
                 }
                 placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-                style={{ width: 160 }}
+                style={{ width: 200 }}
                 size="large"
                 allowClear
                 onChange={handleNameChange}

@@ -20,6 +20,7 @@ import { Avatar, Divider, Modal } from 'antd';
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import styled from 'styled-components';
+import { DEFAULT_ENTER_PAGE } from '../config/settings';
 
 const IconWrapper = styled.span`
   cursor: pointer;
@@ -93,7 +94,7 @@ export const ExtraContent = () => {
 
   const navigate = useNavigate();
 
-  const loginPath = '/login';
+  const loginPath = DEFAULT_ENTER_PAGE.login;
 
   const showUpgrade = useMemo(() => {
     return (

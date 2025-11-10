@@ -3,6 +3,7 @@ import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
+import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Form, Segmented } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
@@ -129,11 +130,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       field: 'categories'
     }
   ];
-
-  console.log(
-    'getScrollElementScrollableHeight',
-    getScrollElementScrollableHeight?.()
-  );
 
   const segmentedTop = useMemo(() => {
     if (
@@ -294,10 +290,19 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey(Array.isArray(keys) ? keys : [keys]);
   };
 
-  const handleTargetChange = async (val: any) => {
-    setTarget(val);
+  const throttleScrollToSegment = useMemoizedFn(
+    _.throttle(
+      async (val: string) => {
+        setTarget(val);
+        scrollToSegment(val, { offsetTop: segmentedTop.offsetTop });
+      },
+      500,
+      { trailing: true }
+    )
+  );
 
-    await scrollToSegment(val, { offsetTop: segmentedTop.offsetTop });
+  const handleTargetChange = async (val: any) => {
+    throttleScrollToSegment(val);
   };
 
   const handleOnFinishFailed = (errorInfo: any) => {

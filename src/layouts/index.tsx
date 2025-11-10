@@ -9,6 +9,7 @@ import ShortCuts, {
 } from '@/components/short-cuts';
 import VersionInfo, { modalConfig } from '@/components/version-info';
 import routeCachekey from '@/config/route-cachekey';
+import { DEFAULT_ENTER_PAGE } from '@/config/settings';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useUserSettings from '@/hooks/use-user-settings';
@@ -54,7 +55,7 @@ const NO_CONTAINER_PAGES = [
   'clusterCreate'
 ];
 
-const loginPath = '/login';
+const loginPath = DEFAULT_ENTER_PAGE.login;
 
 type InitialStateType = {
   fetchUserInfo: () => Promise<Global.UserInfo>;
@@ -408,8 +409,8 @@ export default (props: any) => {
       history.push(loginPath);
     } else if (location.pathname === '/') {
       const pathname = initialState?.currentUser?.is_admin
-        ? '/dashboard'
-        : '/playground';
+        ? DEFAULT_ENTER_PAGE.adminForNormal
+        : DEFAULT_ENTER_PAGE.user;
       history.push(pathname);
     }
   };
@@ -417,11 +418,14 @@ export default (props: any) => {
   const onMenuHeaderClick = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    navigate('/dashboard');
+    const pagepath = initialState?.currentUser?.is_admin
+      ? DEFAULT_ENTER_PAGE.adminForNormal
+      : DEFAULT_ENTER_PAGE.user;
+
+    navigate(pagepath);
   };
 
   const onCollapse = (value) => {
-    // setCollapsed(value);
     setUserSettings({
       ...userSettings,
       collapsed: value

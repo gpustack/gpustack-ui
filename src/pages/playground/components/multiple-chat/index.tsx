@@ -1,4 +1,4 @@
-import { HEADER_HEIGHT } from '@/config/constants';
+import { HEADER_HEIGHT } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import _ from 'lodash';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';

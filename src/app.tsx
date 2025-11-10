@@ -1,5 +1,6 @@
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
+import { DEFAULT_ENTER_PAGE } from '@/config/settings';
 import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
@@ -15,8 +16,6 @@ import {
 import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 
-const loginPath = '/login';
-
 // only for the first login and access from http://localhost
 
 const checkDefaultPage = async (userInfo: any) => {
@@ -24,7 +23,7 @@ const checkDefaultPage = async (userInfo: any) => {
   if (isFirstLogin === null && isOnline()) {
     writeState(IS_FIRST_LOGIN, true);
     if (userInfo && userInfo?.is_admin) {
-      history.push('/models/deployments');
+      history.push(DEFAULT_ENTER_PAGE.adminForFirst);
     }
   }
 };
@@ -72,7 +71,7 @@ export async function getInitialState(): Promise<{
           duration: 5
         });
       }
-      history.push(loginPath);
+      history.push(DEFAULT_ENTER_PAGE.login);
     }
     return {} as Global.UserInfo;
   };
@@ -92,7 +91,7 @@ export async function getInitialState(): Promise<{
 
   getAppVersionInfo();
 
-  if (![loginPath].includes(location.pathname)) {
+  if (![DEFAULT_ENTER_PAGE.login].includes(location.pathname)) {
     const userInfo = await fetchUserInfo();
     checkDefaultPage(userInfo);
     return {

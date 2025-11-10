@@ -1,6 +1,7 @@
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
+import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
 import { Form, Segmented } from 'antd';
 import _ from 'lodash';
@@ -72,6 +73,13 @@ interface DataFormProps {
   onBackendChange?: (value: string) => void;
 }
 
+const TABKeysMap = {
+  BASIC: 'basic',
+  SCHEDULING: 'scheduling',
+  PERFORMANCE: 'performance',
+  ADVANCED: 'advanced'
+};
+
 const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const {
     action,
@@ -89,6 +97,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onValuesChange,
     onOk
   } = props;
+  const { getScrollElementScrollableHeight } = useWrapperContext();
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();
@@ -96,14 +105,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const scheduleType = Form.useWatch('scheduleType', form);
-  const [target, setTarget] = React.useState<string>('basic');
-
-  const TABKeysMap = {
-    BASIC: 'basic',
-    SCHEDULING: 'scheduling',
-    PERFORMANCE: 'performance',
-    ADVANCED: 'advanced'
-  };
+  const [target, setTarget] = React.useState<string>(TABKeysMap.BASIC);
 
   const segmentOptions = [
     {
@@ -128,14 +130,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
   ];
 
-  const { scrollToSegment } = useFieldScroll({
-    form,
-    activeKey,
-    setActiveKey,
-    segmentOptions
-  });
+  console.log(
+    'getScrollElementScrollableHeight',
+    getScrollElementScrollableHeight?.()
+  );
 
-  const SegmentedTop = useMemo(() => {
+  const segmentedTop = useMemo(() => {
     if (
       modelSourceMap.local_path_value === source ||
       action === PageAction.EDIT ||
@@ -152,6 +152,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       offsetTop: 146
     };
   }, [source, formKey, action]);
+
+  const { scrollToSegment, holderHeight } = useFieldScroll({
+    form,
+    activeKey,
+    setActiveKey,
+    segmentOptions,
+    segmentedTop: segmentedTop,
+    getScrollElementScrollableHeight: getScrollElementScrollableHeight
+  });
 
   const handleSumit = () => {
     form.submit();
@@ -288,7 +297,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const handleTargetChange = async (val: any) => {
     setTarget(val);
 
-    await scrollToSegment(val, { offsetTop: SegmentedTop.offsetTop });
+    await scrollToSegment(val, { offsetTop: segmentedTop.offsetTop });
   };
 
   const handleOnFinishFailed = (errorInfo: any) => {
@@ -389,7 +398,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         onBackendChange: handleBackendChange
       }}
     >
-      <SegmentedHeader $top={SegmentedTop.top}>
+      <SegmentedHeader $top={segmentedTop.top}>
         <SegmentedInner
           defaultValue="basic"
           value={target}
@@ -465,6 +474,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             }
           ]}
         ></CollapsePanel>
+        <div className="holder" style={{ height: holderHeight }}></div>
       </Form>
     </FormContext.Provider>
   );

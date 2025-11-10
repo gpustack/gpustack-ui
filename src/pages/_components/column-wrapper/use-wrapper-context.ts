@@ -2,8 +2,14 @@ import { createContext, useContext } from 'react';
 
 interface WrapperContextProps {
   osInstance?: any;
+  scroller?: any;
+  scrollEventElement?: any;
   scrollToBottom?: () => void;
   scrollToTop?: () => void;
+  getScrollElementScrollableHeight?: () => {
+    scrollHeight: number;
+    scrollTop: number;
+  };
   scrollToTarget?: (target: any, offset?: number) => void;
 }
 

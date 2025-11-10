@@ -232,20 +232,7 @@ export default function useOverlayScroller(data?: {
         instanceRef.current?.elements()?.scrollEventElement;
     }
 
-    const scrollerState = instanceRef.current?.state();
-    const overflowAmount = scrollerState?.overflowAmount;
     const scrollOffsetElement = instanceRef.current?.elements().viewport;
-    console.log('osInstance==========', overflowAmount, scrollOffsetElement, {
-      top:
-        Math.round(
-          (overflowAmount?.y - scrollOffsetElement?.scrollTop || 0) /
-            overflowAmount?.y
-        ) * overflowAmount?.y,
-      scrollTop: scrollOffsetElement?.scrollTop,
-      scrollLeft: scrollOffsetElement?.scrollLeft,
-      scrollHeight:
-        scrollOffsetElement?.scrollHeight - scrollOffsetElement?.clientHeight
-    });
 
     return {
       scrollTop: scrollOffsetElement?.scrollTop,

@@ -42,7 +42,7 @@ export default {
   'models.search.hfvisit': 'Please make sure you can visit',
   'models.search.unsupport':
     'This model is not supported and may be unusable after deployment.',
-  'models.form.scheduletype': 'Schedule Type',
+  'models.form.scheduletype': 'Scheduling Mode',
   'models.form.categories': 'Model Category',
   'models.form.scheduletype.auto': 'Auto',
   'models.form.scheduletype.manual': 'Manual',

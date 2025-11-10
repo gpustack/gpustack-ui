@@ -45,7 +45,8 @@ export default {
   'models.form.scheduletype': 'Schedule Type',
   'models.form.categories': 'Model Category',
   'models.form.scheduletype.auto': 'Auto',
-  'models.form.scheduletype.manual': 'Specify GPU',
+  'models.form.scheduletype.manual': 'Manual',
+  'models.form.scheduletype.gpu': 'Specify GPU',
   'models.form.scheduletype.gpuType': 'Specify GPU Type',
   'models.form.scheduletype.auto.tips':
     'Automatically deploys model instances to appropriate GPUs based on current resource conditions.',
@@ -242,5 +243,6 @@ export default {
   'models.form.rules.name':
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
   'models.catalog.button.explore': 'Explore Other Models',
-  'models.catalog.precision': 'Precision'
+  'models.catalog.precision': 'Precision',
+  'models.form.gpuPerReplica.tips': 'Enter a custom number'
 };

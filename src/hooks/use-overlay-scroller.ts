@@ -217,18 +217,41 @@ export default function useOverlayScroller(data?: {
 
     // const currentScroll = instanceRef.current?.scroll().position.y;
     const targetPos = targetRect.top - containerRect.top + currentScroll;
-    console.log(
-      'target=======',
-      currentScroll,
-      targetPos,
-      instanceRef.current?.options()
-    );
 
     scrollEventElement.current.scroll({
       y: targetPos - offset,
       behavior: 'smooth'
     });
     instanceRef.current?.update?.();
+  };
+
+  const getScrollElementScrollableHeight = () => {
+    if (!instanceRef.current || !scrollEventElement.current) {
+      instanceRef.current = instance?.();
+      scrollEventElement.current =
+        instanceRef.current?.elements()?.scrollEventElement;
+    }
+
+    const scrollerState = instanceRef.current?.state();
+    const overflowAmount = scrollerState?.overflowAmount;
+    const scrollOffsetElement = instanceRef.current?.elements().viewport;
+    console.log('osInstance==========', overflowAmount, scrollOffsetElement, {
+      top:
+        Math.round(
+          (overflowAmount?.y - scrollOffsetElement?.scrollTop || 0) /
+            overflowAmount?.y
+        ) * overflowAmount?.y,
+      scrollTop: scrollOffsetElement?.scrollTop,
+      scrollLeft: scrollOffsetElement?.scrollLeft,
+      scrollHeight:
+        scrollOffsetElement?.scrollHeight - scrollOffsetElement?.clientHeight
+    });
+
+    return {
+      scrollTop: scrollOffsetElement?.scrollTop,
+      scrollHeight:
+        scrollOffsetElement?.scrollHeight - scrollOffsetElement?.clientHeight
+    };
   };
 
   useEffect(() => {
@@ -240,9 +263,10 @@ export default function useOverlayScroller(data?: {
 
   return {
     initialize: createInstance,
-    instance: instanceRef.current,
-    scrollEventElement: scrollEventElement.current,
+    instance: instanceRef,
+    scrollEventElement: scrollEventElement,
     initialized: initialized.current,
+    getScrollElementScrollableHeight,
     generateInstance,
     destroyInstance: destroyInstance,
     updateScrollerPosition: throttledUpdateScrollerPosition,

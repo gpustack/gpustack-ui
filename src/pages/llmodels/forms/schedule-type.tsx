@@ -5,9 +5,10 @@ import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
 import React from 'react';
+import styled from 'styled-components';
 import GPUCard from '../components/gpu-card';
 import {
   placementStrategyOptions,
@@ -17,6 +18,10 @@ import {
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
+
+const InputWrapper = styled.div`
+  padding: 8px 4px;
+`;
 
 const placementStrategyTips = [
   {
@@ -70,6 +75,10 @@ const ScheduleTypeForm: React.FC = () => {
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
   const workerSelector = Form.useWatch('worker_selector', form);
+  const GPUsPerReplicas = Form.useWatch(
+    ['gpu_selector', 'gpus_per_replica'],
+    form
+  );
 
   const handleScheduleTypeChange = async (value: string) => {
     if (value === ScheduleValueMap.Auto) {
@@ -80,6 +89,15 @@ const ScheduleTypeForm: React.FC = () => {
     } else if (value === ScheduleValueMap.Manual) {
       form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
     }
+  };
+  const handleGpusPerReplicasChange = (val: string | number | null) => {
+    if (val === null) {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
+    } else {
+      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], val);
+    }
+
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const handleGpuSelectorChange = (value: any[]) => {
@@ -191,15 +209,32 @@ const ScheduleTypeForm: React.FC = () => {
                   { label: '2', value: 2 },
                   { label: '4', value: 4 },
                   { label: '8', value: 8 },
-                  { label: '16', value: 16 },
-                  { label: '32', value: 32 },
-                  { label: '64', value: 64 },
-                  { label: '128', value: 128 },
-                  { label: '256', value: 256 }
+                  { label: '16', value: 16 }
                 ]}
                 description={
                   <TooltipList list={GPUsPerReplicaTips}></TooltipList>
                 }
+                popupRender={(originNode) => (
+                  <div>
+                    {originNode}
+                    <InputWrapper>
+                      <InputNumber
+                        min={1}
+                        max={16}
+                        step={1}
+                        style={{ width: '100%' }}
+                        defaultValue={
+                          GPUsPerReplicas === -1 ? null : GPUsPerReplicas
+                        }
+                        placeholder={intl.formatMessage({
+                          id: 'models.form.gpuPerReplica.tips'
+                        })}
+                        value={GPUsPerReplicas === -1 ? null : GPUsPerReplicas}
+                        onChange={handleGpusPerReplicasChange}
+                      />
+                    </InputWrapper>
+                  </div>
+                )}
               />
             </Form.Item>
           </>

@@ -17,11 +17,11 @@ export default function useQueryBackends() {
           value: item.backend_name,
           label:
             item.backend_name === backendOptionsMap.custom
-              ? intl.formatMessage({ id: 'backend.quickConfig' })
+              ? intl.formatMessage({ id: 'backend.custom' })
               : item.backend_name,
           title:
             item.backend_name === backendOptionsMap.custom
-              ? intl.formatMessage({ id: 'backend.quickConfig' })
+              ? intl.formatMessage({ id: 'backend.custom' })
               : item.backend_name.replace(/-custom$/, ''),
           default_backend_param: item.default_backend_param || [],
           default_version: item.default_version,

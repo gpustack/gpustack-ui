@@ -45,7 +45,8 @@ export default {
   'models.form.scheduletype': 'Тип планирования',
   'models.form.categories': 'Категория модели',
   'models.form.scheduletype.auto': 'Авто',
-  'models.form.scheduletype.manual': 'Указать GPU',
+  'models.form.scheduletype.manual': 'Ручной',
+  'models.form.scheduletype.gpu': 'Указать GPU',
   'models.form.scheduletype.gpuType': 'Указать тип GPU',
   'models.form.scheduletype.auto.tips':
     'Автоматическое развертывание инстансов модели на подходящие GPU в зависимости от текущих ресурсов.',
@@ -243,9 +244,11 @@ export default {
   'models.form.rules.name':
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
   'models.catalog.button.explore': 'Изучить другие модели',
-  'models.catalog.precision': 'Точность'
+  'models.catalog.precision': 'Точность',
+  'models.form.gpuPerReplica.tips': 'Enter a custom number'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
+// 1. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
+// 2. 'models.form.gpuPerReplica.tips': 'Enter a custom number'
 // ========== End of To-Do List ==========

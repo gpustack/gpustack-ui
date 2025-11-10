@@ -29,7 +29,7 @@ const BackendFields: React.FC = () => {
   const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
   const backend = Form.useWatch('backend', form);
 
-  const handleBackendVersionOnBlur = () => {
+  const handleBackendVersionOnChange = () => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
@@ -137,13 +137,14 @@ const BackendFields: React.FC = () => {
       {backendOptionsMap.custom !== backend && (
         <Form.Item name="backend_version">
           <SealSelect
+            allowClear
             options={backendVersions}
             optionRender={optionRender}
             labelRender={labelRender}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'
             })}
-            onBlur={handleBackendVersionOnBlur}
+            onChange={handleBackendVersionOnChange}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
             description={intl.formatMessage(
               {

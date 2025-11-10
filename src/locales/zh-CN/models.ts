@@ -46,7 +46,8 @@ export default {
   'models.form.categories': '模型类别',
   'models.form.scheduletype': '调度方式',
   'models.form.scheduletype.auto': '自动',
-  'models.form.scheduletype.manual': '指定 GPU',
+  'models.form.scheduletype.manual': '手动',
+  'models.form.scheduletype.gpu': '指定 GPU',
   'models.form.scheduletype.gpuType': '指定 GPU 类型',
   'models.form.scheduletype.auto.tips':
     '自动根据当前资源情况部署模型实例到合适的 GPU 上。',
@@ -229,5 +230,6 @@ export default {
   'models.form.rules.name':
     '长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字开头和结尾。',
   'models.catalog.button.explore': '浏览其他模型',
-  'models.catalog.precision': '精度'
+  'models.catalog.precision': '精度',
+  'models.form.gpuPerReplica.tips': '输入自定义数值'
 };

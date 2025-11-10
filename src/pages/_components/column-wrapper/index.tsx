@@ -22,14 +22,20 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
   styles = {}
 }) => {
   const scroller = React.useRef<any>(null);
-  const { initialize, instance, scrollToBottom, scrollToTarget } =
-    useOverlayScroller({
-      options: {
-        scrollbars: {
-          autoHide: 'move'
-        }
+  const {
+    initialize,
+    instance,
+    scrollEventElement,
+    scrollToBottom,
+    scrollToTarget,
+    getScrollElementScrollableHeight
+  } = useOverlayScroller({
+    options: {
+      scrollbars: {
+        autoHide: 'move'
       }
-    });
+    }
+  });
 
   React.useEffect(() => {
     if (scroller.current) {
@@ -39,7 +45,14 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
 
   return (
     <WrapperContext.Provider
-      value={{ osInstance: instance, scrollToBottom, scrollToTarget }}
+      value={{
+        scroller: scroller,
+        osInstance: instance,
+        scrollEventElement,
+        getScrollElementScrollableHeight,
+        scrollToBottom,
+        scrollToTarget
+      }}
     >
       <div
         className="column-wrapper-footer"

@@ -47,7 +47,8 @@ export default {
   'models.form.scheduletype': 'スケジュールタイプ',
   'models.form.categories': 'モデルカテゴリ',
   'models.form.scheduletype.auto': '自動',
-  'models.form.scheduletype.manual': 'GPUを指定',
+  'models.form.scheduletype.manual': '手動',
+  'models.form.scheduletype.gpu': 'GPUを指定',
   'models.form.scheduletype.gpuType': 'GPUタイプを指定',
   'models.form.scheduletype.auto.tips':
     '現在のリソース状況に基づいて、モデルインスタンスを適切なGPUに自動的にデプロイします。',
@@ -242,7 +243,8 @@ export default {
   'models.form.rules.name':
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
   'models.catalog.button.explore': 'Explore Other Models',
-  'models.catalog.precision': 'Precision'
+  'models.catalog.precision': 'Precision',
+  'models.form.gpuPerReplica.tips': 'Enter a custom number'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -313,5 +315,7 @@ export default {
 // 48. 'models.form.backend.custom': 'User Defined',
 // 49. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
 // 50. 'models.catalog.button.explore': 'Explore Other Models',
-// 51. 'models.catalog.precision': 'Precision'
+// 51. 'models.catalog.precision': 'Precision',
+// 52. 'models.form.gpuPerReplica.tips': 'Enter a custom number'
+
 // ========== End of To-Do List ==========

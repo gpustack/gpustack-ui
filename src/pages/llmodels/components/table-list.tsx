@@ -652,7 +652,6 @@ const Models: React.FC<ModelsProps> = ({
                   items: sourceOptions,
                   onClick: handleClickDropdown
                 }}
-                trigger={['hover']}
                 placement="bottomRight"
               >
                 <Button

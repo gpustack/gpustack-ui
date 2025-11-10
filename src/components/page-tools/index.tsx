@@ -86,8 +86,8 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     handleInputChange,
     handleSelectChange,
     handleSearch,
-    handleDeleteByBatch,
-    handleClickPrimary,
+    handleDeleteByBatch = null,
+    handleClickPrimary = null,
     rowSelection,
     actionItems = [],
     selectOptions,
@@ -99,8 +99,6 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     marginTop = 10,
     inputHolder,
     selectHolder,
-    showPrimaryButton = true,
-    showDeleteButton = true,
     right,
     left,
     width
@@ -108,12 +106,12 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
   const intl = useIntl();
 
   const renderRight = useMemo(() => {
-    if (!showPrimaryButton && !showDeleteButton) {
+    if (!handleClickPrimary && !handleDeleteByBatch) {
       return null;
     }
     return (
       <Space size={20}>
-        {showPrimaryButton ? (
+        {handleClickPrimary ? (
           actionType === 'dropdown' ? (
             <DropDownActions
               menu={{
@@ -139,7 +137,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
             </Button>
           )
         ) : null}
-        {showDeleteButton && (
+        {handleDeleteByBatch && (
           <Button
             icon={<DeleteOutlined />}
             danger

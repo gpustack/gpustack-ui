@@ -76,6 +76,8 @@ export const useInitLLmMeta = (
     return model;
   }, [model, modelList, isChat]);
 
+  const getLLamaBoxMeta = (meta: any) => {};
+
   const getMaxTokens = (meta: any) => {
     const { max_model_len, n_ctx, n_slot, max_total_tokens } = meta || {};
 

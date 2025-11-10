@@ -16,6 +16,9 @@ const DropDownActions: React.FC<DropDownProps> = (props) => {
   const items = useMemo(() => {
     return menu?.items?.map((item: any) => ({
       ..._.omit(item, 'locale'),
+      icon: item.icon
+        ? React.cloneElement(item.icon, { style: { fontSize: 14 } })
+        : null,
       label: item.locale ? intl.formatMessage({ id: item.label }) : item.label
     }));
   }, [menu?.items, intl]);

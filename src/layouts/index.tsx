@@ -49,6 +49,7 @@ const NO_CONTAINER_PAGES = [
   'embedding',
   'speech',
   'image',
+  'text2images',
   'clusterDetail',
   'clusterCreate'
 ];

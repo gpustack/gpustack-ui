@@ -329,8 +329,6 @@ const Clusters: React.FC = () => {
       <PageBox>
         <FilterBar
           showSelect={false}
-          showPrimaryButton={true}
-          showDeleteButton={true}
           marginBottom={22}
           marginTop={30}
           width={{ input: 300 }}

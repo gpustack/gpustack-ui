@@ -1,19 +1,17 @@
 import { modelsExpandKeysAtom } from '@/atoms/models';
 import IconFont from '@/components/icon-font';
-import PageTools from '@/components/page-tools';
-import BaseSelect from '@/components/seal-form/base/select';
+import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import { ScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
-import { SearchOutlined, SyncOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Input, Space, message } from 'antd';
+import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
 import { createModel, queryCatalogList } from './apis';
@@ -21,11 +19,6 @@ import CatalogList from './components/catalog-list';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
 import { CatalogItem as CatalogItemType, FormData } from './config/types';
-
-const PageWrapper = styled.div`
-  display: none;
-  margin-block: 32px 16px;
-`;
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
@@ -59,7 +52,9 @@ const Catalog: React.FC = () => {
   const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const cacheData = React.useRef<CatalogItemType[]>([]);
 
-  const categoryOptions = [...modelCategories.filter((item) => item.value)];
+  const categoryOptions = [
+    ...modelCategories.filter((item) => item.value)
+  ] as Global.BaseOption<string>[];
 
   const fetchData = useCallback(
     async (query?: any) => {
@@ -159,7 +154,7 @@ const Catalog: React.FC = () => {
     [openDeployModal]
   );
 
-  const handleSearch = (e: any) => {
+  const handleSearch = () => {
     fetchData({
       ...queryParams,
       page: 1
@@ -188,6 +183,10 @@ const Catalog: React.FC = () => {
       page: nextPage
     });
   });
+
+  const handleDeployFromOtherHubs = () => {
+    navigate('/models/deployments');
+  };
 
   useEffect(() => {
     fetchData();
@@ -220,49 +219,20 @@ const Catalog: React.FC = () => {
 
   return (
     <PageBox>
-      <PageTools
+      <FilterBar
+        showSelect={true}
+        selectHolder={intl.formatMessage({ id: 'models.filter.category' })}
         marginBottom={22}
         marginTop={0}
-        left={
-          <Space>
-            <Input
-              prefix={
-                <SearchOutlined
-                  style={{ color: 'var(--ant-color-text-placeholder)' }}
-                ></SearchOutlined>
-              }
-              placeholder={intl.formatMessage({ id: 'common.filter.name' })}
-              style={{ width: 230 }}
-              size="large"
-              allowClear
-              onClear={() =>
-                handleNameChange({
-                  target: {
-                    value: ''
-                  }
-                })
-              }
-              onChange={handleNameChange}
-            ></Input>
-            <BaseSelect
-              allowClear
-              showSearch={false}
-              placeholder={intl.formatMessage({ id: 'models.filter.category' })}
-              style={{ width: 200 }}
-              size="large"
-              maxTagCount={1}
-              onChange={handleCategoryChange}
-              options={categoryOptions}
-            ></BaseSelect>
-            <Button
-              type="text"
-              style={{ color: 'var(--ant-color-text-tertiary)' }}
-              icon={<SyncOutlined></SyncOutlined>}
-              onClick={handleSearch}
-            ></Button>
-          </Space>
-        }
-      ></PageTools>
+        buttonText={intl.formatMessage({ id: 'models.catalog.button.explore' })}
+        handleSearch={handleSearch}
+        handleSelectChange={handleCategoryChange}
+        handleClickPrimary={handleDeployFromOtherHubs}
+        handleInputChange={handleNameChange}
+        selectOptions={categoryOptions}
+        buttonIcon={<SearchOutlined />}
+        width={{ input: 230, select: 200 }}
+      ></FilterBar>
       <ScrollerContext.Provider
         value={{
           total: dataSource.totalPage,

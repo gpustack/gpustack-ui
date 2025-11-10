@@ -92,8 +92,6 @@ const GPUList: React.FC = () => {
           handleSearch={handleSearch}
           handleInputChange={handleNameChange}
           handleSelectChange={handleClusterChange}
-          showDeleteButton={false}
-          showPrimaryButton={false}
           selectOptions={clusterList}
           showSelect
           width={{ input: 200 }}

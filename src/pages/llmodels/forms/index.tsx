@@ -238,12 +238,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onOk(allValues);
   };
 
-  const handleClusterChange = (value: number) => {
+  const handleClusterChange = async (value: number) => {
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
     if (scheduleType === ScheduleValueMap.Manual) {
       form.setFieldValue(['gpu_selector', 'gpu_ids'], []);
     }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 150);
+    });
+    onValuesChange?.({}, form.getFieldsValue());
   };
 
   const getFieldPaths = (obj: Record<string, any>, prefix = ''): string => {
@@ -259,6 +263,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     return result[0] || '';
   };
 
+  /**
+   * auto check compatibility or notify recreate when certain fields change
+   * @param changedValues
+   * @param allValues
+   * @returns
+   */
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
     const fieldName = getFieldPaths(changedValues);
 

@@ -172,7 +172,6 @@ const BackendList = () => {
   return (
     <PageBox>
       <FilterBar
-        showDeleteButton={false}
         marginBottom={22}
         marginTop={30}
         width={{
@@ -180,7 +179,6 @@ const BackendList = () => {
         }}
         inputHolder={intl.formatMessage({ id: 'common.filter.name' })}
         buttonText={intl.formatMessage({ id: 'backend.button.add' })}
-        handleDeleteByBatch={handleDeleteBatch}
         handleClickPrimary={handleAddBackend}
         handleSearch={handleSearch}
         handleInputChange={handleNameChange}

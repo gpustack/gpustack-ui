@@ -136,8 +136,6 @@ const WorkerPools = () => {
       </SubTitle>
       <FilterBar
         showSelect={false}
-        showPrimaryButton={true}
-        showDeleteButton={true}
         marginBottom={22}
         marginTop={22}
         width={{ input: 300 }}

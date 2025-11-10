@@ -130,13 +130,14 @@ const Playground: React.FC = () => {
               options={optionsList}
               size="middle"
               className="m-l-40 font-600"
+              value={activeKey}
               onChange={(key) => setActiveKey(key)}
             ></Segmented>
           }
         </div>
       )
     };
-  }, [optionsList]);
+  }, [activeKey, optionsList, intl]);
 
   useHotkeys(
     HotKeys.RIGHT.join(','),

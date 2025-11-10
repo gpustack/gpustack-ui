@@ -335,6 +335,7 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'description',
   'env',
   'source',
+  'cluster_id',
   'quantization',
   'size',
   'restart_on_error',

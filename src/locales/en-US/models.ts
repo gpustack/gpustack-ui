@@ -240,5 +240,7 @@ export default {
   'models.form.quantization': 'Quantization',
   'models.form.backend.custom': 'User-defined',
   'models.form.rules.name':
-    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
+    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
+  'models.catalog.button.explore': 'Explore Other Models',
+  'models.catalog.precision': 'Precision'
 };

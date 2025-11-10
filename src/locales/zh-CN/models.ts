@@ -227,5 +227,7 @@ export default {
   'models.form.quantization': '量化',
   'models.form.backend.custom': '用户定义',
   'models.form.rules.name':
-    '长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字开头和结尾。'
+    '长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字开头和结尾。',
+  'models.catalog.button.explore': '浏览其他模型',
+  'models.catalog.precision': '精度'
 };

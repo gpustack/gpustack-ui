@@ -55,6 +55,16 @@ export default [
         component: './playground/rerank'
       },
       {
+        name: 'text2images',
+        title: 'Text2Images',
+        path: keepAliveRoutes.text2images,
+        key: 'text2images',
+        icon: 'icon-image1',
+        selectedIcon: 'icon-image-filled',
+        defaultIcon: 'icon-image1',
+        component: './playground/images'
+      },
+      {
         name: 'speech',
         title: 'Speech',
         path: keepAliveRoutes.speech,

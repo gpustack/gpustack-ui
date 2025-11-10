@@ -1,3 +1,13 @@
+export const VLLMMetaKeys: Record<string, any> = {};
+
+export const SGLangMetaKeys: Record<string, any> = {};
+
+/**
+ * LLM Meta Keys
+ * @description Keys used for configuring large language models (LLMs)
+ * These keys are from model metadata
+ * These values are set to the from, use uniform keys for easier management
+ */
 export const LLM_METAKEYS: Record<string, any> = {
   seed: 'seed',
   stop: 'stop',
@@ -8,7 +18,8 @@ export const LLM_METAKEYS: Record<string, any> = {
   max_model_len: 'max_model_len',
   frequency_penalty: 'frequency_penalty',
   presence_penalty: 'presence_penalty',
-  max_total_tokens: 'max_total_tokens'
+  max_total_tokens: 'max_total_tokens',
+  max_stop_sequences: 'stop'
 };
 
 export const precisionTwoKeys = [

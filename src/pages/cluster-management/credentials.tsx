@@ -183,7 +183,6 @@ const Credentials: React.FC = () => {
           actionItems={addActions}
           actionType="dropdown"
           showSelect={false}
-          showPrimaryButton={true}
           marginBottom={22}
           marginTop={0}
           buttonText={intl.formatMessage({

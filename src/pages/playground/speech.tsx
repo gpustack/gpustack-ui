@@ -182,7 +182,7 @@ const Playground: React.FC = () => {
         </div>
       )
     };
-  }, [activeKey, optionsList]);
+  }, [activeKey, optionsList, intl]);
 
   useHotkeys(
     HotKeys.RIGHT.join(','),

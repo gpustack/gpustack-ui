@@ -229,7 +229,6 @@ const Workers: React.FC = () => {
       <PageBox>
         <FilterBar
           showSelect={true}
-          showPrimaryButton={false}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           marginBottom={22}
           marginTop={30}

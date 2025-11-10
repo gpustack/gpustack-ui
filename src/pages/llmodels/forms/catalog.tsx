@@ -38,13 +38,13 @@ const CatalogForm: React.FC = () => {
         key="quantization"
         rules={[
           {
-            required: true,
-            message: getRuleMessage('select', 'models.form.quantization', false)
+            required: false,
+            message: getRuleMessage('select', 'models.catalog.precision', false)
           }
         ]}
       >
         <SealInput.Input
-          label={intl.formatMessage({ id: 'models.form.quantization' })}
+          label={intl.formatMessage({ id: 'models.catalog.precision' })}
           disabled
         ></SealInput.Input>
       </Form.Item>

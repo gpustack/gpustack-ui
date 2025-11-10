@@ -240,7 +240,9 @@ export default {
   'models.form.quantization': 'Quantization',
   'models.form.backend.custom': 'User Defined',
   'models.form.rules.name':
-    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
+    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
+  'models.catalog.button.explore': 'Explore Other Models',
+  'models.catalog.precision': 'Precision'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -309,5 +311,7 @@ export default {
 // 46. 'models.form.draftModel.tips': 'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.'
 // 47. 'models.form.quantization': 'Quantization',
 // 48. 'models.form.backend.custom': 'User Defined',
-// 49. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.'
+// 49. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
+// 50. 'models.catalog.button.explore': 'Explore Other Models',
+// 51. 'models.catalog.precision': 'Precision'
 // ========== End of To-Do List ==========

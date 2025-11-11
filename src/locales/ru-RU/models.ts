@@ -249,9 +249,11 @@ export default {
   'models.form.generic_proxy': 'Включить универсальный прокси',
   'models.form.generic_proxy.tips': 'Включить универсальный прокси',
   'models.form.generic_proxy.button': 'Универсальный прокси',
-  'models.accessControlModal.includeusers': 'Включить пользователей'
+  'models.accessControlModal.includeusers': 'Включить пользователей',
+  'models.table.genericProxy':
+    'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 7. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
 // ========== End of To-Do List ==========

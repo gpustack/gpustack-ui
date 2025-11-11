@@ -287,6 +287,7 @@ export const modelCategoriesMap = {
 
 export const categoryOptions = [
   { label: 'LLM', value: modelCategoriesMap.llm },
+  { label: 'Image', value: modelCategoriesMap.image },
   { label: 'Embedding', value: modelCategoriesMap.embedding },
   { label: 'Reranker', value: modelCategoriesMap.reranker },
   { label: 'Text-to-Speech', value: modelCategoriesMap.text_to_speech },

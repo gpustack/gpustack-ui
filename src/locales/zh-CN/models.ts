@@ -233,7 +233,10 @@ export default {
   'models.catalog.precision': '精度',
   'models.form.gpuPerReplica.tips': '输入自定义数值',
   'models.form.generic_proxy': '启用通用代理',
-  'models.form.generic_proxy.tips': '启用通用代理',
+  'models.form.generic_proxy.tips':
+    '启用通用代理后可支持访问非 openai-API 标准的 URI 路径。',
   'models.form.generic_proxy.button': '通用代理',
-  'models.accessControlModal.includeusers': '显示用户'
+  'models.accessControlModal.includeusers': '显示用户',
+  'models.table.genericProxy':
+    '参考下面 curl 的方式，代理会将 /model/proxy 前缀的请求转发到对应的模型，需要在 <span class="bold-text">X-GPUStack-Model</span> 请求头或 JSON 请求体 "model" 属性设置模型名称。'
 };

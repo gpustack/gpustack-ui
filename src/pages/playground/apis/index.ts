@@ -1,8 +1,9 @@
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { request } from '@umijs/max';
 
 export const OPENAI_COMPATIBLE = 'v1-openai';
 
-export const GPUSTACK_API = 'v1';
+export const GPUSTACK_API = GPUSTACK_API_BASE_URL;
 
 export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
 
@@ -18,6 +19,8 @@ export const RERANKER_API = '/rerank';
 export const AUDIO_TEXT_TO_SPEECH_API = `/${OPENAI_COMPATIBLE}/audio/speech`;
 
 export const AUDIO_SPEECH_TO_TEXT_API = `/${OPENAI_COMPATIBLE}/audio/transcriptions`;
+
+export const MODEL_PROXY = '/model/proxy';
 
 export async function execChatCompletions(params: any) {
   return request(`${CHAT_API}`, {

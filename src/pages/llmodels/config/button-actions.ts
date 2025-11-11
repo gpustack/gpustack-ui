@@ -50,11 +50,11 @@ export const ActionList: ActionItem[] = [
     key: 'chat',
     icon: icons.ExperimentOutlined
   },
-  // {
-  //   label: 'models.form.generic_proxy.button',
-  //   key: 'proxy',
-  //   icon: icons.CaptivePortal
-  // },
+  {
+    label: 'models.form.generic_proxy.button',
+    key: 'proxy',
+    icon: icons.CaptivePortal
+  },
   {
     label: 'models.table.button.apiAccessInfo',
     key: 'api',
@@ -197,6 +197,7 @@ export const modelFileActions = [
 
 export const categoryToPathMap: Record<string, string> = {
   [modelCategoriesMap.llm]: '/playground/chat',
+  [modelCategoriesMap.image]: '/playground/text-to-image',
   [modelCategoriesMap.text_to_speech]: '/playground/speech?type=tts',
   [modelCategoriesMap.speech_to_text]: '/playground/speech?type=stt',
   [modelCategoriesMap.reranker]: '/playground/rerank',

@@ -6,3 +6,5 @@ export const DEFAULT_ENTER_PAGE = {
   user: '/models/user-models',
   login: '/login'
 };
+
+export const GPUSTACK_API_BASE_URL = 'v1';

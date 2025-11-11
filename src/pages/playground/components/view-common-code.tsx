@@ -69,7 +69,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
         width={600}
         footer={null}
       >
-        <div style={{ marginBottom: '10px' }}>
+        <div style={{ marginBottom: '8px' }}>
           {intl.formatMessage({ id: 'playground.viewcode.info' })}
         </div>
         <div>
@@ -81,7 +81,7 @@ const ViewCodeModal: React.FC<ViewModalProps> = (props) => {
             onChange={handleOnChangeLang}
           ></CommandViewer>
           <div
-            style={{ marginTop: 10, display: 'flex', alignItems: 'baseline' }}
+            style={{ marginTop: 8, display: 'flex', alignItems: 'baseline' }}
           >
             <BulbOutlined className="m-r-8" />
             <span>

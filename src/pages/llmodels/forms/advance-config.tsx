@@ -133,7 +133,7 @@ const AdvanceConfig = () => {
           })}
         ></CheckboxField>
       </Form.Item>
-      {/* <Form.Item<FormData>
+      <Form.Item<FormData>
         name="generic_proxy"
         valuePropName="checked"
         style={{ marginBottom: 8 }}
@@ -146,7 +146,7 @@ const AdvanceConfig = () => {
             id: 'models.form.generic_proxy'
           })}
         ></CheckboxField>
-      </Form.Item> */}
+      </Form.Item>
     </>
   );
 };

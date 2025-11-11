@@ -83,6 +83,4 @@ const SegmentLine: React.FC<SegmentLineProps> = (props) => {
   );
 };
 
-SegmentLine.displayName = 'SegmentLine';
-
 export default SegmentLine;

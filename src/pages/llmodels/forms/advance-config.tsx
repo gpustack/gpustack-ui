@@ -25,7 +25,6 @@ const AdvanceConfig = () => {
   }, [backend, backendOptions]);
 
   const handleEnviromentVarsChange = (labels: Record<string, any>) => {
-    console.log('handleEnviromentVarsChange', labels);
     form.setFieldValue('env', labels);
   };
 
@@ -134,6 +133,20 @@ const AdvanceConfig = () => {
           })}
         ></CheckboxField>
       </Form.Item>
+      {/* <Form.Item<FormData>
+        name="generic_proxy"
+        valuePropName="checked"
+        style={{ marginBottom: 8 }}
+      >
+        <CheckboxField
+          description={intl.formatMessage({
+            id: 'models.form.generic_proxy.tips'
+          })}
+          label={intl.formatMessage({
+            id: 'models.form.generic_proxy'
+          })}
+        ></CheckboxField>
+      </Form.Item> */}
     </>
   );
 };

@@ -231,5 +231,8 @@ export default {
     '长度不超过 63 个字符，只能包含字母、数字、点（.）、下划线（_）和连字符（-），且必须以字母或数字开头和结尾。',
   'models.catalog.button.explore': '浏览其他模型',
   'models.catalog.precision': '精度',
-  'models.form.gpuPerReplica.tips': '输入自定义数值'
+  'models.form.gpuPerReplica.tips': '输入自定义数值',
+  'models.form.generic_proxy': '启用通用代理',
+  'models.form.generic_proxy.tips': '启用通用代理',
+  'models.form.generic_proxy.button': '通用代理'
 };

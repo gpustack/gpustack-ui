@@ -220,7 +220,7 @@ const ScheduleTypeForm: React.FC = () => {
                     <InputWrapper>
                       <InputNumber
                         min={1}
-                        max={16}
+                        max={64}
                         step={1}
                         style={{ width: '100%' }}
                         defaultValue={

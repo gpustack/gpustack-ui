@@ -247,7 +247,8 @@ export default {
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
   'models.form.generic_proxy.tips': 'Enable Generic Proxy',
-  'models.form.generic_proxy.button': 'Generic Proxy'
+  'models.form.generic_proxy.button': 'Generic Proxy',
+  'models.accessControlModal.includeusers': 'Include Users'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -322,6 +323,7 @@ export default {
 // 52. 'models.form.gpuPerReplica.tips': 'Enter a custom number',
 // 53. 'models.form.generic_proxy': 'Enable Generic Proxy',
 // 54. 'models.form.generic_proxy.tips': 'Enable Generic Proxy',
-// 55. 'models.form.generic_proxy.button': 'Generic Proxy'
+// 55. 'models.form.generic_proxy.button': 'Generic Proxy',
+// 56. 'models.accessControlModal.includeusers': 'Include Users'
 
 // ========== End of To-Do List ==========

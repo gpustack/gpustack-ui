@@ -68,15 +68,6 @@ export const addWorkerGuide: Record<string, any> = {
   }
 };
 
-export const containerInstallOptions = [
-  { label: 'NVIDIA CUDA', value: 'cuda' },
-  { label: 'AMD ROCm', value: 'rocm' },
-  { label: 'Ascend CANN', value: 'npu' },
-  { label: 'Hygon DTK', value: 'dcu' },
-  { label: 'Moore Threads MUSA', value: 'musa' },
-  { label: 'Iluvatar Corex', value: 'corex' }
-];
-
 export const ModelfileStateMap = {
   Error: 'error',
   Downloading: 'downloading',

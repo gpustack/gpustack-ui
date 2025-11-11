@@ -1,4 +1,4 @@
-import { modelsExpandKeysAtom } from '@/atoms/models';
+import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
@@ -14,7 +14,7 @@ import _ from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
-import { createModel, queryCatalogList } from './apis';
+import { createModel, queryCatalogItemSpec, queryCatalogList } from './apis';
 import CatalogList from './components/catalog-list';
 import DelopyBuiltInModal from './components/deploy-builtin-modal';
 import { modelCategories, modelSourceMap } from './config';
@@ -50,6 +50,7 @@ const Catalog: React.FC = () => {
     source: modelSourceMap.huggingface_value
   });
   const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
+  const [, setModelsSession] = useAtom(modelsSessionAtom);
   const cacheData = React.useRef<CatalogItemType[]>([]);
 
   const categoryOptions = [
@@ -184,7 +185,14 @@ const Catalog: React.FC = () => {
     });
   });
 
-  const handleDeployFromOtherHubs = () => {
+  const handleDeployFromOtherHubs = async () => {
+    try {
+      const id = dataSource.dataList?.[0]?.id;
+      const res: any = await queryCatalogItemSpec({ id });
+      setModelsSession({
+        source: res?.items?.[0]?.source
+      });
+    } catch (error) {}
     navigate('/models/deployments');
   };
 

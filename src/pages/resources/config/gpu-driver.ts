@@ -1,12 +1,12 @@
 export const GPUDriverMap = {
   NVIDIA: 'cuda',
   AMD: 'rocm',
-  ASCEND: 'npu',
-  HYGON: 'dcu',
+  ASCEND: 'cann',
+  HYGON: 'dtk',
   MOORE_THREADS: 'musa',
   ILUVATAR: 'corex',
-  CAMBRICON: 'cambricon',
-  METAX: 'metax'
+  CAMBRICON: 'neuware',
+  METAX: 'maca'
 };
 
 const ManufacturerMap = {
@@ -45,7 +45,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.HYGON]: {
     label: ManufacturerMap[GPUDriverMap.HYGON],
     value: GPUDriverMap.HYGON,
-    runtime: 'dcu', // TODO: confirm runtime name
+    runtime: '', // TODO: confirm runtime name
     driver: 'hy-smi'
   },
   [GPUDriverMap.MOORE_THREADS]: {
@@ -57,7 +57,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.ILUVATAR]: {
     label: ManufacturerMap[GPUDriverMap.ILUVATAR],
     value: GPUDriverMap.ILUVATAR,
-    runtime: 'corex', // TODO: confirm runtime name
+    runtime: '', // TODO: confirm runtime name
     driver: 'ixsmi'
   },
   [GPUDriverMap.CAMBRICON]: {

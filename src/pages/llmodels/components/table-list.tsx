@@ -1,4 +1,4 @@
-import { modelsExpandKeysAtom } from '@/atoms/models';
+import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
@@ -137,6 +137,7 @@ const Models: React.FC<ModelsProps> = ({
     isGGUF: false
   });
   const [expandAtom, setExpandAtom] = useAtom(modelsExpandKeysAtom);
+  const [modelsSession, setModelsSession] = useAtom(modelsSessionAtom);
   const intl = useIntl();
   const navigate = useNavigate();
   const rowSelection = useTableRowSelection();
@@ -591,7 +592,16 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
-  const handleSubmitAccessControl = (data: any) => {};
+  useEffect(() => {
+    if (modelsSession.source && loadend) {
+      handleClickDropdown({
+        key: modelsSession.source
+      });
+    }
+    return () => {
+      setModelsSession({});
+    };
+  }, [loadend]);
 
   return (
     <>
@@ -774,7 +784,6 @@ const Models: React.FC<ModelsProps> = ({
       ></APIAccessInfoModal>
       <AccessControlModal
         onCancel={handleCancelAccessControl}
-        onOk={handleSubmitAccessControl}
         title={openAccessControlModal.title}
         open={openAccessControlModal.open}
         currentData={openAccessControlModal.currentData}

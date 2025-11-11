@@ -38,13 +38,13 @@ export interface MessageItem {
 type SchemaType =
   | 'Input'
   | 'InputNumber'
-  | 'Textarea'
+  | 'TextArea'
   | 'Select'
   | 'Slider'
-  | 'TextArea'
-  | 'Checkbox'
   | 'Textarea'
-  | 'Switch';
+  | 'Checkbox'
+  | 'Switch'
+  | 'AutoComplete';
 
 export interface ParamsSchema {
   type: SchemaType;

@@ -86,7 +86,8 @@ export const gpuColorMap: Record<string, string> = {
   dtk: 'magenta',
   musa: 'cyan',
   corex: 'purple',
-  maca: 'geekblue'
+  maca: 'geekblue',
+  neuware: 'gold'
 };
 
 export const getGpuColor = (gpuType: string) => {
@@ -147,8 +148,20 @@ export const frameworks = [
     value: 'dtk'
   },
   {
+    label: 'MACA',
+    value: 'maca'
+  },
+  {
     label: 'CoreX',
     value: 'corex'
+  },
+  {
+    label: 'MUSA',
+    value: 'musa'
+  },
+  {
+    label: 'Neuware',
+    value: 'neuware'
   },
   {
     label: 'CPU',

@@ -4,6 +4,8 @@ import { atom, getDefaultStore } from 'jotai';
 // models expand keys: create, update , delete,
 export const modelsExpandKeysAtom = atom<string[]>([]);
 
+export const modelsSessionAtom = atom<Record<string, any>>({});
+
 export const requestIdAtom = atom<number>(0);
 
 export const setRquestId = () => {

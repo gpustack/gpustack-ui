@@ -234,5 +234,6 @@ export default {
   'models.form.gpuPerReplica.tips': '输入自定义数值',
   'models.form.generic_proxy': '启用通用代理',
   'models.form.generic_proxy.tips': '启用通用代理',
-  'models.form.generic_proxy.button': '通用代理'
+  'models.form.generic_proxy.button': '通用代理',
+  'models.accessControlModal.includeusers': '显示用户'
 };

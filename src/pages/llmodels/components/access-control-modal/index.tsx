@@ -9,7 +9,7 @@ import AccessControlForm from './form';
 
 const AccessControlModal: React.FC<
   Global.ScrollerModalProps<ListItem, AccessControlFormData>
-> = ({ open, title, currentData, action, onOk, onCancel }) => {
+> = ({ open, title, currentData, action, onCancel }) => {
   const intl = useIntl();
   const form = useRef<any>(null);
 

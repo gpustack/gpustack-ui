@@ -1,4 +1,5 @@
 import { Checkbox } from 'antd';
+import AutoComplete from '../auto-complete';
 import SealInput from '../seal-input';
 import SealSelect from '../seal-select';
 import Slider from '../seal-slider';
@@ -12,6 +13,7 @@ const components: {
   Input: typeof SealInput.Input;
   Checkbox: typeof Checkbox;
   Switch: typeof Switch;
+  AutoComplete: typeof AutoComplete;
 } = {
   InputNumber: SealInput.Number,
   Select: SealSelect,
@@ -19,7 +21,8 @@ const components: {
   TextArea: SealInput.TextArea,
   Input: SealInput.Input,
   Checkbox: Checkbox,
-  Switch: Switch
+  Switch: Switch,
+  AutoComplete: AutoComplete
 };
 
 export default components;

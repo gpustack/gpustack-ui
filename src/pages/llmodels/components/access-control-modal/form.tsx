@@ -1,9 +1,16 @@
 import AlertBlockInfo from '@/components/alert-info/block';
 import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
+import { DownOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Empty, Form, Radio } from 'antd';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { Checkbox, Dropdown, DropdownProps, Empty, Form, Radio } from 'antd';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState
+} from 'react';
 import styled from 'styled-components';
 import { queryModelAccessUserList } from '../../apis';
 import { AccessControlFormData, ListItem } from '../../config/types';
@@ -29,12 +36,33 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const accessPolicy = Form.useWatch('access_policy', form);
   const [targetKeys, setTargetKeys] = useState<TransferKey[]>([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [userList, setUserList] = useState<{ title: string; key: number }[]>(
-    []
-  );
+  const [userList, setUserList] = useState<
+    { title: string; key: number; is_admin: boolean; is_active: boolean }[]
+  >([]);
+  const [open, setOpen] = useState(false);
+  const [filterInUsers, setFilterInUsers] = useState<Set<string>>(new Set());
   const [queryParams, setQueryParams] = useState<Global.SearchParams>({
     page: -1
   });
+
+  const dataList = useMemo(() => {
+    if (filterInUsers.size === 0) {
+      return userList.filter((user) => {
+        return !user.is_admin && user.is_active;
+      });
+    }
+    return userList.filter((user) => {
+      const isAdmin = user.is_admin;
+      const isActive = user.is_active;
+      if (!filterInUsers.has('admin') && isAdmin) {
+        return false;
+      }
+      if (!filterInUsers.has('inactive') && !isActive) {
+        return false;
+      }
+      return true;
+    });
+  }, [userList, filterInUsers]);
 
   const getUserList = async (query: Global.SearchParams) => {
     try {
@@ -42,7 +70,8 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       const options = res.items.map((item) => ({
         title: item.username,
         key: item.id,
-        is_admin: item.is_admin
+        is_admin: item.is_admin as boolean,
+        is_active: item.is_active as boolean
       }));
       setTotalPages(res.pagination.totalPage);
       setUserList(options);
@@ -63,6 +92,30 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
 
   const onSearch = (dir: 'left' | 'right', value: string) => {
     console.log('search:', dir, value);
+  };
+
+  const handleCheck = (e: any, type: string) => {
+    const newSet = new Set(filterInUsers);
+    if (e.target.checked) {
+      newSet.add(type);
+    } else {
+      newSet.delete(type);
+    }
+    setFilterInUsers(newSet);
+  };
+
+  const handleOpenChange: DropdownProps['onOpenChange'] = (nextOpen, info) => {
+    if (info.source === 'trigger' || nextOpen) {
+      setOpen(nextOpen);
+    }
+  };
+
+  const handleFilterChange = (e: any) => {
+    if (e.target.checked) {
+      setFilterInUsers(new Set(['admin', 'inactive']));
+    } else {
+      setFilterInUsers(new Set());
+    }
   };
 
   useImperativeHandle(ref, () => ({
@@ -96,6 +149,51 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     }
     getUserList(queryParams);
   }, [currentData?.id]);
+
+  const renderFilterDropdown = () => {
+    return (
+      <Dropdown
+        open={open}
+        onOpenChange={handleOpenChange}
+        key="filter-dropdown"
+        menu={{
+          items: [
+            {
+              label: (
+                <Checkbox
+                  checked={filterInUsers.has('admin')}
+                  onChange={(e: any) => handleCheck(e, 'admin')}
+                >
+                  {intl.formatMessage({ id: 'models.table.admin' })}
+                </Checkbox>
+              ),
+              key: '0'
+            },
+            {
+              label: (
+                <Checkbox
+                  checked={filterInUsers.has('inactive')}
+                  onChange={(e: any) => handleCheck(e, 'inactive')}
+                >
+                  {intl.formatMessage({ id: 'users.status.deactivate' })}
+                </Checkbox>
+              ),
+              key: '1'
+            }
+          ]
+        }}
+      >
+        <span>
+          <span className="m-r-8" style={{ cursor: 'default' }}>
+            {intl.formatMessage({
+              id: 'models.accessControlModal.includeusers'
+            })}
+          </span>
+          <DownOutlined />
+        </span>
+      </Dropdown>
+    );
+  };
 
   return (
     <Form
@@ -149,11 +247,11 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
           </Label>
           <Form.Item<AccessControlFormData> name="users">
             <TransferInner
-              dataSource={userList}
+              dataSource={dataList}
               targetKeys={targetKeys}
               pagination={false}
               titles={[
-                intl.formatMessage({ id: 'models.table.users.all' }),
+                renderFilterDropdown(),
                 intl.formatMessage({
                   id: 'models.table.users.selected'
                 })
@@ -188,9 +286,11 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                 <span className="flex-center gap-4">
                   <span>{item.title}</span>
                   <span className="text-tertiary">
-                    {item.is_admin
-                      ? `[${intl.formatMessage({ id: 'models.table.admin' })}]`
-                      : ''}
+                    {!item.is_active
+                      ? `[${intl.formatMessage({ id: 'users.status.inactive' })}]`
+                      : item.is_admin
+                        ? `[${intl.formatMessage({ id: 'models.table.admin' })}]`
+                        : ''}
                   </span>
                 </span>
               )}

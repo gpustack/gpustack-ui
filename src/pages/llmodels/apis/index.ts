@@ -372,7 +372,7 @@ export async function queryCatalogItemSpec(
   params: { id: number },
   options?: any
 ) {
-  return await request<Global.PageResponse<CatalogSpec>>(
+  return request<Global.PageResponse<CatalogSpec>>(
     `/model-sets/${params.id}/specs`,
     {
       method: 'GET',

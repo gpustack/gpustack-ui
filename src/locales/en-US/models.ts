@@ -247,5 +247,6 @@ export default {
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
   'models.form.generic_proxy.tips': 'Enable Generic Proxy',
-  'models.form.generic_proxy.button': 'Generic Proxy'
+  'models.form.generic_proxy.button': 'Generic Proxy',
+  'models.accessControlModal.includeusers': 'Include Users'
 };

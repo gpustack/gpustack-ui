@@ -32,7 +32,7 @@ export const imageSizeOptions: {
 
 export const TTSParamsConfig: ParamsSchema[] = [
   {
-    type: 'Select',
+    type: 'AutoComplete',
     name: 'voice',
     options: [],
     label: {
@@ -41,7 +41,7 @@ export const TTSParamsConfig: ParamsSchema[] = [
     },
     rules: [
       {
-        required: true,
+        required: false,
         message: 'Voice is required'
       }
     ]

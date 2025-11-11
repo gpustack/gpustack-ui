@@ -244,7 +244,10 @@ export default {
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
   'models.catalog.button.explore': 'Explore Other Models',
   'models.catalog.precision': 'Precision',
-  'models.form.gpuPerReplica.tips': 'Enter a custom number'
+  'models.form.gpuPerReplica.tips': 'Enter a custom number',
+  'models.form.generic_proxy': 'Enable Generic Proxy',
+  'models.form.generic_proxy.tips': 'Enable Generic Proxy',
+  'models.form.generic_proxy.button': 'Generic Proxy'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -316,6 +319,9 @@ export default {
 // 49. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
 // 50. 'models.catalog.button.explore': 'Explore Other Models',
 // 51. 'models.catalog.precision': 'Precision',
-// 52. 'models.form.gpuPerReplica.tips': 'Enter a custom number'
+// 52. 'models.form.gpuPerReplica.tips': 'Enter a custom number',
+// 53. 'models.form.generic_proxy': 'Enable Generic Proxy',
+// 54. 'models.form.generic_proxy.tips': 'Enable Generic Proxy',
+// 55. 'models.form.generic_proxy.button': 'Generic Proxy'
 
 // ========== End of To-Do List ==========

@@ -50,6 +50,11 @@ export const ActionList: ActionItem[] = [
     key: 'chat',
     icon: icons.ExperimentOutlined
   },
+  // {
+  //   label: 'models.form.generic_proxy.button',
+  //   key: 'proxy',
+  //   icon: icons.CaptivePortal
+  // },
   {
     label: 'models.table.button.apiAccessInfo',
     key: 'api',
@@ -68,7 +73,7 @@ export const ActionList: ActionItem[] = [
   {
     label: 'models.button.accessSettings',
     key: 'accessControl',
-    icon: icons.Private
+    icon: icons.Permission
   },
   {
     label: 'common.button.delete',

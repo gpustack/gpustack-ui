@@ -28,7 +28,7 @@ import useCredentialColumns from './hooks/use-credential-columns';
 
 const addActions = [
   {
-    label: 'Digital Ocean',
+    label: 'DigitalOcean',
     locale: false,
     key: ProviderValueMap.DigitalOcean,
     value: ProviderValueMap.DigitalOcean,

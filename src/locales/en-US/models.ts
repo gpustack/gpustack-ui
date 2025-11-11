@@ -244,5 +244,8 @@ export default {
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
   'models.catalog.button.explore': 'Explore Other Models',
   'models.catalog.precision': 'Precision',
-  'models.form.gpuPerReplica.tips': 'Enter a custom number'
+  'models.form.gpuPerReplica.tips': 'Enter a custom number',
+  'models.form.generic_proxy': 'Enable Generic Proxy',
+  'models.form.generic_proxy.tips': 'Enable Generic Proxy',
+  'models.form.generic_proxy.button': 'Generic Proxy'
 };

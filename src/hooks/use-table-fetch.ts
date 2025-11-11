@@ -14,6 +14,17 @@ type WatchConfig =
   | { watch: true; API: string; polling?: false | undefined }
   | { polling: true; watch: false | undefined; API?: string };
 
+/**
+ *
+ * @param contentForDelete i18n key for delete confirmation modal content
+ * @param fetchAPI API function to fetch data, should return a promise with Global.PageResponse<T>
+ * @param deleteAPI API function to delete an item, should return a promise
+ * @param defaultData default data list
+ * @param events events to watch for chunked updates, default: ['UPDATE', 'DELETE']
+ * @param defaultQueryParams default query parameters for fetching data
+ * @param isInfiniteScroll whether to use infinite scroll mode , use in card list
+ * @returns
+ */
 export default function useTableFetch<T>(
   options: {
     fetchAPI: (params: any) => Promise<Global.PageResponse<T>>;

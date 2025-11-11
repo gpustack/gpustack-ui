@@ -60,6 +60,7 @@ export interface FormData {
   local_path?: string;
   model_scope_model_id?: string;
   model_scope_file_path?: string;
+  generic_proxy?: boolean;
   gpu_selector?: {
     gpu_ids?: string[];
     gpu_type?: string;

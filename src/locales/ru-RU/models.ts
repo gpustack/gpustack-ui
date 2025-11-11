@@ -242,21 +242,16 @@ export default {
   'models.form.quantization': 'Квантование',
   'models.form.backend.custom': 'Пользовательский',
   'models.form.rules.name':
-    'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
+    'До 63 символов; только буквы, цифры, точки (.), подчёркивания (_) и дефисы (-); должно начинаться и заканчиваться буквенно-цифровым символом.',
   'models.catalog.button.explore': 'Изучить другие модели',
   'models.catalog.precision': 'Точность',
-  'models.form.gpuPerReplica.tips': 'Enter a custom number',
-  'models.form.generic_proxy': 'Enable Generic Proxy',
-  'models.form.generic_proxy.tips': 'Enable Generic Proxy',
-  'models.form.generic_proxy.button': 'Generic Proxy',
-  'models.accessControlModal.includeusers': 'Include Users'
+  'models.form.gpuPerReplica.tips': 'Введите произвольное число',
+  'models.form.generic_proxy': 'Включить универсальный прокси',
+  'models.form.generic_proxy.tips': 'Включить универсальный прокси',
+  'models.form.generic_proxy.button': 'Универсальный прокси',
+  'models.accessControlModal.includeusers': 'Включить пользователей'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
-// 2. 'models.form.gpuPerReplica.tips': 'Enter a custom number',
-// 3. 'models.form.generic_proxy': 'Enable Generic Proxy',
-// 4. 'models.form.generic_proxy.tips': 'Enable Generic Proxy',
-// 5. 'models.form.generic_proxy.button': 'Generic Proxy',
-// 6. 'models.accessControlModal.includeusers': 'Include Users',
+
 // ========== End of To-Do List ==========

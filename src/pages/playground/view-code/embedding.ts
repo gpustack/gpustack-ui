@@ -1,8 +1,9 @@
 import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
-export const generateEmbeddingCode = ({
+export const generateEmbeddingCurlCode = ({
   api: url,
+  modelProxy,
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
@@ -12,8 +13,21 @@ export const generateEmbeddingCode = ({
   const curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 ${formatCurlArgs(parameters, false)}`.trim();
+
+  return curlCode;
+};
+
+export const generateEmbeddingCode = ({
+  api: url,
+  parameters
+}: Record<string, any>) => {
+  const host = window.location.origin;
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+
+  // ========================= Curl =========================
+  const curlCode = generateEmbeddingCurlCode({ api: url, parameters });
 
   // ========================= Python =========================
   const pythonCode = `

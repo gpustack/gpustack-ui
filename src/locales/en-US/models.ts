@@ -246,7 +246,10 @@ export default {
   'models.catalog.precision': 'Precision',
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
-  'models.form.generic_proxy.tips': 'Enable Generic Proxy',
+  'models.form.generic_proxy.tips':
+    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
   'models.form.generic_proxy.button': 'Generic Proxy',
-  'models.accessControlModal.includeusers': 'Include Users'
+  'models.accessControlModal.includeusers': 'Include Users',
+  'models.table.genericProxy':
+    'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
 };

@@ -107,9 +107,6 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
 
   return (
     <Container>
-      <Title>
-        {intl.formatMessage({ id: 'clusters.create.supportedGpu' })}
-      </Title>
       <SupportedGPUs
         onSelect={handleSelectProvider}
         current={currentGPU}

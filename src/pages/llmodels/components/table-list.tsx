@@ -58,6 +58,7 @@ import {
   SourceType
 } from '../config/types';
 import useFormInitialValues from '../hooks/use-form-initial-values';
+import useGenericProxy from '../hooks/use-generic-proxy';
 import useModelsColumns from '../hooks/use-models-columns';
 import AccessControlModal from './access-control-modal';
 import APIAccessInfoModal from './api-access-info';
@@ -194,6 +195,8 @@ const Models: React.FC<ModelsProps> = ({
     action: PageAction.CREATE
   });
   const modalRef = useRef<any>(null);
+
+  const { GenericProxyModal, openProxyModal } = useGenericProxy();
 
   useEffect(() => {
     if (deleteIds?.length) {
@@ -454,6 +457,10 @@ const Models: React.FC<ModelsProps> = ({
 
       if (val === 'api') {
         handleViewAPIInfo(row);
+      }
+
+      if (val === 'proxy') {
+        openProxyModal(row);
       }
 
       if (val === 'stop') {
@@ -789,6 +796,7 @@ const Models: React.FC<ModelsProps> = ({
         currentData={openAccessControlModal.currentData}
         action={openAccessControlModal.action}
       ></AccessControlModal>
+      {GenericProxyModal}
     </>
   );
 };

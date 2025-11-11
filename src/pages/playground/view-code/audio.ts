@@ -1,8 +1,9 @@
 import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
-export const speechToTextCode = ({
+export const generateSpeechToTextCurlCode = ({
   api: url,
+  modelProxy,
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
@@ -13,11 +14,25 @@ export const speechToTextCode = ({
   const curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: multipart/form-data" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 -F file="@/path/to/file/audio.mp3;type=audio/mpeg" \\
 ${formatCurlArgs(parameters, true)}`
     .trim()
     .replace(/\\$/g, '');
+
+  return curlCode;
+};
+
+export const speechToTextCode = ({
+  api: url,
+  parameters
+}: Record<string, any>) => {
+  const host = window.location.origin;
+  // replace url OPENAI_COMPATIBLE with GPUSTACK
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+
+  // ========================= Curl =========================
+  const curlCode = generateSpeechToTextCurlCode({ api: url, parameters });
 
   // ========================= Python =========================
   const pythonCode = `
@@ -67,8 +82,9 @@ main();`.trim();
   };
 };
 
-export const TextToSpeechCode = ({
+export const generateTextToSpeechCurlCode = ({
   api: url,
+  modelProxy,
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
@@ -78,8 +94,21 @@ export const TextToSpeechCode = ({
   const curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 ${formatCurlArgs(parameters, false)} \\\n--output output.${parameters.response_format}`.trim();
+
+  return curlCode;
+};
+
+export const TextToSpeechCode = ({
+  api: url,
+  parameters
+}: Record<string, any>) => {
+  const host = window.location.origin;
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+
+  // ========================= Curl =========================
+  const curlCode = generateTextToSpeechCurlCode({ api: url, parameters });
 
   // ========================= Python =========================
   const pythonCode = `

@@ -2,9 +2,10 @@ import _ from 'lodash';
 import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
-export const generateImageCode = ({
+export const generateImageCurlCode = ({
   api: url,
   parameters,
+  modelProxy,
   isFormdata = false,
   edit = false
 }: Record<string, any>) => {
@@ -15,20 +16,40 @@ export const generateImageCode = ({
   let curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 ${formatCurlArgs(parameters, isFormdata)}`.trim();
 
   if (edit) {
     curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: multipart/form-data" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 -F image="@image.png" \\
 -F mask="@mask.png" \\
 ${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
       .trim()
       .replace(/\\$/, '');
   }
+
+  return curlCode;
+};
+
+export const generateImageCode = ({
+  api: url,
+  parameters,
+  isFormdata = false,
+  edit = false
+}: Record<string, any>) => {
+  const host = window.location.origin;
+  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+
+  // ========================= Curl =========================
+  let curlCode = generateImageCurlCode({
+    api: url,
+    parameters,
+    isFormdata,
+    edit
+  });
 
   // ========================= Python =========================
   const pythonCode = `

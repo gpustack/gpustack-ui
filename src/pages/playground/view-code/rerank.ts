@@ -1,7 +1,8 @@
 import { formatCurlArgs } from './utils';
 
-export const generateRerankCode = ({
+export const generateRerankCurlCode = ({
   api,
+  modelProxy,
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
@@ -10,8 +11,20 @@ export const generateRerankCode = ({
   const curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
+-H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 ${formatCurlArgs(parameters, false)}`.trim();
+
+  return curlCode;
+};
+
+export const generateRerankCode = ({
+  api,
+  parameters
+}: Record<string, any>) => {
+  const host = window.location.origin;
+
+  // ========================= Curl =========================
+  const curlCode = generateRerankCurlCode({ api, parameters });
 
   // ========================= Python =========================
   const pythonCode = `

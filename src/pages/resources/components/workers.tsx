@@ -11,7 +11,6 @@ import { Button, ConfigProvider, Table, message } from 'antd';
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import NoResult from '../../_components/no-result';
-import TerminalTabs from '../../_components/terminal-tabs';
 import {
   WORKERS_API,
   deleteWorker,
@@ -70,16 +69,6 @@ const Workers: React.FC = () => {
   }>({
     open: false,
     currentData: null
-  });
-  const [terminals, setTerminals] = useState<{ url: string; name: string }[]>(
-    []
-  );
-  const [terminalModalStatus, setTerminalModalStatus] = useState<{
-    open: boolean;
-    currentActive: string;
-  }>({
-    open: false,
-    currentActive: ''
   });
 
   const getClusterList = async () => {
@@ -165,19 +154,6 @@ const Workers: React.FC = () => {
         name: record.name
       });
     }
-    if (val === 'terminal') {
-      const url = `/api/workers/${record.id}/terminal`;
-      setTerminals((prev) => {
-        return [
-          ...prev,
-          {
-            url,
-            name: record.name
-          }
-        ];
-      });
-      setTerminalModalStatus({ open: true, currentActive: url });
-    }
   });
 
   const handleAddWorker = () => {
@@ -210,11 +186,6 @@ const Workers: React.FC = () => {
       page: 1,
       cluster_id: value
     });
-  };
-
-  const handleTerminalClose = () => {
-    setTerminalModalStatus({ open: false, currentActive: '' });
-    setTerminals([]);
   };
 
   const columns = useWorkerColumns({
@@ -281,14 +252,6 @@ const Workers: React.FC = () => {
           onClose={() =>
             setWorkerDetailStatus({ currentData: null, open: false })
           }
-        />
-        <TerminalTabs
-          height={300}
-          key="terminal-tabs"
-          terminals={terminals}
-          open={terminalModalStatus.open}
-          currentActive={terminalModalStatus.currentActive}
-          onClose={handleTerminalClose}
         />
       </PageBox>
     </>

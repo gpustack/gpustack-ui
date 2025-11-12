@@ -47,7 +47,7 @@ const UpdateLabels: React.FC<ViewModalProps> = (props) => {
       maskClosable={false}
       keyboard={false}
       width={600}
-      maxContentHeight={550}
+      maxContentHeight={'max(calc(100vh - 300px), 500px)'}
       footer={
         <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
       }

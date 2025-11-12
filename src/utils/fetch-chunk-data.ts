@@ -78,14 +78,7 @@ export const fetchChunkedData = async (params: {
   if (!response.ok) {
     return await errorHandler(response);
   }
-  const reader = response?.body?.getReader();
-  const decoder = new TextDecoder('utf-8', {
-    fatal: true
-  });
-  return {
-    reader,
-    decoder
-  };
+  return response.json();
 };
 
 const createFormData = (data: any): FormData => {

@@ -70,6 +70,7 @@ export const openaiCompatibleFieldsDefaultValus = {
 export const imgInitialValues = {
   n: 1,
   size: '512x512',
+  response_format: 'b64_json',
   width: 512,
   height: 512
 };

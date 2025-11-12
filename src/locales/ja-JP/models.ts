@@ -242,7 +242,7 @@ export default {
   'models.form.backend.custom': 'User Defined',
   'models.form.rules.name':
     'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
-  'models.catalog.button.explore': 'Explore Other Models',
+  'models.catalog.button.explore': 'Explore More Models',
   'models.catalog.precision': 'Precision',
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
@@ -321,7 +321,7 @@ export default {
 // 47. 'models.form.quantization': 'Quantization',
 // 48. 'models.form.backend.custom': 'User Defined',
 // 49. 'models.form.rules.name': 'Up to 63 characters; letters, numbers, dots (.), underscores (_), and hyphens (-) only; must start and end with an alphanumeric character.',
-// 50. 'models.catalog.button.explore': 'Explore Other Models',
+// 50. 'models.catalog.button.explore': 'Explore More Models',
 // 51. 'models.catalog.precision': 'Precision',
 // 52. 'models.form.gpuPerReplica.tips': 'Enter a custom number',
 // 53. 'models.form.generic_proxy': 'Enable Generic Proxy',

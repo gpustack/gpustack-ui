@@ -23,6 +23,7 @@ export default function useChatCompletion(
   const currentMessageRef = useRef<any>(null);
   const messageListLengthCache = useRef<number>(0);
   const reasonContentRef = useRef('');
+  const formRef = useRef<any>(null);
 
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
@@ -43,7 +44,6 @@ export default function useChatCompletion(
   };
 
   const joinMessage = (chunk: any) => {
-    console.log('chunk:', chunk);
     setTokenResult({
       ...(chunk?.usage ?? {})
     });
@@ -217,6 +217,7 @@ export default function useChatCompletion(
     loading,
     tokenResult,
     messageList,
+    formRef,
     setMessageId,
     setMessageList,
     handleClear,

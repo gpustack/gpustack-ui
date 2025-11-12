@@ -170,6 +170,10 @@ export const setModelActionList = (record: any) => {
       return record.replicas > 0;
     }
 
+    if (action.key === 'proxy') {
+      return record.generic_proxy;
+    }
+
     return true;
   });
 };

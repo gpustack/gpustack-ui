@@ -252,6 +252,7 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
     checkTokenRef.current = createAxiosToken();
     const evaluations = await evaluationsModelSpec(
       {
+        cluster_id: clusterId!,
         model_specs: repoList
       },
       {

@@ -243,7 +243,7 @@ export default {
   'models.form.backend.custom': 'Пользовательский',
   'models.form.rules.name':
     'До 63 символов; только буквы, цифры, точки (.), подчёркивания (_) и дефисы (-); должно начинаться и заканчиваться буквенно-цифровым символом.',
-  'models.catalog.button.explore': 'Изучить другие модели',
+  'models.catalog.button.explore': 'Explore More Models',
   'models.catalog.precision': 'Точность',
   'models.form.gpuPerReplica.tips': 'Введите произвольное число',
   'models.form.generic_proxy': 'Включить универсальный прокси',
@@ -255,5 +255,6 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 7. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
+// 1. 'models.catalog.button.explore': 'Explore More Models',
+// 2. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
 // ========== End of To-Do List ==========

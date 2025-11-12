@@ -191,25 +191,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     size: number;
     quantization: string;
   }) => {
-    // const spec = _.find(specListRef.current, (item: CatalogSpec) => {
-    //   if (data.size && data.quantization) {
-    //     return (
-    //       item.size === data.size &&
-    //       item.backend === data.backend &&
-    //       item.quantization === data.quantization
-    //     );
-    //   }
-    //   if (data.size) {
-    //     return item.size === data.size && item.backend === data.backend;
-    //   }
-    //   if (data.quantization) {
-    //     return (
-    //       item.quantization === data.quantization &&
-    //       item.backend === data.backend
-    //     );
-    //   }
-    //   return item.backend === data.backend;
-    // });
     const defaultSpec = _.find(
       specListRef.current,
       (item: CatalogSpec) => item.mode === data.mode

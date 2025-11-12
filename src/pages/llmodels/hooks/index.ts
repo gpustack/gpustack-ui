@@ -180,6 +180,7 @@ export const useCheckCompatibility = () => {
       });
       const evalution = await evaluationsModelSpec(
         {
+          cluster_id: data.cluster_id,
           model_specs: [
             {
               ..._.omit(data, ['scheduleType']),

@@ -1,4 +1,5 @@
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { createFormData, errorHandler } from '@/utils/fetch-chunk-data';
 import { request } from '@umijs/max';
 
 export const OPENAI_COMPATIBLE = 'v1-openai';
@@ -92,6 +93,41 @@ export const createImages = async (
     };
   }
   return res.json();
+};
+
+// =========== edit image ============
+export const editImage = async (params: {
+  data?: any;
+  signal?: AbortSignal;
+}) => {
+  const response = await fetch(EDIT_IMAGE_API, {
+    method: 'POST',
+    body: createFormData(params.data),
+    signal: params.signal
+  });
+  if (!response.ok) {
+    return await errorHandler(response);
+  }
+  return response.json();
+};
+
+export const createImage = async (params: {
+  data?: any;
+  signal?: AbortSignal;
+}) => {
+  const response = await fetch(CREAT_IMAGE_API, {
+    method: 'POST',
+    body: JSON.stringify(params.data),
+    signal: params.signal,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    return await errorHandler(response);
+  }
+  return response.json();
 };
 
 // ============ audio ============

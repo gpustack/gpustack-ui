@@ -1,5 +1,5 @@
-import { CloseCircleOutlined } from '@ant-design/icons';
-import { Progress, ProgressProps } from 'antd';
+import { CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Progress, ProgressProps, Spin } from 'antd';
 import classNames from 'classnames';
 import { round } from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
@@ -94,6 +94,17 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
 
   const handleOnLoad = React.useCallback(async () => {}, []);
 
+  const renderProgress = () => {
+    <Progress
+      percent={round(progress, 0)}
+      type="dashboard"
+      size={loadingSize}
+      steps={{ count: 50, gap: 2 }}
+      format={() => <span className="font-size-20">{round(progress, 0)}%</span>}
+      trailColor="var(--ant-color-fill-secondary)"
+    />;
+  };
+
   return (
     <ResizeObserver onResize={handleResize}>
       <div
@@ -135,15 +146,8 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                   overflow: 'hidden'
                 }}
               >
-                <Progress
-                  percent={round(progress, 0)}
-                  type="dashboard"
-                  size={loadingSize}
-                  steps={{ count: 50, gap: 2 }}
-                  format={() => (
-                    <span className="font-size-20">{round(progress, 0)}%</span>
-                  )}
-                  trailColor="var(--ant-color-fill-secondary)"
+                <Spin
+                  indicator={<LoadingOutlined style={{ fontSize: 32 }} spin />}
                 />
               </span>
             ) : (

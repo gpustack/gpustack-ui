@@ -54,3 +54,10 @@ export const allRegionInstanceTypeListAtom = atom<
 >([]);
 
 export const fromClusterCreationAtom = atom(false);
+
+/**
+ * for temporary cluster session storage during creation/editing
+ */
+export const clusterSessionAtom = atom<{
+  firstAddWorker: boolean;
+} | null>(null);

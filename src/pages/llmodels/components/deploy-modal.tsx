@@ -454,6 +454,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       form.current?.form?.setFieldsValue({
         ...props.initialValues
       });
+      console.log('handleOnOpen - modelFiles:', props.initialValues);
       handleOnValuesChange?.({
         changedValues: {},
         allValues: {
@@ -530,7 +531,6 @@ const AddModal: FC<AddModalProps> = (props) => {
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      zIndex={2000}
       styles={{
         body: {
           height: 'calc(100vh - 57px)',

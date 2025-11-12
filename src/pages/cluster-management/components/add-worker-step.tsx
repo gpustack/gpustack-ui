@@ -29,15 +29,14 @@ const NotesWrapper = styled.ol`
   margin: 0 !important;
   padding: 0 !important;
   line-height: 1.25;
+  counter-reset: main 2 sub 0;
   li {
-    margin-left: 12px !important;
+    counter-increment: sub;
+    margin-left: 20px !important;
+    &::marker {
+      content: counters(main, '.') '.' counter(sub) ' ';
+    }
   }
-`;
-
-const Title = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 16px;
 `;
 
 const Line = styled.div`

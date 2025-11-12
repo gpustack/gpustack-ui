@@ -52,6 +52,7 @@ export const useInitLLmMeta = (
     defaultValues = {},
     defaultParamsConfig = []
   } = options;
+  const formRef = useRef<any>(null);
   const [searchParams] = useSearchParams();
   const [modelMeta, setModelMeta] = useState<any>({});
   const [initialValues, setInitialValues] = useState<any>({
@@ -194,6 +195,7 @@ export const useInitLLmMeta = (
     setInitialValues,
     setParams,
     setParamsConfig,
+    formRef,
     paramsConfig,
     initialValues,
     parameters,

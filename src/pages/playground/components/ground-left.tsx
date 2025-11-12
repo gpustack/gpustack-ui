@@ -52,13 +52,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleAddNewMessage,
     handleClear,
     setMessageList,
-    formRef,
     tokenResult,
     messageList,
     loading
   } = useChatCompletion(scroller);
   const {
     handleOnValuesChange,
+    formRef,
     paramsRef,
     paramsConfig,
     initialValues,

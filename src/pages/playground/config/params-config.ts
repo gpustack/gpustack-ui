@@ -191,6 +191,23 @@ export const ImageSizeConfig: ParamsSchema[] = [
         required: false
       }
     ]
+  },
+  {
+    type: 'Select',
+    name: 'response_format',
+    formItemAttrs: {
+      hidden: true
+    },
+    options: [{ label: 'b64_json', value: 'b64_json' }],
+    label: {
+      text: 'Response Format',
+      isLocalized: false
+    },
+    rules: [
+      {
+        required: false
+      }
+    ]
   }
 ];
 

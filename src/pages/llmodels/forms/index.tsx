@@ -101,7 +101,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onValuesChange,
     onOk
   } = props;
-  const { getScrollElementScrollableHeight } = useWrapperContext();
+  const {
+    getScrollElementScrollableHeight,
+    getScrollElement,
+    osInstance,
+    scrollEventElement
+  } = useWrapperContext();
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();
@@ -110,6 +115,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const scheduleType = Form.useWatch('scheduleType', form);
   const [target, setTarget] = React.useState<string>(TABKeysMap.BASIC);
+
+  console.log('scroller instance in form:', osInstance, scrollEventElement);
 
   const segmentOptions = [
     {
@@ -162,6 +169,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey,
     segmentOptions,
     segmentedTop: segmentedTop,
+    getScrollElement,
     getScrollElementScrollableHeight: getScrollElementScrollableHeight
   });
 

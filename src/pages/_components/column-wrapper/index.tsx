@@ -28,6 +28,7 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
     scrollEventElement,
     scrollToBottom,
     scrollToTarget,
+    getScrollElement,
     getScrollElementScrollableHeight
   } = useOverlayScroller({
     options: {
@@ -49,6 +50,7 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
         scroller: scroller,
         osInstance: instance,
         scrollEventElement,
+        getScrollElement,
         getScrollElementScrollableHeight,
         scrollToBottom,
         scrollToTarget

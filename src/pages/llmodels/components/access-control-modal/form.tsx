@@ -75,8 +75,10 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       }));
       setTotalPages(res.pagination.totalPage);
       setUserList(options);
+      return options;
     } catch (error) {
       setUserList([]);
+      return [];
     }
   };
 
@@ -110,14 +112,6 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     }
   };
 
-  const handleFilterChange = (e: any) => {
-    if (e.target.checked) {
-      setFilterInUsers(new Set(['admin', 'inactive']));
-    } else {
-      setFilterInUsers(new Set());
-    }
-  };
-
   useImperativeHandle(ref, () => ({
     submit: () => {
       form.submit();
@@ -134,20 +128,43 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   }));
 
   useEffect(() => {
-    if (currentData?.id) {
-      queryModelAccessUserList(currentData.id).then((res) => {
-        const keys = res.items.map((item) => item.id);
-        setTargetKeys(keys);
-        form.setFieldsValue({
-          access_policy: currentData.access_policy,
-          users: res.items.map((item) => ({ id: item.id }))
+    const init = async () => {
+      const allusers = await getUserList(queryParams);
+      const userMap = new Map(allusers.map((u) => [u.key, u]));
+
+      if (currentData?.id) {
+        queryModelAccessUserList(currentData.id).then((res) => {
+          const keys = res.items.map((item) => item.id);
+          setTargetKeys(keys);
+
+          let hasAdmin = false;
+          let hasInactive = false;
+
+          for (const key of keys) {
+            const user = userMap.get(key);
+            if (!user) continue;
+            if (user.is_admin) hasAdmin = true;
+            if (!user.is_active) hasInactive = true;
+            if (hasAdmin && hasInactive) break;
+          }
+
+          const filterSet = new Set<string>();
+          if (hasAdmin) filterSet.add('admin');
+          if (hasInactive) filterSet.add('inactive');
+
+          setFilterInUsers(filterSet);
+
+          form.setFieldsValue({
+            access_policy: currentData.access_policy,
+            users: res.items.map((item) => ({ id: item.id }))
+          });
         });
-      });
-    } else {
-      setTargetKeys([]);
-      form.setFieldsValue({ users: [] });
-    }
-    getUserList(queryParams);
+      } else {
+        setTargetKeys([]);
+        form.setFieldsValue({ users: [] });
+      }
+    };
+    init();
   }, [currentData?.id]);
 
   const renderFilterDropdown = () => {

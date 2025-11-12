@@ -241,6 +241,15 @@ export default function useOverlayScroller(data?: {
     };
   };
 
+  const getScrollElement = () => {
+    if (!instanceRef.current || !scrollEventElement.current) {
+      instanceRef.current = instance?.();
+      scrollEventElement.current =
+        instanceRef.current?.elements()?.scrollEventElement;
+    }
+    return scrollEventElement;
+  };
+
   useEffect(() => {
     return () => {
       instanceRef.current?.destroy?.();
@@ -254,6 +263,7 @@ export default function useOverlayScroller(data?: {
     scrollEventElement: scrollEventElement,
     initialized: initialized.current,
     getScrollElementScrollableHeight,
+    getScrollElement,
     generateInstance,
     destroyInstance: destroyInstance,
     updateScrollerPosition: throttledUpdateScrollerPosition,

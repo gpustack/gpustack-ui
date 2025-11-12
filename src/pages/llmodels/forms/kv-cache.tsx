@@ -41,6 +41,15 @@ const KVCacheForm = () => {
     );
   };
 
+  const handleRamRatioChange = (
+    value: number | null | string,
+    field: string
+  ) => {
+    if (!value) {
+      form.setFieldValue(['extended_kv_cache', field], null);
+    }
+  };
+
   const builtInBackend = useMemo(() => {
     const currentBackend = backendOptions.find(
       (item) => item.value === backend
@@ -75,6 +84,7 @@ const KVCacheForm = () => {
         <>
           <Form.Item<FormData> name={['extended_kv_cache', 'ram_ratio']}>
             <SealInputNumber
+              onChange={(value) => handleRamRatioChange(value, 'ram_ratio')}
               label={intl.formatMessage({ id: 'models.form.ramRatio' })}
               description={intl.formatMessage({
                 id: 'models.form.ramRatio.tips'
@@ -86,6 +96,7 @@ const KVCacheForm = () => {
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'ram_size']}>
             <SealInputNumber
+              onChange={(value) => handleRamRatioChange(value, 'ram_size')}
               label={intl.formatMessage({ id: 'models.form.ramSize' })}
               description={intl.formatMessage(
                 {
@@ -100,6 +111,7 @@ const KVCacheForm = () => {
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'chunk_size']}>
             <SealInputNumber
+              onChange={(value) => handleRamRatioChange(value, 'chunk_size')}
               label={intl.formatMessage({ id: 'models.form.chunkSize' })}
               description={intl.formatMessage({
                 id: 'models.form.chunkSize.tips'

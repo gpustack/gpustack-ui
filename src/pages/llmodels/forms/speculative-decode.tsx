@@ -182,6 +182,7 @@ const SpeculativeDecode = () => {
               label={intl.formatMessage({ id: 'models.form.numDraftTokens' })}
               min={1}
               step={1}
+              required
               precision={0}
             />
           </Form.Item>

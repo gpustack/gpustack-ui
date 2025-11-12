@@ -384,6 +384,7 @@ export async function queryCatalogItemSpec(
 
 export async function evaluationsModelSpec(
   data: {
+    cluster_id: number;
     model_specs: EvaluateSpec[];
   },
   options: { token: any }

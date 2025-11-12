@@ -86,6 +86,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
 
   const handleOnSelectModel = (item: any) => {
     setSelectedModel(item);
+    setFileName('');
   };
 
   const handleOk = async (values: any) => {

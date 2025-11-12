@@ -52,7 +52,6 @@ export const useInitLLmMeta = (
     defaultValues = {},
     defaultParamsConfig = []
   } = options;
-  const formRef = useRef<any>(null);
   const [searchParams] = useSearchParams();
   const [modelMeta, setModelMeta] = useState<any>({});
   const [initialValues, setInitialValues] = useState<any>({
@@ -75,8 +74,6 @@ export const useInitLLmMeta = (
     // use for multiple chat
     return model;
   }, [model, modelList, isChat]);
-
-  const getLLamaBoxMeta = (meta: any) => {};
 
   const getMaxTokens = (meta: any) => {
     const { max_model_len, n_ctx, n_slot, max_total_tokens } = meta || {};
@@ -197,7 +194,6 @@ export const useInitLLmMeta = (
     setInitialValues,
     setParams,
     setParamsConfig,
-    formRef,
     paramsConfig,
     initialValues,
     parameters,

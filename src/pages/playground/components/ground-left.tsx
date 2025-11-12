@@ -52,13 +52,13 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleAddNewMessage,
     handleClear,
     setMessageList,
+    formRef,
     tokenResult,
     messageList,
     loading
   } = useChatCompletion(scroller);
   const {
     handleOnValuesChange,
-    formRef,
     paramsRef,
     paramsConfig,
     initialValues,
@@ -108,7 +108,7 @@ const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
     return message;
   };
 
-  const handleSendMessage = (message: Omit<MessageItem, 'uid'>) => {
+  const handleSendMessage = async (message: Omit<MessageItem, 'uid'>) => {
     const currentMessage = generateValidMessage(message);
     submitMessage({
       system: systemMessage

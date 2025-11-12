@@ -17,56 +17,71 @@ import { generateEmbeddingCurlCode } from '@/pages/playground/view-code/embeddin
 import { generateImageCurlCode } from '@/pages/playground/view-code/image';
 import { generateLLmCurlCode } from '@/pages/playground/view-code/llm';
 import { generateRerankCurlCode } from '@/pages/playground/view-code/rerank';
-import { formatCurlArgs } from '@/pages/playground/view-code/utils';
 import { useIntl } from '@umijs/max';
 import { useState } from 'react';
 import { modelCategoriesMap } from '../config';
 
 const API_MAP: Record<
   string,
-  { api: string; generateCurlCode: (args: any) => string }
+  { api: string; parameters: any; generateCurlCode: (args: any) => string }
 > = {
   [modelCategoriesMap.embedding]: {
     api: EMBEDDING_API,
+    parameters: {
+      query: 'What are the benefits of regular exercise?',
+      documents: [
+        'Regular physical activity helps improve cardiovascular health and mental well-being.',
+        'Eating too much sugar can lead to health issues.',
+        'Exercise is often done in gyms or outdoors.'
+      ]
+    },
     generateCurlCode: generateEmbeddingCurlCode
   },
   [modelCategoriesMap.llm]: {
     api: CHAT_API,
+    parameters: {
+      messages: [
+        {
+          role: 'user',
+          content: 'Hello, introduce yourself'
+        }
+      ]
+    },
     generateCurlCode: generateLLmCurlCode
   },
   [modelCategoriesMap.image]: {
     api: CREAT_IMAGE_API,
+    parameters: {},
     generateCurlCode: generateImageCurlCode
   },
   [modelCategoriesMap.text_to_speech]: {
     api: AUDIO_TEXT_TO_SPEECH_API,
+    parameters: {
+      response_format: 'mp3',
+      input: ''
+    },
     generateCurlCode: generateTextToSpeechCurlCode
   },
   [modelCategoriesMap.speech_to_text]: {
     api: AUDIO_SPEECH_TO_TEXT_API,
+    parameters: {},
     generateCurlCode: generateSpeechToTextCurlCode
   },
   [modelCategoriesMap.reranker]: {
     api: RERANKER_API,
+    parameters: {
+      messages: [
+        {
+          role: 'user',
+          content: 'Hello, introduce yourself'
+        }
+      ]
+    },
     generateCurlCode: generateRerankCurlCode
   }
 };
 
 const langOptions = [{ label: 'Curl', value: 'bash' }];
-
-const generateCode = ({ api: url, parameters }: Record<string, any>) => {
-  const host = window.location.origin;
-  const api = '/model/proxy/v1/';
-
-  // ========================= Curl =========================
-  const curlCode = `
-curl ${host}${api} \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\
-${formatCurlArgs(parameters, false)}`.trim();
-
-  return curlCode;
-};
 
 const useGenericProxy = () => {
   const intl = useIntl();
@@ -88,6 +103,7 @@ const useGenericProxy = () => {
         return {
           category,
           api: `${MODEL_PROXY}${config.api}`,
+          parameters: config.parameters,
           generateCurlCode: config.generateCurlCode
         };
       }
@@ -95,12 +111,22 @@ const useGenericProxy = () => {
     return {
       category: modelCategoriesMap.llm,
       api: CHAT_API,
+      parameters: {
+        messages: [
+          {
+            role: 'user',
+            content: 'Hello, introduce yourself'
+          }
+        ]
+      },
       generateCurlCode: generateLLmCurlCode
     };
   };
 
   const openProxyModal = (data?: any) => {
-    const { api, generateCurlCode } = getModelCategory(data?.categories || []);
+    const { api, generateCurlCode, parameters } = getModelCategory(
+      data?.categories || []
+    );
 
     setModalStatus({
       open: true,
@@ -108,7 +134,8 @@ const useGenericProxy = () => {
         api,
         modelProxy: true,
         parameters: {
-          model: data?.name || ''
+          model: data?.name || '',
+          ...parameters
         }
       })
     });

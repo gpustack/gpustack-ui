@@ -11,6 +11,7 @@ interface WrapperContextProps {
     scrollTop: number;
   };
   scrollToTarget?: (target: any, offset?: number) => void;
+  getScrollElement?: () => HTMLElement | null;
 }
 
 export const WrapperContext = createContext<WrapperContextProps>(

@@ -451,15 +451,13 @@ const AddModal: FC<AddModalProps> = (props) => {
     ]);
 
     if (props.deploymentType === 'modelFiles') {
+      clearCacheFormValues();
       form.current?.form?.setFieldsValue({
         ...props.initialValues
       });
-      console.log('handleOnOpen - modelFiles:', props.initialValues);
       handleOnValuesChange?.({
         changedValues: {},
-        allValues: {
-          ...props.initialValues
-        },
+        allValues: form.current?.form?.getFieldsValue(),
         source: source
       });
     } else {

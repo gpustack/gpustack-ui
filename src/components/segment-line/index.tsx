@@ -11,7 +11,7 @@ interface ThemeType {
 }
 interface SegmentLineProps extends SegmentedProps {
   height?: number;
-  theme: 'dark' | 'light';
+  theme?: 'dark' | 'light';
 }
 
 const darkTheme: ThemeType = {

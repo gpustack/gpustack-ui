@@ -1,13 +1,14 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { extractErrorMessage, promptList } from '@/pages/playground/config';
-import {
-  fetchChunkedData,
-  fetchChunkedDataPostFormData
-} from '@/utils/fetch-chunk-data';
 import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { CREAT_IMAGE_API, EDIT_IMAGE_API } from '../apis';
+import {
+  CREAT_IMAGE_API,
+  EDIT_IMAGE_API,
+  createImage,
+  editImage
+} from '../apis';
 
 const ODD_STRING = 'AAAABJRU5ErkJgg===';
 
@@ -126,20 +127,20 @@ export default function useTextImage(props: any) {
 
       let result: any = {};
       if (API === CREAT_IMAGE_API) {
-        result = await fetchChunkedData({
+        result = await createImage({
           data: parameters,
-          url: `${API}?t=${Date.now()}`,
           signal: requestToken.current.signal
         });
       }
 
       if (API === EDIT_IMAGE_API) {
-        result = await fetchChunkedDataPostFormData({
+        result = await editImage({
           data: parameters,
-          url: `${API}?t=${Date.now()}`,
           signal: requestToken.current.signal
         });
       }
+
+      console.log('result:', result);
 
       if (result.error) {
         setTokenResult({
@@ -149,26 +150,25 @@ export default function useTextImage(props: any) {
         setImageList([]);
         return;
       }
-      console.log('result:', result);
+
+      // If the request ID has changed, ignore this chunk
       if (requestIdRef.current !== currentRequestId) {
-        // If the request ID has changed, ignore this chunk
-        // return;
+        return;
       }
-      // if (result?.error) {
-      //   setTokenResult({
-      //     error: true,
-      //     errorMessage: extractErrorMessage(result)
-      //   });
-      //   return;
-      // }
+      if (result?.error) {
+        setTokenResult({
+          error: true,
+          errorMessage: extractErrorMessage(result)
+        });
+        return;
+      }
+
       result?.data?.forEach((item: any, index: number) => {
         const imgItem = newImageList[index];
 
         if (item.b64_json) {
           imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
         }
-
-        const progress = 100;
 
         newImageList[index] = {
           dataUrl: imgItem.dataUrl,
@@ -178,76 +178,13 @@ export default function useTextImage(props: any) {
           maxWidth: `${imgSize[0]}px`,
           uid: imgItem.uid,
           span: imgItem.span,
-          loading: _.get(parameters, chunkFields) ? progress < 100 : false,
-          preview: API === CREAT_IMAGE_API ? progress >= 100 : false,
-          progress: progress
+          loading: false,
+          preview: true,
+          progress: 100
         };
       });
       console.log('newImageList:', newImageList);
-      // if (
-      //   done &&
-      //   !chunk?.error &&
-      //   newImageList.some((item) => item.progress < 100)
-      // ) {
-      //   setTokenResult({
-      //     error: true,
-      //     errorMessage: intl.formatMessage({
-      //       id: 'playground.image.generate.error'
-      //     })
-      //   });
-      // }
       setImageList([...newImageList]);
-      // const { reader, decoder } = result;
-      // streamReaderRef.current = reader;
-      // await readStreamData(reader, decoder, (chunk: any, done?: boolean) => {
-      //   console.log('chunk done:', chunk, done);
-      //   if (requestIdRef.current !== currentRequestId) {
-      //     // If the request ID has changed, ignore this chunk
-      //     return;
-      //   }
-      //   if (chunk?.error) {
-      //     setTokenResult({
-      //       error: true,
-      //       errorMessage: extractErrorMessage(chunk)
-      //     });
-      //     return;
-      //   }
-      //   chunk?.data?.forEach((item: any) => {
-      //     const imgItem = newImageList[item.index];
-      //     if (item.b64_json && _.get(parameters, chunkFields)) {
-      //       imgItem.dataUrl += removeBase64Suffix(item.b64_json, ODD_STRING);
-      //     } else if (item.b64_json) {
-      //       imgItem.dataUrl = `data:image/png;base64,${removeBase64Suffix(item.b64_json, ODD_STRING)}`;
-      //     }
-      //     const progress = item.progress;
-
-      //     newImageList[item.index] = {
-      //       dataUrl: imgItem.dataUrl,
-      //       height: imgSize[1],
-      //       width: imgSize[0],
-      //       maxHeight: `${imgSize[1]}px`,
-      //       maxWidth: `${imgSize[0]}px`,
-      //       uid: imgItem.uid,
-      //       span: imgItem.span,
-      //       loading: _.get(parameters, chunkFields) ? progress < 100 : false,
-      //       preview: API === CREAT_IMAGE_API ? progress >= 100 : false,
-      //       progress: progress
-      //     };
-      //   });
-      //   if (
-      //     done &&
-      //     !chunk?.error &&
-      //     newImageList.some((item) => item.progress < 100)
-      //   ) {
-      //     setTokenResult({
-      //       error: true,
-      //       errorMessage: intl.formatMessage({
-      //         id: 'playground.image.generate.error'
-      //       })
-      //     });
-      //   }
-      //   setImageList([...newImageList]);
-      // });
     } catch (error) {
       console.log('error:', error);
       updateRequestId();

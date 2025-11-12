@@ -32,7 +32,7 @@ const extractJSON = (
   return { results, remaining };
 };
 
-const errorHandler = async (res: any) => {
+export const errorHandler = async (res: any) => {
   try {
     const data = await res.json();
     return {
@@ -78,10 +78,17 @@ export const fetchChunkedData = async (params: {
   if (!response.ok) {
     return await errorHandler(response);
   }
-  return response.json();
+  const reader = response?.body?.getReader();
+  const decoder = new TextDecoder('utf-8', {
+    fatal: true
+  });
+  return {
+    reader,
+    decoder
+  };
 };
 
-const createFormData = (data: any): FormData => {
+export const createFormData = (data: any): FormData => {
   const formData = new FormData();
 
   const appendToFormData = (key: string, value: any) => {

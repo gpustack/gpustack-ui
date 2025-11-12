@@ -213,4 +213,4 @@ const ThumbImg: React.FC<{
   );
 };
 
-export default React.memo(ThumbImg);
+export default ThumbImg;

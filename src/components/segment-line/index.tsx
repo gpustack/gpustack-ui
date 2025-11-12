@@ -2,15 +2,40 @@ import { Segmented, type SegmentedProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
+interface ThemeType {
+  color: string;
+  itemColorHover: string;
+  itemSelectedColor: string;
+  thumbBgColor: string;
+  fontWeight: number;
+}
 interface SegmentLineProps extends SegmentedProps {
   height?: number;
+  theme: 'dark' | 'light';
 }
 
-const SegmentedQwrapper = styled.div<{ $height: number }>`
+const darkTheme: ThemeType = {
+  color: 'var(--color-white-tertiary)',
+  itemColorHover: 'var(--color-white-secondary)',
+  itemSelectedColor: 'var(--color-white-primary)',
+  thumbBgColor: 'var(--color-white-primary)',
+  fontWeight: 400
+};
+
+const lightTheme: ThemeType = {
+  color: 'var(--ant-segmented-item-color)',
+  itemColorHover: 'var(--ant-segmented-item-hover-color)',
+  itemSelectedColor: 'var(--ant-segmented-item-selected-color)',
+  thumbBgColor: 'var(--ant-color-primary)',
+  fontWeight: 500
+};
+
+const SegmentedQwrapper = styled.div<{ $height: number; $theme: ThemeType }>`
   .ant-segmented.segment-line {
     padding: 0;
     background-color: transparent;
-    color: var(--color-white-tertiary);
+    color: ${(props) => props.$theme.color};
+    font-weight: ${(props) => props.$theme.fontWeight};
     border: none;
     box-shadow: none;
     height: ${(props) => props.$height}px;
@@ -21,14 +46,14 @@ const SegmentedQwrapper = styled.div<{ $height: number }>`
       height: 100%;
     }
     .ant-segmented-item:hover {
-      color: var(--color-white-secondary);
+      color: ${(props) => props.$theme.itemColorHover};
     }
     .ant-segmented-thumb {
       height: 2px;
       padding: 0px;
       bottom: 0px;
       top: unset;
-      background-color: var(--color-white-primary) !important;
+      background-color: ${(props) => props.$theme.thumbBgColor} !important;
     }
     .ant-segmented-item-label {
       display: flex;
@@ -42,7 +67,7 @@ const SegmentedQwrapper = styled.div<{ $height: number }>`
       display: flex;
       align-items: center;
       &::after {
-        background-color: var(--color-white-primary) !important;
+        background-color: ${(props) => props.$theme.thumbBgColor} !important;
         width: 100%;
         height: 0px;
         border-radius: 2px;
@@ -53,7 +78,8 @@ const SegmentedQwrapper = styled.div<{ $height: number }>`
     }
     .ant-segmented-item-selected {
       background-color: transparent;
-      color: var(--color-white-primary);
+      box-shadow: none;
+      color: ${(props) => props.$theme.itemSelectedColor};
       &::after {
         height: 2px;
         opacity: 1;
@@ -68,11 +94,15 @@ const SegmentLine: React.FC<SegmentLineProps> = (props) => {
     size = 'small',
     options = [],
     className = 'segment-line',
+    theme = 'dark',
     ...rest
   } = props;
 
   return (
-    <SegmentedQwrapper $height={height}>
+    <SegmentedQwrapper
+      $height={height}
+      $theme={theme === 'dark' ? darkTheme : lightTheme}
+    >
       <Segmented
         {...rest}
         size={size}

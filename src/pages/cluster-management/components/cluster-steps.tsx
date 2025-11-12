@@ -13,19 +13,6 @@ const Wrapper = styled.div`
     max-width: 300px !important;
     color: var(--ant-color-text-description) !important;
   }
-  .ant-steps-item-content > .ant-steps-item-title {
-    // font-weight: 600;
-  }
-  .ant-steps-item {
-    .ant-steps-item-container {
-      // .ant-steps-item-icon {
-      //   margin-inline-start: 0 !important;
-      // }
-      // .ant-steps-item-tail {
-      //   margin-inline-start: 0 !important;
-      // }
-    }
-  }
 `;
 
 const ClusterSteps: React.FC<{

@@ -1,3 +1,5 @@
+import IconFont from '@/components/icon-font';
+import SegmentLine from '@/components/segment-line';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
@@ -52,7 +54,8 @@ const SegmentedHeader = styled.div<{ $top?: number }>`
   position: sticky;
   top: ${(props) => props.$top || 0}px;
   z-index: 10;
-  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--ant-color-split);
   background-color: var(--ant-color-bg-elevated);
 `;
 
@@ -112,21 +115,25 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     {
       value: TABKeysMap.BASIC,
       label: intl.formatMessage({ id: 'common.title.basicInfo' }),
+      icon: <IconFont type="icon-basic" />,
       field: 'name'
     },
     {
       value: TABKeysMap.SCHEDULING,
       label: intl.formatMessage({ id: 'models.form.scheduling' }),
+      icon: <IconFont type="icon-model" />,
       field: 'scheduleType'
     },
     {
       value: TABKeysMap.PERFORMANCE,
       label: intl.formatMessage({ id: 'models.form.performance' }),
+      icon: <IconFont type="icon-speed" />,
       field: 'extended_kv_cache.enabled'
     },
     {
       value: TABKeysMap.ADVANCED,
       label: intl.formatMessage({ id: 'resources.form.advanced' }),
+      icon: <IconFont type="icon-settings" />,
       field: 'categories'
     }
   ];
@@ -404,7 +411,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       }}
     >
       <SegmentedHeader $top={segmentedTop.top}>
-        <SegmentedInner
+        <SegmentLine
+          theme={'light'}
           defaultValue="basic"
           value={target}
           onChange={handleTargetChange}

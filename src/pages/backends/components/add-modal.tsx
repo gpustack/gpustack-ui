@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import SegmentLine from '@/components/segment-line';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
@@ -33,7 +34,8 @@ const SegmentedInner = styled(Segmented)`
 `;
 
 const SegmentedHeader = styled.div`
-  padding: 16px 24px;
+  margin: 16px 24px;
+  border-bottom: 1px solid var(--ant-color-split);
 `;
 
 interface AddModalProps {
@@ -203,7 +205,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       footer={false}
     >
       <SegmentedHeader>
-        <SegmentedInner
+        <SegmentLine
+          theme="light"
           onChange={(value) => setActiveKey(value as string)}
           options={[
             {

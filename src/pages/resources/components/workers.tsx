@@ -1,3 +1,4 @@
+import { clusterSessionAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -7,6 +8,7 @@ import { queryClusterList } from '@/pages/cluster-management/apis';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, ConfigProvider, Table, message } from 'antd';
+import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import NoResult from '../../_components/no-result';
 import TerminalTabs from '../../_components/terminal-tabs';
@@ -44,6 +46,7 @@ const Workers: React.FC = () => {
     watch: true,
     API: WORKERS_API
   });
+  const [, setClusterSession] = useAtom(clusterSessionAtom);
 
   const navigate = useNavigate();
   const intl = useIntl();
@@ -178,6 +181,7 @@ const Workers: React.FC = () => {
   });
 
   const handleAddWorker = () => {
+    setClusterSession({ firstAddWorker: true });
     navigate('/cluster-management/clusters/list');
   };
 

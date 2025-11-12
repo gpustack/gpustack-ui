@@ -1,4 +1,4 @@
-import { expandKeysAtom } from '@/atoms/clusters';
+import { clusterSessionAtom, expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -10,7 +10,7 @@ import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
 import AddWorker from '@/pages/cluster-management/components/add-worker';
-import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, message } from 'antd';
 import { useAtom } from 'jotai';
@@ -32,7 +32,11 @@ import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
 import PoolRows from './components/pool-rows';
 import RegisterCluster from './components/register-cluster';
-import { ProviderType, ProviderValueMap } from './config';
+import {
+  ClusterStatusValueMap,
+  ProviderType,
+  ProviderValueMap
+} from './config';
 import {
   ClusterListItem,
   ClusterFormData as FormData,
@@ -61,15 +65,10 @@ const Clusters: React.FC = () => {
     contentForDelete: 'menu.clusterManagement.clusters'
   });
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
-  const [expandAtom, setExpandAtom] = useAtom(expandKeysAtom);
-  const {
-    handleExpandChange,
-    handleExpandAll,
-    updateExpandedRowKeys,
-    removeExpandedRowKey,
-    expandedRowKeys
-  } = useExpandedRowKeys(expandAtom);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [expandAtom] = useAtom(expandKeysAtom);
+  const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
+  const { handleExpandChange, handleExpandAll, expandedRowKeys } =
+    useExpandedRowKeys(expandAtom);
   const navigate = useNavigate();
   const intl = useIntl();
   const [registerClusterStatus, setRegisterClusterStatus] = useState<{
@@ -308,6 +307,28 @@ const Clusters: React.FC = () => {
     };
     fetchCredentialList();
   }, []);
+
+  /**
+   * add worker from workers page redirect
+   */
+  useEffect(() => {
+    if (
+      clusterSession?.firstAddWorker &&
+      dataSource.loadend &&
+      dataSource.dataList?.length > 0
+    ) {
+      const targetCluster = dataSource.dataList.find(
+        (cluster) =>
+          cluster.provider === ProviderValueMap.Docker &&
+          cluster.state === ClusterStatusValueMap.Ready
+      );
+      if (targetCluster) {
+        handleAddWorker(targetCluster);
+        // reset session
+        setClusterSession(null);
+      }
+    }
+  }, [clusterSession, dataSource.loadend, dataSource.dataList]);
 
   const renderChildren = (
     list: any,

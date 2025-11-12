@@ -60,7 +60,7 @@ const Credentials: React.FC = () => {
     deleteAPI: deleteCredential,
     contentForDelete: 'menu.clusterManagement.credentials'
   });
-  const [isFromCluster] = useAtom(fromClusterCreationAtom);
+  const [isFromCluster, setIsFromCluster] = useAtom(fromClusterCreationAtom);
   const intl = useIntl();
   const navigate = useNavigate();
   const [openModalStatus, setOpenModalStatus] = useState<{
@@ -110,6 +110,7 @@ const Credentials: React.FC = () => {
           navigate(-1);
         }
       }
+      setIsFromCluster(false);
       fetchData();
       setOpenModalStatus({ ...openModalStatus, open: false });
       message.success(intl.formatMessage({ id: 'common.message.success' }));

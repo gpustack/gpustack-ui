@@ -11,21 +11,12 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import styled from 'styled-components';
 import { PageContainerInner } from '../_components/page-box';
 import { queryModelsList } from './apis';
 import GroundLeft from './components/ground-left';
 import MultipleChat from './components/multiple-chat';
 import ViewCodeButtons from './components/view-code-buttons';
 import './style/play-ground.less';
-
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 16px;
-  padding-inline: 32px;
-`;
 
 const Playground: React.FC = () => {
   const intl = useIntl();

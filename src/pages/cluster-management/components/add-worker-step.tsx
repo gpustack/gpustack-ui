@@ -62,7 +62,7 @@ const Container = styled.div`
   width: 800px;
   margin: 0 auto;
   .command-info {
-    margin-top: 24px;
+    margin-top: 16px;
     margin-bottom: 8px;
   }
 `;

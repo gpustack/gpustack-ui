@@ -10,7 +10,7 @@ const Wrapper = styled.div<{ $cols?: number }>`
   grid-template-columns: repeat(${(props) => props.$cols || 3}, 1fr);
   gap: 16px;
   .template-card-wrapper {
-    padding: 16px;
+    padding: 10px;
   }
   .template-card-inner {
     justify-content: center;

@@ -24,17 +24,15 @@ const AddWorker: React.FC<ViewModalProps> = (props) => {
     <ScrollerModal
       title={intl.formatMessage({ id: 'resources.button.create' })}
       open={open}
-      centered={false}
+      centered={true}
       onCancel={onCancel}
       destroyOnHidden={true}
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
       width={860}
-      style={{
-        top: 100
-      }}
-      maxContentHeight={600}
+      style={{}}
+      maxContentHeight={'max(calc(100vh - 200px), 600px)'}
       footer={null}
     >
       <AddWorkerStep registrationInfo={registrationInfo} provider={provider} />

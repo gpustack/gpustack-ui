@@ -4,14 +4,16 @@ import { Modal, type ModalProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-const Wrapper = styled.div<{ $maxHeight?: number }>`
+const Wrapper = styled.div<{ $maxHeight?: number | string }>`
   max-height: ${({ $maxHeight }) =>
     typeof $maxHeight === 'number' ? `${$maxHeight}px` : $maxHeight};
   overflow-y: auto;
   width: 100%;
 `;
 
-const ScrollerModal = (props: ModalProps & { maxContentHeight?: number }) => {
+const ScrollerModal = (
+  props: ModalProps & { maxContentHeight?: number | string }
+) => {
   const scroller = React.useRef<any>(null);
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const { initialize, destroyInstance } = useOverlayScroller();

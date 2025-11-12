@@ -67,9 +67,11 @@ const AddPool: React.FC<AddModalProps> = ({
       onCancel={handleCancel}
       destroyOnHidden={true}
       closeIcon={true}
+      centered={true}
       maskClosable={false}
       keyboard={false}
       width={600}
+      maxContentHeight={'max(calc(100vh - 300px), 500px)'}
       footer={
         <ModalFooter onOk={handleSubmit} onCancel={onCancel}></ModalFooter>
       }

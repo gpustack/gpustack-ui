@@ -23,36 +23,8 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Nav = styled.div`
-  display: flex;
-  align-items: center;
-  font-weight: 400;
-  font-size: 20px;
-  color: var(--ant-color-text-tertiary);
-  .level-2 {
-    color: var(--ant-color-text);
-    font-weight: 600;
-  }
-`;
-
 const Content = styled.div`
   width: 600px;
-`;
-
-const HeaderContainer = styled.div`
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  padding-inline: var(--layout-content-header-inlinepadding);
-  .text {
-    margin-right: 16px;
-    padding-right: 16px;
-    border-right: 1px solid var(--ant-color-split);
-    font-weight: 600;
-    font-size: 20px;
-    margin-right: 32px;
-  }
 `;
 
 const ClusterCreate = () => {
@@ -110,11 +82,6 @@ const ClusterCreate = () => {
       }));
   }, [action, extraData.provider, stepList]);
 
-  const handleStepChange = (newStep: number) => {
-    setCurrentStep(newStep);
-    console.log('step========', newStep);
-  };
-
   const getFormFieldsValue = () => {
     setFormValues((prev) => {
       const newFormValues = _.cloneDeep(prev);
@@ -141,8 +108,6 @@ const ClusterCreate = () => {
         formKeys.map((key) => formRefs[key].current?.validateFields())
       );
 
-      console.log('results========', results);
-
       const resultsMap = new Map<string, any>();
       results.forEach((result, index) => {
         if (result.status === 'rejected') {
@@ -168,7 +133,6 @@ const ClusterCreate = () => {
   const onNext = async (callback?: (values: ClusterFormData) => void) => {
     try {
       const result = await validateForms();
-      console.log('results========2', result);
       if (result) {
         await callback?.(result as ClusterFormData);
         const step = steps[currentStep];
@@ -306,11 +270,7 @@ const ClusterCreate = () => {
         title: <PageBreadcrumb items={breadcrumbItems} />
       }}
     >
-      <ClusterSteps
-        steps={steps}
-        currentStep={currentStep}
-        onChange={handleStepChange}
-      ></ClusterSteps>
+      <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
       {currentStep === startStep && (
         <ProviderCatalog
           dataList={providerList}

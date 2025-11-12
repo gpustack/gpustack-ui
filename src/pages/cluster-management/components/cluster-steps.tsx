@@ -17,7 +17,7 @@ const Wrapper = styled.div`
 
 const ClusterSteps: React.FC<{
   currentStep: number;
-  onChange: (step: number) => void;
+  onChange?: (step: number) => void;
   steps: any[];
 }> = (props) => {
   const { steps, currentStep, onChange } = props;
@@ -27,7 +27,6 @@ const ClusterSteps: React.FC<{
       <Steps current={currentStep} size="small" onChange={onChange} progressDot>
         {steps.map((step) => (
           <Step
-            disabled={step.disabled}
             key={step.title}
             title={step.title}
             description={step.content}

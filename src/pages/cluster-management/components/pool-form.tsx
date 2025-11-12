@@ -456,7 +456,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
             ]}
           >
             <LabelSelector
-              disabled={action === PageAction.EDIT}
               label={intl.formatMessage({ id: 'resources.table.labels' })}
               labels={labels || {}}
               btnText={intl.formatMessage({ id: 'common.button.addLabel' })}

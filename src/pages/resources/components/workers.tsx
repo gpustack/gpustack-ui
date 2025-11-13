@@ -20,6 +20,7 @@ import {
 } from '../apis';
 import { ListItem } from '../config/types';
 import useWorkerColumns from '../hooks/use-worker-columns';
+import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
 
@@ -46,6 +47,8 @@ const Workers: React.FC = () => {
     API: WORKERS_API
   });
   const [, setClusterSession] = useAtom(clusterSessionAtom);
+  const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
+    useWorkerMaintenance({ fetchData });
 
   const navigate = useNavigate();
   const intl = useIntl();
@@ -154,6 +157,17 @@ const Workers: React.FC = () => {
         name: record.name
       });
     }
+
+    if (val === 'star_maintenance') {
+      setOpenStatus({
+        open: true,
+        currentData: record
+      });
+    }
+
+    if (val === 'stop_maintenance') {
+      handleStopMaintenance(record);
+    }
   });
 
   const handleAddWorker = () => {
@@ -253,6 +267,7 @@ const Workers: React.FC = () => {
             setWorkerDetailStatus({ currentData: null, open: false })
           }
         />
+        {MaintenanceModal}
       </PageBox>
     </>
   );

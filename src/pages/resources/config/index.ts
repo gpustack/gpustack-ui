@@ -14,7 +14,8 @@ export const WorkerStatusMap = {
   deleting: 'deleting',
   error: 'error',
   pending: 'pending',
-  initializing: 'initializing'
+  initializing: 'initializing',
+  maintenance: 'maintenance'
 };
 
 export const WorkerStatusMapValue = {
@@ -25,7 +26,8 @@ export const WorkerStatusMapValue = {
   [WorkerStatusMap.deleting]: 'Deleting',
   [WorkerStatusMap.error]: 'Error',
   [WorkerStatusMap.initializing]: 'Initializing',
-  [WorkerStatusMap.pending]: 'Pending'
+  [WorkerStatusMap.pending]: 'Pending',
+  [WorkerStatusMap.maintenance]: 'Maintenance'
 };
 
 export const status: any = {
@@ -36,7 +38,8 @@ export const status: any = {
   [WorkerStatusMap.deleting]: StatusMaps.transitioning,
   [WorkerStatusMap.error]: StatusMaps.error,
   [WorkerStatusMap.pending]: StatusMaps.transitioning,
-  [WorkerStatusMap.initializing]: StatusMaps.transitioning
+  [WorkerStatusMap.initializing]: StatusMaps.transitioning,
+  [WorkerStatusMap.maintenance]: StatusMaps.warning
 };
 export const checkEnvCommand = (gpu: string) => {
   return {

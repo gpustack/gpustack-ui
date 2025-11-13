@@ -285,22 +285,21 @@ export default (props: any) => {
         {logo}
         <div className="collapse-wrap" onClick={handleToggleCollapse}>
           <Button
-            style={{ marginRight: collapsed ? 0 : -14, border: 'none' }}
+            style={{
+              marginRight: collapsed ? 0 : -14,
+              border: 'none',
+              cursor: 'w-resize'
+            }}
             size="small"
             type={collapsed ? 'default' : 'text'}
           >
-            <>
-              <IconFont
-                type="icon-expand-left"
-                className="font-size-18 text-secondary"
-                style={{ display: collapsed ? 'block' : 'none' }}
-              />
-              <IconFont
-                type="icon-expand-right"
-                className="font-size-18 text-secondary"
-                style={{ display: !collapsed ? 'block' : 'none' }}
-              />
-            </>
+            <IconFont
+              type={collapsed ? 'icon-expand-left' : 'icon-expand-right'}
+              className="font-size-18 text-secondary"
+              style={{
+                display: 'block'
+              }}
+            />
           </Button>
         </div>
       </>

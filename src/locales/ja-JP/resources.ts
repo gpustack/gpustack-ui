@@ -97,7 +97,15 @@ export default {
   'resources.worker.download.privatekey': 'Download Private Key',
   'resources.worker': 'Worker',
   'resources.modelfiles.form.exsting': 'Downloaded',
-  'resources.modelfiles.form.added': 'Added'
+  'resources.modelfiles.form.added': 'Added',
+  'resources.worker.maintenance.title': 'System Maintenance',
+  'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
+  'resources.worker.maintenance.disable': 'Exit Maintenance Mode',
+  'resources.worker.maintenance.remark': 'Remark',
+  'resources.worker.maintenance.remark.rules':
+    'Please enter maintenance remarks',
+  'resources.worker.maintenance.tips':
+    'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -117,5 +125,11 @@ export default {
 // 14. 'resources.worker.download.privatekey': 'Download Private Key',
 // 15. 'resources.worker': 'Worker',
 // 16. 'resources.modelfiles.form.exsting': 'Downloaded',
-// 17. 'resources.modelfiles.form.added': 'Added'
+// 17. 'resources.modelfiles.form.added': 'Added',
+// 18. 'resources.worker.maintenance.title': 'System Maintenance',
+// 19. 'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
+// 20. 'resources.worker.maintenance.disable': 'Exit Maintenance Mode',
+// 21. 'resources.worker.maintenance.remark': 'Remark',
+// 22. 'resources.worker.maintenance.remark.rules': 'Please enter maintenance remarks',
+// 23. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
 // ========== End of To-Do List ==========

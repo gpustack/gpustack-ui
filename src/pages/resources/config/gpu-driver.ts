@@ -134,25 +134,19 @@ const registerWorker = (params: {
   token: string;
   image: string;
   gpu: string;
+  workerIP?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `CONTAINER_NAME="gpustack-worker" \\
-WORKER_PORT="80" \\
-WORKER_IP="" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
+  return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
-      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --runtime ${config.runtime} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-port \${WORKER_PORT} \\
-      --advertise-address \${WORKER_IP}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
 };
 
 // avaliable for Ascend
@@ -162,17 +156,13 @@ const registerAscendWorker = (params: {
   token: string;
   image: string;
   gpu: string;
+  workerIP?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `CONTAINER_NAME="gpustack-worker" \\
-WORKER_PORT="80" \\
-WORKER_IP="" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
+  return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
-      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --network=host \\
       --env "ASCEND_VISIBLE_DEVICES=$(npu-smi info -m | tail -n 1 | awk '{print $1}') \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
@@ -180,8 +170,7 @@ sudo docker run -d --name \${CONTAINER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-port \${WORKER_PORT} \\
-      --advertise-address \${WORKER_IP}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
 };
 
 const registerHygonWorker = (params: {
@@ -190,17 +179,13 @@ const registerHygonWorker = (params: {
   token: string;
   image: string;
   gpu: string;
+  workerIP?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `CONTAINER_NAME="gpustack-worker" \\
-WORKER_PORT="80" \\
-WORKER_IP="" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
+  return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
-      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --network=host \\
       --env ROCM_PATH=/opt/dtk \\
       --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
@@ -210,8 +195,7 @@ sudo docker run -d --name \${CONTAINER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-port \${WORKER_PORT} \\
-      --advertise-address \${WORKER_IP}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
 };
 
 const registerIluvatarWorker = (params: {
@@ -220,17 +204,13 @@ const registerIluvatarWorker = (params: {
   token: string;
   image: string;
   gpu: string;
+  workerIP?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `CONTAINER_NAME="gpustack-worker" \\
-WORKER_PORT="80" \\
-WORKER_IP="" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
+  return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
-      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --volume /lib/modules:/lib/modules:ro \\
@@ -240,8 +220,7 @@ sudo docker run -d --name \${CONTAINER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-port \${WORKER_PORT} \\
-      --advertise-address \${WORKER_IP}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
 };
 
 const registerMetaXWorker = (params: {
@@ -250,17 +229,13 @@ const registerMetaXWorker = (params: {
   token: string;
   image: string;
   gpu: string;
+  workerIP?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `CONTAINER_NAME="gpustack-worker" \\
-WORKER_PORT="80" \\
-WORKER_IP="" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
+  return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
-      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --volume /opt/mxdriver:/opt/mxdriver:ro \\
@@ -268,8 +243,7 @@ sudo docker run -d --name \${CONTAINER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-port \${WORKER_PORT} \\
-      --advertise-address \${WORKER_IP}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
 };
 
 const registerCambriconWorker = (params: {
@@ -278,17 +252,13 @@ const registerCambriconWorker = (params: {
   token: string;
   image: string;
   gpu: string;
+  workerIP?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `CONTAINER_NAME="gpustack-worker" \\
-WORKER_PORT="80" \\
-WORKER_IP="" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
+  return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
-      --publish \${WORKER_PORT}:\${WORKER_PORT} \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --volume /usr/local/neuware:/usr/local/neuware:ro \\
@@ -296,8 +266,7 @@ sudo docker run -d --name \${CONTAINER_NAME} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
-      --worker-port \${WORKER_PORT} \\
-      --advertise-address \${WORKER_IP}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
 };
 
 export const registerAddWokerCommandMap = {

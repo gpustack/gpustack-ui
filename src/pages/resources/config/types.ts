@@ -68,6 +68,10 @@ export interface ListItem {
   state_message: string;
   ssh_key_id: string;
   provision_progress: string;
+  maintenance: {
+    enabled: boolean;
+    message: string;
+  };
   status: {
     cpu: {
       total: number;

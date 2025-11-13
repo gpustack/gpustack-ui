@@ -95,9 +95,22 @@ export default {
   'resources.worker.download.privatekey': 'Скачать приватный ключ',
   'resources.worker': 'Рабочий узел',
   'resources.modelfiles.form.exsting': 'Загружено',
-  'resources.modelfiles.form.added': 'Добавлено'
+  'resources.modelfiles.form.added': 'Добавлено',
+  'resources.worker.maintenance.title': 'System Maintenance',
+  'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
+  'resources.worker.maintenance.disable': 'Exit Maintenance Mode',
+  'resources.worker.maintenance.remark': 'Remark',
+  'resources.worker.maintenance.remark.rules':
+    'Please enter maintenance remarks',
+  'resources.worker.maintenance.tips':
+    'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 2. 'resources.worker.maintenance.title': 'System Maintenance',
+// 3. 'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
+// 4. 'resources.worker.maintenance.disable': 'Exit Maintenance Mode',
+// 5. 'resources.worker.maintenance.remark': 'Remark',
+// 6. 'resources.worker.maintenance.remark.rules': 'Please enter maintenance remarks',
+// 7. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
 // ========== End of To-Do List ==========

@@ -4,6 +4,7 @@ import React from 'react';
 
 type ViewModalProps = {
   currentGPU?: string;
+  workerIP?: string;
   registrationInfo: {
     token: string;
     image: string;
@@ -13,6 +14,7 @@ type ViewModalProps = {
 
 const AddWorkerCommand: React.FC<ViewModalProps> = ({
   registrationInfo,
+  workerIP,
   currentGPU
 }) => {
   const code = React.useMemo(() => {
@@ -21,10 +23,11 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
       gpu: currentGPU || '',
       server: registrationInfo.server_url || origin,
       tag: '',
+      workerIP: '${WORKER_IP}',
       image: registrationInfo.image,
       token: registrationInfo.token || '${token}'
     });
-  }, [registrationInfo, currentGPU]);
+  }, [registrationInfo, currentGPU, workerIP]);
 
   return (
     <HighlightCode

@@ -9,7 +9,9 @@ import {
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  SafetyOutlined,
+  ToolOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
@@ -31,6 +33,16 @@ const ActionList = [
     key: 'download_ssh_key',
     icon: <DownloadOutlined />
   },
+  {
+    label: 'resources.worker.maintenance.enable',
+    key: 'star_maintenance',
+    icon: <ToolOutlined />
+  },
+  {
+    label: 'resources.worker.maintenance.disable',
+    key: 'stop_maintenance',
+    icon: <SafetyOutlined />
+  },
   // {
   //   label: 'common.button.logs',
   //   locale: false,
@@ -50,6 +62,12 @@ const setActions = (row: ListItem) => {
   return ActionList.filter((action) => {
     if (action.key === 'download_ssh_key') {
       return !!row.ssh_key_id;
+    }
+    if (action.key === 'star_maintenance') {
+      return !row.maintenance?.enabled;
+    }
+    if (action.key === 'stop_maintenance') {
+      return row.maintenance?.enabled;
     }
     return true;
   });

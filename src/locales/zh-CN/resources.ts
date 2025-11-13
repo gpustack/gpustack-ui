@@ -94,5 +94,12 @@ export default {
   'resources.model.instance': '模型实例',
   'resources.worker.download.privatekey': '下载私钥',
   'resources.modelfiles.form.exsting': '已下载',
-  'resources.modelfiles.form.added': '已添加'
+  'resources.modelfiles.form.added': '已添加',
+  'resources.worker.maintenance.title': '系统维护',
+  'resources.worker.maintenance.enable': '开启维护',
+  'resources.worker.maintenance.disable': '停止维护',
+  'resources.worker.maintenance.remark': '备注',
+  'resources.worker.maintenance.remark.rules': '请输入维护备注',
+  'resources.worker.maintenance.tips':
+    '启用维护后，节点将停止调度新的模型实例部署任务，正在运行的实例不会受到影响。'
 };

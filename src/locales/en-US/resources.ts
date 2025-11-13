@@ -96,5 +96,13 @@ export default {
   'resources.model.instance': 'Model Instance',
   'resources.worker.download.privatekey': 'Download Private Key',
   'resources.modelfiles.form.exsting': 'Downloaded',
-  'resources.modelfiles.form.added': 'Added'
+  'resources.modelfiles.form.added': 'Added',
+  'resources.worker.maintenance.title': 'System Maintenance',
+  'resources.worker.maintenance.enable': 'Enter Maintenance Mode',
+  'resources.worker.maintenance.disable': 'Exit Maintenance Mode',
+  'resources.worker.maintenance.remark': 'Remark',
+  'resources.worker.maintenance.remark.rules':
+    'Please enter maintenance remarks',
+  'resources.worker.maintenance.tips':
+    'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
 };

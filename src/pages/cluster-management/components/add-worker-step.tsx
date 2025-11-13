@@ -89,7 +89,6 @@ const AddWorkerStep: React.FC<AddModalProps> = ({
   const [currentGPU, setCurrentGPU] = React.useState<string>(
     GPUDriverMap.NVIDIA
   );
-  React.useState<string>(GPUDriverMap.NVIDIA);
   const [workerCommand, setWorkerCommand] = React.useState<Record<string, any>>(
     {
       label: 'NVIDIA',

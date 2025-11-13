@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
@@ -15,8 +16,9 @@ export const generateSpeechToTextCurlCode = ({
 curl ${host}${api} \\
 -H "Content-Type: multipart/form-data" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
+-F model="${parameters.model}" \\
 -F file="@/path/to/file/audio.mp3;type=audio/mpeg" \\
-${formatCurlArgs(parameters, true)}`
+${formatCurlArgs(_.omit(parameters, 'model'), true)}`
     .trim()
     .replace(/\\$/g, '');
 

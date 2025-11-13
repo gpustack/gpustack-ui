@@ -1,6 +1,5 @@
 import icons from '@/components/icon-font/icons';
 import HotKeys from '@/config/hotkeys';
-import _ from 'lodash';
 import React from 'react';
 import { modelCategoriesMap, modelSourceMap } from './index';
 
@@ -49,11 +48,6 @@ export const ActionList: ActionItem[] = [
     label: 'models.openinplayground',
     key: 'chat',
     icon: icons.ExperimentOutlined
-  },
-  {
-    label: 'models.form.generic_proxy.button',
-    key: 'proxy',
-    icon: icons.CaptivePortal
   },
   {
     label: 'models.table.button.apiAccessInfo',
@@ -155,27 +149,6 @@ export const generateSource = (record: any) => {
     return `${modelSourceMap.ollama_library}/${record.ollama_library_model_name}`;
   }
   return '';
-};
-
-export const setModelActionList = (record: any) => {
-  return _.filter(ActionList, (action: any) => {
-    if (action.key === 'chat' || action.key === 'api') {
-      return record.ready_replicas > 0;
-    }
-    if (action.key === 'start') {
-      return record.replicas === 0;
-    }
-
-    if (action.key === 'stop') {
-      return record.replicas > 0;
-    }
-
-    if (action.key === 'proxy') {
-      return record.generic_proxy;
-    }
-
-    return true;
-  });
 };
 
 export const modelFileActions = [

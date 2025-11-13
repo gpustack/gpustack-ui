@@ -58,9 +58,11 @@ export default {
   'clusters.addworker.metaxNotes':
     'Если директория <span class="bold-text">/opt/mxdriver</span> не существует, создайте символическую ссылку на путь установки MetaX: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Аналогично для директории <span class="bold-text">/opt/maca</span>.',
   'clusters.addworker.cambriconNotes':
-    'Если директория <span class="bold-text">/usr/local/neuware</span> не существует, создайте символическую ссылку на путь установки Cambricon: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
+    'Если директория <span class="bold-text">/usr/local/neuware</span> не существует, создайте символическую ссылку на путь установки Cambricon: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
+  'clusters.addworker.hygonNotes-02':
+    'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'clusters.addworker.hygonNotes-02': 'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
 // ========== End of To-Do List ==========

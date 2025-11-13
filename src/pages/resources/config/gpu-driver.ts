@@ -57,7 +57,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.ILUVATAR]: {
     label: ManufacturerMap[GPUDriverMap.ILUVATAR],
     value: GPUDriverMap.ILUVATAR,
-    runtime: '', // TODO: confirm runtime name
+    runtime: 'iluvatar', // TODO: confirm runtime name
     driver: 'ixsmi'
   },
   [GPUDriverMap.CAMBRICON]: {
@@ -136,15 +136,15 @@ const registerWorker = (params: {
   gpu: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `WORKER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker" \\
 WORKER_PORT="80" \\
 WORKER_IP="" \\
-docker run -d --name \${WORKER_NAME} \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
       --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --runtime ${config.runtime} \\
@@ -164,19 +164,19 @@ const registerAscendWorker = (params: {
   gpu: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `WORKER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker" \\
 WORKER_PORT="80" \\
 WORKER_IP="" \\
-docker run -d --name \${WORKER_NAME} \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
       --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --env "ASCEND_VISIBLE_DEVICES=$(npu-smi info -m | tail -n 1 | awk '{print $1}') \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --runtime ${config.runtime} \\
-      --env "ASCEND_VISIBLE_DEVICES=$(npu-smi info -m | tail -n 1 | awk '{print $1}') \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
@@ -192,21 +192,21 @@ const registerHygonWorker = (params: {
   gpu: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `WORKER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker" \\
 WORKER_PORT="80" \\
 WORKER_IP="" \\
-docker run -d --name \${WORKER_NAME} \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
       --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --env ROCM_PATH=/opt/dtk \\
+      --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
-      --runtime ${config.runtime} \\
       --volume /opt/hyhal:/opt/hyhal:ro \\
       --volume /opt/dtk:/opt/dtk:ro \\
-      --env ROCM_PATH=/opt/dtk \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
@@ -222,20 +222,21 @@ const registerIluvatarWorker = (params: {
   gpu: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `WORKER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker" \\
 WORKER_PORT="80" \\
 WORKER_IP="" \\
-docker run -d --name \${WORKER_NAME} \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
       --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --volume /lib/modules:/lib/modules:ro \\
       --volume /usr/local/corex:/usr/local/corex:ro \\
       --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
+      --runtime ${config.runtime} \\
       ${params.image} \\
       --server-url ${params.server} \\
       --token ${params.token} \\
@@ -251,15 +252,15 @@ const registerMetaXWorker = (params: {
   gpu: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `WORKER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker" \\
 WORKER_PORT="80" \\
 WORKER_IP="" \\
-docker run -d --name \${WORKER_NAME} \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
       --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --volume /opt/mxdriver:/opt/mxdriver:ro \\
@@ -279,15 +280,15 @@ const registerCambriconWorker = (params: {
   gpu: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `WORKER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker" \\
 WORKER_PORT="80" \\
 WORKER_IP="" \\
-docker run -d --name \${WORKER_NAME} \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
       --restart=unless-stopped \\
       --privileged \\
       --publish \${WORKER_PORT}:\${WORKER_PORT} \\
       --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_DEPLOYMENT=true" \\
-      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${WORKER_NAME}" \\
+      --env "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
       --volume /usr/local/neuware:/usr/local/neuware:ro \\
@@ -330,7 +331,8 @@ export const AddWorkerDockerNotes: Record<string, string[]> = {
   [GPUDriverMap.HYGON]: [
     'clusters.addworker.nvidiaNotes-01',
     'clusters.addworker.nvidiaNotes-02',
-    'clusters.addworker.hygonNotes'
+    'clusters.addworker.hygonNotes',
+    'clusters.addworker.hygonNotes-02'
   ],
   [GPUDriverMap.ILUVATAR]: [
     'clusters.addworker.nvidiaNotes-01',

@@ -58,7 +58,9 @@ export default {
   'clusters.addworker.metaxNotes':
     'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
   'clusters.addworker.cambriconNotes':
-    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
+    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
+  'clusters.addworker.hygonNotes-02':
+    'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -111,5 +113,5 @@ export default {
 // 47. 'clusters.addworker.corexNotes': 'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class
 // 48. 'clusters.addworker.metaxNotes': 'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
 // 49. 'clusters.addworker.cambriconNotes': 'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
-
+// 50. 'clusters.addworker.hygonNotes-02': 'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
 // ========== End of To-Do List ==========

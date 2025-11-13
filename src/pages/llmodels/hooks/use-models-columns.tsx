@@ -8,10 +8,29 @@ import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
 import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { useMemo } from 'react';
 import ModelTag from '../components/model-tag';
-import { generateSource, setModelActionList } from '../config/button-actions';
+import { ActionList, generateSource } from '../config/button-actions';
 import { ListItem } from '../config/types';
+
+const setModelActionList = (record: any) => {
+  return _.filter(ActionList, (action: any) => {
+    if (action.key === 'chat' || action.key === 'api') {
+      return record.ready_replicas > 0;
+    }
+
+    if (action.key === 'start') {
+      return record.replicas === 0;
+    }
+
+    if (action.key === 'stop') {
+      return record.replicas > 0;
+    }
+
+    return true;
+  });
+};
 
 interface ModelsColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;

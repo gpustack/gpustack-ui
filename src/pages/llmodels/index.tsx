@@ -238,12 +238,12 @@ const Models: React.FC = () => {
 
   const handleOnCancelViewLogs = useMemoizedFn(async () => {
     isPageHidden.current = false;
-    await getAllModelInstances();
-    await createModelsInstanceChunkRequest();
-    await createModelsChunkRequest();
     fetchData({
       loadingVal: false
     });
+    await getAllModelInstances();
+    await createModelsInstanceChunkRequest();
+    await createModelsChunkRequest();
   });
 
   const handleSearchBySilent = useMemoizedFn(async () => {
@@ -372,12 +372,12 @@ const Models: React.FC = () => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
         isPageHidden.current = false;
-        await getAllModelInstances();
-        await createModelsInstanceChunkRequest();
-        await createModelsChunkRequest();
         fetchData({
           loadingVal: false
         });
+        await getAllModelInstances();
+        await createModelsInstanceChunkRequest();
+        await createModelsChunkRequest();
       } else {
         isPageHidden.current = true;
         chunkRequedtRef.current?.current?.cancel?.();

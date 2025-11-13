@@ -1,3 +1,4 @@
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import _ from 'lodash';
 import { CREAT_IMAGE_API } from '../apis';
 import { AudioData, MessageItem } from './types';
@@ -118,7 +119,7 @@ export const OpenAIViewCode = {
     }
   },
   rerank: {
-    api: '/v1/rerank',
+    api: `/${GPUSTACK_API_BASE_URL}/rerank`,
     logcommand: {
       python: 'json()',
       node: 'data'

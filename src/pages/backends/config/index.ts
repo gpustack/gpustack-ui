@@ -2,6 +2,7 @@ import MindIELogo from '@/assets/logo/ascend.png';
 import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
 import icons from '@/components/icon-font/icons';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
 import jsYaml from 'js-yaml';
 import { trim } from 'lodash';
@@ -173,7 +174,7 @@ export const yamlTemplate = `# backend configuration template
 backend_name: my-backend-custom
 description: this is my-backend
 default_version: v0.5.1
-health_check_path: /v1/models
+health_check_path: /${GPUSTACK_API_BASE_URL}/models
 default_backend_param:
   - --host
 default_run_command: myBackend serve {{model_path}} --port {{port}}

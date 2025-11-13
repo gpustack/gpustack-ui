@@ -1,3 +1,4 @@
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { downloadFile } from '@/utils/download-stream';
 import { request } from '@umijs/max';
 import { message } from 'antd';
@@ -24,7 +25,9 @@ export async function downloadWorkerPrivateKey({
   name?: string;
 }) {
   try {
-    const res = await fetch(`/v1${WORKERS_API}/${id}/privatekey`);
+    const res = await fetch(
+      `/${GPUSTACK_API_BASE_URL}${WORKERS_API}/${id}/privatekey`
+    );
     // header
     const contentDispostion = res.headers.get('content-Disposition');
     const filename =

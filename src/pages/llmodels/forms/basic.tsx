@@ -1,6 +1,7 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { modelNameReg } from '@/config';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
   ClusterStatusLabelMap,
@@ -149,7 +150,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           required
           description={intl.formatMessage(
             { id: 'models.form.replicas.tips' },
-            { api: `${window.location.origin}/v1` }
+            { api: `${window.location.origin}/${GPUSTACK_API_BASE_URL}` }
           )}
           min={0}
         ></SealInput.Number>

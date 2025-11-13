@@ -3,7 +3,7 @@
   "properties": {
     "backend_name": {
       "type": "string",
-      "pattern": "^-custom$",
+      "pattern": "^.+-custom$",
       "description": "backend name",
       "severity": "error"
     },

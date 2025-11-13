@@ -5,7 +5,7 @@ import SegmentLine from '@/components/segment-line';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
-import { Segmented, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useId, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -24,14 +24,6 @@ const ModalFooterStyle = {
   display: 'flex',
   justifyContent: 'flex-end'
 };
-
-const SegmentedInner = styled(Segmented)`
-  width: 100%;
-  border-radius: 0;
-  .ant-segmented-item {
-    flex: 1;
-  }
-`;
 
 const SegmentedHeader = styled.div`
   margin: 16px 24px;

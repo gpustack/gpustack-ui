@@ -196,6 +196,7 @@ export async function queryModelScopeModels(
           Criterion: [...(tagsCriterion || []), ...(tasksCriterion || [])]
         }
       : {};
+
   const res = await fetch(setProxyUrl(`${MODEL_SCOPE_LIST_MODEL_API}`), {
     method: 'PUT',
     signal: config?.signal,
@@ -212,7 +213,6 @@ export async function queryModelScopeModels(
   });
   if (!res.ok) {
     throw new Error('Network response was not ok');
-    return null;
   }
   return res.json();
 }
@@ -246,7 +246,6 @@ export async function queryModelScopeModelFiles(
 
   if (!res.ok) {
     throw new Error('Network response was not ok');
-    return null;
   }
 
   return res.json();

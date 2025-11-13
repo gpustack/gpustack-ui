@@ -339,7 +339,6 @@ export default (props: any) => {
   };
 
   const menuItemRender = (menuItemProps, defaultDom) => {
-    console.log('defaultdom==========', menuItemProps, defaultDom);
     if (menuItemProps.isUrl || menuItemProps.children) {
       return defaultDom;
     }

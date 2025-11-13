@@ -116,6 +116,7 @@ const Models: React.FC = () => {
           cancelToken: axiosToken.token
         });
 
+        // if the current page is beyond total page, fetch again
         if (
           !res.items.length &&
           params.page > res.pagination.totalPage &&

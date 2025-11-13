@@ -73,7 +73,6 @@ const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
   const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
-    const uri = monaco.Uri.parse(path);
   };
 
   const formatCode = () => {

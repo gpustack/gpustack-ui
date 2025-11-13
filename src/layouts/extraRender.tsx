@@ -22,6 +22,26 @@ import { useMemo } from 'react';
 import styled from 'styled-components';
 import { DEFAULT_ENTER_PAGE } from '../config/settings';
 
+const NewLabel = styled.span`
+  position: relative;
+  bottom: 3px;
+  display: flex;
+  color: #fff;
+  width: 36px;
+  height: 15px;
+  margin-left: 5px;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--ant-orange-5);
+  border-radius: 8px 8px 8px 0;
+  transform: scale(0.9);
+
+  .text {
+    transform: scale(0.8);
+    line-height: 1em;
+  }
+`;
+
 const IconWrapper = styled.span`
   cursor: pointer;
   display: flex;
@@ -173,11 +193,11 @@ export const ExtraContent = () => {
             <>
               <a className="m-l-8">{item.label}</a>
               {showUpgrade && (
-                <span className="new-icon">
+                <NewLabel>
                   <span className="text">
                     {intl.formatMessage({ id: 'common.text.new' })}
                   </span>
-                </span>
+                </NewLabel>
               )}
             </>
           ) : (

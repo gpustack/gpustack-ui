@@ -184,7 +184,6 @@ const ClusterCreate = () => {
     }
 
     return formKeys.map((key) => {
-      console.log('renderForms key========', key, formValues);
       const FormComponent = moduleRegistry[key];
       return FormComponent ? (
         <FormComponent

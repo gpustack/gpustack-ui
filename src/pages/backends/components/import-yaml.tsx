@@ -67,6 +67,10 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
     );
     const [error, setError] = useState<string>('');
 
+    const setContent = (val: string) => {
+      editorRef.current?.setValue?.(val);
+    };
+
     const beforeUpload = (file: RcFile) => {
       const isYaml =
         file.type === 'application/x-yaml' ||
@@ -81,6 +85,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
         const content = e.target?.result;
         if (typeof content === 'string') {
           setFileContent(content);
+          setContent(content);
         } else {
           message.error('Failed to read file content!');
         }
@@ -150,9 +155,7 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
       getContent: () => {
         return getContent();
       },
-      setContent: (val: string) => {
-        editorRef.current?.setValue?.(val);
-      },
+      setContent: setContent,
       validate() {
         return validate();
       }

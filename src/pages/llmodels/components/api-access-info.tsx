@@ -122,6 +122,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
   const handleClose = () => {
     onClose();
   };
+
   return (
     <ScrollerModal
       open={open}

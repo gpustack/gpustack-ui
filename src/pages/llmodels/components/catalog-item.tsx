@@ -12,7 +12,6 @@ import { CatalogItem as CatalogItemType } from '../config/types';
 import '../style/catalog-item.less';
 import { categoryConfig } from './model-tag';
 
-const COLORS = ['blue', 'purple', 'orange'];
 interface CatalogItemProps {
   activeId: number;
   data: CatalogItemType;
@@ -25,32 +24,6 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
   const handleOnClick = useCallback(() => {
     onClick(data);
   }, [data, onClick]);
-
-  const handleOnError = (e: any) => {
-    e.target.src = fallbackImg;
-  };
-
-  const renderTag = useCallback((sItem: any) => {
-    return (
-      <ThemeTag
-        key={sItem}
-        className="tag-item"
-        opacity={0.7}
-        style={{
-          marginRight: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '2px 6px',
-          borderRadius: 4,
-          fontSize: 12,
-          height: 22
-        }}
-      >
-        {sItem.label}
-      </ThemeTag>
-    );
-  }, []);
 
   const description = useMemo(() => {
     return (
@@ -86,13 +59,12 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
     >
       <div className="content">
         <div className="title">
-          <div className="img">
-            <img
-              src={data.icon || fallbackImg}
-              alt=""
-              onError={handleOnError}
-            />
-          </div>
+          <div
+            className="img"
+            style={{
+              backgroundImage: `url(${data.icon}),url(${fallbackImg})`
+            }}
+          ></div>
           <AutoTooltip ghost>{data.name}</AutoTooltip>
         </div>
       </div>

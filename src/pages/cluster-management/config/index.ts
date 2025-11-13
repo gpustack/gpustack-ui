@@ -1,5 +1,6 @@
 import icons from '@/components/icon-font/icons';
 import { StatusMaps } from '@/config';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { StatusType } from '@/config/types';
 
 export const ClusterStatusValueMap = {
@@ -43,7 +44,7 @@ export const generateRegisterCommand = (params: {
   clusterId: number;
   registrationToken: string;
 }) => {
-  return `curl -k -L '${params.server}/v1/clusters/${params.clusterId}/manifests' \\
+  return `curl -k -L '${params.server}/${GPUSTACK_API_BASE_URL}/clusters/${params.clusterId}/manifests' \\
 --header 'Authorization: Bearer ${params.registrationToken}' | kubectl apply -f -`;
 };
 

@@ -451,19 +451,6 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
     ]
   },
   {
-    type: 'Switch',
-    name: 'preview',
-    label: {
-      text: 'Preview',
-      isLocalized: false
-    },
-    rules: [
-      {
-        required: false
-      }
-    ]
-  },
-  {
     type: 'InputNumber',
     name: 'seed',
     label: {

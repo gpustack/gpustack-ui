@@ -2,6 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button, Tag } from 'antd';
@@ -9,6 +10,8 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { modelCategoriesMap } from '../config';
+
+const GPUSTACK_API = GPUSTACK_API_BASE_URL;
 
 const ApiAccessInfoWrapper = styled.div`
   display: grid;
@@ -64,7 +67,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
 
-  const endPoint = `${window.location.origin}/v1`;
+  const endPoint = `${window.location.origin}/${GPUSTACK_API}`;
 
   const isRanker = useMemo(() => {
     return _.includes(data.categories, modelCategoriesMap.reranker);

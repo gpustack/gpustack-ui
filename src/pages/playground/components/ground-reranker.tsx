@@ -1,5 +1,6 @@
 import AlertInfo from '@/components/alert-info';
 import SealInputNumber from '@/components/seal-form/input-number';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -201,7 +202,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const viewCodeContent = useMemo(() => {
     return generateRerankCode({
-      api: '/v1/rerank',
+      api: `/${GPUSTACK_API_BASE_URL}/rerank`,
       parameters: {
         ..._.pick(parameters, ['model', ..._.split(formFields, ',')]),
         query: queryValue,

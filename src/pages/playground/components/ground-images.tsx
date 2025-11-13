@@ -140,25 +140,10 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   };
 
   const generateParams = () => {
-    // preview
-    let stream_options: Record<string, any> = {
-      chunk_size: 16 * 1024,
-      chunk_results: true
-    };
-
-    if (parameters.preview) {
-      stream_options = {
-        preview_faster: true
-      };
-    }
-
     const params = {
       ..._.omitBy(finalParameters, (value: string) => !value),
       seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
-      stream: true,
-      stream_options: {
-        ...stream_options
-      },
+      stream: false,
       prompt: currentPrompt
     };
     return params;

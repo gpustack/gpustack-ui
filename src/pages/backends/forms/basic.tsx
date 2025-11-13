@@ -2,6 +2,7 @@ import ListInput from '@/components/list-input';
 import SealInput from '@/components/seal-form/seal-input';
 import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageAction } from '@/config';
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
@@ -47,7 +48,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
               trim
               placeholder={intl.formatMessage(
                 { id: 'common.help.default' },
-                { content: '/v1/models' }
+                { content: `/${GPUSTACK_API_BASE_URL}/models` }
               )}
               label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
             ></SealInput.Input>

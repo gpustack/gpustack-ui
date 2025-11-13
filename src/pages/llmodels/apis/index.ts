@@ -1,3 +1,4 @@
+import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { ListItem as UserListItem } from '@/pages/users/config/types';
 import { downloadFile, listFiles, listModels } from '@huggingface/hub';
 import { PipelineType } from '@huggingface/tasks';
@@ -154,10 +155,9 @@ export async function queryModelInstanceLogs(id: number) {
 
 // ===================== call huggingface quicksearch api =====================
 
-const MODEL_SCOPE_LIST_MODEL_API =
-  'https://www.modelscope.cn/api/v1/dolphin/models';
+const MODEL_SCOPE_LIST_MODEL_API = `https://www.modelscope.cn/api/${GPUSTACK_API_BASE_URL}/dolphin/models`;
 
-const MODE_SCOPE_MODEL_FIELS_API = 'https://modelscope.cn/api/v1/models/';
+const MODE_SCOPE_MODEL_FIELS_API = `https://modelscope.cn/api/${GPUSTACK_API_BASE_URL}/models/`;
 
 export async function queryHuggingfaceModelDetail(
   params: { repo: string },

@@ -1,6 +1,6 @@
 import { GPUStackVersionAtom, UpdateCheckAtom } from '@/atoms/user';
 import { setAtomStorage } from '@/atoms/utils';
-import { DEFAULT_ENTER_PAGE } from '@/config/settings';
+import { DEFAULT_ENTER_PAGE, GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { requestConfig } from '@/request-config';
 import {
   queryCurrentUserState,
@@ -105,6 +105,6 @@ export async function getInitialState(): Promise<{
 }
 
 export const request: RequestConfig = {
-  baseURL: ' /v1',
+  baseURL: `/${GPUSTACK_API_BASE_URL}`,
   ...requestConfig
 };

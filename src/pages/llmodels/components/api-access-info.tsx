@@ -3,15 +3,47 @@ import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import {
+  AUDIO_SPEECH_TO_TEXT_API,
+  AUDIO_TEXT_TO_SPEECH_API,
+  CHAT_API,
+  CREAT_IMAGE_API,
+  EMBEDDING_API,
+  MODEL_PROXY,
+  RERANKER_API
+} from '@/pages/playground/apis';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { modelCategoriesMap } from '../config';
+import { ListItem } from '../config/types';
 
 const GPUSTACK_API = GPUSTACK_API_BASE_URL;
+
+const API_MAP: Record<string, { api: string }> = {
+  [modelCategoriesMap.embedding]: {
+    api: EMBEDDING_API
+  },
+  [modelCategoriesMap.llm]: {
+    api: CHAT_API
+  },
+  [modelCategoriesMap.image]: {
+    api: CREAT_IMAGE_API
+  },
+  [modelCategoriesMap.text_to_speech]: {
+    api: AUDIO_TEXT_TO_SPEECH_API
+  },
+  [modelCategoriesMap.speech_to_text]: {
+    api: AUDIO_SPEECH_TO_TEXT_API
+  },
+  [modelCategoriesMap.reranker]: {
+    api: RERANKER_API
+  }
+};
 
 const ApiAccessInfoWrapper = styled.div`
   display: grid;
@@ -59,7 +91,7 @@ const CreateButton = styled(Button)`
 
 interface ApiAccessInfoProps {
   open: boolean;
-  data: any;
+  data: ListItem;
   onClose: () => void;
 }
 
@@ -67,7 +99,21 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
 
-  const endPoint = `${window.location.origin}/${GPUSTACK_API}`;
+  const getModelCategory = useMemoizedFn((categories: string[]) => {
+    for (const [category, config] of Object.entries(API_MAP)) {
+      if (categories.includes(category)) {
+        return `${MODEL_PROXY}${config.api}`;
+      }
+    }
+    return `${MODEL_PROXY}${CHAT_API}`;
+  });
+
+  const endPoint = useMemo(() => {
+    if (!data.generic_proxy) {
+      return `${window.location.origin}/${GPUSTACK_API}`;
+    }
+    return getModelCategory(data.categories || []);
+  }, [data]);
 
   const isRanker = useMemo(() => {
     return _.includes(data.categories, modelCategoriesMap.reranker);
@@ -113,9 +159,13 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
             <BulbOutlined />
           </dt>
           <dd>
-            {intl.formatMessage({
-              id: 'models.table.button.apiAccessInfo.tips'
-            })}
+            {data.generic_proxy
+              ? intl.formatMessage({
+                  id: 'models.table.genericProxy'
+                })
+              : intl.formatMessage({
+                  id: 'models.table.button.apiAccessInfo.tips'
+                })}
           </dd>
         </dl>
       </Tips>
@@ -127,13 +177,17 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           <AutoTooltip ghost maxWidth={180}>
             {endPoint}
           </AutoTooltip>
-          <APITAG color="geekblue">
-            {intl.formatMessage({
-              id: isRanker
-                ? 'models.table.apiAccessInfo.jinaCompatible'
-                : 'models.table.apiAccessInfo.openaiCompatible'
-            })}
-          </APITAG>
+          {!data.generic_proxy && (
+            <APITAG color="geekblue">
+              {isRanker
+                ? intl.formatMessage({
+                    id: 'models.table.apiAccessInfo.jinaCompatible'
+                  })
+                : intl.formatMessage({
+                    id: 'models.table.apiAccessInfo.openaiCompatible'
+                  })}
+            </APITAG>
+          )}
         </span>
         <span className="copy-btn">
           <CopyButton text={endPoint} type="link" size="small"></CopyButton>

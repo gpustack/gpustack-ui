@@ -56,5 +56,7 @@ export default {
   'clusters.addworker.metaxNotes':
     '如果 <span class="bold-text">/opt/mxdriver</span> 目录不存在，请创建指向 MetaX 安装路径的符号链接：<span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>。与 <span class="bold-text">/opt/maca</span> 目录相同。',
   'clusters.addworker.cambriconNotes':
-    '如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向 Cambricon 安装路径的符号链接：<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。'
+    '如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向 Cambricon 安装路径的符号链接：<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。',
+  'clusters.addworker.hygonNotes-02':
+    '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。'
 };

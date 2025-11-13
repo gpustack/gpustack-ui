@@ -58,5 +58,7 @@ export default {
   'clusters.addworker.metaxNotes':
     'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
   'clusters.addworker.cambriconNotes':
-    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
+    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
+  'clusters.addworker.hygonNotes-02':
+    'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import AddWorkerStep from '../components/add-worker-step';
+import AddWorkerStep from '../components/add-worker/add-worker-step';
 import ProviderCatalog from '../components/provider-catalog';
 import BasicForm from './basic-form';
 import WorkerPoolForm from './worker-pools-form';

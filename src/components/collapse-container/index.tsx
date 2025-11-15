@@ -77,6 +77,7 @@ export interface CollapsibleContainerProps {
   onToggle?: (open: boolean) => void;
   disabled?: boolean;
   variant?: 'outlined' | 'borderless' | undefined;
+  iconPosition?: 'left' | 'right';
   className?: string;
   children?: React.ReactNode;
   styles?: {
@@ -99,6 +100,7 @@ export default function CollapsibleContainer({
   variant = 'borderless',
   className = '',
   collapsible,
+  iconPosition = 'left',
   styles: cardStyles,
   children
 }: CollapsibleContainerProps) {
@@ -121,6 +123,22 @@ export default function CollapsibleContainer({
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(isOpen ? 'auto' : '0px');
 
+  const renderIcon = () => {
+    if (showExpandIcon) {
+      return (
+        <IconFont
+          rotate={isOpen ? 180 : 0}
+          type="icon-down"
+          style={{
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            fontSize: 12
+          }}
+        />
+      );
+    }
+    return null;
+  };
+
   const renderTitle = () => {
     if (!collapsible) {
       return null;
@@ -129,16 +147,7 @@ export default function CollapsibleContainer({
       <div className={styles.title} onClick={toggle}>
         <div className={styles.left}>
           <div className={styles.expandIcon}>
-            {showExpandIcon && (
-              <IconFont
-                rotate={isOpen ? 180 : 0}
-                type="icon-down"
-                style={{
-                  cursor: disabled ? 'not-allowed' : 'pointer',
-                  fontSize: 12
-                }}
-              />
-            )}
+            {iconPosition === 'left' && renderIcon()}
             {title && <div>{title}</div>}
           </div>
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
@@ -146,6 +155,7 @@ export default function CollapsibleContainer({
         <div className={styles.right}>
           {right && <span>{right}</span>}
           {deleteBtn && <span className="del-btn">{deleteBtn}</span>}
+          {iconPosition === 'right' && renderIcon()}
         </div>
       </div>
     );

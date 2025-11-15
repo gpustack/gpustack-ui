@@ -40,10 +40,10 @@ export default {
   'clusters.create.addworker.tips':
     '在执行以下命令之前，请确保已满足 {label} 的<a href={link} target="_blank">先决条件</a>。',
   'clusters.create.addCommand.tips':
-    '在需要添加的节点上运行以下命令，将其加入到集群中',
+    '在需要添加的节点上运行以下命令，将其加入到集群中。',
   'clusters.create.register.tips':
-    '在需要添加的 Kubernetes 集群上运行以下命令，将其中的节点加入到集群中',
-  'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当',
+    '在需要添加的 Kubernetes 集群上运行以下命令，将其中的节点加入到集群中。',
+  'cluster.create.checkEnv.tips': '使用以下命令检查环境是否准备妥当。',
   'cluster.provider.comingsoon': '即将推出',
   'clusters.addworker.nvidiaNotes-01':
     '如果节点有多个出站 IP 地址，请填写 <span class="bold-text">WORKER_IP</span>，以确保使用指定的 IP。可通过命令 <span class="bold-text">hostname -I | xargs -n1</span> 进行确认。',
@@ -58,5 +58,24 @@ export default {
   'clusters.addworker.cambriconNotes':
     '如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向 Cambricon 安装路径的符号链接：<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。',
   'clusters.addworker.hygonNotes-02':
-    '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。'
+    '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。',
+  'clusters.addworker.selectCluster': '选择集群',
+  'clusters.addworker.selectCluster.tips':
+    '非 Docker 集群请前往集群页面注册集群或管理节点池。',
+  'clusters.addworker.selectGPU': '选择 GPU 厂商',
+  'clusters.addworker.checkEnv': '检查环境',
+  'clusters.addworker.specifyArgs': '指定参数',
+  'clusters.addworker.runCommand': '运行指令',
+  'clusters.addworker.specifyWorkerIP': '指定 Worker IP',
+  'clusters.addworker.detectWorkerIP': '自动检测 Worker IP',
+  'clusters.addworker.enterWorkerIP': '输入节点 IP',
+  'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
+  'clusters.addworker.extraVolume': '额外卷挂载',
+  'clusters.addworker.configSummary': '配置摘要',
+  'clusters.addworker.gpuVendor': 'GPU 厂商',
+  'clusters.addworker.workerIP': '节点 IP',
+  'clusters.addworker.notSpecified': '未指定',
+  'clusters.addworker.autoDetect': '自动检测',
+  'clusters.addworker.extraVolume.holder':
+    '例如：/data/models（路径需以 / 开头）'
 };

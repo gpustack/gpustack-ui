@@ -43,24 +43,43 @@ export default {
   'clusters.create.addCommand.tips':
     'On the Worker that needs to be added, run the following command to join it to the cluster.',
   'cluster.create.checkEnv.tips':
-    'Use the following command to check if the environment is ready',
+    'Use the following command to check if the environment is ready.',
   'clusters.create.register.tips':
     ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
   'cluster.provider.comingsoon': 'Coming soon',
   'clusters.addworker.nvidiaNotes-01':
-    'If the worker has multiple outbound IP addresses, enter <span class="bold-text">WORKER_IP</span> to ensure that the node uses the desired IP. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
+    'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
   'clusters.addworker.nvidiaNotes-02':
-    'If the model directory already exists on the worker, please add the <span class="bold-text">--volume</span> directive to mount it.',
-  'clusters.addworker.hygonNotes':
-    'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, please create a symbolic link pointing to the Hygon installed path: <span class="bold-text">/opt/hyhal</span>. Same as <span class="bold-text">/opt/dtk</span> directory.',
-  'clusters.addworker.corexNotes':
-    'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class="bold-text">/usr/local/corex</span> directory.',
-  'clusters.addworker.metaxNotes':
-    'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
-  'clusters.addworker.cambriconNotes':
-    'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
+    'If a model directory already exists on the worker, you can specify the path to mount it.',
+  'clusters.addworker.hygonNotes': `If the <span class="bold-text">/opt/hyhal</span> directory does not exist, create a symbolic link to the Hygon installation path.  
+Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
+  'clusters.addworker.corexNotes': `If the <span class="bold-text">/lib/modules</span> directory does not exist, create a symbolic link to the Iluvatar installation path:  
+<span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same applies to the <span class="bold-text">/usr/local/corex</span> directory.`,
+  'clusters.addworker.metaxNotes': `If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, create a symbolic link to the MetaX installation path:  
+<span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same applies to the <span class="bold-text">/opt/maca</span> directory.`,
+  'clusters.addworker.cambriconNotes': `If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, create a symbolic link to the Cambricon installation path:  
+<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.`,
   'clusters.addworker.hygonNotes-02':
-    'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
+    'If device detection fails, try removing <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
+  'clusters.addworker.selectCluster': 'Select Cluster',
+  'clusters.addworker.selectCluster.tips':
+    'For non-Docker clusters, please register clusters or manage worker pools from the Clusters page.',
+  'clusters.addworker.selectGPU': 'Select GPU Vendor',
+  'clusters.addworker.checkEnv': 'Check Environment',
+  'clusters.addworker.specifyArgs': 'Specify Arguments',
+  'clusters.addworker.runCommand': 'Run Command',
+  'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
+  'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+  'clusters.addworker.enterWorkerIP': 'Enter worker IP',
+  'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
+  'clusters.addworker.extraVolume': 'Additional Volume Mount',
+  'clusters.addworker.configSummary': 'Configuration Summary',
+  'clusters.addworker.gpuVendor': 'GPU Vendor',
+  'clusters.addworker.workerIP': 'Worker IP',
+  'clusters.addworker.notSpecified': 'Not Specified',
+  'clusters.addworker.autoDetect': 'Auto-detect',
+  'clusters.addworker.extraVolume.holder':
+    'e.g. /data/models (path must start with /)'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -104,14 +123,31 @@ export default {
 // 38. 'clusters.workerpool.batchSize.desc': 'Number of workers created simultaneously in the Worker pool',
 // 39. 'clusters.create.addworker.tips': 'Please make sure the <a href={link} target="_blank">prerequisites</a> for {label} are met before executing the following command.',
 // 40. 'clusters.create.addCommand.tips': 'On the Worker that needs to be added, run the following command to join it to the cluster.',
-// 41. 'cluster.create.checkEnv.tips': 'Use the following command to check if the environment is ready',
+// 41. 'cluster.create.checkEnv.tips': 'Use the following command to check if the environment is ready.',
 // 42. 'clusters.create.register.tips': ' On the Kubernetes cluster that needs to be added, run the following command to join its nodes to the cluster.',
 // 43. 'cluster.provider.comingsoon': 'Coming soon',
-// 44. 'clusters.addworker.nvidiaNotes-01': 'If the worker has multiple outbound IP addresses, enter <span class="bold-text">WORKER_IP</span> to ensure that the node uses the desired IP. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
-// 45. 'clusters.addworker.nvidiaNotes-02': 'If the model directory already exists on the worker, please add the <span class="bold-text">--volume</span> directive to mount it.',
-// 46. 'clusters.addworker.hygonNotes': 'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, please create a symbolic link pointing to the Hygon installed path: <span class="bold-text">/opt/hyhal</span>. Same as <span class="bold-text">/opt/dtk</span> directory.',
-// 47. 'clusters.addworker.corexNotes': 'If the <span class="bold-text">/lib/modules</span> directory does not exist, please create a symbolic link pointing to the Iluvatar installed path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same as <span class
-// 48. 'clusters.addworker.metaxNotes': 'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, please create a symbolic link pointing to the MetaX installed path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same as <span class="bold-text">/opt/maca</span> directory.',
-// 49. 'clusters.addworker.cambriconNotes': 'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, please create a symbolic link pointing to the Cambricon installed path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
-// 50. 'clusters.addworker.hygonNotes-02': 'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
+// 44. 'clusters.addworker.nvidiaNotes-01': 'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
+// 45. 'clusters.addworker.nvidiaNotes-02': 'If a model directory already exists on the worker, you can specify the path to mount it.',
+// 46. 'clusters.addworker.hygonNotes': 'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, create a symbolic link to the Hygon installation path.  Same applies to the <span class="bold-text">/opt/dtk</span> directory.',
+// 47. 'clusters.addworker.corexNotes': 'If the <span class="bold-text">/lib/modules</span> directory does not exist, create a symbolic link to the Iluvatar installation path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same applies to the <span class="bold-text">/usr/local/corex</span> directory.',
+// 48. 'clusters.addworker.metaxNotes': 'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, create a symbolic link to the MetaX installation path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same applies to the <span class="bold-text">/opt/maca</span> directory.',
+// 49. 'clusters.addworker.cambriconNotes': 'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, create a symbolic link to the Cambricon installation path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'
+// 50. 'clusters.addworker.hygonNotes-02': 'If device detection fails, try removing <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
+// 51.  'clusters.addworker.selectCluster': 'Select Cluster',
+// 52. 'clusters.addworker.selectCluster.tips': 'For non-Docker clusters, please register clusters or manage worker pools from the Clusters page.',
+// 53. 'clusters.addworker.selectGPU': 'Select GPU Vendor',
+// 54. 'clusters.addworker.checkEnv': 'Check Environment',
+// 55. 'clusters.addworker.specifyArgs': 'Specify Arguments',
+// 56. 'clusters.addworker.runCommand': 'Run Command',
+// 57. 'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
+// 58. 'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+// 59. 'clusters.addworker.enterWorkerIP': 'Enter worker IP',
+// 60. 'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
+// 61. 'clusters.addworker.extraVolume': 'Additional Volume Mount',
+// 62. 'clusters.addworker.configSummary': 'Configuration Summary',
+// 63. 'clusters.addworker.gpuVendor': 'GPU Vendor',
+// 64. 'clusters.addworker.workerIP': 'Worker IP',
+// 65. 'clusters.addworker.notSpecified': 'Not Specified',
+// 66. 'clusters.addworker.autoDetect': 'Auto-detect',
+// 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
 // ========== End of To-Do List ==========

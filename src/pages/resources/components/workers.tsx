@@ -1,14 +1,19 @@
-import { clusterSessionAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
-import { useIntl, useNavigate } from '@umijs/max';
+import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
+import {
+  ClusterStatusValueMap,
+  ProviderValueMap
+} from '@/pages/cluster-management/config';
+import { ClusterListItem } from '@/pages/cluster-management/config/types';
+import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
+import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, ConfigProvider, Table, message } from 'antd';
-import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import NoResult from '../../_components/no-result';
 import {
@@ -46,11 +51,9 @@ const Workers: React.FC = () => {
     watch: true,
     API: WORKERS_API
   });
-  const [, setClusterSession] = useAtom(clusterSessionAtom);
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
-    useWorkerMaintenance({ fetchData });
+    useWorkerMaintenance({ fetchData: handleSearch });
 
-  const navigate = useNavigate();
   const intl = useIntl();
   const [updateLabelsData, setUpdateLabelsData] = useState<{
     open: boolean;
@@ -60,7 +63,7 @@ const Workers: React.FC = () => {
     data: {} as ListItem
   });
   const [clusterData, setClusterData] = useState<{
-    list: Global.BaseOption<number>[];
+    list: Global.BaseOption<number, ClusterListItem>[];
     data: Record<number, string>;
   }>({
     list: [],
@@ -72,6 +75,9 @@ const Workers: React.FC = () => {
   }>({
     open: false,
     currentData: null
+  });
+  const { handleAddWorker, AddWorkerModal, setStepList } = useAddWorker({
+    clusterList: clusterData.list
   });
 
   const getClusterList = async () => {
@@ -89,7 +95,10 @@ const Workers: React.FC = () => {
       );
       const list = res?.items?.map((item: any) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
+        id: item.id,
+        state: item.state,
+        provider: item.provider
       }));
       setClusterData({
         list,
@@ -170,9 +179,16 @@ const Workers: React.FC = () => {
     }
   });
 
-  const handleAddWorker = () => {
-    setClusterSession({ firstAddWorker: true });
-    navigate('/cluster-management/clusters/list');
+  const handleOnAddWorker = () => {
+    let currentData = clusterData.list.find(
+      (item) =>
+        item.provider === ProviderValueMap.Docker &&
+        item.state === ClusterStatusValueMap.Ready
+    );
+    if (!currentData) {
+      currentData = clusterData.list[0];
+    }
+    handleAddWorker(currentData as ClusterListItem);
   };
 
   const renderEmpty = (type?: string) => {
@@ -188,7 +204,7 @@ const Workers: React.FC = () => {
         title={intl.formatMessage({ id: 'noresult.workers.title' })}
         subTitle={intl.formatMessage({ id: 'noresult.workers.subTitle' })}
       >
-        <Button type="primary" onClick={handleAddWorker}>
+        <Button type="primary" onClick={handleOnAddWorker}>
           {intl.formatMessage({ id: 'noresult.workers.button.add' })}
         </Button>
       </NoResult>
@@ -211,6 +227,7 @@ const Workers: React.FC = () => {
 
   useEffect(() => {
     getClusterList();
+    setStepList(DockerStepsFromWorker);
   }, []);
 
   return (
@@ -225,6 +242,7 @@ const Workers: React.FC = () => {
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}
           handleSelectChange={handleClusterChange}
+          handleClickPrimary={handleOnAddWorker}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           selectOptions={clusterData.list}
@@ -268,6 +286,7 @@ const Workers: React.FC = () => {
           }
         />
         {MaintenanceModal}
+        {AddWorkerModal}
       </PageBox>
     </>
   );

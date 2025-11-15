@@ -96,7 +96,7 @@ const generateHygonDockerEnvCommand = (config: {
 
 // available for Kubernetes
 export const generateKubernetesEnvCommand = (gpu: string) => {
-  const config = GPUsConfigs[gpu];
+  const config = GPUsConfigs[gpu] || {};
   return `kubectl get runtimeclass ${config.runtime} > /dev/null 2>&1  && echo "${config.label} runtimeclass registered" || (echo "${config.label} runtimeclass issue"; exit 1)`;
 };
 
@@ -126,6 +126,20 @@ export const dockerEnvCommandMap = {
     GPUsConfigs[GPUDriverMap.METAX]
   )
 };
+const setNormalArgs = () => {
+  return `sudo docker run -d --name gpustack-worker \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --network=host \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\`;
+};
+
+const setImageArgs = (params: any) => {
+  return `${params.image} \\
+      --server-url ${params.server} \\
+      --token ${params.token} \\`;
+};
 
 // avaliable for  NVIDIA、AMD、MThreads
 const registerWorker = (params: {
@@ -135,18 +149,17 @@ const registerWorker = (params: {
   image: string;
   gpu: string;
   workerIP?: string;
+  modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+  const commonArgs = setNormalArgs();
+  const imageArgs = setImageArgs(params);
+  // remove empty enter lines and trailing backslash
+  return `${commonArgs} \\
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
       --runtime ${config.runtime} \\
-      ${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\
-      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
 // avaliable for Ascend
@@ -157,20 +170,17 @@ const registerAscendWorker = (params: {
   image: string;
   gpu: string;
   workerIP?: string;
+  modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --network=host \\
-      --env "ASCEND_VISIBLE_DEVICES=$(npu-smi info -m | tail -n 1 | awk '{print $1}') \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+  const commonArgs = setNormalArgs();
+  const imageArgs = setImageArgs(params);
+  return `${commonArgs} \\
+      --env "ASCEND_VISIBLE_DEVICES=$(sudo ls /dev/davinci* | head -1 | grep -o '[0-9]\\+' || echo "0") \\
       --runtime ${config.runtime} \\
-      ${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\
-      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
 };
 
 const registerHygonWorker = (params: {
@@ -180,22 +190,19 @@ const registerHygonWorker = (params: {
   image: string;
   gpu: string;
   workerIP?: string;
+  modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --network=host \\
-      --env ROCM_PATH=/opt/dtk \\
-      --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+  const commonArgs = setNormalArgs();
+  const imageArgs = setImageArgs(params);
+  return `${commonArgs} \\
       --volume /opt/hyhal:/opt/hyhal:ro \\
       --volume /opt/dtk:/opt/dtk:ro \\
-      ${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\
-      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
+      --env ROCM_PATH=/opt/dtk \\
+      --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
 };
 
 const registerIluvatarWorker = (params: {
@@ -205,22 +212,19 @@ const registerIluvatarWorker = (params: {
   image: string;
   gpu: string;
   workerIP?: string;
+  modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --network=host \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+  const commonArgs = setNormalArgs();
+  const imageArgs = setImageArgs(params);
+  return `${commonArgs} \\
       --volume /lib/modules:/lib/modules:ro \\
       --volume /usr/local/corex:/usr/local/corex:ro \\
       --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
       --runtime ${config.runtime} \\
-      ${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\
-      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
 };
 
 const registerMetaXWorker = (params: {
@@ -230,20 +234,17 @@ const registerMetaXWorker = (params: {
   image: string;
   gpu: string;
   workerIP?: string;
+  modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --network=host \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+  const commonArgs = setNormalArgs();
+  const imageArgs = setImageArgs(params);
+  return `${commonArgs} \\
       --volume /opt/mxdriver:/opt/mxdriver:ro \\
       --volume /opt/maca:/opt/maca:ro \\
-      ${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\
-      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
 };
 
 const registerCambriconWorker = (params: {
@@ -253,20 +254,17 @@ const registerCambriconWorker = (params: {
   image: string;
   gpu: string;
   workerIP?: string;
+  modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --network=host \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+  const commonArgs = setNormalArgs();
+  const imageArgs = setImageArgs(params);
+  return `${commonArgs} \\
       --volume /usr/local/neuware:/usr/local/neuware:ro \\
       --volume /usr/bin/cnmon:/usr/bin/cnmon \\
-      ${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\
-      ${params.workerIP ? `--advertise-address ${params.workerIP}` : ''}`.trim();
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
 };
 
 export const registerAddWokerCommandMap = {
@@ -281,41 +279,15 @@ export const registerAddWokerCommandMap = {
 };
 
 export const AddWorkerDockerNotes: Record<string, string[]> = {
-  [GPUDriverMap.NVIDIA]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02'
-  ],
-  [GPUDriverMap.AMD]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02'
-  ],
-  [GPUDriverMap.MOORE_THREADS]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02'
-  ],
-  [GPUDriverMap.ASCEND]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02'
-  ],
+  [GPUDriverMap.NVIDIA]: [],
+  [GPUDriverMap.AMD]: [],
+  [GPUDriverMap.MOORE_THREADS]: [],
+  [GPUDriverMap.ASCEND]: [],
   [GPUDriverMap.HYGON]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02',
     'clusters.addworker.hygonNotes',
     'clusters.addworker.hygonNotes-02'
   ],
-  [GPUDriverMap.ILUVATAR]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02',
-    'clusters.addworker.corexNotes'
-  ],
-  [GPUDriverMap.CAMBRICON]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02',
-    'clusters.addworker.cambriconNotes'
-  ],
-  [GPUDriverMap.METAX]: [
-    'clusters.addworker.nvidiaNotes-01',
-    'clusters.addworker.nvidiaNotes-02',
-    'clusters.addworker.metaxNotes'
-  ]
+  [GPUDriverMap.ILUVATAR]: ['clusters.addworker.corexNotes'],
+  [GPUDriverMap.CAMBRICON]: ['clusters.addworker.cambriconNotes'],
+  [GPUDriverMap.METAX]: ['clusters.addworker.metaxNotes']
 };

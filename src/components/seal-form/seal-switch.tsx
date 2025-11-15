@@ -34,6 +34,7 @@ const SealSlider: React.FC<SealSwitchProps> = (props) => {
     defaultValue,
     checkStatus,
     labelWidth,
+    size = 'small',
     ...rest
   } = props;
 
@@ -57,7 +58,7 @@ const SealSlider: React.FC<SealSwitchProps> = (props) => {
         <LabelInfo label={label} description={description}></LabelInfo>
         <Switch
           {...rest}
-          size="small"
+          size={size}
           defaultValue={defaultValue}
           style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
           value={value}

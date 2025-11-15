@@ -1,4 +1,4 @@
-import { clusterSessionAtom, expandKeysAtom } from '@/atoms/clusters';
+import { expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -9,7 +9,6 @@ import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
-import AddWorker from '@/pages/cluster-management/components/add-worker';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, message } from 'antd';
@@ -22,7 +21,6 @@ import {
   createWorkerPool,
   deleteCluster,
   queryClusterList,
-  queryClusterToken,
   queryCredentialList,
   queryWorkerPools,
   updateCluster,
@@ -30,19 +28,19 @@ import {
 } from './apis';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
-import PoolRows from './components/pool-rows';
-import RegisterCluster from './components/register-cluster';
 import {
-  ClusterStatusValueMap,
-  ProviderType,
-  ProviderValueMap
-} from './config';
+  DockerStepsFromCluster,
+  K8sStepsFromCluter
+} from './components/add-worker/config';
+import PoolRows from './components/pool-rows';
+import { ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
   ClusterFormData as FormData,
   ClusterListItem as ListItem,
   NodePoolFormData
 } from './config/types';
+import useAddWorker from './hooks/use-add-worker';
 import useClusterColumns from './hooks/use-cluster-columns';
 
 const Clusters: React.FC = () => {
@@ -66,50 +64,12 @@ const Clusters: React.FC = () => {
   });
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
-  const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
   const navigate = useNavigate();
   const intl = useIntl();
-  const [registerClusterStatus, setRegisterClusterStatus] = useState<{
-    open: boolean;
-    provider: ProviderType;
-    registrationInfo: {
-      token: string;
-      image: string;
-      server_url: string;
-      cluster_id: number;
-    };
-  }>({
-    open: false,
-    provider: null,
-    registrationInfo: {
-      token: '',
-      image: '',
-      server_url: '',
-      cluster_id: 0
-    }
-  });
+  const { handleAddWorker, AddWorkerModal, setStepList } = useAddWorker({});
 
-  const [openAddWorker, setOpenAddWorker] = useState<{
-    open: boolean;
-    provider: ProviderType;
-    registrationInfo: {
-      token: string;
-      image: string;
-      server_url: string;
-      cluster_id: number;
-    };
-  }>({
-    open: false,
-    provider: null,
-    registrationInfo: {
-      token: '',
-      image: '',
-      server_url: '',
-      cluster_id: 0
-    }
-  });
   const [openAddModal, setOpenAddModal] = useState<{
     open: boolean;
     action: PageActionType;
@@ -206,36 +166,6 @@ const Clusters: React.FC = () => {
     });
   };
 
-  const handleAddWorker = async (row: ListItem) => {
-    try {
-      const data = await queryClusterToken({ id: row.id });
-      setOpenAddWorker({
-        open: true,
-        provider: row.provider as ProviderType,
-        registrationInfo: {
-          ...data,
-          cluster_id: row.id
-        }
-      });
-    } catch (error: any) {
-      message.error(error.message || 'Failed to fetch cluster token');
-    }
-  };
-
-  const handleRegisterCluster = async (row: ListItem) => {
-    try {
-      const info = await queryClusterToken({ id: row.id });
-      setRegisterClusterStatus({
-        open: true,
-        provider: row.provider as ProviderType,
-        registrationInfo: {
-          ...info,
-          cluster_id: row.id
-        }
-      });
-    } catch (error) {}
-  };
-
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
     if (val === 'edit') {
       handleEditCluster(row);
@@ -243,10 +173,12 @@ const Clusters: React.FC = () => {
       handleDelete({ ...row, name: row.name });
     } else if (val === 'add_worker') {
       handleAddWorker(row);
+      setStepList(DockerStepsFromCluster);
     } else if (val === 'addPool') {
       handleAddPool(row);
     } else if (val === 'register_cluster') {
-      handleRegisterCluster(row);
+      handleAddWorker(row);
+      setStepList(K8sStepsFromCluter);
     }
   });
 
@@ -307,28 +239,6 @@ const Clusters: React.FC = () => {
     };
     fetchCredentialList();
   }, []);
-
-  /**
-   * add worker from workers page redirect
-   */
-  useEffect(() => {
-    if (
-      clusterSession?.firstAddWorker &&
-      dataSource.loadend &&
-      dataSource.dataList?.length > 0
-    ) {
-      const targetCluster = dataSource.dataList.find(
-        (cluster) =>
-          cluster.provider === ProviderValueMap.Docker &&
-          cluster.state === ClusterStatusValueMap.Ready
-      );
-      if (targetCluster) {
-        handleAddWorker(targetCluster);
-        // reset session
-        setClusterSession(null);
-      }
-    }
-  }, [clusterSession, dataSource.loadend, dataSource.dataList]);
 
   const renderChildren = (
     list: any,
@@ -421,41 +331,6 @@ const Clusters: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddCluster>
-      <AddWorker
-        open={openAddWorker.open}
-        provider={openAddWorker.provider}
-        onCancel={() =>
-          setOpenAddWorker({
-            open: false,
-            provider: null,
-            registrationInfo: {
-              token: '',
-              image: '',
-              server_url: '',
-              cluster_id: 0
-            }
-          })
-        }
-        registrationInfo={openAddWorker.registrationInfo}
-      ></AddWorker>
-      <RegisterCluster
-        title={intl.formatMessage({ id: 'clusters.button.register' })}
-        open={registerClusterStatus.open}
-        provider={registerClusterStatus.provider}
-        registrationInfo={registerClusterStatus.registrationInfo}
-        onCancel={() => {
-          setRegisterClusterStatus({
-            open: false,
-            provider: null,
-            registrationInfo: {
-              token: '',
-              image: '',
-              server_url: '',
-              cluster_id: 0
-            }
-          });
-        }}
-      ></RegisterCluster>
       <AddPool
         provider={addPoolStatus.provider}
         open={addPoolStatus.open}
@@ -475,6 +350,7 @@ const Clusters: React.FC = () => {
         onOk={handleSubmitWorkerPool}
       ></AddPool>
       <DeleteModal ref={modalRef}></DeleteModal>
+      {AddWorkerModal}
     </>
   );
 };

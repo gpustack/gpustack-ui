@@ -1,0 +1,60 @@
+import { useIntl } from '@umijs/max';
+import AddWorkerCommand from '../add-worker-command';
+import { useAddWorkerContext } from './add-worker-context';
+import { StepNamesMap } from './config';
+import { Tips, Title } from './constainers';
+import StepCollapse from './step-collapse';
+import SummaryData from './summary-data';
+import VendorNotes from './vendor-notes';
+
+const DockerRunCommand = () => {
+  const intl = useIntl();
+  const { registrationInfo, stepList, summary, clusterList } =
+    useAddWorkerContext();
+  const workerIPConfig = summary.get('workerIPConfig') || {
+    enable: false,
+    ip: '',
+    required: false
+  };
+  const modelDirConfig = summary.get('modelDirConfig') || {
+    enable: false,
+    path: '',
+    required: false
+  };
+  const currentGPU = summary.get('currentGPU') || '';
+
+  const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
+
+  return (
+    <StepCollapse
+      name={StepNamesMap.RunCommand}
+      title={
+        <Title>
+          {stepIndex}.{' '}
+          {intl.formatMessage({ id: 'clusters.addworker.runCommand' })}
+        </Title>
+      }
+    >
+      <SummaryData></SummaryData>
+      <VendorNotes></VendorNotes>
+      <Tips
+        style={{
+          marginBottom: 8,
+          color: 'var(--ant-color-text)'
+        }}
+      >
+        {intl.formatMessage({
+          id: 'clusters.create.addCommand.tips'
+        })}
+      </Tips>
+      <AddWorkerCommand
+        registrationInfo={registrationInfo}
+        workerIP={workerIPConfig.enable ? workerIPConfig.ip : ''}
+        modelDir={modelDirConfig.enable ? modelDirConfig.path : ''}
+        currentGPU={currentGPU}
+      />
+    </StepCollapse>
+  );
+};
+
+export default DockerRunCommand;

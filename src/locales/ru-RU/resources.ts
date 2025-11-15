@@ -103,7 +103,9 @@ export default {
   'resources.worker.maintenance.remark.rules':
     'Please enter maintenance remarks',
   'resources.worker.maintenance.tips':
-    'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
+    'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
+  'resources.worker.noCluster.tips':
+    'No available clusters. Please create a cluster before adding a node.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -112,5 +114,6 @@ export default {
 // 4. 'resources.worker.maintenance.disable': 'Exit Maintenance Mode',
 // 5. 'resources.worker.maintenance.remark': 'Remark',
 // 6. 'resources.worker.maintenance.remark.rules': 'Please enter maintenance remarks',
-// 7. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.'
+// 7. 'resources.worker.maintenance.tips': 'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
+// 8. 'resources.worker.noCluster.tips': 'No available clusters. Please create a cluster before adding a node.'
 // ========== End of To-Do List ==========

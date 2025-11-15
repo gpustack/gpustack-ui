@@ -19,7 +19,6 @@ const Wrapper = styled.div<{ $cols?: number }>`
 
 const Container = styled.div`
   display: flex;
-  width: 800px;
   margin: 0 auto;
   flex-direction: column;
   gap: 16px;

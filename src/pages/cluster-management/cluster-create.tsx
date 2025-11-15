@@ -7,6 +7,10 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { PageContainerInner } from '../_components/page-box';
 import { createCluster, queryClusterToken, queryCredentialList } from './apis';
+import {
+  DockerStepsFromCluster,
+  K8sStepsFromCluter
+} from './components/add-worker/config';
 import ClusterSteps from './components/cluster-steps';
 import FooterButtons from './components/footer-buttons';
 import ProviderCatalog from './components/provider-catalog';
@@ -198,6 +202,10 @@ const ClusterCreate = () => {
     });
   };
 
+  /**
+   * this function is used to render the modules in the current step
+   * @returns
+   */
   const renderModules = () => {
     const step = steps[currentStep];
     const moduleKeys = step?.showModules || [];
@@ -209,6 +217,11 @@ const ClusterCreate = () => {
       return ModuleComponent ? (
         <ModuleComponent
           key={key}
+          stepList={
+            extraData.provider === ProviderValueMap.Docker
+              ? DockerStepsFromCluster
+              : K8sStepsFromCluter
+          }
           registrationInfo={registrationInfo}
           provider={extraData.provider}
         />
@@ -270,19 +283,21 @@ const ClusterCreate = () => {
       }}
     >
       <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
-      {currentStep === startStep && (
-        <ProviderCatalog
-          dataList={providerList}
-          height={70}
-          onSelect={handleSelectProvider}
-          clickable={true}
-          current={extraData.provider}
-        />
-      )}
-      {renderModules()}
-      <Container>
-        <Content>{renderForms()}</Content>
-      </Container>
+      <div style={{ width: 800, margin: '0 auto' }}>
+        {currentStep === startStep && (
+          <ProviderCatalog
+            dataList={providerList}
+            height={70}
+            onSelect={handleSelectProvider}
+            clickable={true}
+            current={extraData.provider}
+          />
+        )}
+        {renderModules()}
+        <Container>
+          <Content>{renderForms()}</Content>
+        </Container>
+      </div>
     </PageContainerInner>
   );
 };

@@ -48,9 +48,9 @@ export default {
     'На Kubernetes кластере, который необходимо добавить, выполните следующую команду, чтобы присоединить его узлы к кластеру.',
   'cluster.provider.comingsoon': 'Скоро будет',
   'clusters.addworker.nvidiaNotes-01':
-    'Если рабочий узел имеет несколько исходящих IP-адресов, укажите <span class="bold-text">WORKER_IP</span>, чтобы гарантировать использование узлом нужного IP. Перепроверьте с помощью команды <span class="bold-text">hostname -I | xargs -n1</span>.',
+    'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
   'clusters.addworker.nvidiaNotes-02':
-    'Если директория с моделью уже существует на рабочем узле, добавьте директиву <span class="bold-text">--volume</span> для её монтирования.',
+    'If a model directory already exists on the worker, you can specify the path to mount it.',
   'clusters.addworker.hygonNotes':
     'Если директория <span class="bold-text">/opt/hyhal</span> не существует, создайте символическую ссылку на путь установки Hygon: <span class="bold-text">/opt/hyhal</span>. Аналогично для директории <span class="bold-text">/opt/dtk</span>.',
   'clusters.addworker.corexNotes':
@@ -60,9 +60,47 @@ export default {
   'clusters.addworker.cambriconNotes':
     'Если директория <span class="bold-text">/usr/local/neuware</span> не существует, создайте символическую ссылку на путь установки Cambricon: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.',
   'clusters.addworker.hygonNotes-02':
-    'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
+    'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
+  'clusters.addworker.selectCluster': 'Select Cluster',
+  'clusters.addworker.selectCluster.tips':
+    'For non-Docker clusters, please register clusters or manage worker pools from the Clusters page.',
+  'clusters.addworker.selectGPU': 'Select GPU Vendor',
+  'clusters.addworker.checkEnv': 'Check Environment',
+  'clusters.addworker.specifyArgs': 'Specify Arguments',
+  'clusters.addworker.runCommand': 'Run Command',
+  'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
+  'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+  'clusters.addworker.enterWorkerIP': 'Enter worker IP',
+  'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
+  'clusters.addworker.extraVolume': 'Additional Volume Mount',
+  'clusters.addworker.configSummary': 'Configuration Summary',
+  'clusters.addworker.gpuVendor': 'GPU Vendor',
+  'clusters.addworker.workerIP': 'Worker IP',
+  'clusters.addworker.notSpecified': 'Not Specified',
+  'clusters.addworker.autoDetect': 'Auto-detect',
+  'clusters.addworker.extraVolume.holder':
+    'e.g. /data/models (path must start with /)'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'clusters.addworker.hygonNotes-02': 'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.'
+// 1. 'clusters.addworker.hygonNotes-02': 'If failed to detect devices, please try to remove <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
+// 2. 'clusters.addworker.selectCluster': 'Select Cluster',
+// 3. 'clusters.addworker.selectCluster.tips': 'For non-Docker clusters, please register clusters or manage worker pools from the Clusters page.',
+// 4. 'clusters.addworker.selectGPU': 'Select GPU Vendor',
+// 5. 'clusters.addworker.checkEnv': 'Check Environment',
+// 6. 'clusters.addworker.specifyArgs': 'Specify Arguments',
+// 7. 'clusters.addworker.runCommand': 'Run Command',
+// 8. 'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
+// 9. 'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+// 10. 'clusters.addworker.enterWorkerIP': 'Enter worker IP',
+// 11. 'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
+// 12. 'clusters.addworker.extraVolume': 'Additional Volume Mount',
+// 13. 'clusters.addworker.configSummary': 'Configuration Summary',
+// 14. 'clusters.addworker.gpuVendor': 'GPU Vendor',
+// 15. 'clusters.addworker.workerIP': 'Worker IP',
+// 16. 'clusters.addworker.notSpecified': 'Not Specified',
+// 17. 'clusters.addworker.nvidiaNotes-01': 'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
+// 18. 'clusters.addworker.nvidiaNotes-02': 'If a model directory already exists on the worker, you can specify the path to mount it.',
+// 19. 'clusters.addworker.autoDetect': 'Auto-detect',
+// 20. 'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
 // ========== End of To-Do List ==========

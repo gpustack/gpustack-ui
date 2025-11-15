@@ -25,6 +25,10 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
     onClick(data);
   }, [data, onClick]);
 
+  const handleOnError = (e: any) => {
+    e.target.src = fallbackImg;
+  };
+
   const description = useMemo(() => {
     return (
       <Typography.Paragraph
@@ -59,12 +63,13 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
     >
       <div className="content">
         <div className="title">
-          <div
-            className="img"
-            style={{
-              backgroundImage: `url(${data.icon}),url(${fallbackImg})`
-            }}
-          ></div>
+          <div className="img">
+            <img
+              src={data.icon || fallbackImg}
+              alt=""
+              onError={handleOnError}
+            />
+          </div>
           <AutoTooltip ghost>{data.name}</AutoTooltip>
         </div>
       </div>

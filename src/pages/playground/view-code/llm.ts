@@ -37,7 +37,7 @@ client = OpenAI(
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
-response = client.chat.completions.create((\n${formatPyParams({ ...parameters })})\n
+response = client.chat.completions.create(\n${formatPyParams({ ...parameters })})\n
 print(response.choices[0].message.content)`.trim();
 
   // ========================= Node.js =========================

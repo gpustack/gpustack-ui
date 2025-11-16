@@ -32,7 +32,7 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
         token: registrationInfo.token || '${token}'
       })
       ?.trim()
-      .replace(/\\\s+$/gm, '')
+      .replace(/\s+$/gm, '')
       .replace(/\\+$/, '');
   }, [registrationInfo, currentGPU, workerIP, modelDir]);
 

@@ -81,7 +81,7 @@ const generateNvidiaDockerEnvCommand = (config: {
   runtime: string;
   driver: string;
 }) => {
-  return `${config.driver} >/dev/null 2>&1 && echo "${config.label} driver OK" || (echo "${config.label} driver issue"; exit 1) && docker info 2>/dev/null | grep -q "${config.runtime}" && echo "${config.label} Container Toolkit OK" || (echo "${config.label} Container Toolkit not configured"; exit 1)`;
+  return `${config.driver} >/dev/null 2>&1 && echo "${config.label} driver OK" || (echo "${config.label} driver issue"; exit 1) && sudo docker info 2>/dev/null | grep -q "${config.runtime}" && echo "${config.label} Container Toolkit OK" || (echo "${config.label} Container Toolkit not configured"; exit 1)`;
 };
 
 // avaliable for Hygon、Iluvatar、MetaX 、Cambricon
@@ -126,13 +126,14 @@ export const dockerEnvCommandMap = {
     GPUsConfigs[GPUDriverMap.METAX]
   )
 };
-const setNormalArgs = () => {
+const setNormalArgs = (params: any) => {
   return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
       --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\`;
+      --volume gpustack-data:/var/lib/gpustack \\
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}`;
 };
 
 const setImageArgs = (params: any) => {
@@ -152,11 +153,10 @@ const registerWorker = (params: {
   modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs();
+  const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
   // remove empty enter lines and trailing backslash
-  return `${commonArgs} \\
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
+  return `${commonArgs}
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
@@ -173,14 +173,13 @@ const registerAscendWorker = (params: {
   modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs();
+  const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
-  return `${commonArgs} \\
+  return `${commonArgs}
       --env "ASCEND_VISIBLE_DEVICES=$(sudo ls /dev/davinci* | head -1 | grep -o '[0-9]\\+' || echo "0")" \\
       --runtime ${config.runtime} \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
 const registerHygonWorker = (params: {
@@ -193,16 +192,15 @@ const registerHygonWorker = (params: {
   modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs();
+  const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
-  return `${commonArgs} \\
+  return `${commonArgs}
       --volume /opt/hyhal:/opt/hyhal:ro \\
       --volume /opt/dtk:/opt/dtk:ro \\
       --env ROCM_PATH=/opt/dtk \\
       --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
 const registerIluvatarWorker = (params: {
@@ -215,16 +213,15 @@ const registerIluvatarWorker = (params: {
   modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs();
+  const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
-  return `${commonArgs} \\
+  return `${commonArgs}
       --volume /lib/modules:/lib/modules:ro \\
       --volume /usr/local/corex:/usr/local/corex:ro \\
       --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
       --runtime ${config.runtime} \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
 const registerMetaXWorker = (params: {
@@ -237,14 +234,13 @@ const registerMetaXWorker = (params: {
   modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs();
+  const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
-  return `${commonArgs} \\
+  return `${commonArgs}
       --volume /opt/mxdriver:/opt/mxdriver:ro \\
       --volume /opt/maca:/opt/maca:ro \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
 const registerCambriconWorker = (params: {
@@ -257,14 +253,13 @@ const registerCambriconWorker = (params: {
   modelDir?: string;
 }) => {
   const config = GPUsConfigs[params.gpu];
-  const commonArgs = setNormalArgs();
+  const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
-  return `${commonArgs} \\
+  return `${commonArgs}
       --volume /usr/local/neuware:/usr/local/neuware:ro \\
       --volume /usr/bin/cnmon:/usr/bin/cnmon \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir}` : ''}`;
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
 export const registerAddWokerCommandMap = {

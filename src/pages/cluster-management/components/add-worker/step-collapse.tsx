@@ -18,6 +18,12 @@ const Box = styled.div`
   &.step-collapse-open {
     border-color: var(--ant-color-primary);
   }
+  &:not(.step-collapse-open):hover {
+    .ant-card-head {
+      background-color: var(--ant-color-fill-tertiary) !important;
+      transition: background-color 0.3s;
+    }
+  }
 `;
 
 const ButtonWrapper = styled.div`

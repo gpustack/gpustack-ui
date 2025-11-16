@@ -176,7 +176,7 @@ const registerAscendWorker = (params: {
   const commonArgs = setNormalArgs();
   const imageArgs = setImageArgs(params);
   return `${commonArgs} \\
-      --env "ASCEND_VISIBLE_DEVICES=$(sudo ls /dev/davinci* | head -1 | grep -o '[0-9]\\+' || echo "0") \\
+      --env "ASCEND_VISIBLE_DEVICES=$(sudo ls /dev/davinci* | head -1 | grep -o '[0-9]\\+' || echo "0")" \\
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}

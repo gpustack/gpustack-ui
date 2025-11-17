@@ -73,7 +73,7 @@ export default {
   'models.form.backend_parameters.vllm.placeholder':
     'e.g., --max-model-len=8192 (use = to separate name and value)',
   'models.form.backend_parameters.sglang.placeholder':
-    'e.g., --max-total-tokens=8192 (use = to separate name and value)',
+    'e.g., --context-length=8192 (use = to separate name and value)',
   'models.form.backend_parameters.vllm.tips':
     'More {backend} parameter details',
   'models.logs.pagination.prev': 'Previous {lines} Lines',
@@ -88,9 +88,12 @@ export default {
   'models.form.gpuselector': 'GPU Selector',
   'models.form.backend.llamabox':
     'For GGUF format models, supports Linux, macOS, and Windows.',
-  'models.form.backend.vllm': 'Supported only on Linux.',
-  'models.form.backend.voxbox': 'Supported only on NVIDIA GPUs and CPUs.',
-  'models.form.backend.mindie': 'Supported only on Ascend 910B and 310P.',
+  'models.form.backend.vllm':
+    'Built-in support for NVIDIA, AMD, Ascend, Hygon, Iluvatar, and MetaX devices.',
+  'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie': 'Only supports Ascend NPUs.',
+  'models.form.backend.sglang':
+    'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
   'models.form.search.gguftips':
     'If using macOS or Windows as a worker, check GGUF (uncheck for audio models).',
   'models.form.button.addlabel': 'Add Label',
@@ -226,13 +229,13 @@ export default {
   'models.form.numDraftTokens': 'Number of Draft Tokens',
   'models.form.ngramMinMatchLength': 'N-gram Minimum Match Length',
   'models.form.ngramMaxMatchLength': 'N-gram Maximum Match Length',
-  'models.form.mode.throughput': 'High-Throughput',
-  'models.form.mode.latency': 'Low-Latency',
+  'models.form.mode.throughput': 'Throughput',
+  'models.form.mode.latency': 'Latency',
   'models.form.mode.baseline': 'Standard',
   'models.form.mode.throughput.tips':
-    'optimized for high throughput under high request concurrency.',
+    'Optimized for high throughput under high request concurrency.',
   'models.form.mode.latency.tips':
-    'optimized for low latency under low request concurrency.',
+    'Optimized for low latency under low request concurrency.',
   'models.form.mode.baseline.tips':
     'Runs at full (original) precision and prioritizes compatibility.',
   'models.form.draftModel.placeholder': 'Please select or enter a draft model',

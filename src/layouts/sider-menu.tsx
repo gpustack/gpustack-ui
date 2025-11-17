@@ -70,7 +70,7 @@ const useStyles = createStyles(({ css, token }) => {
       }
     `,
     menuItemContent: css`
-      margin: 2px;
+      margin: 2px 0;
       border-radius: 4px;
       overflow: hidden;
     `,

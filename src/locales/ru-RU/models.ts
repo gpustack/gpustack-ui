@@ -73,7 +73,7 @@ export default {
   'models.form.backend_parameters.vllm.placeholder':
     'например: --max-model-len=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.sglang.placeholder':
-    'например: --max-total-tokens=8192（параметр и значение разделены знаком =）',
+    'например: --context-length=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.vllm.tips':
     'Подробнее о параметрах {backend}',
   'models.logs.pagination.prev': 'Предыдущие {lines} строк',
@@ -88,9 +88,12 @@ export default {
   'models.form.gpuselector': 'Селектор GPU',
   'models.form.backend.llamabox':
     'Для моделей формата GGUF. Поддержка Linux, macOS и Windows.',
-  'models.form.backend.vllm': 'Поддерживается только в Linux.',
-  'models.form.backend.voxbox': 'Поддерживается только на GPU NVIDIA и CPU.',
-  'models.form.backend.mindie': 'Поддерживается только на Ascend 910B и 310P.',
+  'models.form.backend.vllm':
+    'Built-in support for NVIDIA, AMD, Ascend, Hygon, Iluvatar, and MetaX devices.',
+  'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie': 'Only supports Ascend NPUs.',
+  'models.form.backend.sglang':
+    'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
   'models.form.search.gguftips':
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
@@ -256,5 +259,9 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.catalog.button.explore': 'Explore More Models',
-// 2. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
+// 2. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'，
+// 3. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Iluvatar, and MetaX devices.',
+// 4. 'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
+// 5. 'models.form.backend.mindie': 'Only supports Ascend NPUs.',
+// 6. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
 // ========== End of To-Do List ==========

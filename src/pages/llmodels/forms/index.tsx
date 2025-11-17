@@ -126,16 +126,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       field: 'name'
     },
     {
-      value: TABKeysMap.SCHEDULING,
-      label: intl.formatMessage({ id: 'models.form.scheduling' }),
-      icon: <IconFont type="icon-model" />,
-      field: 'scheduleType'
-    },
-    {
       value: TABKeysMap.PERFORMANCE,
       label: intl.formatMessage({ id: 'models.form.performance' }),
       icon: <IconFont type="icon-speed" />,
       field: 'extended_kv_cache.enabled'
+    },
+    {
+      value: TABKeysMap.SCHEDULING,
+      label: intl.formatMessage({ id: 'models.form.scheduling' }),
+      icon: <IconFont type="icon-model" />,
+      field: 'scheduleType'
     },
     {
       value: TABKeysMap.ADVANCED,
@@ -477,16 +477,16 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
           onChange={handleOnCollapseChange}
           items={[
             {
-              key: TABKeysMap.SCHEDULING,
-              label: intl.formatMessage({ id: 'models.form.scheduling' }),
-              forceRender: true,
-              children: <ScheduleTypeForm></ScheduleTypeForm>
-            },
-            {
               key: TABKeysMap.PERFORMANCE,
               label: intl.formatMessage({ id: 'models.form.performance' }),
               forceRender: true,
               children: <Performance></Performance>
+            },
+            {
+              key: TABKeysMap.SCHEDULING,
+              label: intl.formatMessage({ id: 'models.form.scheduling' }),
+              forceRender: true,
+              children: <ScheduleTypeForm></ScheduleTypeForm>
             },
             {
               key: TABKeysMap.ADVANCED,

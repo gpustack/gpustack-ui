@@ -3,7 +3,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import StatusTag from '@/components/status-tag';
-import { Link, useIntl } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
@@ -35,13 +35,7 @@ const useClusterColumns = (
         dataIndex: 'name',
         span: 3,
         render: (text: string, record: ClusterListItem) => (
-          <AutoTooltip ghost>
-            <Link
-              to={`/cluster-management/clusters/detail?id=${record.id}&provider=${record.provider}&name=${record.name}`}
-            >
-              {text}
-            </Link>
-          </AutoTooltip>
+          <AutoTooltip ghost>{text}</AutoTooltip>
         )
       },
       {

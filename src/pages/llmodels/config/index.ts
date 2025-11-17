@@ -8,6 +8,10 @@ export const backendTipsList = [
     tips: 'models.form.backend.vllm'
   },
   {
+    title: 'SGLang',
+    tips: 'models.form.backend.sglang'
+  },
+  {
     title: 'Ascend MindIE',
     tips: 'models.form.backend.mindie'
   },

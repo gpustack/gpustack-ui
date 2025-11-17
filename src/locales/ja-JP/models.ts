@@ -75,7 +75,7 @@ export default {
   'models.form.backend_parameters.vllm.placeholder':
     '例: --max-model-len=8192（=で名前と値を分ける）',
   'models.form.backend_parameters.sglang.placeholder':
-    '例: --max-total-tokens=8192（=で名前と値を分ける）',
+    '例: --context-length=8192（=で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips': '詳細な{backend}パラメータ情報',
   'models.logs.pagination.prev': '前の{lines}行',
   'models.logs.pagination.next': '次の{lines}行',
@@ -89,9 +89,12 @@ export default {
   'models.form.gpuselector': 'GPUセレクター',
   'models.form.backend.llamabox':
     'GGUF形式のモデル用（Linux、macOS、Windowsをサポート）。',
-  'models.form.backend.vllm': 'Linux のみ対応。',
-  'models.form.backend.voxbox': 'NVIDIA GPUおよびCPUのみ対応。',
-  'models.form.backend.mindie': 'Ascend 910Bおよび310Pのみ対応。',
+  'models.form.backend.vllm':
+    'Built-in support for NVIDIA, AMD, Ascend, Hygon, Iluvatar, and MetaX devices.',
+  'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
+  'models.form.backend.mindie': 'Only supports Ascend NPUs.',
+  'models.form.backend.sglang':
+    'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
   'models.form.search.gguftips':
     'macOSまたはWindowsをワーカーとして使用する場合、GGUFをチェックしてください（音声モデルの場合はオフにしてください）。',
   'models.form.button.addlabel': 'ラベルを追加',
@@ -230,11 +233,11 @@ export default {
   'models.form.mode.latency': 'Latency',
   'models.form.mode.baseline': 'Standard',
   'models.form.mode.throughput.tips':
-    'optimized for high throughput under high request concurrency.',
+    'Optimized for high throughput under high request concurrency.',
   'models.form.mode.latency.tips':
-    'optimized for low latency under low request concurrency.',
+    'Optimized for low latency under low request concurrency.',
   'models.form.mode.baseline.tips':
-    'the most compatible option with full precision.',
+    'The most compatible option with full precision.',
   'models.form.draftModel.placeholder': 'Please select or enter a draft model',
   'models.form.draftModel.tips':
     'You can enter a local path (e.g., /path/to/model) or select a model from Hugging Face or ModelScope (e.g., Tengyunw/qwen3_8b_eagle3). The system will automatically match based on the primary model source.',
@@ -329,5 +332,8 @@ export default {
 // 55. 'models.form.generic_proxy.button': 'Generic Proxy',
 // 56. 'models.accessControlModal.includeusers': 'Include Users',
 // 57. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
-
+// 58. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Iluvatar, and MetaX devices.',
+// 59. 'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
+// 60.  models.form.backend.mindie': 'Only supports Ascend NPUs.',
+// 61. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
 // ========== End of To-Do List ==========

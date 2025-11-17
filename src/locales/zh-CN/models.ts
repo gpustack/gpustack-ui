@@ -72,7 +72,7 @@ export default {
   'models.form.backend_parameters.vllm.placeholder':
     '例如，--max-model-len=8192（参数名和值用 = 号分隔）',
   'models.form.backend_parameters.sglang.placeholder':
-    '例如，--max-total-tokens=8192（参数名和值用 = 号分隔）',
+    '例如，--context-length=8192（参数名和值用 = 号分隔）',
   'models.form.backend_parameters.vllm.tips': '更多 {backend} 参数说明查看',
   'models.logs.pagination.prev': '上一 {lines} 行',
   'models.logs.pagination.next': '下一 {lines} 行',
@@ -86,9 +86,11 @@ export default {
   'models.form.gpuselector': 'GPU 选择器',
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows。',
-  'models.form.backend.vllm': '仅支持 Linux。',
-  'models.form.backend.voxbox': '仅支持 NVIDIA GPU 与 CPU。',
-  'models.form.backend.mindie': '仅支持昇腾 910B 和 310P。',
+  'models.form.backend.vllm':
+    '内置支持 NVIDIA、AMD、昇腾、海光、亦来云（Iluvatar）和沐曦（MetaX）设备。',
+  'models.form.backend.voxbox': '仅支持 NVIDIA GPU 和 CPU。',
+  'models.form.backend.mindie': '仅支持昇腾 NPU。',
+  'models.form.backend.sglang': '内置支持 NVIDIA/AMD GPU 和昇腾 NPU。',
   'models.form.search.gguftips':
     '当 macOS 或 Windows 作节点时勾选 GGUF（搜索语音模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',

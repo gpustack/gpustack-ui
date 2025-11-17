@@ -212,7 +212,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
               id: 'models.accessControlModal.includeusers'
             })}
           </span>
-          <DownOutlined />
+          <DownOutlined style={{ fontSize: 12 }} />
         </span>
       </Dropdown>
     );

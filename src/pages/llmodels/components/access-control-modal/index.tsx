@@ -53,6 +53,7 @@ const AccessControlModal: React.FC<
       <AccessControlForm
         ref={form}
         currentData={currentData}
+        action={action}
         onFinish={handleOnFinish}
       />
     </ScrollerModal>

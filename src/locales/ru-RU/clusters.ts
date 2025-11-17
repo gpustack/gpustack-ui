@@ -79,7 +79,8 @@ export default {
   'clusters.addworker.notSpecified': 'Not Specified',
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':
-    'e.g. /data/models (path must start with /)'
+    'e.g. /data/models (path must start with /)',
+  'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -102,5 +103,6 @@ export default {
 // 17. 'clusters.addworker.nvidiaNotes-01': 'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
 // 18. 'clusters.addworker.nvidiaNotes-02': 'If a model directory already exists on the worker, you can specify the path to mount it.',
 // 19. 'clusters.addworker.autoDetect': 'Auto-detect',
-// 20. 'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
+// 20. 'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)',
+// 21. 'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device'
 // ========== End of To-Do List ==========

@@ -10,14 +10,17 @@ const VendorNotes = () => {
   const workerCommand =
     summary.get('workerCommand') ||
     ({
-      label: 'N/A',
+      label: '',
       notes: []
     } as { label: string; notes: string[] });
 
   return (
     <AlertInfoBlock
       maxHeight={200}
-      title={`Notes for ${workerCommand.label} Device`}
+      title={intl.formatMessage(
+        { id: 'clusters.addworker.vendorNotes.title' },
+        { vendor: workerCommand.label }
+      )}
       style={{ marginBottom: 8 }}
       type="warning"
       contentStyle={{

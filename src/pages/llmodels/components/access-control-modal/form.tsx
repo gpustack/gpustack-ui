@@ -1,4 +1,6 @@
 import AlertBlockInfo from '@/components/alert-info/block';
+import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
 import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
 import { DownOutlined } from '@ant-design/icons';
@@ -25,12 +27,13 @@ const Label = styled.div`
 `;
 
 interface AccessControlFormProps {
+  action: PageActionType;
   currentData?: ListItem | null;
   onFinish: (values: AccessControlFormData) => void;
 }
 
 const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
-  const { currentData, onFinish } = props;
+  const { action, currentData, onFinish } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const accessPolicy = Form.useWatch('access_policy', form);
@@ -133,6 +136,9 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       const userMap = new Map(allusers.map((u) => [u.key, u]));
 
       if (currentData?.id) {
+        form.setFieldsValue({
+          access_policy: currentData?.access_policy
+        });
         queryModelAccessUserList(currentData.id).then((res) => {
           const keys = res.items.map((item) => item.id);
           setTargetKeys(keys);
@@ -220,7 +226,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
       clearOnDestroy={true}
       scrollToFirstError={true}
       initialValues={{
-        access_policy: 'authed'
+        access_policy: action === PageAction.CREATE ? 'authed' : undefined
       }}
     >
       <Label>{intl.formatMessage({ id: 'models.table.accessScope' })}</Label>

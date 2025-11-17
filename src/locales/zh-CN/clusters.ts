@@ -77,5 +77,6 @@ export default {
   'clusters.addworker.notSpecified': '未指定',
   'clusters.addworker.autoDetect': '自动检测',
   'clusters.addworker.extraVolume.holder':
-    '例如：/data/models（路径需以 / 开头）'
+    '例如：/data/models（路径需以 / 开头）',
+  'clusters.addworker.vendorNotes.title': '{vendor}设备注意事项'
 };

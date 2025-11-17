@@ -79,7 +79,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.notSpecified': 'Not Specified',
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':
-    'e.g. /data/models (path must start with /)'
+    'e.g. /data/models (path must start with /)',
+  'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -150,4 +151,5 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 65. 'clusters.addworker.notSpecified': 'Not Specified',
 // 66. 'clusters.addworker.autoDetect': 'Auto-detect',
 // 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
+// 68. 'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device'
 // ========== End of To-Do List ==========

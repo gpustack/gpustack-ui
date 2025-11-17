@@ -99,7 +99,7 @@ const useWorkerMaintenance = ({ fetchData }: { fetchData: () => void }) => {
           name="remark"
           rules={[
             {
-              required: true,
+              required: false,
               message: intl.formatMessage({
                 id: 'resources.worker.maintenance.remark.rules'
               })
@@ -107,8 +107,6 @@ const useWorkerMaintenance = ({ fetchData }: { fetchData: () => void }) => {
           ]}
         >
           <SealTextArea
-            required
-            alwaysFocus
             label={intl.formatMessage({
               id: 'resources.worker.maintenance.remark'
             })}

@@ -150,7 +150,7 @@ export default function useQueryDraftModels({ source }: { source: string }) {
 
   // local path starts with /
   const handleOnSearch = async (value: string) => {
-    if (!value || value?.trim?.().startsWith('/')) {
+    if (!value || value?.trim?.().startsWith('/') || !source) {
       setDraftModelList(presetDraftModelListRef.current);
       return;
     }

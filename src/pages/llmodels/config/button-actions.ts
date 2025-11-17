@@ -7,17 +7,17 @@ export const modalConfig: Record<
   string,
   { show: boolean; width: string | number; source: any; isGGUF?: boolean }
 > = {
-  huggingface: {
+  [modelSourceMap.huggingface_value]: {
     show: true,
     width: 'calc(100vw - 220px)',
     source: modelSourceMap.huggingface_value
   },
-  modelscope: {
+  [modelSourceMap.modelscope_value]: {
     show: true,
     width: 'calc(100vw - 220px)',
     source: modelSourceMap.modelscope_value
   },
-  local_path: {
+  [modelSourceMap.local_path_value]: {
     show: true,
     width: 600,
     source: modelSourceMap.local_path_value
@@ -105,21 +105,21 @@ export const onLineSourceOptions = [
     label: 'Hugging Face',
     locale: false,
     value: modelSourceMap.huggingface_value,
-    key: 'huggingface',
+    key: modelSourceMap.huggingface_value,
     icon: icons.HF
   },
   {
     label: 'ModelScope',
     locale: false,
     value: modelSourceMap.modelscope_value,
-    key: 'modelscope',
+    key: modelSourceMap.modelscope_value,
     icon: icons.ModelScope
   },
   {
     label: 'models.form.localPath',
     locale: true,
     value: modelSourceMap.local_path_value,
-    key: 'local_path',
+    key: modelSourceMap.local_path_value,
     icon: icons.LocalPath
   }
 ];

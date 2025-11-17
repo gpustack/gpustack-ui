@@ -25,15 +25,16 @@ const Catalog: React.FC = () => {
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const navigate = useNavigate();
   const [activeId, setActiveId] = React.useState(-1);
-  const [isFirst, setIsFirst] = React.useState(true);
   const [dataSource, setDataSource] = useState<{
     dataList: CatalogItemType[];
     loading: boolean;
     total: number;
+    loadend: boolean;
     totalPage: number;
   }>({
     dataList: [],
     loading: false,
+    loadend: false,
     total: 0,
     totalPage: 0
   });
@@ -52,67 +53,65 @@ const Catalog: React.FC = () => {
   const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const [, setModelsSession] = useAtom(modelsSessionAtom);
   const cacheData = React.useRef<CatalogItemType[]>([]);
+  const sourceRef = React.useRef<string>('');
 
   const categoryOptions = [
     ...modelCategories.filter((item) => item.value)
   ] as Global.BaseOption<string>[];
 
-  const fetchData = useCallback(
-    async (query?: any) => {
-      const searchQuery = {
+  const fetchData = useMemoizedFn(async (query?: any) => {
+    const searchQuery = {
+      ...queryParams,
+      ...query
+    };
+    if (
+      dataSource.loading ||
+      (searchQuery.page > dataSource.totalPage && dataSource.totalPage > 0)
+    ) {
+      return;
+    }
+    setDataSource((pre) => {
+      pre.loading = true;
+
+      return { ...pre };
+    });
+    try {
+      const params = {
+        ..._.pickBy(searchQuery, (val: string | number) => !!val)
+      };
+      const res: any = await queryCatalogList(params);
+
+      const dataList =
+        searchQuery.page === 1
+          ? res.items
+          : _.concat(dataSource.dataList, res.items);
+      setDataSource({
+        dataList: dataList,
+        loading: false,
+        loadend: true,
+        total: res.pagination.total,
+        totalPage: res.pagination.totalPage
+      });
+      setQueryParams({
         ...queryParams,
         ...query
-      };
-      if (
-        dataSource.loading ||
-        (searchQuery.page > dataSource.totalPage && dataSource.totalPage > 0)
-      ) {
-        return;
-      }
-      setDataSource((pre) => {
-        pre.loading = true;
-
-        return { ...pre };
       });
-      try {
-        const params = {
-          ..._.pickBy(searchQuery, (val: string | number) => !!val)
-        };
-        const res: any = await queryCatalogList(params);
-
-        const dataList =
-          searchQuery.page === 1
-            ? res.items
-            : _.concat(dataSource.dataList, res.items);
-        setDataSource({
-          dataList: dataList,
-          loading: false,
-          total: res.pagination.total,
-          totalPage: res.pagination.totalPage
-        });
-        setQueryParams({
-          ...queryParams,
-          ...query
-        });
-      } catch (error) {
-        cacheData.current = [];
-        setDataSource({
-          dataList: [],
-          loading: false,
-          total: dataSource.total,
-          totalPage: dataSource.totalPage
-        });
-        setQueryParams({
-          ...queryParams,
-          ...query
-        });
-        console.log('error', error);
-      } finally {
-        setIsFirst(false);
-      }
-    },
-    [queryParams, cacheData.current]
-  );
+    } catch (error) {
+      cacheData.current = [];
+      setDataSource({
+        dataList: [],
+        loading: false,
+        loadend: true,
+        total: dataSource.total,
+        totalPage: dataSource.totalPage
+      });
+      setQueryParams({
+        ...queryParams,
+        ...query
+      });
+      console.log('error', error);
+    }
+  });
 
   const handleDeployModalCancel = () => {
     setOpenDeployModal({
@@ -123,12 +122,12 @@ const Catalog: React.FC = () => {
     setActiveId(-1);
   };
 
-  const handleOnDeploy = useCallback((item: CatalogItemType) => {
+  const handleOnDeploy = useCallback(async (item: CatalogItemType) => {
     saveScrollHeight();
     setActiveId(item.id);
     setOpenDeployModal({
       show: true,
-      source: modelSourceMap.huggingface_value,
+      source: sourceRef.current,
       current: item,
       width: 600
     });
@@ -186,11 +185,10 @@ const Catalog: React.FC = () => {
   });
 
   const handleDeployFromOtherHubs = async () => {
+    console.log('sourceRef.current', sourceRef.current);
     try {
-      const id = dataSource.dataList?.[0]?.id;
-      const res: any = await queryCatalogItemSpec({ id });
       setModelsSession({
-        source: res?.items?.[0]?.source
+        source: sourceRef.current || modelSourceMap.huggingface_value
       });
     } catch (error) {}
     navigate('/models/deployments');
@@ -199,6 +197,19 @@ const Catalog: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (dataSource.loadend) {
+      const getCatalogSource = async () => {
+        try {
+          const id = dataSource.dataList?.[0]?.id;
+          const res: any = await queryCatalogItemSpec({ id });
+          sourceRef.current = res?.items?.[0]?.source;
+        } catch (error) {}
+      };
+      getCatalogSource();
+    }
+  }, [dataSource.loadend]);
 
   useEffect(() => {
     const handleScroll = async () => {
@@ -255,11 +266,11 @@ const Catalog: React.FC = () => {
           loading={dataSource.loading}
           onDeploy={handleOnDeploy}
           activeId={-1}
-          isFirst={isFirst}
+          isFirst={!dataSource.loadend}
         ></CatalogList>
         <NoResult
           loading={dataSource.loading}
-          loadend={!isFirst}
+          loadend={dataSource.loadend}
           dataSource={dataSource.dataList}
           image={<IconFont type="icon-layers" />}
           filters={queryParams}

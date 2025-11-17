@@ -10,12 +10,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import ColumnWrapper from '../../_components/column-wrapper';
 import { queryCatalogItemSpec } from '../apis';
-import {
-  defaultFormValues,
-  DeployFormKeyMap,
-  modelCategoriesMap,
-  sourceOptions
-} from '../config';
+import { DeployFormKeyMap, sourceOptions } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { CatalogFormContext } from '../config/form-context';
 import { CatalogSpec, FormData, ListItem, SourceType } from '../config/types';
@@ -68,36 +63,7 @@ const FormWrapper = styled.div`
   maxwidth: 100%;
 `;
 
-const backendOptions = [
-  {
-    label: `llama-box`,
-    value: backendOptionsMap.llamaBox
-  },
-  {
-    label: 'vLLM',
-    value: backendOptionsMap.vllm
-  },
-  {
-    label: 'Ascend Mindie',
-    value: backendOptionsMap.ascendMindie
-  },
-  {
-    label: 'vox-box',
-    value: backendOptionsMap.voxBox
-  }
-];
-
-const quantiCapitMap: Record<string, string> = {
-  F16: 'FP16',
-  f16: 'FP16',
-  F32: 'FP32',
-  f32: 'FP32'
-};
-
-const defaultQuant = ['Q4_K_M'];
-const EmbeddingRerankFirstQuant = ['FP16', 'F16'];
 const AscendNPUQuant_F16 = ['F16', 'FP16'];
-const AscendNPUQuant_Q8 = ['Q8_0'];
 
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
@@ -124,13 +90,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const form = useRef<any>({});
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
   const [sourceList, setSourceList] = useState<any[]>([]);
-  const [backendList, setBackendList] = useState<any[]>([]);
-  const [sizeOptions, setSizeOptions] = useState<Global.BaseOption<number>[]>(
-    []
-  );
-  const [quantizationOptions, setQuantizationOptions] = useState<
-    Global.BaseOption<string>[]
-  >([]);
   const [modeList, setModeList] = useState<
     Global.BaseOption<string, { isBuiltIn: boolean; tips: string }>[]
   >([]);
@@ -149,15 +108,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     form.current?.submit?.();
   };
 
-  // use for size change and quantization change
-  const pickSomeFieldsValue = (defaultSpec: CatalogSpec) => {
-    const formData = form.current?.getFieldsValue();
-    const currentData = _.pick(formData, Object.keys(defaultFormValues));
-
-    // if the backend_parameters is empty, use the defaultSpec.backend_parameters
-    return currentData;
-  };
-
   const generateSubmitData = (formData: FormData) => {
     const gpuSelector = generateGPUIds(formData);
     const data = {
@@ -167,22 +117,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     };
 
     return data;
-  };
-
-  const getDefaultQuant = (data: {
-    category: string;
-    quantOption: string;
-    backend: string;
-    condidateQuant?: string[];
-  }) => {
-    if (
-      data.category === modelCategoriesMap.embedding ||
-      data.category === modelCategoriesMap.reranker
-    ) {
-      return EmbeddingRerankFirstQuant.includes(_.toUpper(data.quantOption));
-    }
-
-    return defaultQuant.includes(_.toUpper(data.quantOption));
   };
 
   const getModelSpec = (data: {
@@ -210,59 +144,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     });
   };
 
-  const handleSetSizeOptions = (data: { backend: string }) => {
-    const sizeGroup = _.groupBy(
-      _.filter(specListRef.current, (item: CatalogSpec) => {
-        return item.backend === data.backend;
-      }),
-      'size'
-    );
-
-    const sizeList = _.keys(sizeGroup)
-      .map((size: string) => {
-        return {
-          label: `${size}B`,
-          value: _.toNumber(size)
-        };
-      })
-      .filter((item: any) => item.value);
-    const result = _.sortBy(sizeList, 'value');
-    setSizeOptions(result);
-    return result;
-  };
-
-  const handleSetQuantizationOptions = (data: {
-    size: number;
-    backend: string;
-  }) => {
-    const sizeGroup = _.filter(specListRef.current, (item: CatalogSpec) => {
-      return item.size === data.size && item.backend === data.backend;
-    });
-
-    const quantizationList = _.map(sizeGroup, (item: CatalogSpec) => {
-      return {
-        label:
-          quantiCapitMap[item.quantization] ?? _.toUpper(item.quantization),
-        value: item.quantization
-      };
-    });
-    const result = _.uniqBy(quantizationList, 'value');
-    console.log('quantization options:', result);
-    setQuantizationOptions(result);
-    return result;
-  };
-
-  // TODO need check the backend is available
-  const handleSetBackendOptions = () => {
-    const backendGroup = _.groupBy(specListRef.current, 'backend');
-
-    const backendList = _.filter(backendOptions, (item: any) => {
-      return backendGroup[item.value];
-    });
-    setBackendList(backendList);
-    return backendList;
-  };
-
   const handleCheckCompatibility = async (formData: FormData) => {
     handleDoEvalute(formData);
   };
@@ -276,44 +157,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const handleSourceChange = (source: string) => {
     const defaultSpec = _.get(sourceGroupMap.current, `${source}.0`, {});
     initFormDataBySource(defaultSpec);
-    handleSetSizeOptions({
-      backend: defaultSpec.backend
-    });
-    handleSetQuantizationOptions({
-      size: defaultSpec.size,
-      backend: defaultSpec.backend
-    });
+
     // set form value
     initFormDataBySource(defaultSpec);
     handleCheckFormData();
-  };
-
-  const checkSize = (list: any[]) => {
-    return (
-      _.find(
-        list,
-        (item: { label: string; value: string }) =>
-          item.value === form.current.getFieldValue('size')
-      )?.value || _.get(list, '0.value', 0)
-    );
-  };
-
-  const checkQuantization = (list: any[]) => {
-    return (
-      _.find(
-        list,
-        (item: { label: string; value: string }) =>
-          item.value === form.current.getFieldValue('quantization')
-      )?.value ||
-      _.find(list, (item: { label: string; value: string }) =>
-        getDefaultQuant({
-          category: _.get(current, 'categories.0', ''),
-          quantOption: item.value,
-          backend: form.current.getFieldValue('backend')
-        })
-      )?.value ||
-      _.get(list, '0.value', '')
-    );
   };
 
   const onValuesChange = async (changedValues: any, allValues: any) => {
@@ -329,35 +176,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = (backend: string) => {
-    // if (backend === backendOptionsMap.llamaBox) {
-    //   setIsGGUF(true);
-    // } else {
-    //   setIsGGUF(false);
-    // }
-
-    // const sizeList = handleSetSizeOptions({
-    //   backend: backend
-    // });
-
-    // const size = checkSize(sizeList);
-
-    // const quantizaList = handleSetQuantizationOptions({
-    //   size: size,
-    //   backend: backend
-    // });
-
-    // const quantization = checkQuantization(quantizaList);
-
-    // const data = getModelSpec({
-    //   backend: backend,
-    //   size: size,
-    //   quantization: quantization
-    // });
-
-    // form.current.setFieldsValue({
-    //   ...defaultFormValues,
-    //   ...data
-    // });
     handleCheckFormData();
   };
 
@@ -421,14 +239,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       setModeList(modeDataList);
       setSourceList(sources);
-      handleSetBackendOptions();
-      handleSetSizeOptions({
-        backend: defaultSpec.backend
-      });
-      handleSetQuantizationOptions({
-        size: defaultSpec.size,
-        backend: defaultSpec.backend
-      });
       initFormDataBySource({
         ...defaultSpec,
         cluster_id: initClusterId()
@@ -452,43 +262,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     } catch (error) {
       // ignore
     }
-  };
-
-  const handleOnQuantizationChange = (val: string) => {
-    const data = getModelSpec({
-      backend: form.current.getFieldValue('backend'),
-      size: form.current.getFieldValue('size'),
-      quantization: val
-    });
-    form.current.setFieldsValue({
-      ...data,
-      ...pickSomeFieldsValue(data)
-    });
-    handleCheckFormData();
-  };
-
-  const handleOnSizeChange = (val: number) => {
-    // TODO
-    form.current.setFieldValue(defaultFormValues);
-    const list = handleSetQuantizationOptions({
-      backend: form.current.getFieldValue('backend'),
-      size: val
-    });
-
-    const quantization = checkQuantization(list);
-
-    const data = getModelSpec({
-      backend: form.current.getFieldValue('backend'),
-      size: val,
-      quantization: quantization
-    });
-
-    // set form data
-    form.current.setFieldsValue({
-      ...defaultFormValues,
-      ...data
-    });
-    handleCheckFormData();
   };
 
   const handleOnModeChange = (val: string) => {
@@ -578,9 +351,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           sizeOptions: [],
           quantizationOptions: [],
           modeList: modeList,
-          onModeChange: handleOnModeChange,
-          onSizeChange: handleOnSizeChange,
-          onQuantizationChange: handleOnQuantizationChange
+          onModeChange: handleOnModeChange
         }}
       >
         <FormWrapper>

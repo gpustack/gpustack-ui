@@ -157,6 +157,22 @@ const VersionsForm: React.FC<AddModalProps> = ({
     console.log('Version changed:', e.target.value);
   };
 
+  const optionRender = (option: any) => {
+    const { data } = option;
+    return (
+      <span>
+        {option.label}
+        {data.tips ? (
+          data.locale ? (
+            <span className="text-tertiary m-l-4">{` [${intl.formatMessage({ id: data.tips })}]`}</span>
+          ) : (
+            <span className="text-tertiary m-l-4">{` [${data.tips}]`}</span>
+          )
+        ) : null}
+      </span>
+    );
+  };
+
   return (
     <>
       <Title>
@@ -315,8 +331,10 @@ const VersionsForm: React.FC<AddModalProps> = ({
                     ]}
                   >
                     <SealSelect
+                      listHeight={288}
                       label={intl.formatMessage({ id: 'backend.framework' })}
                       options={frameworks}
+                      optionRender={optionRender}
                       required
                     />
                   </Form.Item>

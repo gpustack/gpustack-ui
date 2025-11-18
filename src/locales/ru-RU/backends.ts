@@ -20,7 +20,7 @@ export default {
   'backend.form.healthCheckPath': 'Путь проверки здоровья',
   'backend.form.defaultExecuteCommand': 'Команда выполнения по умолчанию',
   'backend.form.defaultExecuteCommand.tips':
-    '{{model_path}} is the model path, and {{port}} is the service port. These variable names cannot be modified.',
+    '{{model_path}} is the model path, {{port}} is the service port, and {{model_name}} is the model name. Do not change these variables.',
   'backend.form.defaultBackendParameters': 'Параметры бэкенда по умолчанию',
   'backend.form.versionConfig': 'Конфигурация версий',
   'backend.form.addParameter': 'Добавить параметр',

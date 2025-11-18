@@ -1,4 +1,5 @@
 import SealInput from '@/components/seal-form/seal-input';
+import { Global } from '@/config/global';
 import { MinusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
@@ -99,6 +100,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
       <div className="label-value">
         {valueAddon ?? (
           <SealInput.Input
+            trim={false}
             disabled={disabled}
             checkStatus={label.value ? 'success' : ''}
             label={intl.formatMessage({ id: 'common.input.value' })}

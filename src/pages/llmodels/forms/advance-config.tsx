@@ -5,13 +5,11 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { DeployFormKeyMap, modelCategories } from '../config';
+import { modelCategories } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
-import BackendForm from './backend';
 import BackendParametersList from './backend-parameters-list';
-import CustomBackend from './custom-backend';
 
 const AdvanceConfig = () => {
   const intl = useIntl();
@@ -64,12 +62,6 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      {formKey === DeployFormKeyMap.CATALOG && (
-        <>
-          <BackendForm></BackendForm>
-          <CustomBackend></CustomBackend>
-        </>
-      )}
 
       <BackendParametersList></BackendParametersList>
       <Form.Item<FormData> name="env">

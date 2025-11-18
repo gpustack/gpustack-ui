@@ -34,7 +34,7 @@ export const GPUsConfigs: Record<
     label: ManufacturerMap[GPUDriverMap.AMD],
     value: GPUDriverMap.AMD,
     runtime: 'amd',
-    driver: 'amd-smi'
+    driver: 'amd-smi static'
   },
   [GPUDriverMap.ASCEND]: {
     label: ManufacturerMap[GPUDriverMap.ASCEND],

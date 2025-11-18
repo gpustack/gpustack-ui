@@ -67,7 +67,7 @@ const SealInput: React.FC<InputProps & SealFormItemProps> = (props) => {
       setIsFocus(false);
     }
     if (!trim) {
-      e.target.value = e.target.value?.trimRight?.();
+      e.target.value = e.target.value?.trim?.();
       props.onChange?.(e);
     }
     props.onBlur?.(e);

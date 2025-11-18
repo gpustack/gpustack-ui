@@ -187,7 +187,7 @@ export default {
   'models.form.performance': 'Performance',
   'models.form.gpus.notfound': 'No GPUs found',
   'models.form.extendedkvcache': 'Enable Extended KV Cache',
-  'models.form.chunkSize': 'Size Of Cache Chunks',
+  'models.form.chunkSize': 'Size of Cache Chunks',
   'models.form.maxCPUSize': 'Maximum CPU Cache Size (GiB)',
   'models.form.remoteURL': 'Remote Storage URL',
   'models.form.remoteURL.tips':

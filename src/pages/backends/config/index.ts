@@ -5,6 +5,10 @@ import VoxBoxLogo from '@/assets/logo/voxbox.png';
 import icons from '@/components/icon-font/icons';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
+import {
+  GPUDriverMap,
+  ManufacturerMap
+} from '@/pages/resources/config/gpu-driver';
 import jsYaml from 'js-yaml';
 import { trim } from 'lodash';
 
@@ -135,35 +139,51 @@ export const builtInBackendFields = [
 export const frameworks = [
   {
     label: 'CUDA',
-    value: 'cuda'
+    value: GPUDriverMap.NVIDIA,
+    tips: ManufacturerMap[GPUDriverMap.NVIDIA],
+    locale: false
   },
   {
     label: 'ROCm',
-    value: 'rocm'
+    value: GPUDriverMap.AMD,
+    tips: ManufacturerMap[GPUDriverMap.AMD],
+    locale: false
   },
   {
     label: 'CANN',
-    value: 'cann'
+    value: GPUDriverMap.ASCEND,
+    tips: ManufacturerMap[GPUDriverMap.ASCEND],
+    locale: true
   },
   {
     label: 'DTK',
-    value: 'dtk'
+    value: GPUDriverMap.HYGON,
+    tips: ManufacturerMap[GPUDriverMap.HYGON],
+    locale: true
   },
   {
     label: 'MACA',
-    value: 'maca'
+    value: GPUDriverMap.METAX,
+    tips: ManufacturerMap[GPUDriverMap.METAX],
+    locale: true
   },
   {
     label: 'CoreX',
-    value: 'corex'
+    value: GPUDriverMap.ILUVATAR,
+    tips: ManufacturerMap[GPUDriverMap.ILUVATAR],
+    locale: true
   },
   {
     label: 'MUSA',
-    value: 'musa'
+    value: GPUDriverMap.MOORE_THREADS,
+    tips: ManufacturerMap[GPUDriverMap.MOORE_THREADS],
+    locale: true
   },
   {
     label: 'Neuware',
-    value: 'neuware'
+    value: GPUDriverMap.CAMBRICON,
+    tips: ManufacturerMap[GPUDriverMap.CAMBRICON],
+    locale: true
   },
   {
     label: 'CPU',

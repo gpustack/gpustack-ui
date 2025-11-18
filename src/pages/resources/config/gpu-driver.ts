@@ -9,15 +9,15 @@ export const GPUDriverMap = {
   METAX: 'maca'
 };
 
-const ManufacturerMap = {
+export const ManufacturerMap = {
   [GPUDriverMap.NVIDIA]: 'NVIDIA',
   [GPUDriverMap.AMD]: 'AMD',
-  [GPUDriverMap.ASCEND]: 'Huawei',
-  [GPUDriverMap.HYGON]: 'Hygon',
-  [GPUDriverMap.MOORE_THREADS]: 'Moore Threads',
-  [GPUDriverMap.ILUVATAR]: 'Iluvatar',
-  [GPUDriverMap.CAMBRICON]: 'Cambricon',
-  [GPUDriverMap.METAX]: 'MetaX'
+  [GPUDriverMap.ASCEND]: 'vendor.ascend',
+  [GPUDriverMap.HYGON]: 'vendor.hygon',
+  [GPUDriverMap.MOORE_THREADS]: 'vendor.moorthreads',
+  [GPUDriverMap.ILUVATAR]: 'vendor.iluvatar',
+  [GPUDriverMap.CAMBRICON]: 'vendor.cambricon',
+  [GPUDriverMap.METAX]: 'vendor.metax'
 };
 
 export const GPUsConfigs: Record<

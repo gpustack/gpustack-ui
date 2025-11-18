@@ -91,7 +91,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={860}
+      width={865}
       style={{}}
       maxContentHeight={'max(calc(100vh - 200px), 600px)'}
       footer={null}

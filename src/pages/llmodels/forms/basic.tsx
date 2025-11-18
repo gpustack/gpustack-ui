@@ -10,12 +10,14 @@ import {
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
-import { DeployFormKeyMap, sourceOptions } from '../config';
+import { sourceOptions } from '../config';
 import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import BackendForm from './backend';
+import CatalogFrom from './catalog';
 import CustomBackend from './custom-backend';
 import LocalPathSource from './local-path-source';
+import ModeField from './mode-field';
 import OnlineSource from './online-source';
 
 interface BasicFormProps {
@@ -126,13 +128,10 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           ></SealSelect>
         }
       </Form.Item>
-      {formKey === DeployFormKeyMap.DEPLOYMENT && (
-        <>
-          <BackendForm></BackendForm>
-          <CustomBackend></CustomBackend>
-        </>
-      )}
-
+      <ModeField></ModeField>
+      <CatalogFrom></CatalogFrom>
+      <BackendForm></BackendForm>
+      <CustomBackend></CustomBackend>
       <Form.Item<FormData>
         name="replicas"
         rules={[

@@ -179,21 +179,22 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleCheckFormData();
   };
 
-  const initClusterId = () => {
-    const cluster_id =
-      clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
-        ?.value || '';
+  const initClusterId = (): number => {
+    const cluster_id = clusterList?.find(
+      (item) => item.state === ClusterStatusValueMap.Ready
+    )?.value;
 
-    return cluster_id;
+    return cluster_id as number;
   };
 
-  const fetchSpecData = async () => {
+  const fetchSpecData = async (clusterId: number) => {
     try {
       axiosToken.current?.cancel?.();
       axiosToken.current = createAxiosToken();
       const res: any = await queryCatalogItemSpec(
         {
-          id: current.id
+          id: current.id,
+          cluster_id: clusterId
         },
         {
           token: axiosToken.current.token
@@ -224,16 +225,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       const list = _.sortBy(res.items, 'size');
 
-      hasF16Ref.current = _.some(res.items, (item: CatalogSpec) => {
-        return AscendNPUQuant_F16.includes(_.toUpper(item.quantization));
-      });
-
       const defaultSpec = _.find(
         list,
         (item: CatalogSpec) => item.mode === modeDataList[0]?.value
       );
-
-      console.log('default spec:', defaultSpec);
 
       selectSpecRef.current = defaultSpec;
 
@@ -241,7 +236,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       setSourceList(sources);
       initFormDataBySource({
         ...defaultSpec,
-        cluster_id: initClusterId()
+        cluster_id: clusterId
       });
 
       const name = _.toLower(current.name).replace(/\s/g, '-') || '';
@@ -255,7 +250,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       const allValues = generateSubmitData({
         ...defaultSpec,
         categories: _.get(current, 'categories.0', null),
-        cluster_id: initClusterId(),
+        cluster_id: clusterId,
         name
       });
       handleCheckCompatibility(allValues);
@@ -280,6 +275,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleCheckFormData();
   };
 
+  const handleOnClusterChange = async (clusterId: number) => {
+    await fetchSpecData(clusterId);
+  };
+
   const handleOk = async (values: FormData) => {
     const data = {
       ..._.omit(selectSpecRef.current, ['name']),
@@ -298,14 +297,19 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   }, [warningStatus.show, warningStatus.type]);
 
   useEffect(() => {
+    getClusterList();
+  }, []);
+
+  useEffect(() => {
     if (open) {
       setTimeout(() => {
-        fetchSpecData();
+        const clusterId = initClusterId();
+        fetchSpecData(clusterId);
         form.current?.getGPUOptionList?.({
-          clusterId: initClusterId()
+          clusterId: clusterId
         });
         form.current?.getBackendOptions?.({
-          cluster_id: initClusterId()
+          cluster_id: clusterId
         });
       }, 100);
     }
@@ -319,10 +323,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       });
     };
   }, [open, current]);
-
-  useEffect(() => {
-    getClusterList();
-  }, []);
 
   return (
     <GSDrawer
@@ -415,6 +415,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 sourceDisable={false}
                 sourceList={sourceList}
                 clusterList={clusterList}
+                onClusterChange={handleOnClusterChange}
                 onBackendChange={handleBackendChange}
                 onSourceChange={handleSourceChange}
                 onValuesChange={onValuesChange}

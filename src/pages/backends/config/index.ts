@@ -1,6 +1,7 @@
 import MindIELogo from '@/assets/logo/ascend.png';
 import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
+import VoxBoxLogo from '@/assets/logo/voxbox.png';
 import icons from '@/components/icon-font/icons';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
@@ -22,7 +23,7 @@ export const builtInBackendLogos: Record<string, string> = {
   [backendOptionsMap.SGLang]: SGLangLogo,
   [backendOptionsMap.vllm]: vLLMLogo,
   [backendOptionsMap.ascendMindie]: MindIELogo,
-  [backendOptionsMap.voxBox]: ''
+  [backendOptionsMap.voxBox]: VoxBoxLogo
 };
 
 export const backendActions = [

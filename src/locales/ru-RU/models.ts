@@ -254,12 +254,12 @@ export default {
   'models.form.generic_proxy.button': 'Универсальный прокси',
   'models.accessControlModal.includeusers': 'Включить пользователей',
   'models.table.genericProxy':
-    'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
+    'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.catalog.button.explore': 'Explore More Models',
-// 2. 'models.table.genericProxy': 'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'，
+// 2. 'models.table.genericProxy': 'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.',
 // 3. 'models.form.backend.vllm': 'Built-in support for NVIDIA, AMD, Ascend, Hygon, Iluvatar, and MetaX devices.',
 // 4. 'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
 // 5. 'models.form.backend.mindie': 'Only supports Ascend NPUs.',

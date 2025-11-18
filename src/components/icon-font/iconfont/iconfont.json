@@ -6,6 +6,300 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "46055620",
+      "name": "basic",
+      "font_class": "basic",
+      "unicode": "e6bb",
+      "unicode_decimal": 59067
+    },
+    {
+      "icon_id": "46055265",
+      "name": "settings",
+      "font_class": "settings",
+      "unicode": "e6b8",
+      "unicode_decimal": 59064
+    },
+    {
+      "icon_id": "46055263",
+      "name": "speed",
+      "font_class": "speed",
+      "unicode": "e6ba",
+      "unicode_decimal": 59066
+    },
+    {
+      "icon_id": "46039838",
+      "name": "permission",
+      "font_class": "permission",
+      "unicode": "e6b6",
+      "unicode_decimal": 59062
+    },
+    {
+      "icon_id": "46039837",
+      "name": "captive_portal",
+      "font_class": "captive_portal",
+      "unicode": "e6b7",
+      "unicode_decimal": 59063
+    },
+    {
+      "icon_id": "46001737",
+      "name": "lock_open_right",
+      "font_class": "lock_open_right",
+      "unicode": "e6b3",
+      "unicode_decimal": 59059
+    },
+    {
+      "icon_id": "46001736",
+      "name": "lock_person",
+      "font_class": "lock_person",
+      "unicode": "e6b4",
+      "unicode_decimal": 59060
+    },
+    {
+      "icon_id": "46001735",
+      "name": "lock_open",
+      "font_class": "lock_open",
+      "unicode": "e6b5",
+      "unicode_decimal": 59061
+    },
+    {
+      "icon_id": "45937227",
+      "name": "question_mark_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz",
+      "font_class": "question",
+      "unicode": "e6b2",
+      "unicode_decimal": 59058
+    },
+    {
+      "icon_id": "10786885",
+      "name": "aws",
+      "font_class": "aws",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "12014352",
+      "name": "aws",
+      "font_class": "aws1",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "45704693",
+      "name": "manage_accounts_24dp_1F1F1F_FILL1_wght300_GRAD0_op",
+      "font_class": "manage_user",
+      "unicode": "e6b1",
+      "unicode_decimal": 59057
+    },
+    {
+      "icon_id": "45702717",
+      "name": "private",
+      "font_class": "private",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "45702697",
+      "name": "stop",
+      "font_class": "stop3",
+      "unicode": "e6af",
+      "unicode_decimal": 59055
+    },
+    {
+      "icon_id": "45688107",
+      "name": "version",
+      "font_class": "version",
+      "unicode": "e6ae",
+      "unicode_decimal": 59054
+    },
+    {
+      "icon_id": "45631011",
+      "name": "contract_edit_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz",
+      "font_class": "edit-content",
+      "unicode": "e6ab",
+      "unicode_decimal": 59051
+    },
+    {
+      "icon_id": "45631010",
+      "name": "code_blocks_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "code_block",
+      "unicode": "e6ac",
+      "unicode_decimal": 59052
+    },
+    {
+      "icon_id": "45631009",
+      "name": "settings_applications_24dp_1F1F1F_FILL0_wght300_GR",
+      "font_class": "parameters",
+      "unicode": "e6ad",
+      "unicode_decimal": 59053
+    },
+    {
+      "icon_id": "45623375",
+      "name": "bolt_24dp_1F1F1F_FILL1_wght300_GRAD0_opsz24",
+      "font_class": "backend-filled",
+      "unicode": "e6a9",
+      "unicode_decimal": 59049
+    },
+    {
+      "icon_id": "45623374",
+      "name": "bolt_24dp_1F1F1F_FILL0_wght300_GRAD0_opsz24",
+      "font_class": "backend",
+      "unicode": "e6aa",
+      "unicode_decimal": 59050
+    },
+    {
+      "icon_id": "45554217",
+      "name": "arrow_down",
+      "font_class": "down2",
+      "unicode": "e6a7",
+      "unicode_decimal": 59047
+    },
+    {
+      "icon_id": "11155543",
+      "name": "nvidia",
+      "font_class": "nvidia2",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "11425971",
+      "name": "centos",
+      "font_class": "centos",
+      "unicode": "e6cd",
+      "unicode_decimal": 59085
+    },
+    {
+      "icon_id": "15378743",
+      "name": "redhat",
+      "font_class": "redhat",
+      "unicode": "ec7b",
+      "unicode_decimal": 60539
+    },
+    {
+      "icon_id": "6808499",
+      "name": "Ubuntu",
+      "font_class": "ubuntu",
+      "unicode": "edd3",
+      "unicode_decimal": 60883
+    },
+    {
+      "icon_id": "15378275",
+      "name": "debian",
+      "font_class": "debian",
+      "unicode": "eb74",
+      "unicode_decimal": 60276
+    },
+    {
+      "icon_id": "38395859",
+      "name": "almalinux",
+      "font_class": "alma-linux",
+      "unicode": "e6a8",
+      "unicode_decimal": 59048
+    },
+    {
+      "icon_id": "43280042",
+      "name": "linux-fedora",
+      "font_class": "fedora",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "43280143",
+      "name": "linux-rocky_linux",
+      "font_class": "rocky-linux",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "36227448",
+      "name": "nvidia",
+      "font_class": "nvidia1",
+      "unicode": "e980",
+      "unicode_decimal": 59776
+    },
+    {
+      "icon_id": "40723469",
+      "name": "nvidia",
+      "font_class": "nvidia",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "45463937",
+      "name": "amd",
+      "font_class": "amd",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "24164616",
+      "name": "华为",
+      "font_class": "huawei",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "45461362",
+      "name": "metax",
+      "font_class": "metax",
+      "unicode": "e6a4",
+      "unicode_decimal": 59044
+    },
+    {
+      "icon_id": "45459906",
+      "name": "ascend",
+      "font_class": "ascend",
+      "unicode": "e6a3",
+      "unicode_decimal": 59043
+    },
+    {
+      "icon_id": "8152996",
+      "name": "HUAWEI",
+      "font_class": "huaweicloud",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "34290284",
+      "name": "alicloud",
+      "font_class": "alicloud",
+      "unicode": "e784",
+      "unicode_decimal": 59268
+    },
+    {
+      "icon_id": "36654764",
+      "name": "tencent",
+      "font_class": "tencentcloud",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "45310241",
+      "name": "cluster2-outline",
+      "font_class": "cluster2-outline",
+      "unicode": "e6a1",
+      "unicode_decimal": 59041
+    },
+    {
+      "icon_id": "45310242",
+      "name": "cluster2-filled",
+      "font_class": "cluster2-filled",
+      "unicode": "e6a2",
+      "unicode_decimal": 59042
+    },
+    {
+      "icon_id": "45310070",
+      "name": "cluster-filled",
+      "font_class": "cluster-filled",
+      "unicode": "e69f",
+      "unicode_decimal": 59039
+    },
+    {
+      "icon_id": "45310069",
+      "name": "cluster-outline",
+      "font_class": "cluster-outline",
+      "unicode": "e6a0",
+      "unicode_decimal": 59040
+    },
+    {
       "icon_id": "45240470",
       "name": "admin-user",
       "font_class": "admin-user",
@@ -21,8 +315,8 @@
     },
     {
       "icon_id": "45221182",
-      "name": "quick_reference_24dp_1F1F1F_FILL0_wght300_GRAD0_op",
-      "font_class": "quick_reference_24dp_1F1F1F_FILL0_wght300_GRAD0_op",
+      "name": "detail-info",
+      "font_class": "detail-info",
       "unicode": "e69b",
       "unicode_decimal": 59035
     },

@@ -15,7 +15,7 @@ export const categoryConfig = {
   },
   [modelCategoriesMap.embedding]: {
     icon: <IconFont type="icon-cube" />,
-    color: 'purple',
+    color: 'magenta',
     label: 'Embedding'
   },
   [modelCategoriesMap.text_to_speech]: {

@@ -368,7 +368,7 @@ export async function queryCatalogList(
 }
 
 export async function queryCatalogItemSpec(
-  params: { id: number },
+  params: { id: number; cluster_id: number },
   options?: any
 ) {
   return request<Global.PageResponse<CatalogSpec>>(

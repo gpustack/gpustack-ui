@@ -69,12 +69,13 @@ interface DataFormProps {
   sourceDisable?: boolean;
   sourceList?: Global.BaseOption<string>[];
   clusterList: Global.BaseOption<number>[];
-  fields?: string[];
+  fields?: string[]; // control some fields to show in the form
   clearCacheFormValues?: () => void;
   onValuesChange?: (changedValues: any, allValues: any) => void;
   onSourceChange?: (value: string) => void;
   onOk: (values: FormData) => void;
   onBackendChange?: (value: string) => void;
+  onClusterChange?: (value: number) => void;
 }
 
 const TABKeysMap = {
@@ -99,6 +100,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onBackendChange,
     onSourceChange,
     onValuesChange,
+    onClusterChange,
     onOk
   } = props;
   const {
@@ -259,6 +261,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   };
 
   const handleClusterChange = async (value: number) => {
+    await onClusterChange?.(value);
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
     if (scheduleType === ScheduleValueMap.Manual) {

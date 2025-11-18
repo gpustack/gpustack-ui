@@ -240,5 +240,5 @@ export default {
   'models.form.generic_proxy.button': '通用代理',
   'models.accessControlModal.includeusers': '显示用户',
   'models.table.genericProxy':
-    '参考下面 curl 的方式，代理会将 /model/proxy 前缀的请求转发到对应的模型，需要在 <span class="bold-text">X-GPUStack-Model</span> 请求头或 JSON 请求体 "model" 属性设置模型名称。'
+    '使用以下路径前缀，并在请求头 <span class="bold-text">X-GPUStack-Model</span> 或请求体中的 model 字段设置模型名称后访问该模型。该路径的所有子路径请求会被转发到推理后端。'
 };

@@ -254,5 +254,5 @@ export default {
   'models.form.generic_proxy.button': 'Generic Proxy',
   'models.accessControlModal.includeusers': 'Include Users',
   'models.table.genericProxy':
-    'Refer to the curl example below. The proxy forwards requests with the /model/proxy prefix to the corresponding model. You need to specify the model name either in the <span class="bold-text">X-GPUStack-Model</span> request header or in the "model" property of the JSON body.'
+    'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.'
 };

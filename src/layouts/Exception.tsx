@@ -3,6 +3,7 @@
 import { history, useIntl, type IRoute } from '@umijs/max';
 import { Button, Result } from 'antd';
 import React from 'react';
+import { PageContainerInner } from '../pages/_components/page-box';
 
 const Exception: React.FC<{
   children: React.ReactNode;
@@ -21,20 +22,22 @@ const Exception: React.FC<{
     (props.route?.unaccessible && (props.unAccessible || props.noAccessible)) ||
     // render default exception
     ((!props.route || props.route?.unaccessible) && (
-      <Result
-        status={props.route ? '403' : '404'}
-        title={props.route ? '403' : '404'}
-        subTitle={
-          props.route
-            ? intl.formatMessage({ id: 'common.permission.403' })
-            : intl.formatMessage({ id: 'common.permission.404' })
-        }
-        extra={
-          <Button type="primary" onClick={() => history.push('/')}>
-            {intl.formatMessage({ id: 'common.button.back' })}
-          </Button>
-        }
-      />
+      <PageContainerInner>
+        <Result
+          status={props.route ? '403' : '404'}
+          title={props.route ? '403' : '404'}
+          subTitle={
+            props.route
+              ? intl.formatMessage({ id: 'common.permission.403' })
+              : intl.formatMessage({ id: 'common.permission.404' })
+          }
+          extra={
+            <Button type="primary" onClick={() => history.push('/')}>
+              {intl.formatMessage({ id: 'common.button.back' })}
+            </Button>
+          }
+        />
+      </PageContainerInner>
     )) ||
     // normal render
     props.children

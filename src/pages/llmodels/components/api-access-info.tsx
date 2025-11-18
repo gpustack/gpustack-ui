@@ -136,22 +136,6 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
       maskClosable={false}
       onOk={handleClose}
       onCancel={handleClose}
-      styles={{
-        content: {
-          padding: '0 0 16px 0'
-        },
-        header: {
-          padding: 'var(--ant-modal-content-padding)',
-          paddingBottom: '0'
-        },
-        body: {
-          padding: '16px 24px 32px'
-        },
-        footer: {
-          padding: '16px 24px',
-          margin: '0'
-        }
-      }}
       footer={null}
     >
       <Tips>
@@ -159,15 +143,17 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           <dt>
             <BulbOutlined />
           </dt>
-          <dd>
-            {data.generic_proxy
-              ? intl.formatMessage({
-                  id: 'models.table.genericProxy'
-                })
-              : intl.formatMessage({
-                  id: 'models.table.button.apiAccessInfo.tips'
-                })}
-          </dd>
+          <dd
+            dangerouslySetInnerHTML={{
+              __html: data.generic_proxy
+                ? intl.formatMessage({
+                    id: 'models.table.genericProxy'
+                  })
+                : intl.formatMessage({
+                    id: 'models.table.button.apiAccessInfo.tips'
+                  })
+            }}
+          ></dd>
         </dl>
       </Tips>
       <ApiAccessInfoWrapper>
@@ -175,7 +161,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
         </span>
         <span className="value">
-          <AutoTooltip ghost maxWidth={180}>
+          <AutoTooltip ghost maxWidth={data.generic_proxy ? 300 : 180}>
             {endPoint}
           </AutoTooltip>
           {!data.generic_proxy && (

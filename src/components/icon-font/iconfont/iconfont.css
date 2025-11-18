@@ -1,8 +1,8 @@
 @font-face {
   font-family: iconfont; /* Project id 4613488 */
-  src: url('iconfont.woff2?t=1755160439217') format('woff2'),
-       url('iconfont.woff?t=1755160439217') format('woff'),
-       url('iconfont.ttf?t=1755160439217') format('truetype');
+  src: url('iconfont.woff2?t=1763436184844') format('woff2'),
+       url('iconfont.woff?t=1763436184844') format('woff'),
+       url('iconfont.ttf?t=1763436184844') format('truetype');
 }
 
 .iconfont {
@@ -13,6 +13,174 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-basic::before {
+  content: "\e6bb";
+}
+
+.icon-settings::before {
+  content: "\e6b8";
+}
+
+.icon-speed::before {
+  content: "\e6ba";
+}
+
+.icon-permission::before {
+  content: "\e6b6";
+}
+
+.icon-captive_portal::before {
+  content: "\e6b7";
+}
+
+.icon-lock_open_right::before {
+  content: "\e6b3";
+}
+
+.icon-lock_person::before {
+  content: "\e6b4";
+}
+
+.icon-lock_open::before {
+  content: "\e6b5";
+}
+
+.icon-question::before {
+  content: "\e6b2";
+}
+
+.icon-aws::before {
+  content: "\e616";
+}
+
+.icon-aws1::before {
+  content: "\e62f";
+}
+
+.icon-manage_user::before {
+  content: "\e6b1";
+}
+
+.icon-private::before {
+  content: "\e6b0";
+}
+
+.icon-stop3::before {
+  content: "\e6af";
+}
+
+.icon-version::before {
+  content: "\e6ae";
+}
+
+.icon-edit-content::before {
+  content: "\e6ab";
+}
+
+.icon-code_block::before {
+  content: "\e6ac";
+}
+
+.icon-parameters::before {
+  content: "\e6ad";
+}
+
+.icon-backend-filled::before {
+  content: "\e6a9";
+}
+
+.icon-backend::before {
+  content: "\e6aa";
+}
+
+.icon-down2::before {
+  content: "\e6a7";
+}
+
+.icon-nvidia2::before {
+  content: "\e60d";
+}
+
+.icon-centos::before {
+  content: "\e6cd";
+}
+
+.icon-redhat::before {
+  content: "\ec7b";
+}
+
+.icon-ubuntu::before {
+  content: "\edd3";
+}
+
+.icon-debian::before {
+  content: "\eb74";
+}
+
+.icon-alma-linux::before {
+  content: "\e6a8";
+}
+
+.icon-fedora::before {
+  content: "\e61a";
+}
+
+.icon-rocky-linux::before {
+  content: "\e620";
+}
+
+.icon-nvidia1::before {
+  content: "\e980";
+}
+
+.icon-nvidia::before {
+  content: "\e60c";
+}
+
+.icon-amd::before {
+  content: "\e6a6";
+}
+
+.icon-huawei::before {
+  content: "\e615";
+}
+
+.icon-metax::before {
+  content: "\e6a4";
+}
+
+.icon-ascend::before {
+  content: "\e6a3";
+}
+
+.icon-huaweicloud::before {
+  content: "\e614";
+}
+
+.icon-alicloud::before {
+  content: "\e784";
+}
+
+.icon-tencentcloud::before {
+  content: "\e609";
+}
+
+.icon-cluster2-outline::before {
+  content: "\e6a1";
+}
+
+.icon-cluster2-filled::before {
+  content: "\e6a2";
+}
+
+.icon-cluster-filled::before {
+  content: "\e69f";
+}
+
+.icon-cluster-outline::before {
+  content: "\e6a0";
+}
+
 .icon-admin-user::before {
   content: "\e69d";
 }
@@ -21,7 +189,7 @@
   content: "\e69e";
 }
 
-.icon-quick_reference_24dp_1F1F1F_FILL0_wght300_GRAD0_op::before {
+.icon-detail-info::before {
   content: "\e69b";
 }
 

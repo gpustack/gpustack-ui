@@ -216,7 +216,6 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
         )}
         <FormWrapper>
           <ColumnWrapper
-            paddingBottom={50}
             styles={{
               container: { paddingTop: 0 }
             }}

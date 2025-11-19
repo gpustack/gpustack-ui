@@ -15,8 +15,7 @@ export default function useScrollAfterExpand({
   segmentOptions,
   defaultWait = 300,
   segmentedTop = { top: 0, offsetTop: 96 },
-  getScrollElementScrollableHeight,
-  getScrollElement
+  getScrollElementScrollableHeight
 }: {
   form: any;
   activeKey: string[];
@@ -26,7 +25,6 @@ export default function useScrollAfterExpand({
     scrollHeight: number;
     scrollTop: number;
   };
-  getScrollElement?: () => HTMLElement | null;
   defaultWait?: number;
   segmentedTop: {
     top: number;

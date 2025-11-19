@@ -44,7 +44,7 @@ const CustomBackend: React.FC = () => {
             <SealTextArea
               allowClear
               required
-              scaleSize={true}
+              scaleSize={false}
               alwaysFocus={true}
               autoSize={{ minRows: 2, maxRows: 4 }}
               label={intl.formatMessage({ id: 'backend.runCommand' })}
@@ -53,7 +53,10 @@ const CustomBackend: React.FC = () => {
               })}
               placeholder={intl.formatMessage(
                 { id: 'common.help.eg' },
-                { content: 'vllm serve {{model_path}} --port {{port}}' }
+                {
+                  content:
+                    'vllm serve {{model_path}} --port {{port}} --served-model-name {{model_name}}'
+                }
               )}
             ></SealTextArea>
           </Form.Item>

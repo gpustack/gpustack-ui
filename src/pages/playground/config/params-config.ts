@@ -125,6 +125,9 @@ export const ImageParamsConfig: ParamsSchema[] = [
       min: 1,
       max: 4
     },
+    formItemAttrs: {
+      hidden: true
+    },
     rules: [
       {
         required: false
@@ -163,6 +166,9 @@ export const ImageCountConfig: ParamsSchema[] = [
     attrs: {
       min: 1,
       max: 4
+    },
+    formItemAttrs: {
+      hidden: true
     },
     rules: [
       {
@@ -222,6 +228,9 @@ export const ImageEidtParamsConfig: ParamsSchema[] = [
     attrs: {
       min: 1,
       max: 4
+    },
+    formItemAttrs: {
+      hidden: true
     },
     rules: [
       {

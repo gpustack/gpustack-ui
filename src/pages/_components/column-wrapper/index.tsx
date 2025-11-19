@@ -18,17 +18,17 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
   children,
   footer,
   maxHeight,
-  paddingBottom = 50,
   styles = {}
 }) => {
   const scroller = React.useRef<any>(null);
+  const footerRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
   const {
     initialize,
     instance,
     scrollEventElement,
     scrollToBottom,
     scrollToTarget,
-    getScrollElement,
     getScrollElementScrollableHeight
   } = useOverlayScroller({
     options: {
@@ -44,13 +44,28 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
     }
   }, []);
 
+  React.useLayoutEffect(() => {
+    if (!scroller.current || !footerRef.current || !contentRef.current) return;
+
+    const updatePadding = () => {
+      const height = footerRef.current!.getBoundingClientRect().height;
+      contentRef.current!.style.paddingBottom = `${height - 22}px`;
+    };
+
+    updatePadding();
+
+    const observer = new ResizeObserver(updatePadding);
+    observer.observe(footerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <WrapperContext.Provider
       value={{
         scroller: scroller,
         osInstance: instance,
         scrollEventElement,
-        getScrollElement,
         getScrollElementScrollableHeight,
         scrollToBottom,
         scrollToTarget
@@ -65,15 +80,13 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
           ref={scroller}
           style={{ padding: '16px 24px', ...styles.container }}
         >
-          <div
-            style={{
-              paddingBottom: footer ? paddingBottom : 0
-            }}
-          >
-            {children}
-          </div>
+          <div ref={contentRef}>{children}</div>
         </div>
-        {footer && <div className="footer">{footer}</div>}
+        {footer && (
+          <div className="footer" ref={footerRef}>
+            {footer}
+          </div>
+        )}
       </div>
     </WrapperContext.Provider>
   );

@@ -587,7 +587,6 @@ const AddModal: FC<AddModalProps> = (props) => {
 
         <FormWrapper>
           <ColumnWrapper
-            paddingBottom={warningStatus.show ? 170 : 50}
             styles={{
               container: { paddingTop: 0 }
             }}

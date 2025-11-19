@@ -63,8 +63,6 @@ const FormWrapper = styled.div`
   maxwidth: 100%;
 `;
 
-const AscendNPUQuant_F16 = ['F16', 'FP16'];
-
 const AddModal: React.FC<AddModalProps> = (props) => {
   const {
     title,
@@ -97,7 +95,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
-  const hasF16Ref = useRef<boolean>(false);
 
   const handleSumit = () => {
     form.current?.submit?.();
@@ -361,13 +358,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                 paddingTop: 0
               }
             }}
-            paddingBottom={
-              warningStatus.show
-                ? Array.isArray(warningStatus.message)
-                  ? 150
-                  : 125
-                : 50
-            }
             footer={
               <>
                 <CompatibilityAlert

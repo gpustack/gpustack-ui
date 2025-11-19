@@ -262,7 +262,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
             paddingTop: 0
           }
         }}
-        paddingBottom={warningStatus.show ? 100 : 50}
         footer={
           <>
             <CompatibilityAlert

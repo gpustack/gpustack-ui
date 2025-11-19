@@ -103,12 +103,9 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onClusterChange,
     onOk
   } = props;
-  const {
-    getScrollElementScrollableHeight,
-    getScrollElement,
-    osInstance,
-    scrollEventElement
-  } = useWrapperContext();
+  const { getScrollElementScrollableHeight, osInstance, scrollEventElement } =
+    useWrapperContext();
+  console.log('data form render');
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();
@@ -171,7 +168,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey,
     segmentOptions,
     segmentedTop: segmentedTop,
-    getScrollElement,
     getScrollElementScrollableHeight: getScrollElementScrollableHeight
   });
 

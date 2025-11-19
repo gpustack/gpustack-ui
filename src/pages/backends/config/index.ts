@@ -192,20 +192,20 @@ export const frameworks = [
 ];
 
 export const yamlTemplate = `# backend configuration template
-backend_name: my-backend-custom
-description: this is my-backend
-default_version: v0.5.1
+backend_name: vllm-custom
+description: this is my custom vllm backend
+default_version: v0.11.0
 health_check_path: /${GPUSTACK_API_BASE_URL}/models
 default_backend_param:
   - --host
-default_run_command: myBackend serve {{model_path}} --port {{port}}
+default_run_command: vllm serve {{model_path}} --port {{port}} --served-model-name {{model_name}}
 version_configs:
-  v0.0.1:
-    image_name: lm/mybackend:latest
-    run_command: myBackend serve {{model_path}} --port {{port}}
+  v0.11.0:
+    image_name: lm/vllm:latest
+    run_command: vllm serve {{model_path}} --port {{port}} --served-model-name {{model_name}}
     custom_framework: cuda
-  v0.0.2:
-    image_name: lm/mybackend:test
+  v0.10.0:
+    image_name: lm/vllm:test
     run_command:
     custom_framework:
   `;

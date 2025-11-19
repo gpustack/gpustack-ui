@@ -55,7 +55,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
           </Form.Item>
           <Form.Item name="default_run_command">
             <SealTextArea
-              scaleSize={true}
+              scaleSize={false}
               alwaysFocus={true}
               description={intl.formatMessage({
                 id: 'backend.form.defaultExecuteCommand.tips'

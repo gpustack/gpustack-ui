@@ -1,25 +1,32 @@
 import { useEffect, useState } from 'react';
 
-const useResizeObserver = (ref: React.RefObject<HTMLElement>) => {
+export const useResizeObserver = (ref: React.RefObject<HTMLElement>) => {
   const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
 
-    const observer = new ResizeObserver((entries) => {
-      if (entries[0]) {
-        const { width, height } = entries[0].contentRect;
-        setSize({ width, height });
-      }
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      setSize((prev) => {
+        if (prev.width === rect.width && prev.height === rect.height)
+          return prev;
+        return { width: rect.width, height: rect.height };
+      });
+    };
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
     });
 
     observer.observe(element);
+    updateSize();
 
     return () => {
       observer.disconnect();
     };
-  }, [ref]);
+  }, [ref.current]);
 
   return size;
 };

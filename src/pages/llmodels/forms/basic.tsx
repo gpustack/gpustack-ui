@@ -11,7 +11,6 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
 import { sourceOptions } from '../config';
-import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import BackendForm from './backend';
 import CatalogFrom from './catalog';
@@ -39,9 +38,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
     onSourceChange
   } = props;
   const intl = useIntl();
-  const { formKey } = useFormContext();
   const { getRuleMessage } = useAppUtils();
-  const form = Form.useFormInstance();
 
   const handleOnSourceChange = (val: string) => {
     onSourceChange?.(val);

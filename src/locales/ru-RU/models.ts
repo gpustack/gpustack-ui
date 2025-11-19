@@ -206,7 +206,7 @@ export default {
   'models.form.gpusAllocationType.auto': 'Авто',
   'models.form.gpusAllocationType.custom': 'Вручную',
   'models.form.gpusAllocationType.auto.tips':
-    'Система автоматически рассчитывает количество GPU на реплику.',
+    'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
   'models.form.gpusAllocationType.custom.tips':
     'Вы можете указать точное количество GPU на реплику.',
   'models.mymodels.status.inactive': 'Остановлен',
@@ -264,4 +264,5 @@ export default {
 // 4. 'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
 // 5. 'models.form.backend.mindie': 'Only supports Ascend NPUs.',
 // 6. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
+// 7. 'models.form.gpusAllocationType.auto.tips': 'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
 // ========== End of To-Do List ==========

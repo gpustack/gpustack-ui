@@ -274,7 +274,7 @@ export const ExtraContent = () => {
         {originNode}
         <Divider style={{ marginBlock: 4 }} />
         <CustomItem onClick={handleLogout} className="border-top">
-          <LogoutOutlined />
+          <LogoutOutlined rotate={180} />
           <span>{intl?.formatMessage?.({ id: 'common.button.logout' })}</span>
         </CustomItem>
       </DropdownWrapper>

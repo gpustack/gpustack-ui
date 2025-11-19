@@ -24,7 +24,6 @@ const Catalog: React.FC = () => {
   const intl = useIntl();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const navigate = useNavigate();
-  const [activeId, setActiveId] = React.useState(-1);
   const [dataSource, setDataSource] = useState<{
     dataList: CatalogItemType[];
     loading: boolean;
@@ -50,7 +49,7 @@ const Catalog: React.FC = () => {
     current: {},
     source: modelSourceMap.huggingface_value
   });
-  const [modelsExpandKeys, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
+  const [, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const [, setModelsSession] = useAtom(modelsSessionAtom);
   const cacheData = React.useRef<CatalogItemType[]>([]);
   const sourceRef = React.useRef<string>('');
@@ -109,7 +108,6 @@ const Catalog: React.FC = () => {
         ...queryParams,
         ...query
       });
-      console.log('error', error);
     }
   });
 
@@ -119,12 +117,10 @@ const Catalog: React.FC = () => {
       show: false
     });
     restoreScrollHeight();
-    setActiveId(-1);
   };
 
   const handleOnDeploy = useCallback(async (item: CatalogItemType) => {
     saveScrollHeight();
-    setActiveId(item.id);
     setOpenDeployModal({
       show: true,
       source: sourceRef.current,
@@ -185,7 +181,6 @@ const Catalog: React.FC = () => {
   });
 
   const handleDeployFromOtherHubs = async () => {
-    console.log('sourceRef.current', sourceRef.current);
     try {
       setModelsSession({
         source: sourceRef.current || modelSourceMap.huggingface_value
@@ -203,7 +198,7 @@ const Catalog: React.FC = () => {
       const getCatalogSource = async () => {
         try {
           const id = dataSource.dataList?.[0]?.id;
-          const res: any = await queryCatalogItemSpec({ id });
+          const res: any = await queryCatalogItemSpec({ id, cluster_id: 0 });
           sourceRef.current = res?.items?.[0]?.source;
         } catch (error) {}
       };

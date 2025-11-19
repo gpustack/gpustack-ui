@@ -206,7 +206,7 @@ export default {
   'models.form.gpusAllocationType.auto': 'Auto',
   'models.form.gpusAllocationType.custom': 'Custom',
   'models.form.gpusAllocationType.auto.tips':
-    'System calculates GPUs per replica automatically.',
+    'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
   'models.form.gpusAllocationType.custom.tips':
     'You can specify the exact number of GPUs per replica.',
   'models.mymodels.status.inactive': 'Stopped',
@@ -293,7 +293,7 @@ export default {
 // 34.  'models.form.gpusAllocationType': 'GPU Allocation Type',
 // 35.  'models.form.gpusAllocationType.auto': 'Auto',
 // 36.  'models.form.gpusAllocationType.custom': 'Custom',
-// 37.  'models.form.gpusAllocationType.auto.tips': 'System calculates GPUs per replica automatically.',
+// 37.  'models.form.gpusAllocationType.auto.tips': 'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
 // 38.  'models.form.gpusAllocationType.custom.tips': 'You can specify the exact number of GPUs per replica.',
 // 39.  'models.mymodels.status.inactive': 'Stopped',
 // 41.  'models.mymodels.status.degrade': 'Abnormal',

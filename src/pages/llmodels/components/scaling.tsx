@@ -45,13 +45,9 @@ const CheckboxField: React.FC<{
 
 const Scaling: React.FC = () => {
   const intl = useIntl();
-  const { onValuesChange, onQuantizationChange } = useFormContext();
+  const { onValuesChange } = useFormContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
-
-  const handleOnQuantizationChange = (val: any) => {
-    onQuantizationChange?.(val);
-  };
 
   return (
     <>

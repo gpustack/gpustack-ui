@@ -57,7 +57,7 @@ const SystemLoad = () => {
     const fetchClusters = async () => {
       try {
         const res = await queryClusterList({ page: -1 });
-        const options = res.items.map((cluster) => ({
+        const options = res.items.map((cluster: any) => ({
           label: cluster.name,
           value: cluster.id
         }));

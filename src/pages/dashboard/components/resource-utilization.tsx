@@ -63,20 +63,21 @@ const UtilizationOvertime: React.FC<{
     const legendData: string[] = [];
     const xAxisData: string[] = [];
     let seriesData: { value: number; time: string; type: string }[] = [];
-    seriesData = _.map(typeList, (item: string) => {
-      const itemConfig = _.get(TypeKeyMap, item, {});
+    seriesData = _.map(typeList, (label: string) => {
+      const itemConfig = _.get(TypeKeyMap, label, {});
       const name = itemConfig.intl
         ? intl.formatMessage({ id: itemConfig.label })
         : itemConfig.label;
       legendData.push(name);
-      const itemDataList = _.get(data, item, []);
+      const itemDataList = _.get(data, label, []);
       return {
         name: name,
         color: itemConfig.color,
         data: _.map(itemDataList, (item: any) => {
-          xAxisData.push(dayjs(item.timestamp * 1000).format('HH:mm:ss'));
+          const time = dayjs(item.timestamp * 1000).format('HH:mm:ss');
+          xAxisData.push(time);
           return {
-            time: dayjs(item.timestamp * 1000).format('HH:mm:ss'),
+            time: item,
             value: _.round(_.get(item, 'value', 0), 1)
           };
         })

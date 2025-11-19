@@ -105,7 +105,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   } = props;
   const { getScrollElementScrollableHeight, osInstance, scrollEventElement } =
     useWrapperContext();
-  console.log('data form render');
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();

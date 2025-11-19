@@ -601,7 +601,7 @@ const AddModal: FC<AddModalProps> = (props) => {
                     });
                   }}
                   warningStatus={warningStatus}
-                  contentStyle={{ paddingInline: 0 }}
+                  contentStyle={{ paddingInline: '0 6px' }}
                 ></CompatibilityAlert>
                 <ModalFooter
                   onCancel={handleCancel}

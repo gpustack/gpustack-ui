@@ -119,6 +119,9 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           contentStyle={contentStyle}
           type={type || 'warning'}
           icon={renderIcon}
+          style={{
+            paddingInlineEnd: showClose ? 20 : 16
+          }}
           overlayScrollerProps={{
             scrollbars: {
               autoHide: 'move'

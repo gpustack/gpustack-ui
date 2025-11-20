@@ -92,7 +92,9 @@ export const generateTextToSpeechCurlCode = ({
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
-  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+  const api = modelProxy
+    ? `${MODEL_PROXY}/\${YOUR_API_PATH}`
+    : url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   const curlCode = `

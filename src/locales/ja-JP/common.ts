@@ -264,7 +264,8 @@ export default {
   'common.help.default': 'Default: {content}',
   'common.filter.status': 'Filter by status',
   'common.form.rule.selectInput': 'Please select or enter a {name}',
-  'common.tag.experimental': 'Experimental'
+  'common.tag.experimental': 'Experimental',
+  'common.title.example': 'Example'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -295,4 +296,5 @@ export default {
 // 25. 'common.filter.status': 'Filter by status'
 // 26. 'common.form.rule.selectInput': 'Please select or enter a {name}',
 // 27. 'common.tag.experimental': 'Experimental',
+// 28. 'common.title.example': 'Example'
 // ========== End of To-Do List ==========

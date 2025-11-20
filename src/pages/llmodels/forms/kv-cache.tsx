@@ -2,6 +2,7 @@ import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealInputNumber from '@/components/seal-form/input-number';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import { useMemo, useRef } from 'react';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
@@ -50,6 +51,22 @@ const KVCacheForm = () => {
     }
   };
 
+  const handleRamSizeInput = (value: number | null | string) => {
+    if (!value) {
+      form.setFieldValue(['extended_kv_cache', 'ram_size'], null);
+    } else {
+      form.setFieldValue(['extended_kv_cache', 'ram_size'], _.round(value));
+    }
+    onValuesChange?.(
+      {
+        extended_kv_cache: {
+          ram_size: value
+        }
+      },
+      form.getFieldsValue()
+    );
+  };
+
   const builtInBackend = useMemo(() => {
     const currentBackend = backendOptions.find(
       (item) => item.value === backend
@@ -96,7 +113,7 @@ const KVCacheForm = () => {
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'ram_size']}>
             <SealInputNumber
-              onChange={(value) => handleRamRatioChange(value, 'ram_size')}
+              onInput={(value) => handleRamSizeInput(value)}
               label={intl.formatMessage({ id: 'models.form.ramSize' })}
               description={intl.formatMessage(
                 {

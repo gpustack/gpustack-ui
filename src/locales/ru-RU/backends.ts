@@ -20,7 +20,7 @@ export default {
   'backend.form.healthCheckPath': 'Путь проверки здоровья',
   'backend.form.defaultExecuteCommand': 'Команда выполнения по умолчанию',
   'backend.form.defaultExecuteCommand.tips':
-    '{{model_path}} is the model path, {{port}} is the service port, and {{model_name}} is the model name. Do not change these variables.',
+    '{{model_path}}, {{port}}, {{worker_ip}} and {{model_name}} are placeholders that will be substituted with the actual values during deployment.',
   'backend.form.defaultBackendParameters': 'Параметры бэкенда по умолчанию',
   'backend.form.versionConfig': 'Конфигурация версий',
   'backend.form.addParameter': 'Добавить параметр',
@@ -36,5 +36,5 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. {{model_path}}, {{port}}, {{worker_ip}} and {{model_name}} are placeholders that will be substituted with the actual values during deployment.
 // ========== End of To-Do List ==========

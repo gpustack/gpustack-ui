@@ -20,7 +20,7 @@ export default {
   'backend.form.healthCheckPath': 'Health Check Path',
   'backend.form.defaultExecuteCommand': 'Default Execution Command',
   'backend.form.defaultExecuteCommand.tips':
-    '{{model_path}} is the model path, {{port}} is the service port, and {{model_name}} is the model name. Do not change these variables.',
+    '{{model_path}}, {{port}}, {{worker_ip}} and {{model_name}} are placeholders that will be substituted with the actual values during deployment.',
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',
   'backend.form.versionConfig': 'Versions Config',
   'backend.form.addParameter': 'Add Parameter',

@@ -46,10 +46,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
           >
             <SealInput.Input
               trim
-              placeholder={intl.formatMessage(
-                { id: 'common.help.default' },
-                { content: `/${GPUSTACK_API_BASE_URL}/models` }
-              )}
+              placeholder={`/${GPUSTACK_API_BASE_URL}/models`}
               label={intl.formatMessage({ id: 'backend.form.healthCheckPath' })}
             ></SealInput.Input>
           </Form.Item>
@@ -64,7 +61,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
                 { id: 'common.help.eg' },
                 {
                   content:
-                    'vllm serve {{model_path}} --port {{port}} --served-model-name {{model_name}}'
+                    'vllm serve {{model_path}} --port {{port}} --worker-ip {{worker_ip}} --served-model-name {{model_name}}'
                 }
               )}
               autoSize={{ minRows: 2, maxRows: 4 }}

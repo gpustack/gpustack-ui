@@ -5,7 +5,6 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import {
   backendLabelMap,
   backendTipsList,
@@ -13,14 +12,6 @@ import {
 } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
-
-const Box = styled.div`
-  &.default-backend {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-`;
 
 const BackendFields: React.FC = () => {
   const intl = useIntl();

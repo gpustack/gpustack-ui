@@ -27,30 +27,25 @@ const API_MAP: Record<
   [modelCategoriesMap.embedding]: {
     api: EMBEDDING_API,
     parameters: {
-      query: 'What are the benefits of regular exercise?',
-      documents: [
-        'Regular physical activity helps improve cardiovascular health and mental well-being.',
-        'Eating too much sugar can lead to health issues.',
-        'Exercise is often done in gyms or outdoors.'
-      ]
+      query: '',
+      documents: []
     },
     generateCurlCode: generateEmbeddingCurlCode
   },
   [modelCategoriesMap.llm]: {
     api: CHAT_API,
     parameters: {
-      messages: [
-        {
-          role: 'user',
-          content: 'Hello, introduce yourself'
-        }
-      ]
+      messages: []
     },
     generateCurlCode: generateLLmCurlCode
   },
   [modelCategoriesMap.image]: {
     api: CREAT_IMAGE_API,
-    parameters: {},
+    parameters: {
+      n: 1,
+      size: '512x512',
+      response_format: 'b64_json'
+    },
     generateCurlCode: generateImageCurlCode
   },
   [modelCategoriesMap.text_to_speech]: {
@@ -63,18 +58,15 @@ const API_MAP: Record<
   },
   [modelCategoriesMap.speech_to_text]: {
     api: AUDIO_SPEECH_TO_TEXT_API,
-    parameters: {},
+    parameters: {
+      language: 'auto'
+    },
     generateCurlCode: generateSpeechToTextCurlCode
   },
   [modelCategoriesMap.reranker]: {
     api: RERANKER_API,
     parameters: {
-      messages: [
-        {
-          role: 'user',
-          content: 'Hello, introduce yourself'
-        }
-      ]
+      messages: []
     },
     generateCurlCode: generateRerankCurlCode
   }
@@ -102,12 +94,7 @@ const useGenericProxy = () => {
       category: modelCategoriesMap.llm,
       api: CHAT_API,
       parameters: {
-        messages: [
-          {
-            role: 'user',
-            content: 'Hello, introduce yourself'
-          }
-        ]
+        messages: []
       },
       generateCurlCode: generateLLmCurlCode
     };
@@ -123,7 +110,8 @@ const useGenericProxy = () => {
         api,
         modelProxy: true,
         parameters: {
-          model: data?.name || ''
+          model: data?.name || '',
+          ...parameters
         }
       })
     });

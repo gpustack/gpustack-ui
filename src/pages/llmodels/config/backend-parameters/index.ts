@@ -4,6 +4,9 @@ import mindieParameters from './mindie';
 import sglangParameters from './sglang';
 import vllmParameters from './vllm';
 
+/**
+ * backend label map
+ */
 export const backendOptionsMap = {
   llamaBox: 'llama-box',
   vllm: 'vLLM',

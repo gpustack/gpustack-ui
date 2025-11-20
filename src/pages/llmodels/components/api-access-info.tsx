@@ -17,10 +17,11 @@ import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { modelCategoriesMap } from '../config';
 import { ListItem } from '../config/types';
+import useGenericProxy from '../hooks/use-generic-proxy';
 
 const GPUSTACK_API = GPUSTACK_API_BASE_URL;
 
@@ -75,7 +76,7 @@ const Tips = styled.div`
     gap: 8px;
   }
   dd {
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 `;
 
@@ -98,21 +99,22 @@ interface ApiAccessInfoProps {
 const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
+  const { GenericProxyCommandCode, openProxyModal } = useGenericProxy();
 
-  const getModelCategory = useMemoizedFn((categories: string[]) => {
+  const getProxyEndPoint = useMemoizedFn((categories: string[]) => {
     for (const [category, config] of Object.entries(API_MAP)) {
       if (categories.includes(category)) {
         return `${MODEL_PROXY}${config.api}`;
       }
     }
-    return `${MODEL_PROXY}${CHAT_API}`;
+    return `${window.location.origin}${MODEL_PROXY}/<YOUR_API_PATH>`;
   });
 
   const endPoint = useMemo(() => {
     if (!data.generic_proxy) {
       return `${window.location.origin}/${GPUSTACK_API}`;
     }
-    return getModelCategory(data.categories || []);
+    return getProxyEndPoint(data.categories || []);
   }, [data]);
 
   const isRanker = useMemo(() => {
@@ -123,6 +125,12 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
     onClose();
   };
 
+  useEffect(() => {
+    if (open && data.generic_proxy) {
+      openProxyModal(data);
+    }
+  }, [open, data, openProxyModal]);
+
   return (
     <ScrollerModal
       open={open}
@@ -130,7 +138,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
         top: '20%'
       }}
       title={intl.formatMessage({ id: 'models.table.button.apiAccessInfo' })}
-      width={550}
+      width={600}
       destroyOnHidden
       closable={true}
       maskClosable={false}
@@ -156,12 +164,17 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           ></dd>
         </dl>
       </Tips>
+      {data.generic_proxy && (
+        <div style={{ paddingLeft: 20, marginBottom: 12 }}>
+          {GenericProxyCommandCode}
+        </div>
+      )}
       <ApiAccessInfoWrapper>
         <span className="label">
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
         </span>
         <span className="value">
-          <AutoTooltip ghost maxWidth={data.generic_proxy ? 300 : 180}>
+          <AutoTooltip ghost maxWidth={data.generic_proxy ? 400 : 180}>
             {endPoint}
           </AutoTooltip>
           {!data.generic_proxy && (

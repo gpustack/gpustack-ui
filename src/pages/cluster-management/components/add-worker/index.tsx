@@ -79,6 +79,9 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     if (open && cluster_id && firstLoad.current) {
       handleOnClusterChange(cluster_id);
     }
+    return () => {
+      firstLoad.current = true;
+    };
   }, [open, cluster_id]);
 
   return (

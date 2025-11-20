@@ -20,7 +20,7 @@ export default {
   'backend.form.healthCheckPath': '健康检查路径',
   'backend.form.defaultExecuteCommand': '默认执行命令',
   'backend.form.defaultExecuteCommand.tips':
-    '{{model_path}} 为模型文件路径，{{port}} 为服务端口，{{model_name}} 为模型名称，这三个变量名不可更改。',
+    '{{model_path}}、{{port}}、{{worker_ip}} 和 {{model_name}} 都是占位符，在部署过程中会被替换为实际的值。',
   'backend.form.defaultBackendParameters': '默认后端参数',
   'backend.form.versionConfig': '版本配置',
   'backend.form.addParameter': '添加参数',

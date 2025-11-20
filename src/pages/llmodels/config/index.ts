@@ -4,19 +4,19 @@ import { backendOptionsMap } from './backend-parameters';
 
 export const backendTipsList = [
   {
-    title: 'vLLM',
+    title: backendOptionsMap.vllm,
     tips: 'models.form.backend.vllm'
   },
   {
-    title: 'SGLang',
+    title: backendOptionsMap.SGLang,
     tips: 'models.form.backend.sglang'
   },
   {
-    title: 'Ascend MindIE',
+    title: backendOptionsMap.ascendMindie,
     tips: 'models.form.backend.mindie'
   },
   {
-    title: 'vox-box',
+    title: backendOptionsMap.voxBox,
     tips: 'models.form.backend.voxbox'
   }
 ];
@@ -356,6 +356,7 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'run_command',
   'image_name',
   'extended_kv_cache.enabled',
+  'extended_kv_cache.ram_size',
   'speculative_config.enabled',
   'speculative_config.draft_model'
 ];

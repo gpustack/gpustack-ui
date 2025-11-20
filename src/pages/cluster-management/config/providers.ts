@@ -54,15 +54,5 @@ export default [
     icon: icons.AliCloud,
     description: 'cluster.provider.comingsoon',
     group: 'clusters.create.provider.cloud'
-  },
-  {
-    label: 'Tencent Cloud',
-    locale: false,
-    disabled: true,
-    value: ProviderValueMap.TencentCloud,
-    key: ProviderValueMap.TencentCloud,
-    icon: icons.TencentCloud,
-    description: 'cluster.provider.comingsoon',
-    group: 'clusters.create.provider.cloud'
   }
 ];

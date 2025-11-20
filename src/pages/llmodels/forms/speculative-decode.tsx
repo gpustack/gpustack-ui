@@ -49,7 +49,7 @@ const SpeculativeDecode = () => {
         algorithm:
           speculativeConfigRef.current.algorithm || AlgorithmMap.Eagle3,
         draft_model: speculativeConfigRef.current.draft_model || '',
-        num_draft_tokens: speculativeConfigRef.current.num_draft_tokens || 3,
+        num_draft_tokens: speculativeConfigRef.current.num_draft_tokens || 4,
         ngram_min_match_length:
           speculativeConfigRef.current.ngram_min_match_length || 1,
         ngram_max_match_length:

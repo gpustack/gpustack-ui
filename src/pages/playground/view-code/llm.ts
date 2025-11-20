@@ -1,4 +1,4 @@
-import { GPUSTACK_API, MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
+import { MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
 export const generateLLmCurlCode = ({
@@ -7,9 +7,7 @@ export const generateLLmCurlCode = ({
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
-  const api = modelProxy
-    ? `${MODEL_PROXY}/\${YOUR_API_PATH}`
-    : url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+  const api = modelProxy ? `${MODEL_PROXY}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
   const curlCode = `
@@ -26,7 +24,6 @@ export const generateLLMCode = ({
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
-  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   const curlCode = generateLLmCurlCode({ api: url, parameters });
@@ -35,7 +32,7 @@ export const generateLLMCode = ({
   const pythonCode = `
 from openai import OpenAI\n
 client = OpenAI(
-  base_url="${host}/${GPUSTACK_API}", 
+  base_url="${host}/${OPENAI_COMPATIBLE}", 
   api_key="YOUR_GPUSTACK_API_KEY"
 )
 
@@ -52,7 +49,7 @@ const OpenAI = require("openai");
 
 const openai = new OpenAI({
   "apiKey": "YOUR_GPUSTACK_API_KEY",
-  "baseURL": "${host}/${GPUSTACK_API}"
+  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
 });
 
 async function main() {

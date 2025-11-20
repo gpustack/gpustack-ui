@@ -1,6 +1,7 @@
 const proxyTableList = [
   'cli',
   'v1',
+  'v2',
   'auth',
   'v1-openai',
   'version',

@@ -454,9 +454,12 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             enabled: false,
             algorithm: '',
             draft_model: null,
-            num_draft_tokens: 4,
-            ngram_min_match_length: 1,
-            ngram_max_match_length: 10
+            num_draft_tokens:
+              initialValues?.speculative_config?.num_draft_tokens || 4,
+            ngram_min_match_length:
+              initialValues?.speculative_config?.ngram_min_match_length || 1,
+            ngram_max_match_length:
+              initialValues?.speculative_config?.ngram_max_match_length || 10
           },
           ...initialValues
         }}

@@ -2,7 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import CopyButton from '@/components/copy-button';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal';
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { OPENAI_COMPATIBLE } from '@/config/settings';
 import {
   AUDIO_SPEECH_TO_TEXT_API,
   AUDIO_TEXT_TO_SPEECH_API,
@@ -22,8 +22,6 @@ import styled from 'styled-components';
 import { modelCategoriesMap } from '../config';
 import { ListItem } from '../config/types';
 import useGenericProxy from '../hooks/use-generic-proxy';
-
-const GPUSTACK_API = GPUSTACK_API_BASE_URL;
 
 const API_MAP: Record<string, { api: string }> = {
   [modelCategoriesMap.embedding]: {
@@ -112,7 +110,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
 
   const endPoint = useMemo(() => {
     if (!data.generic_proxy) {
-      return `${window.location.origin}/${GPUSTACK_API}`;
+      return `${window.location.origin}/${OPENAI_COMPATIBLE}`;
     }
     return `${window.location.origin}${MODEL_PROXY}/<YOUR_API_PATH>`;
   }, [data]);

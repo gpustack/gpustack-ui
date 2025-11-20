@@ -20,7 +20,8 @@ const BackendFields: React.FC = () => {
   const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
   const backend = Form.useWatch('backend', form);
 
-  const handleBackendVersionOnChange = () => {
+  const handleBackendVersionOnChange = (value: any) => {
+    console.log('value changed:', value);
     onValuesChange?.({}, form.getFieldsValue());
   };
 

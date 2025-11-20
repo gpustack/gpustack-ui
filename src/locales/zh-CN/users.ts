@@ -1,8 +1,8 @@
 export default {
   'users.title': '用户',
-  'users.button.create': '新建用户',
+  'users.button.create': '添加用户',
   'users.form.edit': '编辑用户',
-  'users.form.create': '新建用户',
+  'users.form.create': '添加用户',
   'users.table.username': '用户名',
   'users.table.role': '角色',
   'users.table.status': '状态',

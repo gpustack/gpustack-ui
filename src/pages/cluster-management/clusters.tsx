@@ -36,6 +36,7 @@ import PoolRows from './components/pool-rows';
 import { ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
+  CredentialListItem,
   ClusterFormData as FormData,
   ClusterListItem as ListItem,
   NodePoolFormData
@@ -231,7 +232,7 @@ const Clusters: React.FC = () => {
   useEffect(() => {
     const fetchCredentialList = async () => {
       const data = await queryCredentialList({ page: -1 });
-      const list = data?.items?.map((item) => ({
+      const list = data?.items?.map((item: CredentialListItem) => ({
         label: item.name,
         value: item.id
       }));

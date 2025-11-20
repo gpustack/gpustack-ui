@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { GPUSTACK_API, OPENAI_COMPATIBLE } from '../apis';
+import { GPUSTACK_API, MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
 import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
 export const generateSpeechToTextCurlCode = ({
@@ -9,7 +9,9 @@ export const generateSpeechToTextCurlCode = ({
 }: Record<string, any>) => {
   const host = window.location.origin;
   // replace url OPENAI_COMPATIBLE with GPUSTACK
-  const api = url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
+  const api = modelProxy
+    ? `${MODEL_PROXY}/\${YOUR_API_PATH}`
+    : url.replace(OPENAI_COMPATIBLE, GPUSTACK_API);
 
   // ========================= Curl =========================
   const curlCode = `

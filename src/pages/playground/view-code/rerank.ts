@@ -1,3 +1,4 @@
+import { MODEL_PROXY } from '../apis';
 import { formatCurlArgs } from './utils';
 
 export const generateRerankCurlCode = ({
@@ -6,10 +7,11 @@ export const generateRerankCurlCode = ({
   parameters
 }: Record<string, any>) => {
   const host = window.location.origin;
+  const apiUrl = modelProxy ? `${MODEL_PROXY}/\${YOUR_API_PATH}` : api;
 
   // ========================= Curl =========================
   const curlCode = `
-curl ${host}${api} \\
+curl ${host}${apiUrl} \\
 -H "Content-Type: application/json" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
 ${formatCurlArgs(parameters, false)}`.trim();

@@ -11,6 +11,7 @@ interface ViewerProps {
   options?: Global.BaseOption<string>[];
   defaultValue?: string;
   headerHeight?: number;
+  height?: number;
   lang?: string;
   onChange?: (value: string | number) => void;
 }
@@ -31,6 +32,7 @@ const CommandViewer: React.FC<ViewerProps> = (props) => {
     defaultValue,
     options = [],
     headerHeight = 40,
+    height = 380,
     lang,
     onChange
   } = props || {};
@@ -66,7 +68,7 @@ const CommandViewer: React.FC<ViewerProps> = (props) => {
       }
     >
       <HighlightCode
-        height={380}
+        height={height}
         theme="dark"
         code={code}
         lang={lang || value}

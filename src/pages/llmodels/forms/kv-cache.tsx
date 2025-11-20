@@ -106,7 +106,7 @@ const KVCacheForm = () => {
               )}
               min={0}
               step={1}
-              precision={1}
+              precision={0}
             />
           </Form.Item>
           <Form.Item<FormData> name={['extended_kv_cache', 'chunk_size']}>

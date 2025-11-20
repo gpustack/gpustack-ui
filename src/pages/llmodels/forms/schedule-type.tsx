@@ -4,6 +4,7 @@ import SealCascader from '@/components/seal-form/seal-cascader';
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
+import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
 import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
@@ -71,6 +72,8 @@ const ScheduleTypeForm: React.FC = () => {
     clearCacheFormValues,
     initialValues
   } = useFormContext();
+  const { setSScrollContentPaddingBottom, getScrollElementScrollableHeight } =
+    useWrapperContext();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const scheduleType = Form.useWatch('scheduleType', form);
@@ -79,15 +82,41 @@ const ScheduleTypeForm: React.FC = () => {
     ['gpu_selector', 'gpus_per_replica'],
     form
   );
+  const gpuSekectorElRef = React.useRef<HTMLElement | null>(null);
+
+  const setContentPaddingBottom = () => {
+    if (!gpuSekectorElRef.current) {
+      gpuSekectorElRef.current = document.querySelector(
+        '[data-field="gpu_selector.gpu_ids"]'
+      );
+    }
+    if (gpuSekectorElRef.current) {
+      const { scrollHeight, scrollTop } =
+        getScrollElementScrollableHeight?.() || {
+          scrollHeight: 0,
+          scrollTop: 0
+        };
+
+      const rect = gpuSekectorElRef.current.getBoundingClientRect();
+      const bottomSpace =
+        window.innerHeight - rect.bottom + (scrollHeight - scrollTop);
+      if (bottomSpace < 340) {
+        setSScrollContentPaddingBottom?.(340 - bottomSpace);
+      }
+    }
+  };
 
   const handleScheduleTypeChange = async (value: string) => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
     if (value === ScheduleValueMap.Auto) {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 100);
-      });
       onValuesChange?.({}, form.getFieldsValue());
     } else if (value === ScheduleValueMap.Manual) {
       form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
+      requestAnimationFrame(() => {
+        setContentPaddingBottom();
+      });
     }
   };
   const handleGpusPerReplicasChange = (val: string | number | null) => {
@@ -161,6 +190,7 @@ const ScheduleTypeForm: React.FC = () => {
         !form.getFieldValue('fix_gpu_type') && (
           <>
             <Form.Item
+              data-field="gpu_selector.gpu_ids"
               name={['gpu_selector', 'gpu_ids']}
               rules={[
                 {

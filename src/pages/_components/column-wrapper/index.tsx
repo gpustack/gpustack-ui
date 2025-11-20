@@ -1,5 +1,5 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
-import React from 'react';
+import React, { useCallback } from 'react';
 import './style.less';
 import { WrapperContext } from './use-wrapper-context';
 
@@ -60,6 +60,15 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
     return () => observer.disconnect();
   }, []);
 
+  const setContentPaddingBottom = useCallback((padding: number) => {
+    if (footerRef.current) {
+      const height = footerRef.current.getBoundingClientRect().height;
+      contentRef.current!.style.paddingBottom = `${height + padding - 22}px`;
+    } else {
+      contentRef.current!.style.paddingBottom = `${padding}px`;
+    }
+  }, []);
+
   return (
     <WrapperContext.Provider
       value={{
@@ -68,7 +77,8 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
         scrollEventElement,
         getScrollElementScrollableHeight,
         scrollToBottom,
-        scrollToTarget
+        scrollToTarget,
+        setSScrollContentPaddingBottom: setContentPaddingBottom
       }}
     >
       <div
@@ -80,7 +90,9 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
           ref={scroller}
           style={{ padding: '16px 24px', ...styles.container }}
         >
-          <div ref={contentRef}>{children}</div>
+          <div ref={contentRef} className="child-content">
+            {children}
+          </div>
         </div>
         {footer && (
           <div className="footer" ref={footerRef}>

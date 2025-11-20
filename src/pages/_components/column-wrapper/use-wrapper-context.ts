@@ -12,6 +12,7 @@ interface WrapperContextProps {
   };
   scrollToTarget?: (target: any, offset?: number) => void;
   getScrollElement?: () => HTMLElement | null;
+  setSScrollContentPaddingBottom?: (padding: number) => void;
 }
 
 export const WrapperContext = createContext<WrapperContextProps>(

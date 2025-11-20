@@ -123,6 +123,7 @@ const useGenericProxy = () => {
 
   const GenericProxyCommandCode = (
     <CommandViewer
+      showTitle={true}
       code={modalStatus.codeValue}
       copyText={modalStatus.codeValue}
       options={langOptions}

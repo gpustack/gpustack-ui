@@ -12,6 +12,7 @@ interface ThemeType {
 interface SegmentLineProps extends SegmentedProps {
   height?: number;
   theme?: 'dark' | 'light';
+  showTitle?: boolean;
 }
 
 const darkTheme: ThemeType = {
@@ -30,7 +31,10 @@ const lightTheme: ThemeType = {
   fontWeight: 500
 };
 
-const SegmentedQwrapper = styled.div<{ $height: number; $theme: ThemeType }>`
+const SegmentedQwrapper = styled.div<{
+  $height: number;
+  $theme: ThemeType;
+}>`
   .ant-segmented.segment-line {
     padding: 0;
     background-color: transparent;
@@ -76,6 +80,7 @@ const SegmentedQwrapper = styled.div<{ $height: number; $theme: ThemeType }>`
         opacity: 1;
       }
     }
+
     .ant-segmented-item-selected {
       background-color: transparent;
       box-shadow: none;
@@ -84,6 +89,11 @@ const SegmentedQwrapper = styled.div<{ $height: number; $theme: ThemeType }>`
         height: 2px;
         opacity: 1;
       }
+    }
+  }
+  &.with-title .ant-segmented.segment-line {
+    .ant-segmented-item.ant-segmented-item-selected::after {
+      display: none;
     }
   }
 `;
@@ -95,11 +105,13 @@ const SegmentLine: React.FC<SegmentLineProps> = (props) => {
     options = [],
     className = 'segment-line',
     theme = 'dark',
+    showTitle = false,
     ...rest
   } = props;
 
   return (
     <SegmentedQwrapper
+      className={showTitle ? 'with-title' : ''}
       $height={height}
       $theme={theme === 'dark' ? darkTheme : lightTheme}
     >

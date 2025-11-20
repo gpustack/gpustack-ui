@@ -11,6 +11,7 @@ interface ViewerProps {
   options?: Global.BaseOption<string>[];
   defaultValue?: string;
   headerHeight?: number;
+  showTitle?: boolean;
   height?: number;
   lang?: string;
   onChange?: (value: string | number) => void;
@@ -33,6 +34,7 @@ const CommandViewer: React.FC<ViewerProps> = (props) => {
     options = [],
     headerHeight = 40,
     height = 380,
+    showTitle = false,
     lang,
     onChange
   } = props || {};
@@ -54,6 +56,7 @@ const CommandViewer: React.FC<ViewerProps> = (props) => {
             value={value}
             size="small"
             options={options}
+            showTitle={showTitle}
             onChange={handlOnChange}
           ></SegmentLine>
 

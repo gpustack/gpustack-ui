@@ -1,8 +1,8 @@
 export default {
   'users.title': 'Users',
-  'users.button.create': 'New User',
+  'users.button.create': 'Add User',
   'users.form.edit': 'Edit User',
-  'users.form.create': 'New User',
+  'users.form.create': 'Add User',
   'users.table.username': 'User Name',
   'users.table.role': 'Role',
   'users.table.status': 'Status',

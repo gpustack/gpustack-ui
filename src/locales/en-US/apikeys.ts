@@ -1,7 +1,7 @@
 export default {
   'apikeys.title': 'API Keys',
   'apikeys.table.apikeys': 'keys',
-  'apikeys.button.create': 'New API Key',
+  'apikeys.button.create': 'Add API Key',
   'apikeys.title.save': 'Save API Key',
   'apikeys.form.expiretime': 'Expiration',
   'apikeys.form.apikey': 'API Key',

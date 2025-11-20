@@ -13,7 +13,7 @@ export default {
   'backend.isDefault': 'Default',
   'backend.availableFrameworks': 'Supported Frameworks',
   'backend.addVersion': 'Add Version',
-  'backend.filter.framework': 'Filter by Framework',
+  'backend.filter.framework': 'Filter by framework',
   'backend.export.yaml': 'Export YAML',
   'backend.mode.form': 'Form Mode',
   'backend.mode.yaml': 'YAML Mode',

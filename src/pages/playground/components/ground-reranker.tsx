@@ -1,6 +1,5 @@
 import AlertInfo from '@/components/alert-info';
 import SealInputNumber from '@/components/seal-form/input-number';
-import { OPENAI_COMPATIBLE } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useRequestToken from '@/hooks/use-request-token';
 import {
@@ -33,7 +32,7 @@ import React, {
   useState
 } from 'react';
 import styled from 'styled-components';
-import { rerankerQuery } from '../apis';
+import { RERANKER_API, rerankerQuery } from '../apis';
 import { extractErrorMessage } from '../config';
 import { rerankerSamples } from '../config/samples';
 import { ParamsSchema } from '../config/types';
@@ -202,7 +201,7 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const viewCodeContent = useMemo(() => {
     return generateRerankCode({
-      api: `/${OPENAI_COMPATIBLE}/rerank`,
+      api: RERANKER_API,
       parameters: {
         ..._.pick(parameters, ['model', ..._.split(formFields, ',')]),
         query: queryValue,

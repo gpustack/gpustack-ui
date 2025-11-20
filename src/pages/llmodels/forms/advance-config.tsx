@@ -93,9 +93,7 @@ const AdvanceConfig = () => {
           ></CheckboxField>
         </Form.Item>
       )}
-      {[backendOptionsMap.vllm, backendOptionsMap.ascendMindie].includes(
-        backend
-      ) && (
+      {backend !== backendOptionsMap.voxBox && (
         <Form.Item<FormData>
           name="distributed_inference_across_workers"
           valuePropName="checked"

@@ -73,7 +73,7 @@ const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
     } else {
       setIsFocus(false);
     }
-    props.onChange?.(val, options);
+    props.onChange?.(val || null, options);
   };
 
   const handleOnFocus = (e: any) => {

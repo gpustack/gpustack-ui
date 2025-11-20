@@ -5,7 +5,7 @@ export default {
   'clusters.button.add': 'Add Cluster',
   'clusters.button.addCredential': 'Add Cloud Credential',
   'clusters.button.editCredential': 'Edit Cloud Credential',
-  'clusters.filterBy.cluster': 'Filter by Cluster',
+  'clusters.filterBy.cluster': 'Filter by cluster',
   'clusters.add.cluster': 'Add {cluster} Cluster',
   'clusters.edit.cluster': 'Edit {cluster}',
   'clusters.provider.custom': 'Custom',

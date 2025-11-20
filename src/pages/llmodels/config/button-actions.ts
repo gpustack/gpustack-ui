@@ -55,6 +55,11 @@ export const ActionList: ActionItem[] = [
     icon: icons.ApiOutlined
   },
   {
+    label: 'models.button.accessSettings',
+    key: 'accessControl',
+    icon: icons.Permission
+  },
+  {
     label: 'common.button.stop',
     key: 'stop',
     icon: icons.Stop
@@ -63,11 +68,6 @@ export const ActionList: ActionItem[] = [
     label: 'common.button.start',
     key: 'start',
     icon: icons.Play
-  },
-  {
-    label: 'models.button.accessSettings',
-    key: 'accessControl',
-    icon: icons.Permission
   },
   {
     label: 'common.button.delete',

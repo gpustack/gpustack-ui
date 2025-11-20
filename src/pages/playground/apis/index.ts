@@ -13,7 +13,7 @@ export const EMBEDDING_API = `/${OPENAI_COMPATIBLE}/embeddings`;
 
 export const OPENAI_MODELS = `/${OPENAI_COMPATIBLE}/models`;
 
-export const RERANKER_API = '/rerank';
+export const RERANKER_API = `/${OPENAI_COMPATIBLE}/rerank`;
 
 export const AUDIO_TEXT_TO_SPEECH_API = `/${OPENAI_COMPATIBLE}/audio/speech`;
 

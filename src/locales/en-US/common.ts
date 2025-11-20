@@ -264,5 +264,6 @@ export default {
   'common.help.default': 'Default: {content}',
   'common.filter.status': 'Filter by status',
   'common.form.rule.selectInput': 'Please select or enter a {name}',
-  'common.tag.experimental': 'Experimental'
+  'common.tag.experimental': 'Experimental',
+  'common.title.example': 'Example'
 };

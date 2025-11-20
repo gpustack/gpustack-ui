@@ -114,7 +114,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
     if (!data.generic_proxy) {
       return `${window.location.origin}/${GPUSTACK_API}`;
     }
-    return getProxyEndPoint(data.categories || []);
+    return `${window.location.origin}${MODEL_PROXY}/<YOUR_API_PATH>`;
   }, [data]);
 
   const isRanker = useMemo(() => {
@@ -164,11 +164,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           ></dd>
         </dl>
       </Tips>
-      {data.generic_proxy && (
-        <div style={{ paddingLeft: 20, marginBottom: 12 }}>
-          {GenericProxyCommandCode}
-        </div>
-      )}
+
       <ApiAccessInfoWrapper>
         <span className="label">
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
@@ -224,6 +220,11 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           </CreateButton>
         </span>
       </ApiAccessInfoWrapper>
+      {data.generic_proxy && (
+        <div style={{ paddingLeft: 20, marginTop: 12 }}>
+          {GenericProxyCommandCode}
+        </div>
+      )}
     </ScrollerModal>
   );
 };

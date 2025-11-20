@@ -256,5 +256,6 @@ export default {
   'common.help.default': '默认: {content}',
   'common.filter.status': '按状态筛选',
   'common.form.rule.selectInput': '请选择或输入{name}',
-  'common.tag.experimental': '实验性'
+  'common.tag.experimental': '实验性',
+  'common.title.example': '示例'
 };

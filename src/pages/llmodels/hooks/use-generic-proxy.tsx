@@ -16,6 +16,7 @@ import { generateEmbeddingCurlCode } from '@/pages/playground/view-code/embeddin
 import { generateImageCurlCode } from '@/pages/playground/view-code/image';
 import { generateLLmCurlCode } from '@/pages/playground/view-code/llm';
 import { generateRerankCurlCode } from '@/pages/playground/view-code/rerank';
+import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { useState } from 'react';
 import { modelCategoriesMap } from '../config';
@@ -72,12 +73,15 @@ const API_MAP: Record<
   }
 };
 
-const langOptions = [{ label: 'Curl', value: 'bash' }];
-
 const useGenericProxy = () => {
   const [modalStatus, setModalStatus] = useState<{
     codeValue: string;
   }>({ codeValue: '' });
+  const intl = useIntl();
+
+  const langOptions = [
+    { label: intl.formatMessage({ id: 'common.title.example' }), value: 'bash' }
+  ];
 
   const getModelCategory = (categories: string[]) => {
     for (const [category, config] of Object.entries(API_MAP)) {

@@ -1,10 +1,8 @@
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE } from '@/config/settings';
 import { createFormData, errorHandler } from '@/utils/fetch-chunk-data';
 import { request } from '@umijs/max';
 
-export const OPENAI_COMPATIBLE = 'v1-openai';
-
-export const GPUSTACK_API = GPUSTACK_API_BASE_URL;
+export { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE };
 
 export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
 

@@ -4,8 +4,8 @@ import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 import { DEFAULT_ENTER_PAGE } from './config/settings';
 
-// no base URL APIs
-const NoBaseURLAPIs = ['/auth', '/v1-openai', '/version', '/proxy', '/update'];
+// no GPUSTACK BASE API
+const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {
   errorConfig: {

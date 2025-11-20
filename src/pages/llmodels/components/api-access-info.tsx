@@ -48,7 +48,7 @@ const ApiAccessInfoWrapper = styled.div`
   display: grid;
   padding-left: 20px;
   grid-template-columns: max-content 1fr max-content;
-  gap: 12px 0px;
+  gap: 8px 0px;
   justify-items: start;
   align-items: center;
   .label {

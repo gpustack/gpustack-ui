@@ -4,7 +4,7 @@ import { RequestConfig, history } from '@umijs/max';
 import { message } from 'antd';
 import { DEFAULT_ENTER_PAGE } from './config/settings';
 
-// no GPUSTACK BASE API
+//  these APIs do not via the GPUSTACK_API_BASE_URL
 const NoBaseURLAPIs = ['/auth', '/v1', '/version', '/proxy', '/update'];
 
 export const requestConfig: RequestConfig = {

@@ -75,7 +75,7 @@ export default {
   'models.form.backend_parameters.sglang.placeholder':
     'e.g., --context-length=8192 (use = to separate name and value)',
   'models.form.backend_parameters.vllm.tips':
-    'More {backend} parameter details',
+    'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
   'models.logs.pagination.prev': 'Previous {lines} Lines',
   'models.logs.pagination.next': 'Next {lines} Lines',
   'models.logs.pagination.last': 'Last Page',
@@ -250,7 +250,7 @@ export default {
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
   'models.form.generic_proxy.tips':
-    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
+    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI compatible APIs.',
   'models.form.generic_proxy.button': 'Generic Proxy',
   'models.accessControlModal.includeusers': 'Include Users',
   'models.table.genericProxy':

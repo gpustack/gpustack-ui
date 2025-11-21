@@ -154,7 +154,7 @@ const UserModels: React.FC = () => {
       return MyModelsStatusValueMap.Degrade;
     }
 
-    if (model.replicas === model.ready_replicas && model.replicas > 0) {
+    if (model.ready_replicas > 0 && model.replicas > 0) {
       return MyModelsStatusValueMap.Active;
     }
     return MyModelsStatusValueMap.Degrade;

@@ -168,7 +168,7 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
           {intl.formatMessage({ id: 'models.table.apiAccessInfo.endpoint' })}
         </span>
         <span className="value">
-          <AutoTooltip ghost maxWidth={data.generic_proxy ? 400 : 180}>
+          <AutoTooltip ghost maxWidth={data.generic_proxy ? 400 : 240}>
             {endPoint}
           </AutoTooltip>
           {!data.generic_proxy && (

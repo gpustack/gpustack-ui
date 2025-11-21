@@ -33,6 +33,18 @@ const Title = styled.span`
   margin-block: 20px 16px;
 `;
 
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  .description {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ant-color-text-tertiary);
+  }
+`;
+
 interface ProviderCatalogProps {
   onSelect?: (provider: string, item: any) => void;
   cols?: number;
@@ -71,6 +83,21 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
     );
   }, [dataList]);
 
+  const renderTitle = (item: any) => {
+    return (
+      <Header>
+        <span>
+          {item.locale ? intl.formatMessage({ id: item.label }) : item.label}
+        </span>
+        {item.description && (
+          <span className="description">
+            {intl.formatMessage({ id: item.description })}
+          </span>
+        )}
+      </Header>
+    );
+  };
+
   return (
     <Container>
       {Object.entries(groupList).map(([groupName, items]) => (
@@ -87,16 +114,9 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
                 active={current === action.key}
                 disabled={action.disabled}
                 clickable={clickable}
-                header={
-                  action.locale
-                    ? intl.formatMessage({ id: action.label })
-                    : action.label
-                }
+                header={renderTitle(action)}
                 icon={action.icon}
-              >
-                {action.description &&
-                  intl.formatMessage({ id: action.description })}
-              </Card>
+              ></Card>
             ))}
           </Wrapper>
         </div>

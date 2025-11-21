@@ -16,7 +16,7 @@ export default {
   'models.form.partialoffload.tips':
     '启用 CPU 卸载时，如果 GPU 资源不足，则模型的一部分层将被卸载到 CPU 上，在没有 GPU 可用时，会使用纯 CPU 推理。',
   'models.form.distribution.tips':
-    '允许在单个节点资源不足时，将部分计算卸载到一个或多个远程节点',
+    '允许在单个节点资源不足时，将部分计算卸载到一个或多个远程节点。',
   'models.openinplayground': '在 Playground 中打开',
   'models.instances': '实例',
   'models.table.replicas.edit': '调整副本数',
@@ -73,7 +73,8 @@ export default {
     '例如，--max-model-len=8192（参数名和值用 = 号分隔）',
   'models.form.backend_parameters.sglang.placeholder':
     '例如，--context-length=8192（参数名和值用 = 号分隔）',
-  'models.form.backend_parameters.vllm.tips': '更多 {backend} 参数说明查看',
+  'models.form.backend_parameters.vllm.tips':
+    '更多 {backend} 参数说明查看<a href={link} target="_blank">这里</a>。',
   'models.logs.pagination.prev': '上一 {lines} 行',
   'models.logs.pagination.next': '下一 {lines} 行',
   'models.logs.pagination.last': '最后一页',
@@ -87,7 +88,7 @@ export default {
   'models.form.backend.llamabox':
     '用于 GGUF 格式模型，支持 Linux, macOS 和 Windows。',
   'models.form.backend.vllm':
-    '内置支持 NVIDIA、AMD、昇腾、海光、亦来云（Iluvatar）和沐曦（MetaX）设备。',
+    '内置支持 NVIDIA、AMD、昇腾、海光、天数智芯和沐曦设备。',
   'models.form.backend.voxbox': '仅支持 NVIDIA GPU 和 CPU。',
   'models.form.backend.mindie': '仅支持昇腾 NPU。',
   'models.form.backend.sglang': '内置支持 NVIDIA/AMD GPU 和昇腾 NPU。',
@@ -100,12 +101,12 @@ export default {
   'models.localpath.gguf.tips.title': 'GGUF 格式模型',
   'models.localpat.safe.tips.title': 'safetensors 格式模型',
   'models.localpath.shared.tips.title': '分片的 GGUF 格式模型',
-  'models.localpath.gguf.tips': '指向模型文件，例如 /data/models/model.gguf',
+  'models.localpath.gguf.tips': '指向模型文件，例如 /data/models/model.gguf。',
   'models.localpath.safe.tips':
-    '指向包含 .safetensors, config.json 文件的模型目录，例如 /data/models/model',
+    '指向包含 .safetensors, config.json 文件的模型目录，例如 /data/models/model。',
   'models.localpath.chunks.tips':
-    '指向模型第一个分片文件，例如 /data/models/model-00001-of-00004.gguf',
-  'models.form.replicas.tips': '多副本数实现 { api } 接口推理请求的负载均衡',
+    '指向模型第一个分片文件，例如 /data/models/model-00001-of-00004.gguf。',
+  'models.form.replicas.tips': '多副本数实现 { api } 接口推理请求的负载均衡。',
   'models.table.list.empty': '暂无已部署模型',
   'models.table.list.getStart':
     '<span style="margin-right: 5px;font-size: 13px;">一键部署</span><span style="font-size: 14px;font-weight: 700">DeepSeek-R1-Distill-Qwen-1.5B</span><span style="margin-left: 5px;font-size: 13px;">立即使用！</span>',
@@ -126,7 +127,7 @@ export default {
   'models.form.evaluating': '评估模型兼容性中...',
   'models.form.incompatible': '检测到不兼容',
   'models.form.restart.onerror': '错误时重启',
-  'models.form.restart.onerror.tips': '当发生错误时，将自动尝试恢复',
+  'models.form.restart.onerror.tips': '当发生错误时，将自动尝试恢复。',
   'models.form.check.params': '正在校验配置...',
   'models.form.check.passed': '兼容性检查通过',
   'models.form.check.claims': '该模型大约需要消耗 {vram} 显存和 {ram} 内存。',
@@ -180,7 +181,7 @@ export default {
   'models.form.maxCPUSize': 'CPU 缓存最大占用 (GiB)',
   'models.form.remoteURL': '远程存储地址',
   'models.form.remoteURL.tips':
-    '参考 <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">配置文档</a> 配置',
+    '参考 <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">配置文档</a> 配置。',
   'models.form.runCommandPlaceholder':
     '例如，vllm serve Qwen/Qwen2.5-1.5B-Instruct',
   'models.accessSettings.public': '公开',
@@ -196,7 +197,8 @@ export default {
   'models.form.gpusAllocationType.custom': '自定义',
   'models.form.gpusAllocationType.auto.tips':
     '系统自动计算每个副本的 GPU 数量，默认是 2 的幂，不超过选择的 GPU 数量。',
-  'models.form.gpusAllocationType.custom.tips': '您可以指定每个副本的 GPU 数量',
+  'models.form.gpusAllocationType.custom.tips':
+    '您可以指定每个副本的 GPU 数量。',
   'models.mymodels.status.inactive': '已停止',
   'models.mymodels.status.degrade': '异常',
   'models.mymodels.status.active': '可用',
@@ -236,7 +238,7 @@ export default {
   'models.form.gpuPerReplica.tips': '输入自定义数值',
   'models.form.generic_proxy': '启用通用代理',
   'models.form.generic_proxy.tips':
-    '启用通用代理后可支持访问非 openai-API 标准的 URI 路径。',
+    '启用通用代理后可支持访问非 OpenAI-API 标准的 URI 路径。',
   'models.form.generic_proxy.button': '通用代理',
   'models.accessControlModal.includeusers': '显示用户',
   'models.table.genericProxy':

@@ -8,7 +8,7 @@ export default {
   'users.table.status': '状态',
   'users.status.active': '启用',
   'users.status.inactive': '停用',
-  'users.form.active': '激活账户',
+  'users.form.active': '启用账户',
   'users.form.active.description': '启用或禁用此用户账户',
   'users.form.fullname': '全名',
   'users.form.source': '来源',
@@ -35,5 +35,6 @@ export default {
   'users.version.update': 'GPUStack {version} 版本可供更新',
   'users.settings.title': '用户设置',
   'users.status.activate': '启用账户',
-  'users.status.deactivate': '停用账户'
+  'users.status.deactivate': '停用账户',
+  'users.status.inactiveAccount': '停用账户'
 };

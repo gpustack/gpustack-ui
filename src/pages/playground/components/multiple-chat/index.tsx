@@ -1,7 +1,7 @@
 import { HEADER_HEIGHT } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import _ from 'lodash';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CompareContext from '../../config/compare-context';
 import {
   MessageItem,
@@ -309,4 +309,4 @@ const MultiCompare: React.FC<MultiCompareProps> = ({ modelList, loaded }) => {
   );
 };
 
-export default memo(MultiCompare);
+export default MultiCompare;

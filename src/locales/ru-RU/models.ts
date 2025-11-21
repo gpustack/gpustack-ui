@@ -178,6 +178,10 @@ export default {
   'models.table.accessScope': 'Область доступа',
   'models.table.accessScope.all': 'Все пользователи',
   'models.table.userSelection': 'Выбор пользователей',
+  'models.button.accessSettings.tips':
+    'Changes to access settings take effect after one minute.',
+  'models.table.userSelection.tips':
+    'Administrators always have access to all models.',
   'models.table.filterByName': 'Фильтр по имени пользователя',
   'models.table.admin': 'Администратор',
   'models.table.noselected': 'Пользователи не выбраны',
@@ -266,4 +270,6 @@ export default {
 // 6. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
 // 7. 'models.form.gpusAllocationType.auto.tips': 'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
 // 8. 'models.form.backend_parameters.vllm.tips': 'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
+// 9. 'models.button.accessSettings.tips': 'Changes to access settings take effect after one minute.',
+// 10. 'models.table.userSelection.tips': 'Administrators always have access to all models.',
 // ========== End of To-Do List ==========

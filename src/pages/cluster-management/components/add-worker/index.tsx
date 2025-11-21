@@ -68,9 +68,6 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       firstLoad.current = false;
       setRegistrationInfo({
         ...data,
-        image: data.container_registry
-          ? `${data.container_registry}/${data.image}`
-          : data.image,
         cluster_id: value
       });
     } catch (error) {

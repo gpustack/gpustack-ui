@@ -516,7 +516,12 @@ export default (props: any) => {
         onCollapse={onCollapse}
         onMenuHeaderClick={onMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
-        extra={[<ExtraContent key="extra-content" />]}
+        extra={[
+          <ExtraContent
+            key="extra-content"
+            isDarkTheme={userSettings.isDarkTheme}
+          />
+        ]}
         collapsed={userSettings.collapsed}
         onPageChange={onPageChange}
         formatMessage={formatMessage}

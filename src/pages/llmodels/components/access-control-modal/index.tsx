@@ -1,9 +1,11 @@
+import AlertBlockInfo from '@/components/alert-info/block';
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
-import { useRef } from 'react';
+import _ from 'lodash';
+import { useEffect, useRef, useState } from 'react';
 import { updateModelAccessUser } from '../../apis';
 import { AccessControlFormData, ListItem } from '../../config/types';
 import AccessControlForm from './form';
@@ -13,6 +15,8 @@ const AccessControlModal: React.FC<
 > = ({ open, title, currentData, action, onCancel }) => {
   const intl = useIntl();
   const form = useRef<any>(null);
+  const [isChanged, setIsChanged] = useState(false);
+  const formCacheRef = useRef<AccessControlFormData | null>(null);
 
   const handleSumit = () => {
     form.current?.submit();
@@ -36,6 +40,32 @@ const AccessControlModal: React.FC<
     }
   };
 
+  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    console.log('changedValues', changedValues, allValues);
+    const initialValues = formCacheRef.current;
+    if (_.isEqual(initialValues, allValues)) {
+      setIsChanged(false);
+    } else {
+      setIsChanged(true);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      setIsChanged(false);
+      setTimeout(() => {
+        const initialValues = form.current?.getFieldsValue();
+        formCacheRef.current = {
+          access_policy: initialValues.access_policy,
+          users: initialValues.users || []
+        };
+      }, 200);
+    } else {
+      formCacheRef.current = null;
+      setIsChanged(false);
+    }
+  }, [open, currentData]);
+
   return (
     <ScrollerModal
       title={title}
@@ -48,7 +78,19 @@ const AccessControlModal: React.FC<
       keyboard={false}
       width={700}
       footer={
-        <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
+        <>
+          {isChanged && (
+            <AlertBlockInfo
+              type="warning"
+              style={{ marginBottom: 16 }}
+              contentStyle={{ paddingInline: 0 }}
+              message={intl.formatMessage({
+                id: 'models.button.accessSettings.tips'
+              })}
+            ></AlertBlockInfo>
+          )}
+          <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
+        </>
       }
     >
       <AccessControlForm
@@ -56,6 +98,7 @@ const AccessControlModal: React.FC<
         currentData={currentData}
         action={action as PageActionType}
         onFinish={handleOnFinish}
+        onValuesChange={handleOnValuesChange}
       />
     </ScrollerModal>
   );

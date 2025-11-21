@@ -12,7 +12,8 @@ import AllowModelsForm from './allow-models';
 const APIKeyForm: React.FC<{
   action: PageActionType;
   currentData?: Partial<ListItem> | null;
-}> = ({ action, currentData }) => {
+  onValuesChange?: (changedValues: any, allValues: any) => void;
+}> = ({ action, currentData, onValuesChange }) => {
   const intl = useIntl();
 
   return (
@@ -70,6 +71,7 @@ const APIKeyForm: React.FC<{
       <AllowModelsForm
         currentData={currentData}
         action={action}
+        onValuesChange={onValuesChange}
       ></AllowModelsForm>
     </>
   );

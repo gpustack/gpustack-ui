@@ -1,3 +1,4 @@
+import AlertBlockInfo from '@/components/alert-info/block';
 import CopyButton from '@/components/copy-button';
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
@@ -9,7 +10,7 @@ import { useIntl } from '@umijs/max';
 import { Form, Tag } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createApisKey, updateApisKey } from '../../apis';
 import { expirationOptions } from '../../config';
 import { FormData, ListItem } from '../../config/types';
@@ -37,6 +38,11 @@ const AddModal: React.FC<AddModalProps> = ({
   const [showKey, setShowKey] = useState(false);
   const [apikeyValue, setAPIKeyValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
+  const cacheFormRef = useRef<{
+    allowed_type: string;
+    allowed_model_names: string[];
+  }>({} as any);
 
   const getExpireValue = (val: number | null) => {
     const expires_in = val;
@@ -128,6 +134,21 @@ const AddModal: React.FC<AddModalProps> = ({
     setShowKey(false);
   };
 
+  const handleOnValuesChange = async (changedValues: any, allValues: any) => {
+    const initialValues = cacheFormRef.current;
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+    console.log('initialValues', initialValues, allValues);
+    if (
+      _.isEqual(initialValues, _.pick(allValues, Object.keys(initialValues)))
+    ) {
+      setIsChanged(false);
+    } else {
+      setIsChanged(true);
+    }
+  };
+
   const initValues = () => {
     if (action === PageAction.CREATE && open) {
       form.setFieldsValue({
@@ -146,10 +167,19 @@ const AddModal: React.FC<AddModalProps> = ({
         allowed_model_names: currentData.allowed_model_names || []
       });
     }
+
+    cacheFormRef.current = {
+      allowed_type: form.getFieldValue('allowed_type'),
+      allowed_model_names: form.getFieldValue('allowed_model_names')
+    };
   };
 
   useEffect(() => {
     initValues();
+    if (!open) {
+      setIsChanged(false);
+      cacheFormRef.current = {} as any;
+    }
   }, [open]);
 
   return (
@@ -183,29 +213,45 @@ const AddModal: React.FC<AddModalProps> = ({
         }}
         footer={
           !showKey ? (
-            <ModalFooter
-              onOk={handleSumit}
-              onCancel={onCancel}
-              loading={loading}
-              style={{
-                padding: '16px 24px',
-                display: 'flex',
-                justifyContent: 'flex-end'
-              }}
-            ></ModalFooter>
+            <>
+              {isChanged && (
+                <div style={{ marginInline: 24 }}>
+                  <AlertBlockInfo
+                    type="warning"
+                    style={{ marginBottom: 16 }}
+                    contentStyle={{ paddingInline: 0 }}
+                    message={intl.formatMessage({
+                      id: 'models.button.accessSettings.tips'
+                    })}
+                  ></AlertBlockInfo>
+                </div>
+              )}
+              <ModalFooter
+                onOk={handleSumit}
+                onCancel={onCancel}
+                loading={loading}
+                style={{
+                  padding: '16px 24px',
+                  display: 'flex',
+                  justifyContent: 'flex-end'
+                }}
+              ></ModalFooter>
+            </>
           ) : (
-            <ModalFooter
-              onOk={handleDone}
-              onCancel={onCancel}
-              loading={loading}
-              okText={intl.formatMessage({ id: 'common.button.done' })}
-              showCancelBtn={false}
-              style={{
-                padding: '16px 24px',
-                display: 'flex',
-                justifyContent: 'flex-end'
-              }}
-            ></ModalFooter>
+            <>
+              <ModalFooter
+                onOk={handleDone}
+                onCancel={onCancel}
+                loading={loading}
+                okText={intl.formatMessage({ id: 'common.button.done' })}
+                showCancelBtn={false}
+                style={{
+                  padding: '16px 24px',
+                  display: 'flex',
+                  justifyContent: 'flex-end'
+                }}
+              ></ModalFooter>
+            </>
           )
         }
       >
@@ -213,10 +259,15 @@ const AddModal: React.FC<AddModalProps> = ({
           name="addAPIKey"
           form={form}
           onFinish={handleOnOk}
+          onValuesChange={handleOnValuesChange}
           preserve={false}
         >
           {!showKey && (
-            <APIKeyForm action={action} currentData={currentData}></APIKeyForm>
+            <APIKeyForm
+              action={action}
+              currentData={currentData}
+              onValuesChange={handleOnValuesChange}
+            ></APIKeyForm>
           )}
           {showKey && action === PageAction.CREATE && (
             <Form.Item>

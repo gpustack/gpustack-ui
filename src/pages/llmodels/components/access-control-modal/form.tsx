@@ -3,14 +3,24 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import TransferInner from '@/pages/_components/transfer';
 import { queryUsersList } from '@/pages/users/apis';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Checkbox, Dropdown, DropdownProps, Empty, Form, Radio } from 'antd';
+import {
+  Checkbox,
+  Dropdown,
+  DropdownProps,
+  Empty,
+  Form,
+  Radio,
+  RadioChangeEvent,
+  Tooltip
+} from 'antd';
 import {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState
 } from 'react';
 import styled from 'styled-components';
@@ -30,10 +40,11 @@ interface AccessControlFormProps {
   action: PageActionType;
   currentData?: ListItem | null;
   onFinish: (values: AccessControlFormData) => void;
+  onValuesChange?: (changedValues: any, allValues: any) => void;
 }
 
 const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
-  const { action, currentData, onFinish } = props;
+  const { action, currentData, onFinish, onValuesChange } = props;
   const intl = useIntl();
   const [form] = Form.useForm();
   const accessPolicy = Form.useWatch('access_policy', form);
@@ -47,6 +58,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
   const [queryParams, setQueryParams] = useState<Global.SearchParams>({
     page: -1
   });
+  const formDataCacheRef = useRef<AccessControlFormData | null>(null);
 
   const dataList = useMemo(() => {
     if (filterInUsers.size === 0) {
@@ -85,7 +97,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     }
   };
 
-  const handleOnChange = (
+  const handleOnChange = async (
     nextTargetKeys: TransferKey[],
     direction: string,
     removeKeys: TransferKey[]
@@ -93,6 +105,10 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     setTargetKeys(nextTargetKeys);
     const users = nextTargetKeys.map((key) => ({ id: key }));
     form.setFieldsValue({ users });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+    onValuesChange?.({ users }, form.getFieldsValue());
   };
 
   const onSearch = (dir: 'left' | 'right', value: string) => {
@@ -113,6 +129,23 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     if (info.source === 'trigger' || nextOpen) {
       setOpen(nextOpen);
     }
+  };
+
+  const handleOnPolicyChange = async (e: RadioChangeEvent) => {
+    console.log('policy changed:', e.target.value);
+    const policy = e.target.value;
+    if (policy === 'allowed_users') {
+      form.setFieldsValue({ users: formDataCacheRef.current?.users || [] });
+    } else {
+      formDataCacheRef.current = {
+        access_policy: policy,
+        users: form.getFieldValue('users') || []
+      };
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+    onValuesChange?.({ access_policy: policy }, form.getFieldsValue());
   };
 
   useImperativeHandle(ref, () => ({
@@ -222,16 +255,18 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
     <Form
       form={form}
       onFinish={onFinish}
-      preserve={false}
+      preserve={true}
       clearOnDestroy={true}
       scrollToFirstError={true}
       initialValues={{
+        users: [],
         access_policy: action === PageAction.CREATE ? 'authed' : undefined
       }}
     >
       <Label>{intl.formatMessage({ id: 'models.table.accessScope' })}</Label>
       <Form.Item<AccessControlFormData> name="access_policy" noStyle>
         <Radio.Group
+          onChange={handleOnPolicyChange}
           style={{ marginBottom: 12 }}
           options={[
             {
@@ -267,6 +302,13 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         <>
           <Label>
             {intl.formatMessage({ id: 'models.table.userSelection' })}
+            <Tooltip
+              title={intl.formatMessage({
+                id: 'models.table.userSelection.tips'
+              })}
+            >
+              <QuestionCircleOutlined style={{ marginLeft: 4 }} />
+            </Tooltip>
           </Label>
           <Form.Item<AccessControlFormData> name="users">
             <TransferInner

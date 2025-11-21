@@ -110,10 +110,14 @@ const ScheduleTypeForm: React.FC = () => {
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
     });
+
     if (value === ScheduleValueMap.Auto) {
       onValuesChange?.({}, form.getFieldsValue());
     } else if (value === ScheduleValueMap.Manual) {
-      form.setFieldValue(['gpu_selector', 'gpus_per_replica'], null);
+      form.setFieldValue('gpu_selector', {
+        gpu_ids: [],
+        gpus_per_replica: null
+      });
       requestAnimationFrame(() => {
         setContentPaddingBottom();
       });

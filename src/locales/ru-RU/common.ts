@@ -261,15 +261,12 @@ export default {
   'common.button.terminal': 'Терминал',
   'common.button.addItem': 'Добавить элемент',
   'common.help.default': 'По умолчанию: {content}',
-  'common.filter.status': 'Filter by status',
-  'common.form.rule.selectInput': 'Please select or enter a {name}',
-  'common.tag.experimental': 'Experimental',
-  'common.title.example': 'Example'
+  'common.filter.status': 'Фильтровать по статусу',
+  'common.form.rule.selectInput': 'Выберите или введите {name}',
+  'common.tag.experimental': 'Экспериментальный',
+  'common.title.example': 'Пример'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.filter.status': 'Filter by status'
-// 2. 'common.form.rule.selectInput': 'Please select or enter a {name}',
-// 3. 'common.tag.experimental': 'Experimental',
-// 4. 'common.title.example': 'Example'
+
 // ========== End of To-Do List ==========

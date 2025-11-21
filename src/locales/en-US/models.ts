@@ -178,6 +178,10 @@ export default {
   'models.table.accessScope': 'Access Scope',
   'models.table.accessScope.all': 'All users',
   'models.table.userSelection': 'User Selection',
+  'models.button.accessSettings.tips':
+    'Changes to access settings take effect after one minute.',
+  'models.table.userSelection.tips':
+    'Administrators always have access to all models.',
   'models.table.filterByName': 'Filter by username',
   'models.table.admin': 'Admin',
   'models.table.noselected': 'No users selected',

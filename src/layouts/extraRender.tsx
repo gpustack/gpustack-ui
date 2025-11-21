@@ -98,7 +98,8 @@ const CustomItem = styled.div`
   background-color: var(--ant-color-bg-elevated);
 `;
 
-export const ExtraContent = () => {
+export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
+  const { isDarkTheme } = props;
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [modal, contextHolder] = Modal.useModal();
   const [version] = useAtom(GPUStackVersionAtom);
@@ -129,6 +130,16 @@ export const ExtraContent = () => {
     version.version,
     initialState?.currentUser?.is_admin
   ]);
+
+  const avatarStyle = useMemo(() => {
+    if (isDarkTheme) {
+      return {
+        color: 'var(--ant-color-text)',
+        border: 'none'
+      };
+    }
+    return {};
+  }, [isDarkTheme]);
 
   const showVersion = () => {
     saveScrollHeight();
@@ -260,6 +271,7 @@ export const ExtraContent = () => {
           <span className="flex-center gap-8">
             <Avatar
               size={24}
+              style={{ ...avatarStyle }}
               src={initialState?.currentUser?.avatar}
               icon={
                 <IconFont type="icon-user-filled" className="font-size-24" />
@@ -309,6 +321,7 @@ export const ExtraContent = () => {
         <IconWrapper>
           <Avatar
             size={24}
+            style={{ ...avatarStyle }}
             src={initialState?.currentUser?.avatar}
             icon={<IconFont type="icon-user-filled" className="font-size-24" />}
           />

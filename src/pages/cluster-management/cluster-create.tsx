@@ -243,9 +243,6 @@ const ClusterCreate = () => {
     const info = await queryClusterToken({ id: res.id });
     setRegistrationInfo({
       ...info,
-      image: info.container_registry
-        ? `${info.container_registry}/${info.image}`
-        : info.image,
       cluster_id: res.id
     });
     return true;

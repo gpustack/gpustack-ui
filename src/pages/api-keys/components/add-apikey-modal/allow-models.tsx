@@ -19,7 +19,8 @@ const Label = styled.div`
 const AllowModelsForm: React.FC<{
   currentData?: Partial<ListItem> | null;
   action: PageActionType;
-}> = ({ currentData, action }) => {
+  onValuesChange?: (changedValues: any, allValues: any) => void;
+}> = ({ currentData, action, onValuesChange }) => {
   const intl = useIntl();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
@@ -102,6 +103,10 @@ const AllowModelsForm: React.FC<{
           })}
           onSelectChange={(selectedKeys) => {
             form.setFieldsValue({ allowed_model_names: selectedKeys });
+            onValuesChange?.(
+              { allowed_model_names: selectedKeys },
+              form.getFieldsValue()
+            );
           }}
         />
       </Form.Item>

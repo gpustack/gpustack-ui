@@ -168,6 +168,8 @@ export default {
   'models.table.accessScope': '访问范围',
   'models.table.accessScope.all': '所有用户',
   'models.table.userSelection': '用户选择',
+  'models.button.accessSettings.tips': '访问设置的更改将在一分钟后生效。',
+  'models.table.userSelection.tips': '管理员始终拥有对所有模型的访问权限。',
   'models.table.filterByName': '按用户名筛选',
   'models.table.admin': '管理员',
   'models.table.noselected': '未选择用户',

@@ -1,4 +1,4 @@
-import { colorPrimary } from '@/config/theme';
+import { COLOR_PRIMARY } from '@/config/theme';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
@@ -14,7 +14,7 @@ const defaultSettings: UserSettings = {
   theme: 'light',
   mode: 'auto',
   isDarkTheme: false,
-  colorPrimary: colorPrimary,
+  colorPrimary: COLOR_PRIMARY,
   collapsed: false
 };
 
@@ -47,7 +47,7 @@ export const userSettingsHelperAtom = atom(
     };
     set(userSettingsAtom, {
       ...newSettings,
-      colorPrimary: newSettings.colorPrimary || colorPrimary,
+      colorPrimary: newSettings.colorPrimary || COLOR_PRIMARY,
       isDarkTheme: newSettings.theme === 'realDark'
     });
   }

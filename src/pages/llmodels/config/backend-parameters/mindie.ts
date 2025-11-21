@@ -193,6 +193,22 @@ const options: BackendParameter[] = [
   {
     label: '--multi-token-prediction-tokens',
     value: '--multi-token-prediction-tokens'
+  },
+  {
+    label: '--context-parallel-size',
+    value: '--context-parallel-size'
+  },
+  {
+    label: '--models',
+    value: '--models'
+  },
+  {
+    label: '--max-prefill-tokens',
+    value: '--max-prefill-tokens'
+  },
+  {
+    label: '--max-iter-times',
+    value: '--max-iter-times'
   }
 ];
 

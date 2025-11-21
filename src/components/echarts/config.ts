@@ -16,8 +16,6 @@ export default function useChartConfig() {
   const { useToken } = theme;
   const { token } = useToken();
 
-  console.log('token:', token);
-
   const chartColorMap = useMemo(() => {
     return {
       titleColor: token.colorText,

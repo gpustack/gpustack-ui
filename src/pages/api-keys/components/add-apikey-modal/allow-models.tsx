@@ -54,6 +54,11 @@ const AllowModelsForm: React.FC<{
     } catch (error) {}
   };
 
+  const handleAllowTypeChange = (e: any) => {
+    const value = e.target.value;
+    onValuesChange?.({ allowed_type: value }, form.getFieldsValue());
+  };
+
   useEffect(() => {
     getModelList();
   }, [action, currentData]);
@@ -68,6 +73,7 @@ const AllowModelsForm: React.FC<{
         style={{ marginBottom: 8 }}
       >
         <Radio.Group
+          onChange={handleAllowTypeChange}
           options={[
             {
               label: intl.formatMessage({ id: 'apikeys.models.all' }),

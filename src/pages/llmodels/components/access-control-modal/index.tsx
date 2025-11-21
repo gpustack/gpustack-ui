@@ -40,10 +40,18 @@ const AccessControlModal: React.FC<
     }
   };
 
+  const customEqual = (objValue: any, othValue: any) => {
+    if (_.isArray(objValue) && _.isArray(othValue)) {
+      const objIds = objValue.map((item: any) => item.id).sort();
+      const othIds = othValue.map((item: any) => item.id).sort();
+      return _.isEqual(objIds, othIds);
+    }
+    return undefined;
+  };
+
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
-    console.log('changedValues', changedValues, allValues);
     const initialValues = formCacheRef.current;
-    if (_.isEqual(initialValues, allValues)) {
+    if (_.isEqualWith(initialValues, allValues, customEqual)) {
       setIsChanged(false);
     } else {
       setIsChanged(true);
@@ -77,6 +85,7 @@ const AccessControlModal: React.FC<
       maskClosable={false}
       keyboard={false}
       width={700}
+      height={660}
       footer={
         <>
           {isChanged && (

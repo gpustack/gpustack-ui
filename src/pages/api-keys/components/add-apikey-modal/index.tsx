@@ -134,14 +134,24 @@ const AddModal: React.FC<AddModalProps> = ({
     setShowKey(false);
   };
 
+  const customEqual = (objValue: any, othValue: any) => {
+    if (_.isArray(objValue) && _.isArray(othValue)) {
+      return _.isEmpty(_.xor(objValue, othValue));
+    }
+    return undefined;
+  };
+
   const handleOnValuesChange = async (changedValues: any, allValues: any) => {
     const initialValues = cacheFormRef.current;
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
     });
-    console.log('initialValues', initialValues, allValues);
     if (
-      _.isEqual(initialValues, _.pick(allValues, Object.keys(initialValues)))
+      _.isEqualWith(
+        initialValues,
+        _.pick(allValues, Object.keys(initialValues)),
+        customEqual
+      )
     ) {
       setIsChanged(false);
     } else {
@@ -259,7 +269,6 @@ const AddModal: React.FC<AddModalProps> = ({
           name="addAPIKey"
           form={form}
           onFinish={handleOnOk}
-          onValuesChange={handleOnValuesChange}
           preserve={false}
         >
           {!showKey && (

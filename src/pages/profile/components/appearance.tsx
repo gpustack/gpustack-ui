@@ -30,8 +30,6 @@ const SettingsItem = styled.div`
 const Appearance: React.FC = () => {
   const { setTheme, userSettings } = useUserSettings();
 
-  console.log('userSettings', userSettings);
-
   const intl = useIntl();
   const allLocals = getAllLocales();
 
@@ -57,8 +55,6 @@ const Appearance: React.FC = () => {
     setTheme(value);
   };
 
-  console.log('allLocals', allLocals);
-
   const languageOptions = allLocals.map((locale) => ({
     value: locale,
     label: _.get(langConfigMap, [locale, 'label'])
@@ -71,6 +67,7 @@ const Appearance: React.FC = () => {
           <span>{intl.formatMessage({ id: 'common.appearance.theme' })}</span>
         </span>
         <BaseSelect
+          defaultValue={'light'}
           value={userSettings.mode}
           options={ThemeOptions}
           onChange={handleOnChange}

@@ -1,5 +1,5 @@
 import { userAtom } from '@/atoms/user';
-import { clearAtomStorage } from '@/atoms/utils';
+import { clearAtomStorage, clearStorageUserSettings } from '@/atoms/utils';
 import { request } from '@umijs/max';
 import qs from 'query-string';
 
@@ -27,6 +27,7 @@ export const logout = async (userInfo?: any) => {
   await request(`${AUTH_API}/logout`, {
     method: 'POST'
   });
+  clearStorageUserSettings();
   clearAtomStorage(userAtom);
   return;
 };

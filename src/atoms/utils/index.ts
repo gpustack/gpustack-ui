@@ -1,5 +1,18 @@
 import { getDefaultStore } from 'jotai';
 
+export const clearStorageUserSettings = () => {
+  const savedSettings = JSON.parse(
+    localStorage.getItem('userSettings') || '{}'
+  );
+  localStorage.setItem(
+    'userSettings',
+    JSON.stringify({
+      ...savedSettings,
+      colorPrimary: undefined
+    })
+  );
+};
+
 export const clearAtomStorage = (atom: any) => {
   if (!atom) {
     return;

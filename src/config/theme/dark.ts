@@ -1,3 +1,5 @@
+import { COLOR_PRIMARY } from './index';
+
 export default {
   'root-entry-name': 'variable',
   cssVar: true,
@@ -36,7 +38,7 @@ export default {
       iconMarginInlineEnd: 12,
       itemBorderRadius: 4,
       itemHeight: 32,
-      itemSelectedColor: '#007BFF',
+      itemSelectedColor: COLOR_PRIMARY,
       darkItemSelectedBg: '#141414',
       darkItemHoverBg: 'rgba(255, 255, 255, 0.03)',
       groupTitleColor: 'rgba(0,0,0,1)',
@@ -78,7 +80,7 @@ export default {
     fontFamily:
       "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
     colorText: '#ccc',
-    colorPrimary: '#007BFF',
+    colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#48A77E',
     borderRadius: 4,
     borderRadiusSM: 2,

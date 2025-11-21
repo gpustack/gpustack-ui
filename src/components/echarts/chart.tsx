@@ -33,7 +33,7 @@ const Chart: React.FC<{
   };
 
   const setOption = (options: ECOption) => {
-    console.log('setOption', options);
+    if (!chart.current) return;
     chart.current?.clear();
     chart.current?.setOption(options, {
       notMerge: true,
@@ -107,8 +107,8 @@ const Chart: React.FC<{
     }
 
     return () => {
-      chart.current?.dispose();
       chart.current?.off('finished', handleOnFinished);
+      chart.current?.dispose();
     };
   }, []);
 
@@ -128,13 +128,11 @@ const Chart: React.FC<{
 
     if (container.current) {
       resizeObserver.current = new ResizeObserver(handleResize);
-
       resizeObserver.current.observe(container.current);
     }
     return () => {
-      if (container.current) {
-        resizeObserver.current?.unobserve(container.current);
-      }
+      resizeObserver.current?.disconnect();
+      resizeObserver.current = undefined;
     };
   }, []);
 

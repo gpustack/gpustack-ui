@@ -1,10 +1,10 @@
 import dark from './dark';
 import light from './light';
 
-export const colorPrimary = '#007BFF';
+export const COLOR_PRIMARY = '#007BFF';
 
 export default {
   light,
   dark,
-  colorPrimary: colorPrimary
+  colorPrimary: COLOR_PRIMARY
 };

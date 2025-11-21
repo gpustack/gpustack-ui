@@ -1,5 +1,6 @@
 import ModalFooter from '@/components/modal-footer';
 import ScrollerModal from '@/components/scroller-modal';
+import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { message } from 'antd';
 import { useRef } from 'react';
@@ -53,7 +54,7 @@ const AccessControlModal: React.FC<
       <AccessControlForm
         ref={form}
         currentData={currentData}
-        action={action}
+        action={action as PageActionType}
         onFinish={handleOnFinish}
       />
     </ScrollerModal>

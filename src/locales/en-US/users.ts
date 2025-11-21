@@ -36,5 +36,6 @@ export default {
   'users.version.update': 'GPUStack {version} is available',
   'users.settings.title': 'User Settings',
   'users.status.activate': 'Activate Account',
-  'users.status.deactivate': 'Deactivate Account'
+  'users.status.deactivate': 'Deactivate Account',
+  'users.status.inactiveAccount': 'Inactive Account'
 };

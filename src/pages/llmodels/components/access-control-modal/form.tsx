@@ -198,7 +198,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                   checked={filterInUsers.has('inactive')}
                   onChange={(e: any) => handleCheck(e, 'inactive')}
                 >
-                  {intl.formatMessage({ id: 'users.status.deactivate' })}
+                  {intl.formatMessage({ id: 'users.status.inactiveAccount' })}
                 </Checkbox>
               ),
               key: '1'

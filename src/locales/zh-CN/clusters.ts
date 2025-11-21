@@ -36,7 +36,7 @@ export default {
   'clusters.create.noImages': '无可用的镜像',
   'clusters.create.noInstanceTypes': '无可用的实例类型',
   'clusters.create.noRegions': '无可用的区域',
-  'clusters.workerpool.batchSize.desc': '节点池中同时创建的节点数量',
+  'clusters.workerpool.batchSize.desc': '节点池中同时创建的节点数量。',
   'clusters.create.addworker.tips':
     '在执行以下命令之前，请确保已满足 {label} 的<a href={link} target="_blank">先决条件</a>。',
   'clusters.create.addCommand.tips':

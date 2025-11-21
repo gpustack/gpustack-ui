@@ -75,7 +75,7 @@ export default {
   'models.form.backend_parameters.sglang.placeholder':
     'например: --context-length=8192（параметр и значение разделены знаком =）',
   'models.form.backend_parameters.vllm.tips':
-    'Подробнее о параметрах {backend}',
+    'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
   'models.logs.pagination.prev': 'Предыдущие {lines} строк',
   'models.logs.pagination.next': 'Следующие {lines} строк',
   'models.logs.pagination.last': 'Последняя страница',
@@ -265,4 +265,5 @@ export default {
 // 5. 'models.form.backend.mindie': 'Only supports Ascend NPUs.',
 // 6. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
 // 7. 'models.form.gpusAllocationType.auto.tips': 'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
+// 8. 'models.form.backend_parameters.vllm.tips': 'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
 // ========== End of To-Do List ==========

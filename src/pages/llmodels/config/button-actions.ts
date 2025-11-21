@@ -50,6 +50,11 @@ export const ActionList: ActionItem[] = [
     icon: icons.ExperimentOutlined
   },
   {
+    label: 'common.button.start',
+    key: 'start',
+    icon: icons.Play
+  },
+  {
     label: 'models.table.button.apiAccessInfo',
     key: 'api',
     icon: icons.ApiOutlined
@@ -63,11 +68,6 @@ export const ActionList: ActionItem[] = [
     label: 'common.button.stop',
     key: 'stop',
     icon: icons.Stop
-  },
-  {
-    label: 'common.button.start',
-    key: 'start',
-    icon: icons.Play
   },
   {
     label: 'common.button.delete',

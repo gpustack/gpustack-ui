@@ -163,6 +163,22 @@ const VersionList: React.FC<{ versionConfigs: VersionListItem[] }> = ({
     }
   };
 
+  const optionRender = (option: any) => {
+    const { data } = option;
+    return (
+      <span>
+        {option.label}
+        {data.tips ? (
+          data.locale ? (
+            <span className="text-tertiary m-l-4">{` [${intl.formatMessage({ id: data.tips })}]`}</span>
+          ) : (
+            <span className="text-tertiary m-l-4">{` [${data.tips}]`}</span>
+          )
+        ) : null}
+      </span>
+    );
+  };
+
   return (
     <div>
       <FilterBox>
@@ -171,6 +187,7 @@ const VersionList: React.FC<{ versionConfigs: VersionListItem[] }> = ({
           placeholder={intl.formatMessage({ id: 'backend.filter.framework' })}
           options={frameworks}
           style={{ width: '100%' }}
+          optionRender={optionRender}
           onChange={handleChange}
         />
       </FilterBox>

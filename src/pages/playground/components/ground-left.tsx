@@ -1,4 +1,3 @@
-import { useIntl } from '@umijs/max';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -34,7 +33,6 @@ interface MessageProps {
 
 const GroundLeft: React.FC<MessageProps> = forwardRef((props, ref) => {
   const { modelList } = props;
-  const intl = useIntl();
   const [systemMessage, setSystemMessage] = useState('');
   const [show, setShow] = useState(false);
   const [collapse, setCollapse] = useState(false);

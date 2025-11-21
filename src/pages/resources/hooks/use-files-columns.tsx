@@ -304,7 +304,7 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
         dataIndex: 'resolved_paths',
-        width: '30%',
+        width: '20%',
         ellipsis: {
           showTitle: false
         },

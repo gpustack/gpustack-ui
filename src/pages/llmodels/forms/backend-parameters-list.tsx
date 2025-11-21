@@ -1,7 +1,6 @@
-import IconFont from '@/components/icon-font';
 import ListInput from '@/components/list-input';
 import { useIntl } from '@umijs/max';
-import { Form, Typography } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
 import { backendParamsHolderTips, getBackendParamsTips } from '../config';
@@ -64,24 +63,20 @@ const BackendParametersList: React.FC = () => {
                   {intl.formatMessage({ id: 'models.backend.mindie.310p' })}
                 </span>
               )}
-              <span style={{ marginLeft: 5 }}>
-                {intl.formatMessage(
-                  { id: 'models.form.backend_parameters.vllm.tips' },
-                  { backend: backendParamsTips.backend || '' }
-                )}{' '}
-                <Typography.Link
-                  style={{ display: 'inline' }}
-                  className="flex-center"
-                  href={backendParamsTips.link}
-                  target="_blank"
-                >
-                  <span>{intl.formatMessage({ id: 'common.text.here' })}</span>
-                  <IconFont
-                    type="icon-external-link"
-                    className="font-size-14 m-l-4"
-                  ></IconFont>
-                </Typography.Link>
-              </span>
+              <span
+                style={{
+                  marginLeft: backend === backendOptionsMap.ascendMindie ? 4 : 0
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: intl.formatMessage(
+                    { id: 'models.form.backend_parameters.vllm.tips' },
+                    {
+                      backend: backendParamsTips.backend || '',
+                      link: backendParamsTips.link
+                    }
+                  )
+                }}
+              ></span>
             </span>
           )
         }

@@ -76,7 +76,8 @@ export default {
     '例: --max-model-len=8192（=で名前と値を分ける）',
   'models.form.backend_parameters.sglang.placeholder':
     '例: --context-length=8192（=で名前と値を分ける）',
-  'models.form.backend_parameters.vllm.tips': '詳細な{backend}パラメータ情報',
+  'models.form.backend_parameters.vllm.tips':
+    'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
   'models.logs.pagination.prev': '前の{lines}行',
   'models.logs.pagination.next': '次の{lines}行',
   'models.logs.pagination.last': '最終ページ',
@@ -336,4 +337,5 @@ export default {
 // 59. 'models.form.backend.voxbox': 'Only supports NVIDIA GPUs and CPUs.',
 // 60.  models.form.backend.mindie': 'Only supports Ascend NPUs.',
 // 61. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
+// 62. 'models.form.backend_parameters.vllm.tips': 'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
 // ========== End of To-Do List ==========

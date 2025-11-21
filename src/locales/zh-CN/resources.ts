@@ -96,11 +96,11 @@ export default {
   'resources.modelfiles.form.exsting': '已下载',
   'resources.modelfiles.form.added': '已添加',
   'resources.worker.maintenance.title': '系统维护',
-  'resources.worker.maintenance.enable': '开启维护',
-  'resources.worker.maintenance.disable': '停止维护',
+  'resources.worker.maintenance.enable': '进入维护模式',
+  'resources.worker.maintenance.disable': '退出维护模式',
   'resources.worker.maintenance.remark': '备注',
   'resources.worker.maintenance.remark.rules': '请输入维护备注',
   'resources.worker.maintenance.tips':
-    '启用维护后，节点将停止调度新的模型实例部署任务，正在运行的实例不会受到影响。',
+    '进入维护模式后，节点将停止调度新的模型实例部署任务，正在运行的实例不会受到影响。',
   'resources.worker.noCluster.tips': '当前无可用集群，请先创建集群再添加节点。'
 };

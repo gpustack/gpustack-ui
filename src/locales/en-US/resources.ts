@@ -104,7 +104,7 @@ export default {
   'resources.worker.maintenance.remark.rules':
     'Please enter maintenance remarks',
   'resources.worker.maintenance.tips':
-    'When maintenance mode is enabled, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
+    'When enter the maintenance mode, the node will stop scheduling new model deployment tasks. Running instances will not be affected.',
   'resources.worker.noCluster.tips':
     'No available clusters. Please create a cluster before adding a node.'
 };

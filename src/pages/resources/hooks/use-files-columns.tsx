@@ -282,6 +282,7 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_name',
+        width: '18%',
         ellipsis: {
           showTitle: false
         },
@@ -296,7 +297,7 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
-        width: 132,
+        width: 160,
         render: (text: string, record: ListItem) => {
           return <InstanceStatusTag data={record} />;
         }

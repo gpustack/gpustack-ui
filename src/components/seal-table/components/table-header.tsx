@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import React from 'react';
@@ -40,7 +41,9 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     >
       {sorter ? (
         <span className="sorter-header" onClick={handleOnSort}>
-          <span className="table-header-cell">{title}</span>
+          <AutoTooltip ghost>
+            <span className="table-header-cell">{title}</span>
+          </AutoTooltip>
           <span className="sorter">
             <CaretUpOutlined
               className={classNames('sorter-up', {
@@ -55,7 +58,9 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
           </span>
         </span>
       ) : (
-        <div className="table-header-cell">{title}</div>
+        <AutoTooltip ghost>
+          <span className="table-header-cell">{title}</span>
+        </AutoTooltip>
       )}
     </div>
   );

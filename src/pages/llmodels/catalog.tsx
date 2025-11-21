@@ -206,31 +206,6 @@ const Catalog: React.FC = () => {
     }
   }, [dataSource.loadend]);
 
-  useEffect(() => {
-    const handleScroll = async () => {
-      // Determine the scrolling element
-      const scrollingElement = document.documentElement || document.body;
-
-      // Calculate if the user has scrolled to the bottom
-      const isAtBottom =
-        scrollingElement.scrollTop + scrollingElement.clientHeight >=
-        scrollingElement.scrollHeight - 20; // Adding a small buffer for precision
-
-      if (isAtBottom) {
-        fetchData({
-          ...queryParams,
-          page: queryParams.page + 1
-        });
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [fetchData]);
-
   return (
     <PageBox>
       <FilterBar

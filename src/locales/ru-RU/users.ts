@@ -36,13 +36,11 @@ export default {
   'users.version.islatest': 'GPUStack {version} — последняя версия',
   'users.version.update': 'Доступно обновление GPUStack {version}',
   'users.settings.title': 'Настройки пользователя',
-  'users.status.activate': 'Activate Account',
-  'users.status.deactivate': 'Deactivate Account',
-  'users.status.inactiveAccount': 'Inactive Account'
+  'users.status.activate': 'Активировать аккаунт',
+  'users.status.deactivate': 'Деактивировать аккаунт',
+  'users.status.inactiveAccount': 'Неактивный аккаунт'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'users.status.activate': 'Activate Account',
-// 2. 'users.status.deactivate': 'Deactivate Account',
-// 3. 'users.status.inactiveAccount': 'Inactive Account'
+
 // ========== End of To-Do List ==========

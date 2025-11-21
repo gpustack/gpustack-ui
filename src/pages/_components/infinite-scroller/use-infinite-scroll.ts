@@ -45,5 +45,5 @@ export function useInfiniteScroll({
     }
   }, [inView, throttledLoadMore]);
 
-  return { observerRef };
+  return { observerRef, throttledLoadMore };
 }

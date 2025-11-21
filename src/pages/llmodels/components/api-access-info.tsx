@@ -14,7 +14,6 @@ import {
 } from '@/pages/playground/apis';
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import { useEffect, useMemo } from 'react';
@@ -98,15 +97,6 @@ const ApiAccessInfo = ({ open, data, onClose }: ApiAccessInfoProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const { GenericProxyCommandCode, openProxyModal } = useGenericProxy();
-
-  const getProxyEndPoint = useMemoizedFn((categories: string[]) => {
-    for (const [category, config] of Object.entries(API_MAP)) {
-      if (categories.includes(category)) {
-        return `${MODEL_PROXY}${config.api}`;
-      }
-    }
-    return `${window.location.origin}${MODEL_PROXY}/<YOUR_API_PATH>`;
-  });
 
   const endPoint = useMemo(() => {
     if (!data.generic_proxy) {

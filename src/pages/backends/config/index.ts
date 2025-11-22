@@ -198,11 +198,11 @@ default_version: v0.11.0
 health_check_path: /${GPUSTACK_API_BASE_URL}/models
 default_backend_param:
   - --host
-default_run_command: vllm serve {{model_path}} --port {{port}} --worker-ip {{worker_ip}} --served-model-name {{model_name}}
+default_run_command: vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}
 version_configs:
   v0.11.0:
     image_name: lm/vllm:latest
-    run_command: vllm serve {{model_path}} --port {{port}} --worker-ip {{worker_ip}} --served-model-name {{model_name}}
+    run_command: vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}
     custom_framework: cuda
   v0.10.0:
     image_name: lm/vllm:test

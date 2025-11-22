@@ -181,7 +181,7 @@ export default {
   'models.button.accessSettings.tips':
     'Changes to access settings take effect after one minute.',
   'models.table.userSelection.tips':
-    'Administrators always have access to all models.',
+    'Admin users can access all models by default.',
   'models.table.filterByName': 'Filter by username',
   'models.table.admin': 'Admin',
   'models.table.noselected': 'No users selected',
@@ -254,7 +254,7 @@ export default {
   'models.form.gpuPerReplica.tips': 'Enter a custom number',
   'models.form.generic_proxy': 'Enable Generic Proxy',
   'models.form.generic_proxy.tips':
-    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI compatible APIs.',
+    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
   'models.form.generic_proxy.button': 'Generic Proxy',
   'models.accessControlModal.includeusers': 'Include Users',
   'models.table.genericProxy':

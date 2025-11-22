@@ -182,7 +182,7 @@ export default {
   'models.button.accessSettings.tips':
     'Changes to access settings take effect after one minute.',
   'models.table.userSelection.tips':
-    'Administrators always have access to all models.',
+    'Admin users can access all models by default.',
   'models.table.filterByName': 'Filter by username',
   'models.table.admin': 'Admin',
   'models.table.noselected': 'No users selected',
@@ -343,5 +343,5 @@ export default {
 // 61. 'models.form.backend.sglang': 'Built-in support for NVIDIA/AMD GPUs and Ascend NPUs.',
 // 62. 'models.form.backend_parameters.vllm.tips': 'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
 // 63. 'models.button.accessSettings.tips': 'Changes to access settings take effect after one minute.',
-// 64.  'models.table.userSelection.tips': 'Administrators always have access to all models.',
+// 64.  'models.table.userSelection.tips': 'Admin users can access all models by default.',
 // ========== End of To-Do List ==========

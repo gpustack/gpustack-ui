@@ -60,7 +60,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
                 { id: 'common.help.eg' },
                 {
                   content:
-                    'vllm serve {{model_path}} --port {{port}} --worker-ip {{worker_ip}} --served-model-name {{model_name}}'
+                    'vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
                 }
               )}
               autoSize={{ minRows: 2, maxRows: 4 }}

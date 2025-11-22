@@ -24,7 +24,7 @@ const langMap = {
 const langOptions = [
   { label: 'Curl', value: langMap.shell },
   { label: 'Python', value: langMap.python },
-  { label: 'Nodejs', value: langMap.javascript }
+  { label: 'Node.js', value: langMap.javascript }
 ];
 
 const ViewCodeModal: React.FC<ViewModalProps> = (props) => {

@@ -181,7 +181,7 @@ export default {
   'models.button.accessSettings.tips':
     'Changes to access settings take effect after one minute.',
   'models.table.userSelection.tips':
-    'Administrators always have access to all models.',
+    'Admin users can access all models by default.',
   'models.table.filterByName': 'Фильтр по имени пользователя',
   'models.table.admin': 'Администратор',
   'models.table.noselected': 'Пользователи не выбраны',
@@ -254,7 +254,8 @@ export default {
   'models.catalog.precision': 'Точность',
   'models.form.gpuPerReplica.tips': 'Введите произвольное число',
   'models.form.generic_proxy': 'Включить универсальный прокси',
-  'models.form.generic_proxy.tips': 'Включить универсальный прокси',
+  'models.form.generic_proxy.tips':
+    'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
   'models.form.generic_proxy.button': 'Универсальный прокси',
   'models.accessControlModal.includeusers': 'Включить пользователей',
   'models.table.genericProxy':
@@ -271,5 +272,6 @@ export default {
 // 7. 'models.form.gpusAllocationType.auto.tips': 'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
 // 8. 'models.form.backend_parameters.vllm.tips': 'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
 // 9. 'models.button.accessSettings.tips': 'Changes to access settings take effect after one minute.',
-// 10. 'models.table.userSelection.tips': 'Administrators always have access to all models.',
+// 10. 'models.table.userSelection.tips': 'Admin users can access all models by default.',
+// 11. 'models.form.generic_proxy.tips': 'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
 // ========== End of To-Do List ==========

@@ -407,6 +407,19 @@ export const useCheckCompatibility = () => {
       return;
     }
 
+    if (
+      backendOptionsMap.custom === allValues.backend &&
+      (!allValues.run_command || !allValues.image_name)
+    ) {
+      setWarningStatus({
+        show: false,
+        type: 'warning',
+        isHtml: true,
+        message: ''
+      });
+      return;
+    }
+
     // check gguf: for online and local path
     if (
       checkIsGGUFFileOrNotSupport(allValues.local_path, allValues) &&

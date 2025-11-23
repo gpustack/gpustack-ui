@@ -9,7 +9,10 @@ import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { evaluationsModelSpec } from '../apis';
 import { modelSourceMap, modelTaskMap } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
+import {
+  backendOptionsMap,
+  BuiltInBackendOptions
+} from '../config/backend-parameters';
 import { EvaluateResult, FormData } from '../config/types';
 import { generateGPUIds } from '../config/utils';
 import useCheckBackend from './use-check-backend';
@@ -334,19 +337,19 @@ export const useCheckCompatibility = () => {
     const isOllamaModelFile = isBlobFile || isOllamaModel;
 
     let warningMessage = '';
-    if (isOllamaModelFile && backend === backendOptionsMap.llamaBox) {
-      warningMessage = '';
-    } else if (isOllamaModelFile && backend !== backendOptionsMap.llamaBox) {
-      warningMessage = intl.formatMessage({
-        id: 'models.form.ollama.warning'
-      });
-    } else if (isGGUFFile && backend !== backendOptionsMap.llamaBox) {
+    if (
+      (isGGUFFile || isOllamaModelFile) &&
+      BuiltInBackendOptions.includes(backend)
+    ) {
       warningMessage = intl.formatMessage({
         id: 'models.form.backend.warning'
       });
-    } else if (!isGGUFFile && backend === backendOptionsMap.llamaBox) {
+    } else if (
+      (isGGUFFile || isOllamaModelFile) &&
+      !BuiltInBackendOptions.includes(backend)
+    ) {
       warningMessage = intl.formatMessage({
-        id: 'models.form.backend.warning.llamabox'
+        id: 'models.form.backend.warning.gguf'
       });
     }
 

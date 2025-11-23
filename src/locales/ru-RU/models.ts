@@ -13,7 +13,7 @@ export default {
   'models.form.env': 'Переменные окружения',
   'models.form.configurations': 'Конфигурации',
   'models.form.s3address': 'S3-адрес',
-  'models.form.partialoffload.tips': `При включенном оффлоудинге на CPU: если ресурсов GPU недостаточно, часть слоёв модели будет перенесена на CPU. Если GPU отсутствует, будет использоваться полный вывод на CPU.`, // Already translated
+  'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`, // Already translated
   'models.form.distribution.tips': `Позволяет переносить часть слоёв модели на один или несколько удалённых воркеров, когда ресурсов текущего воркера недостаточно.`,
   'models.openinplayground': 'Открыть в Песочнице',
   'models.instances': 'инстансы',
@@ -120,7 +120,9 @@ export default {
   'models.form.moreparameters': 'Описание параметров',
   'models.table.vram.allocated': 'Выделенная VRAM',
   'models.form.backend.warning':
-    'Бэкенд для моделей формата GGUF использует llama-box.',
+    'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
+  'models.form.backend.warning.gguf':
+    'Please ensure that the selected custom backend supports GGUF models.',
   'models.form.ollama.warning':
     'Чтобы развернуть бэкенд для моделей Ollama с использованием llama-box , выполните следующие шаги.',
   'models.form.backend.warning.llamabox':
@@ -274,4 +276,7 @@ export default {
 // 9. 'models.button.accessSettings.tips': 'Changes to access settings take effect after one minute.',
 // 10. 'models.table.userSelection.tips': 'Admin users can access all models by default.',
 // 11. 'models.form.generic_proxy.tips': 'After enabling the generic proxy, you can access URI paths that do not follow the OpenAI API standard.',
+// 12. 'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`,
+// 13. 'models.form.backend.warning': 'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
+// 14. 'models.form.backend.warning.gguf': 'Please ensure that the selected custom backend supports GGUF models.',
 // ========== End of To-Do List ==========

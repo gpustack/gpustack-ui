@@ -13,8 +13,7 @@ export default {
   'models.form.env': '環境変数',
   'models.form.configurations': '設定',
   'models.form.s3address': 'S3アドレス',
-  'models.form.partialoffload.tips':
-    'CPUオフロードが有効な場合、GPUリソースが不足するとモデルの一部のレイヤーがCPUにオフロードされます。GPUが利用できない場合は、完全なCPU推論が使用されます。',
+  'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`,
   'models.form.distribution.tips':
     'ワーカーのリソースが不足している場合、モデルの一部のレイヤーを単一または複数のリモートワーカーにオフロードすることができます。',
   'models.openinplayground': 'プレイグラウンドで開く',
@@ -121,7 +120,9 @@ export default {
   'models.form.moreparameters': 'パラメータ説明',
   'models.table.vram.allocated': '割り当て済みVRAM',
   'models.form.backend.warning':
-    'GGUF形式のモデルのバックエンドはllama-boxを使用します。',
+    'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
+  'models.form.backend.warning.gguf':
+    'Please ensure that the selected custom backend supports GGUF models.',
   'models.form.ollama.warning':
     'Ollamaモデルのバックエンドをllama-boxを使用してデプロイします。',
   'models.form.backend.warning.llamabox':
@@ -344,4 +345,7 @@ export default {
 // 62. 'models.form.backend_parameters.vllm.tips': 'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
 // 63. 'models.button.accessSettings.tips': 'Changes to access settings take effect after one minute.',
 // 64.  'models.table.userSelection.tips': 'Admin users can access all models by default.',
+// 65. 'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`,
+// 66. 'models.form.backend.warning': 'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
+// 67.  'models.form.backend.warning.gguf': 'Please ensure that the selected custom backend supports GGUF models.',
 // ========== End of To-Do List ==========

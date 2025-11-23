@@ -14,7 +14,7 @@ export default {
   'models.form.configurations': '配置',
   'models.form.s3address': 'S3 地址',
   'models.form.partialoffload.tips':
-    '启用 CPU 卸载时，如果 GPU 资源不足，则模型的一部分层将被卸载到 CPU 上，在没有 GPU 可用时，会使用纯 CPU 推理。',
+    '启用 CPU 卸载后，GPU 不足时 GPUStack 会自动使用 CPU 内存。请确保推理后端已正确配置为混合 CPU+GPU 或纯 CPU 推理。',
   'models.form.distribution.tips':
     '允许在单个节点资源不足时，将部分计算卸载到一个或多个远程节点。',
   'models.openinplayground': '在 Playground 中打开',
@@ -115,7 +115,10 @@ export default {
   'models.form.releases': '版本',
   'models.form.moreparameters': '参数说明',
   'models.table.vram.allocated': '分配显存',
-  'models.form.backend.warning': 'GGUF 格式模型后端用 llama-box。',
+  'models.form.backend.warning':
+    '当前后端不支持 GGUF 格式模型。请在“推理后端”中添加一个支持 GGUF 的后端后再继续。',
+  'models.form.backend.warning.gguf':
+    '请确认当前使用的自定义后端已支持 GGUF 格式模型。',
   'models.form.ollama.warning': '部署 Ollama 模型后端使用 llama-box。',
   'models.form.backend.warning.llamabox':
     '要使用 llama-box 后端，请指定模型文件的完整路径（例如：<span style="font-weight: 700">/data/models/model.gguf</span>）。对于分片模型，请提供第一个分片的路径（例如：<span style="font-weight: 700">/data/models/model-00001-of-00004.gguf</span>）。',

@@ -37,12 +37,8 @@ const BackendList = () => {
     modalRef,
     fetchData,
     handleDelete,
-    handleDeleteBatch,
-    handlePageChange,
-    handleTableChange,
     handleSearch,
-    handleNameChange,
-    handleQueryChange
+    handleNameChange
   } = useTableFetch<ListItem>({
     fetchAPI: queryBackendsList,
     deleteAPI: deleteBackend,

@@ -257,7 +257,6 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (requestModelId !== getRequestId()) {
       return;
     }
-    console.log('handleSelectModelFile:', item, selectedModel);
 
     const modelInfo = onSelectModel(selectedModel, props.source);
 
@@ -267,7 +266,7 @@ const AddModal: FC<AddModalProps> = (props) => {
       model_scope_file_path: item.fakeName,
       backend_parameters: [],
       backend_version: '',
-      backend: '',
+      backend: modelInfo.backend,
       env: {},
       categories: getCategory(item)
     });
@@ -403,6 +402,7 @@ const AddModal: FC<AddModalProps> = (props) => {
   };
 
   const handleBackendChange = async (backend: string) => {
+    console.log('handleBackendChange:', backend);
     const data = form.current.form.getFieldsValue?.();
     const res = handleBackendChangeBefore(data);
     if (res.show) {

@@ -5,6 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React from 'react';
 import { backendOptionsMap } from '../config/backend-parameters';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 
 const CustomBackend: React.FC = () => {
@@ -12,6 +13,23 @@ const CustomBackend: React.FC = () => {
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const backend = Form.useWatch('backend', form);
+  const { onValuesChange } = useFormContext();
+
+  const handleImageNameOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const runCommand = form.getFieldValue('run_command');
+    if (value && runCommand) {
+      onValuesChange?.({ image_name: value }, form.getFieldsValue());
+    }
+  };
+
+  const handleRunCommandOnBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const imageName = form.getFieldValue('image_name');
+    if (value && imageName) {
+      onValuesChange?.({ run_command: value }, form.getFieldsValue());
+    }
+  };
 
   return (
     <>
@@ -29,6 +47,7 @@ const CustomBackend: React.FC = () => {
             <SealInput.Input
               required
               allowClear
+              onBlur={handleImageNameOnBlur}
               label={intl.formatMessage({ id: 'backend.imageName' })}
             ></SealInput.Input>
           </Form.Item>
@@ -46,6 +65,7 @@ const CustomBackend: React.FC = () => {
               required
               scaleSize={false}
               alwaysFocus={true}
+              onBlur={handleRunCommandOnBlur}
               autoSize={{ minRows: 2, maxRows: 4 }}
               label={intl.formatMessage({ id: 'backend.runCommand' })}
               description={intl.formatMessage({

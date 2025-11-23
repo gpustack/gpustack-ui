@@ -17,7 +17,6 @@ export const backendOptionsMap = {
 };
 
 export const BuiltInBackendOptions = [
-  backendOptionsMap.vllm,
   backendOptionsMap.ascendMindie,
   backendOptionsMap.SGLang,
   backendOptionsMap.voxBox

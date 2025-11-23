@@ -16,7 +16,9 @@ export const backendOptionsMap = {
   SGLang: 'SGLang'
 };
 
+// for checking built-in backends when selecting a gguf
 export const BuiltInBackendOptions = [
+  backendOptionsMap.vllm,
   backendOptionsMap.ascendMindie,
   backendOptionsMap.SGLang,
   backendOptionsMap.voxBox

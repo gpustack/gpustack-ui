@@ -1,12 +1,6 @@
 import { Form, Input } from 'antd';
 import type { TextAreaProps } from 'antd/es/input/TextArea';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
@@ -73,46 +67,34 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
     return focusRows;
   }, [props.autoSize, isFocus, scaleSize]);
 
-  const handleClickWrapper = useCallback(() => {
+  const handleClickWrapper = () => {
     if (!props.disabled && !isFocus) {
       inputRef.current?.focus?.({
         cursor: 'all'
       });
       setIsFocus(true);
     }
-  }, [props.disabled, isFocus]);
+  };
 
-  const handleChange = useCallback(
-    (e: any) => {
-      onChange?.(e);
-    },
-    [onChange]
-  );
+  const handleChange = (e: any) => {
+    onChange?.(e);
+  };
 
-  const handleOnFocus = useCallback(
-    (e: any) => {
-      setIsFocus(true);
-      onFocus?.(e);
-    },
-    [onFocus]
-  );
+  const handleOnFocus = (e: any) => {
+    setIsFocus(true);
+    onFocus?.(e);
+  };
 
-  const handleOnBlur = useCallback(
-    (e: any) => {
-      if (!inputRef.current?.resizableTextArea?.textArea?.value) {
-        setIsFocus(false);
-        onBlur?.(e);
-      }
-    },
-    [onBlur, scaleSize]
-  );
+  const handleOnBlur = (e: any) => {
+    if (!inputRef.current?.resizableTextArea?.textArea?.value) {
+      setIsFocus(false);
+    }
+    onBlur?.(e);
+  };
 
-  const handleInput = useCallback(
-    (e: any) => {
-      onInput?.(e);
-    },
-    [onInput]
-  );
+  const handleInput = (e: any) => {
+    onInput?.(e);
+  };
 
   console.log('style=========', style, rest);
 

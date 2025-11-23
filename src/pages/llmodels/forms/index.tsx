@@ -240,6 +240,15 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       ...updateKVCacheConfig(val, option),
       ...updateGPUSelector(val)
     });
+
+    const imageName = form.getFieldValue('image_name');
+    const runCommand = form.getFieldValue('run_command');
+
+    // if the image_name or run_command is empty, set them to default value of the backend
+
+    if (val === backendOptionsMap.custom && !imageName && !runCommand) {
+      return;
+    }
     onBackendChange?.(val);
   };
 

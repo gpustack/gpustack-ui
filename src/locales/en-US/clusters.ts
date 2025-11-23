@@ -12,7 +12,7 @@ export default {
   'clusters.button.register': 'Register Cluster',
   'clusters.button.addNodePool': 'Add Worker Pool',
   'clusters.button.add.credential': 'Add {provider} Credential',
-  'clusters.credential.title': 'Credential',
+  'clusters.credential.title': 'Cloud Credential',
   'clusters.credential.token': 'Access Token',
   'clusters.workerpool.region': 'Region',
   'clusters.workerpool.zone': 'Zone',

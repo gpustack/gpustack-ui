@@ -13,7 +13,7 @@ export default {
   'models.form.env': 'Environment Variables',
   'models.form.configurations': 'Configurations',
   'models.form.s3address': 'S3 Address',
-  'models.form.partialoffload.tips': `When CPU offloading is enabled, if GPU resources are insufficient, part of the model's layers will be offloaded to the CPU. If no GPU is available, full CPU inference will be used.`,
+  'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`,
   'models.form.distribution.tips': `Allows for offloading part of the model's layers to single or multiple remote workers when the resources of a worker are insufficient.`,
   'models.openinplayground': 'Open in Playground',
   'models.instances': 'instances',
@@ -119,7 +119,9 @@ export default {
   'models.form.moreparameters': 'Parameter Description',
   'models.table.vram.allocated': 'Allocated VRAM',
   'models.form.backend.warning':
-    'The backend for GGUF format models uses llama-box.',
+    'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
+  'models.form.backend.warning.gguf':
+    'Please ensure that the selected custom backend supports GGUF models.',
   'models.form.ollama.warning':
     'Deploy the Ollama model backend using llama-box.',
   'models.form.backend.warning.llamabox':

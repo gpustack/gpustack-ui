@@ -16,6 +16,13 @@ export const backendOptionsMap = {
   SGLang: 'SGLang'
 };
 
+export const BuiltInBackendOptions = [
+  backendOptionsMap.vllm,
+  backendOptionsMap.ascendMindie,
+  backendOptionsMap.SGLang,
+  backendOptionsMap.voxBox
+];
+
 export interface BackendParameter {
   label: string;
   value: string;

@@ -12,7 +12,7 @@ export default {
   'clusters.button.register': '注册集群',
   'clusters.button.addNodePool': '添加节点池',
   'clusters.button.add.credential': '添加 {provider} 凭证',
-  'clusters.credential.title': '凭证',
+  'clusters.credential.title': '云凭证',
   'clusters.credential.token': '访问令牌',
   'clusters.workerpool.region': '区域',
   'clusters.workerpool.zone': '可用区',

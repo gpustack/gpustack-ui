@@ -116,7 +116,7 @@ export default {
   'models.form.moreparameters': '参数说明',
   'models.table.vram.allocated': '分配显存',
   'models.form.backend.warning':
-    '当前后端不支持 GGUF 格式模型。请在“推理后端”中添加一个支持 GGUF 的后端后再继续。',
+    '当前后端不支持 GGUF 格式模型。请在“推理后端”中添加一个支持 GGUF 的后端。',
   'models.form.backend.warning.gguf':
     '请确认当前使用的自定义后端已支持 GGUF 格式模型。',
   'models.form.ollama.warning': '部署 Ollama 模型后端使用 llama-box。',

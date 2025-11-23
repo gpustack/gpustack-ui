@@ -317,6 +317,24 @@ export const useCheckCompatibility = () => {
     }, 300);
   };
 
+  const checkIsGGUFFileOrNotSupport = (localPath: string, allValues?: any) => {
+    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
+    const isOllamaModel = localPath?.includes('ollama');
+    const isGGUFFile = localPath?.endsWith?.('.gguf');
+
+    const isOllamaModelFile = isBlobFile || isOllamaModel;
+    return (
+      isGGUFFile ||
+      isOllamaModelFile ||
+      allValues?.huggingface_filename?.endsWith?.('.gguf') ||
+      allValues?.model_scope_file_path?.endsWith?.('.gguf')
+    );
+  };
+
+  const clearCacheFormValues = () => {
+    cacheFormValuesRef.current = {};
+  };
+
   const updateShowWarning = (params: {
     backend: string;
     localPath: string;
@@ -330,29 +348,17 @@ export const useCheckCompatibility = () => {
       };
     }
 
-    const isBlobFile = localPath?.split('/').pop()?.includes('sha256');
-    const isOllamaModel = localPath?.includes('ollama');
-    const isGGUFFile = localPath.endsWith('.gguf');
-
-    const isOllamaModelFile = isBlobFile || isOllamaModel;
+    const isGGUFFile = checkIsGGUFFileOrNotSupport(localPath);
 
     let warningMessage = '';
-    if (
-      (isGGUFFile || isOllamaModelFile) &&
-      BuiltInBackendOptions.includes(backend)
-    ) {
+    if (isGGUFFile && BuiltInBackendOptions.includes(backend)) {
       warningMessage = intl.formatMessage({
         id: 'models.form.backend.warning'
       });
-    } else if (
-      (isGGUFFile || isOllamaModelFile) &&
-      !BuiltInBackendOptions.includes(backend)
-    ) {
-      warningMessage = intl.formatMessage({
-        id: 'models.form.backend.warning.gguf'
-      });
+    } else if (isGGUFFile && !BuiltInBackendOptions.includes(backend)) {
+      warningMessage = '';
     }
-
+    clearCacheFormValues();
     return {
       show: !!warningMessage,
       isHtml: true,
@@ -379,10 +385,6 @@ export const useCheckCompatibility = () => {
     return null;
   };
 
-  const clearCacheFormValues = () => {
-    cacheFormValuesRef.current = {};
-  };
-
   const noLocalPathValue = (allValues: any) => {
     return (
       allValues.source === modelSourceMap.local_path_value &&
@@ -396,13 +398,30 @@ export const useCheckCompatibility = () => {
     source: string;
   }) => {
     const { allValues, source } = params;
-    console.log('handleOnValuesChange', allValues);
     if (
       _.isEqual(cacheFormValuesRef.current, allValues) ||
       noLocalPathValue(allValues) ||
       !allValues.replicas
     ) {
       console.log('No changes detected, skipping evaluation.');
+      return;
+    }
+
+    // check gguf: for online and local path
+    if (
+      checkIsGGUFFileOrNotSupport(allValues.local_path, allValues) &&
+      BuiltInBackendOptions.includes(allValues.backend)
+    ) {
+      clearCacheFormValues();
+      setWarningStatus({
+        show: true,
+        type: 'warning',
+        isHtml: true,
+        message: intl.formatMessage({
+          id: 'models.form.backend.warning'
+        })
+      });
+
       return;
     }
 

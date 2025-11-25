@@ -258,7 +258,10 @@ const AddModal: FC<AddModalProps> = (props) => {
       return;
     }
 
-    const modelInfo = onSelectModel(selectedModel, props.source);
+    const modelInfo = onSelectModel(selectedModel, {
+      source: props.source,
+      defaultBackend: form.current?.getFieldValue?.('backend')
+    });
 
     form.current?.setFieldsValue?.({
       ..._.omit(modelInfo, ['name']),
@@ -323,12 +326,16 @@ const AddModal: FC<AddModalProps> = (props) => {
 
     // TODO
     form.current?.resetFields(resetFields);
-    const modelInfo = onSelectModel(item, props.source);
+    const modelInfo = onSelectModel(item, {
+      source: props.source
+    });
     form.current?.setFieldsValue?.({
       ...defaultFormValues,
       ...modelInfo,
       categories: getCategory(item)
     });
+
+    console.log('modelInfo:', modelInfo);
 
     let warningStatus: MessageStatus = {
       show: true,
@@ -359,7 +366,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       requestModelId: updateRequestModelId()
     });
     handleCancelFiles();
-    const modelInfo = onSelectModel(item, props.source);
+    const modelInfo = onSelectModel(item, {
+      source: props.source
+    });
 
     if (
       evaluateStateRef.current.state === EvaluateProccess.model &&

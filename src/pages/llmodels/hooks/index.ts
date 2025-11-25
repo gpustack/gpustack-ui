@@ -504,7 +504,11 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
   // just for setting the model name or repo_id, and the backend, Since the model type is fixed.
   const { gpuOptions } = data;
 
-  const onSelectModel = (selectModel: any, source: string) => {
+  const onSelectModel = (
+    selectModel: any,
+    options: { source: string; defaultBackend?: string }
+  ) => {
+    const { source, defaultBackend } = options;
     let name = _.split(selectModel.name, '/').slice(-1)[0];
     const reg = /(-gguf)$/i;
     name = _.toLower(name).replace(reg, '');
@@ -512,7 +516,7 @@ export const useSelectModel = (data: { gpuOptions: any[] }) => {
     const modelTaskData = recognizeAudioModel(selectModel, source);
 
     const backend = checkCurrentbackend({
-      defaultBackend: backendOptionsMap.vllm,
+      defaultBackend: defaultBackend || backendOptionsMap.vllm,
       isAudio: modelTaskData.type === modelTaskMap.audio,
       isGGUF: selectModel.isGGUF,
       gpuOptions: gpuOptions

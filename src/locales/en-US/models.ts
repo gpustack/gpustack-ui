@@ -260,5 +260,6 @@ export default {
   'models.form.generic_proxy.button': 'Generic Proxy',
   'models.accessControlModal.includeusers': 'Include Users',
   'models.table.genericProxy':
-    'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.'
+    'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.',
+  'models.form.backendVersion.deprecated': 'Deprecated'
 };

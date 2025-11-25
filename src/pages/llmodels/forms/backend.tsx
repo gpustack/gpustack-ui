@@ -1,12 +1,26 @@
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
+import { CaretDownOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Select } from 'antd';
 import React, { useMemo } from 'react';
+import styled from 'styled-components';
 import { backendTipsList } from '../config';
 import { backendOptionsMap } from '../config/backend-parameters';
 import { useFormContext } from '../config/form-context';
+
+const CaretDownWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  &:hover {
+    .anticon {
+      color: var(--ant-color-text);
+    }
+  }
+`;
 
 const BackendFields: React.FC = () => {
   const intl = useIntl();
@@ -14,6 +28,7 @@ const BackendFields: React.FC = () => {
   const form = Form.useFormInstance();
   const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
   const backend = Form.useWatch('backend', form);
+  const [showDeprecated, setShowDeprecated] = React.useState<boolean>(false);
 
   const handleBackendVersionOnChange = (value: any) => {
     onValuesChange?.({}, form.getFieldsValue());
@@ -45,9 +60,17 @@ const BackendFields: React.FC = () => {
     return options;
   }, [backendOptions, intl]);
 
-  const backendVersions = useMemo(() => {
+  const backendVersions = useMemo((): {
+    builtIn: any[];
+    custom: any[];
+    deprecated: any[];
+  } => {
     if (!backend || backend === backendOptionsMap.custom) {
-      return [];
+      return {
+        builtIn: [],
+        custom: [],
+        deprecated: []
+      };
     }
 
     // find the backend item from backendOptions
@@ -57,54 +80,85 @@ const BackendFields: React.FC = () => {
 
     // if it's a custom backend,
     if (backendItem && !backendItem.isBuiltIn) {
-      return versions;
+      return {
+        builtIn: [],
+        custom: versions.filter((item) => !item.is_deprecated),
+        deprecated: versions.filter((item) => item.is_deprecated)
+      };
     }
 
     // check the value if endts with '-custom', if true, remove the suffix  add to  "Cutom" group, if not , add to "Built-in" group
+
+    // ============ Built-in Versions ============
     const builtInVersions = versions.filter(
-      (item) => !item.value?.endsWith('-custom')
-    );
-    const customVersions = versions.filter((item) =>
-      item.value?.endsWith('-custom')
+      (item) => !item.value?.endsWith('-custom') && !item.is_deprecated
     );
 
-    const options = [];
+    // ============ Custom Versions ============
+    const customVersions = versions.filter(
+      (item) => item.value?.endsWith('-custom') && !item.is_deprecated
+    );
 
-    if (builtInVersions.length > 0) {
-      options.push({
-        label: intl.formatMessage({ id: 'backend.builtin' }),
-        options: builtInVersions
-      });
-    }
+    // ============ Deprecated Versions ============
+    const deprecatedVersions = versions.filter((item) => item.is_deprecated);
 
-    if (customVersions.length > 0) {
-      options.push({
-        label: intl.formatMessage({ id: 'models.form.backend.custom' }),
-        options: customVersions
-      });
-    }
-
-    return options;
+    return {
+      builtIn: builtInVersions,
+      custom: customVersions,
+      deprecated: deprecatedVersions
+    };
   }, [backend, backendOptions, intl]);
 
   const optionRender = (option: any) => {
     return option.data.title;
   };
 
-  const versionOptionRender = (option: any) => {
-    const { data } = option;
-    return data.is_deprecated ? (
-      <span>
-        {data.title}
-        <span className="text-tertiary m-l-4">[Deprecated]</span>
-      </span>
-    ) : (
-      <span>{data.title}</span>
+  const labelRender = (option: any) => {
+    return option.title;
+  };
+
+  const renderVersionOptions = (values: any[], label: string) => {
+    if (!values || values.length === 0) {
+      return null;
+    }
+    return (
+      <Select.OptGroup label={label}>
+        {values.map((item) => (
+          <Select.Option key={item.value} value={item.value} label={item.label}>
+            {item.label}
+          </Select.Option>
+        ))}
+      </Select.OptGroup>
     );
   };
 
-  const labelRender = (option: any) => {
-    return option.title;
+  const renderDeprecatedVersionOptions = (values: any[]) => {
+    if (!values || values.length === 0) {
+      return null;
+    }
+    return (
+      <Select.OptGroup
+        label={
+          <CaretDownWrapper onClick={() => setShowDeprecated(!showDeprecated)}>
+            {intl.formatMessage({
+              id: 'models.form.backendVersion.deprecated'
+            })}
+            <CaretDownOutlined rotate={showDeprecated ? 0 : -90} />
+          </CaretDownWrapper>
+        }
+      >
+        {showDeprecated &&
+          values.map((item) => (
+            <Select.Option
+              key={item.value}
+              value={item.value}
+              label={item.label}
+            >
+              {item.label}
+            </Select.Option>
+          ))}
+      </Select.OptGroup>
+    );
   };
 
   return (
@@ -132,15 +186,24 @@ const BackendFields: React.FC = () => {
         <Form.Item name="backend_version">
           <SealSelect
             allowClear
-            options={backendVersions}
-            optionRender={versionOptionRender}
+            showSearch
             labelRender={labelRender}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'
             })}
             onChange={handleBackendVersionOnChange}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
-          ></SealSelect>
+          >
+            {renderVersionOptions(
+              backendVersions.builtIn,
+              intl.formatMessage({ id: 'backend.builtin' })
+            )}
+            {renderVersionOptions(
+              backendVersions.custom,
+              intl.formatMessage({ id: 'models.form.backend.custom' })
+            )}
+            {renderDeprecatedVersionOptions(backendVersions.deprecated)}
+          </SealSelect>
         </Form.Item>
       )}
     </>

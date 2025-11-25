@@ -580,7 +580,14 @@ const SearchModel: React.FC<SearchInputProps> = (props) => {
   return (
     <div style={{ width: '100%' }}>
       <div className={SearchStyle['search-bar']}>{renderHFSearch()}</div>
-      <ColumnWrapper maxHeight={'calc(100vh - 210px)'}>
+      <ColumnWrapper
+        maxHeight={'calc(100vh - 210px)'}
+        styles={{
+          container: {
+            paddingTop: 0
+          }
+        }}
+      >
         <SearchResult
           loading={dataSource.loading}
           resultList={dataSource.dataList}

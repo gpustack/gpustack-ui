@@ -307,7 +307,12 @@ export interface BackendOption {
   default_backend_param: string[];
   default_version: string;
   isBuiltIn: boolean;
-  versions: { label: string; value: string; title?: string }[];
+  versions: {
+    label: string;
+    value: string;
+    title?: string;
+    is_deprecated: boolean;
+  }[];
 }
 
 export interface AccessControlFormData {

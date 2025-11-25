@@ -131,6 +131,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       value: GPUDriverMap.METAX,
       key: GPUDriverMap.METAX,
       locale: false,
+      link: 'https://docs.gpustack.ai/latest/installation/metax/installation/?h=meta#prerequisites',
       notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
       icon: <ProviderImage src={metaxLogo} showBg />
     }

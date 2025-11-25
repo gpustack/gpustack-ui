@@ -247,5 +247,6 @@ export default {
   'models.form.generic_proxy.button': '通用代理',
   'models.accessControlModal.includeusers': '显示用户',
   'models.table.genericProxy':
-    '使用以下路径前缀，并在请求头 <span class="bold-text">X-GPUStack-Model</span> 或请求体中的 model 字段设置模型名称后访问该模型。该路径的所有子路径请求会被转发到推理后端。'
+    '使用以下路径前缀，并在请求头 <span class="bold-text">X-GPUStack-Model</span> 或请求体中的 model 字段设置模型名称后访问该模型。该路径的所有子路径请求会被转发到推理后端。',
+  'models.form.backendVersion.deprecated': '已弃用'
 };

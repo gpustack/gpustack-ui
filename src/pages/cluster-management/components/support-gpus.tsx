@@ -57,7 +57,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.NVIDIA,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#nvidia-cuda',
+      link: 'https://docs.gpustack.ai/latest/installation/nvidia/installation/#prerequisites',
       icon: <IconFont type="icon-nvidia2" style={{ fontSize: 32 }} />
     },
     {
@@ -67,7 +67,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.AMD,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.AMD],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#amd-rocm',
+      link: 'https://docs.gpustack.ai/latest/installation/amd/installation/#prerequisites',
       icon: (
         <IconFont
           type="icon-amd"
@@ -82,7 +82,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.ASCEND,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ASCEND],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#ascend-cann',
+      link: 'https://docs.gpustack.ai/latest/installation/ascend/installation/#prerequisites',
       icon: <ProviderImage src={ascendLogo} showBg />
     },
     {
@@ -92,7 +92,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.HYGON,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.HYGON],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#hygon-dtk',
+      link: 'https://docs.gpustack.ai/latest/installation/hygon/installation/#prerequisites',
       icon: <ProviderImage src={hyponPNG} />
     },
     {
@@ -102,7 +102,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.MOORE_THREADS,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.MOORE_THREADS],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#moore-threads-musa',
+      link: 'https://docs.gpustack.ai/latest/installation/mthreads/installation/#prerequisites',
       icon: <ProviderImage src={moorePNG} />
     },
     {
@@ -112,7 +112,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.ILUVATAR,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ILUVATAR],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#iluvatar-corex',
+      link: 'https://docs.gpustack.ai/latest/installation/iluvatar/installation/#prerequisites',
       icon: <ProviderImage src={iluvatarWEBP} showBg />
     },
     {
@@ -122,7 +122,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.CAMBRICON,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.CAMBRICON],
-      link: 'https://docs.gpustack.ai/latest/installation/installation-requirements/#cambricon-mlu',
+      link: 'https://docs.gpustack.ai/latest/installation/cambricon/installation/#prerequisites',
       icon: <ProviderImage src={CambriconPNG} />
     },
     {

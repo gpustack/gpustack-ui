@@ -91,6 +91,18 @@ const BackendFields: React.FC = () => {
     return option.data.title;
   };
 
+  const versionOptionRender = (option: any) => {
+    const { data } = option;
+    return data.is_deprecated ? (
+      <span>
+        {data.title}
+        <span className="text-tertiary m-l-4">[Deprecated]</span>
+      </span>
+    ) : (
+      <span>{data.title}</span>
+    );
+  };
+
   const labelRender = (option: any) => {
     return option.title;
   };
@@ -121,7 +133,7 @@ const BackendFields: React.FC = () => {
           <SealSelect
             allowClear
             options={backendVersions}
-            optionRender={optionRender}
+            optionRender={versionOptionRender}
             labelRender={labelRender}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'

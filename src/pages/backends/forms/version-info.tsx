@@ -66,8 +66,7 @@ const FilterBox = styled.div`
   top: 0;
   width: 100%;
   z-index: 100;
-  padding-bottom: 16px;
-  padding-top: 16px;
+  margin-block: 16px;
   background-color: var(--ant-color-bg-container);
 `;
 

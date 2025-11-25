@@ -47,6 +47,7 @@ const CustomBackend: React.FC = () => {
             <SealInput.Input
               required
               allowClear
+              onBlur={handleImageNameOnBlur}
               label={intl.formatMessage({ id: 'backend.imageName' })}
             ></SealInput.Input>
           </Form.Item>
@@ -65,6 +66,7 @@ const CustomBackend: React.FC = () => {
               scaleSize={false}
               alwaysFocus={true}
               autoSize={{ minRows: 2, maxRows: 4 }}
+              onBlur={handleRunCommandOnBlur}
               label={intl.formatMessage({ id: 'backend.runCommand' })}
               description={intl.formatMessage({
                 id: 'backend.form.defaultExecuteCommand.tips'

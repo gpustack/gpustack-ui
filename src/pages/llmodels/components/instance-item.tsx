@@ -94,6 +94,9 @@ const draftModelDownloadList: ColumnProps[] = [
     title: 'models.form.draftModel',
     locale: true,
     key: 'draft_model',
+    style: {
+      wordBreak: 'break-word'
+    },
     width: 280
   },
   ...statusColumn

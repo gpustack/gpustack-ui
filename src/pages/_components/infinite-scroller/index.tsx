@@ -1,6 +1,6 @@
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, FloatButton } from 'antd';
 import React from 'react';
 
 import {
@@ -45,6 +45,7 @@ const InfiniteScroller: React.FC<
           </div>
         )}
       </div>
+      <FloatButton.BackTop visibilityHeight={1000} />
     </div>
   );
 };

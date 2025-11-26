@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
 interface ScrollerContextProps {
-  total: number;
+  total: number; // total pages
   current: number;
   loading: boolean;
   refresh: (nextPage: number) => void;

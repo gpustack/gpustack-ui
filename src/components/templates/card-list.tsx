@@ -1,7 +1,7 @@
 import breakpoints from '@/config/breakpoints';
 import InfiniteScroller from '@/pages/_components/infinite-scroller';
 import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
-import { Col, FloatButton, Row, Spin } from 'antd';
+import { Col, Row, Spin } from 'antd';
 import _ from 'lodash';
 import ResizeObserver from 'rc-resize-observer';
 import React, { useCallback } from 'react';
@@ -122,7 +122,6 @@ const CardList: React.FC<CatalogListProps> = (props) => {
           />
         </InfiniteScroller>
       </ResizeObserver>
-      <FloatButton.BackTop visibilityHeight={1000} />
     </div>
   );
 };

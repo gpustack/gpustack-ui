@@ -6,7 +6,7 @@ import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, message, Table } from 'antd';
+import { ConfigProvider, message, Table } from 'antd';
 import { useMemo, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -150,11 +150,9 @@ const Users: React.FC = () => {
         })}
         title={intl.formatMessage({ id: 'noresult.users.title' })}
         subTitle={intl.formatMessage({ id: 'noresult.users.subTitle' })}
-      >
-        <Button type="primary" onClick={handleAddUser}>
-          {intl.formatMessage({ id: 'noresult.button.add' })}
-        </Button>
-      </NoResult>
+        onClick={handleAddUser}
+        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+      ></NoResult>
     );
   };
 

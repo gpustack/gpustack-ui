@@ -7,7 +7,7 @@ import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, Table, message } from 'antd';
+import { ConfigProvider, Table, message } from 'antd';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
 import NoResult from '../_components/no-result';
@@ -164,14 +164,9 @@ const Credentials: React.FC = () => {
         subTitle={intl.formatMessage({
           id: 'noresult.credentials.subTitle'
         })}
-      >
-        <Button
-          type="primary"
-          onClick={() => handleAddCredential(addActions[0])}
-        >
-          {intl.formatMessage({ id: 'noresult.button.add' })}
-        </Button>
-      </NoResult>
+        onClick={() => handleAddCredential(addActions[0])}
+        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+      ></NoResult>
     );
   };
 

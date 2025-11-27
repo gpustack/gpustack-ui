@@ -6,7 +6,7 @@ import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { Button, ConfigProvider, Table } from 'antd';
+import { ConfigProvider, Table } from 'antd';
 import { useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -111,11 +111,9 @@ const APIKeys: React.FC = () => {
         })}
         title={intl.formatMessage({ id: 'noresult.keys.title' })}
         subTitle={intl.formatMessage({ id: 'noresult.keys.subTitle' })}
-      >
-        <Button type="primary" onClick={handleAddKey}>
-          {intl.formatMessage({ id: 'noresult.button.add' })}
-        </Button>
-      </NoResult>
+        onClick={handleAddKey}
+        buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+      ></NoResult>
     );
   };
 

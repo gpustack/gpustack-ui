@@ -4,7 +4,6 @@ import { PageAction } from '@/config';
 import NoResult from '@/pages/_components/no-result';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button } from 'antd';
 import { useAtom } from 'jotai';
 import React, { useMemo } from 'react';
 
@@ -99,11 +98,9 @@ const useNoResourceResult = (props: {
       noFoundText={statusContent.noFoundText}
       title={title}
       subTitle={statusContent.subTitle}
-    >
-      <Button type="primary" iconPosition="end" onClick={statusContent.onClick}>
-        {statusContent.buttonText}
-      </Button>
-    </NoResult>
+      onClick={statusContent.onClick}
+      buttonText={statusContent.buttonText}
+    ></NoResult>
   );
   return {
     noResourceResult

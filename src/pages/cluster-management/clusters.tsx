@@ -11,7 +11,7 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, message } from 'antd';
+import { message } from 'antd';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
@@ -121,7 +121,7 @@ const Clusters: React.FC = () => {
     });
   };
 
-  const handleClickDropdown = (item: any) => {
+  const handleClickDropdown = () => {
     navigate(`/cluster-management/clusters/create?action=${PageAction.CREATE}`);
   };
 
@@ -331,11 +331,9 @@ const Clusters: React.FC = () => {
                 subTitle={intl.formatMessage({
                   id: 'noresult.cluster.subTitle'
                 })}
-              >
-                <Button type="primary" onClick={handleClickDropdown}>
-                  {intl.formatMessage({ id: 'noresult.button.add' })}
-                </Button>
-              </NoResult>
+                onClick={handleClickDropdown}
+                buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+              ></NoResult>
             }
             pagination={{
               showSizeChanger: true,

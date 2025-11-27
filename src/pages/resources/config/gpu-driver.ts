@@ -57,7 +57,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.ILUVATAR]: {
     label: ManufacturerMap[GPUDriverMap.ILUVATAR],
     value: GPUDriverMap.ILUVATAR,
-    runtime: 'iluvatar', // TODO: confirm runtime name
+    runtime: 'iluvatar',
     driver: 'ixsmi'
   },
   [GPUDriverMap.CAMBRICON]: {
@@ -142,7 +142,7 @@ const setImageArgs = (params: any) => {
       --token ${params.token} \\`;
 };
 
-// avaliable for  NVIDIA、AMD、MThreads
+// avaliable for  NVIDIA、MThreads
 const registerWorker = (params: {
   server: string;
   tag: string;
@@ -157,6 +157,27 @@ const registerWorker = (params: {
   const imageArgs = setImageArgs(params);
   // remove empty enter lines and trailing backslash
   return `${commonArgs}
+      --runtime ${config.runtime} \\
+      ${imageArgs}
+      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+};
+
+// avaliable for AMD
+const registerAMDWorker = (params: {
+  server: string;
+  tag: string;
+  token: string;
+  image: string;
+  gpu: string;
+  workerIP?: string;
+  modelDir?: string;
+}) => {
+  const config = GPUsConfigs[params.gpu];
+  const commonArgs = setNormalArgs(params);
+  const imageArgs = setImageArgs(params);
+  // remove empty enter lines and trailing backslash
+  return `${commonArgs}
+      --volume /opt/rocm:/opt/rocm:ro \\
       --runtime ${config.runtime} \\
       ${imageArgs}
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
@@ -264,7 +285,7 @@ const registerCambriconWorker = (params: {
 
 export const registerAddWokerCommandMap = {
   [GPUDriverMap.NVIDIA]: registerWorker,
-  [GPUDriverMap.AMD]: registerWorker,
+  [GPUDriverMap.AMD]: registerAMDWorker,
   [GPUDriverMap.ASCEND]: registerAscendWorker,
   [GPUDriverMap.HYGON]: registerHygonWorker,
   [GPUDriverMap.ILUVATAR]: registerIluvatarWorker,
@@ -275,7 +296,7 @@ export const registerAddWokerCommandMap = {
 
 export const AddWorkerDockerNotes: Record<string, string[]> = {
   [GPUDriverMap.NVIDIA]: [],
-  [GPUDriverMap.AMD]: [],
+  [GPUDriverMap.AMD]: ['clusters.addworker.amdNotes-01'],
   [GPUDriverMap.MOORE_THREADS]: [],
   [GPUDriverMap.ASCEND]: [],
   [GPUDriverMap.HYGON]: [

@@ -81,5 +81,6 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.extraVolume.holder':
     'e.g. /data/models (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
-  'clusters.button.genToken': 'Generate Token'
+  'clusters.button.genToken': 'Generate Token',
+  'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
 };

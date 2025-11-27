@@ -1,4 +1,4 @@
-import { Empty, EmptyProps, Typography } from 'antd';
+import { Button, Empty, EmptyProps, Typography } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -54,9 +54,19 @@ const NoResult: React.FC<
     loading?: boolean;
     loadend?: boolean;
     dataSource?: any[];
+    buttonText?: React.ReactNode;
+    onClick?: () => void;
   }
 > = (props) => {
-  const { filters, noFoundText, loadend, loading, dataSource } = props;
+  const {
+    filters,
+    noFoundText,
+    loadend,
+    loading,
+    dataSource,
+    buttonText,
+    onClick
+  } = props;
 
   const hasFilters = useMemo(() => {
     const filterValues = _.omit(filters, ['page', 'perPage']);
@@ -69,6 +79,15 @@ const NoResult: React.FC<
       return !!value;
     });
   }, [filters]);
+
+  const renderChildren = () => {
+    if (!buttonText || !onClick) return null;
+    return (
+      <Button color="primary" variant="filled" onClick={onClick}>
+        {buttonText}
+      </Button>
+    );
+  };
 
   return (
     <>
@@ -96,7 +115,7 @@ const NoResult: React.FC<
             </Description>
           }
         >
-          {!hasFilters && props.children}
+          {!hasFilters && renderChildren()}
         </StyledEmpty>
       ) : (
         <span></span>

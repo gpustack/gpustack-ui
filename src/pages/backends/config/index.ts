@@ -3,7 +3,6 @@ import SGLangLogo from '@/assets/logo/sglang.png';
 import vLLMLogo from '@/assets/logo/vllm.png';
 import VoxBoxLogo from '@/assets/logo/voxbox.png';
 import icons from '@/components/icon-font/icons';
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import { backendOptionsMap } from '@/pages/llmodels/config/backend-parameters';
 import {
   GPUDriverMap,
@@ -191,11 +190,23 @@ export const frameworks = [
   }
 ];
 
-export const yamlTemplate = `# backend configuration template
+export const yamlTemplate = `# ----------------------------------------
+# custom backend configuration template
+# ----------------------------------------
+# backend_name: 
+#   - required
+#   - must be endwith '-custom'
+# version_configs:
+#   - image_name: required
+#   - run_command: required
+#   - custom_framework:
+#       - optional
+#       - choose from: ${Object.values(GPUDriverMap).join(', ')}, CPU
+
 backend_name: vllm-custom
 description: this is my custom vllm backend
 default_version: v0.11.0
-health_check_path: /${GPUSTACK_API_BASE_URL}/models
+health_check_path: /v1/models
 default_backend_param:
   - --host
 default_run_command: vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}

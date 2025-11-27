@@ -5,7 +5,6 @@ import { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { Button } from 'antd';
 import _ from 'lodash';
 import { useState } from 'react';
 import { ScrollerContext } from '../_components/infinite-scroller/use-scroller-context';
@@ -209,11 +208,9 @@ const BackendList = () => {
           })}
           title={intl.formatMessage({ id: 'noresult.backend.title' })}
           subTitle={intl.formatMessage({ id: 'noresult.backend.subTitle' })}
-        >
-          <Button type="primary" onClick={handleAddBackend}>
-            {intl.formatMessage({ id: 'noresult.button.add' })}
-          </Button>
-        </NoResult>
+          onClick={handleAddBackend}
+          buttonText={intl.formatMessage({ id: 'noresult.button.add' })}
+        ></NoResult>
       </ScrollerContext.Provider>
       <AddModal
         action={openModalStatus.action}

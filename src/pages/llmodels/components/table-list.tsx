@@ -717,15 +717,11 @@ const Models: React.FC<ModelsProps> = ({
               subTitle={intl.formatMessage({
                 id: 'noresult.deployments.subTitle'
               })}
-            >
-              <Button
-                type="primary"
-                iconPosition="end"
-                onClick={() => handleClickDropdown({ key: 'catalog' })}
-              >
-                {intl?.formatMessage?.({ id: 'models.table.button.deploy' })}
-              </Button>
-            </NoResult>
+              onClick={() => handleClickDropdown({ key: 'catalog' })}
+              buttonText={intl?.formatMessage?.({
+                id: 'models.table.button.deploy'
+              })}
+            ></NoResult>
           }
           pagination={{
             showSizeChanger: true,

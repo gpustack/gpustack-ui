@@ -80,5 +80,6 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':
     'e.g. /data/models (path must start with /)',
-  'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device'
+  'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
+  'clusters.button.genToken': 'Generate Token'
 };

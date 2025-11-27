@@ -33,5 +33,11 @@ export default {
   'noresult.keys.nofound': 'No matching API keys found.',
   'noresult.catalog.title': 'No Models',
   'noresult.catalog.subTitle': 'No models have been configured yet.',
-  'noresult.catalog.nofound': 'No matching models found.'
+  'noresult.catalog.nofound': 'No matching models found.',
+  'noresult.resources.cluster':
+    'No clusters available. Add a cluster to get started.',
+  'noresult.resources.worker':
+    'No workers available. Add a worker to get started.',
+  'noresult.resources.gotocluster': 'Create a Docker or Other Cluster',
+  'noresult.resources.gotoworker': 'Add Worker'
 };

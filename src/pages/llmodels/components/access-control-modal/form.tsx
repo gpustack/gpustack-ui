@@ -1,4 +1,5 @@
 import AlertBlockInfo from '@/components/alert-info/block';
+import TooltipList from '@/components/tooltip-list';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import TransferInner from '@/pages/_components/transfer';
@@ -29,7 +30,34 @@ import { AccessControlFormData, ListItem } from '../../config/types';
 
 type TransferKey = string | number | bigint;
 
+const accessScopeTips = [
+  {
+    title: {
+      text: 'models.accessSettings.authed',
+      locale: true
+    },
+    tips: 'models.accessSettings.authed.tips'
+  },
+  {
+    title: {
+      text: 'models.accessSettings.allowedUsers',
+      locale: true
+    },
+    tips: 'models.accessSettings.allowedUsers.tips'
+  },
+  {
+    title: {
+      text: 'models.accessSettings.public',
+      locale: true
+    },
+    tips: 'models.accessSettings.public.desc'
+  }
+];
+
 const Label = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-weight: 500;
   margin-block: 8px 12px;
   font-size: 14px;
@@ -263,7 +291,13 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
         access_policy: action === PageAction.CREATE ? 'authed' : undefined
       }}
     >
-      <Label>{intl.formatMessage({ id: 'models.table.accessScope' })}</Label>
+      <Label>
+        {intl.formatMessage({ id: 'models.table.accessScope' })}
+        <Tooltip title={<TooltipList list={accessScopeTips}></TooltipList>}>
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </Label>
+
       <Form.Item<AccessControlFormData> name="access_policy" noStyle>
         <Radio.Group
           onChange={handleOnPolicyChange}
@@ -307,7 +341,7 @@ const AccessControlForm = forwardRef((props: AccessControlFormProps, ref) => {
                 id: 'models.table.userSelection.tips'
               })}
             >
-              <QuestionCircleOutlined style={{ marginLeft: 4 }} />
+              <QuestionCircleOutlined />
             </Tooltip>
           </Label>
           <Form.Item<AccessControlFormData> name="users">

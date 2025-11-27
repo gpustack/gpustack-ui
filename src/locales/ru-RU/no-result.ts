@@ -1,10 +1,12 @@
 export default {
   'noresult.button.add': 'Добавить сейчас',
   'noresult.mymodels.title': 'Нет доступных моделей',
-  'noresult.mymodels.subTitle': 'Обратитесь к администратору для получения доступа.',
+  'noresult.mymodels.subTitle':
+    'Обратитесь к администратору для получения доступа.',
   'noresult.mymodels.nofound': 'Подходящие модели не найдены',
   'noresult.deployments.title': 'Нет развернутых моделей',
-  'noresult.deployments.subTitle': 'Вы еще не развернули ни одной модели. Нажмите кнопку ниже, чтобы начать.',
+  'noresult.deployments.subTitle':
+    'Вы еще не развернули ни одной модели. Нажмите кнопку ниже, чтобы начать.',
   'noresult.gpus.title': 'GPU устройства не обнаружены',
   'noresult.gpus.subTitle': 'Проверьте, что статус Worker READY.',
   'noresult.gpus.nofound': 'Подходящие GPU устройства не найдены.',
@@ -32,5 +34,18 @@ export default {
   'noresult.keys.nofound': 'Подходящие API-ключи не найдены.',
   'noresult.catalog.title': 'Нет моделей',
   'noresult.catalog.subTitle': 'Модели еще не настроены.',
-  'noresult.catalog.nofound': 'Подходящие модели не найдены.'
+  'noresult.catalog.nofound': 'Подходящие модели не найдены.',
+  'noresult.resources.cluster':
+    'No clusters available. Add a cluster to get started.',
+  'noresult.resources.worker':
+    'No workers available. Add a worker to get started.',
+  'noresult.resources.gotocluster': 'Create a Docker or Other Cluster',
+  'noresult.resources.gotoworker': 'Add Worker'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'noresult.resources.cluster': 'No clusters available. Add a cluster to get started.',
+// 2. 'noresult.resources.worker': 'No workers available. Add a worker to get started.',
+// 3. 'noresult.resources.gotocluster': 'Create a Docker or Other Cluster',
+// 4. 'noresult.resources.gotoworker': 'Add Worker'
+// ========================================================================

@@ -261,7 +261,13 @@ export default {
   'models.accessControlModal.includeusers': 'Include Users',
   'models.table.genericProxy':
     'Use the following path prefix, and set the model name in either the <span class="bold-text">X-GPUStack-Model</span> request header or the model field in the request body. All requests under this path prefix will be forwarded to the inference backend.',
-  'models.form.backendVersion.deprecated': 'Deprecated'
+  'models.form.backendVersion.deprecated': 'Deprecated',
+  'models.accessSettings.public.desc':
+    'Accessible to anyone without authentication.',
+  'models.accessSettings.authed.tips':
+    'Accessible to all authenticated platform users.',
+  'models.accessSettings.allowedUsers.tips':
+    'Only designated users can access the model.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -349,5 +355,8 @@ export default {
 // 65. 'models.form.partialoffload.tips': `When CPU offloading is enabled, GPUStack will allocate CPU memory if GPU resources are insufficient. You must correctly configure the inference backend to use hybrid CPU+GPU or full CPU inference.`,
 // 66. 'models.form.backend.warning': 'The selected backend does not support GGUF models. Please add a backend with GGUF support in the Inference Backend.',
 // 67.  'models.form.backend.warning.gguf': 'Please ensure that the selected custom backend supports GGUF models.',,
-// 68. 'models.form.backendVersion.deprecated': 'Deprecated'
+// 68. 'models.form.backendVersion.deprecated': 'Deprecated',
+// 69. 'models.accessSettings.public.desc': 'Accessible to anyone without authentication.',
+// 70.  'models.accessSettings.authed.tips': 'Accessible to all authenticated platform users.',
+// 71.'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.'
 // ========== End of To-Do List ==========

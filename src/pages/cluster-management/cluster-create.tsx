@@ -1,7 +1,9 @@
+import { clusterSessionAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import PageBreadcrumb from '@/pages/_components/page-breadcrumb';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
+import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -39,6 +41,7 @@ const ClusterCreate = () => {
   const action =
     (searchParams.get('action') as PageActionType) || PageAction.CREATE;
   const navigate = useNavigate();
+  const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
   const [credentialList, setCredentialList] = useState<
     Global.BaseOption<number, { provider: ProviderType }>[]
   >([]);
@@ -253,6 +256,14 @@ const ClusterCreate = () => {
   };
 
   const handleCancel = () => {
+    if (clusterSession?.firstAddCluster) {
+      setClusterSession({
+        firstAddCluster: false,
+        firstAddWorker: false
+      });
+      navigate(`/cluster-management/clusters/list`);
+      return;
+    }
     navigate(-1);
   };
 

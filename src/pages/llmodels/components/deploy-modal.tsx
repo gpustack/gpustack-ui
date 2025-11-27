@@ -110,7 +110,6 @@ const AddModal: FC<AddModalProps> = (props) => {
 
   const { checkOnlyAscendNPU } = useCheckBackend();
   const {
-    handleShowCompatibleAlert,
     setWarningStatus,
     handleBackendChangeBefore,
     cancelEvaluate,

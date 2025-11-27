@@ -60,4 +60,5 @@ export const fromClusterCreationAtom = atom(false);
  */
 export const clusterSessionAtom = atom<{
   firstAddWorker: boolean;
+  firstAddCluster: boolean;
 } | null>(null);

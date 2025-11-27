@@ -266,5 +266,17 @@ export default {
   'models.accessControlModal.includeusers': 'Включить пользователей',
   'models.table.genericProxy':
     'Используйте следующий префикс пути и укажите имя модели либо в заголовке запроса <span class="bold-text">X-GPUStack-Model</span>, либо в поле model в теле запроса. Все запросы с этим префиксом пути будут перенаправлены в бэкенд вывода.',
-  'models.form.backendVersion.deprecated': 'Устаревший'
+  'models.form.backendVersion.deprecated': 'Устаревший',
+  'models.accessSettings.public.desc':
+    'Accessible to anyone without authentication.',
+  'models.accessSettings.authed.tips':
+    'Accessible to all authenticated platform users.',
+  'models.accessSettings.allowedUsers.tips':
+    'Only designated users can access the model.'
 };
+
+// ========== To-Do: Translate Keys (Remove After Translation) ==========
+// 1. 'models.accessSettings.public.desc': 'Accessible to anyone without authentication.',
+// 2.  'models.accessSettings.authed.tips': 'Accessible to all authenticated platform users.',
+// 3. 'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.'
+// ========== End of To-Do List ==========

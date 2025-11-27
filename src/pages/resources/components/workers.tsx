@@ -1,5 +1,4 @@
 import DeleteModal from '@/components/delete-modal';
-import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
@@ -11,11 +10,11 @@ import {
 } from '@/pages/cluster-management/config';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
+import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
-import { Button, ConfigProvider, Table, message } from 'antd';
+import { ConfigProvider, Table, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import NoResult from '../../_components/no-result';
 import {
   WORKERS_API,
   deleteWorker,
@@ -191,24 +190,26 @@ const Workers: React.FC = () => {
     handleAddWorker(currentData as ClusterListItem);
   };
 
+  const { noResourceResult } = useNoResourceResult({
+    loadend: dataSource.loadend,
+    loading: dataSource.loading,
+    dataSource: dataSource.dataList,
+    queryParams: queryParams,
+    iconType: 'icon-resources',
+    title: intl.formatMessage({ id: 'noresult.workers.title' }),
+    noClusters: !clusterData.list.length,
+    noWorkers: dataSource.dataList.length === 0 && clusterData.list.length > 0,
+    defaultContent: {
+      subTitle: intl.formatMessage({ id: 'noresult.workers.subTitle' }),
+      noFoundText: intl.formatMessage({ id: 'noresult.workers.nofound' }),
+      buttonText: intl.formatMessage({ id: 'noresult.workers.button.add' }),
+      onClick: handleOnAddWorker
+    }
+  });
+
   const renderEmpty = (type?: string) => {
     if (type !== 'Table') return;
-    return (
-      <NoResult
-        loading={dataSource.loading}
-        loadend={dataSource.loadend}
-        dataSource={dataSource.dataList}
-        image={<IconFont type="icon-resources" />}
-        filters={queryParams}
-        noFoundText={intl.formatMessage({ id: 'noresult.workers.nofound' })}
-        title={intl.formatMessage({ id: 'noresult.workers.title' })}
-        subTitle={intl.formatMessage({ id: 'noresult.workers.subTitle' })}
-      >
-        <Button type="primary" onClick={handleOnAddWorker}>
-          {intl.formatMessage({ id: 'noresult.workers.button.add' })}
-        </Button>
-      </NoResult>
-    );
+    return noResourceResult;
   };
 
   const handleClusterChange = (value: number) => {

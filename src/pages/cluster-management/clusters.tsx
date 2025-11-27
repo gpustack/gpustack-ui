@@ -1,4 +1,4 @@
-import { expandKeysAtom } from '@/atoms/clusters';
+import { clusterSessionAtom, expandKeysAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -33,7 +33,11 @@ import {
   K8sStepsFromCluter
 } from './components/add-worker/config';
 import PoolRows from './components/pool-rows';
-import { ProviderType, ProviderValueMap } from './config';
+import {
+  ClusterStatusValueMap,
+  ProviderType,
+  ProviderValueMap
+} from './config';
 import {
   ClusterListItem,
   CredentialListItem,
@@ -65,6 +69,7 @@ const Clusters: React.FC = () => {
   });
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
+  const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
   const navigate = useNavigate();
@@ -240,6 +245,27 @@ const Clusters: React.FC = () => {
     };
     fetchCredentialList();
   }, []);
+
+  useEffect(() => {
+    if (
+      clusterSession?.firstAddWorker &&
+      dataSource.loadend &&
+      dataSource.dataList?.length > 0
+    ) {
+      const targetCluster = dataSource.dataList.find(
+        (cluster) =>
+          cluster.state === ClusterStatusValueMap.Ready &&
+          !cluster.workers &&
+          !cluster.worker_pools?.length
+      );
+
+      if (targetCluster) {
+        handleAddWorker(targetCluster);
+        // reset session
+        setClusterSession(null);
+      }
+    }
+  }, [clusterSession, dataSource.loadend, dataSource.dataList]);
 
   const renderChildren = (
     list: any,

@@ -33,5 +33,9 @@ export default {
   'noresult.keys.nofound': '未找到匹配的 API 密钥',
   'noresult.catalog.title': '暂无模型',
   'noresult.catalog.subTitle': '尚未配置任何模型。',
-  'noresult.catalog.nofound': '未找到匹配的模型'
+  'noresult.catalog.nofound': '未找到匹配的模型',
+  'noresult.resources.cluster': '暂无可用集群，请添加集群以开始使用。',
+  'noresult.resources.worker': '暂无可用节点，请添加节点以开始使用。',
+  'noresult.resources.gotocluster': '创建 Docker 或其他类型的集群',
+  'noresult.resources.gotoworker': '添加节点'
 };

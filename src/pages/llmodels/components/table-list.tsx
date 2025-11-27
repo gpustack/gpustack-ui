@@ -429,6 +429,7 @@ const Models: React.FC<ModelsProps> = ({
       data: row
     });
   }, []);
+
   const handleSelect = useMemoizedFn(async (val: any, row: ListItem) => {
     try {
       if (val === 'edit') {

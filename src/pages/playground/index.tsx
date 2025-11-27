@@ -156,11 +156,15 @@ const Playground: React.FC = () => {
           activeKey={activeKey}
           key="view-code-buttons"
         />,
-        <Divider
-          key="divider"
-          type="vertical"
-          style={{ height: 24, marginInline: 16 }}
-        />,
+        <>
+          {activeKey === 'chat' && (
+            <Divider
+              key="divider"
+              type="vertical"
+              style={{ height: 24, marginInline: 16 }}
+            />
+          )}
+        </>,
         <ExtraContent key="extra-content" />
       ]}
     >

@@ -4,8 +4,9 @@ import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
+import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Form, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import { ProviderType, ProviderValueMap } from '../config';
 import {
@@ -100,8 +101,21 @@ const AddModal: React.FC<AddModalProps> = ({
               ]}
             >
               <SealInput.Password
-                label={intl.formatMessage({ id: 'clusters.credential.token' })}
+                label={intl.formatMessage({
+                  id: 'clusters.credential.token'
+                })}
                 required={action === PageAction.CREATE}
+                labelExtra={
+                  <Typography.Link
+                    href="https://cloud.digitalocean.com/account/api/tokens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ marginLeft: 8, lineHeight: 1 }}
+                  >
+                    {intl.formatMessage({ id: 'clusters.button.genToken' })}{' '}
+                    <ExportOutlined style={{ fontSize: 12 }} />
+                  </Typography.Link>
+                }
               ></SealInput.Password>
             </Form.Item>
           </>

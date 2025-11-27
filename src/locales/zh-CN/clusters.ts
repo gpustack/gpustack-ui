@@ -78,5 +78,6 @@ export default {
   'clusters.addworker.autoDetect': '自动检测',
   'clusters.addworker.extraVolume.holder':
     '例如：/data/models（路径需以 / 开头）',
-  'clusters.addworker.vendorNotes.title': '{vendor}设备注意事项'
+  'clusters.addworker.vendorNotes.title': '{vendor}设备注意事项',
+  'clusters.button.genToken': '生成令牌'
 };

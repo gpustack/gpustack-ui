@@ -248,5 +248,8 @@ export default {
   'models.accessControlModal.includeusers': '显示用户',
   'models.table.genericProxy':
     '使用以下路径前缀，并在请求头 <span class="bold-text">X-GPUStack-Model</span> 或请求体中的 model 字段设置模型名称后访问该模型。该路径的所有子路径请求会被转发到推理后端。',
-  'models.form.backendVersion.deprecated': '已弃用'
+  'models.form.backendVersion.deprecated': '已弃用',
+  'models.accessSettings.public.desc': '任何人无需认证即可访问。',
+  'models.accessSettings.authed.tips': '平台内所有已认证用户可访问。',
+  'models.accessSettings.allowedUsers.tips': '仅允许选定的特定用户访问。'
 };

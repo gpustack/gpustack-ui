@@ -173,6 +173,16 @@ export const useCheckCompatibility = () => {
 
   const handleEvaluate = async (data: any) => {
     try {
+      // when no cluster selected, show warning and prompt user to add cluster first
+      if (!data.cluster_id) {
+        setWarningStatus({
+          show: true,
+          title: '',
+          type: 'warning',
+          message: intl.formatMessage({ id: 'noresult.resources.cluster' })
+        });
+        return;
+      }
       checkTokenRef.current?.cancel();
       checkTokenRef.current = createAxiosToken();
       setWarningStatus({
@@ -407,6 +417,7 @@ export const useCheckCompatibility = () => {
       return;
     }
 
+    // when custom backend, and no run_command or image_name, skip evaluate
     if (
       backendOptionsMap.custom === allValues.backend &&
       (!allValues.run_command || !allValues.image_name)

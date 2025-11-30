@@ -1,4 +1,5 @@
 import useSetChunkFetch from '@/hooks/use-chunk-fetch';
+import { useMemoizedFn } from 'ahooks';
 import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -177,7 +178,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
     });
   };
 
-  const handleOnScroll = useCallback(
+  const handleOnScroll = useMemoizedFn(
     async (data: { isTop: boolean; isBottom: boolean }) => {
       const { isTop, isBottom } = data;
       setIsAtTop(isTop);
@@ -225,17 +226,7 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
       } else if (isBottom && page < totalPage) {
         // getNextPage();
       }
-    },
-    [
-      loading,
-      logs.length,
-      pageSize,
-      enableScorllLoad,
-      page,
-      totalPage,
-      setScrollPos,
-      createChunkConnection
-    ]
+    }
   );
 
   const debouncedScroll = useCallback(

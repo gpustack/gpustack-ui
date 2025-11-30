@@ -152,37 +152,37 @@ export const frameworks = [
     label: 'CANN',
     value: GPUDriverMap.ASCEND,
     tips: ManufacturerMap[GPUDriverMap.ASCEND],
-    locale: true
+    tipLocale: true
   },
   {
     label: 'DTK',
     value: GPUDriverMap.HYGON,
     tips: ManufacturerMap[GPUDriverMap.HYGON],
-    locale: true
+    tipLocale: true
   },
   {
     label: 'MACA',
     value: GPUDriverMap.METAX,
     tips: ManufacturerMap[GPUDriverMap.METAX],
-    locale: true
+    tipLocale: true
   },
   {
     label: 'CoreX',
     value: GPUDriverMap.ILUVATAR,
     tips: ManufacturerMap[GPUDriverMap.ILUVATAR],
-    locale: true
+    tipLocale: true
   },
   {
     label: 'MUSA',
     value: GPUDriverMap.MOORE_THREADS,
     tips: ManufacturerMap[GPUDriverMap.MOORE_THREADS],
-    locale: true
+    tipLocale: true
   },
   {
     label: 'Neuware',
     value: GPUDriverMap.CAMBRICON,
     tips: ManufacturerMap[GPUDriverMap.CAMBRICON],
-    locale: true
+    tipLocale: true
   },
   {
     label: 'CPU',

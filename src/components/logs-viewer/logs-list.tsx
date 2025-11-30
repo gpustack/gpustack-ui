@@ -64,9 +64,9 @@ const LogsList: React.FC<LogsListProps> = forwardRef((props, ref) => {
 
   const handleOnWheel = useCallback(
     (e: any) => {
-      const scrollTop = scrollEventElement?.scrollTop;
-      const scrollHeight = scrollEventElement?.scrollHeight;
-      const clientHeight = scrollEventElement?.clientHeight;
+      const scrollTop = scrollEventElement?.current.scrollTop;
+      const scrollHeight = scrollEventElement?.current.scrollHeight;
+      const clientHeight = scrollEventElement?.current.clientHeight;
 
       stopScroll.current = scrollTop + clientHeight <= scrollHeight;
 

@@ -4,7 +4,6 @@ import { compressionPluginConfig, monacoPluginConfig } from './plugins';
 import proxy from './proxy';
 import routes from './routes';
 import { getBranchInfo } from './utils';
-const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 const versionInfo = getBranchInfo();
 process.env.VERSION = JSON.stringify(versionInfo);

@@ -163,7 +163,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
       <span>
         {option.label}
         {data.tips ? (
-          data.locale ? (
+          data.tipLocale ? (
             <span className="text-tertiary m-l-4">{` [${intl.formatMessage({ id: data.tips })}]`}</span>
           ) : (
             <span className="text-tertiary m-l-4">{` [${data.tips}]`}</span>

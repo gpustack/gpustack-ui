@@ -267,7 +267,8 @@ export default {
   'models.accessSettings.authed.tips':
     'Accessible to all authenticated platform users.',
   'models.accessSettings.allowedUsers.tips':
-    'Only designated users can access the model.'
+    'Only designated users can access the model.',
+  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -358,5 +359,6 @@ export default {
 // 68. 'models.form.backendVersion.deprecated': 'Deprecated',
 // 69. 'models.accessSettings.public.desc': 'Accessible to anyone without authentication.',
 // 70.  'models.accessSettings.authed.tips': 'Accessible to all authenticated platform users.',
-// 71.'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.'
+// 71.'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.',
+// 72. 'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`
 // ========== End of To-Do List ==========

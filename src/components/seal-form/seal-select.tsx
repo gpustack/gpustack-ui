@@ -10,7 +10,9 @@ import { SealFormItemProps } from './types';
 import Wrapper from './wrapper';
 import SelectWrapper from './wrapper/select';
 
-const SealSelect: React.FC<SelectProps & SealFormItemProps> = (props) => {
+const SealSelect: React.FC<
+  SelectProps & SealFormItemProps & { footer?: React.ReactNode }
+> = (props) => {
   const {
     label,
     placeholder,

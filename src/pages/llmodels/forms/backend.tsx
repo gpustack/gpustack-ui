@@ -1,8 +1,8 @@
 import SealSelect from '@/components/seal-form/seal-select';
 import TooltipList from '@/components/tooltip-list';
 import useAppUtils from '@/hooks/use-app-utils';
-import { CaretDownOutlined } from '@ant-design/icons';
-import { useIntl } from '@umijs/max';
+import { CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { useIntl, useNavigate } from '@umijs/max';
 import { Form, Select } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -24,6 +24,7 @@ const CaretDownWrapper = styled.span`
 
 const BackendFields: React.FC = () => {
   const intl = useIntl();
+  const navigate = useNavigate();
   const { getRuleMessage } = useAppUtils();
   const form = Form.useFormInstance();
   const { onValuesChange, backendOptions, onBackendChange } = useFormContext();
@@ -193,6 +194,27 @@ const BackendFields: React.FC = () => {
             })}
             onChange={handleBackendVersionOnChange}
             label={intl.formatMessage({ id: 'models.form.backendVersion' })}
+            footer={
+              <dl className="flex" style={{ marginBottom: 0 }}>
+                <dt>
+                  <InfoCircleOutlined />
+                </dt>
+                <dd style={{ marginLeft: 8, marginBottom: 0 }}>
+                  {intl.formatMessage(
+                    {
+                      id: 'models.form.backendVersions.tips'
+                    },
+                    {
+                      link: (
+                        <a onClick={() => navigate('/resources/backends')}>
+                          {intl.formatMessage({ id: 'backends.title' })}
+                        </a>
+                      )
+                    }
+                  )}
+                </dd>
+              </dl>
+            }
           >
             {renderVersionOptions(
               backendVersions.builtIn,

@@ -1,16 +1,14 @@
-import { clusterSessionAtom } from '@/atoms/clusters';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import { modelNameReg, PageAction } from '@/config';
+import { modelNameReg } from '@/config';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
   ClusterStatusLabelMap,
   ClusterStatusValueMap
 } from '@/pages/cluster-management/config';
-import { Link, useIntl } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
-import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import { sourceOptions } from '../config';
 import { FormData } from '../config/types';
@@ -29,26 +27,6 @@ interface BasicFormProps {
   handleClusterChange: (value: number) => void;
   onSourceChange?: (value: string) => void;
 }
-
-const NotFoundCredentialContent: React.FC = () => {
-  const [, setFromClusterCreation] = useAtom(clusterSessionAtom);
-  const intl = useIntl();
-  const handleOnClick = () => {
-    setFromClusterCreation({
-      firstAddWorker: false,
-      firstAddCluster: true
-    });
-  };
-
-  return (
-    <Link
-      to={`/cluster-management/clusters/create?action=${PageAction.CREATE}`}
-      onClick={handleOnClick}
-    >
-      {intl.formatMessage({ id: 'noresult.resources.gotocluster' })}
-    </Link>
-  );
-};
 
 const BasicForm: React.FC<BasicFormProps> = (props) => {
   const {
@@ -140,9 +118,6 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
       >
         {
           <SealSelect
-            notFoundContent={
-              <NotFoundCredentialContent></NotFoundCredentialContent>
-            }
             onChange={handleClusterChange}
             label={intl.formatMessage({ id: 'clusters.title' })}
             options={clusterOptions}

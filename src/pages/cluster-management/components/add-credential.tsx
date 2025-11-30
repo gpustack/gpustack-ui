@@ -8,12 +8,24 @@ import { ExportOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Form, Typography } from 'antd';
 import React, { useEffect } from 'react';
+import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../config';
 import {
   CredentialFormData as FormData,
   CredentialListItem as ListItem
 } from '../config/types';
 
+const ExtraContent = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  bottom: 6px;
+  right: 32px;
+  z-index: 1;
+  background: var(--ant-color-bg-container);
+  padding-inline: 8px;
+`;
 type AddModalProps = {
   title: string;
   action: PageActionType;
@@ -105,18 +117,17 @@ const AddModal: React.FC<AddModalProps> = ({
                   id: 'clusters.credential.token'
                 })}
                 required={action === PageAction.CREATE}
-                labelExtra={
-                  <Typography.Link
-                    href="https://cloud.digitalocean.com/account/api/tokens"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ marginLeft: 8, lineHeight: 1 }}
-                  >
-                    {intl.formatMessage({ id: 'clusters.button.genToken' })}{' '}
-                    <ExportOutlined style={{ fontSize: 12 }} />
-                  </Typography.Link>
-                }
               ></SealInput.Password>
+              <ExtraContent>
+                <Typography.Link
+                  href="https://cloud.digitalocean.com/account/api/tokens"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {intl.formatMessage({ id: 'clusters.button.genToken' })}{' '}
+                  <ExportOutlined style={{ transform: 'scale(0.8)' }} />
+                </Typography.Link>
+              </ExtraContent>
             </Form.Item>
           </>
         )}

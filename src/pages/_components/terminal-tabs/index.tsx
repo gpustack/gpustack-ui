@@ -22,6 +22,7 @@ const TerminalModal: React.FC<TerminalModalProps> = ({
         terminals={terminals}
         height={height}
         currentActive={currentActive}
+        onClose={onClose}
       />
     </div>
   );

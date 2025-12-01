@@ -45,6 +45,7 @@ const useTerminalTabs = () => {
 
   return {
     TerminalPanel,
+    terminals,
     handleAddTerminal
   };
 };

@@ -6,6 +6,7 @@ import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
 import { convertFileSize } from '@/utils';
 import {
+  CodeOutlined,
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
@@ -49,7 +50,7 @@ const ActionList = [
   //   key: 'logs',
   //   icon: <IconFont type="icon-logs" />
   // },
-  // { label: 'Terminal', locale: false, key: 'terminal', icon: <CodeOutlined /> },
+  { label: 'common.button.terminal', key: 'terminal', icon: <CodeOutlined /> },
   {
     label: 'common.button.delete',
     key: 'delete',

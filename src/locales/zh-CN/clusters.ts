@@ -79,7 +79,8 @@ export default {
   'clusters.addworker.extraVolume.holder':
     '例如：/data/models（路径需以 / 开头）',
   'clusters.addworker.vendorNotes.title': '{vendor}设备注意事项',
-  'clusters.button.genToken': '生成令牌',
+  'clusters.button.genToken':
+    '需要创建令牌？点击<a href="{link}" target="_blank">这里</a>。',
   'clusters.addworker.amdNotes-01':
     '如果 <span class="bold-text">/opt/rocm</span> 目录不存在，请创建一个指向已安装 ROCm 路径的符号链接：<span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>。'
 };

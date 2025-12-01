@@ -159,11 +159,19 @@ export default {
   'playground.image.generate.error':
     'Something went wrong. The image could not be generated.',
   'playground.uploadfile.sizeError':
-    'File size exceeds the limit. Maximum allowed: {size}.'
+    'File size exceeds the limit. Maximum allowed: {size}.',
+  'playground.uploadImage.url.invalid':
+    'Please enter a direct .png or .jpg image URL (e.g. https://.../image.png). Press ESC to cancel.',
+  'playground.uploadImage.url.holder':
+    'Enter an image URL (supports .png, .jpeg, .jpg)',
+  'playground.uploadImage.url.button': 'Add Image from URL'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'playground.rerank.query.validate': 'The query is required.'
 // 2.  'playground.image.generate.error': 'Something went wrong. The image could not be generated.',
 // 3. 'playground.uploadfile.sizeError': 'File size exceeds the limit. Maximum allowed: {size}.'
+// 4. 'playground.uploadImage.url.invalid': 'Please enter a direct .png or .jpg image URL(e.g. https://.../image.png). Press ESC to cancel.',
+// 5. 'playground.uploadImage.url.holder': 'Enter an image URL (supports .png, .jpeg, .jpg)'
+// 6.  'playground.uploadImage.url.button': 'Add Image from URL'
 // ========== End of To-Do List ==========

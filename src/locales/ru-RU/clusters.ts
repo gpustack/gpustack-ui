@@ -81,10 +81,12 @@ export default {
   'clusters.addworker.extraVolume.holder':
     'напр. /data/models (путь должен начинаться с /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
-  'clusters.button.genToken': 'Сгенерировать токен',
+  'clusters.button.genToken':
+    'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
   'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
+// 1. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+// 2. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
 // ================================================================

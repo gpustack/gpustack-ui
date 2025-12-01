@@ -148,5 +148,11 @@ export default {
     '若预期的模型未显示，请检查模型是否已正常运行并被正确分类。如分类不正确，请编辑模型并手动调整其类别。',
   'playground.rerank.query.validate': '查询内容不能为空',
   'playground.image.generate.error': '出了一点问题，图片未能生成。',
-  'playground.uploadfile.sizeError': '上传的文件大小超过限制，最大允许 {size}。'
+  'playground.uploadfile.sizeError':
+    '上传的文件大小超过限制，最大允许 {size}。',
+  'playground.uploadImage.url.invalid':
+    '请输入直接的 .png 或 .jpg 图片链接（例如：https://…/image.png）。按 ESC 可取消。',
+  'playground.uploadImage.url.holder':
+    '请输入图片链接（支持 .png、.jpeg、.jpg 格式）',
+  'playground.uploadImage.url.button': '从链接添加图片'
 };

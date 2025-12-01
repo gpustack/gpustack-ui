@@ -1,4 +1,5 @@
 import SimpleAudio from '@/components/audio-player/simple-audio';
+import DropDownActions from '@/components/drop-down-actions';
 import IconFont from '@/components/icon-font';
 import UploadAudio from '@/components/upload-audio';
 import HotKeys, { KeyMap } from '@/config/hotkeys';
@@ -10,8 +11,11 @@ import {
 import {
   ClearOutlined,
   CustomerServiceOutlined,
+  LinkOutlined,
+  PictureOutlined,
   SendOutlined,
-  SwapOutlined
+  SwapOutlined,
+  UploadOutlined
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Input, Tooltip } from 'antd';
@@ -163,8 +167,11 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       content: '',
       imgs: []
     });
+    const [isFromUrl, setIsFromUrl] = useState(false);
+    const [openImgTips, setOpenImgTips] = useState(false);
     const uidCountRef = useRef(0);
     const inputRef = useRef<any>(null);
+    const inputImgRef = useRef<any>(null);
 
     const updateUidCount = () => {
       uidCountRef.current += 1;
@@ -293,6 +300,39 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       });
     };
 
+    const handleInputImageUrl = (e: any) => {
+      const url = e.target.value;
+      // ends with .png, .jpg, .jpeg
+      const regex = /(https?:\/\/\S+\.(png|jpg|jpeg))/gi;
+      const isValid = regex.test(url);
+      setOpenImgTips(!isValid);
+      if (!isValid) {
+        return;
+      }
+      handleUpdateImgList([
+        {
+          uid: updateUidCount(),
+          dataUrl: e.target.value
+        }
+      ]);
+      setIsFromUrl(false);
+      setOpenImgTips(false);
+    };
+
+    const handleOnEscape = (e: any) => {
+      if (e.key === 'Escape') {
+        setIsFromUrl(false);
+        setOpenImgTips(false);
+      }
+    };
+
+    const handleAddImgFromUrl = () => {
+      setIsFromUrl(true);
+      setTimeout(() => {
+        inputImgRef.current?.focus?.();
+      }, 100);
+    };
+
     const handleUploadAudioChange = async (data: {
       file: any;
       fileList: any[];
@@ -412,11 +452,41 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
               </Checkbox>
             )}
             {actions.includes('upload') && message.role === Roles.User && (
-              <UploadImg
-                handleUpdateImgList={handleUpdateImgList}
-                size="middle"
-              ></UploadImg>
+              <DropDownActions
+                placement={'topLeft'}
+                menu={{
+                  items: [
+                    {
+                      label: (
+                        <UploadImg
+                          handleUpdateImgList={handleUpdateImgList}
+                          size="middle"
+                        >
+                          {intl.formatMessage({ id: 'playground.img.upload' })}
+                        </UploadImg>
+                      ),
+                      key: 'upload_image',
+                      icon: <UploadOutlined />
+                    },
+                    {
+                      label: intl.formatMessage({
+                        id: 'playground.uploadImage.url.button'
+                      }),
+                      key: 'add_image_url',
+                      icon: <LinkOutlined />,
+                      onClick: handleAddImgFromUrl
+                    }
+                  ]
+                }}
+              >
+                <Button
+                  type="text"
+                  size="middle"
+                  icon={<PictureOutlined />}
+                ></Button>
+              </DropDownActions>
             )}
+
             {actions.includes('upload') && message.role === Roles.User && (
               <UploadAudio
                 maxFileSize={1024 * 1024}
@@ -533,6 +603,26 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
             </AudioWrapper>
           )}
         </ImgsWrapper>
+        {isFromUrl && (
+          <Tooltip
+            open={openImgTips}
+            title={intl.formatMessage({
+              id: 'playground.uploadImage.url.invalid'
+            })}
+          >
+            <Input
+              ref={inputImgRef}
+              status={openImgTips ? 'error' : ''}
+              placeholder={intl.formatMessage({
+                id: 'playground.uploadImage.url.holder'
+              })}
+              style={{ width: 360 }}
+              onBlur={handleInputImageUrl}
+              onPressEnter={handleInputImageUrl}
+              onKeyDown={handleOnEscape}
+            ></Input>
+          </Tooltip>
+        )}
         <div className="input-box">
           {actions.includes('paste') ? (
             <TextArea

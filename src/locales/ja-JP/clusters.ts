@@ -81,7 +81,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.extraVolume.holder':
     'e.g. /data/models (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
-  'clusters.button.genToken': 'Generate Token',
+  'clusters.button.genToken':
+    'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
   'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
 };
 
@@ -154,6 +155,6 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 66. 'clusters.addworker.autoDetect': 'Auto-detect',
 // 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
 // 68. 'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
-// 69. 'clusters.button.genToken': 'Generate Token',
+// 69. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
 // 70. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
 // ========== End of To-Do List ==========

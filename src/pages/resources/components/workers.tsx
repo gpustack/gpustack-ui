@@ -1,7 +1,7 @@
 import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
-import PageBox from '@/pages/_components/page-box';
+import { PageContainerInner } from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
 import {
@@ -23,6 +23,7 @@ import {
   updateWorker
 } from '../apis';
 import { ListItem } from '../config/types';
+import useTerminalTabs from '../hooks/use-terminal-tabs';
 import useWorkerColumns from '../hooks/use-worker-columns';
 import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
@@ -50,6 +51,7 @@ const Workers: React.FC = () => {
     watch: true,
     API: WORKERS_API
   });
+  const { TerminalPanel, terminals, handleAddTerminal } = useTerminalTabs();
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
     useWorkerMaintenance({ fetchData: handleSearch });
 
@@ -176,6 +178,10 @@ const Workers: React.FC = () => {
     if (val === 'stop_maintenance') {
       handleStopMaintenance(record);
     }
+
+    if (val === 'terminal') {
+      handleAddTerminal(record);
+    }
   });
 
   const handleOnAddWorker = () => {
@@ -237,7 +243,9 @@ const Workers: React.FC = () => {
 
   return (
     <>
-      <PageBox>
+      <PageContainerInner
+        footer={terminals.length ? [TerminalPanel] : undefined}
+      >
         <FilterBar
           showSelect={true}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
@@ -292,7 +300,7 @@ const Workers: React.FC = () => {
         />
         {MaintenanceModal}
         {AddWorkerModal}
-      </PageBox>
+      </PageContainerInner>
     </>
   );
 };

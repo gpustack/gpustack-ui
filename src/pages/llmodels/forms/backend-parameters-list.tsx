@@ -39,6 +39,7 @@ const BackendParametersList: React.FC = () => {
   return (
     <Form.Item<FormData> name="backend_parameters">
       <ListInput
+        trim={false}
         placeholder={
           backendParamsHolderTips[backend]
             ? intl.formatMessage({

@@ -90,6 +90,14 @@ const SealAutoComplete: React.FC<
   const handleOnSelect = (value: any, option: any) => {
     onSelect?.(value, option);
   };
+
+  const handleOnInput = (e: any) => {
+    if (trim) {
+      e.target.value = e.target.value?.trim();
+    }
+    props.onInput?.(e);
+  };
+
   const renderAfter = () => {
     if (loading) {
       return (
@@ -123,6 +131,7 @@ const SealAutoComplete: React.FC<
       >
         <AutoComplete
           {...rest}
+          trim={trim}
           ref={inputRef}
           placeholder={
             isFocus || !label ? (
@@ -141,6 +150,7 @@ const SealAutoComplete: React.FC<
           onSearch={handleSearch}
           onChange={handleChange}
           popupRender={popupRender}
+          onInput={handleOnInput}
         ></AutoComplete>
       </Wrapper>
     </SelectWrapper>

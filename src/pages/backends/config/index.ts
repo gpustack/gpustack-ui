@@ -198,7 +198,7 @@ export const yamlTemplate = `# ----------------------------------------
 #   - must be endwith '-custom'
 # version_configs:
 #   - image_name: required
-#   - run_command: required
+#   - run_command: optional
 #   - custom_framework:
 #       - optional
 #       - choose from: ${Object.values(GPUDriverMap).join(', ')}, CPU

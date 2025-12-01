@@ -150,10 +150,19 @@ export default {
   'playground.model.noavailable.tips2':
     'Если нужная модель не отображается, убедитесь, что она запущена и ей присвоена правильная категория. Если категория указана неверно, её можно изменить вручную в настройках модели.',
   'playground.rerank.query.validate': 'Необходимо указать запрос.',
-  'playground.image.generate.error': 'Произошла ошибка. Не удалось сгенерировать изображение.',
-  'playground.uploadfile.sizeError': 'Размер файла превышает ограничение. Максимальный размер: {size}.'
+  'playground.image.generate.error':
+    'Произошла ошибка. Не удалось сгенерировать изображение.',
+  'playground.uploadfile.sizeError':
+    'Размер файла превышает ограничение. Максимальный размер: {size}.',
+  'playground.uploadImage.url.invalid':
+    'Please enter a direct .png or .jpg image URL (e.g. https://.../image.png). Press ESC to cancel.',
+  'playground.uploadImage.url.holder':
+    'Enter an image URL (supports .png, .jpeg, .jpg)',
+  'playground.uploadImage.url.button': 'Add Image from URL'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'playground.uploadImage.url.invalid': 'Please enter a direct .png or .jpg image URL(e.g. https://.../image.png). Press ESC to cancel.',
+// 2. 'playground.uploadImage.url.holder': 'Enter an image URL (supports .png, .jpeg, .jpg)',
+// 3.  'playground.uploadImage.url.button': 'Add Image from URL'
 // ========== End of To-Do List ==========

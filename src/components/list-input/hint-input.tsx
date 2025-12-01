@@ -8,13 +8,14 @@ interface HintInputProps {
   onChange: (value: string) => void;
   onBlur?: (e: any) => void;
   placeholder?: string;
+  trim?: boolean;
   sourceOptions?: Global.HintOptions[];
 }
 
 const matchReg = /[^=]+=[^=]*$/;
 
 const HintInput: React.FC<HintInputProps> = (props) => {
-  const { value, label, onChange, onBlur, sourceOptions } = props;
+  const { value, label, onChange, onBlur, sourceOptions, trim = true } = props;
   const cursorPosRef = React.useRef(0);
   const contextBeforeCursorRef = React.useRef('');
   const [options, setOptions] = React.useState<
@@ -70,11 +71,7 @@ const HintInput: React.FC<HintInputProps> = (props) => {
 
   const handleInput = (e: any) => {
     getContextBeforeCursor(e);
-    onChange(e.target.value?.trim());
-  };
-
-  const handleOnChange = (value: string) => {
-    onChange(value?.trim());
+    onChange(e.target.value);
   };
 
   const handleOnSelect = (value: string) => {
@@ -93,9 +90,10 @@ const HintInput: React.FC<HintInputProps> = (props) => {
       onBlur={onBlur}
       label={label}
       options={options}
+      trim={trim}
       style={{ width: '100%' }}
     />
   );
 };
 
-export default React.memo(HintInput);
+export default HintInput;

@@ -1,4 +1,3 @@
-import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React from 'react';
 import Wrapper from '../label-selector/wrapper';
@@ -12,13 +11,13 @@ interface ListInputProps {
   options?: Global.HintOptions[];
   placeholder?: string;
   labelExtra?: React.ReactNode;
+  trim?: boolean;
   onChange: (data: string[]) => void;
   onBlur?: (e: any, index: number) => void;
   onDelete?: (index: number) => void;
 }
 
 const ListInput: React.FC<ListInputProps> = (props) => {
-  const intl = useIntl();
   const {
     dataList,
     label,
@@ -28,7 +27,8 @@ const ListInput: React.FC<ListInputProps> = (props) => {
     onDelete,
     btnText,
     options,
-    labelExtra
+    labelExtra,
+    trim = true
   } = props;
   const [list, setList] = React.useState<{ value: string; uid: number }[]>([]);
   const countRef = React.useRef(0);
@@ -97,6 +97,7 @@ const ListInput: React.FC<ListInputProps> = (props) => {
               onBlur={(e) => onBlur?.(e, index)}
               onRemove={() => handleOnRemove(index)}
               onChange={(val) => handleOnChange(val, index)}
+              trim={trim}
             />
           );
         })}

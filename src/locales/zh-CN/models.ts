@@ -68,11 +68,11 @@ export default {
   'models.form.ollamalink':
     '在 <a href="https://www.ollama.com/library" target="_blank">Ollama Library</a> 中查找',
   'models.form.backend_parameters.llamabox.placeholder':
-    '例如，--ctx-size=8192（参数名和值用 = 号分隔）',
+    '例如，--ctx-size=8192（参数名和值用 = 号或空格分隔）',
   'models.form.backend_parameters.vllm.placeholder':
-    '例如，--max-model-len=8192（参数名和值用 = 号分隔）',
+    '例如，--max-model-len=8192（参数名和值用 = 号或空格分隔）',
   'models.form.backend_parameters.sglang.placeholder':
-    '例如，--context-length=8192（参数名和值用 = 号分隔）',
+    '例如，--context-length=8192（参数名和值用 = 号或空格分隔）',
   'models.form.backend_parameters.vllm.tips':
     '更多 {backend} 参数说明查看<a href={link} target="_blank">这里</a>。',
   'models.logs.pagination.prev': '上一 {lines} 行',

@@ -2,7 +2,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
-import { GPUSTACK_API_BASE_URL } from '@/config/settings';
+import { OPENAI_COMPATIBLE } from '@/config/settings';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
@@ -94,7 +94,7 @@ const useModelsColumns = ({
           <Tooltip
             title={intl.formatMessage(
               { id: 'models.form.replicas.tips' },
-              { api: `${window.location.origin}/${GPUSTACK_API_BASE_URL}` }
+              { api: `${window.location.origin}/${OPENAI_COMPATIBLE}` }
             )}
           >
             <span style={{ fontWeight: 'var(--font-weight-medium)' }}>

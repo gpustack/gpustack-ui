@@ -69,11 +69,11 @@ export default {
   'models.form.ollamalink':
     'Find More in  <a href="https://www.ollama.com/library" target="_blank">Ollama Library</a>.',
   'models.form.backend_parameters.llamabox.placeholder':
-    'e.g., --ctx-size=8192 (use = to separate name and value)',
+    'e.g., --ctx-size=8192 (use = or a space to separate name and value)',
   'models.form.backend_parameters.vllm.placeholder':
-    'e.g., --max-model-len=8192 (use = to separate name and value)',
+    'e.g., --max-model-len=8192 (use = or a space to separate name and value)',
   'models.form.backend_parameters.sglang.placeholder':
-    'e.g., --context-length=8192 (use = to separate name and value)',
+    'e.g., --context-length=8192 (use = or a space to separate name and value)',
   'models.form.backend_parameters.vllm.tips':
     'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
   'models.logs.pagination.prev': 'Previous {lines} Lines',

@@ -70,11 +70,11 @@ export default {
   'models.form.ollamalink':
     '<a href="https://www.ollama.com/library" target="_blank">Ollamaライブラリ</a>でさらに探す',
   'models.form.backend_parameters.llamabox.placeholder':
-    '例: --ctx-size=8192（=で名前と値を分ける）',
+    '例: --ctx-size=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.vllm.placeholder':
-    '例: --max-model-len=8192（=で名前と値を分ける）',
+    '例: --max-model-len=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.sglang.placeholder':
-    '例: --context-length=8192（=で名前と値を分ける）',
+    '例: --context-length=8192（=または空白で名前と値を分ける）',
   'models.form.backend_parameters.vllm.tips':
     'For more details about {backend} parameters, see <a href={link} target="_blank">here</a>.',
   'models.logs.pagination.prev': '前の{lines}行',

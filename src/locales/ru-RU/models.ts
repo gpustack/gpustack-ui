@@ -71,11 +71,11 @@ export default {
   'models.form.ollamalink':
     'Больше моделей в библиотеке <a href="https://www.ollama.com/library" target="_blank">Ollama</a>',
   'models.form.backend_parameters.llamabox.placeholder':
-    'например: --ctx-size=8192（параметр и значение разделены знаком =）',
+    'например: --ctx-size=8192（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.vllm.placeholder':
-    'например: --max-model-len=8192（параметр и значение разделены знаком =）',
+    'например: --max-model-len=8192（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.sglang.placeholder':
-    'например: --context-length=8192（параметр и значение разделены знаком =）',
+    'например: --context-length=8192（параметр и значение разделены знаком = или пробелом）',
   'models.form.backend_parameters.vllm.tips':
     'Для получения подробной информации о параметрах {backend} см. <a href={link} target="_blank">здесь</a>.',
   'models.logs.pagination.prev': 'Предыдущие {lines} строк',

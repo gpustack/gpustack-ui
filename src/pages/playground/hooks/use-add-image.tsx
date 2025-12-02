@@ -126,11 +126,11 @@ const useAddImage = (options: {
                 handleUpdateImgList={handleUpdateImgList}
                 size="middle"
               >
+                <UploadOutlined className="m-r-8" />
                 {intl.formatMessage({ id: 'playground.img.upload' })}
               </UploadImg>
             ),
-            key: 'upload_image',
-            icon: <UploadOutlined />
+            key: 'upload_image'
           },
           {
             label: intl.formatMessage({

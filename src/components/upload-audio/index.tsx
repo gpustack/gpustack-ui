@@ -87,4 +87,4 @@ const UploadAudio: React.FC<UploadAudioProps> = (props) => {
   );
 };
 
-export default React.memo(UploadAudio);
+export default UploadAudio;

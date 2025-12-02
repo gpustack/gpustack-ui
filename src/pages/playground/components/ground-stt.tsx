@@ -201,9 +201,11 @@ const GroundSTT: React.FC<MessageProps> = forwardRef((props, ref) => {
 
   const handleUploadChange = useCallback(
     async (data: { file: any; fileList: any }) => {
-      const res = await readAudioFile(data.file);
-      setAudioData(res);
-      setTokenResult(null);
+      try {
+        const res = await readAudioFile(data.file);
+        setAudioData(res);
+        setTokenResult(null);
+      } catch (error) {}
     },
     []
   );

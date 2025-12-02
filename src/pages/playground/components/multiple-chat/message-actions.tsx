@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
 import { Roles } from '../../config';
@@ -20,7 +21,7 @@ import {
   MessageItem,
   MessageItemAction
 } from '../../config/types';
-import UploadImg from '../upload-img';
+import useAddImage from '../../hooks/use-add-image';
 
 interface MessageActionsProps {
   data: MessageItem;
@@ -57,32 +58,47 @@ const MessageActions: React.FC<MessageActionsProps> = ({
     file: any;
     fileList: any[];
   }) => {
-    const base64Audio = await convertFileToBase64(audio.file);
-    const audioData = await readAudioFile(audio.file);
-    updateMessage?.({
-      role: data.role,
-      content: data.content,
-      uid: data.uid,
-      imgs: data.imgs || [],
-      audio: [
-        {
-          uid: audio.file.uid || audio.fileList[0].uid,
-          format: audioTypeMap[audio.file.type] as AudioFormat,
-          base64: base64Audio.split(',')[1],
-          data: _.pick(audioData, ['url', 'name', 'duration'])
-        }
-      ]
-    });
+    try {
+      const base64Audio = await convertFileToBase64(audio.file);
+      const audioData = await readAudioFile(audio.file);
+      updateMessage?.({
+        role: data.role,
+        content: data.content,
+        uid: data.uid,
+        imgs: data.imgs || [],
+        audio: [
+          {
+            uid: audio.file.uid || audio.fileList[0].uid,
+            format: audioTypeMap[audio.file.type] as AudioFormat,
+            base64: base64Audio.split(',')[1],
+            data: _.pick(audioData, ['url', 'name', 'duration'])
+          }
+        ]
+      });
+    } catch (error) {
+      console.log('error uploading audio file', error);
+    }
   };
+
+  const { ImageURLInput, UploadImageButton, isFromUrl } = useAddImage({
+    size: 'small',
+    handleUpdateImgList: handleUpdateImgList,
+    updateUidCount: () => `img-${Date.now()}`
+  });
 
   return (
     <>
+      {ImageURLInput}
       {actions.length > 1 && !loading ? (
-        <div className="actions">
+        <div
+          className={classNames('actions', {
+            'has-url-input': isFromUrl
+          })}
+        >
           <div className="actions-wrap gap-5">
-            {actions.includes('upload') && data.role === Roles.User && (
-              <UploadImg handleUpdateImgList={handleUpdateImgList} />
-            )}
+            {actions.includes('upload') &&
+              data.role === Roles.User &&
+              UploadImageButton}
             {actions.includes('upload') && data.role === Roles.User && (
               <UploadAudio
                 type="text"

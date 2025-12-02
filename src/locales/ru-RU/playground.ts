@@ -155,14 +155,13 @@ export default {
   'playground.uploadfile.sizeError':
     'Размер файла превышает ограничение. Максимальный размер: {size}.',
   'playground.uploadImage.url.invalid':
-    'Please enter a direct .png or .jpg image URL (e.g. https://.../image.png). Press ESC to cancel.',
-  'playground.uploadImage.url.holder':
-    'Enter an image URL (supports .png, .jpeg, .jpg)',
+    'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
+  'playground.uploadImage.url.holder': 'Enter an image URL',
   'playground.uploadImage.url.button': 'Add Image from URL'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'playground.uploadImage.url.invalid': 'Please enter a direct .png or .jpg image URL(e.g. https://.../image.png). Press ESC to cancel.',
-// 2. 'playground.uploadImage.url.holder': 'Enter an image URL (supports .png, .jpeg, .jpg)',
+// 1. 'playground.uploadImage.url.invalid': 'Please enter a direct image URL(e.g. https://.../image.png). Press ESC to cancel.',
+// 2. 'playground.uploadImage.url.holder': 'Enter an image URL',
 // 3.  'playground.uploadImage.url.button': 'Add Image from URL'
 // ========== End of To-Do List ==========

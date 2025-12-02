@@ -70,8 +70,9 @@ const AutoImage: React.FC<
     setIsError(false);
   }, [props.onLoad]);
 
-  const handleOnError = useCallback(() => {
+  const handleOnError = useCallback((e: any) => {
     setIsError(true);
+    e.target.src = fallbackImg;
   }, []);
 
   useEffect(() => {
@@ -127,4 +128,4 @@ const AutoImage: React.FC<
   );
 };
 
-export default React.memo(AutoImage);
+export default AutoImage;

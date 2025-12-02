@@ -156,7 +156,7 @@ const Playground: React.FC = () => {
           activeKey={activeKey}
           key="view-code-buttons"
         />,
-        <>
+        <div key="divider-wrapper">
           {activeKey === 'chat' && (
             <Divider
               key="divider"
@@ -164,7 +164,7 @@ const Playground: React.FC = () => {
               style={{ height: 24, marginInline: 16 }}
             />
           )}
-        </>,
+        </div>,
         <ExtraContent key="extra-content" />
       ]}
     >

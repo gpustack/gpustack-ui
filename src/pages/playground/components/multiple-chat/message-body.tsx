@@ -16,10 +16,8 @@ import ThumbImg from '../thumb-img';
 import ThinkContent from './think-content';
 
 const AudioWrapper = styled.div`
-  padding-top: 10px;
   height: max-content;
   width: max-content;
-  margin-inline: 10px;
 `;
 
 const ThumbImgWrapper = styled.div.attrs({
@@ -29,6 +27,12 @@ const ThumbImgWrapper = styled.div.attrs({
   justify-content: flex-start;
   overflow-x: auto;
   flex-direction: column;
+  padding: 0px;
+  gap: 8px;
+  &.has-content {
+    padding-inline: 8px;
+    padding-block: 8px 0;
+  }
 `;
 
 interface MessageBodyProps {
@@ -179,31 +183,6 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
       });
     };
 
-    const handleDeleteLastImage = useCallback(() => {
-      if (data.imgs && data.imgs?.length > 0) {
-        const newImgList = [...(data.imgs || [])];
-        const lastImage = newImgList.pop();
-        if (lastImage) {
-          handleDeleteImg(lastImage.uid);
-        }
-      }
-    }, [data.imgs, handleDeleteImg]);
-
-    const handleKeyDown = useCallback(
-      (event: any) => {
-        if (
-          event.key === 'Backspace' &&
-          data.content === '' &&
-          data.imgs &&
-          data.imgs?.length > 0
-        ) {
-          // inputref blur
-          event.preventDefault();
-          handleDeleteLastImage();
-        }
-      },
-      [data, handleDeleteLastImage]
-    );
     const handleClickWrapper = (e: any) => {
       e.stopPropagation();
       e.preventDefault();
@@ -218,7 +197,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
               data.imgs?.length || (data.audio && data.audio?.length > 0)
           })}
         >
-          <div className="justify-start ">
+          <div className="justify-start">
             <ThumbImg
               editable={editable}
               dataList={data.imgs || []}
@@ -249,7 +228,12 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
           })}
           onClick={handleClickWrapper}
         >
-          <ThumbImgWrapper>
+          <ThumbImgWrapper
+            className={classNames({
+              'has-content':
+                data.imgs?.length || (data.audio && data.audio?.length > 0)
+            })}
+          >
             <ThumbImg
               style={{ paddingBlockEnd: 0 }}
               editable={editable}
@@ -257,7 +241,7 @@ const MessageBody: React.FC<MessageBodyProps> = forwardRef(
               onDelete={handleDeleteImg}
             />
             {data.audio && data.audio.length > 0 && (
-              <AudioWrapper className={data.imgs?.length ? '' : 'm-l-10'}>
+              <AudioWrapper>
                 <SimpleAudio
                   url={data.audio?.[0]?.data.url}
                   name={data.audio?.[0]?.data.name}

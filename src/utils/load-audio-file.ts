@@ -28,50 +28,43 @@ export const loadAudioData = async (
   url: string;
 }> => {
   return new Promise((resolve, reject) => {
-    try {
-      const audioBlob = new Blob([data], { type: type });
-      const fileSize = convertFileSize(audioBlob.size);
+    const audioBlob = new Blob([data], { type: type });
+    const fileSize = convertFileSize(audioBlob.size);
 
-      const audio = document.createElement('audio');
-      const url = URL.createObjectURL(audioBlob);
-      audio.src = url;
+    const audio = document.createElement('audio');
+    const url = URL.createObjectURL(audioBlob);
+    audio.src = url;
 
-      audio.addEventListener('loadedmetadata', () => {
-        const duration = audio.duration;
-        resolve({
-          data: audioBlob,
-          size: fileSize,
-          type: type,
-          duration: Math.ceil(duration),
-          url: url
-        });
+    audio.addEventListener('loadedmetadata', () => {
+      const duration = audio.duration;
+      resolve({
+        data: audioBlob,
+        size: fileSize,
+        type: type,
+        duration: Math.ceil(duration),
+        url: url
       });
+    });
 
-      audio.addEventListener('ended', () => {
-        URL.revokeObjectURL(audio.src);
-      });
+    audio.addEventListener('ended', () => {
+      URL.revokeObjectURL(audio.src);
+    });
 
-      audio.addEventListener('error', () => {
-        URL.revokeObjectURL(url);
-        message.error('Failed to load audio metadata invalid file');
-        reject(new Error('Failed to load audio metadata invalid file'));
-      });
-    } catch (error) {
-      console.log('error====', error);
-      reject(error);
-    }
+    audio.addEventListener('error', () => {
+      URL.revokeObjectURL(url);
+      message.error('Failed to load audio metadata invalid file');
+      reject(new Error('Failed to load audio metadata invalid file'));
+    });
   });
 };
 
 export const readAudioFile = async (
   file: File
 ): Promise<{ url: string; name: string; duration: number }> => {
-  console.log('file====', file);
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async function (e: any) {
       try {
-        console.log('file====', file);
         const arrayBuffer = e.target.result;
         const audioData = await loadAudioData(arrayBuffer, file.type);
         resolve({
@@ -79,7 +72,6 @@ export const readAudioFile = async (
           name: file.name
         });
       } catch (error) {
-        console.log('error====', error);
         reject(error);
       }
     };

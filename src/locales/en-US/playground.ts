@@ -158,8 +158,7 @@ export default {
   'playground.uploadfile.sizeError':
     'File size exceeds the limit. Maximum allowed: {size}.',
   'playground.uploadImage.url.invalid':
-    'Please enter a direct .png or .jpg image URL (e.g. https://.../image.png). Press ESC to cancel.',
-  'playground.uploadImage.url.holder':
-    'Enter an image URL (supports .png, .jpeg, .jpg)',
+    'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
+  'playground.uploadImage.url.holder': 'Enter an image URL',
   'playground.uploadImage.url.button': 'Add Image from URL'
 };

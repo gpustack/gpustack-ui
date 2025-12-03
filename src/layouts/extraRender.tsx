@@ -272,7 +272,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
             <Avatar
               size={24}
               style={{ ...avatarStyle }}
-              src={initialState?.currentUser?.avatar}
+              src={initialState?.currentUser?.avatar_url}
               icon={
                 <IconFont type="icon-user-filled" className="font-size-24" />
               }
@@ -322,7 +322,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
           <Avatar
             size={24}
             style={{ ...avatarStyle }}
-            src={initialState?.currentUser?.avatar}
+            src={initialState?.currentUser?.avatar_url}
             icon={<IconFont type="icon-user-filled" className="font-size-24" />}
           />
         </IconWrapper>

@@ -14,7 +14,7 @@ const NoteInfo: React.FC<NoteInfoProps> = (props) => {
   if (!label) return null;
   const renderRequiredStar = required ? (
     <span className="star" style={{ color: 'red' }}>
-      *
+      ﹡
     </span>
   ) : null;
 

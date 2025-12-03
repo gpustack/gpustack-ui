@@ -260,7 +260,15 @@ const Clusters: React.FC = () => {
       );
 
       if (targetCluster) {
-        handleAddWorker(targetCluster);
+        const actionMap = {
+          [ProviderValueMap.Docker]: 'add_worker',
+          [ProviderValueMap.Kubernetes]: 'register_cluster',
+          [ProviderValueMap.DigitalOcean]: 'addPool'
+        };
+        handleSelect(
+          actionMap[targetCluster.provider as string],
+          targetCluster
+        );
         // reset session
         setClusterSession(null);
       }

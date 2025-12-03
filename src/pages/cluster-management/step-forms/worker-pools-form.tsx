@@ -108,7 +108,6 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       }
       return {};
     });
-    console.log('gatherFormValues========', resultList);
     return resultList.filter((item) => item);
   };
 
@@ -135,7 +134,6 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
     const newWorkerPools = worker_pools.map(
       (poolData: NodePoolFormData, index: number) => [index, poolData]
     );
-    console.log('newWorkerPools========', newWorkerPools);
     setWorkerPoolList(new Map(newWorkerPools));
   };
 
@@ -143,14 +141,12 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
     const values = Object.values(formRefs.current).map((form) =>
       form?.getFieldsValue()
     );
-    console.log('getFieldsValue========', values);
     return {
       worker_pools: values
     };
   };
 
   const handleOnToggle = (open: boolean, key: number) => {
-    console.log('Active keys changed:', key);
     if (open) {
       setActiveKey((prev) => new Set([key]));
     } else {
@@ -170,7 +166,6 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
 
   useEffect(() => {
     if (currentData) {
-      console.log('currentData===========1=', currentData);
       setFieldsValue(currentData);
     }
   }, [currentData]);

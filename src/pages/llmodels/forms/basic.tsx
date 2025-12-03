@@ -51,7 +51,6 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           item.state === ClusterStatusValueMap.Ready
             ? item.label
             : `${item.label} [${ClusterStatusLabelMap[item.state as string]}]`,
-        disabled: item.state !== ClusterStatusValueMap.Ready,
         value: item.value
       };
     });

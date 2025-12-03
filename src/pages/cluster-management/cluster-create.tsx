@@ -18,6 +18,7 @@ import FooterButtons from './components/footer-buttons';
 import ProviderCatalog from './components/provider-catalog';
 import { ProviderType, ProviderValueMap } from './config';
 import providerList from './config/providers';
+import { StepsContext } from './config/steps-context';
 import { ClusterFormData } from './config/types';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
@@ -89,6 +90,7 @@ const ClusterCreate = () => {
       }));
   }, [action, extraData.provider, stepList]);
 
+  // before moving to the next step, get all form values
   const getFormFieldsValue = () => {
     setFormValues((prev) => {
       const newFormValues = _.cloneDeep(prev);
@@ -206,7 +208,7 @@ const ClusterCreate = () => {
   };
 
   /**
-   * this function is used to render the modules in the current step
+   * this function is used to render the modules in the current step, they are not forms
    * @returns
    */
   const renderModules = () => {
@@ -304,10 +306,16 @@ const ClusterCreate = () => {
             current={extraData.provider}
           />
         )}
-        {renderModules()}
-        <Container>
-          <Content>{renderForms()}</Content>
-        </Container>
+        <StepsContext.Provider
+          value={{
+            formValues: formValues
+          }}
+        >
+          {renderModules()}
+          <Container>
+            <Content>{renderForms()}</Content>
+          </Container>
+        </StepsContext.Provider>
       </div>
     </PageContainerInner>
   );

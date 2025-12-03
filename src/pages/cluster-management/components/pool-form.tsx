@@ -24,10 +24,12 @@ import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useState
 } from 'react';
 import styled from 'styled-components';
 import { ProviderType, instanceTypeFieldMap, vendorIconMap } from '../config';
+import { useStepsContext } from '../config/steps-context';
 import { NodePoolFormData as FormData } from '../config/types';
 import VolumesConfig from './volumes-config';
 
@@ -81,15 +83,6 @@ const NotFoundContent = () => {
   return (
     <NoContent>
       {intl.formatMessage({ id: 'clusters.create.noInstanceTypes' })}
-    </NoContent>
-  );
-};
-
-const NotFoundImageContent = () => {
-  const intl = useIntl();
-  return (
-    <NoContent>
-      {intl.formatMessage({ id: 'clusters.create.noImages' })}
     </NoContent>
   );
 };
@@ -179,6 +172,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     currentData,
     collapseProps
   } = props;
+  const { formValues } = useStepsContext();
   const [instanceTypeList] = useAtom(regionInstanceTypeListAtom);
   const [osImageList] = useAtom(regionOSImageListAtom);
   const { collapsible, onToggle, ...restCollapseProps } = collapseProps || {};
@@ -199,6 +193,13 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
       });
     }
   }, [currentData]);
+
+  const imageList = useMemo(() => {
+    if (instanceSpec.count === 8) {
+      return osImageList.filter((item) => item.value === 'gpu-h100x8-base');
+    }
+    return osImageList;
+  }, [osImageList, instanceSpec]);
 
   const imageLabelRender = (data: {
     label: React.ReactNode;
@@ -250,14 +251,16 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
       ...option.specInfo,
       label: option.label,
       vendor: option.vendor,
-      description: option.description
+      description: option.description,
+      count: option.count
     });
     form.setFieldsValue({
       instance_spec: {
         ...option.specInfo,
         label: option.label,
         vendor: option.vendor,
-        description: option.description
+        description: option.description,
+        count: option.count
       }
     });
   };
@@ -422,7 +425,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
               }
               labelRender={imageLabelRender}
               placeholder={currentData?.image_name}
-              options={osImageList}
+              options={imageList}
               disabled={action === PageAction.EDIT}
               label={intl.formatMessage({
                 id: 'clusters.workerpool.osImage'

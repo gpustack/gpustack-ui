@@ -126,6 +126,7 @@ export const useProviderRegions = () => {
           const label = formatLabel(item);
           const description = `${label} ${item.gpu_info?.count}X`;
           return {
+            count: item.gpu_info?.count,
             label: `${description} - ${formatSpec(specInfo)}`,
             value: item.slug,
             description: description,
@@ -171,9 +172,12 @@ export const useProviderRegions = () => {
   };
 
   const updateOSImages = (region: string, allImages?: any[]) => {
-    const list = (allImages || allOSImageList).filter((item) =>
-      item.regions.includes(region)
+    const list = (allImages || allOSImageList).filter(
+      (item) =>
+        item.regions.includes(region) &&
+        ['debian', 'ubuntu'].includes(item.vendor)
     );
+    console.log('osimagelist========', list);
     setOSImageList(list);
   };
 

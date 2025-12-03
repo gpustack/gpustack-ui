@@ -151,7 +151,8 @@ export const useProviderRegions = () => {
         .map((item: any) => {
           return {
             label: item.description,
-            value: item.slug,
+            value: item.description,
+            os_image: item.slug,
             name: item.name,
             description: item.description,
             vendor: _.camelCase(item.distribution),

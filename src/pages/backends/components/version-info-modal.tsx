@@ -1,5 +1,7 @@
 import ScrollerModal from '@/components/scroller-modal';
+import { PlusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { Button } from 'antd';
 import { useEffect, useState } from 'react';
 import { VersionListItem } from '../config/types';
 import VersionInfo from '../forms/version-info';
@@ -7,12 +9,14 @@ import VersionInfo from '../forms/version-info';
 interface VersionInfoModalProps {
   open?: boolean;
   currentData?: any;
+  addVersion?: () => void;
   onClose?: () => void;
 }
 
 const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
   open,
   currentData,
+  addVersion,
   onClose
 }) => {
   const intl = useIntl();
@@ -55,7 +59,14 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
   return (
     <ScrollerModal
       open={open}
-      title={intl.formatMessage({ id: 'backend.versions' })}
+      title={
+        <div className="flex-center gap-16">
+          {intl.formatMessage({ id: 'backend.versions' })}
+          <Button onClick={addVersion} type="link" size="small">
+            <PlusOutlined /> {intl.formatMessage({ id: 'backend.addVersion' })}
+          </Button>
+        </div>
+      }
       width={600}
       centered
       destroyOnHidden
@@ -63,22 +74,6 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
       maskClosable={false}
       onOk={onClose}
       onCancel={onClose}
-      styles={{
-        content: {
-          padding: '0 0 16px 0'
-        },
-        header: {
-          padding: 'var(--ant-modal-content-padding)',
-          paddingBottom: '0'
-        },
-        body: {
-          padding: '16px 24px 32px'
-        },
-        footer: {
-          padding: '16px 24px',
-          margin: '0'
-        }
-      }}
       footer={null}
     >
       <VersionInfo versionConfigs={versionConfigs} />

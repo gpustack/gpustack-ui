@@ -177,9 +177,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const initClusterId = (): number => {
-    const cluster_id = clusterList?.find(
-      (item) => item.state === ClusterStatusValueMap.Ready
-    )?.value;
+    const cluster_id =
+      clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
+        ?.value || clusterList?.[0]?.value;
 
     return cluster_id as number;
   };

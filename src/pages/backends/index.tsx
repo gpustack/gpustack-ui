@@ -154,6 +154,18 @@ const BackendList = () => {
     }
   };
 
+  const handleAddVersion = () => {
+    setOpenVersionInfoModal({
+      open: false,
+      currentData: undefined
+    });
+    setOpenModalStatus({
+      open: true,
+      action: 'edit',
+      currentData: openVersionInfoModal.currentData
+    });
+  };
+
   const loadMore = useMemoizedFn((nextPage: number) => {
     fetchData({
       query: {
@@ -226,6 +238,7 @@ const BackendList = () => {
         }
       ></AddModal>
       <VersionInfoModal
+        addVersion={handleAddVersion}
         open={openVersionInfoModal.open}
         currentData={openVersionInfoModal.currentData as ListItem}
         onClose={() =>

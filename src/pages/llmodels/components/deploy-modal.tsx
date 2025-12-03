@@ -443,7 +443,7 @@ const AddModal: FC<AddModalProps> = (props) => {
     }
     const cluster_id =
       clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
-        ?.value || '';
+        ?.value || clusterList?.[0]?.value;
 
     return cluster_id;
   };

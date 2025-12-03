@@ -39,13 +39,13 @@ export default {
     'No clusters available. Add a cluster to get started.',
   'noresult.resources.worker':
     'No workers available. Add a worker to get started.',
-  'noresult.resources.gotocluster': 'Create a Docker or Other Cluster',
+  'noresult.resources.gotocluster': 'Create Your First Cluster',
   'noresult.resources.gotoworker': 'Add Worker'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'noresult.resources.cluster': 'No clusters available. Add a cluster to get started.',
 // 2. 'noresult.resources.worker': 'No workers available. Add a worker to get started.',
-// 3. 'noresult.resources.gotocluster': 'Create a Docker or Other Cluster',
+// 3. 'noresult.resources.gotocluster': 'Create Your First Cluster',
 // 4. 'noresult.resources.gotoworker': 'Add Worker'
 // ========================================================================

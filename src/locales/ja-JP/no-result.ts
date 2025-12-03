@@ -38,6 +38,6 @@ export default {
     'No clusters available. Add a cluster to get started.',
   'noresult.resources.worker':
     'No workers available. Add a worker to get started.',
-  'noresult.resources.gotocluster': 'Create a Docker or Other Cluster',
+  'noresult.resources.gotocluster': 'Create Your First Cluster',
   'noresult.resources.gotoworker': 'Add Worker'
 };

@@ -50,6 +50,7 @@ const useNoResourceResult = (props: {
       navigate(
         `/cluster-management/clusters/create?action=${PageAction.CREATE}`
       );
+      return;
     }
 
     if (noWorkers) {

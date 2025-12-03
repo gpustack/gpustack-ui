@@ -29,6 +29,7 @@ export const regionOSImageListAtom = atom<
   {
     label: string;
     value: string;
+    os_image: string;
     name: string;
     description: string;
     vendor: string;

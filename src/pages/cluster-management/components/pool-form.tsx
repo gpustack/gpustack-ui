@@ -29,7 +29,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { ProviderType, instanceTypeFieldMap, vendorIconMap } from '../config';
-import { useStepsContext } from '../config/steps-context';
 import { NodePoolFormData as FormData } from '../config/types';
 import VolumesConfig from './volumes-config';
 
@@ -172,7 +171,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     currentData,
     collapseProps
   } = props;
-  const { formValues } = useStepsContext();
   const [instanceTypeList] = useAtom(regionInstanceTypeListAtom);
   const [osImageList] = useAtom(regionOSImageListAtom);
   const { collapsible, onToggle, ...restCollapseProps } = collapseProps || {};
@@ -185,44 +183,41 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (currentData) {
+      // when change the region, shoudle check the instance type and the os Image.
+      const selectOSImage = osImageList.find(
+        (item) => item.os_image === currentData.os_image
+      );
+      const selectInstanceType = instanceTypeList.find(
+        (item) => item.value === currentData.instance_type
+      );
       form.setFieldsValue({
-        ...currentData
+        ...currentData,
+        instance_type: selectInstanceType?.value || '',
+        os_image: selectOSImage?.os_image || '',
+        image_name: selectOSImage?.value || ''
       });
-      setInstanceSpec({
-        ...currentData.instance_spec
+
+      setInstanceSpec(() => {
+        return selectInstanceType ? currentData.instance_spec : {};
       });
     }
-  }, [currentData]);
+  }, [currentData, instanceTypeList, osImageList]);
 
   const imageList = useMemo(() => {
     if (instanceSpec.count === 8) {
-      return osImageList.filter((item) => item.value === 'gpu-h100x8-base');
+      return osImageList.filter((item) => item.os_image === 'gpu-h100x8-base');
     }
+
+    if (instanceSpec.count === 1 && instanceSpec.vendor === 'amd') {
+      return osImageList.filter((item) => item.os_image === 'gpu-amd-base');
+    }
+
+    if (instanceSpec.count === 1 && instanceSpec.vendor === 'nvidia') {
+      return osImageList.filter((item) => item.os_image === 'gpu-h100x1-base');
+    }
+
     return osImageList;
   }, [osImageList, instanceSpec]);
-
-  const imageLabelRender = (data: {
-    label: React.ReactNode;
-    value: string | number;
-  }) => {
-    if (action === PageAction.EDIT) {
-      const vendor = _.split(currentData?.image_name || '', ' ')[0];
-      const iconType = _.get(vendorIconMap, vendor.toLowerCase());
-      return (
-        <div className="flex-center gap-8">
-          {iconType && <IconFont type={iconType}></IconFont>}
-          {currentData?.image_name || currentData?.os_image}
-        </div>
-      );
-    }
-    const selectImage = osImageList.find((item) => item.value === data.value);
-    if (selectImage) {
-      return (
-        <RenderLabel label={data.label} vendor={selectImage.vendor || ''} />
-      );
-    }
-    return data.value;
-  };
 
   const instanceLabelRender = (data: {
     label: React.ReactNode;
@@ -231,6 +226,10 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     const currentInstanceSpec =
       instanceTypeList.find((item) => item.value === data.value) ||
       instanceSpec;
+
+    if (!currentInstanceSpec || _.isEmpty(currentInstanceSpec)) {
+      return null;
+    }
     return (
       <RenderLabel
         label={data.label || currentInstanceSpec?.label || data.value}
@@ -239,10 +238,9 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     );
   };
 
-  const handleOsImageChange = (value: string) => {
+  const handleOsImageChange = (value: string, option: any) => {
     form.setFieldsValue({
-      image_name:
-        osImageList.find((item) => item.value === value)?.label || value
+      os_image: option.os_image || value
     });
   };
 
@@ -405,7 +403,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
           </Form.Item>
 
           <Form.Item<FormData>
-            name="os_image"
+            name="image_name"
             rules={[
               {
                 required: true,
@@ -423,8 +421,6 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
                   styles: { header: { marginBlock: 5 } }
                 })
               }
-              labelRender={imageLabelRender}
-              placeholder={currentData?.image_name}
               options={imageList}
               disabled={action === PageAction.EDIT}
               label={intl.formatMessage({
@@ -465,7 +461,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
             ></LabelSelector>
           </Form.Item>
           <VolumesConfig disabled={action === PageAction.EDIT}></VolumesConfig>
-          <Form.Item<FormData> name="image_name" hidden>
+          <Form.Item<FormData> name="os_image" hidden>
             <SealInput.Input></SealInput.Input>
           </Form.Item>
           <InstanceSpecData instanceSpec={instanceSpec} />

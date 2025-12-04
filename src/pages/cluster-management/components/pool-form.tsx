@@ -17,6 +17,7 @@ import useAppUtils from '@/hooks/use-app-utils';
 import { CardContainer } from '@/pages/llmodels/components/gpu-card';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Form } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -203,7 +204,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     }
   }, [currentData, instanceTypeList, osImageList]);
 
-  const imageList = useMemo(() => {
+  const updateImageList = useMemoizedFn((instanceSpec: Record<string, any>) => {
     if (instanceSpec.count === 8) {
       return osImageList.filter((item) => item.os_image === 'gpu-h100x8-base');
     }
@@ -217,7 +218,11 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
     }
 
     return osImageList;
-  }, [osImageList, instanceSpec]);
+  });
+
+  const imageList = useMemo(() => {
+    return updateImageList(instanceSpec);
+  }, [osImageList, instanceSpec, updateImageList]);
 
   const instanceLabelRender = (data: {
     label: React.ReactNode;
@@ -252,6 +257,26 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
       description: option.description,
       count: option.count
     });
+
+    const newImageList = updateImageList({
+      ...option.specInfo,
+      label: option.label,
+      vendor: option.vendor,
+      description: option.description,
+      count: option.count
+    });
+
+    // if current os_image is not in new image list, clear the os_image field
+    const currentOsImage = form.getFieldValue('os_image');
+    const isCurrentOsImageValid = newImageList.some(
+      (item) => item.os_image === currentOsImage
+    );
+    if (!isCurrentOsImageValid) {
+      form.setFieldsValue({
+        os_image: undefined,
+        image_name: undefined
+      });
+    }
     form.setFieldsValue({
       instance_spec: {
         ...option.specInfo,

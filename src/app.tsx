@@ -79,10 +79,15 @@ export async function getInitialState(): Promise<{
   const getAppVersionInfo = async () => {
     try {
       const data = await queryVersionInfo();
-      const isProduction = data.version?.indexOf('0.0.0') === -1;
+
+      const isDev = data.version?.indexOf('0.0.0') > -1;
+      const isRc = data.version?.indexOf('rc') > -1;
+
       setAtomStorage(GPUStackVersionAtom, {
         ...data,
-        isProduction
+        isProd: !isDev && !isRc,
+        isDev,
+        isRc
       });
     } catch (error) {
       console.error('queryVersionInfo error', error);

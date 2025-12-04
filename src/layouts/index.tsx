@@ -1,16 +1,11 @@
 // @ts-nocheck
 
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
-import { GPUStackVersionAtom, UpdateCheckAtom, userAtom } from '@/atoms/user';
+import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
 import IconFont from '@/components/icon-font';
-import ShortCuts, {
-  modalConfig as ShortCutsConfig
-} from '@/components/short-cuts';
-import VersionInfo, { modalConfig } from '@/components/version-info';
 import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE } from '@/config/settings';
-import useBodyScroll from '@/hooks/use-body-scroll';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useUserSettings from '@/hooks/use-user-settings';
 import { logout } from '@/pages/login/apis';
@@ -18,7 +13,6 @@ import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
 import { ProLayout } from '@ant-design/pro-components';
 import {
-  Link,
   Outlet,
   dropByCacheKey,
   history,
@@ -29,18 +23,17 @@ import {
   useNavigate,
   type IRoute
 } from '@umijs/max';
-import { Button, ConfigProvider, Modal, Tooltip, theme } from 'antd';
+import { Button, ConfigProvider, Modal, theme } from 'antd';
 import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { PageContainerInner } from '../pages/_components/page-box';
 import Exception from './Exception';
 import './Layout.css';
 import { LogoIcon, SLogoIcon } from './Logo';
 import ErrorBoundary from './error-boundary';
 import { ExtraContent } from './extraRender';
-import { getRightRenderContent } from './rightRender';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
@@ -57,16 +50,11 @@ const NO_CONTAINER_PAGES = [
 
 const loginPath = DEFAULT_ENTER_PAGE.login;
 
-type InitialStateType = {
-  fetchUserInfo: () => Promise<Global.UserInfo>;
-  currentUser?: Global.UserInfo;
-};
-
 // Filter out the routes that need to be displayed, where filterFn indicates the levels that should not be shown
 const filterRoutes = (
   routes: IRoute[],
   filterFn: (route: IRoute) => boolean
-) => {
+): any[] => {
   if (routes.length === 0) {
     return [];
   }
@@ -117,21 +105,13 @@ export default (props: any) => {
     defer: false
   });
   const [modal, contextHolder] = Modal.useModal();
-  const { themeData, setTheme, setUserSettings, userSettings, isDarkTheme } =
-    useUserSettings();
-  const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
-  const { initialize: initializeMenu } = useOverlayScroller();
+  const { themeData, setUserSettings, userSettings } = useUserSettings();
   const [userInfo] = useAtom(userAtom);
   const [routeCache] = useAtom(routeCacheAtom);
-  const [version] = useAtom(GPUStackVersionAtom);
-  const [updateCheck] = useAtom(UpdateCheckAtom);
   const location = useLocation();
   const navigate = useNavigate();
   const intl = useIntl();
-  const { clientRoutes, pluginManager } = useAppData();
-  // const [collapsed, setCollapsed] = useState(userSettings.collapsed || false);
-  const [collapseValue, setCollapseValue] = useState(false);
-  const [collapseKeys, setCollapseKeys] = useState<Set<string>>(new Set());
+  const { clientRoutes } = useAppData();
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -148,23 +128,6 @@ export default (props: any) => {
 
   const formatMessage = (args) => {
     return intl.formatMessage({ id: args.id });
-  };
-
-  const showVersion = () => {
-    saveScrollHeight();
-    modal.info({
-      ...modalConfig,
-      width: 460,
-      content: <VersionInfo intl={intl} />,
-      onCancel: restoreScrollHeight
-    });
-  };
-
-  const showShortcuts = () => {
-    Modal.info({
-      ...ShortCutsConfig,
-      content: <ShortCuts intl={intl} />
-    });
   };
 
   const initRouteCacheValue = (pathname) => {
@@ -184,22 +147,17 @@ export default (props: any) => {
 
   const runtimeConfig = {
     ...initialInfo,
-    logout: async (userInfo) => {
+    logout: async () => {
       await logout();
       navigate(loginPath);
     },
-    showVersion: () => {
-      return showVersion();
-    },
-    showShortcuts: () => {
-      return showShortcuts();
-    },
+    showVersion: () => {},
+    showShortcuts: () => {},
     notFound: <span>404 not found</span>
   };
 
   const handleToggleCollapse = (e: any) => {
     e.stopPropagation();
-    // setCollapsed(!collapsed);
     setUserSettings({
       ...userSettings,
       collapsed: !userSettings.collapsed
@@ -234,38 +192,6 @@ export default (props: any) => {
   }, [matchedRoute]);
 
   console.log('matchedRoute=========', matchedRoute, route);
-
-  const allRouteKeys = useMemo(() => {
-    const keys = new Set<string>();
-    const childrenRoutes = route?.children || [];
-    const traverseRoutes = (routes) => {
-      routes.forEach((r) => {
-        if (r.path) {
-          keys.add(r.path);
-        }
-        if (r.children) {
-          traverseRoutes(r.children);
-        }
-      });
-    };
-    traverseRoutes(childrenRoutes);
-
-    return keys;
-  }, [route?.children]);
-
-  const showUpgrade = useMemo(() => {
-    return (
-      initialState?.currentUser?.is_admin &&
-      updateCheck.latest_version &&
-      updateCheck.latest_version !== version?.version &&
-      updateCheck.latest_version?.indexOf('0.0.0') === -1 &&
-      updateCheck.latest_version?.indexOf('rc') === -1
-    );
-  }, [
-    updateCheck.latest_version,
-    version.version,
-    initialState?.currentUser?.is_admin
-  ]);
 
   useEffect(() => {
     const body = document.querySelector('body');
@@ -306,92 +232,13 @@ export default (props: any) => {
     );
   };
 
-  const handleToggleGroup = (menuItemProps, e) => {
-    e.stopPropagation();
-
-    if (collapseKeys.has(menuItemProps.key)) {
-      collapseKeys.delete(menuItemProps.key);
-    } else {
-      collapseKeys.add(menuItemProps.key);
-    }
-    setCollapseKeys(new Set(collapseKeys));
-  };
-
-  const menuContentRender = (menuProps, defaultDom) => {
+  const menuContentRender = (menuProps: any, defaultDom: React.ReactNode) => {
     return <SiderMenu {...menuProps}></SiderMenu>;
   };
 
-  const actionRender = (layoutProps) => {
-    const dom = getRightRenderContent({
-      runtimeConfig,
-      loading,
-      initialState,
-      setInitialState,
-      intl,
-      isDarkTheme: userSettings.isDarkTheme,
-      siderWidth: layoutProps?.siderWidth,
-      collapsed: layoutProps?.collapsed,
-      showUpgrade
-    });
-
-    return dom;
-  };
-
-  const menuItemRender = (menuItemProps, defaultDom) => {
-    if (menuItemProps.isUrl || menuItemProps.children) {
-      return defaultDom;
-    }
-    if (menuItemProps.path && location.pathname !== menuItemProps.path) {
-      return (
-        <Tooltip
-          title={collapsed ? menuItemProps.name : false}
-          placement="right"
-        >
-          <Link
-            to={menuItemProps.path.replace('/*', '')}
-            target={menuItemProps.target}
-          >
-            {defaultDom}
-          </Link>
-        </Tooltip>
-      );
-    }
-    return (
-      <Tooltip title={collapsed ? menuItemProps.name : false} placement="right">
-        {defaultDom}
-      </Tooltip>
-    );
-  };
-
-  const menuDataRender = (menuData) => {
-    const currentItem = menuData.find((s) => location.pathname === s.path);
-    const result = menuData.map((item) => {
-      const newItem = { ...item };
-
-      const selected =
-        location.pathname === newItem.path ||
-        location.pathname.indexOf(newItem.path) > -1;
-
-      if (newItem.icon) {
-        newItem.icon = selected ? (
-          <IconFont type={newItem.selectedIcon} />
-        ) : (
-          <IconFont type={newItem.defaultIcon} />
-        );
-      }
-      if (newItem.children) {
-        newItem.children = menuDataRender(newItem.children);
-      }
-      return newItem;
-    });
-
-    return result;
-  };
-
-  const onPageChange = (route) => {
+  const onPageChange = (route: any) => {
     const { location } = history;
     const { pathname } = location;
-    console.log('onPageChange', pathname, route);
 
     initRouteCacheValue(pathname);
     dropRouteCache(pathname);
@@ -413,7 +260,7 @@ export default (props: any) => {
     }
   };
 
-  const onMenuHeaderClick = (e) => {
+  const onMenuHeaderClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     const pagepath = initialState?.currentUser?.is_admin
@@ -423,64 +270,12 @@ export default (props: any) => {
     navigate(pagepath);
   };
 
-  const onCollapse = (value) => {
+  const onCollapse = (value: boolean) => {
     setUserSettings({
       ...userSettings,
       collapsed: value
     });
   };
-
-  useEffect(() => {
-    // clear previous marks and measures
-    performance.clearMarks();
-    performance.clearMeasures();
-
-    // record start time
-    performance.mark('route-start');
-
-    requestAnimationFrame(() => {
-      // record end time
-      performance.mark('route-end');
-
-      // make sure `route-start` exists
-      if (performance.getEntriesByName('route-start').length > 0) {
-        performance.measure('route-change', 'route-start', 'route-end');
-
-        const measure = performance.getEntriesByName('route-change')[0];
-        console.log(
-          `[Performance] Route change to ${location.pathname} took ${measure.duration.toFixed(2)}ms`
-        );
-
-        // clear marks and measures
-        performance.clearMarks();
-        performance.clearMeasures();
-      } else {
-        console.warn('Missing performance mark: route-start');
-      }
-    });
-  }, [location.pathname]);
-
-  const onRenderCallback = (id, phase, actualDuration) => {
-    console.log(
-      `[Profiler] Route: ${id} - Phase: ${phase} - Render time: ${actualDuration.toFixed(2)}ms`
-    );
-  };
-
-  const currentTheme = useMemo(() => {
-    const data = {
-      algorithm: userSettings.isDarkTheme
-        ? theme.darkAlgorithm
-        : theme.defaultAlgorithm,
-      ...themeData
-    };
-    return data;
-  }, [userSettings.isDarkTheme, themeData]);
-
-  const outlet = runtimeConfig.childrenRender ? (
-    runtimeConfig.childrenRender(<Outlet />, props)
-  ) : (
-    <Outlet />
-  );
 
   return (
     <ConfigProvider
@@ -530,7 +325,7 @@ export default (props: any) => {
           type: 'group'
         }}
         splitMenus={true}
-        logo={collapsed ? SLogoIcon : LogoIcon}
+        logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
         menuContentRender={menuContentRender}
         disableContentMargin
         {...runtimeConfig}
@@ -544,9 +339,11 @@ export default (props: any) => {
           noAccessible={runtimeConfig?.noAccessible}
         >
           {isNoContainerPage ? (
-            outlet
+            <Outlet />
           ) : (
-            <PageContainerInner>{outlet}</PageContainerInner>
+            <PageContainerInner>
+              <Outlet />
+            </PageContainerInner>
           )}
         </Exception>
       </ProLayout>

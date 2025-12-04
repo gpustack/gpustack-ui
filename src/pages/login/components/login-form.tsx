@@ -88,7 +88,7 @@ const useStyles = createStyles(({ token, css }) => ({
 const LoginForm = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { styles } = useStyles();
-  const [userInfo, setUserInfo] = useAtom(userAtom);
+  const [, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
   const [authError, setAuthError] = useState<Error | null>(null);
   const intl = useIntl();

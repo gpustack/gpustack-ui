@@ -122,12 +122,12 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       initialState?.currentUser?.is_admin &&
       updateCheck.latest_version &&
       updateCheck.latest_version !== version?.version &&
-      updateCheck.latest_version?.indexOf('0.0.0') === -1 &&
-      updateCheck.latest_version?.indexOf('rc') === -1
+      version?.isProd
     );
   }, [
     updateCheck.latest_version,
     version.version,
+    version.isProd,
     initialState?.currentUser?.is_admin
   ]);
 

@@ -250,32 +250,21 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
   };
 
   const handleInstanceTypeChange = (value: string, option: any) => {
-    setInstanceSpec({
+    const newInstanceSpec = {
       ...option.specInfo,
       label: option.label,
       vendor: option.vendor,
       description: option.description,
       count: option.count
-    });
+    };
+    setInstanceSpec({ ...newInstanceSpec });
 
-    const newImageList = updateImageList({
-      ...option.specInfo,
-      label: option.label,
-      vendor: option.vendor,
-      description: option.description,
-      count: option.count
-    });
+    const newImageList = updateImageList({ ...newInstanceSpec });
 
     form.setFieldsValue({
       os_image: newImageList[0]?.os_image,
       image_name: newImageList[0]?.value,
-      instance_spec: {
-        ...option.specInfo,
-        label: option.label,
-        vendor: option.vendor,
-        description: option.description,
-        count: option.count
-      }
+      instance_spec: { ...newInstanceSpec }
     });
   };
 

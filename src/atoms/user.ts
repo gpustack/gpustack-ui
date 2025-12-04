@@ -6,11 +6,15 @@ export const userAtom = atomWithStorage<any>('userInfo', null);
 export const GPUStackVersionAtom = atom<{
   version: string;
   git_commit: string;
-  isProduction: boolean;
+  isProd: boolean;
+  isDev?: boolean;
+  isRc?: boolean;
 }>({
   version: '',
   git_commit: '',
-  isProduction: false
+  isProd: false,
+  isDev: false,
+  isRc: false
 });
 
 export const UpdateCheckAtom = atom<{

@@ -34,7 +34,7 @@ const PasswordForm: React.FC = () => {
       });
 
       await setUserInfo({
-        ...userInfo,
+        ...(userInfo || {}),
         require_password_change: false
       });
       setInitialPassword('');

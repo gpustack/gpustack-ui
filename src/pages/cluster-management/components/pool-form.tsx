@@ -266,18 +266,9 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
       count: option.count
     });
 
-    // if current os_image is not in new image list, clear the os_image field
-    const currentOsImage = form.getFieldValue('os_image');
-    const isCurrentOsImageValid = newImageList.some(
-      (item) => item.os_image === currentOsImage
-    );
-    if (!isCurrentOsImageValid) {
-      form.setFieldsValue({
-        os_image: undefined,
-        image_name: undefined
-      });
-    }
     form.setFieldsValue({
+      os_image: newImageList[0]?.os_image,
+      image_name: newImageList[0]?.value,
       instance_spec: {
         ...option.specInfo,
         label: option.label,

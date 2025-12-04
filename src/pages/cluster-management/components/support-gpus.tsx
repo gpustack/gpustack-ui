@@ -87,7 +87,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     },
     {
       label: intl.formatMessage({ id: 'vendor.hygon' }),
-      description: 'common.tag.experimental',
+      description: '',
       value: GPUDriverMap.HYGON,
       key: GPUDriverMap.HYGON,
       locale: false,

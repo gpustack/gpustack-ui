@@ -38,7 +38,7 @@ import { rerankerSamples } from '../config/samples';
 import { ParamsSchema } from '../config/types';
 import { LLM_METAKEYS } from '../hooks/config';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
-import '../style/ground-left.less';
+import '../style/ground-llm.less';
 import '../style/rerank.less';
 import '../style/system-message-wrap.less';
 import { generateRerankCode } from '../view-code/rerank';

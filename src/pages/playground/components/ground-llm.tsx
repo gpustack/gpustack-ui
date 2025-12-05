@@ -15,7 +15,7 @@ import { MessageItem, MessageItemAction } from '../config/types';
 import { LLM_METAKEYS, llmInitialValues } from '../hooks/config';
 import useChatCompletion from '../hooks/use-chat-completion';
 import { useInitLLmMeta } from '../hooks/use-init-meta';
-import '../style/ground-left.less';
+import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateLLMCode } from '../view-code/llm';
 import DynamicParams from './dynamic-params';

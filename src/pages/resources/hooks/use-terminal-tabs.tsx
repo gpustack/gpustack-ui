@@ -34,7 +34,6 @@ const useTerminalTabs = () => {
 
   const TerminalPanel = (
     <TerminalTabs
-      height={300}
       key="terminal-tabs"
       terminals={terminals}
       open={terminalModalStatus.open}

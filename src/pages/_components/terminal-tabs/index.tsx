@@ -3,7 +3,6 @@ import TerminalTabs from './tabs';
 
 export interface TerminalModalProps {
   terminals: { url: string; name: string }[];
-  height: number;
   open: boolean;
   onClose: () => void;
   currentActive?: string;
@@ -11,20 +10,16 @@ export interface TerminalModalProps {
 
 const TerminalModal: React.FC<TerminalModalProps> = ({
   terminals,
-  height,
   open,
   onClose,
   currentActive
 }) => {
   return (
-    <div>
-      <TerminalTabs
-        terminals={terminals}
-        height={height}
-        currentActive={currentActive}
-        onClose={onClose}
-      />
-    </div>
+    <TerminalTabs
+      terminals={terminals}
+      currentActive={currentActive}
+      onClose={onClose}
+    />
   );
 };
 

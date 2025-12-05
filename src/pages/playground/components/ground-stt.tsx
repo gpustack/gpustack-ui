@@ -26,7 +26,7 @@ import React, {
 import { AUDIO_SPEECH_TO_TEXT_API, speechToText } from '../apis';
 import { SpeechToTextFormat, extractErrorMessage } from '../config';
 import { RealtimeParamsConfig as paramsConfig } from '../config/params-config';
-import '../style/ground-left.less';
+import '../style/ground-llm.less';
 import '../style/speech-to-text.less';
 import '../style/system-message-wrap.less';
 import { speechToTextCode } from '../view-code/audio';

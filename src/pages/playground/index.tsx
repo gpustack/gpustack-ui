@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { PageContainerInner } from '../_components/page-box';
 import { queryModelsList } from './apis';
-import GroundLeft from './components/ground-left';
+import GroundLLM from './components/ground-llm';
 import MultipleChat from './components/multiple-chat';
 import ViewCodeButtons from './components/view-code-buttons';
 import './style/play-ground.less';
@@ -65,7 +65,7 @@ const Playground: React.FC = () => {
         label: 'Chat',
         icon: <MessageOutlined />,
         children: (
-          <GroundLeft ref={groundLeftRef} modelList={modelList}></GroundLeft>
+          <GroundLLM ref={groundLeftRef} modelList={modelList}></GroundLLM>
         )
       },
       {

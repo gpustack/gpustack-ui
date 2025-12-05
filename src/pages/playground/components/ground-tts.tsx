@@ -24,7 +24,7 @@ import { AUDIO_TEXT_TO_SPEECH_API, CHAT_API, textToSpeech } from '../apis';
 import { extractErrorMessage } from '../config';
 import { TTSParamsConfig as paramsConfig } from '../config/params-config';
 import { MessageItem, ParamsSchema } from '../config/types';
-import '../style/ground-left.less';
+import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { TextToSpeechCode } from '../view-code/audio';
 import DynamicParams from './dynamic-params';

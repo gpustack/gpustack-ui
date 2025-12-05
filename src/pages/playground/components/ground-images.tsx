@@ -21,7 +21,7 @@ import React, {
 import { CREAT_IMAGE_API } from '../apis';
 import { useInitImageMeta } from '../hooks/use-init-meta';
 import useTextImage from '../hooks/use-text-image';
-import '../style/ground-left.less';
+import '../style/ground-llm.less';
 import '../style/system-message-wrap.less';
 import { generateImageCode, generateOpenaiImageCode } from '../view-code/image';
 import DynamicParams from './dynamic-params';

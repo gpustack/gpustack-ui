@@ -133,7 +133,7 @@ const setNormalArgs = (params: any) => {
       --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}`;
+      ${params.modelDir ? `--volume ${params.modelDir}:/var/lib/gpustack/cache \\` : ''}`;
 };
 
 const setImageArgs = (params: any) => {

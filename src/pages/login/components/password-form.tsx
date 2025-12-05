@@ -1,7 +1,11 @@
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
 import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
-import { CRYPT_TEXT } from '@/utils/localstore/index';
+import {
+  CRYPT_TEXT,
+  IS_FIRST_LOGIN,
+  writeState
+} from '@/utils/localstore/index';
 import { LockOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Form, message } from 'antd';
@@ -38,6 +42,8 @@ const PasswordForm: React.FC = () => {
         require_password_change: false
       });
       setInitialPassword('');
+      // Reset first login flag
+      writeState(IS_FIRST_LOGIN, null);
       gotoDefaultPage(userInfo);
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {

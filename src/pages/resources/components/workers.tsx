@@ -187,7 +187,11 @@ const Workers: React.FC = () => {
     if (!currentData) {
       currentData = clusterData.list[0];
     }
-    handleAddWorker(currentData as ClusterListItem);
+    if (currentData) {
+      handleAddWorker(currentData as ClusterListItem);
+    } else {
+      message.info(intl.formatMessage({ id: 'noresult.resources.cluster' }));
+    }
   };
 
   const { noResourceResult } = useNoResourceResult({

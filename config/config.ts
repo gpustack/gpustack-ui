@@ -78,6 +78,9 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
+  routePrefetch: {
+    defaultPrefetch: 'intent'
+  },
   keepalive: keepAlive,
   locale: {
     antd: true,

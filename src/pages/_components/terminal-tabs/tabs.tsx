@@ -1,6 +1,7 @@
 import XTerminal from '@/components/x-terminal';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, Tabs } from 'antd';
+import { throttle } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ResizeContainer from './resize-container';
@@ -27,8 +28,11 @@ const TabsContainer = styled.div`
       border: none;
       background-color: transparent;
 
-      .ant-tabs-tab-remove {
-        display: none;
+      .ant-tabs-tab-remove .anticon-close {
+        // display: none;
+        height: 0;
+        overflow: hidden;
+        transition: all 0.3s;
       }
 
       &::before {
@@ -47,8 +51,9 @@ const TabsContainer = styled.div`
         &::before {
           display: block;
         }
-        .ant-tabs-tab-remove {
-          display: inline-block;
+        .ant-tabs-tab-remove .anticon-close {
+          // display: inline-block;
+          height: auto;
         }
       }
     }
@@ -79,6 +84,7 @@ const TerminalTabs: React.FC<TerminalTabsProps> = ({
     currentActive || terminals[0]?.url || ''
   );
   const [height, setHeight] = useState(300);
+  const resizeRef = React.useRef<any>(null);
 
   const items = useMemo(() => {
     return terminals.map((terminal) => {
@@ -88,7 +94,13 @@ const TerminalTabs: React.FC<TerminalTabsProps> = ({
         children: <XTerminal height={height} url={terminal.url} />
       };
     });
-  }, [terminals]);
+  }, [terminals, height]);
+
+  const handleOnResize = throttle(() => {
+    const newHeight = resizeRef.current?.container?.state?.height;
+    console.log('newHeight', newHeight);
+    setHeight(newHeight - 43); // 43 is the height of the tabs header
+  }, 200);
 
   useEffect(() => {
     if (currentActive) {
@@ -97,7 +109,7 @@ const TerminalTabs: React.FC<TerminalTabsProps> = ({
   }, [currentActive]);
 
   return (
-    <ResizeContainer>
+    <ResizeContainer onReSize={handleOnResize} ref={resizeRef}>
       <TabsContainer>
         <Tabs
           type="editable-card"

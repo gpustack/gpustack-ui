@@ -31,6 +31,7 @@ export function useUpdateChunkedList(options: {
     cacheDataListRef.current = [...(options.dataList || [])];
   }, [options.dataList]);
 
+  // use to clear the table row selection after delete
   const setDeletedIds = (ids: number[]) => {
     deletedIdsRef.current = new Set([...deletedIdsRef.current, ...ids]);
   };

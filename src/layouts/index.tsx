@@ -45,7 +45,8 @@ const NO_CONTAINER_PAGES = [
   'image',
   'text2images',
   'clusterDetail',
-  'clusterCreate'
+  'clusterCreate',
+  'workers'
 ];
 
 const loginPath = DEFAULT_ENTER_PAGE.login;

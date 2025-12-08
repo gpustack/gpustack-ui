@@ -117,6 +117,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
 
   const loginPath = DEFAULT_ENTER_PAGE.login;
 
+  // only admin can see upgrade info, and current version is a prod version(exclude dev/rc)
   const showUpgrade = useMemo(() => {
     return (
       initialState?.currentUser?.is_admin &&

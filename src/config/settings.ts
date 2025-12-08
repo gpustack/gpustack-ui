@@ -7,5 +7,5 @@ export const DEFAULT_ENTER_PAGE = {
   login: '/login'
 };
 
-export const GPUSTACK_API_BASE_URL = 'v1';
+export const GPUSTACK_API_BASE_URL = 'v2';
 export const OPENAI_COMPATIBLE = 'v1';

@@ -73,6 +73,9 @@ export default {
   'clusters.addworker.enterWorkerIP': 'Введите IP воркера',
   'clusters.addworker.enterWorkerIP.error': 'Пожалуйста, введите IP воркера.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
+  'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
+  'clusters.addworker.cacheVolume.tips':
+    'If you want to custom the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Сводка конфигурации',
   'clusters.addworker.gpuVendor': 'Производитель GPU',
   'clusters.addworker.workerIP': 'IP воркера',
@@ -80,6 +83,8 @@ export default {
   'clusters.addworker.autoDetect': 'Автоопределение',
   'clusters.addworker.extraVolume.holder':
     'напр. /data/models (путь должен начинаться с /)',
+  'clusters.addworker.cacheVolume.holder':
+    'напр. /data/cache (путь должен начинаться с /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
   'clusters.button.genToken':
     'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
@@ -89,4 +94,6 @@ export default {
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
 // 2. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
+// 3. 'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
+// 4. 'clusters.addworker.cacheVolume.tips': 'If you want to custom the model cache directory, you can specify the path to mount it.',
 // ================================================================

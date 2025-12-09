@@ -127,13 +127,15 @@ export const dockerEnvCommandMap = {
   )
 };
 const setNormalArgs = (params: any) => {
+  console.log('params++++++++++++++', params);
   return `sudo docker run -d --name gpustack-worker \\
       --restart=unless-stopped \\
       --privileged \\
       --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
       --volume gpustack-data:/var/lib/gpustack \\
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}`;
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
+      ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
 };
 
 const setImageArgs = (params: any) => {

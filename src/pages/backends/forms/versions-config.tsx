@@ -316,8 +316,12 @@ const VersionsForm: React.FC<AddModalProps> = ({
                     >
                       <SealInput.Input
                         trim
-                        label={intl.formatMessage({ id: 'backend.imageName' })}
                         required
+                        placeholder={intl.formatMessage(
+                          { id: 'common.help.eg' },
+                          { content: 'vllm/vllm-openai:v0.12.0' }
+                        )}
+                        label={intl.formatMessage({ id: 'backend.imageName' })}
                       ></SealInput.Input>
                     </Form.Item>
                   </Box>

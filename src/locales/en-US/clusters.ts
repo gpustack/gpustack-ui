@@ -73,6 +73,9 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
+  'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
+  'clusters.addworker.cacheVolume.tips':
+    'If you want to custom the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Configuration Summary',
   'clusters.addworker.gpuVendor': 'GPU Vendor',
   'clusters.addworker.workerIP': 'Worker IP',
@@ -80,6 +83,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':
     'e.g. /data/models (path must start with /)',
+  'clusters.addworker.cacheVolume.holder':
+    'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
   'clusters.button.genToken':
     'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',

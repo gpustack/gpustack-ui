@@ -21,6 +21,10 @@ const DockerRunCommand = () => {
     path: '',
     required: false
   };
+  const cacheDirConfig = summary.get('cacheDirConfig') || {
+    enable: false,
+    path: ''
+  };
   const currentGPU = summary.get('currentGPU') || '';
 
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
@@ -51,6 +55,7 @@ const DockerRunCommand = () => {
         registrationInfo={registrationInfo}
         workerIP={workerIPConfig.enable ? workerIPConfig.ip : ''}
         modelDir={modelDirConfig.enable ? modelDirConfig.path : ''}
+        cacheDir={cacheDirConfig.enable ? cacheDirConfig.path : ''}
         currentGPU={currentGPU}
       />
     </StepCollapse>

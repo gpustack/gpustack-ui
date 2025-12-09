@@ -6,7 +6,7 @@ import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
-import { Form, Segmented } from 'antd';
+import { Form } from 'antd';
 import _ from 'lodash';
 import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
 import styled from 'styled-components';
@@ -41,14 +41,6 @@ const advancedRequiredFields = ['backend', 'image_name', 'run_command'];
 const scheduleRequiredFields = ['gpu_selector'];
 
 const performanceRequiredFields = ['speculative_config'];
-
-const SegmentedInner = styled(Segmented)`
-  width: 100%;
-  border-radius: 0;
-  .ant-segmented-item {
-    flex: 1;
-  }
-`;
 
 const SegmentedHeader = styled.div<{ $top?: number }>`
   position: sticky;
@@ -260,9 +252,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     await onClusterChange?.(value);
     getGPUOptionList({ clusterId: value });
     getBackendOptions({ cluster_id: value });
-    if (scheduleType === ScheduleValueMap.Manual) {
-      form.setFieldValue(['gpu_selector', 'gpu_ids'], []);
-    }
+    form.setFieldsValue({
+      scheduleType: ScheduleValueMap.Auto,
+      gpu_selector: null
+    });
     await new Promise((resolve) => {
       setTimeout(resolve, 150);
     });

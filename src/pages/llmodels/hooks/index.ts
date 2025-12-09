@@ -174,6 +174,7 @@ export const useCheckCompatibility = () => {
   const handleEvaluate = async (data: any) => {
     try {
       // when no cluster selected, show warning and prompt user to add cluster first
+      console.log('handleEvaluate', data);
       if (!data.cluster_id) {
         setWarningStatus({
           show: true,
@@ -388,7 +389,7 @@ export const useCheckCompatibility = () => {
   const handleDoEvalute = async (formData: FormData) => {
     const currentRequestId = updateRequestId();
     const evalutionData = await handleEvaluate(formData);
-    if (currentRequestId === requestIdRef.current) {
+    if (currentRequestId === requestIdRef.current && evalutionData) {
       handleShowCompatibleAlert?.(evalutionData);
       return evalutionData;
     }

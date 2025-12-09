@@ -73,6 +73,9 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
+  'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
+  'clusters.addworker.cacheVolume.tips':
+    'If you want to custom the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Configuration Summary',
   'clusters.addworker.gpuVendor': 'GPU Vendor',
   'clusters.addworker.workerIP': 'Worker IP',
@@ -80,6 +83,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':
     'e.g. /data/models (path must start with /)',
+  'clusters.addworker.cacheVolume.holder':
+    'e.g. /data/cache (path must start with /)',
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
   'clusters.button.genToken':
     'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
@@ -156,5 +161,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
 // 68. 'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
 // 69. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
-// 70. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
+// 70. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+// 71.  'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
+// 72.  'clusters.addworker.cacheVolume.tips': 'If you want to custom the model cache directory, you can specify the path to mount it.',
+// 73. 'clusters.addworker.cacheVolume.holder': 'e.g. /data/cache (path must start with /)',
 // ========== End of To-Do List ==========

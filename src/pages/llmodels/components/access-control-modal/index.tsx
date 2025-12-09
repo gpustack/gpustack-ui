@@ -36,7 +36,7 @@ const AccessControlModal: React.FC<
       message.success(intl.formatMessage({ id: 'common.message.success' }));
       onCancel?.();
     } catch (error) {
-      message.error(intl.formatMessage({ id: 'common.message.failed' }));
+      // do nothing, error message handled in request layer
     }
   };
 

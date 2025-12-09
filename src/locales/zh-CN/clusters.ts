@@ -48,7 +48,7 @@ export default {
   'clusters.addworker.nvidiaNotes-01':
     '如果节点有多个出站 IP 地址，请填写 <span class="bold-text">WORKER_IP</span>，以确保使用指定的 IP。可通过命令 <span class="bold-text">hostname -I | xargs -n1</span> 进行确认。',
   'clusters.addworker.nvidiaNotes-02':
-    '如果模型目录已存在于节点上，请添加 <span class="bold-text">--volume</span> 参数进行挂载。',
+    '如果 worker 上已经存在模型目录，你可以指定该路径进行挂载。',
   'clusters.addworker.hygonNotes':
     '如果 <span class="bold-text">/opt/hyhal</span> 目录不存在，请创建指向 Hygon 安装路径的符号链接：<span class="bold-text">/opt/hyhal</span>。与 <span class="bold-text">/opt/dtk</span> 目录相同。',
   'clusters.addworker.corexNotes':
@@ -71,6 +71,9 @@ export default {
   'clusters.addworker.enterWorkerIP': '输入节点 IP',
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
   'clusters.addworker.extraVolume': '额外卷挂载',
+  'clusters.addworker.cacheVolume': '缓存卷挂载',
+  'clusters.addworker.cacheVolume.tips':
+    '如果你想自定义模型缓存目录，可以指定路径进行挂载。',
   'clusters.addworker.configSummary': '配置摘要',
   'clusters.addworker.gpuVendor': 'GPU 厂商',
   'clusters.addworker.workerIP': '节点 IP',
@@ -78,6 +81,8 @@ export default {
   'clusters.addworker.autoDetect': '自动检测',
   'clusters.addworker.extraVolume.holder':
     '例如：/data/models（路径需以 / 开头）',
+  'clusters.addworker.cacheVolume.holder':
+    '例如：/data/cache（路径需以 / 开头）',
   'clusters.addworker.vendorNotes.title': '{vendor}设备注意事项',
   'clusters.button.genToken':
     '需要创建令牌？点击<a href="{link}" target="_blank">这里</a>。',

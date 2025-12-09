@@ -82,7 +82,9 @@ export default function useOverlayScroller(data?: {
         ...scrollbars,
         theme:
           scrollbars?.theme ||
-          (userSettings.theme === 'light' ? 'os-theme-dark' : 'os-theme-light')
+          (userSettings.theme === 'light' || !userSettings.theme
+            ? 'os-theme-dark'
+            : 'os-theme-light')
       }
     },
     events: {

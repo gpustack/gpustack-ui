@@ -165,16 +165,6 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
       maskClosable={false}
       keyboard={false}
       zIndex={2000}
-      styles={{
-        body: {
-          height: 'calc(100vh - 57px)',
-          padding: '16px 0',
-          overflowX: 'hidden'
-        },
-        content: {
-          borderRadius: '6px 0 0 6px'
-        }
-      }}
       width={width}
       footer={false}
     >

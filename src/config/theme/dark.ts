@@ -10,7 +10,8 @@ export default {
       inputFontSizeLG: 14
     },
     Steps: {
-      descriptionMaxWidth: 200
+      descriptionMaxWidth: 200,
+      iconSizeSM: 20
     },
     Table: {
       headerBorderRadius: 4,

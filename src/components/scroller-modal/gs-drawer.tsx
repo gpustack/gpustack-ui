@@ -2,8 +2,20 @@ import { useEscHint } from '@/hooks/use-esc-hint';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, Drawer, type DrawerProps } from 'antd';
 
+/**
+ * use ColumnWrapper to wrap content in Drawer with scroller
+ * 57px is the height of header
+ * @param props
+ * @returns
+ */
 const ScrollerModal = (props: DrawerProps) => {
-  const { title, closable = true, maskClosable = false, ...restProps } = props;
+  const {
+    title,
+    closable = true,
+    maskClosable = false,
+    styles,
+    ...restProps
+  } = props;
   const { EscHint } = useEscHint({
     enabled: !props.keyboard && props.open
   });
@@ -14,6 +26,19 @@ const ScrollerModal = (props: DrawerProps) => {
     <>
       <Drawer
         {...restProps}
+        styles={{
+          body: {
+            height: 'calc(100vh - 57px)',
+            paddingBlock: 16,
+            paddingInline: 0,
+            overflowX: 'hidden',
+            ...styles?.body
+          },
+          content: {
+            borderRadius: '6px 0 0 6px',
+            ...styles?.content
+          }
+        }}
         closable={false}
         maskClosable={maskClosable}
         title={

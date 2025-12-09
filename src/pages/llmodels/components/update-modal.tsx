@@ -244,16 +244,6 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       maskClosable={false}
       keyboard={false}
       width={600}
-      styles={{
-        body: {
-          height: 'calc(100vh - 57px)',
-          padding: '16px 0',
-          overflowX: 'hidden'
-        },
-        content: {
-          borderRadius: '6px 0 0 6px'
-        }
-      }}
       footer={false}
     >
       <ColumnWrapper

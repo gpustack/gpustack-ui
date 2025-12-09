@@ -204,16 +204,6 @@ const AddModal: React.FC<AddModalProps> = ({
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      styles={{
-        body: {
-          height: 'calc(100vh - 57px)',
-          padding: '16px 0',
-          overflowX: 'hidden'
-        },
-        content: {
-          borderRadius: '6px 0 0 6px'
-        }
-      }}
       width={600}
       footer={false}
     >

@@ -6,6 +6,7 @@ type ViewModalProps = {
   currentGPU?: string;
   workerIP?: string;
   modelDir?: string;
+  cacheDir?: string;
   registrationInfo: {
     token: string;
     image: string;
@@ -17,6 +18,7 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
   registrationInfo,
   workerIP,
   modelDir,
+  cacheDir,
   currentGPU
 }) => {
   const code = React.useMemo(() => {
@@ -28,13 +30,14 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
         tag: '',
         workerIP: workerIP,
         modelDir: modelDir,
+        cacheDir: cacheDir,
         image: registrationInfo.image,
         token: registrationInfo.token || '${token}'
       })
       ?.trim()
       .replace(/\s+$/gm, '')
       .replace(/\\+$/, '');
-  }, [registrationInfo, currentGPU, workerIP, modelDir]);
+  }, [registrationInfo, currentGPU, workerIP, modelDir, cacheDir]);
 
   return (
     <HighlightCode

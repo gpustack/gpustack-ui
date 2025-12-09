@@ -27,6 +27,11 @@ const SummaryData: React.FC = () => {
     path: ''
   };
 
+  const cacheDirConfig = summary.get('cacheDirConfig') || {
+    enable: false,
+    path: ''
+  };
+
   return (
     <ConfigWrapper>
       <Title>
@@ -120,6 +125,32 @@ const SummaryData: React.FC = () => {
             )}
 
             {modelDirConfig.enable && modelDirConfig.path && (
+              <CheckCircleOutlined
+                style={{
+                  color: 'var(--ant-color-success)',
+                  marginLeft: 4
+                }}
+              />
+            )}
+          </span>
+        </div>
+        <div className="item">
+          <span className="label">
+            {intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}:
+          </span>
+          <span className="value">
+            {cacheDirConfig.enable && cacheDirConfig.path
+              ? cacheDirConfig.path
+              : ''}
+            {(!cacheDirConfig.path || !cacheDirConfig.enable) && (
+              <StopOutlined
+                style={{
+                  color: 'var(--ant-color-text-tertiary)'
+                }}
+              />
+            )}
+
+            {cacheDirConfig.enable && cacheDirConfig.path && (
               <CheckCircleOutlined
                 style={{
                   color: 'var(--ant-color-success)',

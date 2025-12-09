@@ -42,6 +42,10 @@ export interface SummaryDataKeys {
     enabled: boolean;
     path: string;
   };
+  cacheDirConfig: {
+    enabled: boolean;
+    path: string;
+  };
   workerIPConfig: {
     enabled: boolean;
     ip: string;

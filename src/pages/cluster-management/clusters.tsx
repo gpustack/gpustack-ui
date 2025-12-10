@@ -30,6 +30,7 @@ import {
   updateCluster,
   WORKER_POOLS_API
 } from './apis';
+import ClusterModal from './cluster-modal';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
 import {
@@ -47,6 +48,7 @@ import {
 } from './config/types';
 import useAddWorker from './hooks/use-add-worker';
 import useClusterColumns from './hooks/use-cluster-columns';
+import useCreateCluster from './hooks/use-create-cluster';
 
 const Clusters: React.FC = () => {
   const {
@@ -77,6 +79,10 @@ const Clusters: React.FC = () => {
   const intl = useIntl();
   const { handleAddWorker, checkDefaultCluster, AddWorkerModal, setStepList } =
     useAddWorker({});
+  const { clusterModalStatus, openClusterModal, closeClusterModal } =
+    useCreateCluster({
+      refresh: handleSearch
+    });
 
   const [openAddModal, setOpenAddModal] = useState<{
     open: boolean;
@@ -124,7 +130,7 @@ const Clusters: React.FC = () => {
   };
 
   const handleClickDropdown = () => {
-    navigate(`/cluster-management/clusters/create?action=${PageAction.CREATE}`);
+    openClusterModal();
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -396,6 +402,10 @@ const Clusters: React.FC = () => {
         onOk={handleSubmitWorkerPool}
       ></AddPool>
       <DeleteModal ref={modalRef}></DeleteModal>
+      <ClusterModal
+        open={clusterModalStatus.open}
+        onClose={closeClusterModal}
+      ></ClusterModal>
       {AddWorkerModal}
     </>
   );

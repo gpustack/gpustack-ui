@@ -1,13 +1,12 @@
 import { clusterSessionAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
-import PageBreadcrumb from '@/pages/_components/page-breadcrumb';
+import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { PageContainerInner } from '../_components/page-box';
 import {
   createCluster,
   queryClusterList,
@@ -38,10 +37,28 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  width: 600px;
+  width: 100%;
 `;
 
-const ClusterCreate = () => {
+const StepsWrapper = styled.div`
+  width: 230px;
+  padding-inline: 24px;
+  padding-block: 16px;
+  // background-color: var(--ant-color-fill-quaternary);
+  border-right: 1px solid var(--ant-color-split);
+  .ant-steps.ant-steps-vertical {
+    height: 600px;
+  }
+`;
+
+const MainWrapper = styled.div`
+  display: flex;
+  height: 100%;
+`;
+
+const ClusterCreate: React.FC<{
+  onClose?: () => void;
+}> = ({ onClose }) => {
   const intl = useIntl();
   const startStep = 0;
   const stepList = useStepList();
@@ -297,10 +314,12 @@ const ClusterCreate = () => {
         firstAddCluster: false,
         firstAddWorker: false
       });
-      navigate(`/cluster-management/clusters/list`);
+      // navigate(`/cluster-management/clusters/list`);
+      onClose?.();
       return;
     }
-    navigate(-1);
+    onClose?.();
+    // navigate(-1);
   };
 
   const breadcrumbItems = [
@@ -314,46 +333,55 @@ const ClusterCreate = () => {
   ];
 
   return (
-    <PageContainerInner
-      footer={[
-        <FooterButtons
-          key="buttons"
-          onPrevious={onPrevious}
-          onNext={onNext}
-          handleCancel={handleCancel}
-          handleSubmit={handleSubmit}
-          loading={submitLoading}
-          showButtons={showButtons}
-        />
-      ]}
-      header={{
-        title: <PageBreadcrumb items={breadcrumbItems} />
-      }}
-    >
-      <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
-      <div style={{ width: 800, margin: '0 auto' }}>
-        {currentStep === startStep && (
-          <ProviderCatalog
-            dataList={providerList}
-            height={70}
-            onSelect={handleSelectProvider}
-            clickable={true}
-            current={extraData.provider}
+    <MainWrapper>
+      <StepsWrapper>
+        <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
+      </StepsWrapper>
+      <ColumnWrapper
+        styles={{
+          container: { paddingTop: 16, paddingBottom: 56 }
+        }}
+        footer={
+          <FooterButtons
+            key="buttons"
+            onPrevious={onPrevious}
+            onNext={onNext}
+            handleCancel={handleCancel}
+            handleSubmit={handleSubmit}
+            showButtons={showButtons}
+            loading={submitLoading}
           />
-        )}
-        <StepsContext.Provider
-          value={{
-            formValues: formValues,
-            systemConfig: systemConfig
-          }}
-        >
-          {renderModules()}
-          <Container>
-            <Content>{renderForms()}</Content>
-          </Container>
-        </StepsContext.Provider>
-      </div>
-    </PageContainerInner>
+        }
+      >
+        <div style={{ flex: 1 }}>
+          {currentStep === startStep && (
+            <ProviderCatalog
+              groupIcons={{
+                'clusters.create.provider.self': 'icon-server02',
+                'clusters.create.provider.cloud': 'icon-cloud'
+              }}
+              cols={2}
+              dataList={providerList}
+              height={70}
+              onSelect={handleSelectProvider}
+              clickable={true}
+              current={extraData.provider}
+            />
+          )}
+          <StepsContext.Provider
+            value={{
+              formValues: formValues,
+              systemConfig: systemConfig
+            }}
+          >
+            {renderModules()}
+            <Container>
+              <Content>{renderForms()}</Content>
+            </Container>
+          </StepsContext.Provider>
+        </div>
+      </ColumnWrapper>
+    </MainWrapper>
   );
 };
 

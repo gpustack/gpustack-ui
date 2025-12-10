@@ -141,11 +141,11 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     <Box>
       <ProviderCatalog
         onSelect={onSelect}
-        height={50}
+        height={60}
         current={current}
         dataList={supportedHardPlatforms}
         clickable={clickable}
-        cols={4}
+        cols={3}
       />
     </Box>
   );

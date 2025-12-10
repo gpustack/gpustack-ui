@@ -7,8 +7,7 @@ const { Step } = Steps;
 const Wrapper = styled.div`
   width: min(1200px, 100%);
   margin: 0 auto;
-  padding-block: 30px;
-  background-color: var(--ant-color-bg-container);
+  padding-block: 0px;
   .ant-steps-item-description {
     max-width: 300px !important;
     color: var(--ant-color-text-description) !important;
@@ -24,7 +23,12 @@ const ClusterSteps: React.FC<{
 
   return (
     <Wrapper>
-      <Steps current={currentStep} size="small" onChange={onChange} progressDot>
+      <Steps
+        current={currentStep}
+        size="small"
+        onChange={onChange}
+        direction="vertical"
+      >
         {steps.map((step) => (
           <Step
             key={step.title}

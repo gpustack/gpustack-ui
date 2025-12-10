@@ -1,3 +1,4 @@
+import IconFont from '@/components/icon-font';
 import Card from '@/components/templates/card';
 import { useIntl } from '@umijs/max';
 import React, { useMemo } from 'react';
@@ -10,7 +11,7 @@ const Wrapper = styled.div<{ $cols?: number }>`
   grid-template-columns: repeat(${(props) => props.$cols || 3}, 1fr);
   gap: 16px;
   .template-card-wrapper {
-    padding: 10px;
+    padding: 10px 16px;
   }
   .template-card-inner {
     justify-content: center;
@@ -21,16 +22,26 @@ const Container = styled.div`
   display: flex;
   margin: 0 auto;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 `;
 
 const Title = styled.span`
   display: flex;
+  gap: 8px;
   align-items: center;
-  justify-content: space-between;
   font-weight: 700;
-  font-size: 16px;
-  margin-block: 20px 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  .icon {
+    color: var(--ant-color-text-secondary);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--ant-color-fill-tertiary);
+  }
 `;
 
 const Header = styled.div`
@@ -38,6 +49,9 @@ const Header = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+  .title {
+    font-weight: 500;
+  }
   .description {
     font-size: 13px;
     font-weight: 400;
@@ -47,6 +61,7 @@ const Header = styled.div`
 
 interface ProviderCatalogProps {
   onSelect?: (provider: string, item: any) => void;
+  groupIcons?: Record<string, string>;
   cols?: number;
   current?: ProviderType | string;
   clickable?: boolean;
@@ -64,6 +79,7 @@ interface ProviderCatalogProps {
 
 const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   onSelect,
+  groupIcons,
   cols = 3,
   dataList,
   clickable,
@@ -86,7 +102,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   const renderTitle = (item: any) => {
     return (
       <Header>
-        <span>
+        <span className="title">
           {item.locale ? intl.formatMessage({ id: item.label }) : item.label}
         </span>
         {item.description && (
@@ -103,7 +119,14 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
       {Object.entries(groupList).map(([groupName, items]) => (
         <div key={groupName}>
           {groupName !== 'default' && (
-            <Title>{intl.formatMessage({ id: groupName })}</Title>
+            <Title>
+              {groupIcons && groupIcons[groupName] && (
+                <span className="icon">
+                  <IconFont type={groupIcons[groupName]} />
+                </span>
+              )}
+              <span>{intl.formatMessage({ id: groupName })}</span>
+            </Title>
           )}
           <Wrapper $cols={cols}>
             {items?.map((action) => (

@@ -28,22 +28,26 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
     onNext();
   };
   return (
-    <Title style={{ height: 64 }}>
-      <div className="flex-center gap-16">
+    <Title style={{ padding: '16px 24px 32px' }}>
+      <div className="flex-center gap-20">
         {showButtons.previous && (
-          <Button type="link" icon={<LeftOutlined />} onClick={onPrevious}>
+          <Button type="default" icon={<LeftOutlined />} onClick={onPrevious}>
             {intl.formatMessage({ id: 'common.button.prev' })}
           </Button>
         )}
         {showButtons.next && (
-          <Button type="link" onClick={handleOnNext}>
+          <Button
+            type="primary"
+            onClick={handleOnNext}
+            style={{ minWidth: 100 }}
+          >
             {intl.formatMessage({ id: 'common.button.next' })}
             <RightOutlined />
           </Button>
         )}
         {showButtons.skip && (
           <Button type="primary" onClick={handleCancel}>
-            {intl.formatMessage({ id: 'clusters.create.skipfornow' })}
+            {intl.formatMessage({ id: 'common.button.done' })}
           </Button>
         )}
         {showButtons.save && (
@@ -52,7 +56,8 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
             onClick={handleSubmit}
             style={{ minWidth: 88 }}
           >
-            {intl.formatMessage({ id: 'common.button.save' })}
+            {/* {intl.formatMessage({ id: 'common.button.save' })} */}
+            Create & Continue
           </Button>
         )}
       </div>

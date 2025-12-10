@@ -30,8 +30,8 @@ const Title = styled.span`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 14px;
   .text {
     font-size: 20px;
   }

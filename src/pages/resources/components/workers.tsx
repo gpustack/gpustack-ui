@@ -1,7 +1,7 @@
 import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
 import useTableFetch from '@/hooks/use-table-fetch';
-import { PageContainerInner } from '@/pages/_components/page-box';
+import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
 import {
@@ -65,9 +65,11 @@ const Workers: React.FC = () => {
   });
   const [clusterData, setClusterData] = useState<{
     list: Global.BaseOption<number, ClusterListItem>[];
+    loading: boolean;
     data: Record<number, string>;
   }>({
     list: [],
+    loading: false,
     data: {}
   });
   const [workerDetailStatus, setWorkerDetailStatus] = useState<{
@@ -78,7 +80,8 @@ const Workers: React.FC = () => {
     currentData: null
   });
   const { handleAddWorker, AddWorkerModal, setStepList } = useAddWorker({
-    clusterList: clusterData.list
+    clusterList: clusterData.list,
+    clusterLoading: clusterData.loading
   });
 
   const getClusterList = async () => {
@@ -103,11 +106,13 @@ const Workers: React.FC = () => {
       }));
       setClusterData({
         list,
+        loading: false,
         data: clusterMap
       });
     } catch (error) {
       setClusterData({
         list: [],
+        loading: false,
         data: {}
       });
     }
@@ -243,9 +248,7 @@ const Workers: React.FC = () => {
 
   return (
     <>
-      <PageContainerInner
-        footer={terminals.length ? [TerminalPanel] : undefined}
-      >
+      <PageBox>
         <FilterBar
           showSelect={true}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
@@ -300,7 +303,7 @@ const Workers: React.FC = () => {
         />
         {MaintenanceModal}
         {AddWorkerModal}
-      </PageContainerInner>
+      </PageBox>
     </>
   );
 };

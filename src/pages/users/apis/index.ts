@@ -5,7 +5,7 @@ export const USERS_API = '/users';
 
 export async function queryUsersList(params: Global.SearchParams) {
   return request<Global.PageResponse<ListItem>>(`${USERS_API}`, {
-    methos: 'GET',
+    method: 'GET',
     params
   });
 }

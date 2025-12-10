@@ -43,7 +43,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
         )}
         {showButtons.skip && (
           <Button type="primary" onClick={handleCancel}>
-            {intl.formatMessage({ id: 'clusters.create.skipfornow' })}
+            {intl.formatMessage({ id: 'common.button.done' })}
           </Button>
         )}
         {showButtons.save && (

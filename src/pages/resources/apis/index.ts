@@ -52,14 +52,14 @@ export async function queryWorkersList<T extends Record<string, any>>(
 
 export async function queryGpuDevicesList(params: Global.SearchParams) {
   return request<Global.PageResponse<GPUDeviceItem>>(`${GPU_DEVICES_API}`, {
-    methos: 'GET',
+    method: 'GET',
     params
   });
 }
 
 export async function queryGPUDeviceItem(id: string) {
   return request<GPUDeviceItem>(`${GPU_DEVICES_API}/${id}`, {
-    methos: 'GET'
+    method: 'GET'
   });
 }
 

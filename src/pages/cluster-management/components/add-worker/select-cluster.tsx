@@ -1,5 +1,6 @@
 import BaseSelect from '@/components/seal-form/base/select';
 import { useIntl } from '@umijs/max';
+import { Spin } from 'antd';
 import { useEffect } from 'react';
 import { useAddWorkerContext } from './add-worker-context';
 import { StepNamesMap } from './config';
@@ -9,6 +10,7 @@ import StepCollapse from './step-collapse';
 const SelectCluster = () => {
   const {
     clusterList,
+    clusterLoading,
     registrationInfo,
     stepList,
     summary,
@@ -55,13 +57,15 @@ const SelectCluster = () => {
         </div>
       }
     >
-      <BaseSelect
-        defaultValue={registrationInfo.cluster_id}
-        options={clusterList}
-        value={clusterId}
-        onChange={onClusterChange}
-        style={{ width: '100%' }}
-      />
+      <Spin spinning={clusterLoading}>
+        <BaseSelect
+          defaultValue={registrationInfo.cluster_id}
+          options={clusterList}
+          value={clusterId}
+          onChange={onClusterChange}
+          style={{ width: '100%' }}
+        />
+      </Spin>
     </StepCollapse>
   );
 };

@@ -11,10 +11,11 @@ import {
 import { ClusterListItem } from '../config/types';
 
 const useAddWorker = (props: {
+  clusterLoading?: boolean;
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
 }) => {
   const intl = useIntl();
-  const { clusterList } = props || {};
+  const { clusterList, clusterLoading } = props || {};
   const [stepList, setStepList] = useState<StepName[]>([]);
   const [openAddWorker, setOpenAddWorker] = useState<{
     open: boolean;
@@ -73,6 +74,7 @@ const useAddWorker = (props: {
       open={openAddWorker.open}
       provider={openAddWorker.provider}
       clusterList={clusterDataList}
+      clusterLoading={clusterLoading}
       cluster_id={openAddWorker.cluster_id}
       onClusterChange={handleClusterChange}
       onCancel={() =>

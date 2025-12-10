@@ -75,7 +75,7 @@ export default {
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':
-    'If you want to custom the model cache directory, you can specify the path to mount it.',
+    'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Сводка конфигурации',
   'clusters.addworker.gpuVendor': 'Производитель GPU',
   'clusters.addworker.workerIP': 'IP воркера',
@@ -95,5 +95,5 @@ export default {
 // 1. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
 // 2. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
 // 3. 'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
-// 4. 'clusters.addworker.cacheVolume.tips': 'If you want to custom the model cache directory, you can specify the path to mount it.',
+// 4. 'clusters.addworker.cacheVolume.tips': 'If you want to customize the model cache directory, you can specify the path to mount it.',
 // ================================================================

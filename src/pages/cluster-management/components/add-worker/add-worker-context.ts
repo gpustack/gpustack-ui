@@ -5,6 +5,7 @@ import { SummaryDataKey } from './config';
 
 interface AddWorkerContextProps {
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
+  clusterLoading?: boolean;
   provider: ProviderType;
   stepList: string[];
   onClusterChange?: (value: number, row?: any) => void;

@@ -56,7 +56,7 @@ export async function queryModelsList(
   return request<Global.PageResponse<ListItem>>(
     `${MODELS_API}?${qs.stringify(params)}`,
     {
-      methos: 'GET',
+      method: 'GET',
       ...options
     }
   );
@@ -360,7 +360,7 @@ export async function queryCatalogList(
   return request<Global.PageResponse<CatalogItem>>(
     `/model-sets?${qs.stringify(params)}`,
     {
-      methos: 'GET',
+      method: 'GET',
       ...options
     }
   );

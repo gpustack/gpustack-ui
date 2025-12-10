@@ -75,7 +75,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':
-    'If you want to custom the model cache directory, you can specify the path to mount it.',
+    'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Configuration Summary',
   'clusters.addworker.gpuVendor': 'GPU Vendor',
   'clusters.addworker.workerIP': 'Worker IP',

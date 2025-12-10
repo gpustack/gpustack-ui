@@ -81,7 +81,10 @@ const generateNvidiaDockerEnvCommand = (config: {
   runtime: string;
   driver: string;
 }) => {
-  return `${config.driver} >/dev/null 2>&1 && echo "${config.label} driver OK" || (echo "${config.label} driver issue"; exit 1) && sudo docker info 2>/dev/null | grep -q "${config.runtime}" && echo "${config.label} Container Toolkit OK" || (echo "${config.label} Container Toolkit not configured"; exit 1)`;
+  const runtimeCheck =
+    config.runtime === 'nvidia' ? 'Runtime.*nvidia' : config.runtime;
+
+  return `${config.driver} >/dev/null 2>&1 && echo "${config.label} driver OK" || (echo "${config.label} driver issue"; exit 1) && sudo docker info 2>/dev/null | grep -q "${runtimeCheck}" && echo "${config.label} Container Toolkit OK" || (echo "${config.label} Container Toolkit not configured"; exit 1)`;
 };
 
 // avaliable for Hygon、Iluvatar、MetaX 、Cambricon
@@ -127,15 +130,16 @@ export const dockerEnvCommandMap = {
   )
 };
 const setNormalArgs = (params: any) => {
-  console.log('params++++++++++++++', params);
-  return `sudo docker run -d --name gpustack-worker \\
-      --restart=unless-stopped \\
-      --privileged \\
-      --network=host \\
-      --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
-      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
-      ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
+  return `CONTAINER_NAME="gpustack-worker" \\
+sudo docker run -d --name \${CONTAINER_NAME} \\
+    -e GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME} \\
+    --restart=unless-stopped \\
+    --privileged \\
+    --network=host \\
+    --volume /var/run/docker.sock:/var/run/docker.sock \\
+    --volume gpustack-data:/var/lib/gpustack \\
+    ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
+    ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
 };
 
 const setImageArgs = (params: any) => {

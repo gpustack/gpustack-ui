@@ -1,27 +1,17 @@
 import ScrollerModal from '@/components/scroller-modal';
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { queryClusterToken } from '../../apis';
 import { ProviderType } from '../../config';
 import { ClusterListItem } from '../../config/types';
 import AddWorkerStep from './add-worker-step';
 import { StepName } from './config';
 
-const Container = styled.div`
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  .command-info {
-    margin-bottom: 8px;
-  }
-`;
-
 type AddWorkerProps = {
   open: boolean;
   provider: ProviderType;
   title: string;
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
+  clusterLoading?: boolean;
   stepList: StepName[];
   onClusterChange?: (value: number, row?: any) => void;
   onCancel: () => void;
@@ -47,6 +37,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     cluster_id,
     title,
     clusterList,
+    clusterLoading,
     stepList = []
   } = props || {};
   const firstLoad = React.useRef(true);
@@ -103,6 +94,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
         stepList={stepList}
         provider={provider}
         clusterList={clusterList}
+        clusterLoading={clusterLoading}
         onClusterChange={handleOnClusterChange}
         registrationInfo={registrationInfo}
       ></AddWorkerStep>

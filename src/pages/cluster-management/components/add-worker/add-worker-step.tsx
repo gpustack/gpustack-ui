@@ -30,6 +30,7 @@ const Container = styled.div`
 type AddWorkerProps = {
   provider: ProviderType;
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
+  clusterLoading?: boolean;
   stepList: StepName[];
   onClusterChange?: (value: number, row?: any) => void;
   registrationInfo: {
@@ -50,6 +51,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     registrationInfo,
     provider,
     clusterList,
+    clusterLoading,
     stepList = [],
     onClusterChange
   } = props || {};
@@ -77,6 +79,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     <AddWorkerContext.Provider
       value={{
         clusterList,
+        clusterLoading,
         provider,
         stepList: stepList,
         collapseKey,

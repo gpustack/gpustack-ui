@@ -57,7 +57,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.NVIDIA,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA],
-      link: 'https://docs.gpustack.ai/latest/installation/nvidia/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#nvidia-gpu',
       icon: <IconFont type="icon-nvidia2" style={{ fontSize: 32 }} />
     },
     {
@@ -67,7 +67,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.AMD,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.AMD],
-      link: 'https://docs.gpustack.ai/latest/installation/amd/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#amd-gpu',
       icon: (
         <IconFont
           type="icon-amd"
@@ -82,7 +82,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.ASCEND,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ASCEND],
-      link: 'https://docs.gpustack.ai/latest/installation/ascend/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#ascend-npu',
       icon: <ProviderImage src={ascendLogo} showBg />
     },
     {
@@ -92,7 +92,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.HYGON,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.HYGON],
-      link: 'https://docs.gpustack.ai/latest/installation/hygon/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#hygon-dcu',
       icon: <ProviderImage src={hyponPNG} />
     },
     {
@@ -102,7 +102,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.MOORE_THREADS,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.MOORE_THREADS],
-      link: 'https://docs.gpustack.ai/latest/installation/mthreads/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#mthreads-gpu',
       icon: <ProviderImage src={moorePNG} />
     },
     {
@@ -112,7 +112,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.ILUVATAR,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ILUVATAR],
-      link: 'https://docs.gpustack.ai/latest/installation/iluvatar/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#iluvatar-gpu',
       icon: <ProviderImage src={iluvatarWEBP} showBg />
     },
     {
@@ -122,7 +122,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       key: GPUDriverMap.CAMBRICON,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.CAMBRICON],
-      link: 'https://docs.gpustack.ai/latest/installation/cambricon/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#cambricon-mlu',
       icon: <ProviderImage src={CambriconPNG} />
     },
     {
@@ -131,7 +131,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       value: GPUDriverMap.METAX,
       key: GPUDriverMap.METAX,
       locale: false,
-      link: 'https://docs.gpustack.ai/latest/installation/metax/installation/?h=meta#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#metax-gpu',
       notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
       icon: <ProviderImage src={metaxLogo} showBg />
     }

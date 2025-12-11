@@ -2,7 +2,6 @@ import { modelsExpandKeysAtom, modelsSessionAtom } from '@/atoms/models';
 import DeleteModal from '@/components/delete-modal';
 import DropDownActions from '@/components/drop-down-actions';
 import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
 import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
@@ -12,9 +11,8 @@ import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
-import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
-import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
+import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -84,7 +82,6 @@ interface ModelsProps {
     categories?: string[];
   };
   deleteIds?: number[];
-  workerList: WorkerListItem[];
   dataSource: ListItem[];
   loading: boolean;
   loadend: boolean;
@@ -119,14 +116,18 @@ const Models: React.FC<ModelsProps> = ({
   onStart,
   deleteIds,
   dataSource,
-  workerList,
   queryParams,
   loading,
   loadend,
   total
 }) => {
-  const { generateFormValues, clusterList, getClusterList } =
-    useFormInitialValues();
+  const {
+    generateFormValues,
+    clusterList,
+    getClusterList,
+    getWorkerList,
+    workerList
+  } = useFormInitialValues();
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [updateFormInitials, setUpdateFormInitials] = useState<{
     data: any;
@@ -206,7 +207,7 @@ const Models: React.FC<ModelsProps> = ({
 
   useEffect(() => {
     const getData = async () => {
-      await getClusterList();
+      await Promise.all([getClusterList(), getWorkerList()]);
     };
     getData();
     return () => {
@@ -594,6 +595,23 @@ const Models: React.FC<ModelsProps> = ({
     });
   };
 
+  const { noResourceResult } = useNoResourceResult({
+    loadend: loadend,
+    loading: loading,
+    dataSource: dataSource,
+    queryParams: queryParams,
+    iconType: 'icon-resources',
+    title: intl.formatMessage({ id: 'noresult.deployments.title' }),
+    noClusters: !clusterList.length,
+    noWorkers: workerList.length === 0 && clusterList.length > 0,
+    defaultContent: {
+      subTitle: intl.formatMessage({ id: 'noresult.deployments.subTitle' }),
+      noFoundText: intl.formatMessage({ id: 'noresult.mymodels.nofound' }),
+      buttonText: intl.formatMessage({ id: 'models.table.button.deploy' }),
+      onClick: () => handleClickDropdown({ key: 'catalog' })
+    }
+  });
+
   useEffect(() => {
     if (modelsSession.source && loadend) {
       handleClickDropdown({
@@ -709,26 +727,7 @@ const Models: React.FC<ModelsProps> = ({
           loadChildren={getModelInstances}
           loadChildrenAPI={generateChildrenRequestAPI}
           renderChildren={renderChildren}
-          empty={
-            <NoResult
-              loading={loading}
-              loadend={loadend}
-              dataSource={dataSource}
-              image={<IconFont type="icon-rocket-launch1" />}
-              filters={queryParams}
-              noFoundText={intl.formatMessage({
-                id: 'noresult.mymodels.nofound'
-              })}
-              title={intl.formatMessage({ id: 'noresult.deployments.title' })}
-              subTitle={intl.formatMessage({
-                id: 'noresult.deployments.subTitle'
-              })}
-              onClick={() => handleClickDropdown({ key: 'catalog' })}
-              buttonText={intl?.formatMessage?.({
-                id: 'models.table.button.deploy'
-              })}
-            ></NoResult>
-          }
+          empty={noResourceResult}
           pagination={{
             showSizeChanger: true,
             pageSize: queryParams.perPage,

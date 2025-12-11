@@ -27,4 +27,11 @@ export const clusterListAtom = atom<
   }[]
 >([]);
 
+export const workerListAtom = atom<
+  {
+    label: string;
+    value: number;
+  }[]
+>([]);
+
 export const backendOptionsAtom = atom<BackendOption[]>([]);

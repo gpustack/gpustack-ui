@@ -1,4 +1,4 @@
-import { clusterListAtom } from '@/atoms/models';
+import { clusterListAtom, workerListAtom } from '@/atoms/models';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import { queryWorkersList } from '@/pages/resources/apis';
@@ -232,10 +232,13 @@ export const useGenerateWorkerOptions = () => {
 export default function useFormInitialValues() {
   const { getGPUOptionList, gpuOptions } = useGenerateGPUOptions();
   const [, setClusterListAtom] = useAtom(clusterListAtom);
+  const [, setWorkerListAtom] = useAtom(workerListAtom);
 
   const [clusterList, setClusterList] = useState<
     Global.BaseOption<number, { provider: string; state: string }>[]
   >([]);
+
+  const [workerList, setWorkerList] = useState<WorkerListItem[]>([]);
 
   const getClusterList = async (): Promise<Global.BaseOption<number>[]> => {
     try {
@@ -256,6 +259,26 @@ export default function useFormInitialValues() {
       setClusterList([]);
       setClusterListAtom([]);
       return [];
+    }
+  };
+
+  // get worker list
+  const getWorkerList = async (): Promise<any> => {
+    try {
+      const data = await queryWorkersList({ page: -1 });
+      const list =
+        data.items?.map((item) => ({
+          label: item.name,
+          value: item.id
+        })) || [];
+      setWorkerList(data.items);
+      setWorkerListAtom(list);
+      return data;
+    } catch (error) {
+      // ingore
+      setWorkerList([]);
+      setWorkerListAtom([]);
+      return {};
     }
   };
 
@@ -280,6 +303,8 @@ export default function useFormInitialValues() {
     getGPUOptionList,
     generateFormValues,
     getClusterList,
+    getWorkerList,
+    workerList,
     clusterList,
     gpuOptions
   };

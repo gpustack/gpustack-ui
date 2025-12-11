@@ -83,7 +83,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
     handleOnValuesChange,
     warningStatus
   } = useCheckCompatibility();
-  const { getClusterList, clusterList } = useFormInitialValues();
+  const { getClusterList, getWorkerList, clusterList } = useFormInitialValues();
   const intl = useIntl();
   const form = useRef<any>({});
   const [isGGUF, setIsGGUF] = useState<boolean>(false);
@@ -295,6 +295,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
   useEffect(() => {
     getClusterList();
+    getWorkerList();
   }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { clusterListAtom } from '@/atoms/models';
+import { clusterListAtom, workerListAtom } from '@/atoms/models';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { queryModelFilesList } from '@/pages/resources/apis';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
@@ -132,6 +132,7 @@ export const useCheckCompatibility = () => {
   const updateStatusTimer = useRef<any>(null);
   const isLockWarningStatus = useRef<boolean>(false);
   const clusterList = useAtomValue(clusterListAtom);
+  const workerList = useAtomValue(workerListAtom);
   const [warningStatus, setWarningStatus] = useState<MessageStatus>({
     show: false,
     title: '',
@@ -175,12 +176,15 @@ export const useCheckCompatibility = () => {
     try {
       // when no cluster selected, show warning and prompt user to add cluster first
       console.log('handleEvaluate', data);
-      if (!data.cluster_id) {
+
+      if (!data.cluster_id || workerList.length === 0) {
         setWarningStatus({
           show: true,
           title: '',
           type: 'warning',
-          message: intl.formatMessage({ id: 'noresult.resources.cluster' })
+          message: !data.cluster_id
+            ? intl.formatMessage({ id: 'noresult.resources.cluster' })
+            : intl.formatMessage({ id: 'noresult.resources.worker' })
         });
         return;
       }

@@ -1,8 +1,6 @@
 import TableContext from '@/components/seal-table/table-context';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
-import { queryWorkersList } from '@/pages/resources/apis';
-import { ListItem as WokerListItem } from '@/pages/resources/config/types';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import qs from 'query-string';
@@ -35,7 +33,6 @@ const Models: React.FC = () => {
     total: 0
   });
 
-  const [workerList, setWorkerList] = useState<WokerListItem[]>([]);
   const chunkRequedtRef = useRef<any>();
   const chunkInstanceRequedtRef = useRef<any>();
   const isPageHidden = useRef(false);
@@ -320,22 +317,8 @@ const Models: React.FC = () => {
       }
     };
 
-    // get worker list
-    const getWorkerList = async (): Promise<any> => {
-      try {
-        const data = await queryWorkersList({ page: -1 });
-        return data;
-      } catch (error) {
-        // ingore
-        return {};
-      }
-    };
-
     const init = async () => {
-      const [modelRes, workerRes] = await Promise.all([
-        getTableData(),
-        getWorkerList()
-      ]);
+      const [modelRes] = await Promise.all([getTableData()]);
 
       setDataSource({
         dataList: modelRes.items || [],
@@ -344,7 +327,6 @@ const Models: React.FC = () => {
         total: modelRes.pagination?.total || 0,
         deletedIds: []
       });
-      setWorkerList(workerRes.items || []);
 
       clearTimeout(timer);
       timer = setTimeout(() => {
@@ -420,7 +402,6 @@ const Models: React.FC = () => {
         loadend={dataSource.loadend}
         total={dataSource.total}
         deleteIds={dataSource.deletedIds}
-        workerList={workerList}
       ></TableList>
     </TableContext.Provider>
   );

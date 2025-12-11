@@ -7,6 +7,12 @@ import { useMemoizedFn } from 'ahooks';
 import { useAtom } from 'jotai';
 import React, { useMemo } from 'react';
 
+/**Title: Generally, this is from the activation page.
+ * DefaultContent: This content from the activate page, for example, the activate page is Deployments page,
+ * then the defaultContent is for deployment.
+ * @param props
+ * @returns
+ */
 const useNoResourceResult = (props: {
   iconType: string;
   loading?: boolean;
@@ -84,6 +90,7 @@ const useNoResourceResult = (props: {
         onClick: handleClick
       };
     }
+
     return {
       ...defaultContent
     };

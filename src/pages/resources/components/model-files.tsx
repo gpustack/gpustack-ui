@@ -52,6 +52,7 @@ const ModelFiles = () => {
     dataSource,
     rowSelection,
     queryParams,
+    sortOrder,
     modalRef,
     fetchData,
     handleDelete,
@@ -276,6 +277,7 @@ const ModelFiles = () => {
 
   const columns = useFilesColumns({
     handleSelect,
+    sortOrder,
     workersList
   });
 

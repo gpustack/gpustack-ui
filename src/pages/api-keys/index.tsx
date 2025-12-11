@@ -139,6 +139,7 @@ const APIKeys: React.FC = () => {
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
+            sortDirections={['ascend', 'descend', 'ascend']}
             rowKey="id"
             onChange={handleTableChange}
             pagination={{

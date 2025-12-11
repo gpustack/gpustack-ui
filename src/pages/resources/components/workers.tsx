@@ -36,6 +36,7 @@ const Workers: React.FC = () => {
     queryParams,
     modalRef,
     extraStatus,
+    sortOrder,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -238,6 +239,7 @@ const Workers: React.FC = () => {
     clusterData,
     loadend: dataSource.loadend,
     firstLoad: extraStatus.firstLoad,
+    sortOrder,
     handleSelect
   });
 
@@ -267,6 +269,7 @@ const Workers: React.FC = () => {
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             columns={columns}
+            sortDirections={['ascend', 'descend', 'ascend']}
             tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
             style={{ width: '100%' }}
             dataSource={dataSource.dataList}

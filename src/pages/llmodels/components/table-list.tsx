@@ -12,7 +12,6 @@ import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
-import useTableSort from '@/hooks/use-table-sort';
 import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
 import { ListItem as WorkerListItem } from '@/pages/resources/config/types';
@@ -148,8 +147,12 @@ const Models: React.FC<ModelsProps> = ({
     removeExpandedRowKey,
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
-  const { sortOrder, setSortOrder } = useTableSort({
-    defaultSortOrder: 'descend'
+  const [sortOrder, setSortOrder] = useState<{
+    columnKey: string;
+    order: 'ascend' | 'descend' | null;
+  }>({
+    order: null,
+    columnKey: ''
   });
 
   const [apiAccessInfo, setAPIAccessInfo] = useState<any>({
@@ -216,7 +219,10 @@ const Models: React.FC<ModelsProps> = ({
   };
 
   const handleOnSort = (dataIndex: string, order: any) => {
-    setSortOrder(order);
+    setSortOrder({
+      columnKey: dataIndex,
+      order: order
+    });
   };
 
   const handleOnCell = useMemoizedFn(async (record: any, extra: any) => {

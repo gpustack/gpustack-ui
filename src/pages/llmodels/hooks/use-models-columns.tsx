@@ -34,7 +34,10 @@ const setModelActionList = (record: any) => {
 
 interface ModelsColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: SortOrder;
+  sortOrder: {
+    columnKey: string;
+    order: SortOrder;
+  };
   clusterList: Global.BaseOption<
     number,
     { provider: string; state: string | number }
@@ -54,6 +57,11 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'name'
+            ? sortOrder.order
+            : null,
+        sorter: false,
         span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
@@ -122,7 +130,10 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         defaultSortOrder: 'descend',
-        sortOrder,
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'created_at'
+            ? sortOrder.order
+            : null,
         sorter: false,
         span: 4,
         render: (text: number) => (

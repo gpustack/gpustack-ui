@@ -1,6 +1,5 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
-import useTableSort from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { handleBatchRequest } from '@/utils';
 import _ from 'lodash';
@@ -52,8 +51,12 @@ export default function useTableFetch<T>(
   const chunkRequedtRef = useRef<any>(null);
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
-  const { sortOrder, setSortOrder } = useTableSort({
-    defaultSortOrder: 'descend'
+  const [sortOrder, setSortOrder] = useState<{
+    order?: 'ascend' | 'descend' | null;
+    columnKey?: string;
+  }>({
+    order: null,
+    columnKey: undefined
   });
 
   // for skeleton loading
@@ -235,7 +238,10 @@ export default function useTableFetch<T>(
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setSortOrder(sorter.order);
+    setSortOrder({
+      order: sorter.order,
+      columnKey: sorter.columnKey || sorter.field
+    });
   };
 
   const handleSearch = () => {

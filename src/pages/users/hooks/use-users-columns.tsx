@@ -6,7 +6,6 @@ import icons from '@/components/icon-font/icons';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Tag } from 'antd';
-import type { SortOrder } from 'antd/es/table/interface';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -14,7 +13,10 @@ import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: SortOrder;
+  sortOrder: {
+    order?: 'ascend' | 'descend' | null;
+    columnKey?: string;
+  };
 }
 
 const actionList: Global.ActionItem[] = [
@@ -69,6 +71,12 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'username',
         key: 'username',
+        defaultSortOrder: 'descend',
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'username'
+            ? sortOrder.order
+            : null,
+        sorter: false,
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>
             {text}
@@ -177,7 +185,10 @@ const useUsersColumns = ({
         key: 'created_at',
         defaultSortOrder: 'descend',
         showSorterTooltip: false,
-        sortOrder,
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'created_at'
+            ? sortOrder.order
+            : null,
         sorter: false,
         ellipsis: {
           showTitle: false

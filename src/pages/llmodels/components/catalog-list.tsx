@@ -1,14 +1,10 @@
+import ResizeContainer from '@/components/resize-container';
 import CatalogSkelton from '@/components/templates/card-skelton';
-import breakpoints from '@/config/breakpoints';
 import InfiniteScroller from '@/pages/_components/infinite-scroller';
 import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
-import { useIntl } from '@umijs/max';
-import { Col, Row, Spin } from 'antd';
-import _ from 'lodash';
-import ResizeObserver from 'rc-resize-observer';
-import React, { useCallback } from 'react';
+import { Spin } from 'antd';
+import React from 'react';
 import styled from 'styled-components';
-import { CatalogItem as CatalogItemType } from '../config/types';
 import CatalogItem from './catalog-item';
 
 const SpinWrapper = styled.div`
@@ -32,10 +28,9 @@ interface CatalogListProps {
 }
 
 const ListSkeleton: React.FC<{
-  span: number;
   loading: boolean;
   isFirst: boolean;
-}> = ({ span, loading, isFirst }) => {
+}> = ({ loading, isFirst }) => {
   return (
     <div>
       {loading && (
@@ -47,7 +42,7 @@ const ListSkeleton: React.FC<{
             }}
             wrapperClassName="skelton-wrapper"
           >
-            {isFirst && <CatalogSkelton span={span}></CatalogSkelton>}
+            {isFirst && <CatalogSkelton></CatalogSkelton>}
           </Spin>
         </SpinWrapper>
       )}
@@ -56,7 +51,6 @@ const ListSkeleton: React.FC<{
 };
 
 const CatalogList: React.FC<CatalogListProps> = (props) => {
-  const intl = useIntl();
   const { dataList, loading, activeId, isFirst, onDeploy } = props;
   const {
     total,
@@ -65,48 +59,27 @@ const CatalogList: React.FC<CatalogListProps> = (props) => {
     refresh,
     throttleDelay
   } = useScrollerContext();
-  const [span, setSpan] = React.useState(8);
-
-  const getSpanByWidth = (width: number) => {
-    if (width < breakpoints.md) return 24;
-    if (width < breakpoints.lg) return 12;
-    return 8;
-  };
-
-  const handleResize = useCallback(
-    _.throttle((size: { width: number; height: number }) => {
-      setSpan(getSpanByWidth(size.width));
-    }, 100),
-    []
-  );
 
   return (
-    <div className="relative" style={{ width: '100%' }}>
-      <ResizeObserver onResize={handleResize}>
-        <InfiniteScroller
-          total={total}
-          current={current}
-          loading={contextLoading}
-          refresh={refresh}
-          throttleDelay={throttleDelay}
-        >
-          <Row gutter={[16, 16]}>
-            {dataList.map((item: CatalogItemType, index) => {
-              return (
-                <Col span={span} key={item.id}>
-                  <CatalogItem
-                    onClick={onDeploy}
-                    activeId={activeId}
-                    data={item}
-                  ></CatalogItem>
-                </Col>
-              );
-            })}
-          </Row>
-          <ListSkeleton span={span} loading={loading} isFirst={isFirst} />
-        </InfiniteScroller>
-      </ResizeObserver>
-    </div>
+    <InfiniteScroller
+      total={total}
+      current={current}
+      loading={contextLoading}
+      refresh={refresh}
+      throttleDelay={throttleDelay}
+    >
+      <ResizeContainer
+        dataList={dataList}
+        renderItem={(item) => (
+          <CatalogItem
+            onClick={onDeploy}
+            activeId={activeId}
+            data={item}
+          ></CatalogItem>
+        )}
+      ></ResizeContainer>
+      <ListSkeleton loading={loading} isFirst={isFirst} />
+    </InfiniteScroller>
   );
 };
 

@@ -1,11 +1,9 @@
+import ResizeContainer from '@/components/resize-container';
 import CardSkeleton from '@/components/templates/card-skelton';
-import breakpoints from '@/config/breakpoints';
 import InfiniteScroller from '@/pages/_components/infinite-scroller';
 import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
-import { Col, Row, Spin } from 'antd';
-import _ from 'lodash';
-import ResizeObserver from 'rc-resize-observer';
-import React, { useCallback } from 'react';
+import { Spin } from 'antd';
+import React from 'react';
 import styled from 'styled-components';
 import BackendCard from './backend-card';
 
@@ -49,10 +47,9 @@ interface BackendListProps {
 }
 
 const ListSkeleton: React.FC<{
-  span: number;
   loading: boolean;
   isFirst: boolean;
-}> = ({ span, loading, isFirst }) => {
+}> = ({ loading, isFirst }) => {
   return (
     <div>
       {loading && (
@@ -67,7 +64,6 @@ const ListSkeleton: React.FC<{
             {isFirst && (
               <SkeletonWrapper>
                 <CardSkeleton
-                  span={span}
                   skeletonProps={{
                     title: false
                   }}
@@ -95,7 +91,6 @@ const CardList: React.FC<BackendListProps> = (props) => {
     resizable = true,
     onSelect
   } = props;
-  const [span, setSpan] = React.useState(defaultSpan);
   const {
     total,
     current,
@@ -104,42 +99,22 @@ const CardList: React.FC<BackendListProps> = (props) => {
     throttleDelay
   } = useScrollerContext();
 
-  const getSpanByWidth = (width: number) => {
-    if (width < breakpoints.md) return 24;
-    if (width < breakpoints.lg) return 12;
-    return 8;
-  };
-
-  const handleResize = useCallback(
-    _.throttle((size: { width: number; height: number }) => {
-      setSpan(getSpanByWidth(size.width));
-    }, 100),
-    []
-  );
-
   return (
-    <div className="relative" style={{ width: '100%' }}>
-      <ResizeObserver onResize={handleResize} disabled={!resizable}>
-        <InfiniteScroller
-          total={total}
-          current={current}
-          loading={contextLoading}
-          refresh={refresh}
-          throttleDelay={throttleDelay}
-        >
-          <Row gutter={[16, 16]}>
-            {dataList.map((item: any) => {
-              return (
-                <Col span={span} key={item.id}>
-                  <BackendCard data={item} onSelect={onSelect} />
-                </Col>
-              );
-            })}
-          </Row>
-          <ListSkeleton span={span} loading={loading} isFirst={isFirst} />
-        </InfiniteScroller>
-      </ResizeObserver>
-    </div>
+    <InfiniteScroller
+      total={total}
+      current={current}
+      loading={contextLoading}
+      refresh={refresh}
+      throttleDelay={throttleDelay}
+    >
+      <ResizeContainer
+        defaultSpan={defaultSpan}
+        resizable={resizable}
+        dataList={dataList}
+        renderItem={(item) => <BackendCard data={item} onSelect={onSelect} />}
+      ></ResizeContainer>
+      <ListSkeleton loading={loading} isFirst={isFirst} />
+    </InfiniteScroller>
   );
 };
 

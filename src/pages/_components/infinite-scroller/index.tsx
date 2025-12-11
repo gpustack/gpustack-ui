@@ -16,7 +16,7 @@ const InfiniteScroller: React.FC<
   const { observerRef, throttledLoadMore } = useInfiniteScroll(restProps);
 
   return (
-    <div>
+    <div className="relative" style={{ width: '100%' }}>
       {children}
       <div
         ref={observerRef}

@@ -2,7 +2,6 @@ import IconFont from '@/components/icon-font';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import CardList from '@/components/templates/card-list';
-import CardSkeleton from '@/components/templates/card-skelton';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { SyncOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -236,7 +235,6 @@ const UserModels: React.FC = () => {
           loading={dataSource.loading}
           activeId={false}
           isFirst={!dataSource.loadend}
-          Skeleton={CardSkeleton}
           renderItem={renderCard}
         ></CardList>
         <NoResult

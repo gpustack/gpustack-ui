@@ -1,10 +1,9 @@
-import breakpoints from '@/config/breakpoints';
+import ResizeContainer from '@/components/resize-container';
+import CardSkeleton from '@/components/templates/card-skelton';
 import InfiniteScroller from '@/pages/_components/infinite-scroller';
 import { useScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
-import { Col, Row, Spin } from 'antd';
-import _ from 'lodash';
-import ResizeObserver from 'rc-resize-observer';
-import React, { useCallback } from 'react';
+import { Spin } from 'antd';
+import React from 'react';
 import styled from 'styled-components';
 
 const SpinWrapper = styled.div`
@@ -30,22 +29,12 @@ interface CatalogListProps {
   activeId: Global.WithFalse<number>;
   isFirst: boolean;
   renderItem: (data: any) => React.ReactNode;
-  Skeleton: React.ComponentType<{ span: number }>;
 }
 
-const InnerSkeleton = (Skeleton: React.ComponentType<{ span: number }>) => {
-  return (props: any) => {
-    return <Skeleton {...props} />;
-  };
-};
-
 const ListSkeleton: React.FC<{
-  span: number;
   loading: boolean;
   isFirst: boolean;
-  Skeleton: React.ComponentType<{ span: number }>;
-}> = ({ span, loading, isFirst, Skeleton }) => {
-  const CatalogSkeleton = InnerSkeleton(Skeleton);
+}> = ({ loading, isFirst }) => {
   return (
     <div>
       {loading && (
@@ -57,7 +46,7 @@ const ListSkeleton: React.FC<{
             }}
             wrapperClassName="skelton-wrapper"
           >
-            {isFirst && <CatalogSkeleton span={span}></CatalogSkeleton>}
+            {isFirst && <CardSkeleton></CardSkeleton>}
           </Spin>
         </SpinWrapper>
       )}
@@ -72,10 +61,8 @@ const CardList: React.FC<CatalogListProps> = (props) => {
     isFirst,
     defaultSpan = 8,
     resizable = true,
-    Skeleton,
     renderItem
   } = props;
-  const [span, setSpan] = React.useState(defaultSpan);
   const {
     total,
     current,
@@ -83,46 +70,21 @@ const CardList: React.FC<CatalogListProps> = (props) => {
     refresh
   } = useScrollerContext();
 
-  const getSpanByWidth = (width: number) => {
-    if (width < breakpoints.md) return 24;
-    if (width < breakpoints.lg) return 12;
-    return 8;
-  };
-
-  const handleResize = useCallback(
-    _.throttle((size: { width: number; height: number }) => {
-      setSpan(getSpanByWidth(size.width));
-    }, 100),
-    []
-  );
-
   return (
-    <div className="relative" style={{ width: '100%' }}>
-      <ResizeObserver onResize={handleResize} disabled={!resizable}>
-        <InfiniteScroller
-          total={total}
-          current={current}
-          loading={contextLoading}
-          refresh={refresh}
-        >
-          <Row gutter={[16, 16]}>
-            {dataList.map((item: any, index) => {
-              return (
-                <Col span={span} key={item.id}>
-                  {renderItem?.(item)}
-                </Col>
-              );
-            })}
-          </Row>
-          <ListSkeleton
-            span={span}
-            loading={loading}
-            isFirst={isFirst}
-            Skeleton={Skeleton}
-          />
-        </InfiniteScroller>
-      </ResizeObserver>
-    </div>
+    <InfiniteScroller
+      total={total}
+      current={current}
+      loading={contextLoading}
+      refresh={refresh}
+    >
+      <ResizeContainer
+        dataList={dataList}
+        renderItem={renderItem}
+        defaultSpan={defaultSpan}
+        resizable={resizable}
+      ></ResizeContainer>
+      <ListSkeleton loading={loading} isFirst={isFirst} />
+    </InfiniteScroller>
   );
 };
 

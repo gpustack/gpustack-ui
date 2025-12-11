@@ -39,8 +39,12 @@ const useGPUColumns = (props: {
   loadend: boolean;
   firstLoad: boolean;
   clusterList: Global.BaseOption<number>[];
+  sortOrder: {
+    order?: 'ascend' | 'descend' | null;
+    columnKey?: string;
+  };
 }): ColumnsType<GPUDeviceItem> => {
-  const { clusterList, loadend, firstLoad } = props;
+  const { clusterList, loadend, firstLoad, sortOrder } = props;
   const intl = useIntl();
 
   return useMemo(() => {
@@ -49,6 +53,11 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 240,
+        sorter: false,
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'name'
+            ? sortOrder.order
+            : null,
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost maxWidth={240}>
             {text}
@@ -138,7 +147,7 @@ const useGPUColumns = (props: {
         }
       }
     ];
-  }, [intl, clusterList, loadend, firstLoad]);
+  }, [intl, sortOrder, clusterList, loadend, firstLoad]);
 };
 
 export default useGPUColumns;

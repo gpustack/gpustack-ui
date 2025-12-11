@@ -212,6 +212,7 @@ const useWorkerColumns = ({
   clusterData,
   loadend,
   firstLoad,
+  sortOrder,
   handleSelect
 }: {
   clusterData: {
@@ -220,6 +221,10 @@ const useWorkerColumns = ({
   };
   loadend: boolean;
   firstLoad: boolean;
+  sortOrder: {
+    order?: 'ascend' | 'descend' | null;
+    columnKey?: string;
+  };
   handleSelect: (action: string, record: ListItem) => void;
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -230,6 +235,11 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 100,
+        sorter: false,
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'name'
+            ? sortOrder.order
+            : null,
         render: (text: string) => (
           <AutoTooltip ghost maxWidth={240}>
             {text}
@@ -352,7 +362,7 @@ const useWorkerColumns = ({
         )
       }
     ],
-    [intl, clusterData, loadend, firstLoad, handleSelect]
+    [intl, sortOrder, clusterData, loadend, firstLoad, handleSelect]
   );
 };
 

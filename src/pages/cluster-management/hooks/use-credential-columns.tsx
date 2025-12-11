@@ -10,7 +10,10 @@ import { ProviderLabelMap, credentialActionList } from '../config';
 import { CredentialListItem as ListItem } from '../config/types';
 
 const useCredentialColumns = (
-  sortOrder: SortOrder,
+  sortOrder: {
+    order?: SortOrder;
+    columnKey?: string;
+  },
   handleSelect: (val: string, record: ListItem) => void
 ): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -36,7 +39,10 @@ const useCredentialColumns = (
         dataIndex: 'created_at',
         showSorterTooltip: false,
         defaultSortOrder: 'descend',
-        sortOrder: sortOrder,
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'created_at'
+            ? sortOrder.order
+            : null,
         sorter: false,
         ellipsis: {
           showTitle: false

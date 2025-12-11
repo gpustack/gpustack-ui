@@ -3,7 +3,6 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import icons from '@/components/icon-font/icons';
 import { useIntl } from '@umijs/max';
-import type { SortOrder } from 'antd/es/table/interface';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
@@ -11,7 +10,10 @@ import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: SortOrder;
+  sortOrder: {
+    order?: 'ascend' | 'descend' | null;
+    columnKey?: string;
+  };
 }
 
 const actionList: Global.ActionItem[] = [
@@ -91,7 +93,10 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         defaultSortOrder: 'descend',
-        sortOrder,
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'created_at'
+            ? sortOrder.order
+            : null,
         sorter: false,
         ellipsis: {
           showTitle: false

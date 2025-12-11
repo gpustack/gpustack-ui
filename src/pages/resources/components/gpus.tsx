@@ -16,6 +16,7 @@ const GPUList: React.FC = () => {
     dataSource,
     queryParams,
     extraStatus,
+    sortOrder,
     handlePageChange,
     handleTableChange,
     handleQueryChange,
@@ -71,6 +72,7 @@ const GPUList: React.FC = () => {
   const columns = useGPUColumns({
     clusterList,
     loadend: dataSource.loadend,
+    sortOrder,
     firstLoad: extraStatus.firstLoad
   });
 
@@ -100,6 +102,7 @@ const GPUList: React.FC = () => {
           <Table
             columns={columns}
             style={{ width: '100%' }}
+            sortDirections={['ascend', 'descend', 'ascend']}
             tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}

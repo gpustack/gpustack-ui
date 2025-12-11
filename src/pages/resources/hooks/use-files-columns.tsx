@@ -255,8 +255,12 @@ const getWorkerName = (
 const useFilesColumns = (props: {
   handleSelect: (action: string, record: ListItem) => void;
   workersList: Global.BaseOption<number>[];
+  sortOrder: {
+    order?: 'ascend' | 'descend' | null;
+    columnKey?: string;
+  };
 }): ColumnsType<ListItem> => {
-  const { workersList, handleSelect } = props;
+  const { workersList, sortOrder, handleSelect } = props;
   const intl = useIntl();
 
   return useMemo(() => {
@@ -337,6 +341,10 @@ const useFilesColumns = (props: {
         ellipsis: {
           showTitle: false
         },
+        sortOrder:
+          sortOrder.order && sortOrder.columnKey === 'created_at'
+            ? sortOrder.order
+            : null,
         render: (text: number) => (
           <AutoTooltip ghost minWidth={20}>
             {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
@@ -355,7 +363,7 @@ const useFilesColumns = (props: {
         )
       }
     ];
-  }, [intl, workersList, handleSelect]);
+  }, [intl, sortOrder, workersList, handleSelect]);
 };
 
 export default useFilesColumns;

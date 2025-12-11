@@ -45,7 +45,7 @@ const SelectVendor = () => {
     updateField('currentGPU', GPUDriverMap.NVIDIA);
     updateField('workerCommand', {
       label: 'NVIDIA',
-      link: 'https://docs.gpustack.ai/latest/installation/nvidia/installation/#prerequisites',
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#nvidia-gpu',
       notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA]
     });
   }, []);

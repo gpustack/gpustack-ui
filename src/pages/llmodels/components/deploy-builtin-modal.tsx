@@ -222,10 +222,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       const list = _.sortBy(res.items, 'size');
 
-      const defaultSpec = _.find(
-        list,
-        (item: CatalogSpec) => item.mode === modeDataList[0]?.value
-      );
+      const defaultSpec =
+        _.find(
+          list,
+          (item: CatalogSpec) => item.mode === modeDataList[0]?.value
+        ) || {};
 
       selectSpecRef.current = defaultSpec;
 

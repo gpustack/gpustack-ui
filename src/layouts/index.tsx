@@ -312,9 +312,6 @@ export default (props: any) => {
         onCollapse={onCollapse}
         onMenuHeaderClick={onMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
-        menuFooterRender={() => (
-          <span style={{ fontSize: 12 }}>{version?.version}</span>
-        )}
         extra={[
           <ExtraContent
             key="extra-content"

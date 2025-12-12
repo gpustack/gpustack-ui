@@ -88,12 +88,12 @@ const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
     }
   };
 
+  // Currently, do not use this function, but keep it for future validation needs
   const getMarkers = () => {
     const uri = editorRef.current?.getModel()?.uri;
     const markers = monacoRef.current?.editor.getModelMarkers({
       resource: uri
     });
-    console.log('Validation markers:', uri, markers);
     return markers;
   };
 

@@ -103,7 +103,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
-  const scheduleType = Form.useWatch('scheduleType', form);
   const [target, setTarget] = React.useState<string>(TABKeysMap.BASIC);
 
   console.log('scroller instance in form:', osInstance, scrollEventElement);

@@ -268,5 +268,7 @@ export default {
     'Accessible to all authenticated platform users.',
   'models.accessSettings.allowedUsers.tips':
     'Only designated users can access the model.',
-  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`
+  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
+  'models.catalog.nogpus.tips':
+    'No compatible GPUs are available in the selected cluster for this model.'
 };

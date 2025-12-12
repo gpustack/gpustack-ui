@@ -32,9 +32,11 @@ export default {
     'Пользовательское название версии встроенного бэкенда должно оканчиваться на «-custom».',
   'backend.backend.rules.custom':
     'Пользовательское название бэкенда должно оканчиваться на «-custom».',
-  'backend.quickConfig': 'Быстрая настройка'
+  'backend.quickConfig': 'Быстрая настройка',
+  'backend.version.default.not.exists':
+    'The default version does not exist in {versions}.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'backend.version.default.not.exists': 'The default version does not exist in {versions}.'
 // ========== End of To-Do List ==========

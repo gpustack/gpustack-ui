@@ -273,12 +273,15 @@ export default {
     'Accessible to all authenticated platform users.',
   'models.accessSettings.allowedUsers.tips':
     'Only designated users can access the model.',
-  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`
+  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
+  'models.catalog.nogpus.tips':
+    'No compatible GPUs are available in the selected cluster for this model.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'models.accessSettings.public.desc': 'Accessible to anyone without authentication.',
 // 2.  'models.accessSettings.authed.tips': 'Accessible to all authenticated platform users.',
 // 3. 'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.',
-// 4. 'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`
+// 4. 'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
+// 5. 'models.catalog.nogpus.tips': 'No compatible GPUs are available in the selected cluster for this model.'
 // ========== End of To-Do List ==========

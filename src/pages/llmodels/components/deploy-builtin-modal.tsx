@@ -250,6 +250,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         cluster_id: clusterId,
         name
       });
+
+      // If no avaliable gpus for the model, show warning message
+      if (!res.items.length) {
+        setWarningStatus({
+          show: true,
+          type: 'warning',
+          message: intl.formatMessage({ id: 'models.catalog.nogpus.tips' })
+        });
+        return;
+      }
       handleCheckCompatibility(allValues);
     } catch (error) {
       // ignore

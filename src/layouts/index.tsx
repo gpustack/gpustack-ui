@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
-import { userAtom } from '@/atoms/user';
+import { GPUStackVersionAtom, userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
 import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
@@ -112,6 +112,7 @@ export default (props: any) => {
   const navigate = useNavigate();
   const intl = useIntl();
   const { clientRoutes } = useAppData();
+  const [version] = useAtom(GPUStackVersionAtom);
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -311,6 +312,9 @@ export default (props: any) => {
         onCollapse={onCollapse}
         onMenuHeaderClick={onMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
+        menuFooterRender={() => (
+          <span style={{ fontSize: 12 }}>{version?.version}</span>
+        )}
         extra={[
           <ExtraContent
             key="extra-content"

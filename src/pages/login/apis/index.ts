@@ -29,7 +29,7 @@ export const logout = async (userInfo?: any) => {
   });
   clearStorageUserSettings();
   clearAtomStorage(userAtom);
-  if (res.logout_url) {
+  if (res?.logout_url) {
     window.location.href = res.logout_url;
   }
   return;

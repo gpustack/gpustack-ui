@@ -252,5 +252,6 @@ export default {
   'models.accessSettings.public.desc': '任何人无需认证即可访问。',
   'models.accessSettings.authed.tips': '平台内所有已认证用户可访问。',
   'models.accessSettings.allowedUsers.tips': '仅允许选定的特定用户访问。',
-  'models.form.backendVersions.tips': `如需使用更多版本，请前往{link}页面并编辑对应的后端以添加版本。`
+  'models.form.backendVersions.tips': `如需使用更多版本，请前往{link}页面并编辑对应的后端以添加版本。`,
+  'models.catalog.nogpus.tips': '所选集群中没有兼容该模型的 GPU。'
 };

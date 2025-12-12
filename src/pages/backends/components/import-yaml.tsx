@@ -110,24 +110,44 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
         const jsonData = yaml2Json(content);
         const exsistingVersions = Object.keys(jsonData.version_configs || {});
 
+        // Check backend version rules
         if (
           actionStatus.isBuiltIn &&
-          exsistingVersions.find((v) => !v.endsWith('-custom'))
+          exsistingVersions.find((v) => !v?.endsWith('-custom'))
         ) {
           setError(intl.formatMessage({ id: 'backend.version.no.tips' }));
           return false;
         }
+
+        // Check custom backend name rule
         if (
           !actionStatus.isBuiltIn &&
           actionStatus.action === PageAction.CREATE &&
-          !jsonData.backend_name.endsWith('-custom')
+          !jsonData.backend_name?.endsWith('-custom')
         ) {
           setError(intl.formatMessage({ id: 'backend.backend.rules.custom' }));
           return false;
         }
 
+        // Check default version exists
+        if (
+          jsonData.default_version &&
+          !exsistingVersions.includes(jsonData.default_version) &&
+          !actionStatus.isBuiltIn
+        ) {
+          // the default_version must be in [existingVersions]
+          setError(
+            intl.formatMessage(
+              { id: 'backend.version.default.not.exists' },
+              { versions: exsistingVersions.join(', ') }
+            )
+          );
+          return false;
+        }
+
         return content;
       } catch (error) {
+        setError((error as Error).message);
         return false;
       }
     };

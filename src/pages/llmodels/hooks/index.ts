@@ -296,7 +296,12 @@ export const useCheckCompatibility = () => {
         title: intl.formatMessage({ id: 'models.form.check.passed' }),
         message: intl.formatMessage({ id: messageId }, { ram, vram })
       };
-    } else if (othersAvailable) {
+    } else if (
+      othersAvailable &&
+      !scheduling_messages?.length &&
+      !compatibility_messages?.length
+    ) {
+      // no specific messages, but other clusters are available
       msgData = {
         title: intl.formatMessage({
           id: 'models.form.check.clusterUnavailable'

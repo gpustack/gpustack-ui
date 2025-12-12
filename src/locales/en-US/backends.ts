@@ -32,5 +32,7 @@ export default {
     'The built-in backend’s custom version name must end with "-custom".',
   'backend.backend.rules.custom':
     'The custom backend name must end with "-custom".',
-  'backend.quickConfig': 'Quick Config'
+  'backend.quickConfig': 'Quick Config',
+  'backend.version.default.not.exists':
+    'The default version does not exist in {versions}.'
 };

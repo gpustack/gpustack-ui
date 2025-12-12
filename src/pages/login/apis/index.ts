@@ -24,11 +24,14 @@ export const login = async (
 };
 
 export const logout = async (userInfo?: any) => {
-  await request(`${AUTH_API}/logout`, {
+  const res = await request(`${AUTH_API}/logout`, {
     method: 'POST'
   });
   clearStorageUserSettings();
   clearAtomStorage(userAtom);
+  if (res.logout_url) {
+    window.location.href = res.logout_url;
+  }
   return;
 };
 

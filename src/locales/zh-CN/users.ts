@@ -36,5 +36,7 @@ export default {
   'users.settings.title': '用户设置',
   'users.status.activate': '启用账户',
   'users.status.deactivate': '停用账户',
-  'users.status.inactiveAccount': '停用账户'
+  'users.status.inactiveAccount': '停用账户',
+  'users.login.getInitialPassword':
+    '在服务器端运行以下命令以获取初始管理员密码。'
 };

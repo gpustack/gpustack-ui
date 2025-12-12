@@ -37,5 +37,7 @@ export default {
   'users.settings.title': 'User Settings',
   'users.status.activate': 'Activate Account',
   'users.status.deactivate': 'Deactivate Account',
-  'users.status.inactiveAccount': 'Inactive Account'
+  'users.status.inactiveAccount': 'Inactive Account',
+  'users.login.getInitialPassword':
+    'Run the following command on your server to retrieve the initial admin password.'
 };

@@ -1,8 +1,38 @@
+import HighlightCode from '@/components/highlight-code';
 import SealInput from '@/components/seal-form/seal-input';
 import externalLinks from '@/constants/external-links';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  InfoCircleOutlined,
+  LockOutlined,
+  UserOutlined
+} from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Checkbox, Form, FormInstance } from 'antd';
+import { Button, Checkbox, Divider, Form, FormInstance } from 'antd';
+import { createStyles } from 'antd-style';
+import { GET_INITIAL_PASSWORD } from '../../login/config';
+
+const useStyles = createStyles(({ token, css }) => {
+  return {
+    commandInfo: css`
+      .content {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+        .icon {
+          padding-top: 2px;
+          color: ${token.colorInfo};
+          font-size: 16px;
+        }
+        .info {
+          line-height: 1.5;
+          color: ${token.colorTextSecondary};
+          font-size: 14px;
+        }
+      }
+    `
+  };
+});
 
 interface LocalUserFormProps {
   handleLogin: (values: any) => void;
@@ -12,6 +42,27 @@ interface LocalUserFormProps {
 const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
   const { handleLogin, form } = props;
   const intl = useIntl();
+  const { styles } = useStyles();
+
+  const renderCommandInfo = () => {
+    return (
+      <div className={styles.commandInfo}>
+        <Divider />
+        <div className="content">
+          <InfoCircleOutlined className="icon" />
+          <span className="info">
+            {intl.formatMessage({ id: 'users.login.getInitialPassword' })}
+          </span>
+        </div>
+        <HighlightCode
+          theme="dark"
+          code={GET_INITIAL_PASSWORD}
+          copyValue={GET_INITIAL_PASSWORD}
+          lang="bash"
+        ></HighlightCode>
+      </div>
+    );
+  };
 
   return (
     <Form

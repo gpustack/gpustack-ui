@@ -38,12 +38,15 @@ export default {
   'users.settings.title': 'User Settings',
   'users.status.activate': 'Activate Account',
   'users.status.deactivate': 'Deactivate Account',
-  'users.status.inactiveAccount': 'Inactive Account'
+  'users.status.inactiveAccount': 'Inactive Account',
+  'users.login.getInitialPassword':
+    'Run the following command on your server to retrieve the initial admin password.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'users.settings.title': 'User Settings',
 // 2. 'users.status.activate': 'Activate Account',
 // 3. 'users.status.deactivate': 'Deactivate Account',
-// 4. 'users.status.inactiveAccount': 'Inactive Account'
+// 4. 'users.status.inactiveAccount': 'Inactive Account',
+// 5. 'users.login.getInitialPassword': 'Run the following command on your server to retrieve the initial admin password.'
 // ========== End of To-Do List ==========

@@ -63,19 +63,19 @@ const Box = styled.div`
 `;
 
 const FormWrapper = styled.div`
-  position: relative;
   margin: 0 auto;
+  margin-top: 50vh;
+  max-width: 440px;
+  transform: translateY(-50%);
+  position: relative;
   z-index: 999;
   border-radius: var(--border-radius-modal);
   width: max-content;
   height: max-content;
-  max-width: 800px;
-  max-height: 600px;
+  max-height: 660px;
   padding: 40px;
   background-color: var(--color-modal-content-bg);
   box-shadow: var(--color-modal-box-shadow);
-  margin-top: 50vh;
-  transform: translateY(-50%);
   .field-wrapper {
     background-color: transparent !important;
   }
@@ -90,6 +90,8 @@ const Login = () => {
   const { themeData, userSettings, isDarkTheme } = useUserSettings();
   const [userInfo, setUserInfo] = useAtom(userAtom);
   const { initialState, setInitialState } = useModel('@@initialState') || {};
+
+  console.log('useSettings==========', userSettings);
 
   const gotoDefaultPage = async (userInfo: any) => {
     if (!userInfo || userInfo?.require_password_change) {

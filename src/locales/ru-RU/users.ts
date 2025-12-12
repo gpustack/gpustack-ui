@@ -38,9 +38,11 @@ export default {
   'users.settings.title': 'Настройки пользователя',
   'users.status.activate': 'Активировать аккаунт',
   'users.status.deactivate': 'Деактивировать аккаунт',
-  'users.status.inactiveAccount': 'Неактивный аккаунт'
+  'users.status.inactiveAccount': 'Неактивный аккаунт',
+  'users.login.getInitialPassword':
+    'Run the following command on your server to retrieve the initial admin password.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'users.login.getInitialPassword': 'Run the following command on your server to retrieve the initial admin password.'
 // ========== End of To-Do List ==========

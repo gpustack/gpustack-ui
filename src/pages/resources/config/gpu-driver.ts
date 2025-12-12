@@ -131,8 +131,8 @@ export const dockerEnvCommandMap = {
 };
 const setNormalArgs = (params: any) => {
   return `CONTAINER_NAME="gpustack-worker" \\
-sudo docker run -d --name \${CONTAINER_NAME} \\
-    -e GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME} \\
+sudo docker run -d --name "\${CONTAINER_NAME}" \\
+    -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
     --restart=unless-stopped \\
     --privileged \\
     --network=host \\

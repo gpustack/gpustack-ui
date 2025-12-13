@@ -118,6 +118,11 @@ const BackendFields: React.FC = () => {
     return option.title;
   };
 
+  const backendVersionLabelRender = (option: any) => {
+    console.log('backendVersionLabelRender option:', option);
+    return option.title;
+  };
+
   const renderVersionOptions = (values: any[], label: string) => {
     if (!values || values.length === 0) {
       return null;
@@ -188,7 +193,8 @@ const BackendFields: React.FC = () => {
           <SealSelect
             allowClear
             showSearch
-            labelRender={labelRender}
+            allowNull
+            labelRender={backendVersionLabelRender}
             placeholder={intl.formatMessage({
               id: 'models.form.backendVersion.holder'
             })}
@@ -216,6 +222,19 @@ const BackendFields: React.FC = () => {
               </dl>
             }
           >
+            {(backendVersions.builtIn.length > 0 ||
+              backendVersions.custom.length > 0) && (
+              <Select.Option
+                key="auto"
+                value={null}
+                title={intl.formatMessage({ id: 'common.options.auto' })}
+                label={intl.formatMessage({
+                  id: 'common.options.auto'
+                })}
+              >
+                {intl.formatMessage({ id: 'common.options.auto' })}
+              </Select.Option>
+            )}
             {renderVersionOptions(
               backendVersions.builtIn,
               intl.formatMessage({ id: 'backend.builtin' })

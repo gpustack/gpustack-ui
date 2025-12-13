@@ -375,7 +375,7 @@ export const defaultFormValues = {
   gpu_selector: {},
   worker_selector: {},
   backend_parameters: [],
-  backend_version: ''
+  backend_version: null
 };
 
 export const getBackendParamsTips = (backend: string) => {

@@ -16,6 +16,12 @@ import { expirationOptions } from '../../config';
 import { FormData, ListItem } from '../../config/types';
 import APIKeyForm from './form';
 
+const ModalFooterStyle = {
+  padding: '16px 24px 8px',
+  display: 'flex',
+  justifyContent: 'flex-end'
+};
+
 type AddModalProps = {
   title: string;
   action: PageActionType;
@@ -209,16 +215,15 @@ const AddModal: React.FC<AddModalProps> = ({
     >
       <ColumnWrapper
         styles={{
-          container: { paddingTop: 0 }
+          container: { paddingBlock: 0 }
         }}
         footer={
           !showKey ? (
             <>
               {isChanged && (
-                <div style={{ marginInline: 24 }}>
+                <div style={{ marginInline: 24, paddingTop: 8 }}>
                   <AlertBlockInfo
                     type="warning"
-                    style={{ marginBottom: 16 }}
                     contentStyle={{ paddingInline: 0 }}
                     message={intl.formatMessage({
                       id: 'models.button.accessSettings.tips'
@@ -230,11 +235,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 onOk={handleSumit}
                 onCancel={onCancel}
                 loading={loading}
-                style={{
-                  padding: '16px 24px',
-                  display: 'flex',
-                  justifyContent: 'flex-end'
-                }}
+                style={ModalFooterStyle}
               ></ModalFooter>
             </>
           ) : (
@@ -245,11 +246,7 @@ const AddModal: React.FC<AddModalProps> = ({
                 loading={loading}
                 okText={intl.formatMessage({ id: 'common.button.done' })}
                 showCancelBtn={false}
-                style={{
-                  padding: '16px 24px',
-                  display: 'flex',
-                  justifyContent: 'flex-end'
-                }}
+                style={ModalFooterStyle}
               ></ModalFooter>
             </>
           )

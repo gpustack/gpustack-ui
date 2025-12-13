@@ -35,7 +35,7 @@ type AddModalProps = {
 };
 
 const ModalFooterStyle = {
-  padding: '16px 24px',
+  padding: '16px 24px 8px',
   display: 'flex',
   justifyContent: 'flex-end'
 };
@@ -249,7 +249,7 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       <ColumnWrapper
         styles={{
           container: {
-            paddingTop: 0
+            paddingBlock: 0
           }
         }}
         footer={

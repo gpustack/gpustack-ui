@@ -41,7 +41,7 @@ const dropFieldsFromForm = [
 const resetFields = ['worker_selector', 'env'];
 
 const ModalFooterStyle = {
-  padding: '16px 24px',
+  padding: '16px 24px 8px',
   display: 'flex',
   justifyContent: 'flex-end'
 };
@@ -586,7 +586,7 @@ const AddModal: FC<AddModalProps> = (props) => {
         <FormWrapper>
           <ColumnWrapper
             styles={{
-              container: { paddingTop: 0 }
+              container: { paddingBlock: 0 }
             }}
             footer={
               <>

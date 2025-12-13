@@ -207,7 +207,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
         <FormWrapper>
           <ColumnWrapper
             styles={{
-              container: { paddingTop: 0 }
+              container: { paddingBlock: 0 }
             }}
             footer={
               <>
@@ -218,7 +218,7 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
                     loading: loading
                   }}
                   style={{
-                    padding: '16px 24px',
+                    padding: '16px 24px 8px',
                     display: 'flex',
                     justifyContent: 'flex-end'
                   }}

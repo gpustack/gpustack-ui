@@ -1,7 +1,27 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import React, { useCallback } from 'react';
-import './style.less';
+import styled from 'styled-components';
 import { WrapperContext } from './use-wrapper-context';
+
+const Wrapper = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
+  position: relative;
+  overflow-y: auto;
+`;
+
+const Footer = styled.div`
+  padding-block: 0;
+  background-color: var(--ant-color-bg-elevated);
+`;
 
 interface ColumnWrapperProps {
   children: React.ReactNode;
@@ -44,29 +64,8 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
     }
   }, []);
 
-  React.useLayoutEffect(() => {
-    if (!scroller.current || !footerRef.current || !contentRef.current) return;
-
-    const updatePadding = () => {
-      const height = footerRef.current!.getBoundingClientRect().height;
-      contentRef.current!.style.paddingBottom = `${height - 22}px`;
-    };
-
-    updatePadding();
-
-    const observer = new ResizeObserver(updatePadding);
-    observer.observe(footerRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
   const setContentPaddingBottom = useCallback((padding: number) => {
-    if (footerRef.current) {
-      const height = footerRef.current.getBoundingClientRect().height;
-      contentRef.current!.style.paddingBottom = `${height + padding - 22}px`;
-    } else {
-      contentRef.current!.style.paddingBottom = `${padding}px`;
-    }
+    contentRef.current!.style.paddingBottom = `${padding}px`;
   }, []);
 
   return (
@@ -81,25 +80,18 @@ const ColumnWrapper: React.FC<ColumnWrapperProps> = ({
         setSScrollContentPaddingBottom: setContentPaddingBottom
       }}
     >
-      <div
-        className="column-wrapper-footer"
-        style={{ height: maxHeight || '100%', ...styles.wrapper }}
-      >
-        <div
-          className="column-wrapper"
+      <Wrapper style={{ height: maxHeight || '100%', ...styles.wrapper }}>
+        <ContentWrapper
           ref={scroller}
-          style={{ padding: '16px 24px', ...styles.container }}
+          style={{
+            padding: '16px 24px',
+            ...styles.container
+          }}
         >
-          <div ref={contentRef} className="child-content">
-            {children}
-          </div>
-        </div>
-        {footer && (
-          <div className="footer" ref={footerRef}>
-            {footer}
-          </div>
-        )}
-      </div>
+          <div ref={contentRef}>{children}</div>
+        </ContentWrapper>
+        {footer && <Footer ref={footerRef}>{footer}</Footer>}
+      </Wrapper>
     </WrapperContext.Provider>
   );
 };

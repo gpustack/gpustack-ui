@@ -26,7 +26,7 @@ interface CompatibilityAlertProps {
 const DivWrapper = styled.div`
   position: relative;
   padding-inline: 24px;
-  padding-block: 10px 0;
+  padding-block: 8px 0;
   &:hover {
     .close-wrapper {
       display: block;

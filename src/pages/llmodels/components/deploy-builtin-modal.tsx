@@ -357,7 +357,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           <ColumnWrapper
             styles={{
               container: {
-                paddingTop: 0
+                paddingBlock: 0
               }
             }}
             footer={
@@ -387,7 +387,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                     )
                   }
                   style={{
-                    padding: '16px 24px',
+                    padding: '16px 24px 8px',
                     display: 'flex',
                     justifyContent: 'flex-end'
                   }}

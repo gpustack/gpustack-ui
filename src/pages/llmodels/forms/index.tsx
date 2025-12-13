@@ -95,8 +95,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     onClusterChange,
     onOk
   } = props;
-  const { getScrollElementScrollableHeight, osInstance, scrollEventElement } =
-    useWrapperContext();
+  const { getScrollElementScrollableHeight } = useWrapperContext();
   const { backendOptions, getBackendOptions } = useQueryBackends();
   const { getGPUOptionList, gpuOptions, workerLabelOptions } =
     useGenerateGPUOptions();
@@ -104,8 +103,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const [target, setTarget] = React.useState<string>(TABKeysMap.BASIC);
-
-  console.log('scroller instance in form:', osInstance, scrollEventElement);
 
   const segmentOptions = [
     {
@@ -226,7 +223,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     });
     form.setFieldsValue({
       env: null,
-      backend_version: '', // don't set default version here, let the user select it
+      backend_version: null, // don't set default version here, let the user select it
       backend_parameters: option.default_backend_param || [],
       ...updateKVCacheConfig(val, option),
       ...updateGPUSelector(val)
@@ -454,7 +451,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
             ngram_max_match_length:
               initialValues?.speculative_config?.ngram_max_match_length || 10
           },
-          ...initialValues
+          ...initialValues,
+          backend_version: initialValues?.backend_version || null
         }}
       >
         <BasicForm

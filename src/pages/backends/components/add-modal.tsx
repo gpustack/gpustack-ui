@@ -20,7 +20,7 @@ import BackendForm from '../forms';
 import ImportYAML from './import-yaml';
 
 const ModalFooterStyle = {
-  padding: '16px 24px',
+  padding: '16px 24px 8px',
   display: 'flex',
   justifyContent: 'flex-end'
 };
@@ -220,7 +220,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         maxHeight={'calc(100vh - 140px)'}
         styles={{
           container: {
-            paddingTop: 0
+            paddingBlock: 0
           }
         }}
         footer={

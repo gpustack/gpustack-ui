@@ -490,6 +490,7 @@ const options: BackendParameter[] = [
       'quark',
       'moe_wna16',
       'torchao',
+      'ascend',
       'None'
     ]
   },

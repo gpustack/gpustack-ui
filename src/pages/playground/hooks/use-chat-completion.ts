@@ -43,6 +43,7 @@ export default function useChatCompletion(
   };
 
   const joinMessage = (chunk: any) => {
+    console.log('chunk:', chunk);
     setTokenResult({
       ...(chunk?.usage ?? {})
     });

@@ -1,4 +1,5 @@
 import AlertInfoBlock from '@/components/alert-info/block';
+import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import React from 'react';
@@ -56,14 +57,21 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     onClusterChange
   } = props || {};
   const intl = useIntl();
-  const { update, summary, register } = useSummaryStatus();
 
   const [collapseKey, setCollapseKey] = React.useState<Set<string>>(
     new Set([stepList[0]])
   );
+  const startWatchRef = React.useRef(false);
+  const { update, summary, register } = useSummaryStatus();
+  const { contextHolder, createModelsChunkRequest } = useAddWorkerMessage({
+    startWatch: startWatchRef
+  });
 
   const onToggle = (open: boolean, key: string) => {
     setCollapseKey(open ? new Set([key]) : new Set());
+    if (key === StepNamesMap.RunCommand && open) {
+      startWatchRef.current = true;
+    }
   };
 
   const handleOnClusterChange = (value: number, row?: any) => {
@@ -74,6 +82,10 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     // reset collapseKey when stepList changes
     setCollapseKey(new Set([stepList[0]]));
   }, [stepList]);
+
+  React.useEffect(() => {
+    createModelsChunkRequest();
+  }, []);
 
   return (
     <AddWorkerContext.Provider
@@ -128,6 +140,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
           </>
         )}
       </Container>
+      {contextHolder}
     </AddWorkerContext.Provider>
   );
 };

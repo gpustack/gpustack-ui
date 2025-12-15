@@ -88,7 +88,9 @@ export default {
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
   'clusters.button.genToken':
     'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
-  'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
+  'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+  'clusters.addworker.message.success':
+    '{count} workers have been added to the cluster.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -96,4 +98,5 @@ export default {
 // 2. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
 // 3. 'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
 // 4. 'clusters.addworker.cacheVolume.tips': 'If you want to customize the model cache directory, you can specify the path to mount it.',
+// 5. 'clusters.addworker.message.success': '{count} workers have been added to the cluster.'
 // ================================================================

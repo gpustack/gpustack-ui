@@ -87,5 +87,6 @@ export default {
   'clusters.button.genToken':
     '需要创建令牌？点击<a href="{link}" target="_blank">这里</a>。',
   'clusters.addworker.amdNotes-01':
-    '如果 <span class="bold-text">/opt/rocm</span> 目录不存在，请创建一个指向已安装 ROCm 路径的符号链接：<span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>。'
+    '如果 <span class="bold-text">/opt/rocm</span> 目录不存在，请创建一个指向已安装 ROCm 路径的符号链接：<span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>。',
+  'clusters.addworker.message.success': '已将 {count} 个工作节点添加到集群中。'
 };

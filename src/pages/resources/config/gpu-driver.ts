@@ -130,16 +130,16 @@ export const dockerEnvCommandMap = {
   )
 };
 const setNormalArgs = (params: any) => {
-  return `CONTAINER_NAME="gpustack-worker" \\
+  return `CONTAINER_NAME="gpustack-worker"
 sudo docker run -d --name "\${CONTAINER_NAME}" \\
-    -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
-    --restart=unless-stopped \\
-    --privileged \\
-    --network=host \\
-    --volume /var/run/docker.sock:/var/run/docker.sock \\
-    --volume gpustack-data:/var/lib/gpustack \\
-    ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
-    ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
+      -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+      --restart=unless-stopped \\
+      --privileged \\
+      --network=host \\
+      --volume /var/run/docker.sock:/var/run/docker.sock \\
+      --volume gpustack-data:/var/lib/gpustack \\
+      ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
+      ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
 };
 
 const setImageArgs = (params: any) => {

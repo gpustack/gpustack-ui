@@ -15,7 +15,10 @@ export function useUpdateChunkedList(options: {
   events?: EventsType[];
   dataList?: any[];
   limit?: number;
-  setDataList: (args: any, opts?: any) => void;
+  onCreate?: (args: any) => void;
+  onUpdate?: (args: any) => void;
+  onDelete?: (args: any) => void;
+  setDataList?: (args: any, opts?: any) => void;
   callback?: (args: any) => void;
   filterFun?: (args: any) => boolean;
   mapFun?: (args: any) => any;
@@ -56,6 +59,7 @@ export function useUpdateChunkedList(options: {
       collections = data?.collection?.map(options?.mapFun);
     }
     const ids: any[] = data?.ids || [];
+
     // CREATE
     if (data?.type === WatchEventType.CREATE && events.includes('CREATE')) {
       const newDataList = collections.reduce((acc: any[], item: any) => {
@@ -71,11 +75,15 @@ export function useUpdateChunkedList(options: {
 
         return acc;
       }, []);
+
       cacheDataListRef.current = [
         ...newDataList,
         ...cacheDataListRef.current
       ].slice(0, limit);
+
+      options.onCreate?.(newDataList);
     }
+
     // DELETE
     if (data?.type === WatchEventType.DELETE && events.includes('DELETE')) {
       cacheDataListRef.current = cacheDataListRef.current?.filter(
@@ -88,6 +96,7 @@ export function useUpdateChunkedList(options: {
         deletedIds: [...deletedIdsRef.current]
       });
     }
+
     // UPDATE
     if (data?.type === WatchEventType.UPDATE && events.includes('UPDATE')) {
       collections?.forEach((item: any) => {
@@ -102,6 +111,7 @@ export function useUpdateChunkedList(options: {
             updateItem,
             ...cacheDataListRef.current.slice(0, limit - 1)
           ];
+          options.onCreate?.([updateItem]);
         }
       });
     }

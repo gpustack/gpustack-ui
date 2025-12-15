@@ -88,7 +88,9 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.vendorNotes.title': 'Notes for {vendor} Device',
   'clusters.button.genToken':
     'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
-  'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`
+  'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+  'clusters.addworker.message.success':
+    '{count} workers have been added to the cluster.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -165,4 +167,5 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 71.  'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
 // 72.  'clusters.addworker.cacheVolume.tips': 'If you want to customize the model cache directory, you can specify the path to mount it.',
 // 73. 'clusters.addworker.cacheVolume.holder': 'e.g. /data/cache (path must start with /)',
+// 74. 'clusters.addworker.message.success': '{count} workers have been added to the cluster.'
 // ========== End of To-Do List ==========

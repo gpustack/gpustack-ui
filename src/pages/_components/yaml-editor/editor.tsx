@@ -1,6 +1,4 @@
 import EditorWrap from '@/components/editor-wrap';
-import { PageAction } from '@/config';
-import { PageActionType } from '@/config/types';
 import { LoadingOutlined } from '@ant-design/icons';
 import Editor, { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
@@ -11,15 +9,11 @@ import React, {
   useImperativeHandle,
   useRef
 } from 'react';
-import createSchema from '../config/schema/create.json';
-import updateBuiltinSchema from '../config/schema/update-builtin.json';
-import udpateCustomSchema from '../config/schema/update-custom.json';
 
 loader.config({ monaco });
 
 interface ViewerProps {
   ref?: any;
-  lang: string;
   defaultLang?: string;
   config?: any;
   value: string;
@@ -28,22 +22,19 @@ interface ViewerProps {
   header?: React.ReactNode;
   placeholder?: string;
   variant?: 'bordered' | 'borderless';
-  actionStatus: {
-    action: PageActionType;
-    isBuiltIn: boolean;
-  };
+  schema?: any;
 }
 
 const path = 'inmemory://model/config.yaml';
 
-const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
+const EditorInner: React.FC<ViewerProps> = forwardRef((props, ref) => {
   const {
     value,
     height = 380,
     theme = 'vs-dark',
     header,
     variant = 'borderless',
-    actionStatus,
+    schema,
     placeholder
   } = props;
 
@@ -59,12 +50,7 @@ const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
         {
           uri: 'http://example.com/schema-name.json',
           fileMatch: [yamlUri.toString()],
-          schema:
-            actionStatus.action === PageAction.CREATE
-              ? createSchema
-              : actionStatus.isBuiltIn
-                ? updateBuiltinSchema
-                : udpateCustomSchema
+          schema: schema
         }
       ]
     });
@@ -151,4 +137,4 @@ const ViewerEditor: React.FC<ViewerProps> = forwardRef((props, ref) => {
   );
 });
 
-export default ViewerEditor;
+export default EditorInner;

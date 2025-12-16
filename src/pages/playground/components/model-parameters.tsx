@@ -4,7 +4,6 @@ import { Form } from 'antd';
 import _ from 'lodash';
 import React, {
   forwardRef,
-  memo,
   useCallback,
   useEffect,
   useId,
@@ -103,4 +102,4 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
   }
 );
 
-export default memo(ParamsSettings);
+export default ParamsSettings;

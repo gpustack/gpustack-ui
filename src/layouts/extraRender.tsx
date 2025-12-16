@@ -10,30 +10,38 @@ import {
   DiscordOutlined,
   GithubOutlined,
   HomeOutlined,
-  InfoCircleOutlined,
   LogoutOutlined,
   ReadOutlined,
   SettingOutlined
 } from '@ant-design/icons';
 import { history, useIntl, useNavigate } from '@umijs/max';
-import { Avatar, Divider, Modal } from 'antd';
+import { Avatar, Button, Divider, Modal } from 'antd';
 import { useAtom } from 'jotai';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { DEFAULT_ENTER_PAGE } from '../config/settings';
 
+const UpdateDot = styled.span`
+  margin-left: 5px;
+  display: flex;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--ant-orange-5);
+`;
+
 const NewLabel = styled.span`
   position: relative;
-  bottom: 3px;
+  top: -4px;
+  right: 4px;
+  padding: 2px 4px;
   display: flex;
   color: #fff;
-  width: 36px;
   height: 15px;
-  margin-left: 5px;
   justify-content: center;
   align-items: center;
   background-color: var(--ant-orange-5);
-  border-radius: 8px 8px 8px 0;
+  border-radius: 6px 6px 6px 0;
   transform: scale(0.9);
 
   .text {
@@ -187,11 +195,6 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       icon: <ReadOutlined />,
       label: intl.formatMessage({ id: 'common.button.docs' }),
       url: externalLinks.documentation
-    },
-    {
-      key: 'version',
-      icon: <InfoCircleOutlined />,
-      label: intl.formatMessage({ id: 'common.button.version' })
     }
   ];
 
@@ -201,27 +204,14 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
       label: (
         <span className="flex flex-center">
           {item.icon}
-          {item.key === 'version' ? (
-            <>
-              <a className="m-l-8">{item.label}</a>
-              {showUpgrade && (
-                <NewLabel>
-                  <span className="text">
-                    {intl.formatMessage({ id: 'common.text.new' })}
-                  </span>
-                </NewLabel>
-              )}
-            </>
-          ) : (
-            <a
-              className="m-l-8 "
-              href={item.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {item.label}
-            </a>
-          )}
+          <a
+            className="m-l-8 "
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {item.label}
+          </a>
         </span>
       ),
       onClick() {
@@ -301,21 +291,37 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
   return (
     <Wrapper>
       {contextHolder}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <Button
+          type="text"
+          size="small"
+          onClick={showVersion}
+          style={{
+            color: 'var(--ant-color-text-tertiary)'
+          }}
+        >
+          {version.version}
+        </Button>
+        {showUpgrade && (
+          <NewLabel>
+            <span className="text">
+              {intl.formatMessage({ id: 'common.text.new' })}
+            </span>
+          </NewLabel>
+        )}
+      </div>
       <DropDownActions menu={{ ...helpMenu }} popupRender={helpPopupRender}>
         <IconWrapper>
-          <IconFont type="icon-help" className="font-size-20" />
-          {showUpgrade && (
-            <span
-              className="m-l-5"
-              style={{
-                display: 'flex',
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: 'var(--ant-orange-5)'
-              }}
-            ></span>
-          )}
+          <IconFont
+            type="icon-help"
+            className="font-size-20"
+            style={{ color: 'var(--ant-color-text-tertiary)' }}
+          />
         </IconWrapper>
       </DropDownActions>
       <DropDownActions menu={{ ...userMenu }} popupRender={userPopupRender}>

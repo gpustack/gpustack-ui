@@ -366,4 +366,4 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
   );
 });
 
-export default React.memo(ModelItem);
+export default ModelItem;

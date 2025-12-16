@@ -30,8 +30,8 @@ export default function useClusterList() {
       name: string;
     }[]
   >([]);
-  const [, setClusterListAtom] = useAtom(clusterListAtom);
-  const [, setWorkerListAtom] = useAtom(workerListAtom);
+  const [clustersAtom, setClusterListAtom] = useAtom(clusterListAtom);
+  const [workersAtom, setWorkerListAtom] = useAtom(workerListAtom);
 
   const fetchClusterList = async () => {
     try {
@@ -85,6 +85,8 @@ export default function useClusterList() {
   return {
     clusterList,
     workerList,
+    clustersAtom,
+    workersAtom,
     fetchAll,
     fetchWorkerList,
     fetchClusterList

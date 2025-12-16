@@ -6,7 +6,6 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import {
   forwardRef,
-  memo,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -176,4 +175,4 @@ const LogsViewer: React.FC<LogsViewerProps> = forwardRef((props, ref) => {
   );
 });
 
-export default memo(LogsViewer);
+export default LogsViewer;

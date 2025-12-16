@@ -39,4 +39,4 @@ const ActiveModels: React.FC<ActiveModelsProps> = (props) => {
   );
 };
 
-export default React.memo(ActiveModels);
+export default ActiveModels;

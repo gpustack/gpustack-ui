@@ -48,4 +48,4 @@ const FileList: React.FC<FileListProps> = (props) => {
   );
 };
 
-export default React.memo(FileList);
+export default FileList;

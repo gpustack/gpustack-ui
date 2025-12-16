@@ -372,4 +372,4 @@ const AudioInput: React.FC<AudioInputProps> = (props) => {
   );
 };
 
-export default React.memo(AudioInput);
+export default AudioInput;

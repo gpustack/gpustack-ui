@@ -2,7 +2,7 @@ import LineChart from '@/components/echarts/line-chart';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import _ from 'lodash';
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 
 const TypeKeyMap = {
   cpu: {
@@ -106,4 +106,4 @@ const UtilizationOvertime: React.FC<{
   );
 };
 
-export default memo(UtilizationOvertime);
+export default UtilizationOvertime;

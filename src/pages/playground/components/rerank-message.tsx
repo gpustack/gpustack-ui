@@ -81,4 +81,4 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
   );
 };
 
-export default React.memo(RerankMessage);
+export default RerankMessage;

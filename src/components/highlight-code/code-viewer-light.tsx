@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import CodeViewer from './code-viewer';
 import './styles/light.less';
 
@@ -39,4 +38,4 @@ const LightViewer: React.FC<CodeViewerProps> = (props) => {
   );
 };
 
-export default memo(LightViewer);
+export default LightViewer;

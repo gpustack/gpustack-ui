@@ -54,4 +54,4 @@ const MessageContent: React.FC<MessageContentProps> = ({
   );
 };
 
-export default React.memo(MessageContent);
+export default MessageContent;

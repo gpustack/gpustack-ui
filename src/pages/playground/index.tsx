@@ -161,7 +161,7 @@ const Playground: React.FC = () => {
             <Divider
               key="divider"
               type="vertical"
-              style={{ height: 24, marginInline: 16 }}
+              style={{ height: 16, marginInline: 16 }}
             />
           )}
         </div>,

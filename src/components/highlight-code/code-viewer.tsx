@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import hljs from 'highlight.js';
-import { memo, useMemo } from 'react';
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import CopyButton from '../copy-button';
 import { escapeHtml } from './utils';
@@ -155,4 +155,4 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
   );
 };
 
-export default memo(CodeViewer);
+export default CodeViewer;

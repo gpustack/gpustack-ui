@@ -244,4 +244,4 @@ const ContentItem: React.FC<MessageItemProps> = ({
   );
 };
 
-export default React.memo(ContentItem);
+export default ContentItem;

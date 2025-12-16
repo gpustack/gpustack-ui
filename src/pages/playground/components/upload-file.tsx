@@ -117,4 +117,4 @@ const UploadImg: React.FC<UploadImgProps> = ({
   );
 };
 
-export default React.memo(UploadImg);
+export default UploadImg;

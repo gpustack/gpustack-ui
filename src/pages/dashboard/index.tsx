@@ -12,9 +12,13 @@ import { DashboardProps } from './config/types';
 
 const Dashboard: React.FC = () => {
   const intl = useIntl();
-  const [loading, setLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState({
+    loading: false,
+    loadend: false
+  });
   const [data, setData] = useState<DashboardProps>({} as DashboardProps);
-  const { fetchAll, clusterList, workerList } = useClusterList();
+  const { fetchAll, clusterList, workerList, clustersAtom, workersAtom } =
+    useClusterList();
 
   const { noResourceResult } = useNoResourceResult({
     loadend: true,
@@ -47,16 +51,22 @@ const Dashboard: React.FC = () => {
 
   const initData = useMemoizedFn(async () => {
     try {
-      setLoading(true);
+      setLoadingStatus({
+        loading: true,
+        loadend: false
+      });
       const { hasClusters, hasWorkers } = await fetchAll();
       if (!hasClusters || !hasWorkers) {
-        setLoading(false);
         return;
       }
       await fetchDashboardData();
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
+      // ignore
+    } finally {
+      setLoadingStatus({
+        loading: false,
+        loadend: true
+      });
     }
   });
 
@@ -69,11 +79,11 @@ const Dashboard: React.FC = () => {
       value={{ ...data, fetchData: fetchDashboardData, clusterList }}
     >
       <PageBox>
-        <Spin spinning={loading} style={{ minHeight: 300 }}>
-          {(!clusterList.length || !workerList.length) && !loading ? (
-            noResourceResult
-          ) : loading ? null : (
+        <Spin spinning={loadingStatus.loading} style={{ minHeight: 300 }}>
+          {workersAtom.length > 0 && clustersAtom.length > 0 ? (
             <DashboardInner />
+          ) : loadingStatus.loading || !loadingStatus.loadend ? null : (
+            noResourceResult
           )}
         </Spin>
       </PageBox>

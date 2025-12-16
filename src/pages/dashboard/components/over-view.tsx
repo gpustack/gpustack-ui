@@ -74,4 +74,4 @@ const Overview: React.FC = () => {
   );
 };
 
-export default React.memo(Overview);
+export default Overview;

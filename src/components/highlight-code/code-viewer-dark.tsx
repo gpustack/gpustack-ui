@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import CodeViewer from './code-viewer';
 import './styles/dark.less';
 
@@ -38,4 +37,4 @@ const DarkViewer: React.FC<CodeViewerProps> = (props) => {
   );
 };
 
-export default memo(DarkViewer);
+export default DarkViewer;

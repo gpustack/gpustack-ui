@@ -144,4 +144,4 @@ const SystemMessage: React.FC<SystemMessageProps> = (props) => {
   );
 };
 
-export default React.memo(SystemMessage);
+export default SystemMessage;

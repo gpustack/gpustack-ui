@@ -1,0 +1,119 @@
+{
+  "type": "object",
+  "properties": {
+    "worker_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "debug": {
+          "type": "boolean",
+          "description": "Enable debug mode"
+        },
+        "cache_dir": {
+          "type": "string",
+          "description": "Cache directory path"
+        },
+        "log_dir": {
+          "type": "string",
+          "description": "Log directory path"
+        },
+        "bin_dir": {
+          "type": "string",
+          "description": "Binary directory path"
+        },
+        "system_default_container_registry": {
+          "type": "string",
+          "description": "Default container registry"
+        },
+        "image_name_override": {
+          "type": "string",
+          "description": "Override image name"
+        },
+        "image_repo": {
+          "type": "string",
+          "description": "Container image repository"
+        },
+        "gateway_mode": {
+          "type": "string",
+          "description": "Gateway mode",
+          "enum": ["worker", "gateway", "disabled"]
+        },
+        "gateway_kubeconfig": {
+          "type": "string",
+          "description": "Path to kubeconfig used by gateway"
+        },
+        "gateway_concurrency": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Gateway concurrency limit"
+        },
+        "service_discovery_name": {
+          "type": "string",
+          "description": "Service discovery name"
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Kubernetes namespace"
+        },
+        "huggingface_token": {
+          "type": "string",
+          "description": "Hugging Face access token"
+        },
+        "disable_worker_metrics": {
+          "type": "boolean",
+          "description": "Disable worker metrics collection"
+        },
+        "worker_port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Worker service port"
+        },
+        "worker_metrics_port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Worker metrics port"
+        },
+        "service_port_range": {
+          "type": "string",
+          "pattern": "^\\d+-\\d+$",
+          "description": "Service port range, e.g. 30000-31000"
+        },
+        "ray_port_range": {
+          "type": "string",
+          "pattern": "^\\d+-\\d+$",
+          "description": "Ray port range, e.g. 20000-20100"
+        },
+        "resources": {
+          "type": "object",
+          "description": "Additional resource definitions",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "pipx_path": {
+          "type": "string",
+          "description": "pipx installation path"
+        },
+        "tools_download_base_url": {
+          "type": "string",
+          "description": "Base URL for downloading tools"
+        },
+        "enable_hf_transfer": {
+          "type": "boolean",
+          "description": "Enable Hugging Face transfer acceleration"
+        },
+        "enable_hf_xet": {
+          "type": "boolean",
+          "description": "Enable Hugging Face Xet support"
+        },
+        "proxy_mode": {
+          "type": "string",
+          "enum": ["worker", "system", "disabled"],
+          "description": "Proxy mode"
+        }
+      }
+    }
+  }
+}

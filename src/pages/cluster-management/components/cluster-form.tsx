@@ -1,6 +1,8 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageActionType } from '@/config/types';
+import CollapsePanel from '@/pages/_components/collapse-panel';
+import { json2Yaml, yaml2Json } from '@/pages/backends/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
@@ -9,6 +11,7 @@ import {
   ClusterFormData as FormData,
   ClusterListItem as ListItem
 } from '../config/types';
+import AdvanceConfig from '../step-forms/advance-config';
 import CloudProvider from './cloud-provider-form';
 
 type AddModalProps = {
@@ -23,12 +26,27 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
   ({ action, provider, currentData, credentialList, onFinish }, ref) => {
     const [form] = Form.useForm();
     const intl = useIntl();
+    const [activeKey, setActiveKey] = React.useState<string[]>([]);
+    const advanceConfigRef = React.useRef<any>(null);
+
+    const handleOnCollapseChange = (keys: string | string[]) => {
+      setActiveKey(Array.isArray(keys) ? keys : [keys]);
+      if (currentData && advanceConfigRef.current) {
+      }
+    };
 
     useEffect(() => {
       if (currentData) {
         form.setFieldsValue(currentData);
+
+        if (advanceConfigRef.current) {
+          const workerConfigYaml = json2Yaml({
+            worker_config: currentData.worker_config || {}
+          });
+          advanceConfigRef.current?.setYamlValue(workerConfigYaml);
+        }
       }
-    }, [currentData]);
+    }, [currentData, advanceConfigRef.current]);
 
     useImperativeHandle(ref, () => ({
       resetFields: () => {
@@ -44,7 +62,15 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         return form.getFieldsValue();
       },
       validateFields: async () => {
-        return await form.validateFields();
+        const values = await form.validateFields();
+        const workerConfig = yaml2Json(
+          advanceConfigRef.current?.getYamlValue()
+        );
+
+        return {
+          ...values,
+          ...workerConfig
+        };
       }
     }));
 
@@ -91,6 +117,24 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealTextArea>
         </Form.Item>
+        <CollapsePanel
+          accordion={false}
+          activeKey={activeKey}
+          onChange={handleOnCollapseChange}
+          items={[
+            {
+              key: 'advanceConfig',
+              label: intl.formatMessage({ id: 'resources.form.advanced' }),
+              forceRender: true,
+              children: (
+                <AdvanceConfig
+                  action={action}
+                  ref={advanceConfigRef}
+                ></AdvanceConfig>
+              )
+            }
+          ]}
+        ></CollapsePanel>
       </Form>
     );
   }

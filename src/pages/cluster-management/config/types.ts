@@ -53,6 +53,7 @@ export interface ClusterListItem {
   name: string;
   display_name: string;
   description: string;
+  worker_config: Record<string, any>;
   provider: ProviderType;
   credential_id: number;
   zone: string;
@@ -74,5 +75,7 @@ export interface ClusterFormData {
   credential_id: number;
   zone: string;
   region: string;
+  server_url?: string;
+  worker_config?: Record<string, any>;
   worker_pools?: NodePoolFormData[];
 }

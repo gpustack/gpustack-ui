@@ -49,7 +49,7 @@ export const WatchEventType = {
 };
 
 export const PasswordReg =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_+])[a-zA-Z\d!@#$%^&*_+]{6,32}$/;
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_+])[a-zA-Z\d!@#$%^&*_+]{6,64}$/;
 
 export const uppercaseReg = /(?=.*[A-Z])/;
 
@@ -61,7 +61,7 @@ export const specialCharacterReg = /(?=.*[\W_])/;
 
 export const noSpaceReg = /(?=\S+$)/;
 
-export const lengthReg = /^.{6,32}$/;
+export const lengthReg = /^.{6,64}$/;
 
 /**
  * Model name rules:

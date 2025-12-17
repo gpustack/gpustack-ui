@@ -20,12 +20,12 @@ export default {
   'users.form.currentpassword': 'Текущий пароль',
   'users.form.updatepassword': 'Изменить пароль',
   'users.form.rule.password':
-    'Должен содержать заглавные и строчные буквы, цифры и спецсимволы (!@#$%^&*_+), длина 6-32 символов, без пробелов.',
+    'Должен содержать заглавные и строчные буквы, цифры и спецсимволы (!@#$%^&*_+), длина 6-64 символов, без пробелов.',
   'users.password.uppcase': 'Минимум одна заглавная буква',
   'users.password.lowercase': 'Минимум одна строчная буква',
   'users.password.number': 'Минимум одна цифра',
   'users.password.special': 'Минимум один спецсимвол',
-  'users.password.length': 'Длина от 6 до 32 символов',
+  'users.password.length': 'Длина от 6 до 64 символов',
   'users.password.modify.title': 'Смена пароля',
   'users.password.modify.description':
     'В целях безопасности измените первоначальный пароль.',

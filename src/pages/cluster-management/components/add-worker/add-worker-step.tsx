@@ -146,6 +146,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
         )}
         {addedCount > 0 && (
           <Alert
+            style={{ width: 'max-content' }}
             message={intl.formatMessage(
               {
                 id: 'clusters.addworker.message.success'

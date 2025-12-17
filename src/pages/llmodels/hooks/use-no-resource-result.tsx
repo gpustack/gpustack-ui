@@ -111,7 +111,8 @@ const useNoResourceResult = (props: {
     ></NoResult>
   );
   return {
-    noResourceResult
+    noResourceResult,
+    handleCreate: handleClick
   };
 };
 

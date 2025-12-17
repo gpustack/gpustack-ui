@@ -1,10 +1,21 @@
 import ScrollerModal from '@/components/scroller-modal';
+import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
+import { useIntl } from '@umijs/max';
+import { Alert, Button } from 'antd';
 import React, { useEffect } from 'react';
+import styled from 'styled-components';
 import { queryClusterToken } from '../../apis';
 import { ProviderType } from '../../config';
 import { ClusterListItem } from '../../config/types';
 import AddWorkerStep from './add-worker-step';
 import { StepName } from './config';
+
+const Footer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+`;
 
 type AddWorkerProps = {
   open: boolean;
@@ -40,6 +51,11 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     clusterLoading,
     stepList = []
   } = props || {};
+  const intl = useIntl();
+  const startWatchRef = React.useRef(false);
+  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage({
+    startWatch: startWatchRef
+  });
   const firstLoad = React.useRef(true);
   const [registrationInfo, setRegistrationInfo] = React.useState<{
     token: string;
@@ -61,6 +77,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
         ...data,
         cluster_id: value
       });
+      startWatchRef.current = true;
     } catch (error) {
       firstLoad.current = false;
     }
@@ -75,6 +92,12 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     };
   }, [open, cluster_id]);
 
+  useEffect(() => {
+    if (open) {
+      createModelsChunkRequest();
+    }
+  }, [open]);
+
   return (
     <ScrollerModal
       title={title}
@@ -88,9 +111,35 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       width={865}
       style={{}}
       maxContentHeight={'max(calc(100vh - 200px), 600px)'}
-      footer={null}
+      footer={
+        <Footer>
+          <span>
+            {addedCount > 0 && (
+              <Alert
+                message={intl.formatMessage(
+                  {
+                    id: 'clusters.addworker.message.success'
+                  },
+                  { count: addedCount }
+                )}
+                type="warning"
+              />
+            )}
+          </span>
+          <Button
+            type="primary"
+            onClick={onCancel}
+            style={{
+              minWidth: 88
+            }}
+          >
+            {intl.formatMessage({ id: 'common.button.done' })}
+          </Button>
+        </Footer>
+      }
     >
       <AddWorkerStep
+        isModal={true}
         stepList={stepList}
         provider={provider}
         clusterList={clusterList}

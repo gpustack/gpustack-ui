@@ -25,6 +25,7 @@ export default function useAddWorkerMessage(params: {
     onCreate: (newItems: any) => {
       if (params.startWatch?.current) {
         newItemsRef.current = newItemsRef.current.concat(newItems);
+        console.log('newItemsRef.current:', newItemsRef.current);
         showAddWorkerMessage();
       }
     }

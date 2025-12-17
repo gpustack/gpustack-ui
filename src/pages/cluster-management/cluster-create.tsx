@@ -272,7 +272,7 @@ const ClusterCreate = () => {
   const breadcrumbItems = [
     {
       title: <a>{intl.formatMessage({ id: 'clusters.title' })}</a>,
-      onClick: () => navigate(-1)
+      onClick: () => handleCancel()
     },
     {
       title: intl.formatMessage({ id: 'common.button.create' })

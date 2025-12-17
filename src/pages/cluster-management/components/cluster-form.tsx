@@ -40,9 +40,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         form.setFieldsValue(currentData);
 
         if (advanceConfigRef.current) {
-          const workerConfigYaml = json2Yaml({
-            worker_config: currentData.worker_config || {}
-          });
+          const workerConfigYaml = json2Yaml(currentData.worker_config || {});
           advanceConfigRef.current?.setYamlValue(workerConfigYaml);
         }
       }
@@ -69,7 +67,9 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
 
         return {
           ...values,
-          ...workerConfig
+          worker_config: {
+            ...workerConfig
+          }
         };
       }
     }));
@@ -129,6 +129,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
               children: (
                 <AdvanceConfig
                   action={action}
+                  provider={provider}
                   ref={advanceConfigRef}
                 ></AdvanceConfig>
               )

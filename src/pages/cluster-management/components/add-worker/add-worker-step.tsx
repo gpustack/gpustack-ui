@@ -2,6 +2,7 @@ import AlertInfoBlock from '@/components/alert-info/block';
 import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { Alert } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../../config';
@@ -29,6 +30,7 @@ const Container = styled.div`
  * clusterList and onClusterChange are only required when from worker page.
  */
 type AddWorkerProps = {
+  isModal?: boolean;
   provider: ProviderType;
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
   clusterLoading?: boolean;
@@ -49,6 +51,7 @@ type AddWorkerProps = {
  */
 const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   const {
+    isModal = false,
     registrationInfo,
     provider,
     clusterList,
@@ -63,7 +66,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   );
   const startWatchRef = React.useRef(false);
   const { update, summary, register } = useSummaryStatus();
-  const { contextHolder, createModelsChunkRequest } = useAddWorkerMessage({
+  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage({
     startWatch: startWatchRef
   });
 
@@ -84,8 +87,10 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   }, [stepList]);
 
   React.useEffect(() => {
-    createModelsChunkRequest();
-  }, []);
+    if (!isModal) {
+      createModelsChunkRequest();
+    }
+  }, [isModal]);
 
   return (
     <AddWorkerContext.Provider
@@ -139,8 +144,18 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
             )}
           </>
         )}
+        {addedCount > 0 && (
+          <Alert
+            message={intl.formatMessage(
+              {
+                id: 'clusters.addworker.message.success'
+              },
+              { count: addedCount }
+            )}
+            type="warning"
+          />
+        )}
       </Container>
-      {contextHolder}
     </AddWorkerContext.Provider>
   );
 };

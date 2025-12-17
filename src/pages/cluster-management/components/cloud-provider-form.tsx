@@ -1,4 +1,5 @@
 import { fromClusterCreationAtom } from '@/atoms/clusters';
+import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
@@ -11,6 +12,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ClusterFormData as FormData } from '../config/types';
 import { useProviderRegions } from '../hooks/use-provider-regions';
+import useSystemConfig from '../services/use-system-config';
 
 const OptionItem = styled.div`
   display: flex;
@@ -74,6 +76,8 @@ const optionRender = (option: any): React.ReactNode => {
 const CloudProvider: React.FC<CloudProviderProps> = (props) => {
   const { credentialList, action, credentialID } = props;
   const intl = useIntl();
+  const { systemConfig } = useSystemConfig();
+  const form = Form.useFormInstance<FormData>();
 
   const {
     getRegions,
@@ -104,6 +108,10 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
       getRegions(credentialID);
     }
   }, [credentialID]);
+
+  useEffect(() => {
+    form.setFieldValue('server_url', systemConfig?.server_external_url || '');
+  }, [systemConfig]);
 
   const labelRender = (props: {
     label: React.ReactNode;
@@ -175,6 +183,21 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
             id: 'clusters.create.noRegions'
           })}
         ></SealSelect>
+      </Form.Item>
+      <Form.Item<FormData>
+        name="server_url"
+        rules={[
+          {
+            required: true,
+            message: getRuleMessage('input', 'clusters.create.serverUrl')
+          }
+        ]}
+      >
+        <SealInput.Input
+          label={intl.formatMessage({ id: 'clusters.create.serverUrl' })}
+          required={true}
+          trim={true}
+        ></SealInput.Input>
       </Form.Item>
     </>
   );

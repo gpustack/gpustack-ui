@@ -36,7 +36,7 @@
         "gateway_mode": {
           "type": "string",
           "description": "Gateway mode",
-          "enum": ["worker", "gateway", "disabled"]
+          "enum": ["worker", "gateway", "disabled", "auto"]
         },
         "gateway_kubeconfig": {
           "type": "string",
@@ -88,9 +88,7 @@
         "resources": {
           "type": "object",
           "description": "Additional resource definitions",
-          "additionalProperties": {
-            "type": "object"
-          }
+          "additionalProperties": {}
         },
         "pipx_path": {
           "type": "string",

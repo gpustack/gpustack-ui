@@ -6,7 +6,8 @@ import {
   CredentialFormData,
   CredentialListItem,
   NodePoolFormData,
-  NodePoolListItem
+  NodePoolListItem,
+  SystemConfig
 } from '../config/types';
 
 export const CREDENTIALS_API = '/cloud-credentials';
@@ -18,6 +19,8 @@ export const WORKER_POOLS_API = '/worker-pools';
 export const CLUSTER_TOKEN = 'registration-token';
 
 export const PROVIDER_PROXY_API = '/provider-proxy';
+
+export const SYSTEM_CONFIG_API = '/config';
 
 // ============= DigitalOcean start =====================
 
@@ -187,5 +190,11 @@ export async function updateWorkerPool(params: {
 export async function deleteWorkerPool(id: number) {
   return request(`${WORKER_POOLS_API}/${id}`, {
     method: 'DELETE'
+  });
+}
+
+export async function querySystemConfig() {
+  return request<SystemConfig>(`${SYSTEM_CONFIG_API}`, {
+    method: 'GET'
   });
 }

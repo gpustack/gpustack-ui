@@ -96,6 +96,16 @@ const SpecifyArguments = () => {
     path: ''
   };
 
+  const containerNameConfig = summary.get('containerNameConfig') || {
+    enable: false,
+    name: ''
+  };
+
+  const gpustackDataVolumeConfig = summary.get('gpustackDataVolumeConfig') || {
+    enable: false,
+    path: ''
+  };
+
   const setWorkerIPConfig = (config: {
     enable: boolean;
     ip?: string;
@@ -138,10 +148,16 @@ const SpecifyArguments = () => {
     const unregisterWorkerIP = registerField('workerIPConfig');
     const unregisterModelDir = registerField('modelDirConfig');
     const unregisterCacheDir = registerField('cacheDirConfig');
+    const unregisterContainerName = registerField('containerNameConfig');
+    const unregisterGpustackDataVolume = registerField(
+      'gpustackDataVolumeConfig'
+    );
     return () => {
       unregisterWorkerIP();
       unregisterModelDir();
       unregisterCacheDir();
+      unregisterContainerName();
+      unregisterGpustackDataVolume();
     };
   }, []);
 
@@ -158,6 +174,16 @@ const SpecifyArguments = () => {
     });
 
     updateField('cacheDirConfig', {
+      enable: false,
+      path: ''
+    });
+
+    updateField('containerNameConfig', {
+      enable: false,
+      name: ''
+    });
+
+    updateField('gpustackDataVolumeConfig', {
       enable: false,
       path: ''
     });
@@ -244,6 +270,60 @@ const SpecifyArguments = () => {
                 }
               ></AlertInfoBlock>
             )
+          }
+        ></SwitchSetting>
+        {/* container name config */}
+        <SwitchSetting
+          label={intl.formatMessage({ id: 'clusters.addworker.containerName' })}
+          tips={intl.formatMessage({
+            id: 'clusters.addworker.containerName.tips'
+          })}
+          placeholder={intl.formatMessage(
+            {
+              id: 'common.help.default'
+            },
+            { content: 'gpustack-worker' }
+          )}
+          checked={containerNameConfig.enable}
+          value={containerNameConfig.name}
+          onChange={(checked) =>
+            updateField('containerNameConfig', {
+              ...containerNameConfig,
+              enable: checked
+            })
+          }
+          onInputChange={(value) =>
+            updateField('containerNameConfig', {
+              ...containerNameConfig,
+              name: value
+            })
+          }
+        ></SwitchSetting>
+        {/* gpustack data volume config */}
+        <SwitchSetting
+          label={intl.formatMessage({ id: 'clusters.addworker.dataVolume' })}
+          tips={intl.formatMessage({
+            id: 'clusters.addworker.dataVolume.tips'
+          })}
+          placeholder={intl.formatMessage(
+            {
+              id: 'common.help.default'
+            },
+            { content: 'gpustack-data' }
+          )}
+          checked={gpustackDataVolumeConfig.enable}
+          value={gpustackDataVolumeConfig.path}
+          onChange={(checked) =>
+            updateField('gpustackDataVolumeConfig', {
+              ...gpustackDataVolumeConfig,
+              enable: checked
+            })
+          }
+          onInputChange={(value) =>
+            updateField('gpustackDataVolumeConfig', {
+              ...gpustackDataVolumeConfig,
+              path: value
+            })
           }
         ></SwitchSetting>
         {/* model directory config */}

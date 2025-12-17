@@ -271,15 +271,20 @@ export const useCheckCompatibility = () => {
     // current cluster is not available, but other clusters are available
     const othersAvailable = !hasClaim && resourceClaimMap.size > 0;
 
+    let compatibilityMessage = compatibility_messages.join(' ');
+
+    compatibilityMessage = compatibilityMessage.startsWith(
+      'The model file path you specified does not exist on the GPUStack server'
+    )
+      ? intl.formatMessage({ id: 'models.form.modelfile.notfound' })
+      : compatibilityMessage;
+
     let msgData = {
-      title:
-        scheduling_messages?.length > 0
-          ? compatibility_messages?.join(' ')
-          : '',
+      title: scheduling_messages?.length > 0 ? compatibilityMessage : '',
       message:
         scheduling_messages?.length > 0
           ? scheduling_messages
-          : compatibility_messages?.join(' ')
+          : compatibilityMessage
     };
 
     if (hasClaim) {

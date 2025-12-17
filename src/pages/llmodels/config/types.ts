@@ -184,6 +184,7 @@ export interface CatalogItem {
   name: string;
   id: number;
   description: string;
+  deployment_notes?: string;
   home: string;
   icon: string;
   categories: string[];

@@ -92,5 +92,11 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.message.success':
     '{count} workers have been added to the cluster.',
   'clusters.create.serverUrl': 'Server URL',
-  'clusters.create.workerConfig': 'Worker Configuration'
+  'clusters.create.workerConfig': 'Worker Configuration',
+  'clusters.addworker.containerName': 'Worker Container Name',
+  'clusters.addworker.containerName.tips':
+    'Specify a name for the worker container.',
+  'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+  'clusters.addworker.dataVolume.tips':
+    'Specify a data storage path for GPUStack.'
 };

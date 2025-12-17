@@ -5,9 +5,76 @@ import {
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import React from 'react';
+import styled from 'styled-components';
 import { useAddWorkerContext } from './add-worker-context';
 import { StepNamesMap } from './config';
 import { ConfigWrapper, Title } from './constainers';
+
+interface DataItemProps {
+  enable: boolean;
+  value: string;
+  required?: boolean;
+  label: string;
+  tips?: string;
+}
+
+const DataItemWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .label {
+    color: var(--ant-color-text);
+  }
+  .value {
+    display: flex;
+    align-items: center;
+  }
+`;
+
+const DataItem: React.FC<DataItemProps> = ({
+  enable,
+  value,
+  required,
+  label,
+  tips
+}) => {
+  return (
+    <DataItemWrapper>
+      <span className="label">{label}:</span>
+      <span className="value">
+        <span>{enable && value ? value : ''}</span>
+        {tips}
+        {(!value || !enable) && !required && (
+          <StopOutlined
+            style={{
+              color: 'var(--ant-color-text-tertiary)'
+            }}
+          />
+        )}
+
+        {((enable && value) || (required && !enable)) && (
+          <CheckCircleOutlined
+            style={{
+              color: 'var(--ant-color-success)',
+              marginLeft: 4
+            }}
+          />
+        )}
+
+        {enable && !value && required && (
+          <>
+            <WarningOutlined
+              style={{
+                color: 'var(--ant-color-warning)',
+                marginLeft: 4
+              }}
+            />
+          </>
+        )}
+      </span>
+    </DataItemWrapper>
+  );
+};
 
 const SummaryData: React.FC = () => {
   const intl = useIntl();
@@ -32,6 +99,16 @@ const SummaryData: React.FC = () => {
     path: ''
   };
 
+  const containerNameConfig = summary.get('containerNameConfig') || {
+    enable: false,
+    name: ''
+  };
+
+  const gpustackDataVolumeConfig = summary.get('gpustackDataVolumeConfig') || {
+    enable: false,
+    path: ''
+  };
+
   return (
     <ConfigWrapper>
       <Title>
@@ -39,127 +116,56 @@ const SummaryData: React.FC = () => {
       </Title>
       <div className="config-content">
         {stepList.includes(StepNamesMap.SelectCluster) && (
-          <div className="item">
-            <span className="label">
-              {intl.formatMessage({ id: 'clusters.title' })}:
-            </span>
-            <span className="value">
-              {clusterName}
-              {clusterName ? (
-                <CheckCircleOutlined
-                  style={{
-                    color: 'var(--ant-color-success)',
-                    marginLeft: 4
-                  }}
-                />
-              ) : (
-                <WarningOutlined
-                  style={{
-                    color: 'var(--ant-color-warning)',
-                    marginLeft: 4
-                  }}
-                />
-              )}
-            </span>
-          </div>
+          <DataItem
+            value={clusterName}
+            enable={true}
+            label={intl.formatMessage({ id: 'clusters.title' })}
+          ></DataItem>
         )}
-        <div className="item">
-          <span className="label">
-            {intl.formatMessage({ id: 'clusters.addworker.gpuVendor' })}:
-          </span>
-          <span className="value">
-            {/* for checked style */}
-            {workerCommand.label}
-            <CheckCircleOutlined
-              style={{
-                color: 'var(--ant-color-success)',
-                marginLeft: 4
-              }}
-            />
-          </span>
-        </div>
-        <div className="item">
-          <span className="label">
-            {intl.formatMessage({ id: 'clusters.addworker.workerIP' })}:
-          </span>
-          <span className="value">
-            {/* for invalidate style */}
-            {workerIPConfig.enable
+
+        <DataItem
+          label={intl.formatMessage({ id: 'clusters.addworker.gpuVendor' })}
+          enable={true}
+          value={workerCommand.label}
+        ></DataItem>
+
+        <DataItem
+          label={intl.formatMessage({ id: 'clusters.addworker.workerIP' })}
+          tips={
+            workerIPConfig.enable
               ? workerIPConfig.ip
                 ? workerIPConfig.ip
                 : intl.formatMessage({ id: 'clusters.addworker.notSpecified' })
-              : intl.formatMessage({ id: 'clusters.addworker.autoDetect' })}
+              : intl.formatMessage({ id: 'clusters.addworker.autoDetect' })
+          }
+          enable={workerIPConfig.enable}
+          value={workerIPConfig.ip}
+          required={true}
+        ></DataItem>
 
-            {workerIPConfig.enable && !workerIPConfig.ip && (
-              <WarningOutlined
-                style={{
-                  color: 'var(--ant-color-warning)',
-                  marginLeft: 4
-                }}
-              />
-            )}
-            {(!workerIPConfig.enable || workerIPConfig.ip) && (
-              <CheckCircleOutlined
-                style={{
-                  color: 'var(--ant-color-success)',
-                  marginLeft: 4
-                }}
-              />
-            )}
-          </span>
-        </div>
-        <div className="item">
-          <span className="label">
-            {intl.formatMessage({ id: 'clusters.addworker.extraVolume' })}:
-          </span>
-          <span className="value">
-            {modelDirConfig.enable && modelDirConfig.path
-              ? modelDirConfig.path
-              : ''}
-            {(!modelDirConfig.path || !modelDirConfig.enable) && (
-              <StopOutlined
-                style={{
-                  color: 'var(--ant-color-text-tertiary)'
-                }}
-              />
-            )}
+        <DataItem
+          label={intl.formatMessage({ id: 'clusters.addworker.containerName' })}
+          enable={containerNameConfig.enable}
+          value={containerNameConfig.name}
+        ></DataItem>
 
-            {modelDirConfig.enable && modelDirConfig.path && (
-              <CheckCircleOutlined
-                style={{
-                  color: 'var(--ant-color-success)',
-                  marginLeft: 4
-                }}
-              />
-            )}
-          </span>
-        </div>
-        <div className="item">
-          <span className="label">
-            {intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}:
-          </span>
-          <span className="value">
-            {cacheDirConfig.enable && cacheDirConfig.path
-              ? cacheDirConfig.path
-              : ''}
-            {(!cacheDirConfig.path || !cacheDirConfig.enable) && (
-              <StopOutlined
-                style={{
-                  color: 'var(--ant-color-text-tertiary)'
-                }}
-              />
-            )}
+        <DataItem
+          label={intl.formatMessage({ id: 'clusters.addworker.dataVolume' })}
+          enable={gpustackDataVolumeConfig.enable}
+          value={gpustackDataVolumeConfig.path}
+        ></DataItem>
 
-            {cacheDirConfig.enable && cacheDirConfig.path && (
-              <CheckCircleOutlined
-                style={{
-                  color: 'var(--ant-color-success)',
-                  marginLeft: 4
-                }}
-              />
-            )}
-          </span>
-        </div>
+        <DataItem
+          label={intl.formatMessage({ id: 'clusters.addworker.extraVolume' })}
+          enable={modelDirConfig.enable}
+          value={modelDirConfig.path}
+        ></DataItem>
+
+        <DataItem
+          label={intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}
+          enable={cacheDirConfig.enable}
+          value={cacheDirConfig.path}
+        ></DataItem>
       </div>
     </ConfigWrapper>
   );

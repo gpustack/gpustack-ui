@@ -129,15 +129,28 @@ export const dockerEnvCommandMap = {
     GPUsConfigs[GPUDriverMap.METAX]
   )
 };
+
+interface AddWorkerCommandParams {
+  server: string;
+  tag: string;
+  token: string;
+  image: string;
+  gpu: string;
+  workerIP?: string;
+  modelDir?: string;
+  containerName?: string;
+  gpustackDataVolume?: string;
+  cacheDir?: string;
+}
+
 const setNormalArgs = (params: any) => {
-  return `CONTAINER_NAME="gpustack-worker"
-sudo docker run -d --name "\${CONTAINER_NAME}" \\
-      -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=\${CONTAINER_NAME}" \\
+  return `sudo docker run -d --name ${params.containerName || 'gpustack-worker'} \\
+      -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=${params.containerName || 'gpustack-worker'}" \\
       --restart=unless-stopped \\
       --privileged \\
       --network=host \\
       --volume /var/run/docker.sock:/var/run/docker.sock \\
-      --volume gpustack-data:/var/lib/gpustack \\
+      --volume ${params.gpustackDataVolume || 'gpustack-data'}:/var/lib/gpustack \\
       ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
       ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
 };
@@ -149,18 +162,11 @@ const setImageArgs = (params: any) => {
 };
 
 // avaliable for  NVIDIA、MThreads
-const registerWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
+
   // remove empty enter lines and trailing backslash
   return `${commonArgs}
       --runtime ${config.runtime} \\
@@ -169,15 +175,7 @@ const registerWorker = (params: {
 };
 
 // avaliable for AMD
-const registerAMDWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerAMDWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
@@ -190,15 +188,7 @@ const registerAMDWorker = (params: {
 };
 
 // avaliable for Ascend
-const registerAscendWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerAscendWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
@@ -209,15 +199,7 @@ const registerAscendWorker = (params: {
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
-const registerHygonWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerHygonWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
@@ -230,15 +212,7 @@ const registerHygonWorker = (params: {
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
-const registerIluvatarWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerIluvatarWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
@@ -251,15 +225,7 @@ const registerIluvatarWorker = (params: {
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
-const registerMetaXWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerMetaXWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);
@@ -270,15 +236,7 @@ const registerMetaXWorker = (params: {
       ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
 };
 
-const registerCambriconWorker = (params: {
-  server: string;
-  tag: string;
-  token: string;
-  image: string;
-  gpu: string;
-  workerIP?: string;
-  modelDir?: string;
-}) => {
+const registerCambriconWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
   const imageArgs = setImageArgs(params);

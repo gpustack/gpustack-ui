@@ -92,7 +92,13 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.message.success':
     '{count} workers have been added to the cluster.',
   'clusters.create.serverUrl': 'Server URL',
-  'clusters.create.workerConfig': 'Worker Configuration'
+  'clusters.create.workerConfig': 'Worker Configuration',
+  'clusters.addworker.containerName': 'Worker Container Name',
+  'clusters.addworker.containerName.tips':
+    'Specify a name for the worker container.',
+  'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+  'clusters.addworker.dataVolume.tips':
+    'Specify a data storage path for GPUStack.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -172,4 +178,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 74. 'clusters.addworker.message.success': '{count} workers have been added to the cluster.',
 // 75. 'clusters.create.serverUrl': 'Server URL',
 // 76.  'clusters.create.workerConfig': 'Worker Configuration'
+// 75.  'clusters.addworker.containerName': 'Worker Container Name',
+// 76.  'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
+// 77. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+// 78.  'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.'
 // ========== End of To-Do List ==========

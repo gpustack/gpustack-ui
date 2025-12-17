@@ -90,5 +90,9 @@ export default {
     '如果 <span class="bold-text">/opt/rocm</span> 目录不存在，请创建一个指向已安装 ROCm 路径的符号链接：<span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>。',
   'clusters.addworker.message.success': '已将 {count} 个工作节点添加到集群中。',
   'clusters.create.serverUrl': '服务器地址',
-  'clusters.create.workerConfig': '节点配置'
+  'clusters.create.workerConfig': '节点配置',
+  'clusters.addworker.containerName': '节点容器名称',
+  'clusters.addworker.containerName.tips': '为节点容器指定一个名称。',
+  'clusters.addworker.dataVolume': 'GPUStack 数据卷',
+  'clusters.addworker.dataVolume.tips': '为 GPUStack 指定数据存储路径。'
 };

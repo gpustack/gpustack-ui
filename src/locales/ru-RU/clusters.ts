@@ -92,7 +92,13 @@ export default {
   'clusters.addworker.message.success':
     '{count} workers have been added to the cluster.',
   'clusters.create.serverUrl': 'Server URL',
-  'clusters.create.workerConfig': 'Worker Configuration'
+  'clusters.create.workerConfig': 'Worker Configuration',
+  'clusters.addworker.containerName': 'Worker Container Name',
+  'clusters.addworker.containerName.tips':
+    'Specify a name for the worker container.',
+  'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+  'clusters.addworker.dataVolume.tips':
+    'Specify a data storage path for GPUStack.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -103,4 +109,8 @@ export default {
 // 5. 'clusters.addworker.message.success': '{count} workers have been added to the cluster.',
 // 6. 'clusters.create.serverUrl': 'Server URL',
 // 7. 'clusters.create.workerConfig': 'Worker Configuration'
+// 6. 'clusters.addworker.containerName': 'Worker Container Name',
+// 7. 'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
+// 8. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+// 9. 'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.'
 // ================================================================

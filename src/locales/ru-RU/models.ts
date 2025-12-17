@@ -275,7 +275,8 @@ export default {
     'Only designated users can access the model.',
   'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
   'models.catalog.nogpus.tips':
-    'No compatible GPUs are available in the selected cluster for this model.'
+    'No compatible GPUs are available in the selected cluster for this model.',
+  'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -283,5 +284,6 @@ export default {
 // 2.  'models.accessSettings.authed.tips': 'Accessible to all authenticated platform users.',
 // 3. 'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.',
 // 4. 'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
-// 5. 'models.catalog.nogpus.tips': 'No compatible GPUs are available in the selected cluster for this model.'
+// 5. 'models.catalog.nogpus.tips': 'No compatible GPUs are available in the selected cluster for this model.',
+// 6. 'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`
 // ========== End of To-Do List ==========

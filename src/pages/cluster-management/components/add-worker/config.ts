@@ -51,6 +51,14 @@ export interface SummaryDataKeys {
     ip: string;
     required: boolean;
   };
+  containerNameConfig: {
+    enabled: boolean;
+    name: string;
+  };
+  gpustackDataVolumeConfig: {
+    enabled: boolean;
+    path: string;
+  };
 }
 
 export type SummaryDataMap = {

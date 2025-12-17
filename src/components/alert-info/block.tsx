@@ -164,4 +164,4 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
   );
 };
 
-export default React.memo(AlertInfo);
+export default AlertInfo;

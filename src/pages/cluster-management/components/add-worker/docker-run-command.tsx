@@ -25,6 +25,15 @@ const DockerRunCommand = () => {
     enable: false,
     path: ''
   };
+  const containerNameConfig = summary.get('containerNameConfig') || {
+    enable: false,
+    name: ''
+  };
+  const gpustackDataVolumeConfig = summary.get('gpustackDataVolumeConfig') || {
+    enable: false,
+    path: ''
+  };
+
   const currentGPU = summary.get('currentGPU') || '';
 
   const stepIndex = stepList.indexOf(StepNamesMap.RunCommand) + 1;
@@ -56,6 +65,12 @@ const DockerRunCommand = () => {
         workerIP={workerIPConfig.enable ? workerIPConfig.ip : ''}
         modelDir={modelDirConfig.enable ? modelDirConfig.path : ''}
         cacheDir={cacheDirConfig.enable ? cacheDirConfig.path : ''}
+        containerName={
+          containerNameConfig.enable ? containerNameConfig.name : ''
+        }
+        gpustackDataVolume={
+          gpustackDataVolumeConfig.enable ? gpustackDataVolumeConfig.path : ''
+        }
         currentGPU={currentGPU}
       />
     </StepCollapse>

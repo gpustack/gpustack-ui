@@ -9,6 +9,7 @@ const Title = styled.span`
   justify-content: flex-end;
   font-weight: 700;
   font-size: 16px;
+  padding-inline: 24px;
   .text {
     font-size: 20px;
   }

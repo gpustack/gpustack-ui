@@ -23,9 +23,11 @@ const SwitchSetting: React.FC<{
   tips?: React.ReactNode;
   errorMessage?: React.ReactNode;
   extra?: React.ReactNode;
+  showSwitch?: boolean;
   onInputChange?: (value: string) => void;
   onChange: (checked: boolean) => void;
 }> = ({
+  showSwitch = true,
   label,
   checked,
   onChange,
@@ -42,7 +44,7 @@ const SwitchSetting: React.FC<{
         <span style={{ color: 'var(--ant-color-text)', fontWeight: 500 }}>
           <span>{label}</span>
         </span>
-        <Switch checked={checked} onChange={onChange}></Switch>
+        {showSwitch && <Switch checked={checked} onChange={onChange}></Switch>}
       </ButtonWrapper>
       {tips && (
         <Tips
@@ -97,12 +99,12 @@ const SpecifyArguments = () => {
   };
 
   const containerNameConfig = summary.get('containerNameConfig') || {
-    enable: false,
+    enable: true,
     name: ''
   };
 
   const gpustackDataVolumeConfig = summary.get('gpustackDataVolumeConfig') || {
-    enable: false,
+    enable: true,
     path: ''
   };
 
@@ -179,12 +181,12 @@ const SpecifyArguments = () => {
     });
 
     updateField('containerNameConfig', {
-      enable: false,
+      enable: true,
       name: ''
     });
 
     updateField('gpustackDataVolumeConfig', {
-      enable: false,
+      enable: true,
       path: ''
     });
   }, []);
@@ -272,56 +274,23 @@ const SpecifyArguments = () => {
             )
           }
         ></SwitchSetting>
-        {/* container name config */}
+        {/* cache directory config */}
         <SwitchSetting
-          label={intl.formatMessage({ id: 'clusters.addworker.containerName' })}
+          label={intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}
           tips={intl.formatMessage({
-            id: 'clusters.addworker.containerName.tips'
+            id: 'clusters.addworker.cacheVolume.tips'
           })}
-          placeholder={intl.formatMessage(
-            {
-              id: 'common.help.default'
-            },
-            { content: 'gpustack-worker' }
-          )}
-          checked={containerNameConfig.enable}
-          value={containerNameConfig.name}
+          placeholder={intl.formatMessage({
+            id: 'clusters.addworker.cacheVolume.holder'
+          })}
+          checked={cacheDirConfig.enable}
+          value={cacheDirConfig.path}
           onChange={(checked) =>
-            updateField('containerNameConfig', {
-              ...containerNameConfig,
-              enable: checked
-            })
+            setCacheDirConfig({ ...cacheDirConfig, enable: checked })
           }
           onInputChange={(value) =>
-            updateField('containerNameConfig', {
-              ...containerNameConfig,
-              name: value
-            })
-          }
-        ></SwitchSetting>
-        {/* gpustack data volume config */}
-        <SwitchSetting
-          label={intl.formatMessage({ id: 'clusters.addworker.dataVolume' })}
-          tips={intl.formatMessage({
-            id: 'clusters.addworker.dataVolume.tips'
-          })}
-          placeholder={intl.formatMessage(
-            {
-              id: 'common.help.default'
-            },
-            { content: 'gpustack-data' }
-          )}
-          checked={gpustackDataVolumeConfig.enable}
-          value={gpustackDataVolumeConfig.path}
-          onChange={(checked) =>
-            updateField('gpustackDataVolumeConfig', {
-              ...gpustackDataVolumeConfig,
-              enable: checked
-            })
-          }
-          onInputChange={(value) =>
-            updateField('gpustackDataVolumeConfig', {
-              ...gpustackDataVolumeConfig,
+            setCacheDirConfig({
+              ...cacheDirConfig,
               path: value
             })
           }
@@ -347,24 +316,54 @@ const SpecifyArguments = () => {
             })
           }
         ></SwitchSetting>
-        {/* cache directory config */}
+
+        {/* gpustack data volume config */}
         <SwitchSetting
-          label={intl.formatMessage({ id: 'clusters.addworker.cacheVolume' })}
-          tips={intl.formatMessage({
-            id: 'clusters.addworker.cacheVolume.tips'
-          })}
-          placeholder={intl.formatMessage({
-            id: 'clusters.addworker.cacheVolume.holder'
-          })}
-          checked={cacheDirConfig.enable}
-          value={cacheDirConfig.path}
+          showSwitch={false}
+          label={intl.formatMessage({ id: 'clusters.addworker.dataVolume' })}
+          placeholder={intl.formatMessage(
+            {
+              id: 'common.help.default'
+            },
+            { content: 'gpustack-data' }
+          )}
+          checked={gpustackDataVolumeConfig.enable}
+          value={gpustackDataVolumeConfig.path}
           onChange={(checked) =>
-            setCacheDirConfig({ ...cacheDirConfig, enable: checked })
+            updateField('gpustackDataVolumeConfig', {
+              ...gpustackDataVolumeConfig,
+              enable: checked
+            })
           }
           onInputChange={(value) =>
-            setCacheDirConfig({
-              ...cacheDirConfig,
+            updateField('gpustackDataVolumeConfig', {
+              ...gpustackDataVolumeConfig,
               path: value
+            })
+          }
+        ></SwitchSetting>
+        {/* container name config */}
+        <SwitchSetting
+          showSwitch={false}
+          label={intl.formatMessage({ id: 'clusters.addworker.containerName' })}
+          placeholder={intl.formatMessage(
+            {
+              id: 'common.help.default'
+            },
+            { content: 'gpustack-worker' }
+          )}
+          checked={containerNameConfig.enable}
+          value={containerNameConfig.name}
+          onChange={(checked) =>
+            updateField('containerNameConfig', {
+              ...containerNameConfig,
+              enable: checked
+            })
+          }
+          onInputChange={(value) =>
+            updateField('containerNameConfig', {
+              ...containerNameConfig,
+              name: value
             })
           }
         ></SwitchSetting>

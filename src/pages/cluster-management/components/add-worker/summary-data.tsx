@@ -99,16 +99,6 @@ const SummaryData: React.FC = () => {
     path: ''
   };
 
-  const containerNameConfig = summary.get('containerNameConfig') || {
-    enable: false,
-    name: ''
-  };
-
-  const gpustackDataVolumeConfig = summary.get('gpustackDataVolumeConfig') || {
-    enable: false,
-    path: ''
-  };
-
   return (
     <ConfigWrapper>
       <Title>
@@ -141,18 +131,6 @@ const SummaryData: React.FC = () => {
           enable={workerIPConfig.enable}
           value={workerIPConfig.ip}
           required={true}
-        ></DataItem>
-
-        <DataItem
-          label={intl.formatMessage({ id: 'clusters.addworker.containerName' })}
-          enable={containerNameConfig.enable}
-          value={containerNameConfig.name}
-        ></DataItem>
-
-        <DataItem
-          label={intl.formatMessage({ id: 'clusters.addworker.dataVolume' })}
-          enable={gpustackDataVolumeConfig.enable}
-          value={gpustackDataVolumeConfig.path}
         ></DataItem>
 
         <DataItem

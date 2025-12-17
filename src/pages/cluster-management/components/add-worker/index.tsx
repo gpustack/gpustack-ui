@@ -11,10 +11,16 @@ import AddWorkerStep from './add-worker-step';
 import { StepName } from './config';
 
 const Footer = styled.div`
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  gap: 12px;
+  justify-content: center;
   align-items: center;
   padding-top: 12px;
+  .tips {
+    position: absolute;
+    left: 0px;
+  }
 `;
 
 type AddWorkerProps = {
@@ -113,7 +119,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       maxContentHeight={'max(calc(100vh - 200px), 600px)'}
       footer={
         <Footer>
-          <span>
+          <span className="tips">
             {addedCount > 0 && (
               <Alert
                 message={intl.formatMessage(

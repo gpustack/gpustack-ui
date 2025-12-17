@@ -79,3 +79,9 @@ export interface ClusterFormData {
   worker_config?: Record<string, any>;
   worker_pools?: NodePoolFormData[];
 }
+
+export interface SystemConfig {
+  debug: boolean;
+  server_external_url: string;
+  system_default_container_registry: string;
+}

@@ -134,7 +134,7 @@ const SummaryData: React.FC = () => {
           tips={
             workerIPConfig.enable
               ? workerIPConfig.ip
-                ? workerIPConfig.ip
+                ? ''
                 : intl.formatMessage({ id: 'clusters.addworker.notSpecified' })
               : intl.formatMessage({ id: 'clusters.addworker.autoDetect' })
           }

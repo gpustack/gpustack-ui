@@ -45,6 +45,7 @@ export function useUpdateChunkedList(options: {
     }, 200);
   };
   const updateChunkedList = (data: ChunkedCollection) => {
+    console.log('updateChunkedList data:', data);
     let collections = data?.collection || [];
     if (options?.computedID) {
       collections = collections?.map((item: any) => {

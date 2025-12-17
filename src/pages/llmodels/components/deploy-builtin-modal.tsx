@@ -95,6 +95,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const axiosToken = useRef<any>(null);
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
+  const noCompatibleGPUsRef = useRef<boolean>(false);
 
   const handleSumit = () => {
     form.current?.submit?.();
@@ -142,6 +143,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const handleCheckCompatibility = async (formData: FormData) => {
+    // no compatible gpus, do nothing
+    if (noCompatibleGPUsRef.current) {
+      return;
+    }
     handleDoEvalute(formData);
   };
 
@@ -165,6 +170,11 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       ..._.omit(selectSpecRef.current, ['name']),
       ...allValues
     };
+
+    // no compatible gpus, do nothing
+    if (noCompatibleGPUsRef.current) {
+      return;
+    }
     handleOnValuesChange?.({
       changedValues,
       allValues: data,
@@ -254,6 +264,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
 
       // If no avaliable gpus for the model, show warning message
       if (!res.items.length) {
+        noCompatibleGPUsRef.current = true;
         setWarningStatus({
           show: true,
           type: 'warning',
@@ -261,6 +272,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         });
         return;
       }
+      noCompatibleGPUsRef.current = false;
       handleCheckCompatibility(allValues);
     } catch (error) {
       // ignore

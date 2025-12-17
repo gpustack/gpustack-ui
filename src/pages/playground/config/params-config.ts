@@ -309,7 +309,7 @@ export const ImageconstExtraConfig: ParamsSchema[] = [
   }
 ];
 
-export const ImageAdvancedParamsConfig: ParamsSchema[] = [
+const advancedConfig = [
   {
     type: 'Select',
     name: 'sample_method',
@@ -458,7 +458,10 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
         required: false
       }
     ]
-  },
+  }
+];
+
+export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   {
     type: 'InputNumber',
     name: 'seed',

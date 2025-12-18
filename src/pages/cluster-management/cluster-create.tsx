@@ -224,6 +224,7 @@ const ClusterCreate = () => {
       return ModuleComponent ? (
         <ModuleComponent
           key={key}
+          actionSource={'page'}
           stepList={
             extraData.provider === ProviderValueMap.Docker
               ? DockerStepsFromCluster

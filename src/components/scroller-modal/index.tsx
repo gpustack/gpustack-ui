@@ -3,6 +3,7 @@ import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { Modal, type ModalProps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
+import { ScrollerContext } from './use-scroller-context';
 
 const Wrapper = styled.div<{ $maxHeight?: number | string }>`
   max-height: ${({ $maxHeight }) =>
@@ -16,7 +17,7 @@ const ScrollerModal = (
 ) => {
   const scroller = React.useRef<any>(null);
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
-  const { initialize, destroyInstance } = useOverlayScroller();
+  const { initialize, destroyInstance, scrollToBottom } = useOverlayScroller();
 
   React.useEffect(() => {
     if (props.open) {
@@ -68,16 +69,18 @@ const ScrollerModal = (
           : {}
       }}
     >
-      <Wrapper
-        ref={scroller}
-        data-overlayscrollbars-initialize
-        className="overlay-scroller-wrapper"
-        $maxHeight={props.maxContentHeight || 500}
-        hidden={false}
-        style={{ paddingInline: 24, paddingBlockEnd: 0 }}
-      >
-        {props.children}
-      </Wrapper>
+      <ScrollerContext.Provider value={{ scrollToBottom }}>
+        <Wrapper
+          ref={scroller}
+          data-overlayscrollbars-initialize
+          className="overlay-scroller-wrapper"
+          $maxHeight={props.maxContentHeight || 500}
+          hidden={false}
+          style={{ paddingInline: 24, paddingBlockEnd: 0 }}
+        >
+          {props.children}
+        </Wrapper>
+      </ScrollerContext.Provider>
     </Modal>
   );
 };

@@ -100,5 +100,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.dataVolume.tips':
     'Specify a data storage path for GPUStack.',
   'clusters.table.ip.internal': 'Internal',
-  'clusters.table.ip.external': 'External'
+  'clusters.table.ip.external': 'External',
+  'clusters.form.serverUrl.tips':
+    'Specify the server URL accessible from your cloud provider.'
 };

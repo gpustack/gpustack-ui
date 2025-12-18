@@ -30,7 +30,7 @@ export default function useWatchList<T = Record<string, any>>(API: string) {
   const createWatchChunkRequest = useMemoizedFn(async () => {
     chunkRequestRef.current?.current?.cancel?.();
     try {
-      chunkRequestRef.current = await setChunkRequest({
+      chunkRequestRef.current = setChunkRequest({
         url: `${watchAPI}`,
         params: {},
         handler: updateWatchDataListHandler

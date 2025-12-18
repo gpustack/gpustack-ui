@@ -30,7 +30,7 @@ const Container = styled.div`
  * clusterList and onClusterChange are only required when from worker page.
  */
 type AddWorkerProps = {
-  isModal?: boolean;
+  actionSource?: 'modal' | 'page';
   provider: ProviderType;
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
   clusterLoading?: boolean;
@@ -51,7 +51,7 @@ type AddWorkerProps = {
  */
 const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   const {
-    isModal = false,
+    actionSource,
     registrationInfo,
     provider,
     clusterList,
@@ -81,10 +81,12 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   }, [stepList]);
 
   React.useEffect(() => {
-    if (!isModal) {
+    // this effect is only triggered when used in cluster create page
+    console.log('actionSource:', actionSource);
+    if (actionSource === 'page') {
       createModelsChunkRequest();
     }
-  }, [isModal]);
+  }, [actionSource]);
 
   return (
     <AddWorkerContext.Provider

@@ -147,7 +147,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
               },
               { count: addedCount }
             )}
-            type="warning"
+            type="success"
           />
         )}
       </Container>

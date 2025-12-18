@@ -1,15 +1,15 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import _ from 'lodash';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { WORKERS_API } from '../../resources/apis';
 
-export default function useAddWorkerMessage(params: {
-  startWatch?: React.RefObject<boolean>;
-}) {
+export default function useAddWorkerMessage() {
   const chunkRequestRef = useRef<any>(null);
   const newItemsRef = useRef<any[]>([]);
   const [addedCount, setAddedCount] = useState(0);
+  const startWatchRef = useRef(false);
+  const timerRef = useRef<any>(null);
 
   const showAddWorkerMessage = () => {
     if (newItemsRef.current.length > 0) {
@@ -23,7 +23,7 @@ export default function useAddWorkerMessage(params: {
     events: ['CREATE', 'INSERT'],
     dataList: [],
     onCreate: (newItems: any) => {
-      if (params.startWatch?.current) {
+      if (startWatchRef.current) {
         newItemsRef.current = newItemsRef.current.concat(newItems);
         console.log('newItemsRef.current:', newItemsRef.current);
         showAddWorkerMessage();
@@ -37,17 +37,37 @@ export default function useAddWorkerMessage(params: {
     });
   };
 
+  const resetAddedCount = () => {
+    setAddedCount(0);
+    newItemsRef.current = [];
+    startWatchRef.current = false;
+    clearTimeout(timerRef.current);
+  };
+
   const createModelsChunkRequest = async () => {
     chunkRequestRef.current?.current?.cancel?.();
+    resetAddedCount();
     try {
-      chunkRequestRef.current = setChunkRequest({
+      chunkRequestRef.current = await setChunkRequest({
         url: WORKERS_API,
         handler: updateHandler
       });
+      timerRef.current = setTimeout(() => {
+        startWatchRef.current = true;
+      }, 1000);
     } catch (error) {
       // ignore
     }
   };
+
+  useEffect(() => {
+    return () => {
+      chunkRequestRef.current?.current?.cancel?.();
+      startWatchRef.current = false;
+      newItemsRef.current = [];
+      clearTimeout(timerRef.current);
+    };
+  }, []);
 
   return {
     addedCount,

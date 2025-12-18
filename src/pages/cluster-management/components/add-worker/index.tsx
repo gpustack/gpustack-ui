@@ -58,10 +58,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     stepList = []
   } = props || {};
   const intl = useIntl();
-  const startWatchRef = React.useRef(false);
-  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage({
-    startWatch: startWatchRef
-  });
+  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage();
   const firstLoad = React.useRef(true);
   const [registrationInfo, setRegistrationInfo] = React.useState<{
     token: string;
@@ -83,7 +80,6 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
         ...data,
         cluster_id: value
       });
-      startWatchRef.current = true;
     } catch (error) {
       firstLoad.current = false;
     }

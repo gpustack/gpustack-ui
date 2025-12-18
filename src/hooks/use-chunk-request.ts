@@ -166,11 +166,11 @@ const useSetChunkRequest = () => {
     return axiosToken.current;
   };
 
-  const setChunkRequest = (config: RequestConfig) => {
+  const setChunkRequest = async (config: RequestConfig) => {
     requestConfig.current = { ...particalConfig, ...config };
     retryCount.current = totalCount;
     clearTimeout(timer.current);
-    axiosChunkRequest(requestConfig.current);
+    await axiosChunkRequest(requestConfig.current);
     return axiosToken;
   };
 

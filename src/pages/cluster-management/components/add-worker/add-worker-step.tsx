@@ -64,17 +64,11 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   const [collapseKey, setCollapseKey] = React.useState<Set<string>>(
     new Set([stepList[0]])
   );
-  const startWatchRef = React.useRef(false);
   const { update, summary, register } = useSummaryStatus();
-  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage({
-    startWatch: startWatchRef
-  });
+  const { addedCount, createModelsChunkRequest } = useAddWorkerMessage();
 
   const onToggle = (open: boolean, key: string) => {
     setCollapseKey(open ? new Set([key]) : new Set());
-    if (key === StepNamesMap.RunCommand && open) {
-      startWatchRef.current = true;
-    }
   };
 
   const handleOnClusterChange = (value: number, row?: any) => {

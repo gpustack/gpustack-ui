@@ -1,8 +1,11 @@
+import { clusterSessionAtom } from '@/atoms/clusters';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal/index';
+import { PageAction } from '@/config';
 import useClusterList from '@/pages/cluster-management/hooks/use-cluster-list';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
+import { useAtom } from 'jotai';
 import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -53,6 +56,7 @@ const Content = styled.div`
 export default function useAddResource() {
   const intl = useIntl();
   const navigate = useNavigate();
+  const [, setClusterSession] = useAtom(clusterSessionAtom);
 
   const { fetchAll, clusterList, workerList, clustersAtom, workersAtom } =
     useClusterList();
@@ -87,7 +91,27 @@ export default function useAddResource() {
     return isNoResource && !hiddenModal;
   }, [isNoResource, hiddenModal]);
 
-  const handleCreate = () => {};
+  const handleCreate = () => {
+    if (clusterList.length === 0) {
+      setClusterSession({
+        firstAddWorker: false,
+        firstAddCluster: true
+      });
+
+      navigate(
+        `/cluster-management/clusters/create?action=${PageAction.CREATE}`
+      );
+      return;
+    }
+
+    if (workerList.length === 0) {
+      setClusterSession({
+        firstAddWorker: true,
+        firstAddCluster: false
+      });
+      navigate(`/cluster-management/clusters/list`);
+    }
+  };
 
   const handleCancel = () => {
     setHiddenModal(true);

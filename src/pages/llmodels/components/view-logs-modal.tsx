@@ -72,9 +72,11 @@ const ViewLogsModal: React.FC<ViewModalProps> = (props) => {
     if (!props.id) return;
     if (open) {
       requestRef.current?.current?.cancel?.();
-      requestRef.current = setChunkRequest({
+      setChunkRequest({
         url: `${MODELS_API}/${props.modelId}/instances`,
         handler: updateHandler
+      }).then((res) => {
+        requestRef.current = res;
       });
     } else {
       logsViewerRef.current?.abort();

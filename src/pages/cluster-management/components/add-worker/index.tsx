@@ -141,7 +141,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       }
     >
       <AddWorkerStep
-        isModal={true}
+        actionSource={'modal'}
         stepList={stepList}
         provider={provider}
         clusterList={clusterList}

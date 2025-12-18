@@ -1,3 +1,4 @@
+import { useScrollerContext } from '@/components/scroller-modal/use-scroller-context';
 import SealInput from '@/components/seal-form/seal-input';
 import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageActionType } from '@/config/types';
@@ -24,21 +25,41 @@ type AddModalProps = {
 };
 const ClusterForm: React.FC<AddModalProps> = forwardRef(
   ({ action, provider, currentData, credentialList, onFinish }, ref) => {
+    const { scrollToBottom } = useScrollerContext();
     const [form] = Form.useForm();
     const intl = useIntl();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
     const advanceConfigRef = React.useRef<any>(null);
 
-    const handleOnCollapseChange = (keys: string | string[]) => {
+    const handleOnCollapseChange = async (keys: string | string[]) => {
       setActiveKey(Array.isArray(keys) ? keys : [keys]);
-      if (currentData && advanceConfigRef.current) {
+      if (keys?.includes?.('advanceConfig')) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 500);
+        });
+        scrollToBottom();
       }
+    };
+
+    const handleOnFinish = (values: FormData) => {
+      const workerConfig = yaml2Json(advanceConfigRef.current?.getYamlValue());
+
+      onFinish({
+        ...values,
+        worker_config: {
+          ...workerConfig
+        }
+      });
     };
 
     useEffect(() => {
       if (currentData) {
         form.setFieldsValue(currentData);
+      }
+    }, [currentData]);
 
+    useEffect(() => {
+      if (currentData) {
         if (advanceConfigRef.current) {
           const workerConfigYaml = json2Yaml(currentData.worker_config || {});
           advanceConfigRef.current?.setYamlValue(workerConfigYaml);
@@ -78,7 +99,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
       <Form
         name="clusterForm"
         form={form}
-        onFinish={onFinish}
+        onFinish={handleOnFinish}
         preserve={false}
         scrollToFirstError={true}
         initialValues={currentData}
@@ -113,7 +134,7 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         )}
         <Form.Item<FormData> name="description" rules={[{ required: false }]}>
           <SealTextArea
-            autoSize={{ minRows: 4, maxRows: 6 }}
+            autoSize={{ minRows: 2, maxRows: 4 }}
             label={intl.formatMessage({ id: 'common.table.description' })}
           ></SealTextArea>
         </Form.Item>

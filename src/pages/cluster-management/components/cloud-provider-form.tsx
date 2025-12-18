@@ -193,6 +193,9 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         ]}
       >
         <SealInput.Input
+          description={intl.formatMessage({
+            id: 'clusters.form.serverUrl.tips'
+          })}
           label={intl.formatMessage({ id: 'clusters.create.serverUrl' })}
           required={true}
           trim={true}

@@ -1,8 +1,9 @@
+import IconFont from '@/components/icon-font';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageActionType } from '@/config/types';
 import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Button, Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { ProviderType, ProviderValueMap } from '../config';
 import { ClusterFormData as FormData } from '../config/types';
@@ -24,7 +25,6 @@ const ClusterAdvanceConfig: React.FC<{
       return editorRef.current?.getValue();
     },
     setYamlValue: (values: any) => {
-      console.log('setYamlValue:', values, editorRef.current);
       editorRef.current?.setValue(values);
     }
   }));
@@ -42,6 +42,9 @@ const ClusterAdvanceConfig: React.FC<{
           ]}
         >
           <SealInput.Input
+            description={intl.formatMessage({
+              id: 'clusters.form.serverUrl.tips'
+            })}
             label={intl.formatMessage({ id: 'clusters.create.serverUrl' })}
             required={false}
             trim={true}
@@ -62,7 +65,23 @@ const ClusterAdvanceConfig: React.FC<{
       </Form.Item>
       <YamlEditor
         ref={editorRef}
-        title={`${intl.formatMessage({ id: 'clusters.create.workerConfig' })} YAML`}
+        title={
+          <span className="flex-center">
+            <span>{`${intl.formatMessage({ id: 'clusters.create.workerConfig' })} YAML`}</span>
+            <Button
+              size="small"
+              type="link"
+              target="_blank"
+              href="https://docs.gpustack.ai/latest/cli-reference/start/#config-file"
+            >
+              {intl.formatMessage({ id: 'playground.audio.enablemic.doc' })}{' '}
+              <IconFont
+                type="icon-external-link"
+                className="font-size-14"
+              ></IconFont>
+            </Button>
+          </span>
+        }
         value={fileContent}
         height={300}
         onUpload={(content) => {

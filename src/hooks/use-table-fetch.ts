@@ -117,7 +117,7 @@ export default function useTableFetch<T>(
     try {
       const query = _.omit(params || queryParams, ['page', 'perPage']);
 
-      chunkRequedtRef.current = await setChunkRequest({
+      chunkRequedtRef.current = setChunkRequest({
         url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
         handler: updateHandler
       });

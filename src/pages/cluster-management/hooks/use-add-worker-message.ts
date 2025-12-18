@@ -25,7 +25,6 @@ export default function useAddWorkerMessage() {
     onCreate: (newItems: any) => {
       if (startWatchRef.current) {
         newItemsRef.current = newItemsRef.current.concat(newItems);
-        console.log('newItemsRef.current:', newItemsRef.current);
         showAddWorkerMessage();
       }
     }
@@ -48,13 +47,13 @@ export default function useAddWorkerMessage() {
     chunkRequestRef.current?.current?.cancel?.();
     resetAddedCount();
     try {
-      chunkRequestRef.current = await setChunkRequest({
+      chunkRequestRef.current = setChunkRequest({
         url: WORKERS_API,
         handler: updateHandler
       });
       timerRef.current = setTimeout(() => {
         startWatchRef.current = true;
-      }, 1000);
+      }, 5000);
     } catch (error) {
       // ignore
     }

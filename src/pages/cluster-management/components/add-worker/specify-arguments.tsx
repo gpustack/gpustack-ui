@@ -100,12 +100,12 @@ const SpecifyArguments = () => {
 
   const containerNameConfig = summary.get('containerNameConfig') || {
     enable: true,
-    name: ''
+    name: 'gpustack-worker'
   };
 
   const gpustackDataVolumeConfig = summary.get('gpustackDataVolumeConfig') || {
     enable: true,
-    path: ''
+    path: 'gpustack-data'
   };
 
   const setWorkerIPConfig = (config: {
@@ -182,12 +182,12 @@ const SpecifyArguments = () => {
 
     updateField('containerNameConfig', {
       enable: true,
-      name: ''
+      name: 'gpustack-worker'
     });
 
     updateField('gpustackDataVolumeConfig', {
       enable: true,
-      path: ''
+      path: 'gpustack-data'
     });
   }, []);
 

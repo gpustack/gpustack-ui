@@ -124,7 +124,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
                   },
                   { count: addedCount }
                 )}
-                type="warning"
+                type="success"
               />
             )}
           </span>

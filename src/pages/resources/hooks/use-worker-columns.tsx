@@ -18,8 +18,26 @@ import { Tooltip } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import _ from 'lodash';
 import { useMemo } from 'react';
+import styled from 'styled-components';
 import { status, WorkerStatusMap, WorkerStatusMapValue } from '../config';
 import { Filesystem, GPUDeviceItem, ListItem } from '../config/types';
+
+const IPWrapper = styled.span`
+  display: flex;
+  flex-direction: column;
+  .item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 8px;
+    .label {
+      text-align: right;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      color: var(--ant-color-text-tertiary);
+    }
+  }
+`;
 
 const ActionList = [
   { label: 'common.button.edit', key: 'edit', icon: <EditOutlined /> },
@@ -229,6 +247,30 @@ const useWorkerColumns = ({
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
 
+  const renderIP = (text: string, record: ListItem) => {
+    if (record.advertise_address === record.ip) {
+      return record.ip;
+    }
+
+    if (
+      record.advertise_address !== record.ip &&
+      record.advertise_address &&
+      record.ip
+    ) {
+      return (
+        <IPWrapper>
+          <span className="item">
+            <span>{record.ip}</span>
+            <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`}</span>
+            <span> {record.advertise_address}</span>
+            <span className="label">{`(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`}</span>
+          </span>
+        </IPWrapper>
+      );
+    }
+    return record.ip || record.advertise_address || '';
+  };
+
   return useMemo<ColumnsType<ListItem>>(
     () => [
       {
@@ -281,12 +323,7 @@ const useWorkerColumns = ({
         dataIndex: 'ip',
         render: (text: string, record) => (
           <AutoTooltip ghost maxWidth={240}>
-            {record.advertise_address || text}
-            {record.advertise_address
-              ? ` (${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
-              : record.ip
-                ? ` (${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
-                : ''}
+            {renderIP(text, record)}
           </AutoTooltip>
         )
       },

@@ -256,7 +256,7 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
 
   const handleOsImageChange = (value: string, option: any) => {
     form.setFieldsValue({
-      os_image: option.os_image || value
+      os_image: option?.os_image || value
     });
   };
 

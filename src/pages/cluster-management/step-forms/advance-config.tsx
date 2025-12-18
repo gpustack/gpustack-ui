@@ -89,6 +89,7 @@ const ClusterAdvanceConfig: React.FC<{
         }}
         schema={schema}
       ></YamlEditor>
+      <div className="scroller-to-holder" style={{ height: 1 }}></div>
     </>
   );
 });

@@ -116,8 +116,13 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       form?.validateFields()
     );
     const results = await Promise.allSettled(promises);
-    console.log('results========0', promises, results);
-    if (results.some((result) => result.status === 'rejected')) {
+    const rejectIndex = results.findIndex(
+      (result) => result.status === 'rejected'
+    );
+    if (rejectIndex !== -1) {
+      setActiveKey(() => {
+        return new Set([rejectIndex]);
+      });
       return Promise.reject({
         values: {
           worker_pools: gatherFormValues(results)

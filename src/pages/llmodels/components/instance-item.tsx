@@ -478,8 +478,10 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <div className="flex-center">
           <ThunderboltFilled className="m-r-5" />
           {intl.formatMessage({ id: 'models.form.backend' })}:{' '}
-          {modelData?.backend || ''}
-          {modelData.backend_version ? `(${modelData.backend_version})` : ''}
+          {instanceData?.backend || ''}
+          {instanceData.backend_version
+            ? `(${instanceData.backend_version})`
+            : ''}
         </div>
       </div>
     );
@@ -488,8 +490,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     instanceData.worker_ip,
     instanceData.port,
     instanceData.gpu_indexes,
-    modelData?.backend,
-    modelData?.backend_version,
+    instanceData?.backend,
+    instanceData?.backend_version,
     intl
   ]);
 

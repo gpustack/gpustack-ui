@@ -184,25 +184,36 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (currentData) {
-      // when change the region, shoudle check the instance type and the os Image.
-      const selectOSImage = osImageList.find(
-        (item) => item.os_image === currentData.os_image
-      );
-      const selectInstanceType = instanceTypeList.find(
-        (item) => item.value === currentData.instance_type
-      );
-      form.setFieldsValue({
-        ...currentData,
-        instance_type: selectInstanceType?.value || '',
-        os_image: selectOSImage?.os_image || '',
-        image_name: selectOSImage?.value || ''
-      });
+      if (action === PageAction.CREATE) {
+        // when change the region, shoudle check the instance type and the os Image.
+        const selectOSImage = osImageList.find(
+          (item) => item.os_image === currentData.os_image
+        );
+        const selectInstanceType = instanceTypeList.find(
+          (item) => item.value === currentData.instance_type
+        );
 
-      setInstanceSpec(() => {
-        return selectInstanceType ? currentData.instance_spec : {};
-      });
+        form.setFieldsValue({
+          ...currentData,
+          instance_type: selectInstanceType?.value || '',
+          os_image: selectOSImage?.os_image || '',
+          image_name: selectOSImage?.value || ''
+        });
+
+        setInstanceSpec(() => {
+          return selectInstanceType ? currentData.instance_spec : {};
+        });
+      } else if (action === PageAction.EDIT) {
+        form.setFieldsValue({
+          ...currentData
+        });
+
+        setInstanceSpec(() => {
+          return currentData.instance_spec || {};
+        });
+      }
     }
-  }, [currentData, instanceTypeList, osImageList]);
+  }, [currentData, instanceTypeList, osImageList, action]);
 
   const updateImageList = useMemoizedFn((instanceSpec: Record<string, any>) => {
     if (instanceSpec.count === 8) {

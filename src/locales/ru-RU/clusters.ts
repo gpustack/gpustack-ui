@@ -98,7 +98,9 @@ export default {
     'Specify a name for the worker container.',
   'clusters.addworker.dataVolume': 'GPUStack Data Volume',
   'clusters.addworker.dataVolume.tips':
-    'Specify a data storage path for GPUStack.'
+    'Specify a data storage path for GPUStack.',
+  'clusters.table.ip.internal': 'Internal',
+  'clusters.table.ip.external': 'External'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -112,5 +114,7 @@ export default {
 // 6. 'clusters.addworker.containerName': 'Worker Container Name',
 // 7. 'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
 // 8. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
-// 9. 'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.'
+// 9. 'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
+// 10. 'clusters.table.ip.internal': 'Internal',
+// 11. 'clusters.table.ip.external': 'External'
 // ================================================================

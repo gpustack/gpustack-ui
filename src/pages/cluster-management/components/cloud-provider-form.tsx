@@ -10,9 +10,9 @@ import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useStepsContext } from '../config/steps-context';
 import { ClusterFormData as FormData } from '../config/types';
 import { useProviderRegions } from '../hooks/use-provider-regions';
-import useSystemConfig from '../services/use-system-config';
 
 const OptionItem = styled.div`
   display: flex;
@@ -47,7 +47,6 @@ const NotFoundCredentialContent: React.FC = () => {
   const [, setFromClusterCreation] = useAtom(fromClusterCreationAtom);
   const intl = useIntl();
   const handleOnClick = () => {
-    console.log('click add credential');
     setFromClusterCreation(true);
   };
 
@@ -76,7 +75,7 @@ const optionRender = (option: any): React.ReactNode => {
 const CloudProvider: React.FC<CloudProviderProps> = (props) => {
   const { credentialList, action, credentialID } = props;
   const intl = useIntl();
-  const { systemConfig } = useSystemConfig();
+  const { systemConfig } = useStepsContext();
   const form = Form.useFormInstance<FormData>();
 
   const {

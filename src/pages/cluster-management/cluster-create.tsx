@@ -20,6 +20,7 @@ import { ProviderType, ProviderValueMap } from './config';
 import providerList from './config/providers';
 import { StepsContext } from './config/steps-context';
 import { ClusterFormData } from './config/types';
+import useSystemConfig from './services/use-system-config';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
 
@@ -38,6 +39,7 @@ const ClusterCreate = () => {
   const intl = useIntl();
   const startStep = 0;
   const stepList = useStepList();
+  const { systemConfig } = useSystemConfig();
   const [searchParams] = useSearchParams();
   const action =
     (searchParams.get('action') as PageActionType) || PageAction.CREATE;
@@ -308,7 +310,8 @@ const ClusterCreate = () => {
         )}
         <StepsContext.Provider
           value={{
-            formValues: formValues
+            formValues: formValues,
+            systemConfig: systemConfig
           }}
         >
           {renderModules()}

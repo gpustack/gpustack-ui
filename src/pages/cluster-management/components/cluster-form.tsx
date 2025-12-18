@@ -1,6 +1,6 @@
-import { useScrollerContext } from '@/components/scroller-modal/use-scroller-context';
 import SealInput from '@/components/seal-form/seal-input';
 import SealTextArea from '@/components/seal-form/seal-textarea';
+import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { json2Yaml, yaml2Json } from '@/pages/backends/config';
@@ -25,7 +25,6 @@ type AddModalProps = {
 };
 const ClusterForm: React.FC<AddModalProps> = forwardRef(
   ({ action, provider, currentData, credentialList, onFinish }, ref) => {
-    const { scrollToBottom } = useScrollerContext();
     const [form] = Form.useForm();
     const intl = useIntl();
     const [activeKey, setActiveKey] = React.useState<string[]>([]);
@@ -33,13 +32,20 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
 
     const handleOnCollapseChange = async (keys: string | string[]) => {
       setActiveKey(Array.isArray(keys) ? keys : [keys]);
-      if (keys?.includes?.('advanceConfig')) {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 500);
-        });
-        scrollToBottom();
-      }
     };
+
+    useEffect(() => {
+      if (
+        activeKey?.includes?.('advanceConfig') &&
+        action === PageAction.EDIT
+      ) {
+        const el = document.querySelector('.scroller-to-holder');
+        if (!el) return;
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
+    }, [activeKey, action]);
 
     const handleOnFinish = (values: FormData) => {
       const workerConfig = yaml2Json(advanceConfigRef.current?.getYamlValue());

@@ -67,6 +67,7 @@ export interface ListItem {
   cluster_id: number;
   state_message: string;
   ssh_key_id: string;
+  advertise_address: string;
   provision_progress: string;
   maintenance: {
     enabled: boolean;

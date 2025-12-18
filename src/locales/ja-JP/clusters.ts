@@ -98,7 +98,9 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
     'Specify a name for the worker container.',
   'clusters.addworker.dataVolume': 'GPUStack Data Volume',
   'clusters.addworker.dataVolume.tips':
-    'Specify a data storage path for GPUStack.'
+    'Specify a data storage path for GPUStack.',
+  'clusters.table.ip.internal': 'Internal',
+  'clusters.table.ip.external': 'External'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -181,5 +183,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 75.  'clusters.addworker.containerName': 'Worker Container Name',
 // 76.  'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
 // 77. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
-// 78.  'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.'
+// 78.  'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
+// 79.  'clusters.table.ip.internal': 'Internal',
+// 80.  'clusters.table.ip.external': 'External'
 // ========== End of To-Do List ==========

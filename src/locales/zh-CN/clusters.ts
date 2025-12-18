@@ -94,5 +94,7 @@ export default {
   'clusters.addworker.containerName': '节点容器名称',
   'clusters.addworker.containerName.tips': '为节点容器指定一个名称。',
   'clusters.addworker.dataVolume': 'GPUStack 数据卷',
-  'clusters.addworker.dataVolume.tips': '为 GPUStack 指定数据存储路径。'
+  'clusters.addworker.dataVolume.tips': '为 GPUStack 指定数据存储路径。',
+  'clusters.table.ip.internal': '内',
+  'clusters.table.ip.external': '外'
 };

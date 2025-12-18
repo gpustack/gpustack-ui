@@ -279,9 +279,14 @@ const useWorkerColumns = ({
       {
         title: 'IP',
         dataIndex: 'ip',
-        render: (text: string) => (
+        render: (text: string, record) => (
           <AutoTooltip ghost maxWidth={240}>
-            {text}
+            {record.advertise_address || text}
+            {record.advertise_address
+              ? ` (${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
+              : record.ip
+                ? ` (${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
+                : ''}
           </AutoTooltip>
         )
       },

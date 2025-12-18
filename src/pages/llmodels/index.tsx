@@ -201,7 +201,7 @@ const Models: React.FC = () => {
           search: search,
           categories: categories
         };
-        chunkRequedtRef.current = setChunkRequest({
+        chunkRequedtRef.current = await setChunkRequest({
           url: `${MODELS_API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
           handler: updateHandler
         });

@@ -81,10 +81,23 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
         form.submit();
       },
       setFieldsValue: (values: any) => {
-        form.setFieldsValue(values);
+        form.setFieldsValue({
+          ...values,
+          worker_config: undefined
+        });
+        const workerConfigYaml = json2Yaml(values.worker_config || {});
+        advanceConfigRef.current?.setYamlValue(workerConfigYaml);
       },
       getFieldsValue: () => {
-        return form.getFieldsValue();
+        const workerConfig = yaml2Json(
+          advanceConfigRef.current?.getYamlValue()
+        );
+        return {
+          ...form.getFieldsValue(),
+          worker_config: {
+            ...workerConfig
+          }
+        };
       },
       validateFields: async () => {
         const values = await form.validateFields();

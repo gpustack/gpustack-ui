@@ -55,19 +55,29 @@ export const backendActions = [
 ];
 
 export const json2Yaml = (obj: Record<string, any>) => {
-  if (!obj || !Object.keys(obj).length) return '';
-  const res = jsYaml.dump(JSON.parse(JSON.stringify(obj)));
-  return res;
+  try {
+    if (!obj || !Object.keys(obj).length) return '';
+    const res = jsYaml.dump(JSON.parse(JSON.stringify(obj)));
+    return res;
+  } catch (error) {
+    console.error('json2Yaml error:', error);
+    return '';
+  }
 };
 
 export const yaml2Json = (input: string) => {
-  const str = trim(input);
-  const obj = jsYaml.load(str, { schema: SEAL_SCHEMA });
-  if (typeof obj !== 'object' || obj === null) {
+  try {
+    const str = trim(input);
+    const obj = jsYaml.load(str, { schema: SEAL_SCHEMA });
+    if (typeof obj !== 'object' || obj === null) {
+      return {};
+    }
+    const jsonStr = JSON.stringify(obj);
+    return JSON.parse(jsonStr);
+  } catch (error) {
+    console.error('yaml2Json error:', error);
     return {};
   }
-  const jsonStr = JSON.stringify(obj);
-  return JSON.parse(jsonStr);
 };
 
 export const customColors = [

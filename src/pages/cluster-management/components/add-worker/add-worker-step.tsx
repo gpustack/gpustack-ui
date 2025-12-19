@@ -1,4 +1,4 @@
-import AlertInfoBlock from '@/components/alert-info/block';
+import AlertBlockInfo from '@/components/alert-info/block';
 import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -36,6 +36,7 @@ type AddWorkerProps = {
   clusterLoading?: boolean;
   stepList: StepName[];
   onClusterChange?: (value: number, row?: any) => void;
+  onCancel?: () => void;
   registrationInfo: {
     token: string;
     image: string;
@@ -57,6 +58,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     clusterList,
     clusterLoading,
     stepList = [],
+    onCancel,
     onClusterChange
   } = props || {};
   const intl = useIntl();
@@ -82,11 +84,27 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
 
   React.useEffect(() => {
     // this effect is only triggered when used in cluster create page
-    console.log('actionSource:', actionSource);
     if (actionSource === 'page') {
       createModelsChunkRequest();
     }
   }, [actionSource]);
+
+  const renderMessage = (count: number) => {
+    if (count === 1) {
+      return intl.formatMessage(
+        {
+          id: 'clusters.addworker.message.success_single'
+        },
+        { count: addedCount }
+      );
+    }
+    return intl.formatMessage(
+      {
+        id: 'clusters.addworker.message.success_multiple'
+      },
+      { count: addedCount }
+    );
+  };
 
   return (
     <AddWorkerContext.Provider
@@ -96,7 +114,9 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
         provider,
         stepList: stepList,
         collapseKey,
+        actionSource,
         onToggle,
+        onCancel,
         onClusterChange: handleOnClusterChange,
         registrationInfo,
         summary,
@@ -110,7 +130,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
         )}
         {stepList.includes(StepNamesMap.SelectCluster) &&
           !clusterList?.length && (
-            <AlertInfoBlock
+            <AlertBlockInfo
               maxHeight={200}
               style={{ marginBottom: 8 }}
               type="warning"
@@ -118,7 +138,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
               message={intl.formatMessage({
                 id: 'resources.worker.noCluster.tips'
               })}
-            ></AlertInfoBlock>
+            ></AlertBlockInfo>
           )}
 
         {/* render the steps only when there is at least one cluster available or cluster selection is not required */}
@@ -142,14 +162,14 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
         )}
         {addedCount > 0 && (
           <Alert
-            style={{ width: 'max-content' }}
-            message={intl.formatMessage(
-              {
-                id: 'clusters.addworker.message.success'
-              },
-              { count: addedCount }
-            )}
+            style={{
+              textAlign: 'left',
+              borderColor: 'var(--ant-color-success)',
+              width: '100%'
+            }}
             type="success"
+            message={renderMessage(addedCount)}
+            closable
           />
         )}
       </Container>

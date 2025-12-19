@@ -1,7 +1,7 @@
 import ScrollerModal from '@/components/scroller-modal';
 import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
 import { useIntl } from '@umijs/max';
-import { Alert, Button } from 'antd';
+import { Alert } from 'antd';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { queryClusterToken } from '../../apis';
@@ -100,6 +100,23 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     }
   }, [open]);
 
+  const renderMessage = (count: number) => {
+    if (count === 1) {
+      return intl.formatMessage(
+        {
+          id: 'clusters.addworker.message.success_single'
+        },
+        { count: addedCount }
+      );
+    }
+    return intl.formatMessage(
+      {
+        id: 'clusters.addworker.message.success_multiple'
+      },
+      { count: addedCount }
+    );
+  };
+
   return (
     <ScrollerModal
       title={title}
@@ -115,32 +132,23 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
       maxContentHeight={'max(calc(100vh - 200px), 600px)'}
       footer={
         <Footer>
-          <span className="tips">
-            {addedCount > 0 && (
-              <Alert
-                message={intl.formatMessage(
-                  {
-                    id: 'clusters.addworker.message.success'
-                  },
-                  { count: addedCount }
-                )}
-                type="success"
-              />
-            )}
-          </span>
-          <Button
-            type="primary"
-            onClick={onCancel}
-            style={{
-              minWidth: 88
-            }}
-          >
-            {intl.formatMessage({ id: 'common.button.done' })}
-          </Button>
+          {addedCount > 0 && (
+            <Alert
+              style={{
+                textAlign: 'left',
+                borderColor: 'var(--ant-color-success)',
+                width: '100%'
+              }}
+              type="success"
+              message={renderMessage(addedCount)}
+              closable
+            />
+          )}
         </Footer>
       }
     >
       <AddWorkerStep
+        onCancel={onCancel}
         actionSource={'modal'}
         stepList={stepList}
         provider={provider}

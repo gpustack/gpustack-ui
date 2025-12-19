@@ -8,6 +8,8 @@ interface AddWorkerContextProps {
   clusterLoading?: boolean;
   provider: ProviderType;
   stepList: string[];
+  actionSource?: 'modal' | 'page';
+  onCancel?: () => void;
   onClusterChange?: (value: number, row?: any) => void;
   collapseKey: Set<string>;
   onToggle: (open: boolean, key: string) => void;

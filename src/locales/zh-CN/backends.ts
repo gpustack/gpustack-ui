@@ -31,5 +31,9 @@ export default {
   'backend.version.no.tips': '内置后端自定义版本名称必须以 "-custom" 结尾。',
   'backend.backend.rules.custom': '自定义后端名称须以 "-custom" 结尾。',
   'backend.quickConfig': '快速配置',
-  'backend.version.default.not.exists': '默认版本不存在于 {versions}。'
+  'backend.version.default.not.exists': '默认版本不存在于 {versions}。',
+  'backend.replaceEntrypoint': '覆盖镜像入口命令',
+  'backend.entrypoint': '镜像入口命令',
+  'backend.entrypoint.tips':
+    '如指定，镜像中定义的 ENTRYPOINT 将被忽略，下面的命令将作为容器启动入口命令使用。'
 };

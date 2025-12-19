@@ -1,10 +1,5 @@
 import AlertBlockInfo from '@/components/alert-info/block';
-import {
-  CheckCircleFilled,
-  CloseOutlined,
-  LoadingOutlined,
-  WarningFilled
-} from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { isArray } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
@@ -98,16 +93,6 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
     return '';
   }, [message, show, handleLinkMessage]);
 
-  const renderIcon = useMemo(() => {
-    if (type === 'transition') {
-      return <LoadingOutlined />;
-    }
-    if (type === 'success') {
-      return <CheckCircleFilled />;
-    }
-    return <WarningFilled />;
-  }, [type]);
-
   return (
     show &&
     !!message && (
@@ -118,7 +103,6 @@ const CompatibilityAlert: React.FC<CompatibilityAlertProps> = (props) => {
           title={title}
           contentStyle={contentStyle}
           type={type || 'warning'}
-          icon={renderIcon}
           style={{
             paddingInlineEnd: showClose ? 20 : 16
           }}

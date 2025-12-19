@@ -29,6 +29,8 @@ const Box = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 16px;
   margin-top: 16px;
   width: 100%;
 `;
@@ -41,7 +43,8 @@ const StepCollapse: React.FC<StepItemProps> = ({
   ...rest
 }) => {
   const intl = useIntl();
-  const { collapseKey, onToggle, stepList } = useAddWorkerContext();
+  const { collapseKey, onToggle, stepList, actionSource, onCancel } =
+    useAddWorkerContext();
 
   const handleOnNext = async () => {
     const res = await beforeNext?.();
@@ -51,7 +54,15 @@ const StepCollapse: React.FC<StepItemProps> = ({
     onToggle(true, nextName);
   };
 
+  const handleOnPrevious = () => {
+    // find the previous step and open it
+    const previousName = stepList[stepList.indexOf(name) - 1];
+    onToggle(true, previousName);
+  };
+
   const isLastStep = stepList.indexOf(name) === stepList.length - 1;
+
+  const isFirstStep = stepList.indexOf(name) === 0;
 
   return (
     <Box
@@ -75,13 +86,31 @@ const StepCollapse: React.FC<StepItemProps> = ({
         {...rest}
       >
         {children}
-        {!isLastStep && (
-          <ButtonWrapper>
+
+        <ButtonWrapper>
+          {!isFirstStep && (
+            <Button onClick={handleOnPrevious}>
+              {intl.formatMessage({ id: 'common.button.prev' })}
+            </Button>
+          )}
+
+          {!isLastStep && (
             <Button type="primary" onClick={handleOnNext}>
               {intl.formatMessage({ id: 'common.button.next' })}
             </Button>
-          </ButtonWrapper>
-        )}
+          )}
+          {isLastStep && actionSource === 'modal' && (
+            <Button
+              type="primary"
+              onClick={onCancel}
+              style={{
+                minWidth: 88
+              }}
+            >
+              {intl.formatMessage({ id: 'common.button.done' })}
+            </Button>
+          )}
+        </ButtonWrapper>
       </CollapsibleContainer>
     </Box>
   );

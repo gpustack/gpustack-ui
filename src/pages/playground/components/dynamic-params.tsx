@@ -8,8 +8,7 @@ import React, {
   useCallback,
   useEffect,
   useId,
-  useImperativeHandle,
-  useMemo
+  useImperativeHandle
 } from 'react';
 import { ParamsSchema } from '../config/types';
 
@@ -36,8 +35,6 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       initialValues,
       paramsConfig,
       modelList,
-      watchFields,
-      formFields,
       showModelSelector = true,
       extra
     },
@@ -102,12 +99,12 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
       [intl]
     );
 
-    const renderFields = useMemo(() => {
+    const renderFields = () => {
       if (!paramsConfig?.length) {
         return null;
       }
-      console.log('renderFields---------');
-      const formValues = form?.getFieldsValue();
+      const values = form.getFieldsValue();
+      const formValues = _.isEmpty(values) ? initialValues || {} : values;
       return paramsConfig?.map((item: ParamsSchema) => {
         return (
           <Form.Item
@@ -136,7 +133,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
           </Form.Item>
         );
       });
-    }, [formFields, paramsConfig, intl, watchFields]);
+    };
 
     return (
       <Form
@@ -185,7 +182,7 @@ const ParamsSettings: React.FC<ParamsSettingsProps> = forwardRef(
               )}
             </>
           }
-          {renderFields}
+          {renderFields()}
           {extra}
         </div>
       </Form>

@@ -51,15 +51,15 @@ export const llmInitialValues = {
 };
 
 export const advancedFieldsDefaultValus = {
-  seed: null,
-  sample_method: 'euler_a',
-  cfg_scale: 4.5,
-  guidance: 3.5,
-  sampling_steps: 10,
-  negative_prompt: null,
-  strength: null,
-  schedule_method: 'discrete',
-  preview: 'preview_faster'
+  seed: null
+  // sample_method: 'euler_a',
+  // cfg_scale: 4.5,
+  // guidance: 3.5,
+  // sampling_steps: 10,
+  // negative_prompt: null,
+  // strength: null,
+  // schedule_method: 'discrete',
+  // preview: 'preview_faster'
 };
 
 export const openaiCompatibleFieldsDefaultValus = {

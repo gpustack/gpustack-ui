@@ -8,8 +8,8 @@ import {
   ImageAdvancedParamsConfig as ImgAdvancedParamsConfig,
   imageSizeOptions as imageSizeList
 } from '@/pages/playground/config/params-config';
+import { generateRandomNumber } from '@/utils';
 import { useSearchParams } from '@umijs/max';
-import { Form } from 'antd';
 import _ from 'lodash';
 import React, {
   useCallback,
@@ -229,6 +229,8 @@ export const useInitImageMeta = (
   const [initialValues, setInitialValues] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
+    seed: generateRandomNumber(),
+    random_seed: true,
     model: ''
   });
   const [paramsConfig, setParamsConfig] = useState<ParamsSchema[]>([
@@ -240,6 +242,8 @@ export const useInitImageMeta = (
   const [parameters, setParams] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
+    seed: generateRandomNumber(),
+    random_seed: true,
     model: ''
   });
 
@@ -252,11 +256,6 @@ export const useInitImageMeta = (
     ...openaiCompatibleFieldsDefaultValus,
     ...advancedFieldsDefaultValus
   });
-  const randomSeed = Form.useWatch('random_seed', form.current?.form);
-
-  const watchFields = useMemo(() => {
-    return ['random_seed'];
-  }, [randomSeed]);
 
   const getNewImageSizeOptions = (metaData: any) => {
     const { max_height, max_width } = metaData || {};
@@ -436,6 +435,7 @@ export const useInitImageMeta = (
 
   const handleOnValuesChange = useCallback(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {
+      console.log('changeValues', changeValues);
       // model change will reset all values
       if (changeValues.model) {
         handleOnModelChange(changeValues.model);
@@ -468,6 +468,16 @@ export const useInitImageMeta = (
             : ImageconstExtraConfig)
         ]);
         setParams(allValues);
+        updateCacheFormData(changeValues);
+      } else if (_.isBoolean(changeValues.random_seed)) {
+        const seed = changeValues.random_seed ? generateRandomNumber() : null;
+        setParams({
+          ...allValues,
+          seed: seed
+        });
+        form.current?.form?.setFieldsValue({
+          seed: seed
+        });
         updateCacheFormData(changeValues);
       } else {
         setParams(allValues);
@@ -503,7 +513,6 @@ export const useInitImageMeta = (
     form,
     modelMeta,
     formFields,
-    watchFields,
     paramsConfig,
     initialValues,
     parameters,

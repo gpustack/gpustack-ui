@@ -49,7 +49,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
     handleToggleParamsStyle,
     setParams,
     form,
-    watchFields,
     formFields,
     paramsConfig,
     initialValues,
@@ -142,7 +141,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
   const generateParams = () => {
     const params = {
       ..._.omitBy(finalParameters, (value: string) => !value),
-      seed: parameters.random_seed ? generateRandomNumber() : parameters.seed,
+      seed: parameters.random_seed ? generateRandomNumber() : null,
       stream: false,
       prompt: currentPrompt
     };
@@ -272,7 +271,6 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
         <div className="box">
           <DynamicParams
             ref={form}
-            watchFields={watchFields}
             formFields={formFields}
             parametersTitle={
               <div className="flex-between flex-center">

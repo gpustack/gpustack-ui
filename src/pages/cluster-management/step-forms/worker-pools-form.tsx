@@ -95,7 +95,8 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
       newList.delete(id);
       return newList;
     });
-    formRefs.current[id] = null;
+    const { [id]: _, ...rest } = formRefs.current;
+    formRefs.current = rest;
   };
 
   const gatherFormValues = (results: PromiseSettledResult<any>[]) => {

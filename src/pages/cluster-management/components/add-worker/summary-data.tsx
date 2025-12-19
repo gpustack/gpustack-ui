@@ -14,7 +14,7 @@ interface DataItemProps {
   enable: boolean;
   value: string;
   required?: boolean;
-  label: string;
+  label: React.ReactNode;
   tips?: string;
 }
 
@@ -99,6 +99,11 @@ const SummaryData: React.FC = () => {
     path: ''
   };
 
+  const externalWorkerIPConfig = summary.get('externalWorkerIPConfig') || {
+    enable: false,
+    ip: ''
+  };
+
   return (
     <ConfigWrapper>
       <Title>
@@ -120,7 +125,18 @@ const SummaryData: React.FC = () => {
         ></DataItem>
 
         <DataItem
-          label={intl.formatMessage({ id: 'clusters.addworker.workerIP' })}
+          label={
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage(
+                  { id: 'clusters.addworker.workerIP' },
+                  {
+                    type: `(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
+                  }
+                )
+              }}
+            ></span>
+          }
           tips={
             workerIPConfig.enable
               ? workerIPConfig.ip
@@ -130,6 +146,31 @@ const SummaryData: React.FC = () => {
           }
           enable={workerIPConfig.enable}
           value={workerIPConfig.ip}
+          required={true}
+        ></DataItem>
+
+        <DataItem
+          label={
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage(
+                  { id: 'clusters.addworker.workerIP' },
+                  {
+                    type: `(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
+                  }
+                )
+              }}
+            ></span>
+          }
+          tips={
+            externalWorkerIPConfig.enable
+              ? externalWorkerIPConfig.ip
+                ? ''
+                : intl.formatMessage({ id: 'clusters.addworker.notSpecified' })
+              : intl.formatMessage({ id: 'clusters.addworker.autoDetect' })
+          }
+          enable={externalWorkerIPConfig.enable}
+          value={externalWorkerIPConfig.ip}
           required={true}
         ></DataItem>
 

@@ -59,6 +59,11 @@ export interface SummaryDataKeys {
     enabled: boolean;
     path: string;
   };
+  externalWorkerIPConfig: {
+    enable: boolean;
+    ip: string;
+    required: boolean;
+  };
 }
 
 export type SummaryDataMap = {

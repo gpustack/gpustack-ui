@@ -73,8 +73,8 @@ const usePoolsColumns = (
                   }
                 }}
                 data={{
-                  vendor: record.instance_spec.vendor,
-                  description: record.instance_spec.description,
+                  vendor: record.instance_spec?.vendor,
+                  description: record.instance_spec?.description,
                   specInfo: _.omit(record.instance_spec, [
                     'label',
                     'vendor',
@@ -83,11 +83,11 @@ const usePoolsColumns = (
                 }}
               />
             }
-            showTitle
+            SHOWTITLE
             ghost
             minWidth={20}
           >
-            {record.instance_spec.description || record.instance_spec.label}
+            {record.instance_spec?.description || record.instance_spec?.label}
           </AutoTooltip>
         )
       },

@@ -16,7 +16,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const SwitchSetting: React.FC<{
-  label: string;
+  label: React.ReactNode;
   checked: boolean;
   value?: string;
   placeholder?: string;
@@ -88,6 +88,13 @@ const SpecifyArguments = () => {
     ip: '',
     required: false
   };
+
+  const externalWorkerIPConfig = summary.get('externalWorkerIPConfig') || {
+    enable: false,
+    ip: '',
+    required: false
+  };
+
   const modelDirConfig = summary.get('modelDirConfig') || {
     enable: false,
     path: ''
@@ -143,6 +150,15 @@ const SpecifyArguments = () => {
       return false;
     }
 
+    if (externalWorkerIPConfig.enable && !externalWorkerIPConfig.ip) {
+      updateField('externalWorkerIPConfig', {
+        ...externalWorkerIPConfig,
+        required: true
+      });
+
+      return false;
+    }
+
     return true;
   };
 
@@ -189,6 +205,12 @@ const SpecifyArguments = () => {
       enable: true,
       path: 'gpustack-data'
     });
+
+    updateField('externalWorkerIPConfig', {
+      enable: false,
+      ip: '',
+      required: false
+    });
   }, []);
 
   return (
@@ -213,13 +235,27 @@ const SpecifyArguments = () => {
         {/* worker IP config */}
         <SwitchSetting
           label={
-            workerIPConfig.enable
-              ? intl.formatMessage({
-                  id: 'clusters.addworker.specifyWorkerIP'
-                })
-              : intl.formatMessage({
-                  id: 'clusters.addworker.detectWorkerIP'
-                })
+            <span
+              dangerouslySetInnerHTML={{
+                __html: workerIPConfig.enable
+                  ? intl.formatMessage(
+                      {
+                        id: 'clusters.addworker.specifyWorkerIP'
+                      },
+                      {
+                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
+                      }
+                    )
+                  : intl.formatMessage(
+                      {
+                        id: 'clusters.addworker.detectWorkerIP'
+                      },
+                      {
+                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
+                      }
+                    )
+              }}
+            ></span>
           }
           placeholder={intl.formatMessage({
             id: 'clusters.addworker.enterWorkerIP'
@@ -268,6 +304,83 @@ const SpecifyArguments = () => {
                         })
                       }}
                     ></li>
+                  </NotesWrapper>
+                }
+              ></AlertInfoBlock>
+            )
+          }
+        ></SwitchSetting>
+        {/* external worker ip config */}
+        <SwitchSetting
+          label={
+            <span
+              dangerouslySetInnerHTML={{
+                __html: externalWorkerIPConfig.enable
+                  ? intl.formatMessage(
+                      {
+                        id: 'clusters.addworker.specifyWorkerIP'
+                      },
+                      {
+                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
+                      }
+                    )
+                  : intl.formatMessage(
+                      {
+                        id: 'clusters.addworker.detectWorkerIP'
+                      },
+                      {
+                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
+                      }
+                    )
+              }}
+            ></span>
+          }
+          placeholder={intl.formatMessage({
+            id: 'clusters.addworker.enterWorkerIP'
+          })}
+          value={externalWorkerIPConfig.ip}
+          checked={externalWorkerIPConfig.enable}
+          errorMessage={
+            externalWorkerIPConfig.required &&
+            !externalWorkerIPConfig.ip &&
+            intl.formatMessage({
+              id: 'clusters.addworker.enterWorkerIP.error'
+            })
+          }
+          onChange={(checked) =>
+            updateField('externalWorkerIPConfig', {
+              ...externalWorkerIPConfig,
+              enable: checked,
+              required: false
+            })
+          }
+          onInputChange={(value) =>
+            updateField('externalWorkerIPConfig', {
+              ...externalWorkerIPConfig,
+              ip: value
+            })
+          }
+          extra={
+            !externalWorkerIPConfig.enable && (
+              <AlertInfoBlock
+                maxHeight={200}
+                contentStyle={{
+                  paddingLeft: 0
+                }}
+                type="warning"
+                icon={<ExclamationCircleFilled />}
+                message={
+                  <NotesWrapper>
+                    <li
+                      style={{
+                        marginLeft: '0 !important',
+                        listStyleType: 'none'
+                      }}
+                    >
+                      {intl.formatMessage({
+                        id: 'clusters.addworker.externalIP.tips'
+                      })}
+                    </li>
                   </NotesWrapper>
                 }
               ></AlertInfoBlock>

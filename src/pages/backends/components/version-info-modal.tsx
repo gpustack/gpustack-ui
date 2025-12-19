@@ -43,6 +43,7 @@ const VersionInfoModal: React.FC<VersionInfoModalProps> = ({
           version_no: key,
           image_name: value.image_name,
           run_command: value.run_command,
+          entrypoint: value.entrypoint,
           is_default: key === currentData.default_version,
           availableFrameworks: [
             ...(value.built_in_frameworks || []),

@@ -51,6 +51,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const [yamlContent, setYamlContent] = useState<string>('');
   const [formContent, setFormContent] = useState<FormData>({} as FormData);
 
+  const versionFields = [
+    'image_name',
+    'run_command',
+    'custom_framework',
+    'entrypoint'
+  ];
+
   // remove '-custom' suffix from version_no in currentData, when action is EDIT
   const genertateCurrentVersionData = (values: ListItem): ListItem => {
     const data = { ...values };
@@ -82,10 +89,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       (acc: Record<string, any>, curr) => {
         if (curr.version_no) {
           acc[curr.version_no] = {
-            custom_framework: curr.custom_framework,
-            image_name: curr.image_name,
-            run_command: curr.run_command,
-            entrypoint: curr.entrypoint
+            ..._.pick(curr, versionFields)
           };
         }
         return acc;
@@ -111,10 +115,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       const versionConfigs = Object.keys(values.version_configs || {}).map(
         (key: string) => ({
           version_no: key,
-          image_name: values.version_configs?.[key]?.image_name,
-          run_command: values.version_configs?.[key]?.run_command,
-          custom_framework: values.version_configs?.[key]?.custom_framework,
-          is_default: key === values.default_version
+          is_default: key === values.default_version,
+          ..._.pick(values.version_configs?.[key], versionFields)
         })
       );
 
@@ -123,12 +125,15 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         values.built_in_version_configs || {}
       ).map((key) => ({
         version_no: key,
-        image_name: values.built_in_version_configs?.[key]?.image_name,
-        run_command: values.built_in_version_configs?.[key]?.run_command,
         is_default: key === values.default_version,
         built_in_frameworks:
           values.built_in_version_configs?.[key]?.built_in_frameworks || [],
-        is_built_in: true
+        is_built_in: true,
+        ..._.pick(values.built_in_version_configs?.[key], [
+          'image_name',
+          'run_command',
+          'entrypoint'
+        ])
       }));
 
       return {

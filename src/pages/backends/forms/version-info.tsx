@@ -112,6 +112,16 @@ export const VersionItem: React.FC<VersionItemProps> = ({ data }) => {
             </AutoTooltip>
           </InfoItem>
         )}
+        {data.entrypoint && (
+          <InfoItem>
+            <span className="label">
+              {intl.formatMessage({ id: 'backend.replaceEntrypoint' })}:
+            </span>
+            <AutoTooltip ghost minWidth={20}>
+              {data.entrypoint}
+            </AutoTooltip>
+          </InfoItem>
+        )}
         {data.run_command && (
           <InfoItem>
             <span className="label">

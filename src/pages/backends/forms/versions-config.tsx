@@ -73,6 +73,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
       version_no: '',
       image_name: '',
       run_command: '',
+      entrypoint: '',
       isBuiltin: false,
       is_default: false
     }
@@ -99,6 +100,7 @@ const VersionsForm: React.FC<AddModalProps> = ({
       version_no: '',
       image_name: '',
       run_command: '',
+      entrypoint: '',
       isBuiltin: false,
       is_default: false
     };

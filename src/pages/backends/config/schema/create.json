@@ -48,6 +48,10 @@
               "type": ["string", "null"],
               "description": "start command"
             },
+            "entrypoint": {
+              "type": "string",
+              "description": "Override the default ENTRYPOINT of the image"
+            },
             "custom_framework": {
               "type": ["string", "null"],
               "description": "custom framework"
@@ -73,6 +77,10 @@
             "run_command": {
               "type": ["string", "null"],
               "description": "start command"
+            },
+            "entrypoint": {
+              "type": "string",
+              "description": "Override the default ENTRYPOINT of the image"
             },
             "custom_framework": {
               "type": ["string", "null"],

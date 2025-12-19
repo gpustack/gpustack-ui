@@ -129,7 +129,12 @@ const ClusterCreate = () => {
           resultsMap.set(formKeys[index], result.value);
         }
       });
-      const newValues = _.merge(formValues, Object.fromEntries(resultsMap));
+      const newValues = { ...formValues };
+
+      // update form values by the key from resultsMap
+      for (const [key, value] of resultsMap.entries()) {
+        newValues[key] = value;
+      }
 
       setFormValues(newValues);
 

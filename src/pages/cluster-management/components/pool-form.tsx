@@ -459,7 +459,9 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
                             id: 'common.validate.value'
                           },
                           {
-                            name: 'labels'
+                            name: intl.formatMessage({
+                              id: 'resources.table.labels'
+                            })
                           }
                         )
                       );

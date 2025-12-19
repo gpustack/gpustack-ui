@@ -2,6 +2,7 @@ import CollapsibleContainer from '@/components/collapse-container';
 import BaseSelect from '@/components/seal-form/base/select';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
+import SealTextArea from '@/components/seal-form/seal-textarea';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
@@ -342,14 +343,36 @@ const VersionsForm: React.FC<AddModalProps> = ({
                       required
                     />
                   </Form.Item>
+                  <Form.Item name={[name, 'entrypoint']}>
+                    <SealInput.TextArea
+                      allowClear
+                      description={intl.formatMessage({
+                        id: 'backend.entrypoint.tips'
+                      })}
+                      label={intl.formatMessage({
+                        id: 'backend.replaceEntrypoint'
+                      })}
+                    ></SealInput.TextArea>
+                  </Form.Item>
                   <Form.Item
                     name={[name, 'run_command']}
                     style={{ marginBottom: 0 }}
                   >
-                    <SealInput.TextArea
+                    <SealTextArea
                       allowClear
+                      alwaysFocus={true}
+                      description={intl.formatMessage({
+                        id: 'backend.form.defaultExecuteCommand.tips'
+                      })}
+                      placeholder={intl.formatMessage(
+                        { id: 'common.help.eg' },
+                        {
+                          content:
+                            'vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
+                        }
+                      )}
                       label={intl.formatMessage({ id: 'backend.runCommand' })}
-                    ></SealInput.TextArea>
+                    ></SealTextArea>
                   </Form.Item>
                 </CollapsibleContainer>
               </div>

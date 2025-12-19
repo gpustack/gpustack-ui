@@ -4,6 +4,7 @@ export interface VersionConfigs {
   is_default: boolean;
   built_in_frameworks?: string[];
   custom_framework?: string;
+  entrypoint?: string;
   version_no?: string;
   is_built_in?: boolean;
 }

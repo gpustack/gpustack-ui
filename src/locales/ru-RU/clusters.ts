@@ -89,8 +89,10 @@ export default {
   'clusters.button.genToken':
     'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
   'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
-  'clusters.addworker.message.success':
-    '{count} workers have been added to the cluster.',
+  'clusters.addworker.message.success_single':
+    '{count} new worker has been added to the cluster.',
+  'clusters.addworker.message.success_multiple':
+    '{count} new workers have been added to the cluster.',
   'clusters.create.serverUrl': 'Server URL',
   'clusters.create.workerConfig': 'Worker Configuration',
   'clusters.addworker.containerName': 'Worker Container Name',
@@ -110,13 +112,14 @@ export default {
 // 2. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
 // 3. 'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
 // 4. 'clusters.addworker.cacheVolume.tips': 'If you want to customize the model cache directory, you can specify the path to mount it.',
-// 5. 'clusters.addworker.message.success': '{count} workers have been added to the cluster.',
-// 6. 'clusters.create.serverUrl': 'Server URL',
-// 7. 'clusters.create.workerConfig': 'Worker Configuration'
-// 6. 'clusters.addworker.containerName': 'Worker Container Name',
-// 7. 'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
-// 8. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
-// 9. 'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
+// 5. 'clusters.addworker.message.success_single': '{count} new worker has been added to the cluster.',
+// 6. 'clusters.addworker.message.success_multiple': '{count} new workers have been added to the cluster.',
+// 7. 'clusters.create.serverUrl': 'Server URL',
+// 8. 'clusters.create.workerConfig': 'Worker Configuration'
+// 9. 'clusters.addworker.containerName': 'Worker Container Name',
+// 10. 'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
+// 11. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+// 12. 'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
 // 10. 'clusters.table.ip.internal': 'Internal',
 // 11. 'clusters.table.ip.external': 'External',
 // 12. 'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.'

@@ -84,7 +84,8 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           acc[curr.version_no] = {
             custom_framework: curr.custom_framework,
             image_name: curr.image_name,
-            run_command: curr.run_command
+            run_command: curr.run_command,
+            entrypoint: curr.entrypoint
           };
         }
         return acc;

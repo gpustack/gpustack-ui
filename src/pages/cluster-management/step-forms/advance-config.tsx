@@ -25,7 +25,7 @@ const ClusterAdvanceConfig: React.FC<{
       return editorRef.current?.getValue();
     },
     setYamlValue: (values: any) => {
-      editorRef.current?.setValue(values);
+      editorRef.current?.setValue(values || yamlTemplate);
     }
   }));
 

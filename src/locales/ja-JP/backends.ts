@@ -34,5 +34,9 @@ export default {
     'The custom backend name must end with "-custom".',
   'backend.quickConfig': 'Quick Config',
   'backend.version.default.not.exists':
-    'The default version does not exist in {versions}.'
+    'The default version does not exist in {versions}.',
+  'backend.replaceEntrypoint': 'Override Image Entrypoint',
+  'backend.entrypoint': 'Image Entrypoint',
+  'backend.entrypoint.tips':
+    'If specified, the ENTRYPOINT defined in the image will be ignored, and the command below will be used as the container startup entrypoint.'
 };

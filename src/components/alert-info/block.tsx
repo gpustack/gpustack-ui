@@ -1,4 +1,8 @@
-import { WarningFilled } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  LoadingOutlined,
+  WarningFilled
+} from '@ant-design/icons';
 import { Typography } from 'antd';
 import { createStyles } from 'antd-style';
 import classNames from 'classnames';
@@ -122,6 +126,17 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
     overlayScrollerProps = {}
   } = props;
   const { styles } = useStyles();
+
+  const renderIcon = () => {
+    if (type === 'transition') {
+      return <LoadingOutlined />;
+    }
+    if (type === 'success') {
+      return <CheckCircleFilled />;
+    }
+    return <WarningFilled />;
+  };
+
   return (
     <>
       {message ? (
@@ -139,7 +154,7 @@ const AlertInfo: React.FC<AlertInfoProps> = (props) => {
           >
             <div className={classNames('title', type)}>
               <span className={classNames('info-icon', type)}>
-                {icon ?? <WarningFilled />}
+                {icon ?? renderIcon()}
               </span>
             </div>
             {title && (

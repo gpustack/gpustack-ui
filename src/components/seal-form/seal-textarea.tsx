@@ -102,7 +102,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
     <InputWrapper>
       <Wrapper
         status={status}
-        label={<LabelWrapper>{label}</LabelWrapper>}
+        label={label && <LabelWrapper>{label}</LabelWrapper>}
         isFocus={alwaysFocus || isFocus}
         required={required}
         description={description}

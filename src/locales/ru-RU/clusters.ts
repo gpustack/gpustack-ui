@@ -68,8 +68,12 @@ export default {
   'clusters.addworker.checkEnv': 'Проверить окружение',
   'clusters.addworker.specifyArgs': 'Указать аргументы',
   'clusters.addworker.runCommand': 'Выполнить команду',
-  'clusters.addworker.specifyWorkerIP': 'Указать IP воркера',
-  'clusters.addworker.detectWorkerIP': 'Автоопределение IP воркера',
+  'clusters.addworker.specifyWorkerIP':
+    'Указать IP воркера <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.externalIP.tips':
+    'Specify an external IP if the worker is in a VPC or private network.',
+  'clusters.addworker.detectWorkerIP':
+    'Автоопределение IP воркера <span class="text-tertiary">{type}</span>',
   'clusters.addworker.enterWorkerIP': 'Введите IP воркера',
   'clusters.addworker.enterWorkerIP.error': 'Пожалуйста, введите IP воркера.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
@@ -78,7 +82,8 @@ export default {
     'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Сводка конфигурации',
   'clusters.addworker.gpuVendor': 'Производитель GPU',
-  'clusters.addworker.workerIP': 'IP воркера',
+  'clusters.addworker.workerIP':
+    'IP воркера <span class="text-tertiary">{type}</span>',
   'clusters.addworker.notSpecified': 'Не указано',
   'clusters.addworker.autoDetect': 'Автоопределение',
   'clusters.addworker.extraVolume.holder':
@@ -123,4 +128,5 @@ export default {
 // 10. 'clusters.table.ip.internal': 'Internal',
 // 11. 'clusters.table.ip.external': 'External',
 // 12. 'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.'
+// 13. 'clusters.addworker.specifyWorkerIP': 'Specify Worker IP <span class="text-tertiary">{type}</span>',
 // ================================================================

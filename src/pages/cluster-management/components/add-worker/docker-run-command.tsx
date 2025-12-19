@@ -9,9 +9,13 @@ import VendorNotes from './vendor-notes';
 
 const DockerRunCommand = () => {
   const intl = useIntl();
-  const { registrationInfo, stepList, summary, clusterList } =
-    useAddWorkerContext();
+  const { registrationInfo, stepList, summary } = useAddWorkerContext();
   const workerIPConfig = summary.get('workerIPConfig') || {
+    enable: false,
+    ip: '',
+    required: false
+  };
+  const externalWorkerIPConfig = summary.get('externalWorkerIPConfig') || {
     enable: false,
     ip: '',
     required: false
@@ -62,6 +66,9 @@ const DockerRunCommand = () => {
       </Tips>
       <AddWorkerCommand
         registrationInfo={registrationInfo}
+        advertisAddress={
+          externalWorkerIPConfig.enable ? externalWorkerIPConfig.ip : ''
+        }
         workerIP={workerIPConfig.enable ? workerIPConfig.ip : ''}
         modelDir={modelDirConfig.enable ? modelDirConfig.path : ''}
         cacheDir={cacheDirConfig.enable ? cacheDirConfig.path : ''}

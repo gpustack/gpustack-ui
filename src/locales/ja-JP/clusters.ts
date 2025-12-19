@@ -68,8 +68,12 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.runCommand': 'Run Command',
-  'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
-  'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+  'clusters.addworker.specifyWorkerIP':
+    'Specify Worker IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.externalIP.tips':
+    'Specify an external IP if the worker is in a VPC or private network.',
+  'clusters.addworker.detectWorkerIP':
+    'Auto-detect Worker IP <span class="text-tertiary">{type}</span>',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
@@ -78,7 +82,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
     'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Configuration Summary',
   'clusters.addworker.gpuVendor': 'GPU Vendor',
-  'clusters.addworker.workerIP': 'Worker IP',
+  'clusters.addworker.workerIP':
+    'Worker IP <span class="text-tertiary">{type}</span>',
   'clusters.addworker.notSpecified': 'Not Specified',
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':
@@ -171,7 +176,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 61. 'clusters.addworker.extraVolume': 'Additional Volume Mount',
 // 62. 'clusters.addworker.configSummary': 'Configuration Summary',
 // 63. 'clusters.addworker.gpuVendor': 'GPU Vendor',
-// 64. 'clusters.addworker.workerIP': 'Worker IP',
+// 64. 'clusters.addworker.workerIP': 'Worker IP <span class="text-tertiary">{type}</span>',
 // 65. 'clusters.addworker.notSpecified': 'Not Specified',
 // 66. 'clusters.addworker.autoDetect': 'Auto-detect',
 // 67.  'clusters.addworker.extraVolume.holder': 'e.g. /data/models (path must start with /)'
@@ -191,5 +196,6 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 78.  'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
 // 79.  'clusters.table.ip.internal': 'Internal',
 // 80.  'clusters.table.ip.external': 'External',
-// 81.  'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.'
+// 81.  'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.',
+// 82. 'clusters.addworker.externalIP.tips': 'Specify an external IP if the worker is in a VPC or private network.',
 // ========== End of To-Do List ==========

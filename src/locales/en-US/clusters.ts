@@ -68,8 +68,12 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.runCommand': 'Run Command',
-  'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
-  'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+  'clusters.addworker.specifyWorkerIP':
+    'Specify Worker IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.detectWorkerIP':
+    'Auto-detect Worker IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.externalIP.tips':
+    'Specify an external IP if the worker is in a VPC or private network.',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
@@ -78,7 +82,8 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
     'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Configuration Summary',
   'clusters.addworker.gpuVendor': 'GPU Vendor',
-  'clusters.addworker.workerIP': 'Worker IP',
+  'clusters.addworker.workerIP':
+    'Worker IP <span class="text-tertiary">{type}</span>',
   'clusters.addworker.notSpecified': 'Not Specified',
   'clusters.addworker.autoDetect': 'Auto-detect',
   'clusters.addworker.extraVolume.holder':

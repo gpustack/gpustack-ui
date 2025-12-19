@@ -64,6 +64,7 @@ export const addWorkerGuide: Record<string, any> = {
       token: string;
       image: string;
       gpu: string;
+      [key: string]: any;
     }) {
       return registerAddWokerCommandMap[params.gpu]?.(params);
     },

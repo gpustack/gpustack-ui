@@ -9,15 +9,18 @@ type ViewModalProps = {
   cacheDir?: string;
   containerName?: string;
   gpustackDataVolume?: string;
+  advertisAddress?: string;
   registrationInfo: {
     token: string;
     image: string;
     server_url: string;
+    [key: string]: any;
   };
 };
 
 const AddWorkerCommand: React.FC<ViewModalProps> = ({
   registrationInfo,
+  advertisAddress,
   workerIP,
   modelDir,
   cacheDir,
@@ -29,9 +32,11 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
     const commandCode = addWorkerGuide['all'];
     return commandCode
       ?.registerWorker({
+        registrationInfo,
         gpu: currentGPU || '',
         server: registrationInfo.server_url || origin,
         tag: '',
+        advertisAddress: advertisAddress,
         workerIP: workerIP,
         modelDir: modelDir,
         cacheDir: cacheDir,
@@ -50,7 +55,8 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
     modelDir,
     cacheDir,
     containerName,
-    gpustackDataVolume
+    gpustackDataVolume,
+    advertisAddress
   ]);
 
   return (

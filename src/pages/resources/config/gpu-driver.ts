@@ -143,9 +143,23 @@ interface AddWorkerCommandParams {
   cacheDir?: string;
 }
 
+const generateEnvArgs = (params: any) => {
+  const registrationInfo = params.registrationInfo || {};
+  // generate environment variables args from registrationInfo.env
+  let envArgs = '';
+  if (registrationInfo.env && typeof registrationInfo.env === 'object') {
+    Object.keys(registrationInfo.env).forEach((key) => {
+      const value = registrationInfo.env[key];
+      envArgs += `-e "${key}=${value}" \\\n      `;
+    });
+  }
+  return envArgs;
+};
+
 const setNormalArgs = (params: any) => {
   return `sudo docker run -d --name ${params.containerName || 'gpustack-worker'} \\
       -e "GPUSTACK_RUNTIME_DEPLOY_MIRRORED_NAME=${params.containerName || 'gpustack-worker'}" \\
+      ${generateEnvArgs(params)}
       --restart=unless-stopped \\
       --privileged \\
       --network=host \\
@@ -153,6 +167,11 @@ const setNormalArgs = (params: any) => {
       --volume ${params.gpustackDataVolume || 'gpustack-data'}:/var/lib/gpustack \\
       ${params.modelDir ? `--volume ${params.modelDir}:${params.modelDir} \\` : ''}
       ${params.cacheDir ? `--volume ${params.cacheDir}:/var/lib/gpustack/cache \\` : ''}`;
+};
+
+const setWorkerIPArg = (params: any) => {
+  return `${params.workerIP ? `--worker-ip ${params.workerIP} \\` : ''}
+      ${params.advertisAddress ? `--advertise-address ${params.advertisAddress} \\` : ''}`;
 };
 
 const setImageArgs = (params: any) => {
@@ -171,7 +190,7 @@ const registerWorker = (params: AddWorkerCommandParams) => {
   return `${commonArgs}
       --runtime ${config.runtime} \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 // avaliable for AMD
@@ -184,7 +203,7 @@ const registerAMDWorker = (params: AddWorkerCommandParams) => {
       --volume /opt/rocm:/opt/rocm:ro \\
       --runtime ${config.runtime} \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 // avaliable for Ascend
@@ -196,7 +215,7 @@ const registerAscendWorker = (params: AddWorkerCommandParams) => {
       --env "ASCEND_VISIBLE_DEVICES=$(sudo ls /dev/davinci* | head -1 | grep -o '[0-9]\\+' || echo "0")" \\
       --runtime ${config.runtime} \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 const registerHygonWorker = (params: AddWorkerCommandParams) => {
@@ -209,7 +228,7 @@ const registerHygonWorker = (params: AddWorkerCommandParams) => {
       --env ROCM_PATH=/opt/dtk \\
       --env ROCM_SMI_LIB_PATH=/opt/hyhal/lib \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 const registerIluvatarWorker = (params: AddWorkerCommandParams) => {
@@ -222,7 +241,7 @@ const registerIluvatarWorker = (params: AddWorkerCommandParams) => {
       --volume /usr/bin/ixsmi:/usr/bin/ixsmi \\
       --runtime ${config.runtime} \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 const registerMetaXWorker = (params: AddWorkerCommandParams) => {
@@ -233,7 +252,7 @@ const registerMetaXWorker = (params: AddWorkerCommandParams) => {
       --volume /opt/mxdriver:/opt/mxdriver:ro \\
       --volume /opt/maca:/opt/maca:ro \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 const registerCambriconWorker = (params: AddWorkerCommandParams) => {
@@ -244,7 +263,7 @@ const registerCambriconWorker = (params: AddWorkerCommandParams) => {
       --volume /usr/local/neuware:/usr/local/neuware:ro \\
       --volume /usr/bin/cnmon:/usr/bin/cnmon \\
       ${imageArgs}
-      ${params.workerIP ? `--advertise-address ${params.workerIP} \\` : ''}`;
+      ${setWorkerIPArg(params)}`;
 };
 
 export const registerAddWokerCommandMap = {

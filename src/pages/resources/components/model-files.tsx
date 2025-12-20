@@ -3,6 +3,7 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -67,7 +68,10 @@ const ModelFiles = () => {
     deleteAPI: deleteModelFile,
     API: MODEL_FILES_API,
     watch: true,
-    contentForDelete: 'resources.modelfiles.modelfile'
+    contentForDelete: 'resources.modelfiles.modelfile',
+    defaultQueryParams: {
+      sort_by: '-created_at'
+    }
   });
   const intl = useIntl();
   const { showSuccess } = useAppUtils();
@@ -316,6 +320,7 @@ const ModelFiles = () => {
           <Table
             rowKey="id"
             tableLayout="fixed"
+            sortDirections={TABLE_SORT_DIRECTIONS}
             style={{ width: '100%' }}
             onChange={handleTableChange}
             dataSource={dataSource.dataList}

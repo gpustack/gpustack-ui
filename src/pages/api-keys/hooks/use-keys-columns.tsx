@@ -10,10 +10,7 @@ import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: {
-    order?: 'ascend' | 'descend' | null;
-    columnKey?: string;
-  };
+  sortOrder: string;
 }
 
 const actionList: Global.ActionItem[] = [
@@ -42,6 +39,9 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
+        sorter: {
+          multiple: 1
+        },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>
             {text}
@@ -52,6 +52,9 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'apikeys.form.expiretime' }),
         dataIndex: 'expires_at',
         key: 'expires_at',
+        sorter: {
+          multiple: 2
+        },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>
             {text
@@ -93,11 +96,9 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         defaultSortOrder: 'descend',
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'created_at'
-            ? sortOrder.order
-            : null,
-        sorter: false,
+        sorter: {
+          multiple: 3
+        },
         ellipsis: {
           showTitle: false
         },
@@ -120,7 +121,7 @@ const useModelsColumns = ({
         )
       }
     ];
-  }, [sortOrder, intl, handleSelect]);
+  }, [intl, handleSelect]);
 };
 
 export default useModelsColumns;

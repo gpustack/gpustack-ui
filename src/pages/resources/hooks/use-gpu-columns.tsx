@@ -39,10 +39,7 @@ const useGPUColumns = (props: {
   loadend: boolean;
   firstLoad: boolean;
   clusterList: Global.BaseOption<number>[];
-  sortOrder: {
-    order?: 'ascend' | 'descend' | null;
-    columnKey?: string;
-  };
+  sortOrder: string[];
 }): ColumnsType<GPUDeviceItem> => {
   const { clusterList, loadend, firstLoad, sortOrder } = props;
   const intl = useIntl();
@@ -53,11 +50,9 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 240,
-        sorter: false,
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'name'
-            ? sortOrder.order
-            : null,
+        sorter: {
+          multiple: 1
+        },
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost maxWidth={240}>
             {text}
@@ -67,11 +62,17 @@ const useGPUColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.table.index' }),
         dataIndex: 'index',
+        sorter: {
+          multiple: 2
+        },
         render: (text: string, record: GPUDeviceItem) => <span>{text}</span>
       },
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
+        sorter: {
+          multiple: 3
+        },
         ellipsis: {
           showTitle: false
         },
@@ -84,6 +85,9 @@ const useGPUColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_name',
+        sorter: {
+          multiple: 4
+        },
         ellipsis: {
           showTitle: false
         },
@@ -93,7 +97,10 @@ const useGPUColumns = (props: {
       },
       {
         title: intl.formatMessage({ id: 'resources.table.vender' }),
-        dataIndex: 'vendor'
+        dataIndex: 'vendor',
+        sorter: {
+          multiple: 5
+        }
       },
       {
         title: `${intl.formatMessage({ id: 'resources.table.temperature' })} (°C)`,
@@ -104,8 +111,11 @@ const useGPUColumns = (props: {
       },
       {
         title: `${intl.formatMessage({ id: 'resources.table.utilization' })}`,
-        dataIndex: 'gpuUtil',
-        key: 'gpuUtil',
+        dataIndex: 'core.utilization_rate',
+        key: 'core.utilization_rate',
+        sorter: {
+          multiple: 6
+        },
         render: (text: number, record: GPUDeviceItem) => {
           return (
             <>
@@ -122,8 +132,11 @@ const useGPUColumns = (props: {
       },
       {
         title: intl.formatMessage({ id: 'resources.table.vramutilization' }),
-        dataIndex: 'VRAM',
-        key: 'VRAM',
+        dataIndex: 'memory.utilization_rate',
+        key: 'memory.utilization_rate',
+        sorter: {
+          multiple: 7
+        },
         render: (text: number, record: GPUDeviceItem, index: number) => {
           return (
             <ProgressBar
@@ -147,7 +160,7 @@ const useGPUColumns = (props: {
         }
       }
     ];
-  }, [intl, sortOrder, clusterList, loadend, firstLoad]);
+  }, [intl, clusterList, loadend, firstLoad]);
 };
 
 export default useGPUColumns;

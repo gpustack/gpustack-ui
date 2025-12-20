@@ -7,6 +7,7 @@ import HeaderPrefix from './components/header-prefix';
 import TableBody from './components/table-body';
 import './styles/index.less';
 import { SealColumnProps, SealTableProps } from './types';
+import useSorter from './use-sorter';
 
 const Wrapper = styled.div<{ $token: any }>`
   --ant-table-cell-padding-inline: ${(props) =>
@@ -32,7 +33,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     childParentKey,
     onExpand,
     onExpandAll,
-    onSort,
+    onTableSort,
     onCell,
     expandedRowKeys,
     loading,
@@ -43,10 +44,15 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     rowSelection,
     pagination,
     empty,
+    sortDirections,
     renderChildren,
     loadChildren,
     loadChildrenAPI
   } = props;
+  const { handleOnTableSort } = useSorter({
+    onTableSort,
+    columns
+  });
   const { token } = theme.useToken();
   const parsedColumns = useMemo(() => {
     if (columns) return columns;
@@ -156,7 +162,11 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
             disabled={!props.dataSource?.length}
             hasColumns={parsedColumns.length > 0}
           ></HeaderPrefix>
-          <Header onSort={onSort} columns={parsedColumns}></Header>
+          <Header
+            onSort={handleOnTableSort}
+            columns={parsedColumns}
+            sortDirections={sortDirections}
+          ></Header>
         </div>
         <Spin spinning={loading}>
           <TableBody

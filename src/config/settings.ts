@@ -9,3 +9,10 @@ export const DEFAULT_ENTER_PAGE = {
 
 export const GPUSTACK_API_BASE_URL = 'v2';
 export const OPENAI_COMPATIBLE = 'v1';
+
+type SortDirection = 'ascend' | 'descend' | null;
+export const TABLE_SORT_DIRECTIONS: SortDirection[] = [
+  'ascend',
+  'descend',
+  null
+];

@@ -239,10 +239,7 @@ const useWorkerColumns = ({
   };
   loadend: boolean;
   firstLoad: boolean;
-  sortOrder: {
-    order?: 'ascend' | 'descend' | null;
-    columnKey?: string;
-  };
+  sortOrder: string[];
   handleSelect: (action: string, record: ListItem) => void;
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -277,11 +274,9 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 100,
-        sorter: false,
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'name'
-            ? sortOrder.order
-            : null,
+        sorter: {
+          multiple: 1
+        },
         render: (text: string) => (
           <AutoTooltip ghost maxWidth={240}>
             {text}
@@ -306,6 +301,9 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
+        sorter: {
+          multiple: 2
+        },
         render: (_, record) => (
           <StatusTag
             maxTooltipWidth={400}
@@ -321,6 +319,9 @@ const useWorkerColumns = ({
       {
         title: 'IP',
         dataIndex: 'ip',
+        sorter: {
+          multiple: 3
+        },
         render: (text: string, record) => (
           <AutoTooltip ghost maxWidth={240}>
             {renderIP(text, record)}
@@ -329,7 +330,10 @@ const useWorkerColumns = ({
       },
       {
         title: 'CPU',
-        dataIndex: 'cpu',
+        dataIndex: 'status.cpu.utilization_rate',
+        sorter: {
+          multiple: 4
+        },
         render: (text: string, record) =>
           statusAvailable(record) ? (
             <ProgressBar
@@ -341,7 +345,10 @@ const useWorkerColumns = ({
       },
       {
         title: intl.formatMessage({ id: 'resources.table.memory' }),
-        dataIndex: 'memory',
+        dataIndex: 'status.memory.utilization_rate',
+        sorter: {
+          multiple: 5
+        },
         render: (_, record) =>
           statusAvailable(record) ? (
             <ProgressBar

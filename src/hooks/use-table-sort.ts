@@ -23,3 +23,32 @@ export default function useTableSort({
     setSortOrder: handleSortChange
   };
 }
+
+type orderType = {
+  columnKey?: string;
+  field?: string;
+  order: SortOrder;
+};
+
+export function useTableMultiSort() {
+  const [sortOrder, setSortOrder] = useState<string[]>([]);
+
+  const handleMultiSortChange = (order: orderType | orderType[]) => {
+    const sortOrders = Array.isArray(order) ? order : [order];
+    const sortOrderMap: string[] = [];
+    sortOrders.forEach((item) => {
+      const key = item.columnKey || item.field;
+      if (key) {
+        sortOrderMap.push(item.order === 'descend' ? `-${key}` : key);
+      }
+    });
+
+    setSortOrder(sortOrderMap);
+    return sortOrderMap;
+  };
+
+  return {
+    sortOrder,
+    handleMultiSortChange
+  };
+}

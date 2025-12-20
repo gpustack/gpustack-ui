@@ -23,6 +23,9 @@ const useCredentialColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
+        sorter: {
+          multiple: 1
+        },
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
             {text}
@@ -32,6 +35,7 @@ const useCredentialColumns = (
       {
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
+        sorter: false,
         render: (value: string) => <span>{ProviderLabelMap[value]}</span>
       },
       {
@@ -39,11 +43,9 @@ const useCredentialColumns = (
         dataIndex: 'created_at',
         showSorterTooltip: false,
         defaultSortOrder: 'descend',
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'created_at'
-            ? sortOrder.order
-            : null,
-        sorter: false,
+        sorter: {
+          multiple: 3
+        },
         ellipsis: {
           showTitle: false
         },

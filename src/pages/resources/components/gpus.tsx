@@ -1,5 +1,6 @@
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import NoResult from '@/pages/_components/no-result';
 import PageBox from '@/pages/_components/page-box';
@@ -102,7 +103,7 @@ const GPUList: React.FC = () => {
           <Table
             columns={columns}
             style={{ width: '100%' }}
-            sortDirections={['ascend', 'descend', 'ascend']}
+            sortDirections={TABLE_SORT_DIRECTIONS}
             tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}

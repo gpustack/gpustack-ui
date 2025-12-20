@@ -1,15 +1,16 @@
 import { Col, Row } from 'antd';
 import React from 'react';
-import { SealColumnProps } from '../types';
+import { OnSortFn, SealColumnProps } from '../types';
 import TableHeader from './table-header';
 
 interface HeaderProps {
   columns: SealColumnProps[];
-  onSort?: (dataIndex: string, order: any) => void;
+  sortDirections?: ('ascend' | 'descend' | null)[];
+  onSort?: OnSortFn;
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
-  const { onSort } = props;
+  const { onSort, sortDirections } = props;
 
   return (
     <Row className="row">
@@ -32,6 +33,7 @@ const Header: React.FC<HeaderProps> = (props) => {
               sorter={sorter}
               dataIndex={dataIndex}
               sortOrder={sortOrder}
+              sortDirections={sortDirections}
               width={width}
               defaultSortOrder={defaultSortOrder}
               title={title}

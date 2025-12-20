@@ -255,10 +255,7 @@ const getWorkerName = (
 const useFilesColumns = (props: {
   handleSelect: (action: string, record: ListItem) => void;
   workersList: Global.BaseOption<number>[];
-  sortOrder: {
-    order?: 'ascend' | 'descend' | null;
-    columnKey?: string;
-  };
+  sortOrder: string[];
 }): ColumnsType<ListItem> => {
   const { workersList, sortOrder, handleSelect } = props;
   const intl = useIntl();
@@ -268,6 +265,9 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
+        sorter: {
+          multiple: 1
+        },
         ellipsis: {
           showTitle: false
         },
@@ -285,7 +285,10 @@ const useFilesColumns = (props: {
       },
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
-        dataIndex: 'worker_name',
+        dataIndex: 'worker_id',
+        sorter: {
+          multiple: 2
+        },
         width: '18%',
         ellipsis: {
           showTitle: false
@@ -309,6 +312,9 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
         dataIndex: 'resolved_paths',
+        sorter: {
+          multiple: 3
+        },
         width: '20%',
         ellipsis: {
           showTitle: false
@@ -336,15 +342,15 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
-        sorter: false,
+        defaultSortOrder: 'descend',
+        key: 'created_at',
+        sorter: {
+          multiple: 4
+        },
         width: 180,
         ellipsis: {
           showTitle: false
         },
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'created_at'
-            ? sortOrder.order
-            : null,
         render: (text: number) => (
           <AutoTooltip ghost minWidth={20}>
             {dayjs(text).format('YYYY-MM-DD HH:mm:ss')}
@@ -363,7 +369,7 @@ const useFilesColumns = (props: {
         )
       }
     ];
-  }, [intl, sortOrder, workersList, handleSelect]);
+  }, [intl, workersList, handleSelect]);
 };
 
 export default useFilesColumns;

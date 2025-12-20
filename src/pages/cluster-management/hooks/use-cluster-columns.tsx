@@ -33,6 +33,9 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
+        sorter: {
+          multiple: 1
+        },
         span: 3,
         render: (text: string, record: ClusterListItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>
@@ -41,6 +44,9 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
+        sorter: {
+          multiple: 2
+        },
         span: 4,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
@@ -86,6 +92,10 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
+        defaultSortOrder: 'descend',
+        sorter: {
+          multiple: 5
+        },
         span: 4,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>

@@ -6,7 +6,9 @@ import { PageSize } from '@/components/logs-viewer/config';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
 import SealTable from '@/components/seal-table';
+import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import { PageActionType } from '@/config/types';
 import useBodyScroll from '@/hooks/use-body-scroll';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
@@ -75,6 +77,8 @@ interface ModelsProps {
   handleOnToggleExpandAll: () => void;
   onStop?: (ids: number[]) => void;
   onStart?: () => void;
+  onTableSort?: (order: TableOrder | Array<TableOrder>) => void;
+  sortOrder: string[];
   queryParams: {
     page: number;
     perPage: number;
@@ -114,6 +118,8 @@ const Models: React.FC<ModelsProps> = ({
   handleClusterChange,
   onStop,
   onStart,
+  onTableSort,
+  sortOrder,
   deleteIds,
   dataSource,
   queryParams,
@@ -148,13 +154,6 @@ const Models: React.FC<ModelsProps> = ({
     removeExpandedRowKey,
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
-  const [sortOrder, setSortOrder] = useState<{
-    columnKey: string;
-    order: 'ascend' | 'descend' | null;
-  }>({
-    order: null,
-    columnKey: ''
-  });
 
   const [apiAccessInfo, setAPIAccessInfo] = useState<any>({
     show: false,
@@ -219,11 +218,8 @@ const Models: React.FC<ModelsProps> = ({
     currentData.current = data;
   };
 
-  const handleOnSort = (dataIndex: string, order: any) => {
-    setSortOrder({
-      columnKey: dataIndex,
-      order: order
-    });
+  const handleOnSort = (order: TableOrder | Array<TableOrder>) => {
+    onTableSort?.(order);
   };
 
   const handleOnCell = useMemoizedFn(async (record: any, extra: any) => {
@@ -710,6 +706,7 @@ const Models: React.FC<ModelsProps> = ({
 
         <SealTable
           columns={columns}
+          sortDirections={TABLE_SORT_DIRECTIONS}
           dataSource={dataSource}
           rowSelection={rowSelection}
           expandedRowKeys={expandedRowKeys}
@@ -720,7 +717,7 @@ const Models: React.FC<ModelsProps> = ({
           rowKey="id"
           childParentKey="model_id"
           expandable={true}
-          onSort={handleOnSort}
+          onTableSort={handleOnSort}
           onCell={handleOnCell}
           pollingChildren={false}
           watchChildren={true}

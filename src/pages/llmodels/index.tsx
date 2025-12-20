@@ -1,5 +1,7 @@
 import TableContext from '@/components/seal-table/table-context';
+import { TableOrder } from '@/components/seal-table/types';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
+import { useTableMultiSort } from '@/hooks/use-table-sort';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
@@ -15,6 +17,7 @@ import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
 const Models: React.FC = () => {
+  const { sortOrder, handleMultiSortChange } = useTableMultiSort();
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
     useSetChunkRequest();
@@ -43,7 +46,8 @@ const Models: React.FC = () => {
     perPage: 10,
     search: '',
     cluster_id: 0,
-    categories: []
+    categories: [],
+    sort_by: '-created_at'
   });
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({
@@ -96,6 +100,7 @@ const Models: React.FC = () => {
         perPage: number;
         search: string;
         categories: any[];
+        sort_by: string;
       };
     }) => {
       const { loadingVal, query } = params || {};
@@ -294,6 +299,23 @@ const Models: React.FC = () => {
     });
   };
 
+  const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
+    const sortKeys = handleMultiSortChange(order);
+    setQueryParams((pre: any) => {
+      return {
+        ...pre,
+        sort_by: sortKeys.join(',')
+      };
+    });
+    fetchData({
+      query: {
+        ...queryParams,
+        page: 1,
+        sort_by: sortKeys.join(',')
+      }
+    });
+  };
+
   useEffect(() => {
     let timer: any = null;
     // fetch data first time
@@ -397,6 +419,8 @@ const Models: React.FC = () => {
         onCancelViewLogs={handleOnCancelViewLogs}
         onStop={handleSearchBySilent}
         onStart={handleSearchBySilent}
+        onTableSort={handleOnSortChange}
+        sortOrder={sortOrder}
         queryParams={queryParams}
         loading={dataSource.loading}
         loadend={dataSource.loadend}

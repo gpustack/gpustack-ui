@@ -14,19 +14,39 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     firstCell,
     lastCell,
     sortOrder,
+    sortDirections = ['ascend', 'descend', null],
+    defaultSortOrder,
     onSort,
-    sorter,
+    sorter = false,
     width,
     dataIndex
   } = props;
 
-  const handleOnSort = () => {
-    if (sortOrder === 'ascend') {
-      onSort?.(dataIndex, 'descend');
-    } else {
-      onSort?.(dataIndex, 'ascend');
-    }
+  const [currentSortOrder, setCurrentSortOrder] = React.useState<
+    'ascend' | 'descend' | null
+  >(sortOrder || defaultSortOrder || null);
+
+  const getNextSortOrder = (currentOrder: 'ascend' | 'descend' | null) => {
+    const index = sortDirections.indexOf(currentOrder);
+    const nextIndex = (index + 1) % sortDirections.length;
+    return sortDirections[nextIndex];
   };
+
+  const handleOnSort = () => {
+    setCurrentSortOrder((prev) => {
+      const next = getNextSortOrder(prev);
+      onSort?.(
+        {
+          columnKey: dataIndex,
+          field: dataIndex,
+          order: next
+        },
+        sorter
+      );
+      return next;
+    });
+  };
+
   return (
     <div
       style={{ width, ...style }}
@@ -47,12 +67,12 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
           <span className="sorter">
             <CaretUpOutlined
               className={classNames('sorter-up', {
-                'sorter-active': sortOrder === 'ascend'
+                'sorter-active': currentSortOrder === 'ascend'
               })}
             ></CaretUpOutlined>
             <CaretDownOutlined
               className={classNames('sorter-down', {
-                'sorter-active': sortOrder === 'descend'
+                'sorter-active': currentSortOrder === 'descend'
               })}
             ></CaretDownOutlined>
           </span>

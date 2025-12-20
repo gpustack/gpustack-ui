@@ -71,12 +71,9 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'username',
         key: 'username',
-        defaultSortOrder: 'descend',
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'username'
-            ? sortOrder.order
-            : null,
-        sorter: false,
+        sorter: {
+          multiple: 1
+        },
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>
             {text}
@@ -85,8 +82,11 @@ const useUsersColumns = ({
       },
       {
         title: intl.formatMessage({ id: 'users.table.role' }),
-        dataIndex: 'role',
-        key: 'role',
+        dataIndex: 'is_admin',
+        key: 'is_admin',
+        sorter: {
+          multiple: 6
+        },
         ellipsis: {
           showTitle: false
         },
@@ -125,6 +125,9 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.form.source' }),
         dataIndex: 'source',
         key: 'source',
+        sorter: {
+          multiple: 3
+        },
         ellipsis: {
           showTitle: false
         },
@@ -138,6 +141,9 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.table.status' }),
         dataIndex: 'is_active',
         key: 'is_active',
+        sorter: {
+          multiple: 4
+        },
         ellipsis: {
           showTitle: false
         },
@@ -185,11 +191,9 @@ const useUsersColumns = ({
         key: 'created_at',
         defaultSortOrder: 'descend',
         showSorterTooltip: false,
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'created_at'
-            ? sortOrder.order
-            : null,
-        sorter: false,
+        sorter: {
+          multiple: 5
+        },
         ellipsis: {
           showTitle: false
         },

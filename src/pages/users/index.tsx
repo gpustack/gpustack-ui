@@ -2,6 +2,7 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl, useModel } from '@umijs/max';
@@ -38,7 +39,10 @@ const Users: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryUsersList,
     deleteAPI: deleteUser,
-    contentForDelete: 'users.table.user'
+    contentForDelete: 'users.table.user',
+    defaultQueryParams: {
+      sort_by: '-created_at'
+    }
   });
 
   const { initialState } = useModel('@@initialState') || {};
@@ -188,7 +192,7 @@ const Users: React.FC = () => {
             dataSource={dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
-            sortDirections={['ascend', 'descend', 'ascend']}
+            sortDirections={TABLE_SORT_DIRECTIONS}
             rowKey="id"
             onChange={handleTableChange}
             pagination={{

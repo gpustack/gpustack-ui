@@ -4,7 +4,9 @@ import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import SealTable from '@/components/seal-table';
 import TableContext from '@/components/seal-table/table-context';
+import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -54,6 +56,7 @@ const Clusters: React.FC = () => {
     rowSelection,
     queryParams,
     modalRef,
+    handleTableChange,
     handleDelete,
     handleDeleteBatch,
     fetchData,
@@ -65,7 +68,10 @@ const Clusters: React.FC = () => {
     deleteAPI: deleteCluster,
     watch: true,
     API: CLUSTERS_API,
-    contentForDelete: 'menu.clusterManagement.clusters'
+    contentForDelete: 'menu.clusterManagement.clusters',
+    defaultQueryParams: {
+      sort_by: '-created_at'
+    }
   });
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
@@ -227,6 +233,10 @@ const Clusters: React.FC = () => {
     }
   );
 
+  const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
+    handleTableChange({}, {}, order);
+  };
+
   const setDisableExpand = (row: ClusterListItem) => {
     return (
       row.provider !== ProviderValueMap.DigitalOcean ||
@@ -314,10 +324,12 @@ const Clusters: React.FC = () => {
           <SealTable
             rowKey="id"
             loadChildren={getWorkerPoolList}
+            sortDirections={TABLE_SORT_DIRECTIONS}
             expandedRowKeys={expandedRowKeys}
             onExpand={handleExpandChange}
             onExpandAll={handleToggleExpandAll}
             renderChildren={renderChildren}
+            onTableSort={handleOnSortChange}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             loadend={dataSource.loadend}

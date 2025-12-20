@@ -1,5 +1,6 @@
 import DeleteModal from '@/components/delete-modal';
 import { FilterBar } from '@/components/page-tools';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
@@ -51,7 +52,10 @@ const Workers: React.FC = () => {
     events: ['UPDATE', 'DELETE', 'INSERT'],
     contentForDelete: 'resources.worker',
     watch: true,
-    API: WORKERS_API
+    API: WORKERS_API,
+    defaultQueryParams: {
+      sort_by: '-created_at'
+    }
   });
   const { TerminalPanel, terminals, handleAddTerminal } = useTerminalTabs();
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
@@ -270,7 +274,7 @@ const Workers: React.FC = () => {
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             columns={columns}
-            sortDirections={['ascend', 'descend', 'ascend']}
+            sortDirections={TABLE_SORT_DIRECTIONS}
             tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
             style={{ width: '100%' }}
             dataSource={dataSource.dataList}

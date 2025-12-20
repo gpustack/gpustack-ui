@@ -6,7 +6,6 @@ import { OPENAI_COMPATIBLE } from '@/config/settings';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
-import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
@@ -34,10 +33,7 @@ const setModelActionList = (record: any) => {
 
 interface ModelsColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: {
-    columnKey: string;
-    order: SortOrder;
-  };
+  sortOrder: string[];
   clusterList: Global.BaseOption<
     number,
     { provider: string; state: string | number }
@@ -57,11 +53,9 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'name'
-            ? sortOrder.order
-            : null,
-        sorter: false,
+        sorter: {
+          multiple: 1
+        },
         span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
@@ -74,8 +68,11 @@ const useModelsColumns = ({
       },
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
-        dataIndex: 'cluster',
-        key: 'cluster',
+        dataIndex: 'cluster_id',
+        key: 'cluster_id',
+        sorter: {
+          multiple: 2
+        },
         span: 3,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
@@ -90,6 +87,9 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
         key: 'source',
+        sorter: {
+          multiple: 3
+        },
         span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
@@ -111,9 +111,12 @@ const useModelsColumns = ({
             <QuestionCircleOutlined className="m-l-5" />
           </Tooltip>
         ),
-        dataIndex: 'replicas',
-        key: 'replicas',
+        dataIndex: 'ready_replicas',
+        key: 'ready_replicas',
         align: 'center',
+        sorter: {
+          multiple: 4
+        },
         span: 4,
         editable: {
           valueType: 'number',
@@ -130,11 +133,9 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         defaultSortOrder: 'descend',
-        sortOrder:
-          sortOrder.order && sortOrder.columnKey === 'created_at'
-            ? sortOrder.order
-            : null,
-        sorter: false,
+        sorter: {
+          multiple: 5
+        },
         span: 4,
         render: (text: number) => (
           <AutoTooltip ghost>

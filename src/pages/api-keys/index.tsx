@@ -17,6 +17,7 @@ import useKeysColumns from './hooks/use-keys-columns';
 
 const APIKeys: React.FC = () => {
   const {
+    TABLE_SORT_DIRECTIONS,
     dataSource,
     rowSelection,
     queryParams,
@@ -32,7 +33,10 @@ const APIKeys: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryApisKeysList,
     deleteAPI: deleteApisKey,
-    contentForDelete: 'apikeys.table.apikeys'
+    contentForDelete: 'apikeys.table.apikeys',
+    defaultQueryParams: {
+      sort_by: '-created_at'
+    }
   });
 
   const intl = useIntl();
@@ -139,7 +143,7 @@ const APIKeys: React.FC = () => {
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
-            sortDirections={['ascend', 'descend', 'ascend']}
+            sortDirections={TABLE_SORT_DIRECTIONS}
             rowKey="id"
             onChange={handleTableChange}
             pagination={{

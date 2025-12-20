@@ -58,7 +58,10 @@ const Credentials: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryCredentialList,
     deleteAPI: deleteCredential,
-    contentForDelete: 'menu.clusterManagement.credentials'
+    contentForDelete: 'menu.clusterManagement.credentials',
+    defaultQueryParams: {
+      sort_by: '-created_at'
+    }
   });
   const [isFromCluster, setIsFromCluster] = useAtom(fromClusterCreationAtom);
   const intl = useIntl();

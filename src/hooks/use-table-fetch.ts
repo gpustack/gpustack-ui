@@ -1,3 +1,4 @@
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
@@ -5,6 +6,7 @@ import { handleBatchRequest } from '@/utils';
 import _ from 'lodash';
 import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
+import { useTableMultiSort } from './use-table-sort';
 
 type EventsType = 'CREATE' | 'UPDATE' | 'DELETE' | 'INSERT';
 
@@ -51,13 +53,7 @@ export default function useTableFetch<T>(
   const chunkRequedtRef = useRef<any>(null);
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
-  const [sortOrder, setSortOrder] = useState<{
-    order?: 'ascend' | 'descend' | null;
-    columnKey?: string;
-  }>({
-    order: null,
-    columnKey: undefined
-  });
+  const { sortOrder, handleMultiSortChange } = useTableMultiSort();
 
   // for skeleton loading
   const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
@@ -81,6 +77,7 @@ export default function useTableFetch<T>(
     page: 1,
     perPage: 10,
     search: '',
+    sort_by: '',
     ...defaultQueryParams
   });
 
@@ -106,7 +103,6 @@ export default function useTableFetch<T>(
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
-      console.log('list================:', list);
       updateChunkedList(data);
     });
   };
@@ -238,9 +234,19 @@ export default function useTableFetch<T>(
   };
 
   const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    setSortOrder({
-      order: sorter.order,
-      columnKey: sorter.columnKey || sorter.field
+    const sortKeys = handleMultiSortChange(sorter);
+    setQueryParams((pre: any) => {
+      return {
+        ...pre,
+        sort_by: sortKeys.join(',')
+      };
+    });
+    fetchData({
+      query: {
+        ...queryParams,
+        page: 1,
+        sort_by: sortKeys.join(',')
+      }
     });
   };
 
@@ -337,6 +343,7 @@ export default function useTableFetch<T>(
     queryParams,
     modalRef,
     extraStatus,
+    TABLE_SORT_DIRECTIONS,
     setQueryParams,
     handleDelete,
     handleDeleteBatch,

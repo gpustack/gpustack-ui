@@ -4,6 +4,7 @@ import LabelsCell from '@/components/label-cell';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
 import StatusTag from '@/components/status-tag';
+import { tableSorter } from '@/config/settings';
 import { convertFileSize } from '@/utils';
 import {
   DeleteOutlined,
@@ -274,9 +275,7 @@ const useWorkerColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 100,
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost maxWidth={240}>
             {text}
@@ -301,9 +300,7 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
-        sorter: {
-          multiple: 2
-        },
+        sorter: tableSorter(2),
         render: (_, record) => (
           <StatusTag
             maxTooltipWidth={400}
@@ -319,9 +316,7 @@ const useWorkerColumns = ({
       {
         title: 'IP',
         dataIndex: 'ip',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         render: (text: string, record) => (
           <AutoTooltip ghost maxWidth={240}>
             {renderIP(text, record)}
@@ -331,9 +326,7 @@ const useWorkerColumns = ({
       {
         title: 'CPU',
         dataIndex: 'status.cpu.utilization_rate',
-        sorter: {
-          multiple: 4
-        },
+        sorter: tableSorter(4),
         render: (text: string, record) =>
           statusAvailable(record) ? (
             <ProgressBar
@@ -346,9 +339,7 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'resources.table.memory' }),
         dataIndex: 'status.memory.utilization_rate',
-        sorter: {
-          multiple: 5
-        },
+        sorter: tableSorter(5),
         render: (_, record) =>
           statusAvailable(record) ? (
             <ProgressBar

@@ -2,7 +2,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
-import { OPENAI_COMPATIBLE } from '@/config/settings';
+import { OPENAI_COMPATIBLE, tableSorter } from '@/config/settings';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tooltip } from 'antd';
@@ -53,9 +53,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex-center" style={{ maxWidth: '100%' }}>
@@ -70,9 +68,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
         key: 'cluster_id',
-        sorter: {
-          multiple: 2
-        },
+        sorter: tableSorter(2),
         span: 3,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
@@ -87,9 +83,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
         key: 'source',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         span: 5,
         render: (text: string, record: ListItem) => (
           <span className="flex flex-column" style={{ width: '100%' }}>
@@ -114,9 +108,7 @@ const useModelsColumns = ({
         dataIndex: 'ready_replicas',
         key: 'ready_replicas',
         align: 'center',
-        sorter: {
-          multiple: 4
-        },
+        sorter: tableSorter(4),
         span: 4,
         editable: {
           valueType: 'number',
@@ -133,9 +125,7 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         defaultSortOrder: 'descend',
-        sorter: {
-          multiple: 5
-        },
+        sorter: tableSorter(5),
         span: 4,
         render: (text: number) => (
           <AutoTooltip ghost>

@@ -2,6 +2,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import icons from '@/components/icon-font/icons';
+import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
 import dayjs from 'dayjs';
@@ -39,9 +40,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         key: 'name',
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>
             {text}
@@ -52,9 +51,7 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'apikeys.form.expiretime' }),
         dataIndex: 'expires_at',
         key: 'expires_at',
-        sorter: {
-          multiple: 2
-        },
+        sorter: tableSorter(2),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost>
             {text
@@ -96,9 +93,7 @@ const useModelsColumns = ({
         dataIndex: 'created_at',
         key: 'created_at',
         defaultSortOrder: 'descend',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
         },

@@ -2,6 +2,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import { TooltipOverlayScroller } from '@/components/overlay-scroller';
 import StatusTag from '@/components/status-tag';
+import { tableSorter } from '@/config/settings';
 import { modelSourceMap } from '@/pages/llmodels/config';
 import { modelFileActions } from '@/pages/llmodels/config/button-actions';
 import { convertFileSize } from '@/utils';
@@ -265,9 +266,7 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         ellipsis: {
           showTitle: false
         },
@@ -286,9 +285,7 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_id',
-        sorter: {
-          multiple: 2
-        },
+        sorter: tableSorter(2),
         width: '18%',
         ellipsis: {
           showTitle: false
@@ -312,9 +309,7 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.modelfiles.form.path' }),
         dataIndex: 'resolved_paths',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         width: '20%',
         ellipsis: {
           showTitle: false
@@ -344,9 +339,7 @@ const useFilesColumns = (props: {
         dataIndex: 'created_at',
         defaultSortOrder: 'descend',
         key: 'created_at',
-        sorter: {
-          multiple: 4
-        },
+        sorter: tableSorter(4),
         width: 180,
         ellipsis: {
           showTitle: false

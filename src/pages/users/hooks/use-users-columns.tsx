@@ -3,6 +3,7 @@ import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import icons from '@/components/icon-font/icons';
+import { tableSorter } from '@/config/settings';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Tag } from 'antd';
@@ -71,9 +72,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'username',
         key: 'username',
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         render: (text: string, record: ListItem) => (
           <AutoTooltip ghost style={{ maxWidth: 400 }}>
             {text}
@@ -84,9 +83,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.table.role' }),
         dataIndex: 'is_admin',
         key: 'is_admin',
-        sorter: {
-          multiple: 6
-        },
+        sorter: tableSorter(6),
         ellipsis: {
           showTitle: false
         },
@@ -125,9 +122,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.form.source' }),
         dataIndex: 'source',
         key: 'source',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
         },
@@ -141,9 +136,7 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'users.table.status' }),
         dataIndex: 'is_active',
         key: 'is_active',
-        sorter: {
-          multiple: 4
-        },
+        sorter: tableSorter(4),
         ellipsis: {
           showTitle: false
         },
@@ -191,9 +184,7 @@ const useUsersColumns = ({
         key: 'created_at',
         defaultSortOrder: 'descend',
         showSorterTooltip: false,
-        sorter: {
-          multiple: 5
-        },
+        sorter: tableSorter(5),
         ellipsis: {
           showTitle: false
         },

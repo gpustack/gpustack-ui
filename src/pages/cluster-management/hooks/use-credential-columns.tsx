@@ -1,6 +1,7 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
 import type { SortOrder } from 'antd/es/table/interface';
@@ -23,9 +24,7 @@ const useCredentialColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         render: (text: string) => (
           <AutoTooltip ghost minWidth={20}>
             {text}
@@ -43,9 +42,7 @@ const useCredentialColumns = (
         dataIndex: 'created_at',
         showSorterTooltip: false,
         defaultSortOrder: 'descend',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
         },

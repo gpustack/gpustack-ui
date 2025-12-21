@@ -1,6 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import ProgressBar from '@/components/progress-bar';
 import InfoColumn from '@/components/simple-table/info-column';
+import { tableSorter } from '@/config/settings';
 import { convertFileSize } from '@/utils';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/lib/table';
@@ -50,9 +51,7 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 240,
-        sorter: {
-          multiple: 1
-        },
+        sorter: tableSorter(1),
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost maxWidth={240}>
             {text}
@@ -62,17 +61,13 @@ const useGPUColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.table.index' }),
         dataIndex: 'index',
-        sorter: {
-          multiple: 2
-        },
+        sorter: tableSorter(2),
         render: (text: string, record: GPUDeviceItem) => <span>{text}</span>
       },
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
-        sorter: {
-          multiple: 3
-        },
+        sorter: tableSorter(3),
         ellipsis: {
           showTitle: false
         },
@@ -85,9 +80,7 @@ const useGPUColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_name',
-        sorter: {
-          multiple: 4
-        },
+        sorter: tableSorter(4),
         ellipsis: {
           showTitle: false
         },
@@ -98,9 +91,7 @@ const useGPUColumns = (props: {
       {
         title: intl.formatMessage({ id: 'resources.table.vender' }),
         dataIndex: 'vendor',
-        sorter: {
-          multiple: 5
-        }
+        sorter: tableSorter(5)
       },
       {
         title: `${intl.formatMessage({ id: 'resources.table.temperature' })} (°C)`,
@@ -113,9 +104,7 @@ const useGPUColumns = (props: {
         title: `${intl.formatMessage({ id: 'resources.table.utilization' })}`,
         dataIndex: 'core.utilization_rate',
         key: 'core.utilization_rate',
-        sorter: {
-          multiple: 6
-        },
+        sorter: tableSorter(6),
         render: (text: number, record: GPUDeviceItem) => {
           return (
             <>
@@ -134,9 +123,7 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'resources.table.vramutilization' }),
         dataIndex: 'memory.utilization_rate',
         key: 'memory.utilization_rate',
-        sorter: {
-          multiple: 7
-        },
+        sorter: tableSorter(7),
         render: (text: number, record: GPUDeviceItem, index: number) => {
           return (
             <ProgressBar

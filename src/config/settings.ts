@@ -11,8 +11,18 @@ export const GPUSTACK_API_BASE_URL = 'v2';
 export const OPENAI_COMPATIBLE = 'v1';
 
 type SortDirection = 'ascend' | 'descend' | null;
+
 export const TABLE_SORT_DIRECTIONS: SortDirection[] = [
   'ascend',
   'descend',
   null
 ];
+
+export const tableSorter = (order: number | boolean) => {
+  if (typeof order === 'number') {
+    return {
+      multiple: order
+    };
+  }
+  return order;
+};

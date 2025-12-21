@@ -161,21 +161,6 @@ const ModelItem: React.FC<{
     return _.round(max_tokens / 1024);
   }, [model]);
 
-  const status = useMemo(() => {
-    if (!model.replicas && !model.ready_replicas) {
-      return MyModelsStatusValueMap.Inactive;
-    }
-
-    if (model.replicas > 0 && !model.ready_replicas) {
-      return MyModelsStatusValueMap.Degrade;
-    }
-
-    if (model.replicas === model.ready_replicas && model.replicas > 0) {
-      return MyModelsStatusValueMap.Active;
-    }
-    return MyModelsStatusValueMap.Degrade;
-  }, [model]);
-
   return (
     <CardWrapper>
       <Card
@@ -198,7 +183,7 @@ const ModelItem: React.FC<{
               statusValue={{
                 status: MyModelsStatusMap[model.status],
                 text: intl.formatMessage({
-                  id: MyModelsStatusLabelMap[model.status]
+                  id: MyModelsStatusLabelMap[model.status] || ''
                 }),
                 message: model.state_message
               }}

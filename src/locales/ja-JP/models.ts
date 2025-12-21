@@ -216,8 +216,8 @@ export default {
   'models.form.gpusAllocationType.custom.tips':
     'You can specify the exact number of GPUs per replica.',
   'models.mymodels.status.inactive': 'Stopped',
-  'models.mymodels.status.degrade': 'Abnormal',
-  'models.mymodels.status.active': 'Active',
+  'models.mymodels.status.degrade': 'Not Ready',
+  'models.mymodels.status.active': 'Ready',
   'models.form.kvCache.tips':
     'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
   'models.form.kvCache.tips2':
@@ -313,8 +313,8 @@ export default {
 // 37.  'models.form.gpusAllocationType.auto.tips': 'The system automatically calculates the GPU count per replica, using powers of two by default and capped by the selected GPUs.',
 // 38.  'models.form.gpusAllocationType.custom.tips': 'You can specify the exact number of GPUs per replica.',
 // 39.  'models.mymodels.status.inactive': 'Stopped',
-// 41.  'models.mymodels.status.degrade': 'Abnormal',
-// 42.  'models.mymodels.status.active': 'Active'
+// 41.  'models.mymodels.status.degrade': 'Not Ready',
+// 42.  'models.mymodels.status.active': 'Ready',
 // 43. 'models.form.remoteURL.tips': 'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
 // 44.  'models.form.kvCache.tips': 'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
 // 45. 'models.form.kvCache.tips2': 'Only supported when using built-in inference backends (vLLM or SGLang).',

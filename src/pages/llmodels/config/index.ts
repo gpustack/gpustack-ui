@@ -196,9 +196,9 @@ export const status: any = {
 };
 
 export const MyModelsStatusValueMap = {
-  Inactive: 'Inactive',
-  Degrade: 'Degrade',
-  Active: 'Active'
+  Inactive: 'stopped',
+  Degrade: 'not_ready',
+  Active: 'ready'
 };
 
 export const MyModelsStatusMap = {

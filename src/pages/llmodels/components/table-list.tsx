@@ -56,6 +56,7 @@ import {
   ModelInstanceListItem,
   SourceType
 } from '../config/types';
+import useFilterStatus from '../hooks/use-filter-status';
 import useFormInitialValues from '../hooks/use-form-initial-values';
 import useModelsColumns from '../hooks/use-models-columns';
 import AccessControlModal from './access-control-modal';
@@ -78,6 +79,7 @@ interface ModelsProps {
   onStop?: (ids: number[]) => void;
   onStart?: () => void;
   onTableSort?: (order: TableOrder | Array<TableOrder>) => void;
+  onStatusChange: (value?: any) => void;
   sortOrder: string[];
   queryParams: {
     page: number;
@@ -119,6 +121,7 @@ const Models: React.FC<ModelsProps> = ({
   onStop,
   onStart,
   onTableSort,
+  onStatusChange,
   sortOrder,
   deleteIds,
   dataSource,
@@ -154,6 +157,10 @@ const Models: React.FC<ModelsProps> = ({
     removeExpandedRowKey,
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
+  const { labelRender, optionRender, handleStatusChange, statusOptions } =
+    useFilterStatus({
+      onStatusChange: onStatusChange
+    });
 
   const [apiAccessInfo, setAPIAccessInfo] = useState<any>({
     show: false,
@@ -662,6 +669,18 @@ const Models: React.FC<ModelsProps> = ({
                 maxTagCount={1}
                 onChange={handleClusterChange}
                 options={clusterList}
+              ></BaseSelect>
+              <BaseSelect
+                allowClear
+                showSearch={false}
+                placeholder={intl.formatMessage({ id: 'common.filter.status' })}
+                style={{ width: 180 }}
+                size="large"
+                maxTagCount={1}
+                optionRender={optionRender}
+                labelRender={labelRender}
+                options={statusOptions}
+                onChange={handleStatusChange}
               ></BaseSelect>
               <Button
                 type="text"

@@ -47,6 +47,7 @@ const Models: React.FC = () => {
     search: '',
     cluster_id: 0,
     categories: [],
+    state: '',
     sort_by: '-created_at'
   });
 
@@ -197,6 +198,7 @@ const Models: React.FC = () => {
       search: string;
       categories: any[];
       cluster_id: number;
+      state?: string;
     }) => {
       const search = params?.search || queryParams.search;
       const categories = params?.categories || queryParams.categories;
@@ -284,6 +286,19 @@ const Models: React.FC = () => {
       search: queryParams.search,
       cluster_id: queryParams.cluster_id || 0,
       categories: value
+    });
+  };
+
+  const handleOnStatusChange = async (value: string | undefined) => {
+    handleQueryChange({
+      page: 1,
+      state: value
+    });
+    createModelsChunkRequest({
+      search: queryParams.search,
+      categories: queryParams.categories,
+      cluster_id: queryParams.cluster_id || 0,
+      state: value
     });
   };
 
@@ -408,6 +423,7 @@ const Models: React.FC = () => {
     >
       <TableList
         dataSource={dataSource.dataList}
+        onStatusChange={handleOnStatusChange}
         handleNameChange={handleNameChange}
         handleCategoryChange={handleCategoryChange}
         handleClusterChange={handleClusterChange}

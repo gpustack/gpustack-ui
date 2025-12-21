@@ -216,8 +216,8 @@ export default {
   'models.form.gpusAllocationType.custom.tips':
     'You can specify the exact number of GPUs per replica.',
   'models.mymodels.status.inactive': 'Stopped',
-  'models.mymodels.status.degrade': 'Abnormal',
-  'models.mymodels.status.active': 'Active',
+  'models.mymodels.status.degrade': 'Not Ready',
+  'models.mymodels.status.active': 'Ready',
   'models.form.kvCache.tips':
     'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
   'models.form.kvCache.tips2':

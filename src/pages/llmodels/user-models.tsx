@@ -62,7 +62,6 @@ const UserModels: React.FC = () => {
     }
   });
   const intl = useIntl();
-  const [status, setStatus] = React.useState<string | undefined>(undefined);
 
   const statusOptions = useMemo(() => {
     return [
@@ -131,7 +130,9 @@ const UserModels: React.FC = () => {
   });
 
   const handleStatusChange = (value: string) => {
-    setStatus(value);
+    handleQueryChange({
+      state: value
+    });
   };
 
   const labelRender = (item: any) => {
@@ -166,9 +167,8 @@ const UserModels: React.FC = () => {
         status: getStatus(item)
       };
     });
-    if (!status) return result;
-    return result.filter((item) => item.status === status);
-  }, [dataSource.dataList, status]);
+    return result;
+  }, [dataSource.dataList]);
 
   return (
     <PageBox>
@@ -242,7 +242,7 @@ const UserModels: React.FC = () => {
           loadend={dataSource.loadend}
           dataSource={dataList}
           image={<IconFont type="icon-models" />}
-          filters={{ ...queryParams, status: status }}
+          filters={{ ...queryParams }}
           noFoundText={intl.formatMessage({
             id: 'noresult.mymodels.nofound'
           })}

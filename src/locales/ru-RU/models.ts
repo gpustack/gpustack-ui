@@ -220,8 +220,8 @@ export default {
   'models.form.gpusAllocationType.custom.tips':
     'Вы можете указать точное количество GPU на реплику.',
   'models.mymodels.status.inactive': 'Остановлен',
-  'models.mymodels.status.degrade': 'Аномальный',
-  'models.mymodels.status.active': 'Активен',
+  'models.mymodels.status.degrade': 'Не готов',
+  'models.mymodels.status.active': 'Готов',
   'models.form.kvCache.tips':
     'Расширенный KV-кэш и спекулятивное декодирование доступны только со встроенными бэкендами (vLLM / SGLang). Переключите бэкенд в <span class="bold-text">Расширенных</span> настройках, чтобы включить их.',
   'models.form.kvCache.tips2':

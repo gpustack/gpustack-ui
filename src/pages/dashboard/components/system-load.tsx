@@ -2,6 +2,7 @@ import CardWrapper from '@/components/card-wrapper';
 import GaugeChart from '@/components/echarts/gauge';
 import PageTools from '@/components/page-tools';
 import BaseSelect from '@/components/seal-form/base/select';
+import { queryClusterList } from '@/pages/cluster-management/apis';
 import { useIntl } from '@umijs/max';
 import { Col, Row } from 'antd';
 import _ from 'lodash';
@@ -15,8 +16,11 @@ const resourceChartHeight = 400;
 
 const SystemLoad = () => {
   const intl = useIntl();
-  const { system_load, fetchData, clusterList } = useContext(DashboardContext);
+  const { system_load, fetchData } = useContext(DashboardContext);
   const [systemLoadData, setSystemLoadData] = useState<any>(system_load || {});
+  const [clusterList, setClusterList] = useState<Global.BaseOption<number>[]>(
+    []
+  );
 
   const chartData = useMemo(() => {
     const data = systemLoadData?.current || {};
@@ -48,6 +52,22 @@ const SystemLoad = () => {
       setSystemLoadData({});
     }
   };
+
+  useEffect(() => {
+    const fetchClusters = async () => {
+      try {
+        const res = await queryClusterList({ page: -1 });
+        const options = res.items.map((cluster: any) => ({
+          label: cluster.name,
+          value: cluster.id
+        }));
+        setClusterList(options);
+      } catch (error) {
+        setClusterList([]);
+      }
+    };
+    fetchClusters();
+  }, []);
 
   return (
     <div>

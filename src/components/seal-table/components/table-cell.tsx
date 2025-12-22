@@ -29,7 +29,7 @@ const CellWrapper = styled.div`
 `;
 
 const TableCell: React.FC<SealColumnProps> = (props) => {
-  const { dataIndex, render, align, editable } = props;
+  const { dataIndex, render, align, editable, dataField } = props;
 
   return (
     <CellWrapper
@@ -40,7 +40,7 @@ const TableCell: React.FC<SealColumnProps> = (props) => {
       })}
     >
       <CellContent
-        dataIndex={dataIndex}
+        dataIndex={dataField || dataIndex}
         render={render}
         editable={editable}
       ></CellContent>

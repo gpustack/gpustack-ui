@@ -80,6 +80,7 @@ interface ModelsProps {
   onStart?: () => void;
   onTableSort?: (order: TableOrder | Array<TableOrder>) => void;
   onStatusChange: (value?: any) => void;
+  onDeleteInstanceFromCache?: (instanceId: number) => void;
   sortOrder: string[];
   queryParams: {
     page: number;
@@ -122,6 +123,7 @@ const Models: React.FC<ModelsProps> = ({
   onStart,
   onTableSort,
   onStatusChange,
+  onDeleteInstanceFromCache,
   sortOrder,
   deleteIds,
   dataSource,
@@ -231,7 +233,7 @@ const Models: React.FC<ModelsProps> = ({
 
   const handleOnCell = useMemoizedFn(async (record: any, extra: any) => {
     try {
-      await updateModel(getFormattedData(record));
+      await updateModel(getFormattedData(record, { replicas: extra.newValue }));
       message.success(intl.formatMessage({ id: 'common.message.success' }));
       if (extra.newValue > extra.oldValue) {
         updateExpandedRowKeys([record.id, ...expandedRowKeys]);
@@ -367,41 +369,37 @@ const Models: React.FC<ModelsProps> = ({
     navigate(`/playground/chat?model=${row.name}`);
   };
 
-  const handleViewLogs = useCallback(
-    async (row: any) => {
-      try {
-        setCurrentInstance({
-          url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
-          status: row.state,
-          id: row.id,
-          modelId: row.model_id,
-          tail: InstanceRealtimeLogStatus.includes(row.state)
-            ? undefined
-            : PageSize - 1
-        });
-        setOpenLogModal(true);
-        onViewLogs();
-        saveScrollHeight();
-      } catch (error) {
-        console.log('error:', error);
-      }
-    },
-    [onViewLogs]
-  );
-  const handleDeleteInstace = useCallback(
-    (row: any) => {
-      modalRef.current?.show({
-        content: 'models.instances',
-        okText: 'common.button.delrecreate',
-        operation: 'common.delete.single.confirm',
-        name: row.name,
-        async onOk() {
-          await deleteModelInstance(row.id);
-        }
+  const handleViewLogs = async (row: any) => {
+    try {
+      setCurrentInstance({
+        url: `${MODEL_INSTANCE_API}/${row.id}/logs`,
+        status: row.state,
+        id: row.id,
+        modelId: row.model_id,
+        tail: InstanceRealtimeLogStatus.includes(row.state)
+          ? undefined
+          : PageSize - 1
       });
-    },
-    [deleteModelInstance]
-  );
+      setOpenLogModal(true);
+      onViewLogs();
+      saveScrollHeight();
+    } catch (error) {
+      console.log('error:', error);
+    }
+  };
+
+  const handleDeleteInstace = (row: any) => {
+    modalRef.current?.show({
+      content: 'models.instances',
+      okText: 'common.button.delrecreate',
+      operation: 'common.delete.single.confirm',
+      name: row.name,
+      async onOk() {
+        await deleteModelInstance(row.id);
+        onDeleteInstanceFromCache?.(row.id);
+      }
+    });
+  };
 
   const getModelInstances = useCallback(async (row: any, options?: any) => {
     try {

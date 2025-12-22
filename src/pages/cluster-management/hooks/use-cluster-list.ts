@@ -1,8 +1,13 @@
-import { clusterListAtom, workerListAtom } from '@/atoms/models';
+import {
+  clusterListAtom,
+  resourceOverviewAtom,
+  workerListAtom
+} from '@/atoms/models';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { queryWorkersList } from '@/pages/resources/apis';
 import { useAtom } from 'jotai';
 import { useState } from 'react';
+import { queryDashboardData } from '../../dashboard/apis';
 
 /**
  * Currently fetch the cluster list and worker list for checking resource existence.
@@ -32,6 +37,11 @@ export default function useClusterList() {
   >([]);
   const [clustersAtom, setClusterListAtom] = useAtom(clusterListAtom);
   const [workersAtom, setWorkerListAtom] = useAtom(workerListAtom);
+  const [resourceAtom, setResourceOverview] = useAtom(resourceOverviewAtom);
+  const [resourceCount, setResourceCount] = useState<Record<string, any>>({
+    cluster_count: 0,
+    worker_count: 0
+  });
 
   const fetchClusterList = async () => {
     try {
@@ -67,7 +77,7 @@ export default function useClusterList() {
     }
   };
 
-  const fetchAll = async () => {
+  const fetchData = async () => {
     const [clusters, workers] = await Promise.all([
       fetchClusterList(),
       fetchWorkerList()
@@ -82,12 +92,33 @@ export default function useClusterList() {
     };
   };
 
+  const fetchResource = async () => {
+    try {
+      const res = await queryDashboardData();
+      setResourceOverview(res.resource_counts);
+      setResourceCount(res.resource_counts);
+      return {
+        hasClusters: res.resource_counts?.cluster_count > 0,
+        hasWorkers: res.resource_counts?.worker_count > 0
+      };
+    } catch (error) {
+      setResourceOverview({});
+      setResourceCount({});
+      return {
+        hasClusters: false,
+        hasWorkers: false
+      };
+    }
+  };
+
   return {
     clusterList,
     workerList,
     clustersAtom,
     workersAtom,
-    fetchAll,
+    resourceAtom,
+    resourceCount,
+    fetchResource,
     fetchWorkerList,
     fetchClusterList
   };

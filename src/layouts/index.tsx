@@ -8,6 +8,7 @@ import routeCachekey from '@/config/route-cachekey';
 import { DEFAULT_ENTER_PAGE } from '@/config/settings';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import useUserSettings from '@/hooks/use-user-settings';
+import useAddResource from '@/pages/dashboard/hooks/use-add-resource';
 import { logout } from '@/pages/login/apis';
 import { useAccessMarkedRoutes } from '@@/plugin-access';
 import { useModel } from '@@/plugin-model';
@@ -46,6 +47,13 @@ const NO_CONTAINER_PAGES = [
   'text2images',
   'clusterDetail',
   'clusterCreate'
+];
+
+const CHECK_RESOURCE_PATH = [
+  '/resources/workers',
+  '/cluster-management/clusters/list',
+  '/cluster-management/credentials',
+  '/cluster-management/clusters/create'
 ];
 
 const loginPath = DEFAULT_ENTER_PAGE.login;
@@ -104,6 +112,12 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
+  const {
+    setLoadingStatus,
+    fetchResourceData,
+    NoResourceModal,
+    loadingStatus
+  } = useAddResource();
   const [modal, contextHolder] = Modal.useModal();
   const { themeData, setUserSettings, userSettings } = useUserSettings();
   const [userInfo] = useAtom(userAtom);
@@ -241,6 +255,10 @@ export default (props: any) => {
     const { location } = history;
     const { pathname } = location;
 
+    if (!CHECK_RESOURCE_PATH.includes(pathname)) {
+      // fetchResourceData();
+    }
+
     initRouteCacheValue(pathname);
     dropRouteCache(pathname);
 
@@ -347,6 +365,7 @@ export default (props: any) => {
             </PageContainerInner>
           )}
         </Exception>
+        {NoResourceModal}
       </ProLayout>
       {contextHolder}
     </ConfigProvider>

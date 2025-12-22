@@ -331,6 +331,13 @@ const Models: React.FC = () => {
     });
   };
 
+  const handleDeleteInstanceFromCache = (id: number) => {
+    cacheInsDataListRef.current = cacheInsDataListRef.current.filter(
+      (item) => item.id !== id
+    );
+    setModelInstances(cacheInsDataListRef.current);
+  };
+
   useEffect(() => {
     let timer: any = null;
     // fetch data first time
@@ -436,6 +443,7 @@ const Models: React.FC = () => {
         onStop={handleSearchBySilent}
         onStart={handleSearchBySilent}
         onTableSort={handleOnSortChange}
+        onDeleteInstanceFromCache={handleDeleteInstanceFromCache}
         sortOrder={sortOrder}
         queryParams={queryParams}
         loading={dataSource.loading}

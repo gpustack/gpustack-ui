@@ -68,12 +68,13 @@ export default {
   'clusters.addworker.checkEnv': 'Проверить окружение',
   'clusters.addworker.specifyArgs': 'Указать аргументы',
   'clusters.addworker.runCommand': 'Выполнить команду',
-  'clusters.addworker.specifyWorkerIP':
-    'Указать IP воркера <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.specifyWorkerIP': 'Указать IP воркера',
+  'clusters.addworker.detectWorkerIP': 'Автоматически определить IP воркера',
+  'clusters.addworker.specifyWorkerAddress': 'Указать внешний адрес воркера',
+  'clusters.addworker.detectWorkerAddress':
+    'Указать внешний адрес воркера (по умолчанию используется IP воркера)',
   'clusters.addworker.externalIP.tips':
-    'Specify an external IP if the worker is in a VPC or private network.',
-  'clusters.addworker.detectWorkerIP':
-    'Автоопределение IP воркера <span class="text-tertiary">{type}</span>',
+    'Если работаете в VPC или частной сети, укажите внешний адрес воркера, доступный для сервера.',
   'clusters.addworker.enterWorkerIP': 'Введите IP воркера',
   'clusters.addworker.enterWorkerIP.error': 'Пожалуйста, введите IP воркера.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',

@@ -68,12 +68,13 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.runCommand': 'Run Command',
-  'clusters.addworker.specifyWorkerIP':
-    'Specify Worker IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.specifyWorkerIP': 'Worker IP を指定',
+  'clusters.addworker.detectWorkerIP': 'Worker IP を自動検出',
+  'clusters.addworker.specifyWorkerAddress': 'Worker 外部アドレスを指定',
+  'clusters.addworker.detectWorkerAddress':
+    'Worker 外部アドレスを指定（デフォルトはWorker IP）',
   'clusters.addworker.externalIP.tips':
-    'Specify an external IP if the worker is in a VPC or private network.',
-  'clusters.addworker.detectWorkerIP':
-    'Auto-detect Worker IP <span class="text-tertiary">{type}</span>',
+    'VPCやプライベートネットワークで動作している場合は、サーバーから到達可能なWorkerの外部アドレスを指定してください。',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',

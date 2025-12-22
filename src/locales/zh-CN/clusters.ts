@@ -66,12 +66,13 @@ export default {
   'clusters.addworker.checkEnv': '检查环境',
   'clusters.addworker.specifyArgs': '指定参数',
   'clusters.addworker.runCommand': '运行指令',
-  'clusters.addworker.specifyWorkerIP':
-    '指定节点 IP <span class="text-tertiary">{type}</span>',
-  'clusters.addworker.detectWorkerIP':
-    '自动检测节点 IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.specifyWorkerIP': '指定 Worker IP',
+  'clusters.addworker.detectWorkerIP': '自动检测 Worker IP',
+  'clusters.addworker.specifyWorkerAddress': '指定 Worker 外部地址',
+  'clusters.addworker.detectWorkerAddress':
+    '指定 Worker 外部地址（默认使用Worker IP）',
   'clusters.addworker.externalIP.tips':
-    '当节点位于 VPC 或私有网络时，需要指定外部 IP。',
+    '如运行在 VPC 或私有网络时，请指定 Server 可达的 Worker 外部地址。',
   'clusters.addworker.enterWorkerIP': '输入节点 IP',
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
   'clusters.addworker.extraVolume': '额外卷挂载',

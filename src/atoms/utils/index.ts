@@ -1,16 +1,20 @@
 import { getDefaultStore } from 'jotai';
 
 export const clearStorageUserSettings = () => {
-  const savedSettings = JSON.parse(
-    localStorage.getItem('userSettings') || '{}'
-  );
-  localStorage.setItem(
-    'userSettings',
-    JSON.stringify({
-      ...savedSettings,
-      colorPrimary: undefined
-    })
-  );
+  try {
+    const savedSettings = JSON.parse(
+      localStorage.getItem('userSettings') || '{}'
+    );
+    localStorage.setItem(
+      'userSettings',
+      JSON.stringify({
+        ...savedSettings,
+        colorPrimary: undefined
+      })
+    );
+  } catch (error) {
+    console.log('Error clearing user settings:', error);
+  }
 };
 
 export const clearAtomStorage = (atom: any) => {

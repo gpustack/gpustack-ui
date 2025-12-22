@@ -316,22 +316,12 @@ const SpecifyArguments = () => {
             <span
               dangerouslySetInnerHTML={{
                 __html: externalWorkerIPConfig.enable
-                  ? intl.formatMessage(
-                      {
-                        id: 'clusters.addworker.specifyWorkerIP'
-                      },
-                      {
-                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
-                      }
-                    )
-                  : intl.formatMessage(
-                      {
-                        id: 'clusters.addworker.detectWorkerIP'
-                      },
-                      {
-                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
-                      }
-                    )
+                  ? intl.formatMessage({
+                      id: 'clusters.addworker.specifyWorkerAddress'
+                    })
+                  : intl.formatMessage({
+                      id: 'clusters.addworker.detectWorkerAddress'
+                    })
               }}
             ></span>
           }
@@ -361,7 +351,7 @@ const SpecifyArguments = () => {
             })
           }
           extra={
-            !externalWorkerIPConfig.enable && (
+            externalWorkerIPConfig.enable && (
               <AlertInfoBlock
                 maxHeight={200}
                 contentStyle={{

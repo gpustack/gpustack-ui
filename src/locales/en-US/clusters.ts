@@ -68,12 +68,13 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.runCommand': 'Run Command',
-  'clusters.addworker.specifyWorkerIP':
-    'Specify Worker IP <span class="text-tertiary">{type}</span>',
-  'clusters.addworker.detectWorkerIP':
-    'Auto-detect Worker IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
+  'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
+  'clusters.addworker.specifyWorkerAddress': 'Specify Worker External Address',
+  'clusters.addworker.detectWorkerAddress':
+    'Specify Worker External Address (default uses Worker IP)',
   'clusters.addworker.externalIP.tips':
-    'Specify an external IP if the worker is in a VPC or private network.',
+    'If running in a VPC or private network, please specify the Worker external address reachable by the Server.',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',

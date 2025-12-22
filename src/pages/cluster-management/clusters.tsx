@@ -235,7 +235,7 @@ const Clusters: React.FC = () => {
   );
 
   const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
-    handleTableChange({}, {}, order);
+    handleTableChange({}, {}, order, { action: 'sort' });
   };
 
   const setDisableExpand = (row: ClusterListItem) => {

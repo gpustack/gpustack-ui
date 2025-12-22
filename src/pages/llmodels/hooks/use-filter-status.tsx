@@ -38,7 +38,7 @@ const useFilterStatus = (options: {
     },
     {
       value: MyModelsStatusValueMap.Degrade,
-      color: 'var(--ant-color-error)',
+      color: 'var(--ant-color-warning)',
       label: intl.formatMessage({
         id: 'models.mymodels.status.degrade'
       })

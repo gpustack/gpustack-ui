@@ -176,8 +176,7 @@ const setWorkerIPArg = (params: any) => {
 
 const setImageArgs = (params: any) => {
   return `${params.image} \\
-      --server-url ${params.server} \\
-      --token ${params.token} \\`;
+      --server-url ${params.server} \\`;
 };
 
 // avaliable for  NVIDIA、MThreads

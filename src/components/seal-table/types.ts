@@ -43,6 +43,7 @@ export interface SealColumnProps {
 }
 
 export interface TableHeaderProps {
+  sorterList?: TableOrder | Array<TableOrder>;
   sorter?: boolean | { multiple?: number };
   sortDirections?: ('ascend' | 'descend' | null)[];
   defaultSortOrder?: 'ascend' | 'descend' | null;

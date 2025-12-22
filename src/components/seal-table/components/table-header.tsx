@@ -1,7 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles/header.less';
 
 import { TableHeaderProps } from '../types';
@@ -17,6 +17,7 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     sortDirections = ['ascend', 'descend', null],
     defaultSortOrder,
     onSort,
+    sorterList,
     sorter = false,
     width,
     dataIndex
@@ -46,6 +47,29 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
       return next;
     });
   };
+
+  useEffect(() => {
+    if (!sorterList) {
+      setCurrentSortOrder(null);
+      return;
+    }
+
+    if (Array.isArray(sorterList)) {
+      const sortItem = sorterList.find(
+        (item) => item.columnKey === dataIndex || item.field === dataIndex
+      );
+      setCurrentSortOrder(sortItem?.order || null);
+    } else {
+      if (
+        sorterList.columnKey === dataIndex ||
+        sorterList.field === dataIndex
+      ) {
+        setCurrentSortOrder(sorterList.order);
+      } else {
+        setCurrentSortOrder(null);
+      }
+    }
+  }, [sorterList]);
 
   return (
     <div

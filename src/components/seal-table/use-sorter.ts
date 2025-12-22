@@ -1,5 +1,5 @@
 import { isBoolean } from 'lodash';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { SealColumnProps, TableOrder } from './types';
 
 const initSorterList = (columns: SealColumnProps[]) => {
@@ -23,6 +23,9 @@ export default function useSorter(options: {
   const sorterListRef = useRef<TableOrder | Array<TableOrder>>(
     initSorterList(columns || [])
   );
+  const [sorterList, setSorterList] = useState<TableOrder | Array<TableOrder>>(
+    initSorterList(columns || [])
+  );
 
   const handleOnTableSort = (
     order: TableOrder,
@@ -39,6 +42,7 @@ export default function useSorter(options: {
     }
     // single column sort
     if (isBoolean(sorter)) {
+      setSorterList(currentOrder);
       sorterListRef.current = currentOrder;
 
       onTableSort?.(sorterListRef.current);
@@ -73,12 +77,14 @@ export default function useSorter(options: {
         }
       }
     }
+    setSorterList(sorterListRef.current);
 
     onTableSort?.(sorterListRef.current);
   };
 
   return {
     sorterListRef,
+    sorterList,
     handleOnTableSort
   };
 }

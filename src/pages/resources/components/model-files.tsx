@@ -321,6 +321,7 @@ const ModelFiles = () => {
             rowKey="id"
             tableLayout="fixed"
             sortDirections={TABLE_SORT_DIRECTIONS}
+            showSorterTooltip={false}
             style={{ width: '100%' }}
             onChange={handleTableChange}
             dataSource={dataSource.dataList}

@@ -105,6 +105,7 @@ const GPUList: React.FC = () => {
             columns={columns}
             style={{ width: '100%' }}
             sortDirections={TABLE_SORT_DIRECTIONS}
+            showSorterTooltip={false}
             tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}

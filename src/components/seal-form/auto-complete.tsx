@@ -131,7 +131,6 @@ const SealAutoComplete: React.FC<
       >
         <AutoComplete
           {...rest}
-          trim={trim}
           ref={inputRef}
           placeholder={
             isFocus || !label ? (

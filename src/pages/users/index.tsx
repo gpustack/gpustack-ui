@@ -8,6 +8,7 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl, useModel } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, message, Table } from 'antd';
+import _ from 'lodash';
 import { useMemo, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -148,7 +149,7 @@ const Users: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-users" />}
-        filters={queryParams}
+        filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.users.nofound'
         })}

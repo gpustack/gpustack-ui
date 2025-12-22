@@ -9,6 +9,7 @@ import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { ConfigProvider, Table, message } from 'antd';
 import { useAtom } from 'jotai';
+import _ from 'lodash';
 import { useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -159,7 +160,7 @@ const Credentials: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={[]}
         image={<IconFont type="icon-credential-outline" />}
-        filters={queryParams}
+        filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.credentials.nofound'
         })}

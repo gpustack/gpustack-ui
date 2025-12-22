@@ -246,7 +246,7 @@ const Catalog: React.FC = () => {
           loadend={dataSource.loadend}
           dataSource={dataSource.dataList}
           image={<IconFont type="icon-layers" />}
-          filters={queryParams}
+          filters={_.omit(queryParams, ['sort_by'])}
           noFoundText={intl.formatMessage({
             id: 'noresult.catalog.nofound'
           })}

@@ -216,7 +216,7 @@ const ModelFiles = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-files" />}
-        filters={queryParams}
+        filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({ id: 'noresult.modelfiles.nofound' })}
         title={intl.formatMessage({ id: 'noresult.modelfiles.title' })}
         subTitle={intl.formatMessage({ id: 'noresult.modelfiles.subTitle' })}

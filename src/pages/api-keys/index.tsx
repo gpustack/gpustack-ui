@@ -7,6 +7,7 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { ConfigProvider, Table } from 'antd';
+import _ from 'lodash';
 import { useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -109,7 +110,7 @@ const APIKeys: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-key" />}
-        filters={queryParams}
+        filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({
           id: 'noresult.keys.nofound'
         })}

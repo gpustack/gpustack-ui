@@ -7,6 +7,7 @@ import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { useIntl } from '@umijs/max';
 import { ConfigProvider, Table } from 'antd';
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
@@ -62,7 +63,7 @@ const GPUList: React.FC = () => {
         loadend={dataSource.loadend}
         dataSource={dataSource.dataList}
         image={<IconFont type="icon-gpu1" />}
-        filters={queryParams}
+        filters={_.omit(queryParams, ['sort_by'])}
         noFoundText={intl.formatMessage({ id: 'noresult.gpus.nofound' })}
         title={intl.formatMessage({ id: 'noresult.gpus.title' })}
         subTitle={intl.formatMessage({ id: 'noresult.gpus.subTitle' })}

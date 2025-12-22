@@ -247,7 +247,7 @@ export default {
   'common.appearance.theme': 'Theme',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
-    'Oops! Something went wrong. Try refreshing the page.',
+    'The page may need to be updated. Try refreshing it!',
   'common.tips.escape.disable':
     'Click Cancel or the X at the top right to close.',
   'common.button.clearSelection': 'Clear Selection',

@@ -153,6 +153,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
       await form.current?.form?.validateFields();
       if (!parameters.model) return;
       const params = generateParams();
+      console.log('generateParams:', params);
       setParams({
         ...parameters,
         seed: params.seed

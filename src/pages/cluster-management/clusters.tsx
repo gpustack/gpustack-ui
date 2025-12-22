@@ -15,6 +15,7 @@ import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
+import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
@@ -343,7 +344,7 @@ const Clusters: React.FC = () => {
                 loadend={dataSource.loadend}
                 dataSource={dataSource.dataList}
                 image={<IconFont type="icon-cluster-outline" />}
-                filters={queryParams}
+                filters={_.omit(queryParams, ['sort_by'])}
                 noFoundText={intl.formatMessage({
                   id: 'noresult.cluster.nofound'
                 })}

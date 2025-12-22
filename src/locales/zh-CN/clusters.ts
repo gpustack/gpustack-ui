@@ -48,15 +48,15 @@ export default {
   'clusters.addworker.nvidiaNotes-01':
     '如果节点有多个出站 IP 地址，请填写 <span class="bold-text">WORKER_IP</span>，以确保使用指定的 IP。可通过命令 <span class="bold-text">hostname -I | xargs -n1</span> 进行确认。',
   'clusters.addworker.nvidiaNotes-02':
-    '如果 worker 上已经存在模型目录，你可以指定该路径进行挂载。',
+    '如果节点上已经存在模型目录，你可以指定该路径进行挂载。',
   'clusters.addworker.hygonNotes':
-    '如果 <span class="bold-text">/opt/hyhal</span> 目录不存在，请创建指向 Hygon 安装路径的符号链接：<span class="bold-text">/opt/hyhal</span>。与 <span class="bold-text">/opt/dtk</span> 目录相同。',
+    '如果 <span class="bold-text">/opt/hyhal</span> 目录不存在，请创建指向海光安装路径的符号链接：<span class="bold-text">/opt/hyhal</span>。与 <span class="bold-text">/opt/dtk</span> 目录相同。',
   'clusters.addworker.corexNotes':
-    '如果 <span class="bold-text">/lib/modules</span> 目录不存在，请创建指向 Iluvatar 安装路径的符号链接：<span class="bold-text">ln -s /path/to/corex /lib/modules</span>。与 <span class="bold-text">/usr/local/corex</span> 目录相同。',
+    '如果 <span class="bold-text">/lib/modules</span> 目录不存在，请创建指向天数智芯安装路径的符号链接：<span class="bold-text">ln -s /path/to/corex /lib/modules</span>。与 <span class="bold-text">/usr/local/corex</span> 目录相同。',
   'clusters.addworker.metaxNotes':
-    '如果 <span class="bold-text">/opt/mxdriver</span> 目录不存在，请创建指向 MetaX 安装路径的符号链接：<span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>。与 <span class="bold-text">/opt/maca</span> 目录相同。',
+    '如果 <span class="bold-text">/opt/mxdriver</span> 目录不存在，请创建指向沐曦安装路径的符号链接：<span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>。与 <span class="bold-text">/opt/maca</span> 目录相同。',
   'clusters.addworker.cambriconNotes':
-    '如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向 Cambricon 安装路径的符号链接：<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。',
+    '如果 <span class="bold-text">/usr/local/neuware</span> 目录不存在，请创建指向寒武纪安装路径的符号链接：<span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>。',
   'clusters.addworker.hygonNotes-02':
     '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。',
   'clusters.addworker.selectCluster': '选择集群',
@@ -67,11 +67,11 @@ export default {
   'clusters.addworker.specifyArgs': '指定参数',
   'clusters.addworker.runCommand': '运行指令',
   'clusters.addworker.specifyWorkerIP':
-    '指定 Worker IP <span class="text-tertiary">{type}</span>',
+    '指定节点 IP <span class="text-tertiary">{type}</span>',
   'clusters.addworker.detectWorkerIP':
-    '自动检测 Worker IP <span class="text-tertiary">{type}</span>',
+    '自动检测节点 IP <span class="text-tertiary">{type}</span>',
   'clusters.addworker.externalIP.tips':
-    '当 worker 位于 VPC 或私有网络时，需要指定外部 IP。',
+    '当节点位于 VPC 或私有网络时，需要指定外部 IP。',
   'clusters.addworker.enterWorkerIP': '输入节点 IP',
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
   'clusters.addworker.extraVolume': '额外卷挂载',

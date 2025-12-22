@@ -5,6 +5,7 @@ import NoResult from '@/pages/_components/no-result';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { useAtom } from 'jotai';
+import _ from 'lodash';
 import React, { useMemo } from 'react';
 
 /**Title: Generally, this is from the activation page.
@@ -102,7 +103,7 @@ const useNoResourceResult = (props: {
       loadend={loadend}
       dataSource={dataSource}
       image={<IconFont type={iconType} />}
-      filters={queryParams}
+      filters={_.omit(queryParams, ['sort_by'])}
       noFoundText={statusContent.noFoundText}
       title={title}
       subTitle={statusContent.subTitle}

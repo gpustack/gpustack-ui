@@ -72,5 +72,6 @@ export const imgInitialValues = {
   size: '512x512',
   response_format: 'b64_json',
   width: 512,
-  height: 512
+  height: 512,
+  random_seed: true
 };

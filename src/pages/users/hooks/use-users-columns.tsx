@@ -14,10 +14,7 @@ import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: {
-    order?: 'ascend' | 'descend' | null;
-    columnKey?: string;
-  };
+  sortOrder: string[];
 }
 
 const actionList: Global.ActionItem[] = [

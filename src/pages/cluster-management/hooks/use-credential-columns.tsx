@@ -4,17 +4,13 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
 import { ColumnsType } from 'antd/es/table';
-import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { ProviderLabelMap, credentialActionList } from '../config';
 import { CredentialListItem as ListItem } from '../config/types';
 
 const useCredentialColumns = (
-  sortOrder: {
-    order?: SortOrder;
-    columnKey?: string;
-  },
+  sortOrder: string[],
   handleSelect: (val: string, record: ListItem) => void
 ): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -76,7 +72,7 @@ const useCredentialColumns = (
         )
       }
     ];
-  }, [intl, handleSelect, sortOrder]);
+  }, [intl, handleSelect]);
 };
 
 export default useCredentialColumns;

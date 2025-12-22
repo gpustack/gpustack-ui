@@ -214,7 +214,7 @@ const BackendList = () => {
           loadend={dataSource.loadend}
           dataSource={dataSource.dataList}
           image={<IconFont type="icon-models" />}
-          filters={queryParams}
+          filters={_.omit(queryParams, ['sort_by'])}
           noFoundText={intl.formatMessage({
             id: 'noresult.backend.nofound'
           })}

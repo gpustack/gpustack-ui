@@ -247,7 +247,7 @@ export default {
   'common.appearance.theme': 'Theme',
   'common.page.wentwrong': 'Something went wrong.',
   'common.page.refresh.tips':
-    'Oops! Something went wrong. Try refreshing the page.',
+    'The page may need to be updated. Try refreshing it!',
   'common.tips.escape.disable':
     'Click Cancel or the X at the top right to close.',
   'common.button.clearSelection': 'Clear Selection',
@@ -280,7 +280,7 @@ export default {
 // 9. 'common.button.forgotpassword': 'Forgot Password?'
 // 10.  'common.appearance.theme': 'Theme',
 // 11. 'common.page.wentwrong': 'Something went wrong.',
-// 12. 'common.page.refresh.tips': 'Oops! Something went wrong. Try refreshing the page.'
+// 12. 'common.page.refresh.tips': 'The page may need to be updated. Try refreshing it!',
 // 13. 'common.tips.escape.disable': 'Click Cancel or the X at the top right to close.'
 // 14. 'common.button.clearSelection': 'Clear Selection',
 // 15. 'common.select.count': '{count} selected',

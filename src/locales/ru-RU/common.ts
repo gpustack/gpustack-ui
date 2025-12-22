@@ -246,7 +246,7 @@ export default {
   'common.appearance.theme': 'Тема',
   'common.page.wentwrong': 'Что-то пошло не так.',
   'common.page.refresh.tips':
-    'Упс! Что-то пошло не так. Попробуйте обновить страницу.',
+    'Страница может нуждаться в обновлении. Попробуйте обновить её!',
   'common.tips.escape.disable':
     'Чтобы закрыть, нажмите "Отмена" или крестик (X) в правом верхнем углу.',
   'common.button.clearSelection': 'Сбросить выбор',

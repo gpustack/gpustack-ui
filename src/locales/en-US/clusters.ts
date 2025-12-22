@@ -74,7 +74,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.detectWorkerAddress':
     'Specify Worker External Address (default uses Worker IP)',
   'clusters.addworker.externalIP.tips':
-    'If running in a VPC or private network, please specify the Worker external address reachable by the Server.',
+    'If running in a VPC or private network, please specify the Worker external address reachable by the GPUStack Server.',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',

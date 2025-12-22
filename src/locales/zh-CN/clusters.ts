@@ -72,7 +72,7 @@ export default {
   'clusters.addworker.detectWorkerAddress':
     '指定 Worker 外部地址（默认使用Worker IP）',
   'clusters.addworker.externalIP.tips':
-    '如运行在 VPC 或私有网络时，请指定 Server 可达的 Worker 外部地址。',
+    '如运行在 VPC 或私有网络时，请指定 GPUStack Server 可达的 Worker 外部地址。',
   'clusters.addworker.enterWorkerIP': '输入节点 IP',
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
   'clusters.addworker.extraVolume': '额外卷挂载',

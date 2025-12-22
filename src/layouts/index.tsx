@@ -53,7 +53,8 @@ const CHECK_RESOURCE_PATH = [
   '/resources/workers',
   '/cluster-management/clusters/list',
   '/cluster-management/credentials',
-  '/cluster-management/clusters/create'
+  '/cluster-management/clusters/create',
+  ''
 ];
 
 const loginPath = DEFAULT_ENTER_PAGE.login;
@@ -255,8 +256,11 @@ export default (props: any) => {
     const { location } = history;
     const { pathname } = location;
 
-    if (!CHECK_RESOURCE_PATH.includes(pathname)) {
-      // fetchResourceData();
+    if (
+      !CHECK_RESOURCE_PATH.includes(pathname) &&
+      initialState?.currentUser?.is_admin
+    ) {
+      fetchResourceData();
     }
 
     initRouteCacheValue(pathname);

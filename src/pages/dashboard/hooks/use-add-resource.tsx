@@ -58,8 +58,7 @@ export default function useAddResource() {
   const navigate = useNavigate();
   const [, setClusterSession] = useAtom(clusterSessionAtom);
 
-  const { fetchAll, clusterList, workerList, clustersAtom, workersAtom } =
-    useClusterList();
+  const { fetchResource, resourceCount, resourceAtom } = useClusterList();
 
   const [hiddenModal, setHiddenModal] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState({
@@ -68,12 +67,14 @@ export default function useAddResource() {
   });
 
   const isNoResource = useMemo(() => {
-    const noResource = workerList.length === 0 || clusterList.length === 0;
+    const noResource =
+      !resourceAtom?.cluster_count || !resourceAtom?.worker_count;
     return noResource && !loadingStatus.loading && loadingStatus.loadend;
-  }, [workersAtom.length, clustersAtom.length, loadingStatus]);
+  }, [resourceAtom, loadingStatus]);
 
   const contentInfo = useMemo(() => {
-    if (clusterList.length === 0) {
+    console.log('resourceCount=', resourceCount);
+    if (!resourceCount.cluster_count) {
       return {
         title: intl.formatMessage({ id: 'noresult.cluster.title' }),
         subTitle: intl.formatMessage({ id: 'noresult.resources.cluster' }),
@@ -85,14 +86,14 @@ export default function useAddResource() {
       subTitle: intl.formatMessage({ id: 'noresult.resources.worker' }),
       btnText: intl.formatMessage({ id: 'noresult.workers.button.add' })
     };
-  }, [clusterList.length, workerList.length, intl]);
+  }, [resourceCount, intl]);
 
   const open: boolean = useMemo(() => {
     return isNoResource && !hiddenModal;
   }, [isNoResource, hiddenModal]);
 
   const handleCreate = () => {
-    if (clusterList.length === 0) {
+    if (!resourceCount.cluster_count) {
       setClusterSession({
         firstAddWorker: false,
         firstAddCluster: true
@@ -104,7 +105,7 @@ export default function useAddResource() {
       return;
     }
 
-    if (workerList.length === 0) {
+    if (!resourceCount.worker_count) {
       setClusterSession({
         firstAddWorker: true,
         firstAddCluster: false
@@ -117,12 +118,20 @@ export default function useAddResource() {
     setHiddenModal(true);
   };
 
-  const Modal = (
+  const fetchResourceData = async () => {
+    setLoadingStatus({ loading: true, loadend: false });
+    setHiddenModal(false);
+    await fetchResource();
+    setLoadingStatus({ loading: false, loadend: true });
+  };
+
+  const NoResourceModal = (
     <ScrollerModal
       open={open}
       footer={null}
       maskClosable={false}
       closeIcon={null}
+      destroyOnHidden={false}
       onCancel={handleCancel}
     >
       <Content>
@@ -149,11 +158,11 @@ export default function useAddResource() {
     open,
     contentInfo,
     loadingStatus,
-    clusterList,
-    Modal,
+    NoResourceModal,
     handleCreate,
     setLoadingStatus,
     handleCancel,
-    fetchAll
+    fetchResource,
+    fetchResourceData
   };
 }

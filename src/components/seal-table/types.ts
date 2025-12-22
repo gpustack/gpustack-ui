@@ -25,6 +25,7 @@ export interface SealColumnProps {
   render?: (text: any, record: any) => React.ReactNode;
   dataIndex: string;
   key?: string;
+  dataField?: string; // Added dataField property, aviods conflict with dataIndex, because dataIndex maybe used in sorting
   width?: number;
   span: number;
   align?: 'left' | 'center' | 'right';
@@ -90,7 +91,7 @@ export interface SealTableProps {
   watchChildren?: boolean;
   loading?: boolean;
   loadend?: boolean;
-  onCell?: (record: any, dataIndex: string) => void;
+  onCell?: (record: any, extra: any) => void;
   onTableSort?: (order: TableOrder | Array<TableOrder>) => void;
   onExpand?: (expanded: boolean, record: any, rowKey: any) => void;
   onExpandAll?: (expanded: boolean) => void;

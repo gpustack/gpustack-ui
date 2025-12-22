@@ -107,7 +107,8 @@ const useModelsColumns = ({
         ),
         dataIndex: 'ready_replicas',
         key: 'ready_replicas',
-        align: 'center',
+        dataField: 'replicas',
+        align: 'left',
         sorter: tableSorter(4),
         span: 4,
         editable: {

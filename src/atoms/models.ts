@@ -35,3 +35,5 @@ export const workerListAtom = atom<
 >([]);
 
 export const backendOptionsAtom = atom<BackendOption[]>([]);
+
+export const resourceOverviewAtom = atom<Record<string, any>>({});

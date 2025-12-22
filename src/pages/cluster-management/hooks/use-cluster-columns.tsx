@@ -44,7 +44,7 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'clusters.table.provider' }),
         dataIndex: 'provider',
         sorter: tableSorter(2),
-        span: 4,
+        span: 3,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {ProviderLabelMap[value]}
@@ -55,17 +55,20 @@ const useClusterColumns = (
         title: 'GPUs',
         dataIndex: 'gpus',
         span: 2,
+        sorter: tableSorter(3),
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'clusters.table.deployments' }),
         dataIndex: 'models',
-        span: 2,
+        sorter: tableSorter(4),
+        span: 3,
         render: (value: number) => <span>{value}</span>
       },
       {
         title: intl.formatMessage({ id: 'resources.nodes' }),
         dataIndex: 'workers',
+        sorter: tableSorter(5),
         span: 3,
         render: (value: number, record: ClusterListItem) => (
           <span>
@@ -90,7 +93,7 @@ const useClusterColumns = (
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         defaultSortOrder: 'descend',
-        sorter: tableSorter(5),
+        sorter: tableSorter(6),
         span: 4,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>

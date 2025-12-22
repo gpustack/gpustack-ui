@@ -6,57 +6,36 @@ import { queryDashboardData } from './apis';
 import DashboardInner from './components/dahboard-inner';
 import DashboardContext from './config/dashboard-context';
 import { DashboardProps } from './config/types';
-import useAddResource from './hooks/use-add-resource';
 
 const Dashboard: React.FC = () => {
-  const { setLoadingStatus, fetchAll, Modal, loadingStatus, clusterList } =
-    useAddResource();
   const [data, setData] = useState<DashboardProps>({} as DashboardProps);
+  const [loading, setLoading] = useState(false);
 
   const fetchDashboardData = useMemoizedFn(async () => {
     try {
+      setLoading(true);
       const res = await queryDashboardData();
       setData(res);
     } catch (error) {
       setData({} as DashboardProps);
-    }
-  });
-
-  const initData = useMemoizedFn(async () => {
-    try {
-      setLoadingStatus({
-        loading: true,
-        loadend: false
-      });
-      const { hasClusters, hasWorkers } = await fetchAll();
-      if (!hasClusters || !hasWorkers) {
-        return;
-      }
-      await fetchDashboardData();
-    } catch (error) {
-      // ignore
     } finally {
-      setLoadingStatus({
-        loading: false,
-        loadend: true
-      });
+      setLoading(false);
     }
   });
 
   useEffect(() => {
-    initData();
+    fetchDashboardData();
   }, []);
 
   return (
     <DashboardContext.Provider
-      value={{ ...data, fetchData: fetchDashboardData, clusterList }}
+      value={{ ...data, fetchData: fetchDashboardData }}
     >
       <PageBox>
-        <Spin spinning={loadingStatus.loading} style={{ minHeight: 300 }}>
+        <Spin spinning={loading} style={{ minHeight: 300 }}>
           <DashboardInner />
         </Spin>
       </PageBox>
-      {Modal}
     </DashboardContext.Provider>
   );
 };

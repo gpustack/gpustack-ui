@@ -233,21 +233,28 @@ export default function useTableFetch<T>(
     handleQueryChange({ page, perPage: pageSize || 10 });
   };
 
-  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-    const sortKeys = handleMultiSortChange(sorter);
-    setQueryParams((pre: any) => {
-      return {
-        ...pre,
-        sort_by: sortKeys.join(',')
-      };
-    });
-    fetchData({
-      query: {
-        ...queryParams,
-        page: 1,
-        sort_by: sortKeys.join(',')
-      }
-    });
+  const handleTableChange = (
+    pagination: any,
+    filters: any,
+    sorter: any,
+    extra: any
+  ) => {
+    if (extra.action === 'sort') {
+      const sortKeys = handleMultiSortChange(sorter);
+      setQueryParams((pre: any) => {
+        return {
+          ...pre,
+          sort_by: sortKeys.join(',')
+        };
+      });
+      fetchData({
+        query: {
+          ...queryParams,
+          page: 1,
+          sort_by: sortKeys.join(',')
+        }
+      });
+    }
   };
 
   const handleSearch = () => {

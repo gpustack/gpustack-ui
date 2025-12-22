@@ -15,14 +15,18 @@ type SortDirection = 'ascend' | 'descend' | null;
 export const TABLE_SORT_DIRECTIONS: SortDirection[] = [
   'ascend',
   'descend',
-  null
+  'ascend'
 ];
 
 export const tableSorter = (order: number | boolean) => {
-  if (typeof order === 'number') {
-    return {
-      multiple: order
-    };
-  }
-  return order;
+  return true;
+
+  // mutiple sorting can be supported in future
+
+  // if (typeof order === 'number') {
+  //   return {
+  //     multiple: order
+  //   };
+  // }
+  // return order;
 };

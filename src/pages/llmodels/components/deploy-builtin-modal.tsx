@@ -4,7 +4,7 @@ import { PageActionType } from '@/config/types';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { ClusterStatusValueMap } from '@/pages/cluster-management/config';
 import { useIntl } from '@umijs/max';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -96,13 +96,16 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   const selectSpecRef = useRef<CatalogSpec>({} as CatalogSpec);
   const specListRef = useRef<any[]>([]);
   const noCompatibleGPUsRef = useRef<boolean>(false);
-  const [noCompatibleGPUs, setNoCompatibleGPUs] = useState<boolean>(false);
 
   const handleSumit = () => {
     form.current?.submit?.();
   };
 
   const handleSubmitAnyway = async () => {
+    if (noCompatibleGPUsRef.current) {
+      message.error(intl.formatMessage({ id: 'models.catalog.nogpus.tips' }));
+      return;
+    }
     submitAnyway.current = true;
     form.current?.submit?.();
   };
@@ -266,7 +269,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       // If no avaliable gpus for the model, show warning message
       if (!res.items.length) {
         noCompatibleGPUsRef.current = true;
-        setNoCompatibleGPUs(true);
         setWarningStatus({
           show: true,
           type: 'warning',
@@ -275,7 +277,6 @@ const AddModal: React.FC<AddModalProps> = (props) => {
         return;
       }
       noCompatibleGPUsRef.current = false;
-      setNoCompatibleGPUs(false);
       handleCheckCompatibility(allValues);
     } catch (error) {
       // ignore
@@ -394,11 +395,7 @@ const AddModal: React.FC<AddModalProps> = (props) => {
                   showOkBtn={!showExtraButton}
                   extra={
                     showExtraButton && (
-                      <Button
-                        type="primary"
-                        onClick={handleSubmitAnyway}
-                        disabled={noCompatibleGPUs}
-                      >
+                      <Button type="primary" onClick={handleSubmitAnyway}>
                         {intl.formatMessage({
                           id: 'models.form.submit.anyway'
                         })}

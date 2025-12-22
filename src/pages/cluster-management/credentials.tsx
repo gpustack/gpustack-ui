@@ -3,6 +3,7 @@ import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useTableFetch from '@/hooks/use-table-fetch';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -203,6 +204,8 @@ const Credentials: React.FC = () => {
             dataSource={dataSource.dataList}
             rowSelection={rowSelection}
             loading={dataSource.loading}
+            sortDirections={TABLE_SORT_DIRECTIONS}
+            showSorterTooltip={false}
             rowKey="id"
             onChange={handleTableChange}
             pagination={{

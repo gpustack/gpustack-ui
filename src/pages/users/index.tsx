@@ -194,6 +194,7 @@ const Users: React.FC = () => {
             rowSelection={rowSelection}
             loading={dataSource.loading}
             sortDirections={TABLE_SORT_DIRECTIONS}
+            showSorterTooltip={false}
             rowKey="id"
             onChange={handleTableChange}
             pagination={{

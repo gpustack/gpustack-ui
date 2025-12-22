@@ -275,6 +275,7 @@ const Workers: React.FC = () => {
           <Table
             columns={columns}
             sortDirections={TABLE_SORT_DIRECTIONS}
+            showSorterTooltip={false}
             tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
             style={{ width: '100%' }}
             dataSource={dataSource.dataList}

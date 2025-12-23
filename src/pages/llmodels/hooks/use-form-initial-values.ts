@@ -217,7 +217,8 @@ export const useGenerateWorkerOptions = () => {
         label: item.name,
         value: item.id,
         provider: item.provider as string,
-        state: item.state
+        state: item.state,
+        is_default: item.is_default
       }))
     );
   };
@@ -235,7 +236,10 @@ export default function useFormInitialValues() {
   const [, setWorkerListAtom] = useAtom(workerListAtom);
 
   const [clusterList, setClusterList] = useState<
-    Global.BaseOption<number, { provider: string; state: string }>[]
+    Global.BaseOption<
+      number,
+      { provider: string; state: string; is_default: boolean }
+    >[]
   >([]);
 
   const [workerList, setWorkerList] = useState<WorkerListItem[]>([]);
@@ -249,7 +253,8 @@ export default function useFormInitialValues() {
         label: item.name,
         value: item.id,
         provider: item.provider as string,
-        state: item.state
+        state: item.state,
+        is_default: item.is_default
       }));
       setClusterList(list);
       setClusterListAtom(list);

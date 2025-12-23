@@ -106,5 +106,7 @@ export default {
   'clusters.addworker.dataVolume.tips': '为 GPUStack 指定数据存储路径。',
   'clusters.table.ip.internal': '内',
   'clusters.table.ip.external': '外',
-  'clusters.form.serverUrl.tips': '指定可从您的云服务提供商访问的服务器地址。'
+  'clusters.form.serverUrl.tips': '指定可从您的云服务提供商访问的服务器地址。',
+  'clusters.form.setDefault': '设为默认',
+  'clusters.form.setDefault.tips': '部署时的默认集群。'
 };

@@ -191,6 +191,10 @@ const AddModal: React.FC<AddModalProps> = (props) => {
   };
 
   const initClusterId = (): number => {
+    const defaultCluster = clusterList?.find((item) => item.is_default);
+    if (defaultCluster) {
+      return defaultCluster.value;
+    }
     const cluster_id =
       clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
         ?.value || clusterList?.[0]?.value;

@@ -1,4 +1,5 @@
 import { initialPasswordAtom } from '@/atoms/user';
+import { clearStorageUserSettings } from '@/atoms/utils';
 import {
   CRYPT_TEXT,
   REMEMBER_ME_KEY,
@@ -81,7 +82,7 @@ export const useLocalAuth = ({
       if (userInfo?.require_password_change) {
         setInitialPassword(encryptPassword(values.password));
       }
-
+      clearStorageUserSettings();
       onSuccess?.(userInfo);
     } catch (error: any) {
       onError?.(error);

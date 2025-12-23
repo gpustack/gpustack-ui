@@ -198,3 +198,9 @@ export async function querySystemConfig() {
     method: 'GET'
   });
 }
+
+export async function setDefaultCluster(params: { id: number }) {
+  return request(`${CLUSTERS_API}/${params.id}/set-default`, {
+    method: 'POST'
+  });
+}

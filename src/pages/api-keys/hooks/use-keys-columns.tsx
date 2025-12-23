@@ -11,7 +11,7 @@ import { ListItem } from '../config/types';
 
 interface ColumnsHookProps {
   handleSelect: (val: string, record: ListItem) => void;
-  sortOrder: string;
+  sortOrder: string[];
 }
 
 const actionList: Global.ActionItem[] = [

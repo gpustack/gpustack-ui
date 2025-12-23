@@ -8,7 +8,13 @@ import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { PageContainerInner } from '../_components/page-box';
-import { createCluster, queryClusterToken, queryCredentialList } from './apis';
+import {
+  createCluster,
+  queryClusterList,
+  queryClusterToken,
+  queryCredentialList,
+  setDefaultCluster
+} from './apis';
 import {
   DockerStepsFromCluster,
   K8sStepsFromCluter
@@ -248,6 +254,20 @@ const ClusterCreate = () => {
     return step?.showButtons ? step?.showButtons(extraData.provider) : {};
   }, [currentStep, steps, extraData.provider]);
 
+  const checkDefaultCluster = async () => {
+    try {
+      const res = await queryClusterList({ page: 1, perPage: 10 });
+      if (res.items.length === 1) {
+        const cluster = res.items[0];
+        if (!cluster.is_default) {
+          await setDefaultCluster({
+            id: cluster.id
+          });
+        }
+      }
+    } catch (error) {}
+  };
+
   const submit = async (values: ClusterFormData) => {
     const data = {
       ...extraData,
@@ -259,6 +279,7 @@ const ClusterCreate = () => {
       ...info,
       cluster_id: res.id
     });
+    checkDefaultCluster();
     return true;
   };
 

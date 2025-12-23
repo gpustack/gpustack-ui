@@ -75,7 +75,7 @@ type AddModalProps = {
   deploymentType?: 'modelList' | 'modelFiles';
   clusterList: Global.BaseOption<
     number,
-    { provider: string; state: string | number }
+    { provider: string; state: string | number; is_default: boolean }
   >[];
   onOk: (values: FormData) => void;
   onCancel: () => void;
@@ -441,6 +441,12 @@ const AddModal: FC<AddModalProps> = (props) => {
     if (initialValues?.cluster_id) {
       return initialValues.cluster_id;
     }
+    // Find default cluster
+    const defaultCluster = clusterList?.find((item) => item.is_default);
+    if (defaultCluster) {
+      return defaultCluster.value;
+    }
+
     const cluster_id =
       clusterList?.find((item) => item.state === ClusterStatusValueMap.Ready)
         ?.value || clusterList?.[0]?.value;

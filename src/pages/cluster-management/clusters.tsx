@@ -26,6 +26,7 @@ import {
   queryClusterList,
   queryCredentialList,
   queryWorkerPools,
+  setDefaultCluster,
   updateCluster,
   WORKER_POOLS_API
 } from './apis';
@@ -192,6 +193,10 @@ const Clusters: React.FC = () => {
     } else if (val === 'register_cluster') {
       handleAddWorker(row);
       setStepList(K8sStepsFromCluter);
+    } else if (val === 'isDefault') {
+      setDefaultCluster({ id: row.id }).then(() => {
+        message.success(intl.formatMessage({ id: 'common.message.success' }));
+      });
     }
   });
 

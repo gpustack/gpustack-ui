@@ -113,6 +113,11 @@ export const clusterActionList = [
     icon: icons.Catalog1
   },
   {
+    key: 'isDefault',
+    label: 'clusters.form.setDefault',
+    icon: icons.StarOutlined
+  },
+  {
     key: 'delete',
     label: 'common.button.delete',
     icon: icons.DeleteOutlined,

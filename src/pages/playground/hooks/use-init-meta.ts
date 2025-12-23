@@ -230,7 +230,6 @@ export const useInitImageMeta = (
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
     seed: generateRandomNumber(),
-    random_seed: true,
     model: ''
   });
   const [paramsConfig, setParamsConfig] = useState<ParamsSchema[]>([
@@ -243,7 +242,6 @@ export const useInitImageMeta = (
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
     seed: generateRandomNumber(),
-    random_seed: true,
     model: ''
   });
 
@@ -422,10 +420,12 @@ export const useInitImageMeta = (
       setModelMeta(model?.meta || {});
       setInitialValues({
         ...initialData,
+        seed: parameters.seed,
         model: val
       });
       setParams({
         ...initialData,
+        seed: parameters.seed,
         model: val
       });
       updateCacheFormData(initialData);

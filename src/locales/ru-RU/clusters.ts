@@ -83,8 +83,8 @@ export default {
     'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Сводка конфигурации',
   'clusters.addworker.gpuVendor': 'Производитель GPU',
-  'clusters.addworker.workerIP':
-    'IP воркера <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.workerIP': 'IP воркера',
+  'clusters.addworker.workerExternalIP': 'Внешний адрес воркера',
   'clusters.addworker.notSpecified': 'Не указано',
   'clusters.addworker.autoDetect': 'Автоопределение',
   'clusters.addworker.extraVolume.holder':

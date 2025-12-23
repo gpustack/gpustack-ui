@@ -9,6 +9,7 @@ export const clearStorageUserSettings = () => {
       'userSettings',
       JSON.stringify({
         ...savedSettings,
+        hideAddResourceModal: false,
         colorPrimary: undefined
       })
     );

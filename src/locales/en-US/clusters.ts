@@ -72,7 +72,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
   'clusters.addworker.specifyWorkerAddress': 'Specify Worker External Address',
   'clusters.addworker.detectWorkerAddress':
-    'Specify Worker External Address (default uses Worker IP)',
+    'Specify Worker External Address (default to Worker IP)',
   'clusters.addworker.externalIP.tips':
     'If running in a VPC or private network, please specify the Worker external address reachable by the GPUStack Server.',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
@@ -83,10 +83,10 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
     'If you want to customize the model cache directory, you can specify the path to mount it.',
   'clusters.addworker.configSummary': 'Configuration Summary',
   'clusters.addworker.gpuVendor': 'GPU Vendor',
-  'clusters.addworker.workerIP':
-    'Worker IP <span class="text-tertiary">{type}</span>',
+  'clusters.addworker.workerIP': 'Worker IP',
+  'clusters.addworker.workerExternalIP': 'Worker External Address',
   'clusters.addworker.notSpecified': 'Not Specified',
-  'clusters.addworker.autoDetect': 'Auto-detect',
+  'clusters.addworker.autoDetect': 'Auto',
   'clusters.addworker.extraVolume.holder':
     'e.g. /data/models (path must start with /)',
   'clusters.addworker.cacheVolume.holder':

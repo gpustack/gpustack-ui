@@ -126,16 +126,11 @@ const SummaryData: React.FC = () => {
 
         <DataItem
           label={
-            <span
-              dangerouslySetInnerHTML={{
-                __html: intl.formatMessage(
-                  { id: 'clusters.addworker.workerIP' },
-                  {
-                    type: `(${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
-                  }
-                )
-              }}
-            ></span>
+            <span>
+              {intl.formatMessage({
+                id: 'clusters.addworker.workerIP'
+              })}
+            </span>
           }
           tips={
             workerIPConfig.enable
@@ -151,16 +146,11 @@ const SummaryData: React.FC = () => {
 
         <DataItem
           label={
-            <span
-              dangerouslySetInnerHTML={{
-                __html: intl.formatMessage(
-                  { id: 'clusters.addworker.workerIP' },
-                  {
-                    type: `(${intl.formatMessage({ id: 'clusters.table.ip.external' })})`
-                  }
-                )
-              }}
-            ></span>
+            <span>
+              {intl.formatMessage({
+                id: 'clusters.addworker.workerExternalIP'
+              })}
+            </span>
           }
           tips={
             externalWorkerIPConfig.enable

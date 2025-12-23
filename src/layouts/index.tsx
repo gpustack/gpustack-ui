@@ -28,7 +28,7 @@ import { Button, ConfigProvider, Modal, theme } from 'antd';
 import 'driver.js/dist/driver.css';
 import { useAtom } from 'jotai';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { PageContainerInner } from '../pages/_components/page-box';
 import Exception from './Exception';
 import './Layout.css';
@@ -113,12 +113,6 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
-  const {
-    setLoadingStatus,
-    fetchResourceData,
-    NoResourceModal,
-    loadingStatus
-  } = useAddResource();
   const [modal, contextHolder] = Modal.useModal();
   const { themeData, setUserSettings, userSettings } = useUserSettings();
   const [userInfo] = useAtom(userAtom);
@@ -128,6 +122,18 @@ export default (props: any) => {
   const intl = useIntl();
   const { clientRoutes } = useAppData();
   const [version] = useAtom(GPUStackVersionAtom);
+  const requestResourceRef = useRef<boolean>(false);
+
+  const {
+    setLoadingStatus,
+    fetchResourceData,
+    NoResourceModal,
+    loadingStatus
+  } = useAddResource({
+    onCreate() {
+      requestResourceRef.current = false;
+    }
+  });
 
   const initialInfo = (useModel && useModel('@@initialState')) || {
     initialState: undefined,
@@ -252,15 +258,18 @@ export default (props: any) => {
     return <SiderMenu {...menuProps}></SiderMenu>;
   };
 
-  const onPageChange = (route: any) => {
+  const onPageChange = async (route: any) => {
     const { location } = history;
     const { pathname } = location;
 
     if (
       !CHECK_RESOURCE_PATH.includes(pathname) &&
-      initialState?.currentUser?.is_admin
+      initialState?.currentUser?.is_admin &&
+      !requestResourceRef.current &&
+      !userSettings.hideAddResourceModal
     ) {
-      fetchResourceData();
+      requestResourceRef.current = true;
+      await fetchResourceData();
     }
 
     initRouteCacheValue(pathname);
@@ -294,6 +303,10 @@ export default (props: any) => {
   };
 
   const onCollapse = (value: boolean) => {
+    // only trigger by window resize
+    if (!value) {
+      return;
+    }
     setUserSettings({
       ...userSettings,
       collapsed: value

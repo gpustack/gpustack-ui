@@ -220,6 +220,7 @@ const Models: React.FC = () => {
 
   const createModelsInstanceChunkRequest = useMemoizedFn(async () => {
     chunkInstanceRequedtRef.current?.current?.cancel?.();
+    cacheInsDataListRef.current = [];
     try {
       chunkInstanceRequedtRef.current = setModelInstanceChunkRequest({
         url: `${MODEL_INSTANCE_API}`,

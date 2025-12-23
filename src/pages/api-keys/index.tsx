@@ -34,10 +34,7 @@ const APIKeys: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryApisKeysList,
     deleteAPI: deleteApisKey,
-    contentForDelete: 'apikeys.table.apikeys',
-    defaultQueryParams: {
-      sort_by: '-created_at'
-    }
+    contentForDelete: 'apikeys.table.apikeys'
   });
 
   const intl = useIntl();

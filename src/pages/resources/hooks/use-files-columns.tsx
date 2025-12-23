@@ -337,7 +337,6 @@ const useFilesColumns = (props: {
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
-        defaultSortOrder: 'descend',
         key: 'created_at',
         sorter: tableSorter(4),
         width: 180,

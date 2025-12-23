@@ -162,7 +162,6 @@ const usePoolsColumns = (
         key: 'created_at',
         span: 4,
         showSorterTootip: false,
-        defaultSortOrder: 'descend',
         sortOrder: sortOrder,
         sorter: false,
         ellipsis: {

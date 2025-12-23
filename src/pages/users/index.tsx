@@ -40,10 +40,7 @@ const Users: React.FC = () => {
   } = useTableFetch<ListItem>({
     fetchAPI: queryUsersList,
     deleteAPI: deleteUser,
-    contentForDelete: 'users.table.user',
-    defaultQueryParams: {
-      sort_by: '-created_at'
-    }
+    contentForDelete: 'users.table.user'
   });
 
   const { initialState } = useModel('@@initialState') || {};

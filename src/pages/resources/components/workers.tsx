@@ -52,10 +52,7 @@ const Workers: React.FC = () => {
     events: ['UPDATE', 'DELETE', 'INSERT'],
     contentForDelete: 'resources.worker',
     watch: true,
-    API: WORKERS_API,
-    defaultQueryParams: {
-      sort_by: '-created_at'
-    }
+    API: WORKERS_API
   });
   const { TerminalPanel, terminals, handleAddTerminal } = useTerminalTabs();
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =

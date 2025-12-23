@@ -179,7 +179,6 @@ const useUsersColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
-        defaultSortOrder: 'descend',
         showSorterTooltip: false,
         sorter: tableSorter(5),
         ellipsis: {

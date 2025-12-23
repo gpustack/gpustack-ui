@@ -68,10 +68,7 @@ const ModelFiles = () => {
     deleteAPI: deleteModelFile,
     API: MODEL_FILES_API,
     watch: true,
-    contentForDelete: 'resources.modelfiles.modelfile',
-    defaultQueryParams: {
-      sort_by: '-created_at'
-    }
+    contentForDelete: 'resources.modelfiles.modelfile'
   });
   const intl = useIntl();
   const { showSuccess } = useAppUtils();

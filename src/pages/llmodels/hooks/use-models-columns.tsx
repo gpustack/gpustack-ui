@@ -124,7 +124,6 @@ const useModelsColumns = ({
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         key: 'created_at',
-        defaultSortOrder: 'descend',
         sorter: tableSorter(5),
         span: 4,
         render: (text: number) => (

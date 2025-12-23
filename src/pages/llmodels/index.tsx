@@ -48,7 +48,7 @@ const Models: React.FC = () => {
     cluster_id: 0,
     categories: [],
     state: '',
-    sort_by: '-created_at'
+    sort_by: ''
   });
 
   const { updateChunkedList, cacheDataListRef } = useUpdateChunkedList({

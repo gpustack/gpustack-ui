@@ -107,7 +107,6 @@ const useClusterColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
-        defaultSortOrder: 'descend',
         sorter: tableSorter(6),
         span: 4,
         render: (value: string) => (

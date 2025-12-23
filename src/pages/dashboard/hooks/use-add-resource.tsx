@@ -93,6 +93,7 @@ export default function useAddResource() {
   }, [isNoResource, hiddenModal]);
 
   const handleCreate = () => {
+    setHiddenModal(true);
     if (!resourceCount.cluster_count) {
       setClusterSession({
         firstAddWorker: false,

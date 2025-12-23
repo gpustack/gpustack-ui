@@ -151,7 +151,11 @@ const ClusterForm: React.FC<AddModalProps> = forwardRef(
             credentialList={credentialList}
           ></CloudProvider>
         )}
-        <Form.Item<FormData> name="description" rules={[{ required: false }]}>
+        <Form.Item<FormData>
+          name="description"
+          rules={[{ required: false }]}
+          style={{ marginBottom: 8 }}
+        >
           <SealTextArea
             autoSize={{ minRows: 2, maxRows: 4 }}
             label={intl.formatMessage({ id: 'common.table.description' })}

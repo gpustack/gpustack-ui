@@ -52,6 +52,7 @@ export interface NodePoolListItem extends NodePoolFormData {
 export interface ClusterListItem {
   name: string;
   display_name: string;
+  is_default: boolean;
   description: string;
   worker_config: Record<string, any>;
   provider: ProviderType;
@@ -72,6 +73,7 @@ export interface ClusterFormData {
   name: string;
   description: string;
   provider: ProviderType;
+  is_default?: boolean;
   credential_id: number;
   zone: string;
   region: string;

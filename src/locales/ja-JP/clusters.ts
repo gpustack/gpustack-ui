@@ -110,7 +110,9 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.table.ip.internal': 'Internal',
   'clusters.table.ip.external': 'External',
   'clusters.form.serverUrl.tips':
-    'Specify the server URL accessible from your cloud provider.'
+    'Specify the server URL accessible from your cloud provider.',
+  'clusters.form.setDefault': 'Set as Default',
+  'clusters.form.setDefault.tips': 'Default for deployment.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -200,4 +202,6 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 80.  'clusters.table.ip.external': 'External',
 // 81.  'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.',
 // 82. 'clusters.addworker.externalIP.tips': 'Specify an external IP if the worker is in a VPC or private network.',
+// 83. 'clusters.form.setDefault': 'Set as Default',
+// 84. 'clusters.form.setDefault.tips': 'Default for deployment'
 // ========== End of To-Do List ==========

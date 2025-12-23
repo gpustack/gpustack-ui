@@ -4,7 +4,9 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
+import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
+import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
@@ -37,7 +39,20 @@ const useClusterColumns = (
         sorter: tableSorter(1),
         span: 3,
         render: (text: string, record: ClusterListItem) => (
-          <AutoTooltip ghost>{text}</AutoTooltip>
+          <>
+            <AutoTooltip ghost>{text}</AutoTooltip>
+            {record.is_default && (
+              <Tooltip
+                title={intl.formatMessage({
+                  id: 'clusters.form.setDefault.tips'
+                })}
+              >
+                <StarFilled
+                  style={{ color: 'var(--ant-gold-4)', marginLeft: 4 }}
+                />
+              </Tooltip>
+            )}
+          </>
         )
       },
       {

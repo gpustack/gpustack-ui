@@ -10,6 +10,7 @@ import {
   KubernetesOutlined,
   ProfileOutlined,
   RetweetOutlined,
+  StarOutlined,
   ThunderboltOutlined
 } from '@ant-design/icons';
 import React from 'react';
@@ -58,7 +59,8 @@ const icons = {
   LockPerson: React.createElement(IconFont, { type: 'icon-lock_person' }),
   LockOpen: React.createElement(IconFont, { type: 'icon-lock_open' }),
   Permission: React.createElement(IconFont, { type: 'icon-permission' }),
-  CaptivePortal: React.createElement(IconFont, { type: 'icon-captive_portal' })
+  CaptivePortal: React.createElement(IconFont, { type: 'icon-captive_portal' }),
+  StarOutlined: React.createElement(StarOutlined)
 };
 
 export default icons;

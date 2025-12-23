@@ -105,9 +105,8 @@ const useModelsColumns = ({
             <QuestionCircleOutlined className="m-l-5" />
           </Tooltip>
         ),
-        dataIndex: 'ready_replicas',
-        key: 'ready_replicas',
-        dataField: 'replicas',
+        dataIndex: 'replicas',
+        key: 'replicas',
         align: 'left',
         sorter: tableSorter(4),
         span: 4,

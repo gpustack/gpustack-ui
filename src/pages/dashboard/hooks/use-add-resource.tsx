@@ -2,6 +2,7 @@ import { clusterSessionAtom } from '@/atoms/clusters';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal/index';
 import { PageAction } from '@/config';
+import useUserSettings from '@/hooks/use-user-settings';
 import useClusterList from '@/pages/cluster-management/hooks/use-cluster-list';
 import { useIntl, useNavigate } from '@umijs/max';
 import { Button } from 'antd';
@@ -53,14 +54,15 @@ const Content = styled.div`
   }
 `;
 
-export default function useAddResource() {
+export default function useAddResource(options?: { onCreated?: () => void }) {
+  const { onCreated } = options || {};
   const intl = useIntl();
   const navigate = useNavigate();
+  const { setUserSettings, userSettings } = useUserSettings();
   const [, setClusterSession] = useAtom(clusterSessionAtom);
-
+  const [hideModalTemporarily, setHideModalTemporarily] = useState(false);
   const { fetchResource, resourceCount, resourceAtom } = useClusterList();
 
-  const [hiddenModal, setHiddenModal] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState({
     loading: false,
     loadend: false
@@ -73,7 +75,6 @@ export default function useAddResource() {
   }, [resourceAtom, loadingStatus]);
 
   const contentInfo = useMemo(() => {
-    console.log('resourceCount=', resourceCount);
     if (!resourceCount.cluster_count) {
       return {
         title: intl.formatMessage({ id: 'noresult.cluster.title' }),
@@ -89,11 +90,12 @@ export default function useAddResource() {
   }, [resourceCount, intl]);
 
   const open: boolean = useMemo(() => {
-    return isNoResource && !hiddenModal;
-  }, [isNoResource, hiddenModal]);
+    return isNoResource && !userSettings.hideAddResourceModal;
+  }, [isNoResource, userSettings.hideAddResourceModal]);
 
   const handleCreate = () => {
-    setHiddenModal(true);
+    setHideModalTemporarily(true);
+    onCreated?.();
     if (!resourceCount.cluster_count) {
       setClusterSession({
         firstAddWorker: false,
@@ -116,23 +118,33 @@ export default function useAddResource() {
   };
 
   const handleCancel = () => {
-    setHiddenModal(true);
+    setUserSettings({
+      ...userSettings,
+      hideAddResourceModal: true
+    });
   };
 
   const fetchResourceData = async () => {
     setLoadingStatus({ loading: true, loadend: false });
-    setHiddenModal(false);
-    await fetchResource();
+    const { hasClusters, hasWorkers } = await fetchResource();
     setLoadingStatus({ loading: false, loadend: true });
+    setUserSettings({
+      ...userSettings,
+      hideAddResourceModal: hasClusters && hasWorkers
+    });
   };
 
   const NoResourceModal = (
     <ScrollerModal
-      open={open}
+      open={open && !hideModalTemporarily}
       footer={null}
       maskClosable={false}
+      keyboard={false}
       closeIcon={null}
       destroyOnHidden={false}
+      style={{
+        top: '25%'
+      }}
       onCancel={handleCancel}
     >
       <Content>
@@ -145,7 +157,7 @@ export default function useAddResource() {
         </div>
         <div className="btn-wrapper">
           <Button onClick={handleCancel} type="default" style={{ flex: 1 }}>
-            {intl.formatMessage({ id: 'clusters.create.skipfornow' })}
+            {intl.formatMessage({ id: 'common.button.dontshowagain' })}
           </Button>
           <Button onClick={handleCreate} type="primary" style={{ flex: 1 }}>
             {contentInfo.btnText}

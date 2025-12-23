@@ -264,9 +264,10 @@ export default {
   'common.filter.status': 'Фильтровать по статусу',
   'common.form.rule.selectInput': 'Выберите или введите {name}',
   'common.tag.experimental': 'Экспериментальный',
-  'common.title.example': 'Пример'
+  'common.title.example': 'Пример',
+  'common.button.dontshowagain': "Don't show again"
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'common.button.dontshowagain': "Don't show again"
 // ========== End of To-Do List ==========

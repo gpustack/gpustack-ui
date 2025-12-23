@@ -8,6 +8,7 @@ type UserSettings = {
   colorPrimary: string;
   isDarkTheme: boolean;
   collapsed: boolean;
+  hideAddResourceModal?: boolean;
 };
 
 const defaultSettings: UserSettings = {
@@ -15,7 +16,8 @@ const defaultSettings: UserSettings = {
   mode: 'auto',
   isDarkTheme: false,
   colorPrimary: COLOR_PRIMARY,
-  collapsed: false
+  collapsed: false,
+  hideAddResourceModal: false
 };
 
 export const getStorageUserSettings = () => {

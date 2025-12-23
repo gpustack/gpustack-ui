@@ -244,6 +244,7 @@ export default function useTableFetch<T>(
       setQueryParams((pre: any) => {
         return {
           ...pre,
+          page: 1,
           sort_by: sortKeys.join(',')
         };
       });

@@ -316,7 +316,14 @@ const Models: React.FC = () => {
   };
 
   const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
-    const sortKeys = handleMultiSortChange(order);
+    let orderList = Array.isArray(order) ? order : [order];
+    if (orderList[0].columnKey === 'replicas') {
+      orderList.push({
+        columnKey: 'ready_replicas',
+        order: orderList[0].order
+      });
+    }
+    const sortKeys = handleMultiSortChange(orderList);
     setQueryParams((pre: any) => {
       return {
         ...pre,

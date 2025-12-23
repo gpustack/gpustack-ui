@@ -265,5 +265,6 @@ export default {
   'common.filter.status': 'Filter by status',
   'common.form.rule.selectInput': 'Please select or enter a {name}',
   'common.tag.experimental': 'Experimental',
-  'common.title.example': 'Example'
+  'common.title.example': 'Example',
+  'common.button.dontshowagain': "Don't show again"
 };

@@ -1,5 +1,5 @@
 import { useIntl } from '@umijs/max';
-import { Card, Col, Row, Space } from 'antd';
+import { Card, Col, Row } from 'antd';
 import _ from 'lodash';
 import React, { useContext } from 'react';
 import { overviewConfigs } from '../config';
@@ -30,26 +30,6 @@ const Overview: React.FC = () => {
   const intl = useIntl();
   const data = useContext(DashboardContext).resource_counts || {};
 
-  const renderValue = (
-    value:
-      | number
-      | {
-          healthy: number;
-          warning: number;
-          error: number;
-        }
-  ) => {
-    if (typeof value === 'number') {
-      return value;
-    }
-    return (
-      <Space className="value-box" size={20}>
-        <span className={'value-healthy'}>{value.healthy}</span>
-        <span className={'value-warning'}>{value.warning}</span>
-        <span className={'value-error'}>{value.error}</span>
-      </Space>
-    );
-  };
   return (
     <div>
       <Row gutter={[20, 20]} className={styles.row}>
@@ -64,7 +44,7 @@ const Overview: React.FC = () => {
           >
             {renderCardItem({
               label: intl.formatMessage({ id: config.label }),
-              value: renderValue(_.get(data, config.key, 0)),
+              value: _.get(data, config.key, 0),
               bgColor: config.backgroundColor
             })}
           </Col>

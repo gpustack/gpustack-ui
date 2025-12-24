@@ -20,10 +20,18 @@ interface FooterButtonsProps {
   handleCancel: () => void;
   handleSubmit: () => void;
   showButtons: Record<string, boolean>;
+  loading?: boolean;
 }
 
 const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
-  const { onPrevious, onNext, handleCancel, handleSubmit, showButtons } = props;
+  const {
+    onPrevious,
+    onNext,
+    handleCancel,
+    handleSubmit,
+    showButtons,
+    loading
+  } = props;
   const intl = useIntl();
   const handleOnNext = () => {
     onNext();
@@ -52,6 +60,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
             type="primary"
             onClick={handleSubmit}
             style={{ minWidth: 88 }}
+            loading={loading}
           >
             {intl.formatMessage({ id: 'common.button.save' })}
           </Button>

@@ -12,7 +12,7 @@ export default {
   'noresult.workers.title': 'No Workers',
   'noresult.workers.subTitle': 'No workers found in any clusters.',
   'noresult.workers.nofound': 'No matching workers found.',
-  'noresult.workers.button.add': 'Go to Add Worker',
+  'noresult.workers.button.add': 'Add Worker',
   'noresult.modelfiles.title': 'No Model Files',
   'noresult.modelfiles.subTitle': 'No model files have been added yet.',
   'noresult.modelfiles.nofound': 'No matching model files found.',

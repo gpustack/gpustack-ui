@@ -32,7 +32,7 @@ export default {
   'clusters.create.configBasic': '基本配置',
   'clusters.create.execCommand': '执行命令',
   'clusters.create.supportedGpu': '支持的 GPU',
-  'clusters.create.skipfornow': '稍后再说',
+  'clusters.create.skipfornow': '暂时跳过',
   'clusters.create.noImages': '无可用的镜像',
   'clusters.create.noInstanceTypes': '无可用的实例类型',
   'clusters.create.noRegions': '无可用的区域',

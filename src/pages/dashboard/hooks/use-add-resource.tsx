@@ -157,7 +157,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
         </div>
         <div className="btn-wrapper">
           <Button onClick={handleCancel} type="default" style={{ flex: 1 }}>
-            {intl.formatMessage({ id: 'common.button.dontshowagain' })}
+            {intl.formatMessage({ id: 'clusters.create.skipfornow' })}
           </Button>
           <Button onClick={handleCreate} type="primary" style={{ flex: 1 }}>
             {contentInfo.btnText}

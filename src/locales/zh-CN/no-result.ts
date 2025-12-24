@@ -12,7 +12,7 @@ export default {
   'noresult.workers.title': '暂无节点',
   'noresult.workers.subTitle': '当前集群中没有任何节点',
   'noresult.workers.nofound': '未找到匹配的节点',
-  'noresult.workers.button.add': '前往添加节点',
+  'noresult.workers.button.add': '添加节点',
   'noresult.modelfiles.title': '暂无模型文件',
   'noresult.modelfiles.subTitle': '尚未添加任何模型文件。',
   'noresult.modelfiles.nofound': '未找到匹配的模型文件',

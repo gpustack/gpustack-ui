@@ -25,8 +25,7 @@ const ClusterOption = styled.span`
   display: flex;
   padding: 8px 0;
   width: 100%;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   border-bottom: 1px solid var(--ant-color-split);
   gap: 8px;
   .label {
@@ -56,6 +55,12 @@ const ClusterOption = styled.span`
     border-radius: 4px;
     font-weight: 400;
     gap: 12px;
+  }
+  .s-dot {
+    width: 4px;
+    height: 4px;
+    background-color: var(--ant-color-text-quaternary);
+    border-radius: 50%;
   }
 `;
 
@@ -129,6 +134,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
               {data.ready_workers} / {data.workers}
             </span>
           </span>
+          <span className="s-dot"></span>
           <span className="flex-center gap-4 text-tertiary">
             <span>GPUs:</span>
             <span>{data.gpus}</span>

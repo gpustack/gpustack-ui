@@ -71,6 +71,7 @@ const ClusterCreate = () => {
     provider: ProviderValueMap.Docker
   } as ClusterFormData);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   const formRefs: Record<string, any> = {
     [moduleMap.BasicForm]: useRef<any>(null),
@@ -273,8 +274,10 @@ const ClusterCreate = () => {
       ...extraData,
       ...(typeof values === 'object' ? values : {})
     };
+    setSubmitLoading(true);
     const res = await createCluster({ data });
     const info = await queryClusterToken({ id: res.id });
+    setSubmitLoading(false);
     setRegistrationInfo({
       ...info,
       cluster_id: res.id
@@ -318,6 +321,7 @@ const ClusterCreate = () => {
           onNext={onNext}
           handleCancel={handleCancel}
           handleSubmit={handleSubmit}
+          loading={submitLoading}
           showButtons={showButtons}
         />
       ]}

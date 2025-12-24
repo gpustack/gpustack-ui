@@ -238,22 +238,12 @@ const SpecifyArguments = () => {
             <span
               dangerouslySetInnerHTML={{
                 __html: workerIPConfig.enable
-                  ? intl.formatMessage(
-                      {
-                        id: 'clusters.addworker.specifyWorkerIP'
-                      },
-                      {
-                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
-                      }
-                    )
-                  : intl.formatMessage(
-                      {
-                        id: 'clusters.addworker.detectWorkerIP'
-                      },
-                      {
-                        type: ` (${intl.formatMessage({ id: 'clusters.table.ip.internal' })})`
-                      }
-                    )
+                  ? intl.formatMessage({
+                      id: 'clusters.addworker.specifyWorkerIP'
+                    })
+                  : intl.formatMessage({
+                      id: 'clusters.addworker.detectWorkerIP'
+                    })
               }}
             ></span>
           }
@@ -325,8 +315,11 @@ const SpecifyArguments = () => {
               }}
             ></span>
           }
+          tips={intl.formatMessage({
+            id: 'clusters.addworker.detectWorkerAddress.tips'
+          })}
           placeholder={intl.formatMessage({
-            id: 'clusters.addworker.enterWorkerIP'
+            id: 'clusters.addworker.enterWorkerAddress'
           })}
           value={externalWorkerIPConfig.ip}
           checked={externalWorkerIPConfig.enable}
@@ -334,7 +327,7 @@ const SpecifyArguments = () => {
             externalWorkerIPConfig.required &&
             !externalWorkerIPConfig.ip &&
             intl.formatMessage({
-              id: 'clusters.addworker.enterWorkerIP.error'
+              id: 'clusters.addworker.enterWorkerAddress.error'
             })
           }
           onChange={(checked) =>

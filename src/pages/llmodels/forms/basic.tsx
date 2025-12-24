@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import { modelNameReg } from '@/config';
@@ -10,6 +11,7 @@ import {
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { useMemo } from 'react';
+import styled from 'styled-components';
 import { sourceOptions } from '../config';
 import { FormData } from '../config/types';
 import BackendForm from './backend';
@@ -19,11 +21,59 @@ import LocalPathSource from './local-path-source';
 import ModeField from './mode-field';
 import OnlineSource from './online-source';
 
+const ClusterOption = styled.span`
+  display: flex;
+  padding: 8px 0;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--ant-color-split);
+  gap: 8px;
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .dot {
+    display: flex;
+    width: 8px;
+    height: 8px;
+    background-color: var(--ant-color-warning);
+    border-radius: 50%;
+    &.ready {
+      background-color: var(--ant-color-success);
+    }
+  }
+  .item {
+    width: max-content;
+    display: flex;
+    align-items: center;
+    padding: 2px 0px;
+    border-radius: 4px;
+    font-weight: 400;
+    gap: 12px;
+  }
+`;
+
 interface BasicFormProps {
   fields?: string[];
   sourceDisable?: boolean;
   sourceList?: Global.BaseOption<string>[];
-  clusterList: Global.BaseOption<number, { provider: string; state: string }>[];
+  clusterList: Global.BaseOption<
+    number,
+    {
+      provider: string;
+      state: string;
+      is_default: boolean;
+      workers: number;
+      ready_workers: number;
+      gpus: number;
+    }
+  >[];
   handleClusterChange: (value: number) => void;
   onSourceChange?: (value: string) => void;
 }
@@ -51,10 +101,42 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           item.state === ClusterStatusValueMap.Ready
             ? item.label
             : `${item.label} [${ClusterStatusLabelMap[item.state as string]}]`,
-        value: item.value
+        value: item.value,
+        workers: item.workers,
+        ready_workers: item.ready_workers,
+        gpus: item.gpus
       };
     });
   }, [clusterList]);
+
+  const clusterOptionRender = (option: any) => {
+    const { data } = option;
+
+    return (
+      <ClusterOption>
+        <span className="label">
+          <AutoTooltip ghost maxWidth={'100%'}>
+            {data.label}
+          </AutoTooltip>
+        </span>
+        <span className={`item ${data.ready_workers > 0 ? 'ready' : ''}`}>
+          <span
+            className={`dot ${data.ready_workers > 0 ? 'ready' : ''}`}
+          ></span>
+          <span className="flex-center gap-4 text-tertiary">
+            <span>{intl.formatMessage({ id: 'resources.nodes' })}:</span>
+            <span>
+              {data.ready_workers} / {data.workers}
+            </span>
+          </span>
+          <span className="flex-center gap-4 text-tertiary">
+            <span>GPUs:</span>
+            <span>{data.gpus}</span>
+          </span>
+        </span>
+      </ClusterOption>
+    );
+  };
 
   return (
     <>
@@ -120,6 +202,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
             onChange={handleClusterChange}
             label={intl.formatMessage({ id: 'clusters.title' })}
             options={clusterOptions}
+            optionRender={clusterOptionRender}
             required
           ></SealSelect>
         }

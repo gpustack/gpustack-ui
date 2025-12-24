@@ -71,12 +71,16 @@ export default {
   'clusters.addworker.specifyWorkerIP': 'Указать IP воркера',
   'clusters.addworker.detectWorkerIP': 'Автоматически определить IP воркера',
   'clusters.addworker.specifyWorkerAddress': 'Указать внешний адрес воркера',
-  'clusters.addworker.detectWorkerAddress':
-    'Указать внешний адрес воркера (по умолчанию используется IP воркера)',
+  'clusters.addworker.detectWorkerAddress': 'Указать внешний адрес воркера',
+  'clusters.addworker.detectWorkerAddress.tips':
+    'По умолчанию используется IP воркера, если не указано иное.',
   'clusters.addworker.externalIP.tips':
     'Если работаете в VPC или частной сети, укажите внешний адрес воркера, доступный для сервера.',
   'clusters.addworker.enterWorkerIP': 'Введите IP воркера',
   'clusters.addworker.enterWorkerIP.error': 'Пожалуйста, введите IP воркера.',
+  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
+  'clusters.addworker.enterWorkerAddress.error':
+    'Please enter the worker external address.',
   'clusters.addworker.extraVolume': 'Дополнительное монтирование тома',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':
@@ -134,4 +138,6 @@ export default {
 // 13. 'clusters.addworker.specifyWorkerIP': 'Specify Worker IP <span class="text-tertiary">{type}</span>',
 // 14. 'clusters.form.setDefault': 'Set as Default',
 // 15.  'clusters.form.setDefault.tips': 'Default for deployment',
+// 16.  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
+// 17.  'clusters.addworker.enterWorkerAddress.error': 'Please enter the worker external address.',
 // ================================================================

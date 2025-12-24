@@ -1,5 +1,6 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import classNames from 'classnames';
 import React, { useEffect } from 'react';
 import '../styles/header.less';
@@ -22,6 +23,7 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     width,
     dataIndex
   } = props;
+  const intl = useIntl();
 
   const [currentSortOrder, setCurrentSortOrder] = React.useState<
     'ascend' | 'descend' | null
@@ -31,6 +33,16 @@ const TableHeader: React.FC<TableHeaderProps> = (props) => {
     const index = sortDirections.indexOf(currentOrder);
     const nextIndex = (index + 1) % sortDirections.length;
     return sortDirections[nextIndex];
+  };
+
+  const nextSortTips = () => {
+    if (!currentSortOrder) {
+      return intl.formatMessage({ id: 'common.sorter.tips.ascend' });
+    }
+    if (currentSortOrder === 'ascend') {
+      return intl.formatMessage({ id: 'common.sorter.tips.descend' });
+    }
+    return intl.formatMessage({ id: 'common.sorter.tips.cancel' });
   };
 
   const handleOnSort = () => {

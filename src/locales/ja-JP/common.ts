@@ -266,7 +266,10 @@ export default {
   'common.form.rule.selectInput': 'Please select or enter a {name}',
   'common.tag.experimental': 'Experimental',
   'common.title.example': 'Example',
-  'common.button.dontshowagain': "Don't show again"
+  'common.button.dontshowagain': "Don't show again",
+  'common.sorter.tips.ascend': 'Click to sort ascending',
+  'common.sorter.tips.descend': 'Click to sort descending',
+  'common.sorter.tips.cancel': 'Click to cancel sorting'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -298,5 +301,8 @@ export default {
 // 26. 'common.form.rule.selectInput': 'Please select or enter a {name}',
 // 27. 'common.tag.experimental': 'Experimental',
 // 28. 'common.title.example': 'Example',
-// 29. 'common.button.dontshowagain': "Don't show again"
+// 29. 'common.button.dontshowagain': "Don't show again",
+// 30.  'common.sorter.tips.ascend': 'Click to sort ascending',
+// 31.  'common.sorter.tips.descend': 'Click to sort descending',
+// 32.  'common.sorter.tips.cancel': 'Click to cancel sorting'
 // ========== End of To-Do List ==========

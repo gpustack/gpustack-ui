@@ -7,11 +7,12 @@ interface HeaderProps {
   columns: SealColumnProps[];
   sortDirections?: ('ascend' | 'descend' | null)[];
   sorterList: TableOrder | Array<TableOrder>;
+  showSorterTooltip?: boolean;
   onSort?: OnSortFn;
 }
 
 const Header: React.FC<HeaderProps> = (props) => {
-  const { onSort, sortDirections, sorterList } = props;
+  const { onSort, sortDirections, sorterList, showSorterTooltip } = props;
 
   return (
     <Row className="row">
@@ -31,6 +32,7 @@ const Header: React.FC<HeaderProps> = (props) => {
           <Col span={span} key={dataIndex || i}>
             <TableHeader
               onSort={onSort}
+              showSorterTooltip={showSorterTooltip}
               sorter={sorter}
               sorterList={sorterList}
               dataIndex={dataIndex}

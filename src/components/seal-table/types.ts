@@ -44,6 +44,7 @@ export interface SealColumnProps {
 }
 
 export interface TableHeaderProps {
+  showSorterTooltip?: boolean;
   sorterList?: TableOrder | Array<TableOrder>;
   sorter?: boolean | { multiple?: number };
   sortDirections?: ('ascend' | 'descend' | null)[];
@@ -78,6 +79,7 @@ export type TableOrder = {
   order: 'ascend' | 'descend' | null;
 };
 export interface SealTableProps {
+  showSorterTooltip?: boolean;
   sortDirections?: ('ascend' | 'descend' | null)[];
   columns?: SealColumnProps[];
   childParentKey?: string;

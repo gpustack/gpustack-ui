@@ -6,6 +6,7 @@ import SealTable from '@/components/seal-table';
 import TableContext from '@/components/seal-table/table-context';
 import { TableOrder } from '@/components/seal-table/types';
 import { PageAction } from '@/config';
+import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
@@ -326,12 +327,13 @@ const Clusters: React.FC = () => {
           <SealTable
             rowKey="id"
             loadChildren={getWorkerPoolList}
-            sortDirections={['descend', 'ascend']}
+            sortDirections={TABLE_SORT_DIRECTIONS}
             expandedRowKeys={expandedRowKeys}
             onExpand={handleExpandChange}
             onExpandAll={handleToggleExpandAll}
             renderChildren={renderChildren}
             onTableSort={handleOnSortChange}
+            showSorterTooltip={false}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             loadend={dataSource.loadend}

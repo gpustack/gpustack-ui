@@ -36,7 +36,6 @@ const useCredentialColumns = (
       {
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
-        showSorterTooltip: false,
         sorter: tableSorter(3),
         ellipsis: {
           showTitle: false

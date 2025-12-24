@@ -258,5 +258,8 @@ export default {
   'common.form.rule.selectInput': '请选择或输入{name}',
   'common.tag.experimental': '实验性',
   'common.title.example': '示例',
-  'common.button.dontshowagain': '不再提示'
+  'common.button.dontshowagain': '不再提示',
+  'common.sorter.tips.ascend': '点击升序',
+  'common.sorter.tips.descend': '点击降序',
+  'common.sorter.tips.cancel': '取消排序'
 };

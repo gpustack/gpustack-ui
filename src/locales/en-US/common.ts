@@ -266,5 +266,8 @@ export default {
   'common.form.rule.selectInput': 'Please select or enter a {name}',
   'common.tag.experimental': 'Experimental',
   'common.title.example': 'Example',
-  'common.button.dontshowagain': "Don't show again"
+  'common.button.dontshowagain': "Don't show again",
+  'common.sorter.tips.ascend': 'Click to sort ascending',
+  'common.sorter.tips.descend': 'Click to sort descending',
+  'common.sorter.tips.cancel': 'Click to cancel sorting'
 };

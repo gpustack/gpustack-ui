@@ -327,6 +327,7 @@ const Models: React.FC = () => {
     setQueryParams((pre: any) => {
       return {
         ...pre,
+        page: 1,
         sort_by: sortKeys.join(',')
       };
     });

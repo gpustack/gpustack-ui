@@ -66,19 +66,22 @@ export default {
   'clusters.addworker.checkEnv': '检查环境',
   'clusters.addworker.specifyArgs': '指定参数',
   'clusters.addworker.runCommand': '运行指令',
-  'clusters.addworker.specifyWorkerIP': '指定节点 IP',
+  'clusters.addworker.specifyWorkerIP': '节点 IP',
   'clusters.addworker.detectWorkerIP': '自动检测节点 IP',
-  'clusters.addworker.specifyWorkerAddress': '指定节点外部地址',
-  'clusters.addworker.detectWorkerAddress':
-    '指定节点外部地址（默认使用节点 IP）',
+  'clusters.addworker.specifyWorkerAddress': '节点外部地址',
+  'clusters.addworker.detectWorkerAddress': '节点外部地址',
+  'clusters.addworker.detectWorkerAddress.tips':
+    '如果未指定，则默认为节点 IP。',
   'clusters.addworker.externalIP.tips':
     '如运行在 VPC 或私有网络时，请指定 GPUStack Server 可达的节点外部地址。',
   'clusters.addworker.enterWorkerIP': '输入节点 IP',
   'clusters.addworker.enterWorkerIP.error': '请输入节点 IP',
+  'clusters.addworker.enterWorkerAddress': '输入节点外部地址',
+  'clusters.addworker.enterWorkerAddress.error': '请输入节点外部地址',
   'clusters.addworker.extraVolume': '额外卷挂载',
   'clusters.addworker.cacheVolume': '缓存卷挂载',
   'clusters.addworker.cacheVolume.tips':
-    '如果你想自定义模型缓存目录，可以指定路径进行挂载。',
+    '如果要自定义模型缓存目录，可以指定路径进行挂载。',
   'clusters.addworker.configSummary': '配置摘要',
   'clusters.addworker.gpuVendor': 'GPU 厂商',
   'clusters.addworker.workerIP': '节点 IP',

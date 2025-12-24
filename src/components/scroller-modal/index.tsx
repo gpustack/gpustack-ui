@@ -12,6 +12,15 @@ const Wrapper = styled.div<{ $maxHeight?: number | string }>`
   width: 100%;
 `;
 
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+  max-width: 360px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+
 const ScrollerModal = (
   props: ModalProps & { maxContentHeight?: number | string }
 ) => {
@@ -48,6 +57,7 @@ const ScrollerModal = (
   return (
     <Modal
       {...props}
+      title={<Title>{props.title}</Title>}
       destroyOnHidden={true}
       styles={{
         content: {

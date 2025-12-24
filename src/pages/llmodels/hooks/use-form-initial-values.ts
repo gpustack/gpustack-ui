@@ -218,7 +218,10 @@ export const useGenerateWorkerOptions = () => {
         value: item.id,
         provider: item.provider as string,
         state: item.state,
-        is_default: item.is_default
+        is_default: item.is_default,
+        workers: item.workers,
+        ready_workers: item.ready_workers,
+        gpus: item.gpus
       }))
     );
   };
@@ -254,7 +257,10 @@ export default function useFormInitialValues() {
         value: item.id,
         provider: item.provider as string,
         state: item.state,
-        is_default: item.is_default
+        is_default: item.is_default,
+        workers: item.workers,
+        ready_workers: item.ready_workers,
+        gpus: item.gpus
       }));
       setClusterList(list);
       setClusterListAtom(list);

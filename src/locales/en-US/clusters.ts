@@ -68,15 +68,19 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
   'clusters.addworker.runCommand': 'Run Command',
-  'clusters.addworker.specifyWorkerIP': 'Specify Worker IP',
+  'clusters.addworker.specifyWorkerIP': 'Worker IP',
   'clusters.addworker.detectWorkerIP': 'Auto-detect Worker IP',
-  'clusters.addworker.specifyWorkerAddress': 'Specify Worker External Address',
-  'clusters.addworker.detectWorkerAddress':
-    'Specify Worker External Address (default to Worker IP)',
+  'clusters.addworker.specifyWorkerAddress': 'Worker External Address',
+  'clusters.addworker.detectWorkerAddress': 'Worker External Address',
+  'clusters.addworker.detectWorkerAddress.tips':
+    'Defaults to Worker IP if not specified.',
   'clusters.addworker.externalIP.tips':
     'If running in a VPC or private network, please specify the Worker external address reachable by the GPUStack Server.',
   'clusters.addworker.enterWorkerIP': 'Enter worker IP',
   'clusters.addworker.enterWorkerIP.error': 'Please enter the worker IP.',
+  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
+  'clusters.addworker.enterWorkerAddress.error':
+    'Please enter the worker external address.',
   'clusters.addworker.extraVolume': 'Additional Volume Mount',
   'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
   'clusters.addworker.cacheVolume.tips':

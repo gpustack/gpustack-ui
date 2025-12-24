@@ -5,7 +5,7 @@ export const Title = styled.div`
 `;
 
 export const ConfigWrapper = styled.div`
-  padding: 16px;
+  padding: 12px 16px;
   margin-bottom: 16px;
   border: 1px solid var(--ant-color-split);
   border-radius: var(--ant-border-radius);

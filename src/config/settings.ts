@@ -15,7 +15,7 @@ type SortDirection = 'ascend' | 'descend' | null;
 export const TABLE_SORT_DIRECTIONS: SortDirection[] = [
   'ascend',
   'descend',
-  'ascend'
+  null
 ];
 
 export const tableSorter = (order: number | boolean) => {

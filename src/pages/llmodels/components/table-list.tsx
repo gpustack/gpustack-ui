@@ -727,6 +727,7 @@ const Models: React.FC<ModelsProps> = ({
           dataSource={dataSource}
           rowSelection={rowSelection}
           expandedRowKeys={expandedRowKeys}
+          showSorterTooltip={false}
           onExpand={handleExpandChange}
           onExpandAll={handleToggleExpandAll}
           loading={loading}

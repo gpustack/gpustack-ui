@@ -45,6 +45,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     pagination,
     empty,
     sortDirections,
+    showSorterTooltip,
     renderChildren,
     loadChildren,
     loadChildrenAPI
@@ -167,6 +168,7 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
             columns={parsedColumns}
             sortDirections={sortDirections}
             sorterList={sorterList}
+            showSorterTooltip={showSorterTooltip}
           ></Header>
         </div>
         <Spin spinning={loading}>

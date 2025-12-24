@@ -133,5 +133,5 @@ export default {
 // 12. 'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.'
 // 13. 'clusters.addworker.specifyWorkerIP': 'Specify Worker IP <span class="text-tertiary">{type}</span>',
 // 14. 'clusters.form.setDefault': 'Set as Default',
-// 15.  'clusters.form.setDefault.tips': 'Default for deployment'
+// 15.  'clusters.form.setDefault.tips': 'Default for deployment',
 // ================================================================

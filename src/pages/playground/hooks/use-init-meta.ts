@@ -10,6 +10,7 @@ import {
 } from '@/pages/playground/config/params-config';
 import { generateRandomNumber } from '@/utils';
 import { useSearchParams } from '@umijs/max';
+import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import React, {
   useCallback,
@@ -225,11 +226,12 @@ export const useInitImageMeta = (
   const [basicParamsConfig, setBasicParamsConfig] = React.useState<
     ParamsSchema[]
   >([...ImageCountConfig, ...ImageSizeConfig]);
+  const initialSeed = generateRandomNumber();
 
   const [initialValues, setInitialValues] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
-    seed: generateRandomNumber(),
+    seed: initialSeed,
     model: ''
   });
   const [paramsConfig, setParamsConfig] = useState<ParamsSchema[]>([
@@ -241,7 +243,7 @@ export const useInitImageMeta = (
   const [parameters, setParams] = useState<any>({
     ...imgInitialValues,
     ...advancedFieldsDefaultValus,
-    seed: generateRandomNumber(),
+    seed: initialSeed,
     model: ''
   });
 
@@ -433,7 +435,7 @@ export const useInitImageMeta = (
     [modelList, isOpenaiCompatible]
   );
 
-  const handleOnValuesChange = useCallback(
+  const handleOnValuesChange = useMemoizedFn(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {
       console.log('changeValues', changeValues);
       // model change will reset all values
@@ -470,7 +472,10 @@ export const useInitImageMeta = (
         setParams(allValues);
         updateCacheFormData(changeValues);
       } else if (_.isBoolean(changeValues.random_seed)) {
-        const seed = changeValues.random_seed ? generateRandomNumber() : null;
+        const seed = changeValues.random_seed
+          ? generateRandomNumber()
+          : parameters.seed;
+
         setParams({
           ...allValues,
           seed: seed
@@ -483,13 +488,7 @@ export const useInitImageMeta = (
         setParams(allValues);
         updateCacheFormData(changeValues);
       }
-    },
-    [
-      handleOnModelChange,
-      parameters.size,
-      basicParamsConfig,
-      isOpenaiCompatible
-    ]
+    }
   );
 
   useEffect(() => {

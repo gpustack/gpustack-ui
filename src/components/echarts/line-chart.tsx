@@ -3,7 +3,7 @@ import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import { genColors } from '@/utils';
 import _ from 'lodash';
-import React, { memo, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import echarts from '.';
 import { ChartProps } from './types';
 
@@ -169,4 +169,4 @@ const LineChart: React.FC<ChartProps> = (props) => {
   );
 };
 
-export default memo(LineChart);
+export default LineChart;

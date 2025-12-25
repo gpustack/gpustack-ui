@@ -220,6 +220,7 @@ export default function useChartConfig() {
   };
 
   return {
+    token,
     tooltip,
     grid,
     legend,

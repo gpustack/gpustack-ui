@@ -2,7 +2,7 @@ import Chart from '@/components/echarts/chart';
 import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import React, { memo, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ChartProps } from './types';
 
 const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
@@ -17,6 +17,7 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
     title
   } = props;
   const {
+    token,
     grid,
     legend,
     title: titleConfig,
@@ -44,17 +45,28 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
       xAxis: {
         ...xAxis,
         axisLabel: {
-          ...xAxis.axisLabel,
-          formatter: labelFormatter
+          ...xAxis.axisLabel
         }
       },
       yAxis: {
         ...yAxis,
         axisLabel: {
           ...yAxis.axisLabel,
+          show: true,
           overflow: 'truncate',
           width: 75,
-          ellipsis: '...'
+          ellipsis: '...',
+          margin: 12,
+          formatter(value: string, index: number) {
+            return `{a|${index + 1}}`;
+          },
+          rich: {
+            a: {
+              fontWeight: 500,
+              fontSize: 14,
+              color: token?.colorTextSecondary
+            }
+          }
         }
       },
       legend: {
@@ -70,9 +82,25 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
         type: 'bar',
         barWidth: 20,
         stack: 'Ad',
-        barGap: '30%',
+        barGap: '20%',
         label: {
-          show: false
+          show: true,
+          formatter(params: any) {
+            if (params.seriesIndex === 0) {
+              return `{value|${params.name}}`;
+            }
+            return '';
+          },
+          position: 'left',
+          align: 'left',
+          offset: [5, 18],
+          rich: {
+            value: {
+              textBorderWidth: 0,
+              fontSize: 11,
+              color: token?.colorTextTertiary
+            }
+          }
         },
         itemStyle: {
           color: item.color
@@ -138,10 +166,14 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
   return (
     <>
       {isEmpty ? (
-        <EmptyData height={height} title={title}></EmptyData>
+        <EmptyData
+          height={height}
+          title={_.get(title, 'text', title || '')}
+        ></EmptyData>
       ) : (
         <Chart
           height={height}
+          chartHeight={typeof height === 'number' ? height - 10 : undefined}
           options={dataOptions}
           width={width || '100%'}
         ></Chart>
@@ -150,4 +182,4 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
   );
 };
 
-export default memo(BarChart);
+export default BarChart;

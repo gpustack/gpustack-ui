@@ -9,10 +9,11 @@ import echarts, { ECOption } from '.';
 
 const Chart: React.FC<{
   options: ECOption;
+  chartHeight?: number;
   height: number | string;
   width: number | string;
   ref?: any;
-}> = forwardRef(({ options, width, height }, ref) => {
+}> = forwardRef(({ options, width, height, chartHeight }, ref) => {
   const container = useRef<HTMLDivElement>(null);
   const chart = useRef<echarts.EChartsType>();
   const resizeable = useRef(false);
@@ -138,7 +139,10 @@ const Chart: React.FC<{
 
   return (
     <div className="chart-wrapper" style={{ width: width, height }}>
-      <div ref={container} style={{ width: width, height }}></div>
+      <div
+        ref={container}
+        style={{ width: width, height: chartHeight || height }}
+      ></div>
     </div>
   );
 });

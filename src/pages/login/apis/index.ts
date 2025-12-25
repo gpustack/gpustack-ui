@@ -1,3 +1,4 @@
+import { hideModalTemporarilyAtom } from '@/atoms/settings';
 import { userAtom } from '@/atoms/user';
 import { clearAtomStorage, clearStorageUserSettings } from '@/atoms/utils';
 import { request } from '@umijs/max';
@@ -29,6 +30,7 @@ export const logout = async (userInfo?: any) => {
   });
   clearStorageUserSettings();
   clearAtomStorage(userAtom);
+  clearAtomStorage(hideModalTemporarilyAtom);
 
   if (res?.logout_url) {
     window.location.href = res.logout_url;

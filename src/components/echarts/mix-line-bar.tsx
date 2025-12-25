@@ -158,7 +158,10 @@ const MixLineBarChart: React.FC<
   return (
     <>
       {!lineSeriesData.length && !barSeriesData.length ? (
-        <EmptyData height={height} title={title}></EmptyData>
+        <EmptyData
+          height={height}
+          title={_.get(title, 'text', title || '')}
+        ></EmptyData>
       ) : (
         <Chart
           height={height}

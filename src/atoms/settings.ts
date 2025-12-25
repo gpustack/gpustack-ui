@@ -54,3 +54,4 @@ export const userSettingsHelperAtom = atom(
     });
   }
 );
+export const hideModalTemporarilyAtom = atom<boolean>(false);

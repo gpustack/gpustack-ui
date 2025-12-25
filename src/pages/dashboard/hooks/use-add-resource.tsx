@@ -1,4 +1,5 @@
 import { clusterSessionAtom } from '@/atoms/clusters';
+import { hideModalTemporarilyAtom } from '@/atoms/settings';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal/index';
 import { PageAction } from '@/config';
@@ -60,7 +61,9 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
   const navigate = useNavigate();
   const { setUserSettings, userSettings } = useUserSettings();
   const [, setClusterSession] = useAtom(clusterSessionAtom);
-  const [hideModalTemporarily, setHideModalTemporarily] = useState(false);
+  const [hideModalTemporarily, setHideModalTemporarily] = useAtom(
+    hideModalTemporarilyAtom
+  );
   const { fetchResource, resourceCount, resourceAtom } = useClusterList();
 
   const [loadingStatus, setLoadingStatus] = useState({

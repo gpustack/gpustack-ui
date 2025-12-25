@@ -1,4 +1,5 @@
 import { initialPasswordAtom, userAtom } from '@/atoms/user';
+import { resetStorageUserSettings } from '@/atoms/utils';
 import SealInput from '@/components/seal-form/seal-input';
 import { PasswordReg } from '@/config';
 import {
@@ -43,6 +44,7 @@ const PasswordForm: React.FC = () => {
       });
       setInitialPassword('');
       // Reset first login flag
+      resetStorageUserSettings();
       writeState(IS_FIRST_LOGIN, null);
       gotoDefaultPage(userInfo);
       message.success(intl.formatMessage({ id: 'common.message.success' }));

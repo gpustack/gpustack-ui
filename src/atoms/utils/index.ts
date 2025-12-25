@@ -1,3 +1,4 @@
+import { defaultSettings } from '@/atoms/settings';
 import { getDefaultStore } from 'jotai';
 
 export const clearStorageUserSettings = () => {
@@ -10,6 +11,20 @@ export const clearStorageUserSettings = () => {
       JSON.stringify({
         ...savedSettings,
         hideAddResourceModal: false,
+        colorPrimary: undefined
+      })
+    );
+  } catch (error) {
+    console.log('Error clearing user settings:', error);
+  }
+};
+
+export const resetStorageUserSettings = () => {
+  try {
+    localStorage.setItem(
+      'userSettings',
+      JSON.stringify({
+        ...defaultSettings,
         colorPrimary: undefined
       })
     );

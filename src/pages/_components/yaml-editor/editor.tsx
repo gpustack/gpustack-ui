@@ -46,6 +46,7 @@ const EditorInner: React.FC<ViewerProps> = forwardRef((props, ref) => {
     const yamlUri = monaco.Uri.parse(path);
 
     configureMonacoYaml(monaco, {
+      hover: false,
       schemas: [
         {
           uri: 'http://example.com/schema-name.json',

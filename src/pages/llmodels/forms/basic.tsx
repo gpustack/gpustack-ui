@@ -27,7 +27,7 @@ const ClusterOption = styled.span`
   width: 100%;
   flex-direction: column;
   border-bottom: 1px solid var(--ant-color-split);
-  gap: 8px;
+  gap: 4px;
   .label {
     display: flex;
     align-items: center;
@@ -39,8 +39,8 @@ const ClusterOption = styled.span`
   }
   .dot {
     display: flex;
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background-color: var(--ant-color-warning);
     border-radius: 50%;
     &.ready {
@@ -54,11 +54,12 @@ const ClusterOption = styled.span`
     padding: 2px 0px;
     border-radius: 4px;
     font-weight: 400;
-    gap: 12px;
+    gap: 8px;
   }
   .s-dot {
     width: 4px;
     height: 4px;
+    margin: 0 4px;
     background-color: var(--ant-color-text-quaternary);
     border-radius: 50%;
   }
@@ -128,16 +129,18 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
           <span
             className={`dot ${data.ready_workers > 0 ? 'ready' : ''}`}
           ></span>
-          <span className="flex-center gap-4 text-tertiary">
-            <span>{intl.formatMessage({ id: 'resources.nodes' })}:</span>
-            <span>
-              {data.ready_workers} / {data.workers}
+          <span className="flex-center gap-8">
+            <span className="flex-center gap-4 text-tertiary">
+              <span>{intl.formatMessage({ id: 'resources.nodes' })}:</span>
+              <span>
+                {data.ready_workers}/{data.workers}
+              </span>
             </span>
-          </span>
-          <span className="s-dot"></span>
-          <span className="flex-center gap-4 text-tertiary">
-            <span>GPUs:</span>
-            <span>{data.gpus}</span>
+            <span className="s-dot"></span>
+            <span className="flex-center gap-4 text-tertiary">
+              <span>GPUs:</span>
+              <span>{data.gpus}</span>
+            </span>
           </span>
         </span>
       </ClusterOption>

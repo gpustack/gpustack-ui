@@ -11,7 +11,7 @@ type UserSettings = {
   hideAddResourceModal?: boolean;
 };
 
-const defaultSettings: UserSettings = {
+export const defaultSettings: UserSettings = {
   theme: 'light',
   mode: 'auto',
   isDarkTheme: false,

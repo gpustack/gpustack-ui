@@ -18,6 +18,15 @@ import {
 } from '../config';
 import { ListItem } from '../config/types';
 
+const StyledCard = styled(Card)`
+  &:hover {
+    .operations {
+      background-color: var(--ant-color-fill-tertiary);
+      border-radius: var(--ant-border-radius);
+    }
+  }
+`;
+
 const TagInner = styled(Tag)`
   display: flex;
   align-items: center;
@@ -33,6 +42,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 24px;
   width: 100%;
   .title {
     display: flex;
@@ -187,7 +197,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
   };
 
   return (
-    <Card
+    <StyledCard
       onClick={handleClick}
       clickable={true}
       hoverable={true}
@@ -197,7 +207,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
       header={
         <Header>
           <div className="title">{renderIcon()}</div>
-          <span onClick={onClick}>
+          <span onClick={onClick} className="operations">
             <DropDownActions
               menu={{
                 items: actions,
@@ -230,7 +240,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
         </CardName>
         {renderFrameworks()}
       </Content>
-    </Card>
+    </StyledCard>
   );
 };
 

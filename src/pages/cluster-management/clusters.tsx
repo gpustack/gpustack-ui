@@ -37,11 +37,7 @@ import {
   K8sStepsFromCluter
 } from './components/add-worker/config';
 import PoolRows from './components/pool-rows';
-import {
-  ClusterStatusValueMap,
-  ProviderType,
-  ProviderValueMap
-} from './config';
+import { ProviderType, ProviderValueMap } from './config';
 import {
   ClusterListItem,
   CredentialListItem,
@@ -79,7 +75,8 @@ const Clusters: React.FC = () => {
     useExpandedRowKeys(expandAtom);
   const navigate = useNavigate();
   const intl = useIntl();
-  const { handleAddWorker, AddWorkerModal, setStepList } = useAddWorker({});
+  const { handleAddWorker, checkDefaultCluster, AddWorkerModal, setStepList } =
+    useAddWorker({});
 
   const [openAddModal, setOpenAddModal] = useState<{
     open: boolean;
@@ -265,12 +262,12 @@ const Clusters: React.FC = () => {
       dataSource.loadend &&
       dataSource.dataList?.length > 0
     ) {
-      const targetCluster = dataSource.dataList.find(
-        (cluster) =>
-          cluster.state === ClusterStatusValueMap.Ready &&
-          !cluster.workers &&
-          !cluster.worker_pools?.length
-      );
+      const list = dataSource.dataList?.map((item) => ({
+        label: item.name,
+        value: item.id,
+        ...item
+      }));
+      const targetCluster = checkDefaultCluster(list);
 
       if (targetCluster) {
         const actionMap = {
@@ -280,7 +277,7 @@ const Clusters: React.FC = () => {
         };
         handleSelect(
           actionMap[targetCluster.provider as string],
-          targetCluster
+          targetCluster as ListItem
         );
         // reset session
         setClusterSession(null);

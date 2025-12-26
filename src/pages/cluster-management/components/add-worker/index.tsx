@@ -32,12 +32,12 @@ type AddWorkerProps = {
   stepList: StepName[];
   onClusterChange?: (value: number, row?: any) => void;
   onCancel: () => void;
-  cluster_id: number;
+  cluster_id: number | null;
   registrationInfo?: {
     token: string;
     image: string;
     server_url: string;
-    cluster_id: number;
+    cluster_id: number | null;
   };
 };
 
@@ -64,12 +64,12 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     token: string;
     image: string;
     server_url: string;
-    cluster_id: number;
+    cluster_id: number | null;
   }>({
     token: '',
     image: '',
     server_url: '',
-    cluster_id: 0
+    cluster_id: null
   });
 
   const handleOnClusterChange = async (value: number, row?: any) => {

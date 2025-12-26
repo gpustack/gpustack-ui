@@ -268,24 +268,18 @@ export default {
     'Используйте следующий префикс пути и укажите имя модели либо в заголовке запроса <span class="bold-text">X-GPUStack-Model</span>, либо в поле model в теле запроса. Все запросы с этим префиксом пути будут перенаправлены в бэкенд вывода.',
   'models.form.backendVersion.deprecated': 'Устаревший',
   'models.accessSettings.public.desc':
-    'Accessible to anyone without authentication.',
+    'Доступно всем без аутентификации.',
   'models.accessSettings.authed.tips':
-    'Accessible to all authenticated platform users.',
+    'Доступно всем аутентифицированным пользователям платформы.',
   'models.accessSettings.allowedUsers.tips':
-    'Only designated users can access the model.',
-  'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
+    'Доступ к модели имеют только назначенные пользователи.',
+  'models.form.backendVersions.tips': `Чтобы использовать больше версий, перейдите на страницу {link} и отредактируйте бэкенд для добавления версий.`,
   'models.catalog.nogpus.tips':
-    'No compatible GPUs are available in the selected cluster for this model.',
-  'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`,
-  'models.form.readyWorkers': 'workers ready'
+    'В выбранном кластере нет доступных GPU, совместимых с этой моделью.',
+  'models.form.modelfile.notfound': `Указанный путь к файлу модели не существует на сервере GPUStack. Рекомендуется размещать файл модели по одному и тому же пути как на сервере GPUStack, так и на воркерах GPUStack. Это поможет системе принимать лучшие решения по распределению ресурсов.`,
+  'models.form.readyWorkers': 'воркеров готово'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'models.accessSettings.public.desc': 'Accessible to anyone without authentication.',
-// 2.  'models.accessSettings.authed.tips': 'Accessible to all authenticated platform users.',
-// 3. 'models.accessSettings.allowedUsers.tips': 'Only designated users can access the model.',
-// 4. 'models.form.backendVersions.tips': `To use more versions, go to the {link} page and edit the backend to add versions.`,
-// 5. 'models.catalog.nogpus.tips': 'No compatible GPUs are available in the selected cluster for this model.',
-// 6. 'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`,
-// 7. 'models.form.readyWorkers': 'workers ready'
+
 // ========== End of To-Do List ==========

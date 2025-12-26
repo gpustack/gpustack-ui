@@ -12,13 +12,7 @@ import { generateRandomNumber } from '@/utils';
 import { useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ParamsSchema } from '../config/types';
 import {
   IMG_METAKEYS,
@@ -133,37 +127,34 @@ export const useInitLLmMeta = (
     return fields?.join(',');
   }, [paramsConfig]);
 
-  const handleOnModelChange = useCallback(
-    (val: string) => {
-      if (!val) return;
-      const model = modelList.find((item) => item.value === val);
-      const { form: initialData, meta } = extractLLMMeta(model?.meta);
-      setModelMeta(meta);
-      setInitialValues({
-        ...initialData,
-        model: val
-      });
-      setParams({
-        ...initialData,
-        model: val
-      });
-      const config = defaultParamsConfig.map((item) => {
-        return {
-          ...item,
-          attrs:
-            item.name === 'max_tokens'
-              ? { ...item.attrs, max: meta.max_tokens }
-              : {
-                  ...item.attrs
-                }
-        };
-      });
-      setParamsConfig(config);
-    },
-    [modelList, defaultParamsConfig]
-  );
+  const handleOnModelChange = useMemoizedFn((val: string) => {
+    if (!val) return;
+    const model = modelList.find((item) => item.value === val);
+    const { form: initialData, meta } = extractLLMMeta(model?.meta);
+    setModelMeta(meta);
+    setInitialValues({
+      ...initialData,
+      model: val
+    });
+    setParams({
+      ...initialData,
+      model: val
+    });
+    const config = defaultParamsConfig.map((item) => {
+      return {
+        ...item,
+        attrs:
+          item.name === 'max_tokens'
+            ? { ...item.attrs, max: meta.max_tokens }
+            : {
+                ...item.attrs
+              }
+      };
+    });
+    setParamsConfig(config);
+  });
 
-  const handleOnValuesChange = useCallback(
+  const handleOnValuesChange = useMemoizedFn(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {
       if (changeValues.model) {
         handleOnModelChange(changeValues.model);
@@ -172,8 +163,7 @@ export const useInitLLmMeta = (
         setParams(allValues);
         setInitialValues(allValues);
       }
-    },
-    [handleOnModelChange]
+    }
   );
 
   useEffect(() => {
@@ -405,35 +395,32 @@ export const useInitImageMeta = (
     return fields?.join(',');
   }, [paramsConfig]);
 
-  const handleOnModelChange = useCallback(
-    (val: string) => {
-      if (!val) return;
-      const model = modelList.find((item) => item.value === val);
-      const { form: initialData, sizeOptions } = extractIMGMeta(model?.meta);
-      const newParamsConfig = generateImageParamsConfig(model, sizeOptions);
+  const handleOnModelChange = useMemoizedFn((val: string) => {
+    if (!val) return;
+    const model = modelList.find((item) => item.value === val);
+    const { form: initialData, sizeOptions } = extractIMGMeta(model?.meta);
+    const newParamsConfig = generateImageParamsConfig(model, sizeOptions);
 
-      if (!isOpenaiCompatible) {
-        setParamsConfig([...newParamsConfig, ...ImageAdvancedParamsConfig]);
-      } else {
-        setParamsConfig(newParamsConfig);
-      }
-      setBasicParamsConfig(newParamsConfig);
-      setImageSizeOptions(sizeOptions);
-      setModelMeta(model?.meta || {});
-      setInitialValues({
-        ...initialData,
-        seed: parameters.seed,
-        model: val
-      });
-      setParams({
-        ...initialData,
-        seed: parameters.seed,
-        model: val
-      });
-      updateCacheFormData(initialData);
-    },
-    [modelList, isOpenaiCompatible]
-  );
+    if (!isOpenaiCompatible) {
+      setParamsConfig([...newParamsConfig, ...ImageAdvancedParamsConfig]);
+    } else {
+      setParamsConfig(newParamsConfig);
+    }
+    setBasicParamsConfig(newParamsConfig);
+    setImageSizeOptions(sizeOptions);
+    setModelMeta(model?.meta || {});
+    setInitialValues({
+      ...initialData,
+      seed: parameters.seed,
+      model: val
+    });
+    setParams({
+      ...initialData,
+      seed: parameters.seed,
+      model: val
+    });
+    updateCacheFormData(initialData);
+  });
 
   const handleOnValuesChange = useMemoizedFn(
     (changeValues: Record<string, any>, allValues: Record<string, any>) => {

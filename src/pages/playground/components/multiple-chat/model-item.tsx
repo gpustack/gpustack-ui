@@ -47,7 +47,8 @@ interface ModelItemProps {
 }
 
 const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
-  const { modelList, model, instanceId } = props;
+  const { modelList, ...restProps } = props;
+  const { model, instanceId } = restProps;
   const {
     globalParams,
     setGlobalParams,
@@ -66,14 +67,20 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
     paramsConfig,
     initialValues,
     parameters
-  } = useInitLLmMeta(props, {
-    defaultValues: {
-      ...llmInitialValues,
-      model: model
+  } = useInitLLmMeta(
+    {
+      ...restProps,
+      modelList: modelFullList
     },
-    defaultParamsConfig: ChatParamsConfig,
-    metaKeys: LLM_METAKEYS
-  });
+    {
+      defaultValues: {
+        ...llmInitialValues,
+        model: model
+      },
+      defaultParamsConfig: ChatParamsConfig,
+      metaKeys: LLM_METAKEYS
+    }
+  );
   const intl = useIntl();
   const isApplyToAllModels = useRef(false);
   const [systemMessage, setSystemMessage] = useState<string>('');

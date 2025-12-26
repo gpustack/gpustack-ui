@@ -14,6 +14,7 @@ interface ActiveModelsProps {
 
 const ActiveModels: React.FC<ActiveModelsProps> = (props) => {
   const { spans, modelSelections, setModelRefs } = props;
+
   return (
     <Row gutter={[16, 0]} style={{ height: '100%' }}>
       {modelSelections.map((model, index) => (
@@ -21,7 +22,8 @@ const ActiveModels: React.FC<ActiveModelsProps> = (props) => {
           span={spans.span}
           key={`${model.value || 'empty'}-${model.uid}`}
           style={{
-            height: spans.count < 4 ? 'calc(100% - 16px)' : 'calc(50% - 16px)'
+            height: spans.count < 4 ? 'calc(100% - 16px)' : 'calc(50% - 16px)',
+            overflow: 'hidden'
           }}
         >
           <ModelItem

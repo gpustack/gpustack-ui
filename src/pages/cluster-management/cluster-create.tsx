@@ -164,6 +164,7 @@ const ClusterCreate = () => {
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
       }
     } catch (error) {
+      setSubmitLoading(false);
       console.log('next error:', error);
     }
   };

@@ -21,12 +21,12 @@ const useAddWorker = (props: {
     open: boolean;
     provider: ProviderType;
     title: string;
-    cluster_id: number;
+    cluster_id: number | null;
   }>({
     open: false,
     provider: null,
     title: '',
-    cluster_id: 0
+    cluster_id: null
   });
 
   const handleAddWorker = async (row: ClusterListItem) => {
@@ -43,7 +43,12 @@ const useAddWorker = (props: {
         open: true,
         title: title,
         provider: row.provider as ProviderType,
-        cluster_id: row.id
+        cluster_id: [
+          ProviderValueMap.Docker,
+          ProviderValueMap.Kubernetes
+        ].includes(row.provider as string)
+          ? row.id
+          : null
       });
     } catch (error: any) {
       message.error(error?.message || 'Failed to fetch cluster token');
@@ -67,6 +72,38 @@ const useAddWorker = (props: {
       .filter((item) => item.state === ClusterStatusValueMap.Ready);
   }, [clusterList]);
 
+  const checkDefaultCluster = (
+    clusterList: Global.BaseOption<number, ClusterListItem>[]
+  ) => {
+    // select default and ready cluster first, digitalocean no READY state
+    let currentData = clusterList.find(
+      (item) => item.is_default && item.state === ClusterStatusValueMap.Ready
+    );
+
+    if (!currentData) {
+      // select docker ready cluster
+      currentData = clusterList.find(
+        (item) =>
+          item.provider === ProviderValueMap.Docker &&
+          item.state === ClusterStatusValueMap.Ready
+      );
+    }
+
+    if (!currentData) {
+      // select any ready cluster
+      currentData = clusterList.find(
+        (item) => item.state === ClusterStatusValueMap.Ready
+      );
+    }
+
+    if (!currentData) {
+      // maybe no ready a digitalocean cluster
+      currentData = clusterList[0];
+    }
+
+    return currentData || null;
+  };
+
   const AddWorkerModal = (
     <AddWorker
       title={openAddWorker.title}
@@ -82,7 +119,7 @@ const useAddWorker = (props: {
           open: false,
           provider: null,
           title: '',
-          cluster_id: 0
+          cluster_id: null
         })
       }
     ></AddWorker>
@@ -90,6 +127,7 @@ const useAddWorker = (props: {
 
   return {
     handleAddWorker,
+    checkDefaultCluster,
     AddWorkerModal,
     setStepList
   };

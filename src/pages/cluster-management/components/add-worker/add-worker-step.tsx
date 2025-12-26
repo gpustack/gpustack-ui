@@ -41,7 +41,7 @@ type AddWorkerProps = {
     token: string;
     image: string;
     server_url: string;
-    cluster_id: number;
+    cluster_id: number | null;
     [key: string]: any;
   };
 };

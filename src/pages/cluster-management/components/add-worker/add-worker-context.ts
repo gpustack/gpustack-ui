@@ -17,7 +17,7 @@ interface AddWorkerContextProps {
     token: string;
     image: string;
     server_url: string;
-    cluster_id: number;
+    cluster_id: number | null;
   };
   registerField: (key: SummaryDataKey) => () => void;
   updateField: (key: SummaryDataKey, value: any) => void;

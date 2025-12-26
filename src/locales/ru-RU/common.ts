@@ -265,15 +265,12 @@ export default {
   'common.form.rule.selectInput': 'Выберите или введите {name}',
   'common.tag.experimental': 'Экспериментальный',
   'common.title.example': 'Пример',
-  'common.button.dontshowagain': "Don't show again",
-  'common.sorter.tips.ascend': 'Click to sort ascending',
-  'common.sorter.tips.descend': 'Click to sort descending',
-  'common.sorter.tips.cancel': 'Click to cancel sorting'
+  'common.button.dontshowagain': "Больше не показывать",
+  'common.sorter.tips.ascend': 'Нажмите для сортировки по возрастанию',
+  'common.sorter.tips.descend': 'Нажмите для сортировки по убыванию',
+  'common.sorter.tips.cancel': 'Нажмите, чтобы отменить сортировку'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'common.button.dontshowagain': "Don't show again",
-// 2.  'common.sorter.tips.ascend': 'Click to sort ascending',
-// 3.  'common.sorter.tips.descend': 'Click to sort descending',
-// 4.  'common.sorter.tips.cancel': 'Click to cancel sorting'
+
 // ========== End of To-Do List ==========

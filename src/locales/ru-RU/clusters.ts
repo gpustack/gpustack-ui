@@ -97,47 +97,28 @@ export default {
     'напр. /data/cache (путь должен начинаться с /)',
   'clusters.addworker.vendorNotes.title': 'Примечания для устройств {vendor}',
   'clusters.button.genToken':
-    'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
-  'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
+    'Нужен новый токен? Нажмите <a href="{link}" target="_blank">здесь</a>.',
+  'clusters.addworker.amdNotes-01': `Если директория <span class="bold-text">/opt/rocm</span> не существует, создайте символическую ссылку на путь установки ROCm: <span class="bold-text">ln -s /путь/к/rocm /opt/rocm</span>.`,
   'clusters.addworker.message.success_single':
-    '{count} new worker has been added to the cluster.',
+   '{count} новый воркер был добавлен в кластер.',
   'clusters.addworker.message.success_multiple':
-    '{count} new workers have been added to the cluster.',
-  'clusters.create.serverUrl': 'Server URL',
-  'clusters.create.workerConfig': 'Worker Configuration',
-  'clusters.addworker.containerName': 'Worker Container Name',
+   '{count} новых воркеров были добавлены в кластер.',
+  'clusters.create.serverUrl': 'URL сервера',
+  'clusters.create.workerConfig': 'Конфигурация воркера',
+  'clusters.addworker.containerName': 'Имя контейнера воркера',
   'clusters.addworker.containerName.tips':
-    'Specify a name for the worker container.',
-  'clusters.addworker.dataVolume': 'GPUStack Data Volume',
+    'Укажите имя для контейнера воркера.',
+  'clusters.addworker.dataVolume': 'Том данных GPUStack',
   'clusters.addworker.dataVolume.tips':
-    'Specify a data storage path for GPUStack.',
-  'clusters.table.ip.internal': 'Internal',
-  'clusters.table.ip.external': 'External',
+    'Укажите путь для хранения данных GPUStack.',
+  'clusters.table.ip.internal': 'Внутренний',
+  'clusters.table.ip.external': 'Внешний',
   'clusters.form.serverUrl.tips':
-    'Specify the server URL accessible from your cloud provider.',
-  'clusters.form.setDefault': 'Set as Default',
-  'clusters.form.setDefault.tips': 'Default for deployment.'
+   'Укажите URL сервера, доступный из вашего облачного провайдера.',
+  'clusters.form.setDefault': 'Установить по умолчанию',
+  'clusters.form.setDefault.tips': 'Использовать по умолчанию для развертывания.',
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'clusters.addworker.amdNotes-01': `If the <span class="bold-text">/opt/rocm</span> directory does not exist, please create a symbolic link pointing to the ROCm installed path: <span class="bold-text">ln -s /path/to/rocm /opt/rocm</span>.`,
-// 2. 'clusters.button.genToken': 'Need to create a new token? Click <a href="{link}" target="_blank">here</a>.',
-// 3. 'clusters.addworker.cacheVolume': 'Model Cache Volume Mount',
-// 4. 'clusters.addworker.cacheVolume.tips': 'If you want to customize the model cache directory, you can specify the path to mount it.',
-// 5. 'clusters.addworker.message.success_single': '{count} new worker has been added to the cluster.',
-// 6. 'clusters.addworker.message.success_multiple': '{count} new workers have been added to the cluster.',
-// 7. 'clusters.create.serverUrl': 'Server URL',
-// 8. 'clusters.create.workerConfig': 'Worker Configuration'
-// 9. 'clusters.addworker.containerName': 'Worker Container Name',
-// 10. 'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
-// 11. 'clusters.addworker.dataVolume': 'GPUStack Data Volume',
-// 12. 'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
-// 10. 'clusters.table.ip.internal': 'Internal',
-// 11. 'clusters.table.ip.external': 'External',
-// 12. 'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.'
-// 13. 'clusters.addworker.specifyWorkerIP': 'Specify Worker IP <span class="text-tertiary">{type}</span>',
-// 14. 'clusters.form.setDefault': 'Set as Default',
-// 15.  'clusters.form.setDefault.tips': 'Default for deployment',
-// 16.  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
-// 17.  'clusters.addworker.enterWorkerAddress.error': 'Please enter the worker external address.',
+
 // ================================================================

@@ -202,23 +202,16 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
     items: helpList.map((item) => ({
       key: item.key,
       label: (
-        <span className="flex flex-center">
+        <a
+          className="flex flex-center gap-8"
+          href={item.url}
+          target="_blank"
+          rel="noreferrer"
+        >
           {item.icon}
-          <a
-            className="m-l-8 "
-            href={item.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {item.label}
-          </a>
-        </span>
-      ),
-      onClick() {
-        if (item.key === 'version') {
-          showVersion();
-        }
-      }
+          {item.label}
+        </a>
+      )
     }))
   };
 

@@ -49,8 +49,9 @@ export default {
     '如果节点有多个出站 IP 地址，请填写 <span class="bold-text">WORKER_IP</span>，以确保使用指定的 IP。可通过命令 <span class="bold-text">hostname -I | xargs -n1</span> 进行确认。',
   'clusters.addworker.nvidiaNotes-02':
     '如果节点上已经存在模型目录，你可以指定该路径进行挂载。',
-  'clusters.addworker.hygonNotes':
-    '如果 <span class="bold-text">/opt/hyhal</span> 目录不存在，请创建指向海光安装路径的符号链接：<span class="bold-text">/opt/hyhal</span>。与 <span class="bold-text">/opt/dtk</span> 目录相同。',
+  'clusters.addworker.hygonNotes': `如果 <span class="bold-text">/opt/hyhal</span> 或 <span class="bold-text">/opt/dtk</span> 不存在，请创建指向对应海光安装路径的符号链接，例如：
+  <span class="desc-fill line-6">ln -s /path/to/hyhal /opt/hyhal</span>
+  <span class="desc-fill line-6">ln -s /path/to/dtk /opt/dtk</span>`,
   'clusters.addworker.corexNotes':
     '如果 <span class="bold-text">/lib/modules</span> 目录不存在，请创建指向天数智芯安装路径的符号链接：<span class="bold-text">ln -s /path/to/corex /lib/modules</span>。与 <span class="bold-text">/usr/local/corex</span> 目录相同。',
   'clusters.addworker.metaxNotes':

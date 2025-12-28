@@ -51,8 +51,7 @@ export default {
     'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
   'clusters.addworker.nvidiaNotes-02':
     'If a model directory already exists on the worker, you can specify the path to mount it.',
-  'clusters.addworker.hygonNotes': `If the <span class="bold-text">/opt/hyhal</span> directory does not exist, create a symbolic link to the Hygon installation path.  
-Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
+  'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
   'clusters.addworker.corexNotes': `If the <span class="bold-text">/lib/modules</span> directory does not exist, create a symbolic link to the Iluvatar installation path:  
 <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same applies to the <span class="bold-text">/usr/local/corex</span> directory.`,
   'clusters.addworker.metaxNotes': `If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, create a symbolic link to the MetaX installation path:  
@@ -165,7 +164,7 @@ Same applies to the <span class="bold-text">/opt/dtk</span> directory.`,
 // 43. 'cluster.provider.comingsoon': 'Coming soon',
 // 44. 'clusters.addworker.nvidiaNotes-01': 'If multiple outbound IPs exist, specify the one you want the worker to use. Please double-check with <span class="bold-text">hostname -I | xargs -n1</span>.',
 // 45. 'clusters.addworker.nvidiaNotes-02': 'If a model directory already exists on the worker, you can specify the path to mount it.',
-// 46. 'clusters.addworker.hygonNotes': 'If the <span class="bold-text">/opt/hyhal</span> directory does not exist, create a symbolic link to the Hygon installation path.  Same applies to the <span class="bold-text">/opt/dtk</span> directory.',
+// 46. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
 // 47. 'clusters.addworker.corexNotes': 'If the <span class="bold-text">/lib/modules</span> directory does not exist, create a symbolic link to the Iluvatar installation path: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Same applies to the <span class="bold-text">/usr/local/corex</span> directory.',
 // 48. 'clusters.addworker.metaxNotes': 'If the <span class="bold-text">/opt/mxdriver</span> directory does not exist, create a symbolic link to the MetaX installation path: <span class="bold-text">ln -s /path/to/metax /opt/mxdriver</span>. Same applies to the <span class="bold-text">/opt/maca</span> directory.',
 // 49. 'clusters.addworker.cambriconNotes': 'If the <span class="bold-text">/usr/local/neuware</span> directory does not exist, create a symbolic link to the Cambricon installation path: <span class="bold-text">ln -s /path/to/neuware /usr/local/neuware</span>.'

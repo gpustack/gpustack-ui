@@ -51,8 +51,7 @@ export default {
     'Если существует несколько исходящих IP-адресов, укажите тот, который должен использовать воркер. Пожалуйста, перепроверьте с помощью <span class="bold-text">hostname -I | xargs -n1</span>.',
   'clusters.addworker.nvidiaNotes-02':
     'Если директория с моделями уже существует на воркере, вы можете указать путь для её монтирования.',
-  'clusters.addworker.hygonNotes':
-    'Если директория <span class="bold-text">/opt/hyhal</span> не существует, создайте символическую ссылку на путь установки Hygon: <span class="bold-text">/opt/hyhal</span>. Аналогично для директории <span class="bold-text">/opt/dtk</span>.',
+  'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
   'clusters.addworker.corexNotes':
     'Если директория <span class="bold-text">/lib/modules</span> не существует, создайте символическую ссылку на путь установки Iluvatar: <span class="bold-text">ln -s /path/to/corex /lib/modules</span>. Аналогично для директории <span class="bold-text">/usr/local/corex</span>.',
   'clusters.addworker.metaxNotes':
@@ -100,9 +99,9 @@ export default {
     'Нужен новый токен? Нажмите <a href="{link}" target="_blank">здесь</a>.',
   'clusters.addworker.amdNotes-01': `Если директория <span class="bold-text">/opt/rocm</span> не существует, создайте символическую ссылку на путь установки ROCm: <span class="bold-text">ln -s /путь/к/rocm /opt/rocm</span>.`,
   'clusters.addworker.message.success_single':
-   '{count} новый воркер был добавлен в кластер.',
+    '{count} новый воркер был добавлен в кластер.',
   'clusters.addworker.message.success_multiple':
-   '{count} новых воркеров были добавлены в кластер.',
+    '{count} новых воркеров были добавлены в кластер.',
   'clusters.create.serverUrl': 'URL сервера',
   'clusters.create.workerConfig': 'Конфигурация воркера',
   'clusters.addworker.containerName': 'Имя контейнера воркера',
@@ -114,11 +113,12 @@ export default {
   'clusters.table.ip.internal': 'Внутренний',
   'clusters.table.ip.external': 'Внешний',
   'clusters.form.serverUrl.tips':
-   'Укажите URL сервера, доступный из вашего облачного провайдера.',
+    'Укажите URL сервера, доступный из вашего облачного провайдера.',
   'clusters.form.setDefault': 'Установить по умолчанию',
-  'clusters.form.setDefault.tips': 'Использовать по умолчанию для развертывания.',
+  'clusters.form.setDefault.tips':
+    'Использовать по умолчанию для развертывания.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
 // ================================================================

@@ -168,14 +168,17 @@ export default function useOverlayScroller(data?: {
 
   // add  wheel event
   const handleWheelEvent = () => {
-    scrollElementRef.current?.addEventListener?.('wheel', handleWheelCallback);
+    scrollElementRef.current?.addEventListener?.('wheel', handleWheelCallback, {
+      passive: true
+    });
   };
 
   // remove wheel event
   const removeWheelEvent = () => {
     scrollElementRef.current?.removeEventListener?.(
       'wheel',
-      handleWheelCallback
+      handleWheelCallback,
+      { passive: true }
     );
   };
 

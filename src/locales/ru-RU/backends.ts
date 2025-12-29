@@ -19,8 +19,7 @@ export default {
   'backend.mode.yaml': 'Режим YAML',
   'backend.form.healthCheckPath': 'Путь проверки здоровья',
   'backend.form.defaultExecuteCommand': 'Команда выполнения по умолчанию',
-  'backend.form.defaultExecuteCommand.tips':
-    '{{model_path}}, {{port}}, {{worker_ip}} и {{model_name}} заполняются реальными значениями во время запуска',
+  'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' и '{{'model_name'}}' заполняются реальными значениями во время запуска`,
   'backend.form.defaultBackendParameters': 'Параметры бэкенда по умолчанию',
   'backend.form.versionConfig': 'Конфигурация версий',
   'backend.form.addParameter': 'Добавить параметр',

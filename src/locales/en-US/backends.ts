@@ -19,8 +19,7 @@ export default {
   'backend.mode.yaml': 'YAML Mode',
   'backend.form.healthCheckPath': 'Health Check Path',
   'backend.form.defaultExecuteCommand': 'Default Execution Command',
-  'backend.form.defaultExecuteCommand.tips':
-    '{{model_path}}, {{port}}, {{worker_ip}} and {{model_name}} are placeholders that will be substituted with the actual values during deployment.',
+  'backend.form.defaultExecuteCommand.tips': `'{{'model_path'}}', '{{'port'}}', '{{'worker_ip'}}' and '{{'model_name'}}' are placeholders that will be substituted with the actual values during deployment.`,
   'backend.form.defaultBackendParameters': 'Default Backend Parameters',
   'backend.form.versionConfig': 'Versions Config',
   'backend.form.addParameter': 'Add Parameter',

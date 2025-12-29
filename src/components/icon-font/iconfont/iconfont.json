@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "46296038",
+      "name": "cloud",
+      "font_class": "cloud",
+      "unicode": "e6bc",
+      "unicode_decimal": 59068
+    },
+    {
+      "icon_id": "46296037",
+      "name": "server",
+      "font_class": "server02",
+      "unicode": "e6bd",
+      "unicode_decimal": 59069
+    },
+    {
+      "icon_id": "46272083",
+      "name": "drag_handle",
+      "font_class": "drag_handle",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
       "icon_id": "46055620",
       "name": "basic",
       "font_class": "basic",

@@ -55,17 +55,18 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
           show: true,
           overflow: 'truncate',
           width: 75,
-          ellipsis: '...'
-          // formatter(value: string, index: number) {
-          //   return `{a|${index + 1}}`;
-          // },
-          // rich: {
-          //   a: {
-          //     fontWeight: 500,
-          //     fontSize: 14,
-          //     color: token?.colorTextSecondary
-          //   }
-          // }
+          ellipsis: '...',
+          margin: 12,
+          formatter(value: string, index: number) {
+            return `{a|${index + 1}}`;
+          },
+          rich: {
+            a: {
+              fontWeight: 500,
+              fontSize: 14,
+              color: token?.colorTextSecondary
+            }
+          }
         }
       },
       legend: {
@@ -81,9 +82,9 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
         type: 'bar',
         barWidth: 20,
         stack: 'Ad',
-        barGap: '30%',
+        barGap: '20%',
         label: {
-          show: false,
+          show: true,
           formatter(params: any) {
             if (params.seriesIndex === 0) {
               return `{value|${params.name}}`;
@@ -172,6 +173,7 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
       ) : (
         <Chart
           height={height}
+          chartHeight={typeof height === 'number' ? height - 10 : undefined}
           options={dataOptions}
           width={width || '100%'}
         ></Chart>

@@ -6,7 +6,7 @@ const Separator: React.FC = () => {
   return (
     <div className="separator">
       <Divider
-        type="vertical"
+        orientation="vertical"
         style={{ height: 'calc(100vh - 89px)', marginInline: '0px' }}
       ></Divider>
       <span className="shape"></span>

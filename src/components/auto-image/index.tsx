@@ -96,7 +96,7 @@ const AutoImage: React.FC<
         preview &&
         !isError && {
           mask: <EyeOutlined />,
-          toolbarRender: (
+          actionsRender: (
             _,
             {
               transform: { scale },

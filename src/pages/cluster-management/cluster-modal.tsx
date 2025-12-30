@@ -21,11 +21,11 @@ const ClusterModal: React.FC<ClusterModalProps> = ({ open, onClose }) => {
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={900}
       styles={{
         body: {
           paddingBlock: 0
-        }
+        },
+        wrapper: { width: 900 }
       }}
       footer={false}
     >

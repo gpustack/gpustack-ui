@@ -365,8 +365,9 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
             ]}
           >
             <SealSelect
-              showSearch
-              filterOption={filterInstanceOption}
+              showSearch={{
+                filterOption: filterInstanceOption
+              }}
               labelRender={instanceLabelRender}
               notFoundContent={<NotFoundContent />}
               label={intl.formatMessage({

@@ -160,6 +160,9 @@ const InputWrapper = styled.div`
     top: 0;
     height: ${WRAPHEIGHT - 2}px;
   }
+  .ant-input-number-actions {
+    border-radius: 0 ${BORDERRADIUS}px ${BORDERRADIUS}px 0;
+  }
   .seal-textarea-wrapper {
     height: auto;
     padding-right: 10px;

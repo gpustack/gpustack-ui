@@ -411,7 +411,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
                 >
                   {intl.formatMessage({ id: `playground.${message.role}` })}
                 </Button>
-                <Divider type="vertical" style={{ margin: 0 }} />
+                <Divider orientation="vertical" style={{ margin: 0 }} />
               </>
             )}
             {actions.includes('check') && (
@@ -451,7 +451,7 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
 
             {actions.includes('layout') && updateLayout && (
               <>
-                <Divider type="vertical" style={{ margin: 0 }} />
+                <Divider orientation="vertical" style={{ margin: 0 }} />
                 {layoutOptions.map((option) => (
                   <Tooltip
                     title={intl.formatMessage({ id: option.tips })}

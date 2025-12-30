@@ -2,7 +2,7 @@ import { clusterSessionAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
-import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
+import { useIntl, useSearchParams } from '@umijs/max';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -66,7 +66,6 @@ const ClusterCreate: React.FC<{
   const [searchParams] = useSearchParams();
   const action =
     (searchParams.get('action') as PageActionType) || PageAction.CREATE;
-  const navigate = useNavigate();
   const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
   const [credentialList, setCredentialList] = useState<
     Global.BaseOption<number, { provider: ProviderType }>[]
@@ -314,23 +313,11 @@ const ClusterCreate: React.FC<{
         firstAddCluster: false,
         firstAddWorker: false
       });
-      // navigate(`/cluster-management/clusters/list`);
       onClose?.();
       return;
     }
     onClose?.();
-    // navigate(-1);
   };
-
-  const breadcrumbItems = [
-    {
-      title: <a>{intl.formatMessage({ id: 'clusters.title' })}</a>,
-      onClick: () => handleCancel()
-    },
-    {
-      title: intl.formatMessage({ id: 'common.button.create' })
-    }
-  ];
 
   return (
     <MainWrapper>

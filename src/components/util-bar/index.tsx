@@ -8,7 +8,7 @@ interface UitilBarProps {
   gapDegree?: number;
   strokeWidth?: number;
   size?: number;
-  trailColor?: string;
+  railColor?: string;
   strokeColor?: string;
 }
 const UitilBar: React.FC<UitilBarProps> = (props) => {
@@ -20,7 +20,7 @@ const UitilBar: React.FC<UitilBarProps> = (props) => {
     title,
     size = 150,
     strokeColor,
-    trailColor = 'rgba(221,221,221,.5)'
+    railColor = 'rgba(221,221,221,.5)'
   } = props;
 
   const strokeColorFunc = (percent: number) => {
@@ -42,7 +42,7 @@ const UitilBar: React.FC<UitilBarProps> = (props) => {
         strokeWidth={strokeWidth}
         size={size}
         percent={percent}
-        trailColor={trailColor}
+        railColor={railColor}
         strokeColor={strokeColor || strokeColorFunc(percent)}
       ></Progress>
     </div>

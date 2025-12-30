@@ -160,7 +160,7 @@ const Playground: React.FC = () => {
           {activeKey === 'chat' && (
             <Divider
               key="divider"
-              type="vertical"
+              orientation="vertical"
               style={{ height: 16, marginInline: 16 }}
             />
           )}

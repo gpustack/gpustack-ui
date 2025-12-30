@@ -159,7 +159,7 @@ const DistributionInfo: React.FC<{
       toolTipProps={{
         trigger: 'hover',
         styles: {
-          body: {
+          container: {
             width: 'max-content',
             maxWidth: '520px',
             minWidth: '400px'
@@ -221,7 +221,7 @@ const OffloadInfo: React.FC<{
   return (
     <Tooltip
       styles={{
-        body: {
+        container: {
           paddingInline: 12
         }
       }}

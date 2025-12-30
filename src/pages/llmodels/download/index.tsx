@@ -165,7 +165,9 @@ const DownloadModel: React.FC<AddModalProps> = (props) => {
       maskClosable={false}
       keyboard={false}
       zIndex={2000}
-      width={width}
+      styles={{
+        wrapper: { width: width }
+      }}
       footer={false}
     >
       <div style={{ display: 'flex', height: '100%' }}>

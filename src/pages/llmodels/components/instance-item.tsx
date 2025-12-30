@@ -102,6 +102,10 @@ const draftModelDownloadList: ColumnProps[] = [
   ...statusColumn
 ];
 
+const calcTotalVram = (vram: Record<string, number>) => {
+  return _.sum(_.values(vram));
+};
+
 const WorkerInfo = (props: {
   title: React.ReactNode;
   defaultOpen: boolean;
@@ -121,7 +125,7 @@ const WorkerInfo = (props: {
         onOpenChange={setOpen}
         title={props.title}
         styles={{
-          body: {
+          container: {
             width: 'max-content',
             maxWidth: '400px'
           }
@@ -224,7 +228,7 @@ const RenderWorkerDownloading = (props: {
     <Tooltip
       arrow={true}
       styles={{
-        body: {
+        container: {
           width: 360,
           backgroundColor: 'var(--color-spotlight-bg)'
         }
@@ -497,10 +501,6 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     intl
   ]);
 
-  const calcTotalVram = (vram: Record<string, number>) => {
-    return _.sum(_.values(vram));
-  };
-
   const renderDistributedServer = (severList: any[]) => {
     const list = _.map(severList, (item: any) => {
       const data = _.find(workerList, { id: item.worker_id });
@@ -543,13 +543,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     if (!severList.length) {
       return null;
     }
-
     return (
       <TooltipOverlayScroller
         toolTipProps={{
-          trigger: 'hover',
           styles: {
-            body: {
+            container: {
               width: 'max-content',
               maxWidth: '520px',
               minWidth: '400px'
@@ -558,26 +556,28 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         }}
         title={renderDistributedServer(severList)}
       >
-        <ThemeTag
-          opacity={0.75}
-          color="processing"
-          style={{
-            marginRight: 0,
-            display: 'flex',
-            alignItems: 'center',
-            maxWidth: '100%',
-            minWidth: 50,
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            borderRadius: 12
-          }}
-        >
-          <InfoCircleOutlined className="m-r-5" />
-          {intl.formatMessage({
-            id: 'models.table.acrossworker'
-          })}
-        </ThemeTag>
+        <span>
+          <ThemeTag
+            opacity={0.75}
+            color="processing"
+            style={{
+              marginRight: 0,
+              display: 'flex',
+              alignItems: 'center',
+              maxWidth: '100%',
+              minWidth: 50,
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              borderRadius: 12
+            }}
+          >
+            <InfoCircleOutlined className="m-r-5" />
+            {intl.formatMessage({
+              id: 'models.table.acrossworker'
+            })}
+          </ThemeTag>
+        </span>
       </TooltipOverlayScroller>
     );
   };
@@ -608,7 +608,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
     return (
       <Tooltip
         styles={{
-          body: {
+          container: {
             paddingInline: 12
           }
         }}

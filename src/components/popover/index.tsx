@@ -12,7 +12,9 @@ const SealPopover: React.FC<PopoverProps> = (props) => {
         {...restProps}
         style={{ ...style }}
         data-maxHeight="300px"
-        overlayClassName={classNames(className, styles.seal_custom_popover)}
+        classNames={{
+          root: classNames(className, styles.seal_custom_popover)
+        }}
       >
         {children}
       </Popover>

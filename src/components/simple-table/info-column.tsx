@@ -37,7 +37,7 @@ const InfoColumn: React.FC<InfoColumnProps> = (props) => {
             </span>
             {index < fieldList.length - 1 ? (
               <Divider
-                type="vertical"
+                orientation="vertical"
                 style={{
                   height: 30,
                   marginInline: 12,

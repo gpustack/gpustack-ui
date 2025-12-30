@@ -32,6 +32,7 @@ const SealAutoComplete: React.FC<
     loading,
     allowClear,
     clearSpaceOnBlur,
+    showSearch,
     ...rest
   } = props;
   const [isFocus, setIsFocus] = useState(false);
@@ -81,10 +82,6 @@ const SealAutoComplete: React.FC<
       e.target.value = e.target.value?.trim();
     }
     props.onBlur?.(e);
-  };
-
-  const handleSearch = (text: string) => {
-    props.onSearch?.(text);
   };
 
   const handleOnSelect = (value: any, option: any) => {
@@ -146,7 +143,7 @@ const SealAutoComplete: React.FC<
           onSelect={handleOnSelect}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
-          onSearch={handleSearch}
+          showSearch={showSearch}
           onChange={handleChange}
           popupRender={popupRender}
           onInput={handleOnInput}

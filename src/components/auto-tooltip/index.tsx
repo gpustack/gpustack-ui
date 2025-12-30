@@ -118,6 +118,7 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
       ) : (
         <StyledTag
           {...tagProps}
+          variant="outlined"
           className={`${tagProps.className || ''} ${filled ? 'tag-filled' : ''}`}
           ref={contentRef}
           style={{
@@ -147,4 +148,4 @@ const AutoTooltip: React.FC<AutoTooltipProps> = ({
   );
 };
 
-export default React.memo(AutoTooltip);
+export default AutoTooltip;

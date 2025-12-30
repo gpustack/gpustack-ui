@@ -247,10 +247,10 @@ const GroundReranker: React.FC<MessageProps> = forwardRef((props, ref) => {
           ></div>
         </div>
         <span className="flex-center hover-hidden rank-tag">
-          <Tag color={'geekblue'} bordered={false}>
+          <Tag color={'geekblue'} variant="filled">
             {intl.formatMessage({ id: 'playground.rerank.rank' })}: {data.rank}
           </Tag>
-          <Tag color={'gold'} bordered={false}>
+          <Tag color={'gold'} variant="filled">
             {intl.formatMessage({ id: 'playground.rerank.score' })}:{' '}
             {_.round(data.score, 2)}
           </Tag>

@@ -168,7 +168,9 @@ const SpeculativeDecode = () => {
                   id: 'models.form.draftModel.tips'
                 })}
                 options={draftModelList}
-                onSearch={onSearch}
+                showSearch={{
+                  onSearch: onSearch
+                }}
                 onBlur={handleOnDraftBlur}
                 onSelect={handleDraftSelect}
               ></AutoComlete>

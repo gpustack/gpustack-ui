@@ -243,7 +243,9 @@ const UpdateModal: React.FC<AddModalProps> = (props) => {
       closeIcon={true}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      styles={{
+        wrapper: { width: 600 }
+      }}
       footer={false}
     >
       <ColumnWrapper

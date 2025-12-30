@@ -19,7 +19,7 @@ const CollapseInner = styled(Collapse)`
     }
   }
 
-  .ant-collapse-content-box {
+  .ant-collapse-body {
     padding-inline: 0 !important;
     padding-block: 0 !important;
   }
@@ -38,7 +38,7 @@ const CollapsePanel: React.FC<{
 }> = ({ items, activeKey, accordion, onChange }) => {
   return (
     <CollapseInner
-      expandIconPosition="start"
+      expandIconPlacement="start"
       bordered={false}
       ghost
       accordion={accordion}

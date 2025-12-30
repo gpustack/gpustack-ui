@@ -53,6 +53,7 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
   return (
     <Tag
       icon={config.icon}
+      variant="outlined"
       style={{
         height: size,
         margin: 0,

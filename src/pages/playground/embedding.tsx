@@ -90,7 +90,7 @@ const PlaygroundEmbedding: React.FC = () => {
         />,
         <Divider
           key="divider"
-          type="vertical"
+          orientation="vertical"
           style={{ height: 24, marginInline: 16 }}
         />,
         <ExtraContent key="extra-content" />

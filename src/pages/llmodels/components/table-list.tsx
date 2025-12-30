@@ -700,7 +700,7 @@ const Models: React.FC<ModelsProps> = ({
                 <Button
                   icon={<DownOutlined></DownOutlined>}
                   type="primary"
-                  iconPosition="end"
+                  iconPlacement="end"
                 >
                   {intl?.formatMessage?.({ id: 'models.button.deploy' })}
                 </Button>

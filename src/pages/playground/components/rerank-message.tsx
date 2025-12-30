@@ -57,7 +57,7 @@ const RerankMessage: React.FC<RerankMessageProps> = ({ header, dataList }) => {
                           status="normal"
                           percentPosition={{ align: 'end', type: 'outer' }}
                           strokeColor={`linear-gradient(90deg, #388bff 0%, #fff ${sItem.normalizValue}%)`}
-                          trailColor="transparent"
+                          railColor="transparent"
                           percent={sItem.normalizValue}
                           style={{
                             position: 'absolute',

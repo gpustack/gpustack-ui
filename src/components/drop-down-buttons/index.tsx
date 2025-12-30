@@ -1,6 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Dropdown, Tooltip, type MenuProps } from 'antd';
+import { Button, Dropdown, Space, Tooltip, type MenuProps } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React from 'react';
@@ -31,7 +31,9 @@ const DropdownWrapper = styled.div`
   min-width: 160px;
 `;
 
-const DropdownButtons: React.FC<DropdownButtonsProps> = ({
+const DropdownButtons: React.FC<
+  DropdownButtonsProps & { items: MenuProps['items'] }
+> = ({
   items,
   size = 'middle',
   trigger = ['hover'],
@@ -72,70 +74,64 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
           ></Button>
         </Tooltip>
       ) : (
-        <Dropdown.Button
-          disabled={disabled}
-          trigger={trigger}
-          type="primary"
-          popupRender={(menus: any) => {
-            return (
-              <DropdownWrapper>
-                {_.map(_.tail(items), (item: any) => {
-                  return (
-                    <Button
-                      {...item.props}
-                      type="text"
-                      size={size}
-                      icon={item.icon}
-                      key={item.key}
-                      disabled={item.disabled}
-                      onClick={() => handleMenuClick(item)}
-                      style={{
-                        width: '100%',
-                        justifyContent: 'flex-start',
-                        paddingInline: 10
-                      }}
-                    >
-                      {intl.formatMessage({ id: item.label })}
-                    </Button>
-                  );
+        <Space.Compact>
+          <>
+            {showText ? (
+              <Button
+                {...headItem?.props}
+                disabled={headItem?.disabled || disabled}
+                className={classNames('dropdown-button', size)}
+                onClick={handleButtonClick}
+                size={size}
+                icon={headItem?.icon}
+                variant={variant}
+                color={color}
+              >
+                {intl.formatMessage({
+                  id: headItem?.label
                 })}
-              </DropdownWrapper>
-            );
-          }}
-          buttonsRender={([leftButton, rightButton]) => [
-            <>
-              {showText ? (
+                {extra}
+              </Button>
+            ) : (
+              <Tooltip
+                title={intl.formatMessage({ id: headItem?.label })}
+                key="leftButton"
+              >
                 <Button
                   {...headItem?.props}
-                  disabled={headItem?.disabled || disabled}
                   className={classNames('dropdown-button', size)}
                   onClick={handleButtonClick}
                   size={size}
                   icon={headItem?.icon}
-                  variant={variant}
-                  color={color}
-                >
-                  {intl.formatMessage({
-                    id: headItem?.label
-                  })}
-                  {extra}
-                </Button>
-              ) : (
-                <Tooltip
-                  title={intl.formatMessage({ id: headItem?.label })}
-                  key="leftButton"
-                >
-                  <Button
-                    {...headItem?.props}
-                    className={classNames('dropdown-button', size)}
-                    onClick={handleButtonClick}
-                    size={size}
-                    icon={headItem?.icon}
-                    disabled={headItem?.disabled}
-                  ></Button>
-                </Tooltip>
-              )}
-            </>,
+                  disabled={headItem?.disabled}
+                ></Button>
+              </Tooltip>
+            )}
+          </>
+          <Dropdown
+            disabled={disabled}
+            trigger={trigger}
+            placement="bottomRight"
+            styles={{
+              root: {
+                minWidth: 160
+              },
+              itemIcon: {
+                fontSize: 14
+              }
+            }}
+            menu={{
+              onClick: handleMenuClick,
+              items: _.tail(items).map((item: any) => ({
+                ...item,
+                ...item.props,
+                label:
+                  item.locale || item.locale === undefined
+                    ? intl.formatMessage({ id: item.label })
+                    : item.label
+              }))
+            }}
+          >
             <Button
               icon={<MoreOutlined />}
               size={size}
@@ -144,8 +140,8 @@ const DropdownButtons: React.FC<DropdownButtonsProps> = ({
               color="default"
               className={classNames('dropdown-button', size)}
             ></Button>
-          ]}
-        ></Dropdown.Button>
+          </Dropdown>
+        </Space.Compact>
       )}
     </>
   );

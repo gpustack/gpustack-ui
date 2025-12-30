@@ -77,7 +77,7 @@ export interface CollapsibleContainerProps {
   onToggle?: (open: boolean) => void;
   disabled?: boolean;
   variant?: 'outlined' | 'borderless' | undefined;
-  iconPosition?: 'left' | 'right';
+  iconPlacement?: 'left' | 'right';
   className?: string;
   children?: React.ReactNode;
   styles?: {
@@ -100,7 +100,7 @@ export default function CollapsibleContainer({
   variant = 'borderless',
   className = '',
   collapsible,
-  iconPosition = 'left',
+  iconPlacement = 'left',
   styles: cardStyles,
   children
 }: CollapsibleContainerProps) {
@@ -147,7 +147,7 @@ export default function CollapsibleContainer({
       <div className={styles.title} onClick={toggle}>
         <div className={styles.left}>
           <div className={styles.expandIcon}>
-            {iconPosition === 'left' && renderIcon()}
+            {iconPlacement === 'left' && renderIcon()}
             {title && <div>{title}</div>}
           </div>
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
@@ -155,7 +155,7 @@ export default function CollapsibleContainer({
         <div className={styles.right}>
           {right && <span>{right}</span>}
           {deleteBtn && <span className="del-btn">{deleteBtn}</span>}
-          {iconPosition === 'right' && renderIcon()}
+          {iconPlacement === 'right' && renderIcon()}
         </div>
       </div>
     );

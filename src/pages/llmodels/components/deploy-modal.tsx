@@ -542,7 +542,9 @@ const AddModal: FC<AddModalProps> = (props) => {
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={width}
+      styles={{
+        wrapper: { width: width }
+      }}
       footer={false}
     >
       <Container>

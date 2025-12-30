@@ -1,6 +1,7 @@
 import { useEscHint } from '@/hooks/use-esc-hint';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button, Drawer, type DrawerProps } from 'antd';
+import React from 'react';
 
 /**
  * use ColumnWrapper to wrap content in Drawer with scroller
@@ -22,11 +23,18 @@ const ScrollerModal = (props: DrawerProps) => {
   const handleCancel = (e: React.MouseEvent<HTMLElement>) => {
     props.onClose?.(e);
   };
+
   return (
     <>
       <Drawer
         {...restProps}
         styles={{
+          wrapper: {
+            ...styles?.wrapper
+          },
+          root: {
+            ...styles?.root
+          },
           body: {
             height: 'calc(100vh - 57px)',
             paddingBlock: 16,
@@ -34,9 +42,9 @@ const ScrollerModal = (props: DrawerProps) => {
             overflowX: 'hidden',
             ...styles?.body
           },
-          content: {
+          section: {
             borderRadius: '6px 0 0 6px',
-            ...styles?.content
+            ...styles?.section
           }
         }}
         closable={false}

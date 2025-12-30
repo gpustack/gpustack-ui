@@ -146,9 +146,10 @@ const SealCascader: React.FC<
   };
 
   const handleOnBlur = (e: any) => {
-    if (allowNull && props.value === null) {
+    const noVal = !props.value || props.value.length === 0;
+    if (allowNull && noVal) {
       setIsFocus(true);
-    } else if (!props.value) {
+    } else if (noVal) {
       setIsFocus(false);
     }
     props.onBlur?.(e);

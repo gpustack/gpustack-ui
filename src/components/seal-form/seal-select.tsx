@@ -24,6 +24,7 @@ const SealSelect: React.FC<
     isInFormItems = true,
     notFoundContent = null,
     loading,
+    footer,
     ...rest
   } = props;
   const intl = useIntl();
@@ -106,6 +107,7 @@ const SealSelect: React.FC<
       >
         <BaseSelect
           {...rest}
+          footer={footer}
           ref={inputRef}
           options={children ? null : _options}
           onFocus={handleOnFocus}

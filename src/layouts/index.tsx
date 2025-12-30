@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
 import { GPUStackVersionAtom, userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
@@ -158,7 +156,7 @@ export default (props: any) => {
     }
   };
 
-  const dropRouteCache = (pathname) => {
+  const dropRouteCache = (pathname: string) => {
     for (let key of routeCache.keys()) {
       if (key !== pathname && !routeCache.get(key) && routeCachekey[key]) {
         dropByCacheKey(key);
@@ -227,7 +225,7 @@ export default (props: any) => {
     return userSettings.collapsed || false;
   }, [userSettings.collapsed]);
 
-  const renderMenuHeader = (logo, title) => {
+  const renderMenuHeader = (logo: React.ReactNode, title: React.ReactNode) => {
     return (
       <>
         {logo}

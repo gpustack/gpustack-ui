@@ -456,7 +456,7 @@ const GroundImages: React.FC<MessageProps> = forwardRef((props, ref) => {
             {imageList.length > 0 && (
               <>
                 <Divider
-                  type="vertical"
+                  orientation="vertical"
                   style={{
                     margin: '0 30px',
                     height: 80

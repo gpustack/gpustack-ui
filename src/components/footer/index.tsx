@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
                 <span> {new Date().getFullYear()}</span>
                 <span> {intl.formatMessage({ id: 'settings.company' })}</span>
               </CompanyWrapper>
-              <Divider type="vertical" />
+              <Divider orientation="vertical" />
               <Button
                 type="link"
                 size="small"
@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
               >
                 {intl.formatMessage({ id: 'common.button.help' })}
               </Button>
-              <Divider type="vertical" />
+              <Divider orientation="vertical" />
               <Button type="link" size="small" onClick={showVersion}>
                 {getAtomStorage(GPUStackVersionAtom)?.version}
               </Button>

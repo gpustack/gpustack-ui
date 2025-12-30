@@ -362,7 +362,9 @@ const AddModal: React.FC<AddModalProps> = (props) => {
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={width}
+      styles={{
+        wrapper: { width: width }
+      }}
       footer={false}
     >
       <CatalogFormContext.Provider

@@ -302,7 +302,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
           <Popover
             autoAdjustOverflow={true}
             styles={{
-              body: {
+              container: {
                 width: 375,
                 paddingInline: 0
               }

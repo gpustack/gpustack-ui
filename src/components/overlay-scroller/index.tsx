@@ -82,9 +82,9 @@ export const TooltipOverlayScroller: React.FC<
     <Tooltip
       styles={{
         ...styles,
-        body: {
+        container: {
           paddingInline: 0,
-          ...styles?.body
+          ...styles?.container
         }
       }}
       title={

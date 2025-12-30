@@ -20,7 +20,9 @@ const WorkerDetailModal: React.FC<WorkerDetailModalProps> = ({
 
   return (
     <GSDrawer
-      width={'calc(100vw - 200px)'}
+      styles={{
+        wrapper: { width: 'calc(100vw - 200px)' }
+      }}
       title={`${currentData?.name}`}
       open={open}
       destroyOnHidden={true}

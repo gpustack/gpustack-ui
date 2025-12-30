@@ -196,8 +196,8 @@ const SimpleSelect: React.FC<SelectProps & { ref?: any; showTags?: boolean }> =
     };
 
     const handleOnSearch = (value: string) => {
-      if (restProps.onSearch) {
-        restProps.onSearch(value);
+      if (restProps.showSearch?.onSearch) {
+        restProps.showSearch?.onSearch?.(value);
       } else {
         const filteredOptions = options?.filter((option: any) =>
           option.label.toLowerCase().includes(value.toLowerCase())
@@ -268,8 +268,10 @@ const SimpleSelect: React.FC<SelectProps & { ref?: any; showTags?: boolean }> =
           tagRender={TagRender}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
-          onSearch={handleOnSearch}
-          filterOption={filterOption}
+          showSearch={{
+            onSearch: handleOnSearch,
+            filterOption: restProps.showSearch?.filterOption || filterOption
+          }}
           onOpenChange={handleOnOpenChange}
         >
           {props.children}

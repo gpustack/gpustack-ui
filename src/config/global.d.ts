@@ -73,6 +73,7 @@ declare namespace Global {
     label: string;
     key: string;
     icon: React.ReactNode;
+    locale?: boolean;
     props?: {
       danger?: boolean;
     };

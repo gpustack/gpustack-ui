@@ -20,12 +20,16 @@ const ClusterDetailModal: React.FC<ClusterDetailModalProps> = ({
 
   return (
     <GSDrawer
-      width={'calc(100vw - 200px)'}
+      styles={{
+        wrapper: {
+          width: 'calc(100vw - 200px)'
+        }
+      }}
       title={`${currentData?.name}`}
       open={open}
       onClose={handleOnClose}
     >
-      <ClusterDetailContent data={currentData} />
+      <ClusterDetailContent />
     </GSDrawer>
   );
 };

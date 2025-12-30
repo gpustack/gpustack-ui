@@ -36,7 +36,7 @@ const CheckEnvironment = () => {
         style={{
           marginBottom: 8
         }}
-        message={
+        title={
           <span
             dangerouslySetInnerHTML={{
               __html: intl.formatMessage(

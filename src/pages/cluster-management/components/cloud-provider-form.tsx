@@ -168,13 +168,14 @@ const CloudProvider: React.FC<CloudProviderProps> = (props) => {
         ]}
       >
         <SealSelect
-          showSearch
+          showSearch={{
+            filterOption: filterRegionOption
+          }}
           disabled={action === PageAction.EDIT}
           label={intl.formatMessage({ id: 'clusters.workerpool.region' })}
           required
           options={regions}
           loading={loading}
-          filterOption={filterRegionOption}
           labelRender={labelRender}
           optionRender={optionRender}
           onChange={handleRegionChange}

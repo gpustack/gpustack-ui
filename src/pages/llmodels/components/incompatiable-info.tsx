@@ -114,7 +114,7 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
       <CompatibleTag
         icon={<WarningOutlined />}
         color={error ? 'error' : 'warning'}
-        bordered={false}
+        variant="filled"
       ></CompatibleTag>
     </TooltipOverlayScroller>
   );

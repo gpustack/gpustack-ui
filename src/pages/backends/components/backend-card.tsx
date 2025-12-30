@@ -231,7 +231,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
             <Tag
               color="geekblue"
               className="font-400"
-              bordered={false}
+              variant="filled"
               style={{ borderRadius: 'var(--ant-border-radius)', margin: 0 }}
             >
               {intl.formatMessage({ id: 'backend.builtin' })}

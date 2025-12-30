@@ -53,6 +53,7 @@ interface ActionItem {
   value: string;
   key: string;
   icon: React.ReactNode;
+  [key: string]: any;
 }
 interface FilterBarProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -122,7 +123,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
               <Button
                 icon={<DownOutlined></DownOutlined>}
                 type="primary"
-                iconPosition="end"
+                iconPlacement="end"
               >
                 {buttonText}
               </Button>

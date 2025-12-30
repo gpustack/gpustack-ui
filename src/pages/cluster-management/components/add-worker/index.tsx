@@ -140,7 +140,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
                 width: '100%'
               }}
               type="success"
-              message={renderMessage(addedCount)}
+              title={renderMessage(addedCount)}
               closable
             />
           )}

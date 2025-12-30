@@ -101,7 +101,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
       size={loadingSize}
       steps={{ count: 50, gap: 2 }}
       format={() => <span className="font-size-20">{round(progress, 0)}%</span>}
-      trailColor="var(--ant-color-fill-secondary)"
+      railColor="var(--ant-color-fill-secondary)"
     />;
   };
 
@@ -181,7 +181,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
                         </span>
                       )}
                       strokeColor="var(--color-white-secondary)"
-                      trailColor="var(--ant-color-fill-secondary)"
+                      railColor="var(--ant-color-fill-secondary)"
                     />
                   </span>
                 )}

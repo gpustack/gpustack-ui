@@ -9,6 +9,12 @@ export default {
       inputFontSize: 14,
       inputFontSizeLG: 14
     },
+    InputNumber: {
+      handleWidth: 32
+    },
+    Tag: {
+      defaultBg: '#fafafa'
+    },
     Steps: {
       descriptionMaxWidth: 200,
       iconSizeSM: 20

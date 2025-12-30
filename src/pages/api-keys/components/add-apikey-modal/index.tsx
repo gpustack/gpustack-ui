@@ -210,7 +210,9 @@ const AddModal: React.FC<AddModalProps> = ({
       closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={600}
+      styles={{
+        wrapper: { width: 600 }
+      }}
       footer={false}
     >
       <ColumnWrapper
@@ -269,7 +271,7 @@ const AddModal: React.FC<AddModalProps> = ({
             <Form.Item>
               <div>
                 <Tag
-                  bordered={false}
+                  variant="filled"
                   color="error"
                   style={{ padding: '6px 8px', marginBottom: 16 }}
                 >

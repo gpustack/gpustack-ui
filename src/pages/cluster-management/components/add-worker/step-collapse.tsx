@@ -73,7 +73,7 @@ const StepCollapse: React.FC<StepItemProps> = ({
       <CollapsibleContainer
         collapsible={true}
         open={collapseKey?.has(name)}
-        iconPosition="right"
+        iconPlacement="right"
         styles={{
           body: collapseKey?.has(name) ? { padding: 16 } : {},
           content: { paddingTop: 0 },

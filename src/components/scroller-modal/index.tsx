@@ -60,7 +60,7 @@ const ScrollerModal = (
       title={<Title>{props.title}</Title>}
       destroyOnHidden={true}
       styles={{
-        content: {
+        container: {
           padding: 0
         },
         header: {

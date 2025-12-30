@@ -9,7 +9,7 @@ export default function useBodyScroll() {
   const instanceRef = React.useRef<any>(null);
   const timer = React.useRef<any>(null);
 
-  const int = () => {
+  const init = () => {
     bodyScroller.current =
       window.__GPUSTACK_BODY_SCROLLER__?.elements()?.scrollEventElement;
 
@@ -18,7 +18,7 @@ export default function useBodyScroll() {
 
   const saveScrollHeight = React.useCallback(() => {
     if (!bodyScroller.current) {
-      int();
+      init();
     }
     scrollerState.current = instanceRef.current?.state();
 
@@ -43,11 +43,11 @@ export default function useBodyScroll() {
           y: 'scroll'
         }
       });
-    }, 500);
+    }, 650);
   }, []);
 
   React.useEffect(() => {
-    int();
+    init();
     return () => {
       bodyScroller.current = null;
       instanceRef.current = null;

@@ -26,6 +26,7 @@ const ThemeTag: React.FC<TagProps & { opacity?: number }> = ({
   return (
     <TagWrapper
       {...restProps}
+      variant="outlined"
       style={{
         ...style,
         opacity: isDarkTheme ? 1 : opacity

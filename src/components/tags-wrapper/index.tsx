@@ -102,7 +102,9 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
         {hiddenIndices.end < dataList.length && (
           <Dropdown
             trigger={['hover']}
-            overlayClassName="tags-wrapper-dropdown"
+            classNames={{
+              root: 'tags-wrapper-dropdown'
+            }}
             menu={{
               items: _.map(
                 _.slice(dataList, hiddenIndices.end),

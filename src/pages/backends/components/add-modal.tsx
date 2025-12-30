@@ -195,11 +195,13 @@ const AddModal: React.FC<AddModalProps> = (props) => {
           padding: '0 0 16px',
           overflowX: 'hidden'
         },
-        content: {
+        section: {
           borderRadius: '6px 0 0 6px'
+        },
+        wrapper: {
+          width: 600
         }
       }}
-      width={600}
       footer={false}
     >
       <SegmentedHeader>

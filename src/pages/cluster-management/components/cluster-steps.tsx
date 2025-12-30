@@ -2,8 +2,6 @@ import { Steps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
-const { Step } = Steps;
-
 const Wrapper = styled.div`
   width: min(1200px, 100%);
   margin: 0 auto;
@@ -24,19 +22,12 @@ const ClusterSteps: React.FC<{
   return (
     <Wrapper>
       <Steps
+        items={steps}
         current={currentStep}
         size="small"
         onChange={onChange}
-        direction="vertical"
-      >
-        {steps.map((step) => (
-          <Step
-            key={step.title}
-            title={step.title}
-            description={step.content}
-          />
-        ))}
-      </Steps>
+        orientation="vertical"
+      ></Steps>
     </Wrapper>
   );
 };

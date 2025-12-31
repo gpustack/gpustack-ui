@@ -1,13 +1,11 @@
-// @ts-nocheck
-
-import { history, useIntl, type IRoute } from '@umijs/max';
+import { history, useIntl } from '@umijs/max';
 import { Button, Result } from 'antd';
 import React from 'react';
 import { PageContainerInner } from '../pages/_components/page-box';
 
 const Exception: React.FC<{
   children: React.ReactNode;
-  route?: IRoute;
+  route?: any;
   notFound?: React.ReactNode;
   noAccessible?: React.ReactNode;
   unAccessible?: React.ReactNode;
@@ -15,7 +13,7 @@ const Exception: React.FC<{
 }> = (props) => {
   const intl = useIntl();
   // render custom 404
-  console.log('exception====', props.route);
+  console.log('exception====', props);
   return (
     (!props.route && (props.noFound || props.notFound)) ||
     // render custom 403

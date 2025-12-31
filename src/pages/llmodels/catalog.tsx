@@ -3,11 +3,11 @@ import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
 import { PageAction } from '@/config';
 import useBodyScroll from '@/hooks/use-body-scroll';
+import useTableFetch from '@/hooks/use-table-fetch';
 import { ScrollerContext } from '@/pages/_components/infinite-scroller/use-scroller-context';
 import { IS_FIRST_LOGIN, writeState } from '@/utils/localstore/index';
 import { SearchOutlined } from '@ant-design/icons';
 import { useIntl, useNavigate } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
@@ -22,27 +22,24 @@ import { CatalogItem as CatalogItemType, FormData } from './config/types';
 
 const Catalog: React.FC = () => {
   const intl = useIntl();
+  const {
+    dataSource,
+    queryParams,
+    handleSearch,
+    handleQueryChange,
+    loadMore,
+    handleNameChange
+  } = useTableFetch<CatalogItemType>({
+    fetchAPI: queryCatalogList,
+    watch: false,
+    isInfiniteScroll: true,
+    defaultQueryParams: {
+      perPage: 24
+    }
+  });
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const navigate = useNavigate();
-  const [dataSource, setDataSource] = useState<{
-    dataList: CatalogItemType[];
-    loading: boolean;
-    total: number;
-    loadend: boolean;
-    totalPage: number;
-  }>({
-    dataList: [],
-    loading: false,
-    loadend: false,
-    total: 0,
-    totalPage: 0
-  });
-  const [queryParams, setQueryParams] = useState({
-    page: 1,
-    perPage: 24,
-    search: '',
-    categories: ''
-  });
+
   const [openDeployModal, setOpenDeployModal] = useState<any>({
     show: false,
     width: 600,
@@ -51,65 +48,11 @@ const Catalog: React.FC = () => {
   });
   const [, setModelsExpandKeys] = useAtom(modelsExpandKeysAtom);
   const [, setModelsSession] = useAtom(modelsSessionAtom);
-  const cacheData = React.useRef<CatalogItemType[]>([]);
   const sourceRef = React.useRef<string>('');
 
   const categoryOptions = [
     ...modelCategories.filter((item) => item.value)
   ] as Global.BaseOption<string>[];
-
-  const fetchData = useMemoizedFn(async (query?: any) => {
-    const searchQuery = {
-      ...queryParams,
-      ...query
-    };
-    if (
-      dataSource.loading ||
-      (searchQuery.page > dataSource.totalPage && dataSource.totalPage > 0)
-    ) {
-      return;
-    }
-    setDataSource((pre) => {
-      pre.loading = true;
-
-      return { ...pre };
-    });
-    try {
-      const params = {
-        ..._.pickBy(searchQuery, (val: string | number) => !!val)
-      };
-      const res: any = await queryCatalogList(params);
-
-      const dataList =
-        searchQuery.page === 1
-          ? res.items
-          : _.concat(dataSource.dataList, res.items);
-      setDataSource({
-        dataList: dataList,
-        loading: false,
-        loadend: true,
-        total: res.pagination.total,
-        totalPage: res.pagination.totalPage
-      });
-      setQueryParams({
-        ...queryParams,
-        ...query
-      });
-    } catch (error) {
-      cacheData.current = [];
-      setDataSource({
-        dataList: [],
-        loading: false,
-        loadend: true,
-        total: dataSource.total,
-        totalPage: dataSource.totalPage
-      });
-      setQueryParams({
-        ...queryParams,
-        ...query
-      });
-    }
-  });
 
   const handleDeployModalCancel = () => {
     setOpenDeployModal({
@@ -150,35 +93,11 @@ const Catalog: React.FC = () => {
     [openDeployModal]
   );
 
-  const handleSearch = () => {
-    fetchData({
-      ...queryParams,
-      page: 1
-    });
-  };
-
-  const handleNameChange = _.debounce((e: any) => {
-    fetchData({
-      ...queryParams,
-      page: 1,
-      search: e.target.value
-    });
-  }, 200);
-
   const handleCategoryChange = (value: any) => {
-    fetchData({
-      ...queryParams,
-      page: 1,
+    handleQueryChange({
       categories: value
     });
   };
-
-  const loadMore = useMemoizedFn((nextPage: number) => {
-    fetchData({
-      ...queryParams,
-      page: nextPage
-    });
-  });
 
   const handleDeployFromOtherHubs = async () => {
     try {
@@ -188,10 +107,6 @@ const Catalog: React.FC = () => {
     } catch (error) {}
     navigate('/models/deployments');
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (dataSource.loadend) {

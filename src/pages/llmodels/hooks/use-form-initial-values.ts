@@ -153,6 +153,8 @@ export const useGenerateWorkerOptions = () => {
       { state: string; labels: Record<string, string>; cluster_id: number }
     >[]
   >([]);
+  const [, setClusterListAtom] = useAtom(clusterListAtom);
+  const [, setWorkerListAtom] = useAtom(workerListAtom);
 
   const generateCascaderWorkerOptions = (
     workerList: WorkerListItem[],
@@ -201,29 +203,31 @@ export const useGenerateWorkerOptions = () => {
     const data = await getDataList();
     const [workerList, clusterList] = data;
     generateCascaderWorkerOptions(workerList, clusterList);
-    setWorkersList(
-      workerList.map((item) => ({
-        cluster_id: item.cluster_id,
-        state: item.state,
-        label: item.name,
-        value: item.id,
-        id: item.id,
-        labels: item.labels || {},
-        name: item.name
-      }))
-    );
-    setClusterList(
-      clusterList.map((item) => ({
-        label: item.name,
-        value: item.id,
-        provider: item.provider as string,
-        state: item.state,
-        is_default: item.is_default,
-        workers: item.workers,
-        ready_workers: item.ready_workers,
-        gpus: item.gpus
-      }))
-    );
+
+    const workerOptions = workerList.map((item) => ({
+      cluster_id: item.cluster_id,
+      state: item.state,
+      label: item.name,
+      value: item.id,
+      id: item.id,
+      labels: item.labels || {},
+      name: item.name
+    }));
+    const clusterOptions = clusterList.map((item) => ({
+      label: item.name,
+      value: item.id,
+      provider: item.provider as string,
+      state: item.state,
+      is_default: item.is_default,
+      workers: item.workers,
+      ready_workers: item.ready_workers,
+      gpus: item.gpus
+    }));
+
+    setWorkersList(workerOptions);
+    setClusterList(clusterOptions);
+    setWorkerListAtom(workerOptions);
+    setClusterListAtom(clusterOptions);
   };
   return {
     getWorkerOptionList,
@@ -280,7 +284,12 @@ export default function useFormInitialValues() {
       const list =
         data.items?.map((item) => ({
           label: item.name,
-          value: item.id
+          value: item.id,
+          cluster_id: item.cluster_id,
+          state: item.state,
+          id: item.id,
+          labels: item.labels || {},
+          name: item.name
         })) || [];
       setWorkerList(data.items);
       setWorkerListAtom(list);

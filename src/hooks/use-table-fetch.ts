@@ -24,11 +24,14 @@ type WatchConfig =
  * @param events events to watch for chunked updates, default: ['UPDATE', 'DELETE']
  * @param defaultQueryParams default query parameters for fetching data
  * @param isInfiniteScroll whether to use infinite scroll mode , use in card list
+ * @param API use to create chunked request url when watch is true
+ * @param watch whether to watch for chunked updates
+ * @param polling whether to enable polling for data fetching
  * @returns
  */
 export default function useTableFetch<T>(
   options: {
-    fetchAPI: (params: any) => Promise<Global.PageResponse<T>>;
+    fetchAPI: (params: any, options?: any) => Promise<Global.PageResponse<T>>;
     deleteAPI?: (id: number, params?: any) => Promise<any>;
     contentForDelete?: string;
     defaultData?: any[];
@@ -220,7 +223,7 @@ export default function useTableFetch<T>(
     }, 5000);
   };
 
-  // for selection change
+  // for filters change
   const handleQueryChange = (params: any) => {
     setQueryParams({
       ...queryParams,
@@ -258,6 +261,7 @@ export default function useTableFetch<T>(
     }
   };
 
+  // for refresh button
   const handleSearch = () => {
     fetchData();
   };
@@ -319,6 +323,16 @@ export default function useTableFetch<T>(
     });
   };
 
+  const loadMore = (nextPage: number) => {
+    fetchData({
+      query: {
+        ...queryParams,
+        page: nextPage
+      },
+      loadmore: true
+    });
+  };
+
   useEffect(() => {
     if (dataSource.loadend) {
       fetchAPIWithPolling(queryParams);
@@ -360,6 +374,7 @@ export default function useTableFetch<T>(
     handleTableChange,
     handleSearch,
     handleQueryChange,
+    loadMore,
     handleNameChange
   };
 }

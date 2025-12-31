@@ -30,6 +30,8 @@ export const MY_MODELS_API = '/my-models';
 
 export const DRAFT_MODELS_API = '/draft-models';
 
+export const CATALOG_LIST_API = '/model-sets';
+
 const setProxyUrl = (url: string) => {
   return `/proxy?url=${encodeURIComponent(url)}`;
 };
@@ -357,13 +359,11 @@ export async function queryCatalogList(
   params: Global.SearchParams,
   options?: any
 ) {
-  return request<Global.PageResponse<CatalogItem>>(
-    `/model-sets?${qs.stringify(params)}`,
-    {
-      method: 'GET',
-      ...options
-    }
-  );
+  return request<Global.PageResponse<CatalogItem>>(`${CATALOG_LIST_API}`, {
+    method: 'GET',
+    params,
+    cancelToken: options?.token
+  });
 }
 
 export async function queryCatalogItemSpec(
@@ -371,7 +371,7 @@ export async function queryCatalogItemSpec(
   options?: any
 ) {
   return request<Global.PageResponse<CatalogSpec>>(
-    `/model-sets/${params.id}/specs`,
+    `${CATALOG_LIST_API}/${params.id}/specs`,
     {
       method: 'GET',
       ...options,

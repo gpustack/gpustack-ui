@@ -2,7 +2,7 @@ import { COLOR_PRIMARY } from './index';
 
 export default {
   'root-entry-name': 'variable',
-  cssVar: true,
+  // cssVar: true,
   hashed: false,
   components: {
     Input: {
@@ -66,7 +66,8 @@ export default {
       colorBgSpotlight: '#3e3e3e'
     },
     Cascader: {
-      dropdownHeight: 240
+      dropdownHeight: 240,
+      optionSelectedFontWeight: 400
     },
     Slider: {
       handleSize: 8,

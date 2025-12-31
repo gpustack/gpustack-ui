@@ -56,7 +56,7 @@ const BarChart: React.FC<ChartProps & { maxItems?: number }> = (props) => {
           overflow: 'truncate',
           width: 75,
           ellipsis: '...',
-          margin: 12,
+          margin: 8,
           formatter(value: string, index: number) {
             return `{a|${index + 1}}`;
           },

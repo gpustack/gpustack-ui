@@ -1,5 +1,5 @@
 import { routeCacheAtom, setRouteCache } from '@/atoms/route-cache';
-import { GPUStackVersionAtom, userAtom } from '@/atoms/user';
+import { userAtom } from '@/atoms/user';
 import DarkMask from '@/components/dark-mask';
 import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
@@ -36,6 +36,7 @@ import { ExtraContent } from './extraRender';
 import { patchRoutes } from './runtime';
 import SiderMenu from './sider-menu';
 
+// Pages that use the page container in the page
 const NO_CONTAINER_PAGES = [
   'chat',
   'rerank',
@@ -55,6 +56,11 @@ const CHECK_RESOURCE_PATH = [
   ''
 ];
 
+type NewRoute = IRoute & {
+  children?: IRoute[];
+  routes?: IRoute[];
+};
+
 const loginPath = DEFAULT_ENTER_PAGE.login;
 
 // Filter out the routes that need to be displayed, where filterFn indicates the levels that should not be shown
@@ -66,7 +72,7 @@ const filterRoutes = (
     return [];
   }
 
-  let newRoutes = [];
+  let newRoutes: NewRoute[] = [];
   for (const route of routes) {
     const newRoute = { ...route };
     if (filterFn(route)) {
@@ -90,7 +96,7 @@ const mapRoutes = (routes: IRoute[], role: string) => {
     return [];
   }
   return routes.map((route) => {
-    const newRoute = { ...route, role };
+    const newRoute: NewRoute = { ...route, role };
     if (route.originPath) {
       newRoute.path = route.originPath;
     }
@@ -111,7 +117,7 @@ export default (props: any) => {
   const { initialize: initialize } = useOverlayScroller({
     defer: false
   });
-  const [modal, contextHolder] = Modal.useModal();
+  const [, contextHolder] = Modal.useModal();
   const { themeData, setUserSettings, userSettings } = useUserSettings();
   const [userInfo] = useAtom(userAtom);
   const [routeCache] = useAtom(routeCacheAtom);
@@ -119,7 +125,6 @@ export default (props: any) => {
   const navigate = useNavigate();
   const intl = useIntl();
   const { clientRoutes } = useAppData();
-  const [version] = useAtom(GPUStackVersionAtom);
   const requestResourceRef = useRef<boolean>(false);
 
   const {
@@ -128,7 +133,7 @@ export default (props: any) => {
     NoResourceModal,
     loadingStatus
   } = useAddResource({
-    onCreate() {
+    onCreated() {
       requestResourceRef.current = false;
     }
   });
@@ -146,11 +151,11 @@ export default (props: any) => {
     locale: true
   };
 
-  const formatMessage = (args) => {
+  const formatMessage = (args: { id: string }) => {
     return intl.formatMessage({ id: args.id });
   };
 
-  const initRouteCacheValue = (pathname) => {
+  const initRouteCacheValue = (pathname: string) => {
     if (routeCache.get(pathname) === undefined && routeCachekey[pathname]) {
       setRouteCache(pathname, false);
     }
@@ -183,8 +188,8 @@ export default (props: any) => {
       collapsed: !userSettings.collapsed
     });
   };
-
   const newRoutes = filterRoutes(
+    // @ts-ignore
     clientRoutes.filter((route) => route.id === 'max-tabs'),
     (route) => {
       return (
@@ -208,10 +213,9 @@ export default (props: any) => {
   );
 
   const isNoContainerPage = useMemo(() => {
-    return NO_CONTAINER_PAGES.includes(matchedRoute?.name);
+    // @ts-ignore
+    return NO_CONTAINER_PAGES.includes(matchedRoute?.name as string);
   }, [matchedRoute]);
-
-  console.log('matchedRoute=========', matchedRoute, route);
 
   useEffect(() => {
     const body = document.querySelector('body');
@@ -338,19 +342,10 @@ export default (props: any) => {
         }}
         openKeys={false}
         disableMobile={true}
-        header={{
-          title: <div style={{ fontSize: 36 }}> gpuStack </div>
-        }}
         siderWidth={220}
         onCollapse={onCollapse}
         onMenuHeaderClick={onMenuHeaderClick}
         menuHeaderRender={renderMenuHeader}
-        extra={[
-          <ExtraContent
-            key="extra-content"
-            isDarkTheme={userSettings.isDarkTheme}
-          />
-        ]}
         collapsed={userSettings.collapsed}
         onPageChange={onPageChange}
         formatMessage={formatMessage}
@@ -361,14 +356,20 @@ export default (props: any) => {
         splitMenus={true}
         logo={userSettings.collapsed ? <SLogoIcon /> : <LogoIcon />}
         menuContentRender={menuContentRender}
-        disableContentMargin
         {...runtimeConfig}
         ErrorBoundary={ErrorBoundary}
+        // @ts-ignore
+        extra={[
+          <ExtraContent
+            key="extra-content"
+            isDarkTheme={userSettings.isDarkTheme}
+          />
+        ]}
       >
         <Exception
           route={matchedRoute}
-          noFound={runtimeConfig?.noFound}
           notFound={runtimeConfig?.notFound}
+          noFound={runtimeConfig?.noFound}
           unAccessible={runtimeConfig?.unAccessible}
           noAccessible={runtimeConfig?.noAccessible}
         >

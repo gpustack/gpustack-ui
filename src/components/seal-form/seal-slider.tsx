@@ -89,6 +89,17 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
           style={{ marginBottom: 0, marginTop: 16, marginInline: 0 }}
           tooltip={tooltip}
           value={value}
+          styles={{
+            rail: {
+              borderRadius: 3
+            },
+            track: {
+              borderRadius: 3
+            },
+            tracks: {
+              borderRadius: 3
+            }
+          }}
           onChange={handleChange}
         ></Slider>
       </Wrapper>

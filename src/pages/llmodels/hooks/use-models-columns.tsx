@@ -115,7 +115,7 @@ const useModelsColumns = ({
           title: intl.formatMessage({ id: 'models.table.replicas.edit' })
         },
         render: (text: number, record: ListItem) => (
-          <span style={{ paddingLeft: 10, minWidth: '33px' }}>
+          <span style={{ minWidth: '23px' }}>
             {record.ready_replicas} / {record.replicas}
           </span>
         )

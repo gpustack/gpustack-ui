@@ -17,7 +17,8 @@ const AdvanceConfig = () => {
   const form = Form.useFormInstance();
   const EnviromentVars = Form.useWatch('env', form);
   const backend = Form.useWatch('backend', form);
-  const { onValuesChange, backendOptions, formKey } = useFormContext();
+  const { onValuesChange, backendOptions, isGGUF, modelContextData } =
+    useFormContext();
 
   const currentBackendOptions = useMemo(() => {
     return backendOptions?.find((item) => item.value === backend);
@@ -46,6 +47,10 @@ const AdvanceConfig = () => {
     onValuesChange?.({}, form.getFieldsValue());
   };
 
+  const handleContextLengthChange = _.debounce((value: number) => {
+    onValuesChange?.({}, form.getFieldsValue());
+  }, 300);
+
   return (
     <>
       <Form.Item<FormData>
@@ -63,10 +68,22 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      <Form.Item<FormData> name="max_context_len">
-        <SealSlider label="Max Context Length" inputnumber></SealSlider>
-      </Form.Item>
-
+      {!isGGUF && modelContextData?.native && (
+        <Form.Item<FormData> name="max_context_len">
+          <SealSlider
+            label={intl.formatMessage({ id: 'models.form.maxContextLength' })}
+            inputnumber={true}
+            onChange={handleContextLengthChange}
+            included={true}
+            max={modelContextData?.scaled || 163840}
+            tooltip={{}}
+            marks={{
+              [modelContextData?.native]: 'native',
+              [modelContextData?.scaled]: 'scaled'
+            }}
+          ></SealSlider>
+        </Form.Item>
+      )}
       <BackendParametersList></BackendParametersList>
       <Form.Item<FormData> name="env">
         <LabelSelector

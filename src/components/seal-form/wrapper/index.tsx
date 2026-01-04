@@ -231,7 +231,12 @@ const Wrapper: FC<WrapperProps> = ({
         onClick={onClick}
       >
         {label && (
-          <Label $isFocus={isFocus} $hasPrefix={hasPrefix} onClick={onClick}>
+          <Label
+            $isFocus={isFocus}
+            $hasPrefix={hasPrefix}
+            onClick={onClick}
+            className="label-wrapper"
+          >
             <LabelInfo
               label={label}
               required={required}

@@ -8,7 +8,12 @@ import { useIntl } from '@umijs/max';
 import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Form } from 'antd';
 import _ from 'lodash';
-import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo
+} from 'react';
 import styled from 'styled-components';
 import {
   DeployFormKeyMap,
@@ -29,6 +34,7 @@ import { generateGPUIds } from '../config/utils';
 import useFieldScroll from '../hooks/use-field-scroll';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
+import { useQueryContextLength } from '../services/use-query-context-length';
 import AdvanceConfig from './advance-config';
 import BasicForm from './basic';
 import Performance from './performance';
@@ -103,6 +109,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
   const [target, setTarget] = React.useState<string>(TABKeysMap.BASIC);
+  const { modelContextData, fetchContextLength } = useQueryContextLength();
+  const localPath = Form.useWatch('local_path', form);
+  const modelScopeModelId = Form.useWatch('model_scope_model_id', form);
+  const huggingfaceRepoId = Form.useWatch('huggingface_repo_id', form);
 
   const segmentOptions = [
     {
@@ -390,6 +400,23 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     };
   });
 
+  useEffect(() => {
+    if (isGGUF || (!localPath && !modelScopeModelId && !huggingfaceRepoId)) {
+      return;
+    }
+    let params = {};
+    if (source === modelSourceMap.local_path_value) {
+      params = { local_path: localPath };
+    } else if (source === modelSourceMap.modelscope_value) {
+      params = { model_scope_model_id: modelScopeModelId };
+    } else if (source === modelSourceMap.huggingface_value) {
+      params = { huggingface_repo_id: huggingfaceRepoId };
+    }
+
+    // TODO
+    // fetchContextLength({ ...params, source });
+  }, [isGGUF, source, localPath, modelScopeModelId, huggingfaceRepoId]);
+
   return (
     <FormContext.Provider
       value={{
@@ -401,6 +428,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         backendOptions: backendOptions,
         workerLabelOptions: workerLabelOptions,
         initialValues: initialValues,
+        modelContextData: modelContextData,
         clearCacheFormValues: clearCacheFormValues,
         onValuesChange: onValuesChange,
         onBackendChange: handleBackendChange

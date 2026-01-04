@@ -575,7 +575,6 @@ const AddModal: FC<AddModalProps> = (props) => {
                     modelSource={props.source}
                     setIsGGUF={handleSetIsGGUF}
                   ></ModelCard>
-
                   {isGGUF && (
                     <HFModelFile
                       ref={modelFileRef}
@@ -590,7 +589,6 @@ const AddModal: FC<AddModalProps> = (props) => {
               </ColWrapper>
             </>
           )}
-
         <FormWrapper>
           <ColumnWrapper
             styles={{

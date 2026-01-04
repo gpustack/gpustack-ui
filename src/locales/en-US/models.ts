@@ -272,5 +272,6 @@ export default {
   'models.catalog.nogpus.tips':
     'No compatible GPUs are available in the selected cluster for this model.',
   'models.form.modelfile.notfound': `The model file path you specified does not exist on the GPUStack server. It's recommended to place the model file at the same path on both the GPUStack server and GPUStack workers. This helps GPUStack make better decisions.`,
-  'models.form.readyWorkers': 'workers ready'
+  'models.form.readyWorkers': 'workers ready',
+  'models.form.maxContextLength': 'Maximum Context Length'
 };

@@ -175,7 +175,7 @@ const SimpleSelect: React.FC<SelectProps & { ref?: any; showTags?: boolean }> =
 
       return (
         <TagWrapper
-          bordered={false}
+          variant="filled"
           closable={props.closable}
           onClose={props.onClose}
           style={{

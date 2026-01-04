@@ -695,7 +695,7 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
             </Col>
             <Col span={4}>
               <span
-                style={{ paddingLeft: '50px', gap: 4 }}
+                style={{ paddingLeft: '40px', gap: 4 }}
                 className="flex-center"
               >
                 <InstanceStatusTag

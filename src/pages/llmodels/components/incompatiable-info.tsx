@@ -82,7 +82,7 @@ const IncompatiableInfo: React.FC<IncompatiableInfoProps> = (props) => {
 
   if (isEvaluating) {
     return (
-      <CompatibleTag color="blue" bordered={false}>
+      <CompatibleTag color="blue" variant="filled">
         <Tooltip title={intl.formatMessage({ id: 'models.form.evaluating' })}>
           <LoadingOutlined />
         </Tooltip>

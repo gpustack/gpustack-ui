@@ -267,8 +267,7 @@ export default {
   'models.table.genericProxy':
     'Используйте следующий префикс пути и укажите имя модели либо в заголовке запроса <span class="bold-text">X-GPUStack-Model</span>, либо в поле model в теле запроса. Все запросы с этим префиксом пути будут перенаправлены в бэкенд вывода.',
   'models.form.backendVersion.deprecated': 'Устаревший',
-  'models.accessSettings.public.desc':
-    'Доступно всем без аутентификации.',
+  'models.accessSettings.public.desc': 'Доступно всем без аутентификации.',
   'models.accessSettings.authed.tips':
     'Доступно всем аутентифицированным пользователям платформы.',
   'models.accessSettings.allowedUsers.tips':
@@ -277,9 +276,10 @@ export default {
   'models.catalog.nogpus.tips':
     'В выбранном кластере нет доступных GPU, совместимых с этой моделью.',
   'models.form.modelfile.notfound': `Указанный путь к файлу модели не существует на сервере GPUStack. Рекомендуется размещать файл модели по одному и тому же пути как на сервере GPUStack, так и на воркерах GPUStack. Это поможет системе принимать лучшие решения по распределению ресурсов.`,
-  'models.form.readyWorkers': 'воркеров готово'
+  'models.form.readyWorkers': 'воркеров готово',
+  'models.form.maxContextLength': 'Maximum Context Length'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-
+// 1. 'models.form.maxContextLength': 'Maximum Context Length'
 // ========== End of To-Do List ==========

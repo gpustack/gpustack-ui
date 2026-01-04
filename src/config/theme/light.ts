@@ -2,7 +2,6 @@ import { COLOR_PRIMARY } from './index';
 
 export default {
   'root-entry-name': 'variable',
-  // cssVar: true,
   hashed: false,
   components: {
     Input: {
@@ -70,9 +69,9 @@ export default {
       optionSelectedFontWeight: 400
     },
     Slider: {
-      handleSize: 10,
-      handleSizeHover: 10,
-      railSize: 5,
+      handleSize: 8,
+      handleSizeHover: 8,
+      railSize: 4,
       handleActiveOutlineColor: '#B4B4B4', // disable default outline
       handleActiveColor: '#D0D0D0', // same as the rail color
       handleColor: '#D0D0D0', // same as the rail color

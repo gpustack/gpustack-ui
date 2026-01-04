@@ -48,7 +48,7 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
     props.onChange?.(newValue);
   };
 
-  const renderLabel = React.useMemo(() => {
+  const renderLabel = () => {
     return (
       <span
         className="slider-label"
@@ -70,13 +70,13 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
         )}
       </span>
     );
-  }, [label, labelWidth, description, value, max, min, step, defaultValue]);
+  };
   return (
     <SliderWrapper className="slider-wrapper">
       <Wrapper
         required={required}
         status={checkStatus || status}
-        label={renderLabel}
+        label={renderLabel()}
         isFocus={true}
         variant="borderless"
       >

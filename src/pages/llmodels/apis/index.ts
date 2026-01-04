@@ -454,3 +454,20 @@ export async function queryDraftModelList(params?: Global.SearchParams) {
     params
   });
 }
+
+export async function queryModelContextLength(params: {
+  model: {
+    source: string;
+    model_scope_model_id?: string;
+    huggingface_repo_id?: string;
+    local_path?: string;
+  };
+}) {
+  return request<{ native: number; scaled: number }>(
+    `${MODELS_API}/context-length`,
+    {
+      method: 'POST',
+      data: params
+    }
+  );
+}

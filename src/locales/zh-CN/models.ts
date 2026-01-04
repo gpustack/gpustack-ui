@@ -256,5 +256,6 @@ export default {
   'models.catalog.nogpus.tips': '所选集群中没有兼容该模型的 GPU。',
   'models.form.modelfile.notfound':
     '你指定的模型文件路径在 GPUStack 服务器上不存在。建议在 GPUStack 服务器和 GPUStack 节点上使用相同的模型文件路径，这有助于 GPUStack 做出更优的调度与决策。',
-  'models.form.readyWorkers': '节点就绪'
+  'models.form.readyWorkers': '节点就绪',
+  'models.form.maxContextLength': '最大上下文长度'
 };

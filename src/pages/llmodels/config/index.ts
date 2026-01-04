@@ -358,7 +358,8 @@ export const DO_NOT_TRIGGER_CHECK_COMPATIBILITY = [
   'extended_kv_cache.enabled',
   'extended_kv_cache.ram_size',
   'speculative_config.enabled',
-  'speculative_config.draft_model'
+  'speculative_config.draft_model',
+  'max_context_len'
 ];
 
 // ignore to compare old and new data when these fields change in updating model

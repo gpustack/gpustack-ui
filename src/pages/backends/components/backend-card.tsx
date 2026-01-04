@@ -8,6 +8,8 @@ import { useIntl } from '@umijs/max';
 import { Button, Tag } from 'antd';
 import _ from 'lodash';
 import { useMemo } from 'react';
+import semverCoerce from 'semver/functions/coerce';
+import semverGt from 'semver/functions/gt';
 import styled from 'styled-components';
 import {
   backendActions,
@@ -140,7 +142,7 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     const icon = customIcons[data.id % customIcons.length];
 
     return (
-      <TagInner color={color} bordered={false}>
+      <TagInner color={color} variant="filled">
         {icon}
       </TagInner>
     );
@@ -157,13 +159,28 @@ const BackendCard: React.FC<BackendCardProps> = ({ data, onSelect }) => {
     e.stopPropagation();
   };
 
+  const sortVersions = (v2: string, v1: string) => {
+    const sv1 = semverCoerce(v1);
+    const sv2 = semverCoerce(v2);
+
+    if (!sv1 && !sv2) return 0;
+    if (!sv1) return 1;
+    if (!sv2) return -1;
+
+    if (semverGt(sv1, sv2)) return -1;
+    return 1;
+  };
+
   const renderTag = (item: any) => {
     return (
       <AutoTooltip
         ghost
         minWidth={20}
         showTitle
-        title={_.join(data.framework_index_map?.[item], ', ') || false}
+        title={
+          _.join(data.framework_index_map?.[item].sort(sortVersions), ', ') ||
+          false
+        }
       >
         <ThemeTag
           key={item}

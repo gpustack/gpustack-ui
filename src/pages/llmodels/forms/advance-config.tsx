@@ -1,6 +1,7 @@
 import LabelSelector from '@/components/label-selector';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
+import SealSlider from '@/components/seal-form/seal-slider';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -61,6 +62,9 @@ const AdvanceConfig = () => {
           })}
           options={modelCategories}
         ></SealSelect>
+      </Form.Item>
+      <Form.Item<FormData> name="max_context_len">
+        <SealSlider label="Max Context Length" inputnumber></SealSlider>
       </Form.Item>
 
       <BackendParametersList></BackendParametersList>

@@ -70,14 +70,16 @@ export default {
       optionSelectedFontWeight: 400
     },
     Slider: {
-      handleSize: 8,
-      handleSizeHover: 8,
+      handleSize: 10,
+      handleSizeHover: 10,
+      railSize: 5,
+      handleActiveOutlineColor: '#B4B4B4', // disable default outline
+      handleActiveColor: '#D0D0D0', // same as the rail color
+      handleColor: '#D0D0D0', // same as the rail color
+      handleHoverColor: '#B4B4B4', // same as the rail hover color
       trackBg: 'rgba(0,0,0,0.15)',
-      handleColor: 'rgba(0,0,0,0.2)',
-      trackHoverBg: 'rgba(0,0,0,0.25)',
-      handleActiveColor: 'rgba(0,0,0,0.3)',
+      trackHoverBg: '#B4B4B4',
       dotActiveBorderColor: 'rgba(0,0,0,0.25)',
-      handleActiveOutlineColor: 'rgba(0,0,0,0.25)',
       dotBorderColor: 'rgba(0,0,0,0.25)'
     }
   },

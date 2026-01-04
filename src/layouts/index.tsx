@@ -325,6 +325,16 @@ export default (props: any) => {
           : theme.defaultAlgorithm,
         ...themeData
       }}
+      modal={{
+        mask: {
+          blur: false
+        }
+      }}
+      drawer={{
+        mask: {
+          blur: false
+        }
+      }}
     >
       <DarkMask></DarkMask>
       <ProLayout

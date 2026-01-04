@@ -92,6 +92,7 @@ export interface FormData {
     ngram_min_match_length: number;
     ngram_max_match_length: number;
   };
+  max_context_len: number;
 }
 
 interface ComputedResourceClaim {

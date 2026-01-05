@@ -3,7 +3,7 @@ import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Alert } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { ProviderType, ProviderValueMap } from '../../config';
 import { ClusterListItem } from '../../config/types';
@@ -107,6 +107,12 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     );
   };
 
+  const disabled = useMemo(() => {
+    return (
+      stepList.includes(StepNamesMap.SelectCluster) && !clusterList?.length
+    );
+  }, [clusterList, stepList, StepNamesMap]);
+
   return (
     <AddWorkerContext.Provider
       value={{
@@ -127,7 +133,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
     >
       <Container>
         {stepList.includes(StepNamesMap.SelectCluster) && (
-          <SelectCluster></SelectCluster>
+          <SelectCluster disabled={disabled}></SelectCluster>
         )}
         {stepList.includes(StepNamesMap.SelectCluster) &&
           !clusterList?.length && (
@@ -141,22 +147,21 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
               })}
             ></AlertBlockInfo>
           )}
-
         {/* render the steps only when there is at least one cluster available or cluster selection is not required */}
         {((clusterList && clusterList.length > 0) ||
           !stepList.includes(StepNamesMap.SelectCluster)) && (
           <>
-            <SelectVendor></SelectVendor>
-            <CheckEnvironment></CheckEnvironment>
+            <SelectVendor disabled={disabled}></SelectVendor>
+            <CheckEnvironment disabled={disabled}></CheckEnvironment>
 
             {provider === ProviderValueMap.Kubernetes && (
-              <K8sRunCommand></K8sRunCommand>
+              <K8sRunCommand disabled={disabled}></K8sRunCommand>
             )}
 
             {provider === ProviderValueMap.Docker && (
               <>
-                <SpecifyArguments></SpecifyArguments>
-                <DockerRunCommand></DockerRunCommand>
+                <SpecifyArguments disabled={disabled}></SpecifyArguments>
+                <DockerRunCommand disabled={disabled}></DockerRunCommand>
               </>
             )}
           </>

@@ -1,13 +1,13 @@
 import { BulbOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Alert } from 'antd';
+import { Alert, Typography } from 'antd';
 import CheckEnvCommand from '../check-env-command';
 import { useAddWorkerContext } from './add-worker-context';
-import { StepNamesMap } from './config';
-import { Tips, Title } from './constainers';
+import { AddWorkerStepProps, StepNamesMap } from './config';
+import { Title } from './constainers';
 import StepCollapse from './step-collapse';
 
-const CheckEnvironment = () => {
+const CheckEnvironment: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const { stepList, summary, provider } = useAddWorkerContext();
   const intl = useIntl();
   const currentGPU = summary.get('currentGPU');
@@ -21,6 +21,7 @@ const CheckEnvironment = () => {
 
   return (
     <StepCollapse
+      disabled={disabled}
       name={StepNamesMap.CheckEnv}
       title={
         <Title>
@@ -47,9 +48,9 @@ const CheckEnvironment = () => {
           ></span>
         }
       ></Alert>
-      <Tips style={{ marginBottom: 8, color: 'var(--ant-color-text)' }}>
+      <Typography.Paragraph style={{ marginBottom: 8 }}>
         {intl.formatMessage({ id: 'cluster.create.checkEnv.tips' })}
-      </Tips>
+      </Typography.Paragraph>
       <CheckEnvCommand provider={provider} currentGPU={currentGPU} />
     </StepCollapse>
   );

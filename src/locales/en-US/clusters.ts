@@ -115,5 +115,6 @@ export default {
   'clusters.form.serverUrl.tips':
     'Specify the server URL accessible from your cloud provider.',
   'clusters.form.setDefault': 'Set as Default',
-  'clusters.form.setDefault.tips': 'Default for deployment.'
+  'clusters.form.setDefault.tips': 'Default for deployment.',
+  'clusters.addworker.noClusters': 'No available clusters'
 };

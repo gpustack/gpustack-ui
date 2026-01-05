@@ -115,7 +115,8 @@ export default {
   'clusters.form.serverUrl.tips':
     'Specify the server URL accessible from your cloud provider.',
   'clusters.form.setDefault': 'Set as Default',
-  'clusters.form.setDefault.tips': 'Default for deployment.'
+  'clusters.form.setDefault.tips': 'Default for deployment.',
+  'clusters.addworker.noClusters': 'No available clusters'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -209,4 +210,5 @@ export default {
 // 84. 'clusters.form.setDefault.tips': 'Default for deployment',
 // 85.  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
 // 86.  'clusters.addworker.enterWorkerAddress.error': 'Please enter the worker external address.',
+// 87. 'clusters.addworker.noClusters': 'No available clusters'
 // ========== End of To-Do List ==========

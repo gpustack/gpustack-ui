@@ -9,6 +9,7 @@ interface StepItemProps {
   title: React.ReactNode;
   children?: React.ReactNode;
   name: string;
+  disabled?: boolean;
   beforeNext?: () => Promise<boolean> | void;
 }
 
@@ -39,6 +40,7 @@ const StepCollapse: React.FC<StepItemProps> = ({
   title,
   children,
   name = '',
+  disabled = false,
   beforeNext = async () => true,
   ...rest
 }) => {
@@ -82,6 +84,7 @@ const StepCollapse: React.FC<StepItemProps> = ({
           }
         }}
         title={title}
+        disabled={disabled}
         onToggle={(open) => onToggle?.(open, name || '')}
         {...rest}
       >
@@ -95,7 +98,7 @@ const StepCollapse: React.FC<StepItemProps> = ({
           )}
 
           {!isLastStep && (
-            <Button type="primary" onClick={handleOnNext}>
+            <Button type="primary" onClick={handleOnNext} disabled={disabled}>
               {intl.formatMessage({ id: 'common.button.next' })}
             </Button>
           )}

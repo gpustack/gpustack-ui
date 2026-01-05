@@ -1,12 +1,12 @@
 import AlertInfoBlock from '@/components/alert-info/block';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Input, Switch } from 'antd';
+import { Input, Switch, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useAddWorkerContext } from './add-worker-context';
-import { StepNamesMap } from './config';
-import { NotesWrapper, SwitchWrapper, Tips, Title } from './constainers';
+import { AddWorkerStepProps, StepNamesMap } from './config';
+import { NotesWrapper, SwitchWrapper, Title } from './constainers';
 import StepCollapse from './step-collapse';
 
 const ButtonWrapper = styled.div`
@@ -47,14 +47,16 @@ const SwitchSetting: React.FC<{
         {showSwitch && <Switch checked={checked} onChange={onChange}></Switch>}
       </ButtonWrapper>
       {tips && (
-        <Tips
-          dangerouslySetInnerHTML={{
-            __html: tips
-          }}
-        ></Tips>
+        <Typography.Text type="secondary">
+          <div
+            dangerouslySetInnerHTML={{
+              __html: tips
+            }}
+          ></div>
+        </Typography.Text>
       )}
       {checked && (
-        <>
+        <div>
           <Input
             style={{ width: '100%' }}
             value={value}
@@ -62,22 +64,16 @@ const SwitchSetting: React.FC<{
             onChange={(e) => onInputChange?.(e.target.value)}
           />
           {errorMessage && (
-            <Tips
-              style={{
-                color: 'var(--ant-color-error)'
-              }}
-            >
-              {errorMessage}
-            </Tips>
+            <Typography.Text type="danger">{errorMessage}</Typography.Text>
           )}
-        </>
+        </div>
       )}
       {extra}
     </SwitchWrapper>
   );
 };
 
-const SpecifyArguments = () => {
+const SpecifyArguments: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const intl = useIntl();
   const { stepList, summary, updateField, registerField } =
     useAddWorkerContext();
@@ -215,6 +211,7 @@ const SpecifyArguments = () => {
 
   return (
     <StepCollapse
+      disabled={disabled}
       beforeNext={beforeNext}
       name={StepNamesMap.SpecifyArgs}
       title={

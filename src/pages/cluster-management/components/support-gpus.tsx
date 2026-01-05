@@ -98,7 +98,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       icon: (
         <IconFont
           type="icon-amd-logo"
-          style={{ fontSize: 60, color: 'var(--ant-color-text)' }}
+          style={{ fontSize: 64, color: 'var(--ant-color-text)' }}
         />
       )
     },

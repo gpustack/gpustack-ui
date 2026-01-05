@@ -112,5 +112,6 @@ export default {
   'clusters.table.ip.external': '外',
   'clusters.form.serverUrl.tips': '指定可从您的云服务提供商访问的服务器地址。',
   'clusters.form.setDefault': '设为默认',
-  'clusters.form.setDefault.tips': '部署时的默认集群。'
+  'clusters.form.setDefault.tips': '部署时的默认集群。',
+  'clusters.addworker.noClusters': '无可用集群'
 };

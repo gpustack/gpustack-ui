@@ -1,13 +1,14 @@
 import { useIntl } from '@umijs/max';
+import { Typography } from 'antd';
 import AddWorkerCommand from '../add-worker-command';
 import { useAddWorkerContext } from './add-worker-context';
-import { StepNamesMap } from './config';
-import { Tips, Title } from './constainers';
+import { AddWorkerStepProps, StepNamesMap } from './config';
+import { Title } from './constainers';
 import StepCollapse from './step-collapse';
 import SummaryData from './summary-data';
 import VendorNotes from './vendor-notes';
 
-const DockerRunCommand = () => {
+const DockerRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const intl = useIntl();
   const { registrationInfo, stepList, summary } = useAddWorkerContext();
   const workerIPConfig = summary.get('workerIPConfig') || {
@@ -44,6 +45,7 @@ const DockerRunCommand = () => {
 
   return (
     <StepCollapse
+      disabled={disabled}
       name={StepNamesMap.RunCommand}
       title={
         <Title>
@@ -54,16 +56,15 @@ const DockerRunCommand = () => {
     >
       <SummaryData></SummaryData>
       <VendorNotes></VendorNotes>
-      <Tips
+      <Typography.Paragraph
         style={{
-          marginBottom: 8,
-          color: 'var(--ant-color-text)'
+          marginBottom: 8
         }}
       >
         {intl.formatMessage({
           id: 'clusters.create.addCommand.tips'
         })}
-      </Tips>
+      </Typography.Paragraph>
       <AddWorkerCommand
         registrationInfo={registrationInfo}
         advertisAddress={

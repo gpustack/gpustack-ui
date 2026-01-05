@@ -1,11 +1,12 @@
 import { useIntl } from '@umijs/max';
+import { Typography } from 'antd';
 import RegisterClusterInner from '../register-cluster-inner';
 import { useAddWorkerContext } from './add-worker-context';
-import { StepNamesMap } from './config';
-import { Tips, Title } from './constainers';
+import { AddWorkerStepProps, StepNamesMap } from './config';
+import { Title } from './constainers';
 import StepCollapse from './step-collapse';
 
-const K8sRunCommand = () => {
+const K8sRunCommand: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const { registrationInfo, stepList } = useAddWorkerContext();
   const intl = useIntl();
 
@@ -13,6 +14,7 @@ const K8sRunCommand = () => {
 
   return (
     <StepCollapse
+      disabled={disabled}
       name={StepNamesMap.RunCommand}
       title={
         <Title>
@@ -21,16 +23,15 @@ const K8sRunCommand = () => {
         </Title>
       }
     >
-      <Tips
+      <Typography.Paragraph
         style={{
-          marginBottom: 8,
-          color: 'var(--ant-color-text)'
+          marginBottom: 8
         }}
       >
         {intl.formatMessage({
           id: 'clusters.create.addCommand.tips'
         })}
-      </Tips>
+      </Typography.Paragraph>
       <RegisterClusterInner registrationInfo={registrationInfo} />
     </StepCollapse>
   );

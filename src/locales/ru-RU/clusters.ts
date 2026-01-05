@@ -116,9 +116,11 @@ export default {
     'Укажите URL сервера, доступный из вашего облачного провайдера.',
   'clusters.form.setDefault': 'Установить по умолчанию',
   'clusters.form.setDefault.tips':
-    'Использовать по умолчанию для развертывания.'
+    'Использовать по умолчанию для развертывания.',
+  'clusters.addworker.noClusters': 'No available clusters'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
+// 2. 'clusters.addworker.noClusters': 'No available clusters'
 // ================================================================

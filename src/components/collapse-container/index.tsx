@@ -27,6 +27,12 @@ const CardStyled = styled(Card)`
       }
     }
   }
+  &.disabled {
+    .ant-card-head {
+      cursor: not-allowed;
+      background-color: var(--ant-color-fill-quaternary) !important;
+    }
+  }
 `;
 
 const useStyles = createStyles(({ css, token }) => {

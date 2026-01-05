@@ -1,7 +1,7 @@
 import { useIntl } from '@umijs/max';
 import { Input, Switch } from 'antd';
 import React from 'react';
-import { SwitchWrapper, Tips } from './constainers';
+import { SwitchWrapper } from './constainers';
 
 const NetworkConfig = () => {
   const intl = useIntl();
@@ -28,9 +28,6 @@ const NetworkConfig = () => {
           }
         ></Switch>
       </div>
-      <Tips>
-        Enter the NIC name to use for distributed inference (e.g., mlx5_0).
-      </Tips>
       {networkInterface.enable && (
         <>
           <Input

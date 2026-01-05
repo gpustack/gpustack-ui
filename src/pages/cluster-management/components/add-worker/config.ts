@@ -71,3 +71,7 @@ export type SummaryDataMap = {
 };
 
 export type SummaryDataKey = keyof SummaryDataKeys;
+
+export interface AddWorkerStepProps {
+  disabled?: boolean;
+}

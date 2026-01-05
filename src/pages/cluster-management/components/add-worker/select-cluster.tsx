@@ -1,13 +1,13 @@
 import BaseSelect from '@/components/seal-form/base/select';
 import { useIntl } from '@umijs/max';
-import { Spin } from 'antd';
+import { Spin, Typography } from 'antd';
 import { useEffect } from 'react';
 import { useAddWorkerContext } from './add-worker-context';
-import { StepNamesMap } from './config';
+import { AddWorkerStepProps, StepNamesMap } from './config';
 import { Title } from './constainers';
 import StepCollapse from './step-collapse';
 
-const SelectCluster = () => {
+const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const {
     clusterList,
     clusterLoading,
@@ -42,6 +42,7 @@ const SelectCluster = () => {
 
   return (
     <StepCollapse
+      disabled={disabled}
       name={StepNamesMap.SelectCluster}
       title={
         <div>
@@ -65,6 +66,11 @@ const SelectCluster = () => {
           onChange={onClusterChange}
           style={{ width: '100%' }}
         />
+        {!clusterLoading && !clusterList?.length && (
+          <Typography.Text type="danger">
+            {intl.formatMessage({ id: 'clusters.addworker.noClusters' })}
+          </Typography.Text>
+        )}
       </Spin>
     </StepCollapse>
   );

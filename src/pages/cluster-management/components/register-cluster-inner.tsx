@@ -7,7 +7,7 @@ type AddModalProps = {
     token: string;
     image: string;
     server_url: string;
-    cluster_id: number;
+    cluster_id: number | null;
   };
 };
 const AddCluster: React.FC<AddModalProps> = ({ registrationInfo }) => {

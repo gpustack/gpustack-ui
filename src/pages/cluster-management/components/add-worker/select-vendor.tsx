@@ -6,11 +6,11 @@ import { useIntl } from '@umijs/max';
 import React, { useEffect } from 'react';
 import SupportedGPUs from '../support-gpus';
 import { useAddWorkerContext } from './add-worker-context';
-import { StepNamesMap } from './config';
+import { AddWorkerStepProps, StepNamesMap } from './config';
 import { Title } from './constainers';
 import StepCollapse from './step-collapse';
 
-const SelectVendor = () => {
+const SelectVendor: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   const { stepList, registerField, updateField } = useAddWorkerContext();
   const intl = useIntl();
 
@@ -52,6 +52,7 @@ const SelectVendor = () => {
 
   return (
     <StepCollapse
+      disabled={disabled}
       name={StepNamesMap.SelectGPU}
       title={
         <Title>

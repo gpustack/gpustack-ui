@@ -48,7 +48,7 @@ export const SwitchWrapper = styled.div`
 
 export const Tips = styled.div`
   margin-top: 0px;
-  color: var(--ant-color-text-secondary);
+  color: var(--ant-color-text-tertiary);
 `;
 
 export const NotesWrapper = styled.ol`

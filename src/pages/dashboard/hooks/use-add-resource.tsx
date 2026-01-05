@@ -2,7 +2,6 @@ import { clusterSessionAtom } from '@/atoms/clusters';
 import { hideModalTemporarilyAtom } from '@/atoms/settings';
 import IconFont from '@/components/icon-font';
 import ScrollerModal from '@/components/scroller-modal/index';
-import { PageAction } from '@/config';
 import useUserSettings from '@/hooks/use-user-settings';
 import useClusterList from '@/pages/cluster-management/hooks/use-cluster-list';
 import { useIntl, useNavigate } from '@umijs/max';
@@ -105,9 +104,7 @@ export default function useAddResource(options?: { onCreated?: () => void }) {
         firstAddCluster: true
       });
 
-      navigate(
-        `/cluster-management/clusters/create?action=${PageAction.CREATE}`
-      );
+      navigate(`/cluster-management/clusters/list`);
       return;
     }
 

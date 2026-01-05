@@ -1,4 +1,4 @@
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button } from 'antd';
 import styled from 'styled-components';
@@ -37,10 +37,14 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
     onNext();
   };
   return (
-    <Title style={{ padding: '16px 24px 32px' }}>
+    <Title style={{ padding: '16px 24px 24px' }}>
       <div className="flex-center gap-20">
         {showButtons.previous && (
-          <Button type="default" icon={<LeftOutlined />} onClick={onPrevious}>
+          <Button
+            type="default"
+            icon={<ArrowLeftOutlined />}
+            onClick={onPrevious}
+          >
             {intl.formatMessage({ id: 'common.button.prev' })}
           </Button>
         )}
@@ -51,7 +55,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
             style={{ minWidth: 100 }}
           >
             {intl.formatMessage({ id: 'common.button.next' })}
-            <RightOutlined />
+            <ArrowRightOutlined />
           </Button>
         )}
         {showButtons.skip && (

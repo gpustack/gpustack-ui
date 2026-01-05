@@ -1,6 +1,5 @@
 import { clusterSessionAtom } from '@/atoms/clusters';
 import IconFont from '@/components/icon-font';
-import { PageAction } from '@/config';
 import NoResult from '@/pages/_components/no-result';
 import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
@@ -54,9 +53,7 @@ const useNoResourceResult = (props: {
         firstAddCluster: true
       });
 
-      navigate(
-        `/cluster-management/clusters/create?action=${PageAction.CREATE}`
-      );
+      navigate(`/cluster-management/clusters/list`);
       return;
     }
 

@@ -127,12 +127,7 @@ export default (props: any) => {
   const { clientRoutes } = useAppData();
   const requestResourceRef = useRef<boolean>(false);
 
-  const {
-    setLoadingStatus,
-    fetchResourceData,
-    NoResourceModal,
-    loadingStatus
-  } = useAddResource({
+  const { fetchResourceData, NoResourceModal } = useAddResource({
     onCreated() {
       requestResourceRef.current = false;
     }

@@ -1,4 +1,3 @@
-import PageTools from '@/components/page-tools';
 import { PageActionType } from '@/config/types';
 import { useIntl } from '@umijs/max';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
@@ -40,7 +39,7 @@ const BasicForm = forwardRef((props: BasicFormProps, ref) => {
 
   return (
     <div>
-      <PageTools
+      {/* <PageTools
         marginBottom={16}
         left={
           <Title>
@@ -48,7 +47,7 @@ const BasicForm = forwardRef((props: BasicFormProps, ref) => {
           </Title>
         }
         marginTop={0}
-      ></PageTools>
+      ></PageTools> */}
       <ClusterForm
         provider={provider}
         action={action}

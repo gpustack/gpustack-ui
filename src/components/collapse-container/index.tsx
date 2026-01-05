@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 const CardStyled = styled(Card)`
   box-shadow: none !important;
+  background-color: none;
   &.isOpen {
     .ant-card-head {
       border-bottom: 1px solid var(--ant-color-border-secondary);

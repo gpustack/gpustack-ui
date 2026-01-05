@@ -3,6 +3,7 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl, useSearchParams } from '@umijs/max';
+import { Typography } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -29,6 +30,8 @@ import useSystemConfig from './services/use-system-config';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
 
+const { Title, Text } = Typography;
+
 const Container = styled.div`
   width: 100%;
   display: flex;
@@ -41,14 +44,10 @@ const Content = styled.div`
 `;
 
 const StepsWrapper = styled.div`
-  width: 230px;
+  width: 240px;
   padding-inline: 24px;
   padding-block: 16px;
-  // background-color: var(--ant-color-fill-quaternary);
   border-right: 1px solid var(--ant-color-split);
-  .ant-steps.ant-steps-vertical {
-    height: 600px;
-  }
 `;
 
 const MainWrapper = styled.div`
@@ -308,14 +307,15 @@ const ClusterCreate: React.FC<{
   };
 
   const handleCancel = () => {
-    if (clusterSession?.firstAddCluster) {
-      setClusterSession({
-        firstAddCluster: false,
-        firstAddWorker: false
-      });
-      onClose?.();
-      return;
-    }
+    // TODO: delete it if created by drawer
+    // if (clusterSession?.firstAddCluster) {
+    //   setClusterSession({
+    //     firstAddCluster: false,
+    //     firstAddWorker: false
+    //   });
+    //   onClose?.();
+    //   return;
+    // }
     onClose?.();
   };
 
@@ -326,7 +326,7 @@ const ClusterCreate: React.FC<{
       </StepsWrapper>
       <ColumnWrapper
         styles={{
-          container: { paddingTop: 16, paddingBottom: 56 }
+          container: { paddingTop: 16, paddingBottom: 16 }
         }}
         footer={
           <FooterButtons
@@ -340,7 +340,13 @@ const ClusterCreate: React.FC<{
           />
         }
       >
-        <div style={{ flex: 1 }}>
+        <Title level={5} style={{ marginBottom: 8 }}>
+          {steps[currentStep]?.subTitle || steps[currentStep]?.title}
+        </Title>
+        <Text type="secondary">
+          {steps[currentStep]?.description || steps[currentStep]?.content}
+        </Text>
+        <div style={{ flex: 1, marginTop: 32 }}>
           {currentStep === startStep && (
             <ProviderCatalog
               groupIcons={{

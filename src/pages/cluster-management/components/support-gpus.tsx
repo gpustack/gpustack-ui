@@ -3,7 +3,8 @@ import CambriconPNG from '@/assets/logo/cambricon.png';
 import hyponPNG from '@/assets/logo/hygon.png';
 import iluvatarWEBP from '@/assets/logo/Iluvatar.png';
 import metaxLogo from '@/assets/logo/metax.png';
-import moorePNG from '@/assets/logo/moore _threads.png';
+import mooreLogo from '@/assets/logo/moore-logo.png';
+import nvidiaLogo from '@/assets/logo/nvidia.png';
 import IconFont from '@/components/icon-font';
 import {
   AddWorkerDockerNotes,
@@ -15,21 +16,45 @@ import ProviderCatalog from './provider-catalog';
 
 const Box = styled.div`
   .template-card-wrapper {
+    position: relative;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    &.active {
+      background-color: var(--ant-color-fill-tertiary);
+    }
+    .template-card-icon {
+      margin-right: 0;
+    }
     .template-card-inner {
       line-height: 1;
+      flex-direction: row;
+      height: auto;
+      width: 0;
+      overflow: visible;
       .template-card-content {
         font-size: 13px;
       }
     }
+    .extra {
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      padding: 2px;
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 400;
+      background-color: var(--ant-blue-1);
+      color: var(--ant-color-info);
+    }
   }
 `;
 
-const ProviderImage = ({ src, showBg }: { src: string; showBg?: boolean }) => {
+const ProviderImage = ({ src, height }: { src: string; height?: number }) => {
   return (
     <img
       src={src}
       style={{
-        width: 32,
+        height: height || 20,
         objectFit: 'contain'
       }}
     />
@@ -52,16 +77,18 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   const supportedHardPlatforms = [
     {
       label: 'NVIDIA',
+      hiddenTitle: true,
       value: GPUDriverMap.NVIDIA,
       description: '',
       key: GPUDriverMap.NVIDIA,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#nvidia-gpu',
-      icon: <IconFont type="icon-nvidia2" style={{ fontSize: 32 }} />
+      icon: <ProviderImage src={nvidiaLogo} height={20} />
     },
     {
       label: 'AMD',
+      hiddenTitle: true,
       description: '',
       value: GPUDriverMap.AMD,
       key: GPUDriverMap.AMD,
@@ -70,70 +97,80 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#amd-gpu',
       icon: (
         <IconFont
-          type="icon-amd"
-          style={{ fontSize: 32, color: 'var(--ant-color-text)' }}
+          type="icon-amd-logo"
+          style={{ fontSize: 60, color: 'var(--ant-color-text)' }}
         />
       )
     },
     {
       label: intl.formatMessage({ id: 'vendor.ascend' }),
+      hiddenTitle: true,
       description: '',
       value: GPUDriverMap.ASCEND,
       key: GPUDriverMap.ASCEND,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ASCEND],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#ascend-npu',
-      icon: <ProviderImage src={ascendLogo} showBg />
+      icon: <ProviderImage src={ascendLogo} height={32} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.hygon' }),
+      hiddenTitle: true,
       description: '',
       value: GPUDriverMap.HYGON,
       key: GPUDriverMap.HYGON,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.HYGON],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#hygon-dcu',
-      icon: <ProviderImage src={hyponPNG} />
+      icon: <ProviderImage src={hyponPNG} height={20} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.moorthreads' }),
-      description: 'common.tag.experimental',
+      hiddenTitle: true,
+      // description: 'common.tag.experimental',
+      extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.MOORE_THREADS,
       key: GPUDriverMap.MOORE_THREADS,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.MOORE_THREADS],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#mthreads-gpu',
-      icon: <ProviderImage src={moorePNG} />
+      icon: <ProviderImage src={mooreLogo} height={26} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.iluvatar' }),
-      description: 'common.tag.experimental',
+      hiddenTitle: true,
+      // description: 'common.tag.experimental',
+      extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.ILUVATAR,
       key: GPUDriverMap.ILUVATAR,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ILUVATAR],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#iluvatar-gpu',
-      icon: <ProviderImage src={iluvatarWEBP} showBg />
+      icon: <ProviderImage src={iluvatarWEBP} height={26} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.cambricon' }),
-      description: 'common.tag.experimental',
+      hiddenTitle: true,
+      // description: 'common.tag.experimental',
+      extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.CAMBRICON,
       key: GPUDriverMap.CAMBRICON,
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.CAMBRICON],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#cambricon-mlu',
-      icon: <ProviderImage src={CambriconPNG} />
+      icon: <ProviderImage src={CambriconPNG} height={26} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.metax' }),
-      description: 'common.tag.experimental',
+      hiddenTitle: true,
+      // description: 'common.tag.experimental',
+      extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.METAX,
       key: GPUDriverMap.METAX,
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#metax-gpu',
       notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
-      icon: <ProviderImage src={metaxLogo} showBg />
+      icon: <ProviderImage src={metaxLogo} height={20} />
     }
   ];
 
@@ -145,7 +182,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
         current={current}
         dataList={supportedHardPlatforms}
         clickable={clickable}
-        cols={3}
+        cols={4}
       />
     </Box>
   );

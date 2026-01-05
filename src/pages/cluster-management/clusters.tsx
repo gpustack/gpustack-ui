@@ -291,6 +291,14 @@ const Clusters: React.FC = () => {
     }
   }, [clusterSession, dataSource.loadend, dataSource.dataList]);
 
+  useEffect(() => {
+    if (clusterSession?.firstAddCluster && dataSource.loadend) {
+      openClusterModal();
+      // reset session
+      setClusterSession(null);
+    }
+  }, [clusterSession, dataSource.loadend]);
+
   const renderChildren = (
     list: any,
     options: { parent?: any; [key: string]: any }

@@ -21,6 +21,8 @@ const Wrapper = styled.div<{ $token: any }>`
   --ant-table-row-selected-hover-bg: ${(props) =>
     props.$token.rowSelectedHoverBg};
   --ant-table-row-hover-bg: ${(props) => props.$token.rowHoverBg};
+  --ant-table-header-icon-color: ${(props) =>
+    props.$token.tableHeaderIconColor};
 `;
 
 const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
@@ -143,10 +145,13 @@ const SealTable: React.FC<SealTableProps & { pagination: PaginationProps }> = (
     pagination?.onShowSizeChange?.(current, size);
   };
 
+  console.log('token.table', token);
+
   return (
     <Wrapper
       $token={{
         ...token.Table,
+        tableHeaderIconColor: token.colorTextQuaternary,
         colorBorderSecondary: token.colorBorderSecondary
       }}
     >

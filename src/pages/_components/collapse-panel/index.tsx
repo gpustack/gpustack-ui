@@ -13,10 +13,7 @@ const CollapseInner = styled(Collapse)`
     border-radius: var(--border-radius-base) !important;
     font-size: 14px !important;
     font-weight: 600 !important;
-
-    &:hover {
-      background-color: var(--ant-color-fill-tertiary) !important;
-    }
+    background-color: var(--ant-color-fill-tertiary) !important;
   }
 
   .ant-collapse-body {

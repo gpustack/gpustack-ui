@@ -29,7 +29,7 @@ const Title = styled.span`
   display: flex;
   gap: 8px;
   align-items: center;
-  font-weight: 700;
+  font-weight: 500;
   font-size: 14px;
   margin-bottom: 16px;
   .icon {
@@ -100,6 +100,9 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   }, [dataList]);
 
   const renderTitle = (item: any) => {
+    if (item.hiddenTitle) {
+      return <>{item.extra && <span className="extra">{item.extra}</span>}</>;
+    }
     return (
       <Header>
         <span className="title">
@@ -110,6 +113,7 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
             {intl.formatMessage({ id: item.description })}
           </span>
         )}
+        {item.extra && <span className="extra">{item.extra}</span>}
       </Header>
     );
   };

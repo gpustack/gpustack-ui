@@ -1,7 +1,7 @@
 import AutoTooltip from '@/components/auto-tooltip';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import { modelNameReg } from '@/config';
+import { modelNameReg, PageAction } from '@/config';
 import { GPUSTACK_API_BASE_URL } from '@/config/settings';
 import useAppUtils from '@/hooks/use-app-utils';
 import {
@@ -13,6 +13,7 @@ import { Form } from 'antd';
 import { useMemo } from 'react';
 import styled from 'styled-components';
 import { sourceOptions } from '../config';
+import { useFormContext } from '../config/form-context';
 import { FormData } from '../config/types';
 import BackendForm from './backend';
 import CatalogFrom from './catalog';
@@ -94,10 +95,19 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
     onSourceChange
   } = props;
   const intl = useIntl();
+  const form = Form.useFormInstance();
   const { getRuleMessage } = useAppUtils();
+  const { onValuesChange, action } = useFormContext();
 
   const handleOnSourceChange = (val: string) => {
     onSourceChange?.(val);
+  };
+
+  const handleNameBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (action === PageAction.EDIT) {
+      const value = e.target.value;
+      onValuesChange?.({ name: value }, form.getFieldsValue());
+    }
   };
 
   const clusterOptions = useMemo(() => {
@@ -164,6 +174,7 @@ const BasicForm: React.FC<BasicFormProps> = (props) => {
         ]}
       >
         <SealInput.Input
+          onBlur={handleNameBlur}
           description={intl.formatMessage({ id: 'models.form.rules.name' })}
           label={intl.formatMessage({
             id: 'common.table.name'

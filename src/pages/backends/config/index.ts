@@ -211,8 +211,8 @@ export const yamlTemplate = `# ----------------------------------------
 #   - run_command: optional
 #   - entrypoint: optional
 #   - custom_framework:
-#       - optional
-#       - choose from: ${Object.values(GPUDriverMap).join(', ')}, CPU
+#       - required
+#       - choose from: ${Object.values(GPUDriverMap).join(', ')}, cpu
 
 backend_name: vllm-custom
 description: this is my custom vllm backend
@@ -231,5 +231,5 @@ version_configs:
     image_name: lm/vllm:test
     entrypoint: 
     run_command:
-    custom_framework:
+    custom_framework: rocm
   `;

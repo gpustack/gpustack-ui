@@ -411,6 +411,9 @@ const Clusters: React.FC = () => {
       ></AddPool>
       <DeleteModal ref={modalRef}></DeleteModal>
       <ClusterModal
+        title={intl.formatMessage({
+          id: 'menu.clusterManagement.clusterCreate'
+        })}
         open={clusterModalStatus.open}
         onClose={closeClusterModal}
       ></ClusterModal>

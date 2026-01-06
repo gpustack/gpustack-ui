@@ -1,4 +1,5 @@
 import { CheckCircleFilled, CheckCircleOutlined } from '@ant-design/icons';
+import { Steps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -13,6 +14,12 @@ const Box = styled.div`
     color: var(--ant-color-text-tertiary);
     font-size: 14px;
     margin-bottom: 24px;
+  }
+  .ant-steps {
+    --steps-title-font-size: 14px;
+    .ant-steps-item {
+      --steps-item-base-width: 20px;
+    }
   }
 `;
 
@@ -86,19 +93,30 @@ const ClusterSteps: React.FC<{
 }> = (props) => {
   const { steps, currentStep = 0, onChange } = props;
 
+  const visibleSteps = steps.filter((step) => !step.hideInSteps);
   return (
     <Box>
-      <div className="indicates">
-        STEP {currentStep + 1} OF {steps.length}
-      </div>
       <Wrapper>
-        {steps.map((item, index) => (
+        {/* {visibleSteps.map((item, index) => (
           <StepsItem
             key={index}
             active={currentStep === index}
             item={item}
           ></StepsItem>
-        ))}
+        ))} */}
+        <Steps
+          current={currentStep}
+          items={visibleSteps}
+          type="panel"
+          styles={{
+            item: {
+              paddingBlock: 0
+            },
+            itemRail: {
+              borderColor: 'var(--ant-color-split)'
+            }
+          }}
+        ></Steps>
       </Wrapper>
     </Box>
   );

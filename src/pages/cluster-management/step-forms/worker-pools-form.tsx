@@ -179,7 +179,7 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
   return (
     <div>
       <PageTools
-        marginBottom={22}
+        marginBottom={12}
         marginTop={0}
         // left={
         //   <span className="flex-center gap-16">
@@ -189,7 +189,12 @@ const WorkerPoolsForm = forwardRef((props: WorkerPoolsFormProps, ref) => {
         //   </span>
         // }
         left={
-          <Button onClick={handleAddPool} type="link" icon={<PlusOutlined />}>
+          <Button
+            onClick={handleAddPool}
+            type="link"
+            icon={<PlusOutlined />}
+            style={{ paddingInline: 0 }}
+          >
             {intl.formatMessage({ id: 'clusters.button.addNodePool' })}
           </Button>
         }

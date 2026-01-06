@@ -414,7 +414,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
 
     // TODO
-    // fetchContextLength({ ...params, source });
+    fetchContextLength({ ...params, source });
   }, [isGGUF, source, localPath, modelScopeModelId, huggingfaceRepoId]);
 
   return (
@@ -480,7 +480,8 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
               initialValues?.speculative_config?.ngram_max_match_length || 10
           },
           ...initialValues,
-          backend_version: initialValues?.backend_version || null
+          backend_version: initialValues?.backend_version || null,
+          max_context_len: initialValues?.max_context_len || 2048
         }}
       >
         <BasicForm

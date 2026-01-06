@@ -58,7 +58,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
             <ArrowRightOutlined />
           </Button>
         )}
-        {showButtons.skip && (
+        {showButtons.done && (
           <Button type="primary" onClick={handleCancel}>
             {intl.formatMessage({ id: 'common.button.done' })}
           </Button>
@@ -70,8 +70,7 @@ const FooterButtons: React.FC<FooterButtonsProps> = (props) => {
             style={{ minWidth: 88 }}
             loading={loading}
           >
-            {/* {intl.formatMessage({ id: 'common.button.save' })} */}
-            Create & Continue
+            {intl.formatMessage({ id: 'common.button.save' })}
           </Button>
         )}
       </div>

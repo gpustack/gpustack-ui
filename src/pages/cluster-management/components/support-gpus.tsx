@@ -44,7 +44,6 @@ const Box = styled.div`
       font-size: 10px;
       font-weight: 400;
       background-color: var(--ant-blue-1);
-      color: var(--ant-color-info);
     }
   }
 `;

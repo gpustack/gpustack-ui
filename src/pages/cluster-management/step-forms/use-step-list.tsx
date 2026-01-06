@@ -15,9 +15,9 @@ export default function useStepList() {
   return useMemo(
     () => [
       {
-        title: intl.formatMessage({ id: 'clusters.table.provider' }),
-        content: 'Choose where your cluster will run.',
-        subTitle: 'Select Provider',
+        title: intl.formatMessage({ id: 'clusters.create.selectProvider' }),
+        content: '',
+        subTitle: '',
         description:
           'Choose the environment where your cluster will be deployed.',
         showButtons: (provider?: ProviderType) => {
@@ -25,7 +25,8 @@ export default function useStepList() {
             previous: false,
             next: true,
             save: false,
-            skip: false
+            skip: false,
+            done: false
           };
         },
         defaultShow: true,
@@ -35,7 +36,7 @@ export default function useStepList() {
       },
       {
         title: intl.formatMessage({ id: 'common.title.config' }),
-        content: 'Configure your cluster settings.',
+        content: '',
         description:
           'Set the cluster name, description, or other essential parameters in advanced settings.',
         showButtons: (provider?: ProviderType) => {
@@ -43,7 +44,8 @@ export default function useStepList() {
             previous: true,
             next: provider === ProviderValueMap.DigitalOcean,
             save: provider !== ProviderValueMap.DigitalOcean,
-            skip: false
+            skip: false,
+            done: false
           };
         },
         defaultShow: true,
@@ -53,13 +55,14 @@ export default function useStepList() {
       },
       {
         title: intl.formatMessage({ id: 'clusters.button.addNodePool' }),
-        content: 'Add worker pools to your cluster.',
+        content: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: true,
             next: false,
             save: true,
-            skip: false
+            skip: false,
+            done: false
           };
         },
         defaultShow: false,
@@ -69,19 +72,38 @@ export default function useStepList() {
         beforeNext: handleBack
       },
       {
-        title: intl.formatMessage({ id: 'resources.button.create' }),
-        content: 'The cluster is created successfully.',
-        description:
-          'The cluster is now set up and you can add workers to it. You can also add workers later from the cluster list.',
+        title: 'Completed',
+        content: '',
+        description: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: false,
             next: false,
             save: false,
-            skip: true
+            skip: true,
+            done: false
           };
         },
         defaultShow: false,
+        showForms: [],
+        showModules: [moduleMap.SuccessResult],
+        providers: [ProviderValueMap.Docker, ProviderValueMap.Kubernetes]
+      },
+      {
+        title: intl.formatMessage({ id: 'resources.button.create' }),
+        content: '',
+        description: '',
+        showButtons: (provider?: ProviderType) => {
+          return {
+            previous: false,
+            next: false,
+            save: false,
+            skip: false,
+            done: true
+          };
+        },
+        defaultShow: false,
+        hideInSteps: true,
         showForms: [],
         showModules: [moduleMap.AddWorkerStep],
         providers: [ProviderValueMap.Docker]
@@ -89,17 +111,18 @@ export default function useStepList() {
       {
         title: intl.formatMessage({ id: 'clusters.button.register' }),
         content: '',
-        description:
-          'Register an existing Kubernetes cluster to manage its workers. You can also register a cluster later from the cluster list.',
+        description: '',
         showButtons: (provider?: ProviderType) => {
           return {
             previous: false,
             next: false,
             save: false,
-            skip: true
+            skip: false,
+            done: true
           };
         },
         defaultShow: false,
+        hideInSteps: true,
         showForms: [],
         showModules: [moduleMap.AddWorkerStep],
         providers: [ProviderValueMap.Kubernetes]

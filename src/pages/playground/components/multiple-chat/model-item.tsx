@@ -261,7 +261,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
                     placement: 'right'
                   }}
                   minWidth={60}
-                  maxWidth={180}
+                  maxWidth={220}
                 >
                   {data.label}
                 </AutoTooltip>
@@ -275,7 +275,7 @@ const ModelItem: React.FC<ModelItemProps> = forwardRef((props, ref) => {
                     placement: 'right'
                   }}
                   minWidth={60}
-                  maxWidth={180}
+                  maxWidth={220}
                 >
                   {data.label}
                 </AutoTooltip>

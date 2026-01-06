@@ -1,4 +1,5 @@
 import { CheckCircleFilled } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
 import { Button, Flex, Result } from 'antd';
 import React from 'react';
 import { ProviderValueMap } from '../config';
@@ -8,14 +9,19 @@ const SuccessResult: React.FC<{
   onSkip: () => void;
   onAddWorker: () => void;
 }> = ({ provider, onSkip, onAddWorker }) => {
-  const k8sTips =
-    'Next, register this Kubernetes cluster. You can also skip this step and register it later from the cluster list.';
+  const intl = useIntl();
+
+  const k8sTips = (
+    <div className="flex-column">
+      <span>{intl.formatMessage({ id: 'clusters.create.k8sTips1' })}</span>
+      <span>{intl.formatMessage({ id: 'clusters.create.k8sTips2' })}</span>
+    </div>
+  );
+
   const dockerTips = (
     <div className="flex-column">
-      <span>Next, add worker to this cluster.</span>
-      <span>
-        You can also skip this step and add them later from the cluster list.
-      </span>
+      <span>{intl.formatMessage({ id: 'clusters.create.dockerTips1' })}</span>
+      <span>{intl.formatMessage({ id: 'clusters.create.dockerTips2' })}</span>
     </div>
   );
 
@@ -33,17 +39,17 @@ const SuccessResult: React.FC<{
         />
       }
       status="success"
-      title="Cluster Created Successfully!"
+      title={intl.formatMessage({ id: 'clusters.create.complete.tips' })}
       subTitle={provider === ProviderValueMap.Kubernetes ? k8sTips : dockerTips}
       extra={[
         <Flex gap={16} justify="center" key="buttons">
-          <Button key="buy" onClick={onSkip}>
-            Skip for now
+          <Button key="skip" onClick={onSkip}>
+            {intl.formatMessage({ id: 'clusters.create.skipfornow' })}
           </Button>
-          <Button type="primary" key="console" onClick={onAddWorker}>
+          <Button type="primary" key="add" onClick={onAddWorker}>
             {provider === ProviderValueMap.Kubernetes
-              ? 'Register Cluster'
-              : 'Add Worker'}
+              ? intl.formatMessage({ id: 'clusters.button.register' })
+              : intl.formatMessage({ id: 'resources.button.create' })}
           </Button>
         </Flex>
       ]}

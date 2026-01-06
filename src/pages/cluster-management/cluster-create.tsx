@@ -3,7 +3,6 @@ import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
 import { useIntl, useSearchParams } from '@umijs/max';
-import { Typography } from 'antd';
 import { useAtom } from 'jotai';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -29,8 +28,6 @@ import { ClusterFormData } from './config/types';
 import useSystemConfig from './services/use-system-config';
 import { moduleMap, moduleRegistry } from './step-forms/module-registry';
 import useStepList from './step-forms/use-step-list';
-
-const { Title, Text } = Typography;
 
 const Container = styled.div`
   width: 100%;

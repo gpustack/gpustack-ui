@@ -117,10 +117,24 @@ export default {
   'clusters.form.setDefault': 'Установить по умолчанию',
   'clusters.form.setDefault.tips':
     'Использовать по умолчанию для развертывания.',
-  'clusters.addworker.noClusters': 'No available clusters'
+  'clusters.addworker.noClusters': 'No available clusters',
+  'clusters.create.complete.tips': 'Cluster created successfully!',
+  'clusters.create.complete': 'Completed',
+  'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
+  'clusters.create.dockerTips2':
+    'You can also skip this step and add them later from the cluster list.',
+  'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
+  'clusters.create.k8sTips2':
+    'You can also skip this step and register it later from the cluster list.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
-// 2. 'clusters.addworker.noClusters': 'No available clusters'
+// 2. 'clusters.addworker.noClusters': 'No available clusters',
+// 3. 'clusters.create.complete.tips': 'Cluster created successfully!',
+// 4. 'clusters.create.complete': 'Completed',
+// 5. 'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
+// 6. 'clusters.create.dockerTips2': 'You can also skip this step and add them later from the cluster list.',
+// 7. 'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
+// 8. 'clusters.create.k8sTips2': 'You can also skip this step and register it later from the cluster list.'
 // ================================================================

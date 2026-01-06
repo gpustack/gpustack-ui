@@ -113,5 +113,11 @@ export default {
   'clusters.form.serverUrl.tips': '指定可从您的云服务提供商访问的服务器地址。',
   'clusters.form.setDefault': '设为默认',
   'clusters.form.setDefault.tips': '部署时的默认集群。',
-  'clusters.addworker.noClusters': '无可用集群'
+  'clusters.addworker.noClusters': '无可用集群',
+  'clusters.create.complete.tips': '集群创建成功！',
+  'clusters.create.complete': '完成',
+  'clusters.create.dockerTips1': '接下来，为该集群添加节点。',
+  'clusters.create.dockerTips2': '你也可以跳过此步骤，稍后在集群列表中添加。',
+  'clusters.create.k8sTips1': '接下来，注册已有的 Kubernetes 集群。',
+  'clusters.create.k8sTips2': '你也可以跳过此步骤，稍后在集群列表中进行注册。'
 };

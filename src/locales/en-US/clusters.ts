@@ -116,5 +116,13 @@ export default {
     'Specify the server URL accessible from your cloud provider.',
   'clusters.form.setDefault': 'Set as Default',
   'clusters.form.setDefault.tips': 'Default for deployment.',
-  'clusters.addworker.noClusters': 'No available clusters'
+  'clusters.addworker.noClusters': 'No available clusters',
+  'clusters.create.complete.tips': 'Cluster created successfully!',
+  'clusters.create.complete': 'Completed',
+  'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
+  'clusters.create.dockerTips2':
+    'You can also skip this step and add them later from the cluster list.',
+  'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
+  'clusters.create.k8sTips2':
+    'You can also skip this step and register it later from the cluster list.'
 };

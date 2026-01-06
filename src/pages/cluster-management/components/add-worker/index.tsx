@@ -1,4 +1,5 @@
-import ScrollerModal from '@/components/scroller-modal';
+import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import ColumnWrapper from '@/pages/_components/column-wrapper';
 import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
 import { useIntl } from '@umijs/max';
 import { Alert } from 'antd';
@@ -118,46 +119,55 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
   };
 
   return (
-    <ScrollerModal
+    <GSDrawer
       title={title}
       open={open}
-      centered={true}
-      onCancel={onCancel}
+      onClose={onCancel}
       destroyOnHidden={true}
-      closeIcon={true}
+      closeIcon={false}
       maskClosable={false}
       keyboard={false}
-      width={865}
-      style={{}}
-      maxContentHeight={'max(calc(100vh - 200px), 600px)'}
-      footer={
-        <Footer>
-          {addedCount > 0 && (
-            <Alert
-              style={{
-                textAlign: 'left',
-                borderColor: 'var(--ant-color-success)',
-                width: '100%'
-              }}
-              type="success"
-              title={renderMessage(addedCount)}
-              closable
-            />
-          )}
-        </Footer>
-      }
+      styles={{
+        body: {
+          paddingBlock: 0
+        },
+        wrapper: { width: 865 }
+      }}
+      footer={false}
     >
-      <AddWorkerStep
-        onCancel={onCancel}
-        actionSource={'modal'}
-        stepList={stepList}
-        provider={provider}
-        clusterList={clusterList}
-        clusterLoading={clusterLoading}
-        onClusterChange={handleOnClusterChange}
-        registrationInfo={registrationInfo}
-      ></AddWorkerStep>
-    </ScrollerModal>
+      <ColumnWrapper
+        styles={{
+          container: { paddingBlock: 16 }
+        }}
+        footer={
+          <Footer style={{ paddingInline: 24, paddingBottom: 24 }}>
+            {addedCount > 0 && (
+              <Alert
+                style={{
+                  textAlign: 'left',
+                  borderColor: 'var(--ant-color-success)',
+                  width: '100%'
+                }}
+                type="success"
+                title={renderMessage(addedCount)}
+                closable
+              />
+            )}
+          </Footer>
+        }
+      >
+        <AddWorkerStep
+          onCancel={onCancel}
+          actionSource={'modal'}
+          stepList={stepList}
+          provider={provider}
+          clusterList={clusterList}
+          clusterLoading={clusterLoading}
+          onClusterChange={handleOnClusterChange}
+          registrationInfo={registrationInfo}
+        ></AddWorkerStep>
+      </ColumnWrapper>
+    </GSDrawer>
   );
 };
 

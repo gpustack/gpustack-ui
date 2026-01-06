@@ -1,8 +1,4 @@
-import {
-  clusterListAtom,
-  resourceOverviewAtom,
-  workerListAtom
-} from '@/atoms/models';
+import { resourceOverviewAtom } from '@/atoms/models';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { queryWorkersList } from '@/pages/resources/apis';
 import { useAtom } from 'jotai';
@@ -15,28 +11,6 @@ import { queryDashboardData } from '../../dashboard/apis';
  * @returns
  */
 export default function useClusterList() {
-  const [clusterList, setClusterList] = useState<
-    {
-      label: string;
-      value: number;
-      id: number;
-      state: string;
-      provider: string;
-    }[]
-  >([]);
-  const [workerList, setWorkerList] = useState<
-    {
-      cluster_id: number;
-      state: string;
-      label: string;
-      value: number;
-      id: number;
-      labels: { [key: string]: string };
-      name: string;
-    }[]
-  >([]);
-  const [clustersAtom, setClusterListAtom] = useAtom(clusterListAtom);
-  const [workersAtom, setWorkerListAtom] = useAtom(workerListAtom);
   const [resourceAtom, setResourceOverview] = useAtom(resourceOverviewAtom);
   const [resourceCount, setResourceCount] = useState<Record<string, any>>({
     cluster_count: 0,
@@ -77,21 +51,6 @@ export default function useClusterList() {
     }
   };
 
-  const fetchData = async () => {
-    const [clusters, workers] = await Promise.all([
-      fetchClusterList(),
-      fetchWorkerList()
-    ]);
-    setClusterList(clusters);
-    setWorkerList(workers);
-    setClusterListAtom(clusters);
-    setWorkerListAtom(workers);
-    return {
-      hasClusters: clusters.length > 0,
-      hasWorkers: workers.length > 0
-    };
-  };
-
   const fetchResource = async () => {
     try {
       const res = await queryDashboardData();
@@ -112,10 +71,6 @@ export default function useClusterList() {
   };
 
   return {
-    clusterList,
-    workerList,
-    clustersAtom,
-    workersAtom,
     resourceAtom,
     resourceCount,
     fetchResource,

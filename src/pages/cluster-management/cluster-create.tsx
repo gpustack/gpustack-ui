@@ -44,7 +44,7 @@ const Content = styled.div`
 `;
 
 const StepsWrapper = styled.div`
-  width: 240px;
+  width: 220px;
   padding-inline: 24px;
   padding-block: 16px;
   border-right: 1px solid var(--ant-color-split);
@@ -87,6 +87,8 @@ const ClusterCreate: React.FC<{
   } as ClusterFormData);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+  const [isAddWorkerStep, setIsAddWorkerStep] = useState<boolean>(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const formRefs: Record<string, any> = {
     [moduleMap.BasicForm]: useRef<any>(null),
@@ -238,6 +240,12 @@ const ClusterCreate: React.FC<{
     });
   };
 
+  // add worker or cluster registration step
+  const handleAddWorker = () => {
+    setIsAddWorkerStep(true);
+    onNext();
+  };
+
   /**
    * this function is used to render the modules in the current step, they are not forms
    * @returns
@@ -261,6 +269,8 @@ const ClusterCreate: React.FC<{
           }
           registrationInfo={registrationInfo}
           provider={extraData.provider}
+          onSkip={onClose}
+          onAddWorker={handleAddWorker}
         />
       ) : null;
     });
@@ -294,6 +304,7 @@ const ClusterCreate: React.FC<{
     const res = await createCluster({ data });
     const info = await queryClusterToken({ id: res.id });
     setSubmitLoading(false);
+    setIsComplete(true);
     setRegistrationInfo({
       ...info,
       cluster_id: res.id
@@ -307,23 +318,16 @@ const ClusterCreate: React.FC<{
   };
 
   const handleCancel = () => {
-    // TODO: delete it if created by drawer
-    // if (clusterSession?.firstAddCluster) {
-    //   setClusterSession({
-    //     firstAddCluster: false,
-    //     firstAddWorker: false
-    //   });
-    //   onClose?.();
-    //   return;
-    // }
     onClose?.();
   };
 
   return (
     <MainWrapper>
-      <StepsWrapper>
-        <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
-      </StepsWrapper>
+      {/* {!isAddWorkerStep && (
+        <StepsWrapper>
+          <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
+        </StepsWrapper>
+      )} */}
       <ColumnWrapper
         styles={{
           container: { paddingTop: 16, paddingBottom: 16 }
@@ -340,19 +344,24 @@ const ClusterCreate: React.FC<{
           />
         }
       >
-        <Title level={5} style={{ marginBottom: 8 }}>
-          {steps[currentStep]?.subTitle || steps[currentStep]?.title}
-        </Title>
-        <Text type="secondary">
-          {steps[currentStep]?.description || steps[currentStep]?.content}
-        </Text>
-        <div style={{ flex: 1, marginTop: 32 }}>
+        {/* {!isComplete && (
+          <div style={{ marginBottom: 24 }}>
+            <Title level={5} style={{ marginBottom: 8, fontSize: 14 }}>
+              {steps[currentStep]?.subTitle || steps[currentStep]?.title}
+            </Title>
+          </div>
+        )} */}
+        {!isAddWorkerStep && (
+          <div style={{ marginBottom: 32 }}>
+            <ClusterSteps
+              steps={steps}
+              currentStep={currentStep}
+            ></ClusterSteps>
+          </div>
+        )}
+        <div style={{ flex: 1 }}>
           {currentStep === startStep && (
             <ProviderCatalog
-              groupIcons={{
-                'clusters.create.provider.self': 'icon-server02',
-                'clusters.create.provider.cloud': 'icon-cloud'
-              }}
               cols={2}
               dataList={providerList}
               height={70}

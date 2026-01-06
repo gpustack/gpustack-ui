@@ -25,7 +25,10 @@ export default {
       cellFontSize: 14,
       rowSelectedHoverBg: '#1d1d1d',
       rowHoverBg: '#1d1d1d',
-      rowSelectedBg: 'transparent'
+      rowSelectedBg: 'transparent',
+      headerSortActiveBg: 'transparent',
+      headerSortHoverBg: 'transparent',
+      headerBg: 'none'
     },
     Button: {
       contentFontSizeLG: 14,

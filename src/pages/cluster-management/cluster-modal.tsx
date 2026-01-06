@@ -4,17 +4,22 @@ import ClusterCreate from './cluster-create';
 
 interface ClusterModalProps {
   open: boolean;
+  title: string;
   onClose: () => void;
 }
 
-const ClusterModal: React.FC<ClusterModalProps> = ({ open, onClose }) => {
+const ClusterModal: React.FC<ClusterModalProps> = ({
+  open,
+  onClose,
+  title
+}) => {
   const handleCancel = () => {
     onClose();
   };
 
   return (
     <GSDrawer
-      title={'Create Cluster'}
+      title={title}
       open={open}
       onClose={handleCancel}
       destroyOnHidden={true}
@@ -25,7 +30,7 @@ const ClusterModal: React.FC<ClusterModalProps> = ({ open, onClose }) => {
         body: {
           paddingBlock: 0
         },
-        wrapper: { width: 900 }
+        wrapper: { width: 700 }
       }}
       footer={false}
     >

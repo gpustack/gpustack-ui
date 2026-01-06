@@ -1,4 +1,4 @@
-import { fromClusterCreationAtom } from '@/atoms/clusters';
+import { clusterSessionAtom, fromClusterCreationAtom } from '@/atoms/clusters';
 import DeleteModal from '@/components/delete-modal';
 import IconFont from '@/components/icon-font';
 import { FilterBar } from '@/components/page-tools';
@@ -62,6 +62,7 @@ const Credentials: React.FC = () => {
     deleteAPI: deleteCredential,
     contentForDelete: 'menu.clusterManagement.credentials'
   });
+  const [, setClusterSession] = useAtom(clusterSessionAtom);
   const [isFromCluster, setIsFromCluster] = useAtom(fromClusterCreationAtom);
   const intl = useIntl();
   const navigate = useNavigate();
@@ -109,6 +110,10 @@ const Credentials: React.FC = () => {
       } else {
         await createCredential({ data: params });
         if (isFromCluster) {
+          setClusterSession({
+            firstAddWorker: false,
+            firstAddCluster: true
+          });
           navigate(-1);
         }
       }

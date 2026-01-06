@@ -38,6 +38,16 @@
     justify-content: center;
   }
 
+  &:hover {
+    .sorter-header {
+      .sorter {
+        .anticon {
+          color: var(--ant-table-header-icon-hover-color);
+        }
+      }
+    }
+  }
+
   .sorter-header {
     display: flex;
     flex: 1;
@@ -55,6 +65,7 @@
       .anticon {
         font-size: 12px;
         color: var(--ant-table-header-icon-color);
+        transition: color var(--ant-motion-duration-slow);
       }
 
       .sorter-up {

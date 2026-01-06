@@ -116,7 +116,15 @@ export default {
     'Specify the server URL accessible from your cloud provider.',
   'clusters.form.setDefault': 'Set as Default',
   'clusters.form.setDefault.tips': 'Default for deployment.',
-  'clusters.addworker.noClusters': 'No available clusters'
+  'clusters.addworker.noClusters': 'No available clusters',
+  'clusters.create.complete.tips': 'Cluster created successfully!',
+  'clusters.create.complete': 'Completed',
+  'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
+  'clusters.create.dockerTips2':
+    'You can also skip this step and add them later from the cluster list.',
+  'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
+  'clusters.create.k8sTips2':
+    'You can also skip this step and register it later from the cluster list.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -210,5 +218,11 @@ export default {
 // 84. 'clusters.form.setDefault.tips': 'Default for deployment',
 // 85.  'clusters.addworker.enterWorkerAddress': 'Enter worker external address',
 // 86.  'clusters.addworker.enterWorkerAddress.error': 'Please enter the worker external address.',
-// 87. 'clusters.addworker.noClusters': 'No available clusters'
+// 87. 'clusters.addworker.noClusters': 'No available clusters',
+// 88. 'clusters.create.complete.tips': 'Cluster created successfully!',
+// 89. 'clusters.create.complete': 'Completed',
+// 90. 'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
+// 91. 'clusters.create.dockerTips2': 'You can also skip this step and add them later from the cluster list.',
+// 92. 'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
+// 93. 'clusters.create.k8sTips2': 'You can also skip this step and register it later from the cluster list.'
 // ========== End of To-Do List ==========

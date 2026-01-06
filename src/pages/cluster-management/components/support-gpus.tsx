@@ -110,7 +110,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ASCEND],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#ascend-npu',
-      icon: <ProviderImage src={ascendLogo} height={32} />
+      icon: <ProviderImage src={ascendLogo} height={30} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.hygon' }),
@@ -121,7 +121,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.HYGON],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#hygon-dcu',
-      icon: <ProviderImage src={hyponPNG} height={20} />
+      icon: <ProviderImage src={hyponPNG} height={18} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.moorthreads' }),
@@ -133,7 +133,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.MOORE_THREADS],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#mthreads-gpu',
-      icon: <ProviderImage src={mooreLogo} height={26} />
+      icon: <ProviderImage src={mooreLogo} height={24} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.iluvatar' }),
@@ -145,7 +145,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.ILUVATAR],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#iluvatar-gpu',
-      icon: <ProviderImage src={iluvatarWEBP} height={26} />
+      icon: <ProviderImage src={iluvatarWEBP} height={24} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.cambricon' }),
@@ -157,7 +157,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.CAMBRICON],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#cambricon-mlu',
-      icon: <ProviderImage src={CambriconPNG} height={26} />
+      icon: <ProviderImage src={CambriconPNG} height={24} />
     },
     {
       label: intl.formatMessage({ id: 'vendor.metax' }),

@@ -72,7 +72,7 @@ export default function useStepList() {
         beforeNext: handleBack
       },
       {
-        title: 'Completed',
+        title: intl.formatMessage({ id: 'clusters.create.complete' }),
         content: '',
         description: '',
         showButtons: (provider?: ProviderType) => {

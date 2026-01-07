@@ -6,6 +6,7 @@ import metaxLogo from '@/assets/logo/metax.png';
 import mooreLogo from '@/assets/logo/moore-logo.png';
 import nvidiaLogo from '@/assets/logo/nvidia.png';
 import IconFont from '@/components/icon-font';
+import useUserSettings from '@/hooks/use-user-settings';
 import {
   AddWorkerDockerNotes,
   GPUDriverMap
@@ -46,6 +47,17 @@ const Box = styled.div`
       background-color: var(--ant-blue-1);
     }
   }
+  &.dark-theme {
+    .template-card-wrapper {
+      background-color: rgba(255, 255, 255, 0.05);
+      &:hover {
+        background-color: var(--ant-color-bg-solid);
+      }
+      &.active {
+        background-color: var(--ant-color-bg-solid);
+      }
+    }
+  }
 `;
 
 const ProviderImage = ({ src, height }: { src: string; height?: number }) => {
@@ -72,6 +84,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   current
 }) => {
   const intl = useIntl();
+  const { userSettings } = useUserSettings();
 
   const supportedHardPlatforms = [
     {
@@ -97,7 +110,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       icon: (
         <IconFont
           type="icon-amd-logo"
-          style={{ fontSize: 64, color: 'var(--ant-color-text)' }}
+          style={{ fontSize: 64, color: '#000' }}
         />
       )
     },
@@ -174,7 +187,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
   ];
 
   return (
-    <Box>
+    <Box className={userSettings?.theme === 'realDark' ? 'dark-theme' : ''}>
       <ProviderCatalog
         onSelect={onSelect}
         height={60}

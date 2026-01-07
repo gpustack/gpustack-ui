@@ -114,10 +114,10 @@ const Credentials: React.FC = () => {
             firstAddWorker: false,
             firstAddCluster: true
           });
+          setIsFromCluster(false);
           navigate(-1);
         }
       }
-      setIsFromCluster(false);
       fetchData();
       setOpenModalStatus({ ...openModalStatus, open: false });
       message.success(intl.formatMessage({ id: 'common.message.success' }));

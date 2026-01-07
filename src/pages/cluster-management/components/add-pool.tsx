@@ -1,6 +1,5 @@
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
 import { PageActionType } from '@/config/types';
+import FormDrawer from '@/pages/_components/form-drawer';
 import React, { useEffect, useRef } from 'react';
 import { ProviderType } from '../config';
 import {
@@ -61,20 +60,11 @@ const AddPool: React.FC<AddModalProps> = ({
   }, [clusterData, open]);
 
   return (
-    <ScrollerModal
+    <FormDrawer
       title={title}
       open={open}
       onCancel={handleCancel}
-      destroyOnHidden={true}
-      closeIcon={true}
-      centered={true}
-      maskClosable={false}
-      keyboard={false}
-      width={600}
-      maxContentHeight={'max(calc(100vh - 300px), 500px)'}
-      footer={
-        <ModalFooter onOk={handleSubmit} onCancel={onCancel}></ModalFooter>
-      }
+      onSubmit={handleSubmit}
     >
       <PoolForm
         ref={formRef}
@@ -83,7 +73,7 @@ const AddPool: React.FC<AddModalProps> = ({
         currentData={currentData}
         onFinish={handleOnFinish}
       ></PoolForm>
-    </ScrollerModal>
+    </FormDrawer>
   );
 };
 

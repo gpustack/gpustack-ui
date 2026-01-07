@@ -1,6 +1,4 @@
 import IconFont from '@/components/icon-font';
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
 import SealSwitch from '@/components/seal-form/seal-switch';
@@ -9,6 +7,7 @@ import { PageActionType } from '@/config/types';
 import { useIntl, useModel } from '@umijs/max';
 import { Form, Select } from 'antd';
 import { useEffect } from 'react';
+import FormDrawer from '../../_components/form-drawer';
 import { UserRoles, UserRolesOptions } from '../config';
 import { FormData, ListItem } from '../config/types';
 
@@ -47,7 +46,7 @@ const AddModal: React.FC<AddModalProps> = ({
     }
   };
 
-  const handleSumit = () => {
+  const handleSubmit = () => {
     form.submit();
   };
 
@@ -56,20 +55,11 @@ const AddModal: React.FC<AddModalProps> = ({
   }, [open]);
 
   return (
-    <ScrollerModal
+    <FormDrawer
       title={title}
       open={open}
-      centered={true}
-      onOk={handleSumit}
       onCancel={onCancel}
-      destroyOnHidden={true}
-      closeIcon={false}
-      maskClosable={false}
-      keyboard={false}
-      width={600}
-      footer={
-        <ModalFooter onOk={handleSumit} onCancel={onCancel}></ModalFooter>
-      }
+      onSubmit={handleSubmit}
     >
       <Form name="addUserForm" form={form} onFinish={onOk} preserve={false}>
         <Form.Item<FormData>
@@ -165,7 +155,7 @@ const AddModal: React.FC<AddModalProps> = ({
           ></SealInput.Password>
         </Form.Item>
       </Form>
-    </ScrollerModal>
+    </FormDrawer>
   );
 };
 

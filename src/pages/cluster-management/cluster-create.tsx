@@ -38,8 +38,17 @@ const Content = styled.div`
   width: 100%;
 `;
 
+const StepWrapper = styled.div`
+  position: sticky;
+  top: 0;
+  background: var(--ant-color-bg-elevated);
+  z-index: 10;
+  padding: 16px 24px;
+`;
+
 const MainWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   height: 100%;
 `;
 
@@ -308,7 +317,15 @@ const ClusterCreate: React.FC<{
 
   return (
     <MainWrapper>
+      {!isAddWorkerStep && (
+        <StepWrapper>
+          <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
+        </StepWrapper>
+      )}
       <ColumnWrapper
+        maxHeight={
+          isAddWorkerStep ? 'calc(100vh - 200px)' : 'calc(100vh - 150px)'
+        }
         styles={{
           container: { paddingTop: 16, paddingBottom: 16 }
         }}
@@ -324,14 +341,6 @@ const ClusterCreate: React.FC<{
           />
         }
       >
-        {!isAddWorkerStep && (
-          <div style={{ marginBottom: 32 }}>
-            <ClusterSteps
-              steps={steps}
-              currentStep={currentStep}
-            ></ClusterSteps>
-          </div>
-        )}
         <div style={{ flex: 1 }}>
           {currentStep === startStep && (
             <ProviderCatalog

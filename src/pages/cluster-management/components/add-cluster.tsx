@@ -1,6 +1,5 @@
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal/index';
 import { PageActionType } from '@/config/types';
+import FormDrawer from '@/pages/_components/form-drawer';
 import React, { useRef } from 'react';
 import { ProviderType } from '../config';
 import {
@@ -48,19 +47,12 @@ const AddCluster: React.FC<AddModalProps> = ({
   };
 
   return (
-    <ScrollerModal
+    <FormDrawer
       title={title}
       open={open}
       onCancel={handleCancel}
-      destroyOnHidden={true}
-      closeIcon={true}
-      maskClosable={false}
-      keyboard={false}
-      centered={true}
-      width={680}
-      footer={
-        <ModalFooter onOk={handleSubmit} onCancel={onCancel}></ModalFooter>
-      }
+      onSubmit={handleSubmit}
+      width={700}
     >
       <ClusterForm
         ref={form}
@@ -70,7 +62,7 @@ const AddCluster: React.FC<AddModalProps> = ({
         currentData={currentData}
         onFinish={handleOk}
       />
-    </ScrollerModal>
+    </FormDrawer>
   );
 };
 

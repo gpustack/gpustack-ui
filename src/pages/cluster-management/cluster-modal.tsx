@@ -32,7 +32,7 @@ const ClusterModal: React.FC<ClusterModalProps> = ({
         body: {
           paddingBlock: 0
         },
-        wrapper: { width: 700 }
+        wrapper: { width: 710 }
       }}
       footer={false}
     >

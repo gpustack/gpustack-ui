@@ -62,7 +62,7 @@ export default {
     'Если не удается обнаружить устройства, попробуйте удалить <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
   'clusters.addworker.selectCluster': 'Выбрать кластер',
   'clusters.addworker.selectCluster.tips':
-    'Для не-Docker кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами воркеров на странице Кластеры.',
+    'Для <span class="bold-text">не-Docker</span> кластеров, пожалуйста, регистрируйте кластеры или управляйте пулами воркеров на странице Кластеры.',
   'clusters.addworker.selectGPU': 'Выбрать производителя GPU',
   'clusters.addworker.checkEnv': 'Проверить окружение',
   'clusters.addworker.specifyArgs': 'Указать аргументы',
@@ -117,7 +117,7 @@ export default {
   'clusters.form.setDefault': 'Установить по умолчанию',
   'clusters.form.setDefault.tips':
     'Использовать по умолчанию для развертывания.',
-  'clusters.addworker.noClusters': 'No available clusters',
+  'clusters.addworker.noClusters': 'No available Docker clusters found',
   'clusters.create.steps.complete.tips': 'Cluster created successfully!',
   'clusters.create.steps.complete': 'Complete',
   'clusters.create.steps.configure': 'Configure',
@@ -131,7 +131,7 @@ export default {
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
-// 2. 'clusters.addworker.noClusters': 'No available clusters',
+// 2. 'clusters.addworker.noClusters': 'No available Docker clusters found',
 // 3. 'clusters.create.steps.complete.tips': 'Cluster created successfully!',
 // 4. 'clusters.create.steps.complete': 'Complete',
 // 5. 'clusters.create.dockerTips1': 'Next, add worker to this cluster.',

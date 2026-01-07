@@ -52,7 +52,7 @@ const AddCluster: React.FC<AddModalProps> = ({
       open={open}
       onCancel={handleCancel}
       onSubmit={handleSubmit}
-      width={700}
+      width={710}
     >
       <ClusterForm
         ref={form}

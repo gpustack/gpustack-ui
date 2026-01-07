@@ -69,15 +69,29 @@ const useAddWorker = (props: {
             item.provider !== ProviderValueMap.Docker
         };
       })
-      .filter((item) => item.state === ClusterStatusValueMap.Ready);
+      .filter(
+        (item) =>
+          item.state === ClusterStatusValueMap.Ready &&
+          item.provider === ProviderValueMap.Docker
+      );
   }, [clusterList]);
 
+  /**
+   * Add Worker only for Docker clusters,  for k8s and digitalocean do something in the cluster list page.
+   * @param clusterList
+   * @param includeDigitalOcean
+   * @returns
+   */
   const checkDefaultCluster = (
-    clusterList: Global.BaseOption<number, ClusterListItem>[]
+    clusterList: Global.BaseOption<number, ClusterListItem>[],
+    includeDigitalOcean?: boolean
   ) => {
     // select default and ready cluster first, digitalocean no READY state
     let currentData = clusterList.find(
-      (item) => item.is_default && item.state === ClusterStatusValueMap.Ready
+      (item) =>
+        item.is_default &&
+        item.state === ClusterStatusValueMap.Ready &&
+        item.provider === ProviderValueMap.Docker
     );
 
     if (!currentData) {

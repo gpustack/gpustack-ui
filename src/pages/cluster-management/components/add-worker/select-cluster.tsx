@@ -50,11 +50,24 @@ const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
             {stepIndex}.{' '}
             {intl.formatMessage({ id: 'clusters.addworker.selectCluster' })}
           </Title>
-          <span style={{ color: 'var(--ant-color-text-tertiary)' }}>
-            {intl.formatMessage({
-              id: 'clusters.addworker.selectCluster.tips'
-            })}
-          </span>
+          <Typography.Paragraph
+            type="secondary"
+            style={{
+              marginBottom: 0,
+              whiteSpace: 'pre-wrap',
+              lineHeight: 1.2,
+              paddingBlock: 4
+            }}
+            ellipsis={{ rows: 2 }}
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: intl.formatMessage({
+                  id: 'clusters.addworker.selectCluster.tips'
+                })
+              }}
+            ></span>
+          </Typography.Paragraph>
         </div>
       }
     >

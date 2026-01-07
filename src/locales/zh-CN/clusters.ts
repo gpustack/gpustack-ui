@@ -62,7 +62,7 @@ export default {
     '如果未能检测到设备，请尝试移除 <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>。',
   'clusters.addworker.selectCluster': '选择集群',
   'clusters.addworker.selectCluster.tips':
-    '非 Docker 集群请前往集群页面注册集群或管理节点池。',
+    '<span class="bold-text">非 Docker</span> 集群请前往集群页面注册集群或管理节点池。',
   'clusters.addworker.selectGPU': '选择 GPU 厂商',
   'clusters.addworker.checkEnv': '检查环境',
   'clusters.addworker.specifyArgs': '指定参数',
@@ -113,7 +113,7 @@ export default {
   'clusters.form.serverUrl.tips': '指定可从您的云服务提供商访问的服务器地址。',
   'clusters.form.setDefault': '设为默认',
   'clusters.form.setDefault.tips': '部署时的默认集群。',
-  'clusters.addworker.noClusters': '无可用集群',
+  'clusters.addworker.noClusters': '无可用的 Docker 集群',
   'clusters.create.steps.complete.tips': '集群创建成功！',
   'clusters.create.steps.complete': '完成',
   'clusters.create.steps.configure': '配置',

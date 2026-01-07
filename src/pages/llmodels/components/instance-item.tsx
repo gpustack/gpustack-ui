@@ -477,7 +477,11 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         <div className="flex-center">
           <IconFont type="icon-filled-gpu" className="m-r-5" />
           {intl.formatMessage({ id: 'models.table.gpuindex' })}: [
-          {_.join(instanceData.gpu_indexes?.sort?.(), ',')}]
+          {_.join(
+            instanceData.gpu_indexes?.sort?.((a, b) => a - b),
+            ','
+          )}
+          ]
         </div>
         <div className="flex-center">
           <ThunderboltFilled className="m-r-5" />

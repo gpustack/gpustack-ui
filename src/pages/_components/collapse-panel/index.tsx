@@ -13,7 +13,9 @@ const CollapseInner = styled(Collapse)`
     border-radius: var(--border-radius-base) !important;
     font-size: 14px !important;
     font-weight: 600 !important;
-    background-color: var(--ant-color-fill-tertiary) !important;
+    &:hover {
+      background-color: var(--ant-color-fill-tertiary) !important;
+    }
   }
 
   .ant-collapse-body {
@@ -32,7 +34,8 @@ const CollapsePanel: React.FC<{
   activeKey: string | string[];
   accordion?: boolean;
   onChange?: (key: string | string[]) => void;
-}> = ({ items, activeKey, accordion, onChange }) => {
+  styles?: Record<string, React.CSSProperties>;
+}> = ({ items, activeKey, accordion, onChange, styles }) => {
   return (
     <CollapseInner
       expandIconPlacement="start"
@@ -42,6 +45,12 @@ const CollapsePanel: React.FC<{
       activeKey={activeKey}
       onChange={onChange}
       destroyOnHidden={false}
+      styles={{
+        ...styles,
+        header: {
+          backgroundColor: 'var(--ant-collapse-header-bg)'
+        }
+      }}
       expandIcon={({ isActive }) => (
         <IconFont
           type="icon-down"

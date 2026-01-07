@@ -1,4 +1,3 @@
-import { CheckCircleFilled, CheckCircleOutlined } from '@ant-design/icons';
 import { Steps } from 'antd';
 import React from 'react';
 import styled from 'styled-components';
@@ -9,6 +8,9 @@ const Wrapper = styled.div`
   gap: 24px;
 `;
 
+/**
+ * --steps-item-base-width: 20px;  type="panel"
+ */
 const Box = styled.div`
   .indicates {
     color: var(--ant-color-text-tertiary);
@@ -16,75 +18,19 @@ const Box = styled.div`
     margin-bottom: 24px;
   }
   .ant-steps {
-    --steps-title-font-size: 14px;
     .ant-steps-item {
       --steps-item-base-width: 20px;
     }
-  }
-`;
-
-const StepItemWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding-bottom: 16px;
-  // border-bottom: 1px solid var(--ant-color-split);
-  .description {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    .title {
-      font-weight: 500;
-      line-height: 20px;
-      color: var(--ant-color-text-tertiary);
+    .ant-steps-item-rail-wait {
+      --steps-item-solid-line-color: var(--ant-color-split);
     }
-    .content {
-      line-height: 22px;
-      font-size: 14px;
-      color: var(--ant-color-text-tertiary);
-    }
-  }
-  &.active {
-    .description {
-      .title {
-        color: var(--ant-color-text);
-        font-weight: 600;
-      }
-      .content {
-        color: var(--ant-color-text);
+    &:not(.ant-steps-panel) {
+      .ant-steps-item-finish {
+        --steps-item-icon-bg-color: var(--ant-color-primary);
       }
     }
   }
 `;
-
-const StepsItem: React.FC<{
-  active: boolean;
-  item: {
-    title: string;
-    content: string;
-  };
-}> = ({ active, item }) => {
-  return (
-    <StepItemWrapper className={active ? 'active' : ''}>
-      <div className="icon">
-        {active ? (
-          <CheckCircleFilled
-            style={{ color: 'var(--ant-color-primary)', fontSize: 20 }}
-          />
-        ) : (
-          <CheckCircleOutlined
-            style={{ color: 'var(--ant-color-text-disabled)', fontSize: 20 }}
-          />
-        )}
-      </div>
-      <div className="description">
-        <div className="title">{item.title}</div>
-        <div className="content">{item.content}</div>
-      </div>
-    </StepItemWrapper>
-  );
-};
 
 const ClusterSteps: React.FC<{
   currentStep: number;
@@ -94,28 +40,41 @@ const ClusterSteps: React.FC<{
   const { steps, currentStep = 0, onChange } = props;
 
   const visibleSteps = steps.filter((step) => !step.hideInSteps);
+
+  const styles: Record<string, any> = {
+    root: {
+      '--ant-steps-description-max-width': 'auto'
+    },
+    item: {
+      paddingBlock: 0
+    },
+    itemIcon: {
+      fontSize: 0,
+      width: 8,
+      height: 8,
+      marginInlineStart: 0
+    },
+    itemWrapper: {
+      alignItems: 'center'
+    },
+    itemRail: {
+      borderWidth: 1.5,
+      borderRadius: 1,
+      insetInlineStart: 10,
+      insetInlineEnd: 2,
+      '--steps-horizontal-rail-margin': '12px'
+    }
+  };
+
   return (
     <Box>
       <Wrapper>
-        {/* {visibleSteps.map((item, index) => (
-          <StepsItem
-            key={index}
-            active={currentStep === index}
-            item={item}
-          ></StepsItem>
-        ))} */}
         <Steps
           current={currentStep}
           items={visibleSteps}
-          type="panel"
-          styles={{
-            item: {
-              paddingBlock: 0
-            },
-            itemRail: {
-              borderColor: 'var(--ant-color-split)'
-            }
-          }}
+          variant="filled"
+          size="small"
+          styles={styles}
         ></Steps>
       </Wrapper>
     </Box>

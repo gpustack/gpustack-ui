@@ -10,9 +10,7 @@ import {
   DiscordOutlined,
   GithubOutlined,
   HomeOutlined,
-  LogoutOutlined,
-  ReadOutlined,
-  SettingOutlined
+  ReadOutlined
 } from '@ant-design/icons';
 import { history, useIntl, useNavigate } from '@umijs/max';
 import { Avatar, Button, Divider, Modal } from 'antd';
@@ -235,7 +233,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
         key: 'settings',
         label: (
           <span className="flex flex-center">
-            <SettingOutlined />
+            <IconFont type="icon-settings-02" />
             <span className="m-l-8" style={{ marginLeft: 8 }}>
               {intl?.formatMessage?.({ id: 'common.button.settings' })}
             </span>
@@ -270,7 +268,7 @@ export const ExtraContent = (props: { isDarkTheme?: boolean }) => {
         {originNode}
         <Divider style={{ marginBlock: 4 }} />
         <CustomItem onClick={handleLogout} className="border-top">
-          <LogoutOutlined rotate={180} />
+          <IconFont type="icon-logout" style={{ fontSize: 17 }} />
           <span>{intl?.formatMessage?.({ id: 'common.button.logout' })}</span>
         </CustomItem>
       </DropdownWrapper>

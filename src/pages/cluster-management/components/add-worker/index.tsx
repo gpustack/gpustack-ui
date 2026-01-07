@@ -131,7 +131,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
         body: {
           paddingBlock: 0
         },
-        wrapper: { width: 865 }
+        wrapper: { width: 700 }
       }}
       footer={false}
     >

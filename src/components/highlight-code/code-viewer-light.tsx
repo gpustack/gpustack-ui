@@ -10,6 +10,7 @@ interface CodeViewerProps {
   copyable?: boolean;
   height?: string | number;
   style?: React.CSSProperties;
+  xScrollable?: boolean;
 }
 const LightViewer: React.FC<CodeViewerProps> = (props) => {
   const {
@@ -20,7 +21,8 @@ const LightViewer: React.FC<CodeViewerProps> = (props) => {
     ignoreIllegals,
     copyable,
     style,
-    height = 'auto'
+    height = 'auto',
+    xScrollable = false
   } = props || {};
 
   return (
@@ -34,6 +36,7 @@ const LightViewer: React.FC<CodeViewerProps> = (props) => {
       autodetect={autodetect}
       ignoreIllegals={ignoreIllegals}
       copyable={copyable}
+      xScrollable={xScrollable}
     ></CodeViewer>
   );
 };

@@ -15,7 +15,9 @@ export default function useStepList() {
   return useMemo(
     () => [
       {
-        title: intl.formatMessage({ id: 'clusters.create.selectProvider' }),
+        title: intl.formatMessage({
+          id: 'clusters.create.steps.selectProvider'
+        }),
         content: '',
         subTitle: '',
         description:
@@ -35,7 +37,7 @@ export default function useStepList() {
         providers: []
       },
       {
-        title: intl.formatMessage({ id: 'common.title.config' }),
+        title: intl.formatMessage({ id: 'clusters.create.steps.configure' }),
         content: '',
         description:
           'Set the cluster name, description, or other essential parameters in advanced settings.',
@@ -72,7 +74,7 @@ export default function useStepList() {
         beforeNext: handleBack
       },
       {
-        title: intl.formatMessage({ id: 'clusters.create.complete' }),
+        title: intl.formatMessage({ id: 'clusters.create.steps.complete' }),
         content: '',
         description: '',
         showButtons: (provider?: ProviderType) => {

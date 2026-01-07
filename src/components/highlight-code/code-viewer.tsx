@@ -15,6 +15,7 @@ interface CodeViewerProps {
   height?: string | number;
   theme?: 'light' | 'dark';
   style?: React.CSSProperties;
+  xScrollable?: boolean;
 }
 
 interface CodeHeaderProps {
@@ -43,6 +44,14 @@ const CodeHeaderWrapper = styled.div`
 
 const Wrapper = styled.div`
   border-radius: var(--border-radius-mini);
+  &:hover {
+    .custome-scrollbar {
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 4px;
+      }
+    }
+  }
 `;
 
 const CodeHeader: React.FC<CodeHeaderProps> = ({
@@ -80,7 +89,8 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
     ignoreIllegals = true,
     copyable = true,
     height = 'auto',
-    style
+    style,
+    xScrollable = false
   } = props || {};
 
   const highlightedCode = useMemo(() => {
@@ -131,7 +141,8 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
           'code-pre custome-scrollbar custom-scrollbar-horizontal ',
           {
             dark: props.theme === 'dark',
-            light: props.theme === 'light'
+            light: props.theme === 'light',
+            'x-scrollable': xScrollable
           }
         )}
         style={{
@@ -141,7 +152,10 @@ const CodeViewer: React.FC<CodeViewerProps> = (props) => {
         }}
       >
         <code
-          style={{ minHeight: height }}
+          style={{
+            minHeight: height,
+            ...(xScrollable ? { width: 'max-content' } : {})
+          }}
           className={classNames(highlightedCode.className, {
             dark: props.theme === 'dark',
             light: props.theme === 'light'

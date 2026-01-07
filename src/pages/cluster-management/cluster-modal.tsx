@@ -1,4 +1,5 @@
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
+import { PageAction } from '@/config';
 import React from 'react';
 import ClusterCreate from './cluster-create';
 
@@ -13,13 +14,14 @@ const ClusterModal: React.FC<ClusterModalProps> = ({
   onClose,
   title
 }) => {
+  const [currentTitle, setCurrentTitle] = React.useState<string>(title);
   const handleCancel = () => {
     onClose();
   };
 
   return (
     <GSDrawer
-      title={title}
+      title={currentTitle}
       open={open}
       onClose={handleCancel}
       destroyOnHidden={true}
@@ -34,7 +36,11 @@ const ClusterModal: React.FC<ClusterModalProps> = ({
       }}
       footer={false}
     >
-      <ClusterCreate onClose={handleCancel}></ClusterCreate>
+      <ClusterCreate
+        onClose={handleCancel}
+        action={PageAction.CREATE}
+        setCurrentTitle={setCurrentTitle}
+      ></ClusterCreate>
     </GSDrawer>
   );
 };

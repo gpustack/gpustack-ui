@@ -35,11 +35,11 @@ const SuccessResult: React.FC<{
       }}
       icon={
         <CheckCircleFilled
-          style={{ color: 'var(--ant-color-success)', fontSize: 42 }}
+          style={{ color: 'var(--ant-color-success)', fontSize: 36 }}
         />
       }
       status="success"
-      title={intl.formatMessage({ id: 'clusters.create.complete.tips' })}
+      title={intl.formatMessage({ id: 'clusters.create.steps.complete.tips' })}
       subTitle={provider === ProviderValueMap.Kubernetes ? k8sTips : dockerTips}
       extra={[
         <Flex gap={16} justify="center" key="buttons">

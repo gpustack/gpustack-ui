@@ -65,6 +65,7 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
       code={code}
       copyValue={code}
       lang="bash"
+      xScrollable={true}
     ></HighlightCode>
   );
 };

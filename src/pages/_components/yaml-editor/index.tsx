@@ -48,7 +48,7 @@ const Header = styled.div`
   padding-inline: 10px;
   font-size: 14px;
   border-bottom: 1px solid var(--ant-color-border);
-  background-color: var(--ant-color-fill-tertiary);
+  background-color: var(--ant-color-fill-quaternary);
 `;
 
 interface ViewerProps {

@@ -28,7 +28,7 @@ export default {
   'clusters.workerpool.volumes.add': 'Добавить том',
   'clusters.create.provider.self': 'Самостоятельное размещение',
   'clusters.create.provider.cloud': 'Облачный провайдер',
-  'clusters.create.selectProvider': 'Выберите провайдера',
+  'clusters.create.steps.selectProvider': 'Выберите провайдера',
   'clusters.create.configBasic': 'Базовая конфигурация',
   'clusters.create.execCommand': 'Выполнить команду',
   'clusters.create.supportedGpu': 'Поддерживаемые GPU',
@@ -118,8 +118,9 @@ export default {
   'clusters.form.setDefault.tips':
     'Использовать по умолчанию для развертывания.',
   'clusters.addworker.noClusters': 'No available clusters',
-  'clusters.create.complete.tips': 'Cluster created successfully!',
-  'clusters.create.complete': 'Completed',
+  'clusters.create.steps.complete.tips': 'Cluster created successfully!',
+  'clusters.create.steps.complete': 'Complete',
+  'clusters.create.steps.configure': 'Configure',
   'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
   'clusters.create.dockerTips2':
     'You can also skip this step and add them later from the cluster list.',
@@ -131,10 +132,11 @@ export default {
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
 // 1. 'clusters.addworker.hygonNotes': `If <span class="bold-text">/opt/hyhal</span> or <span class="bold-text">/opt/dtk</span> does not exist, create symbolic links pointing to the corresponding Hygon installation paths, for example: <span class="desc-fill">ln -s /path/to/hyhal /opt/hyhal</span> <span class="desc-fill">ln -s /path/to/dtk /opt/dtk</span>.`,
 // 2. 'clusters.addworker.noClusters': 'No available clusters',
-// 3. 'clusters.create.complete.tips': 'Cluster created successfully!',
-// 4. 'clusters.create.complete': 'Completed',
+// 3. 'clusters.create.steps.complete.tips': 'Cluster created successfully!',
+// 4. 'clusters.create.steps.complete': 'Complete',
 // 5. 'clusters.create.dockerTips1': 'Next, add worker to this cluster.',
 // 6. 'clusters.create.dockerTips2': 'You can also skip this step and add them later from the cluster list.',
 // 7. 'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
-// 8. 'clusters.create.k8sTips2': 'You can also skip this step and register it later from the cluster list.'
+// 8. 'clusters.create.k8sTips2': 'You can also skip this step and register it later from the cluster list.',
+// 9. 'clusters.create.steps.configure': 'Configure',
 // ================================================================

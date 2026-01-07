@@ -6,19 +6,22 @@ import { StatusType } from '@/config/types';
 export const ClusterStatusValueMap = {
   Provisioning: 'provisioning',
   Ready: 'ready',
-  Provisioned: 'provisioned'
+  Provisioned: 'provisioned',
+  Pending: 'pending'
 };
 
 export const ClusterStatusLabelMap = {
   [ClusterStatusValueMap.Provisioning]: 'Provisioning',
   [ClusterStatusValueMap.Ready]: 'Ready',
-  [ClusterStatusValueMap.Provisioned]: 'Provisioned'
+  [ClusterStatusValueMap.Provisioned]: 'Provisioned',
+  [ClusterStatusValueMap.Pending]: 'Pending'
 };
 
 export const ClusterStatus: Record<string, StatusType> = {
   [ClusterStatusValueMap.Provisioning]: StatusMaps.transitioning,
   [ClusterStatusValueMap.Ready]: StatusMaps.success,
-  [ClusterStatusValueMap.Provisioned]: StatusMaps.transitioning
+  [ClusterStatusValueMap.Provisioned]: StatusMaps.transitioning,
+  [ClusterStatusValueMap.Pending]: StatusMaps.transitioning
 };
 
 export const ProviderValueMap = {

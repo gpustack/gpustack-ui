@@ -62,7 +62,7 @@ export default {
     'If device detection fails, try removing <span class="bold-text">--env ROCM_SMI_LIB_PATH=/opt/hyhal/lib</span>.',
   'clusters.addworker.selectCluster': 'Select Cluster',
   'clusters.addworker.selectCluster.tips':
-    'For non-Docker clusters, please register clusters or manage worker pools from the Clusters page.',
+    'For <span class="bold-text">non-Docker</span> clusters, please register clusters or manage worker pools from the Clusters page.',
   'clusters.addworker.selectGPU': 'Select GPU Vendor',
   'clusters.addworker.checkEnv': 'Check Environment',
   'clusters.addworker.specifyArgs': 'Specify Arguments',
@@ -116,7 +116,7 @@ export default {
     'Specify the server URL accessible from your cloud provider.',
   'clusters.form.setDefault': 'Set as Default',
   'clusters.form.setDefault.tips': 'Default for deployment.',
-  'clusters.addworker.noClusters': 'No available clusters',
+  'clusters.addworker.noClusters': 'No available Docker clusters found',
   'clusters.create.steps.complete.tips': 'Cluster created successfully!',
   'clusters.create.steps.complete': 'Complete',
   'clusters.create.steps.configure': 'Configure',

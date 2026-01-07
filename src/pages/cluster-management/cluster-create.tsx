@@ -236,8 +236,12 @@ const ClusterCreate: React.FC<{
 
   // add worker or cluster registration step
   const handleAddWorker = () => {
+    const currentTitle =
+      extraData.provider === ProviderValueMap.Docker
+        ? 'resources.button.create'
+        : 'clusters.button.register';
     setIsAddWorkerStep(true);
-    setCurrentTitle?.(intl.formatMessage({ id: 'resources.button.create' }));
+    setCurrentTitle?.(intl.formatMessage({ id: currentTitle }));
     onNext();
   };
 

@@ -39,7 +39,7 @@ const useStyles = createStyles(({ css, token }) => {
   return {
     title: css`
       font-weight: 400;
-      height: 56px;
+      min-height: 56px;
       font-size: var(--font-size-base);
       display: flex;
       justify-content: space-between;

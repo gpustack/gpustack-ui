@@ -1,6 +1,4 @@
-import AlertBlockInfo from '@/components/alert-info/block';
 import useAddWorkerMessage from '@/pages/cluster-management/hooks/use-add-worker-message';
-import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Alert } from 'antd';
 import React, { useMemo } from 'react';
@@ -135,18 +133,6 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
         {stepList.includes(StepNamesMap.SelectCluster) && (
           <SelectCluster disabled={disabled}></SelectCluster>
         )}
-        {stepList.includes(StepNamesMap.SelectCluster) &&
-          !clusterList?.length && (
-            <AlertBlockInfo
-              maxHeight={200}
-              style={{ marginBottom: 8 }}
-              type="warning"
-              icon={<ExclamationCircleFilled />}
-              message={intl.formatMessage({
-                id: 'resources.worker.noCluster.tips'
-              })}
-            ></AlertBlockInfo>
-          )}
         {/* render the steps only when there is at least one cluster available or cluster selection is not required */}
         {((clusterList && clusterList.length > 0) ||
           !stepList.includes(StepNamesMap.SelectCluster)) && (

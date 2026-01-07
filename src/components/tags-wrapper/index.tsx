@@ -120,6 +120,7 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
           >
             <Tag
               className="more"
+              variant="outlined"
               style={{ marginInline: hiddenIndices.end < 1 ? 0 : `${gap}px 0` }}
               ref={moreBtnRef}
             >
@@ -132,4 +133,4 @@ const TagsWrapper: React.FC<TagsWrapperProps> = (props) => {
   );
 };
 
-export default React.memo(TagsWrapper);
+export default TagsWrapper;

@@ -10,6 +10,7 @@ const HighlightCode: React.FC<{
   copyable?: boolean;
   theme?: 'light' | 'dark';
   fixedTheme?: 'light' | 'dark';
+  xScrollable?: boolean;
   height?: string | number;
   style?: React.CSSProperties;
   copyValue?: string;
@@ -21,7 +22,8 @@ const HighlightCode: React.FC<{
     lang = 'bash',
     copyable = true,
     theme,
-    height = 'auto'
+    height = 'auto',
+    xScrollable = false
   } = props;
 
   const { userSettings } = useUserSettings();
@@ -40,6 +42,7 @@ const HighlightCode: React.FC<{
           copyValue={copyValue}
           copyable={copyable}
           height={height}
+          xScrollable={xScrollable}
           style={style}
         />
       ) : (
@@ -50,6 +53,7 @@ const HighlightCode: React.FC<{
           copyValue={copyValue}
           copyable={copyable}
           height={height}
+          xScrollable={xScrollable}
         />
       )}
     </div>

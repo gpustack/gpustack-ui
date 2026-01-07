@@ -1,9 +1,7 @@
-import { clusterSessionAtom } from '@/atoms/clusters';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
-import { useIntl, useSearchParams } from '@umijs/max';
-import { useAtom } from 'jotai';
+import { useIntl } from '@umijs/max';
 import _ from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -40,29 +38,20 @@ const Content = styled.div`
   width: 100%;
 `;
 
-const StepsWrapper = styled.div`
-  width: 220px;
-  padding-inline: 24px;
-  padding-block: 16px;
-  border-right: 1px solid var(--ant-color-split);
-`;
-
 const MainWrapper = styled.div`
   display: flex;
   height: 100%;
 `;
 
 const ClusterCreate: React.FC<{
+  action: PageActionType;
+  setCurrentTitle?: (title: string) => void;
   onClose?: () => void;
-}> = ({ onClose }) => {
-  const intl = useIntl();
+}> = ({ onClose, action, setCurrentTitle }) => {
   const startStep = 0;
   const stepList = useStepList();
   const { systemConfig } = useSystemConfig();
-  const [searchParams] = useSearchParams();
-  const action =
-    (searchParams.get('action') as PageActionType) || PageAction.CREATE;
-  const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
+  const intl = useIntl();
   const [credentialList, setCredentialList] = useState<
     Global.BaseOption<number, { provider: ProviderType }>[]
   >([]);
@@ -85,7 +74,6 @@ const ClusterCreate: React.FC<{
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [isAddWorkerStep, setIsAddWorkerStep] = useState<boolean>(false);
-  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const formRefs: Record<string, any> = {
     [moduleMap.BasicForm]: useRef<any>(null),
@@ -240,6 +228,7 @@ const ClusterCreate: React.FC<{
   // add worker or cluster registration step
   const handleAddWorker = () => {
     setIsAddWorkerStep(true);
+    setCurrentTitle?.(intl.formatMessage({ id: 'resources.button.create' }));
     onNext();
   };
 
@@ -301,7 +290,6 @@ const ClusterCreate: React.FC<{
     const res = await createCluster({ data });
     const info = await queryClusterToken({ id: res.id });
     setSubmitLoading(false);
-    setIsComplete(true);
     setRegistrationInfo({
       ...info,
       cluster_id: res.id
@@ -320,11 +308,6 @@ const ClusterCreate: React.FC<{
 
   return (
     <MainWrapper>
-      {/* {!isAddWorkerStep && (
-        <StepsWrapper>
-          <ClusterSteps steps={steps} currentStep={currentStep}></ClusterSteps>
-        </StepsWrapper>
-      )} */}
       <ColumnWrapper
         styles={{
           container: { paddingTop: 16, paddingBottom: 16 }
@@ -341,13 +324,6 @@ const ClusterCreate: React.FC<{
           />
         }
       >
-        {/* {!isComplete && (
-          <div style={{ marginBottom: 24 }}>
-            <Title level={5} style={{ marginBottom: 8, fontSize: 14 }}>
-              {steps[currentStep]?.subTitle || steps[currentStep]?.title}
-            </Title>
-          </div>
-        )} */}
         {!isAddWorkerStep && (
           <div style={{ marginBottom: 32 }}>
             <ClusterSteps

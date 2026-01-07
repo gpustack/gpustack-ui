@@ -77,9 +77,10 @@ const AdvanceConfig = () => {
             included={true}
             max={modelContextData?.scaled || 163840}
             tooltip={{}}
+            step={1024}
             marks={{
-              [modelContextData?.native]: 'native',
-              [modelContextData?.scaled]: 'scaled'
+              [modelContextData?.scaled]: 'scaled',
+              [modelContextData?.native]: 'native'
             }}
           ></SealSlider>
         </Form.Item>

@@ -1,9 +1,8 @@
-import ModalFooter from '@/components/modal-footer';
-import ScrollerModal from '@/components/scroller-modal';
 import SealInput from '@/components/seal-form/seal-input';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import useAppUtils from '@/hooks/use-app-utils';
+import FormDrawer from '@/pages/_components/form-drawer';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { useEffect } from 'react';
@@ -66,19 +65,11 @@ const AddModal: React.FC<AddModalProps> = ({
   }, [currentData]);
 
   return (
-    <ScrollerModal
+    <FormDrawer
       title={title}
       open={open}
-      centered={true}
-      onOk={handleSumit}
-      destroyOnHidden={true}
-      closeIcon={false}
-      maskClosable={false}
-      keyboard={false}
-      width={600}
-      footer={
-        <ModalFooter onOk={handleSumit} onCancel={handleCancel}></ModalFooter>
-      }
+      onSubmit={handleSumit}
+      onCancel={handleCancel}
     >
       <Form form={form} onFinish={handleOk} preserve={false}>
         <Form.Item<FormData>
@@ -140,7 +131,7 @@ const AddModal: React.FC<AddModalProps> = ({
           ></SealInput.TextArea>
         </Form.Item>
       </Form>
-    </ScrollerModal>
+    </FormDrawer>
   );
 };
 

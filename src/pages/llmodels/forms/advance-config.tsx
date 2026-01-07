@@ -79,8 +79,21 @@ const AdvanceConfig = () => {
             tooltip={{}}
             step={1024}
             marks={{
-              [modelContextData?.scaled]: 'scaled',
-              [modelContextData?.native]: 'native'
+              [modelContextData?.scaled]: {
+                label: 'scaled',
+                style: {
+                  transform: 'translateX(-100%)'
+                }
+              },
+              [modelContextData?.native]: {
+                label: 'native',
+                style: {
+                  transform:
+                    modelContextData?.scaled === modelContextData?.native
+                      ? 'translateX(-100%)'
+                      : 'unset'
+                }
+              }
             }}
           ></SealSlider>
         </Form.Item>

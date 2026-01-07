@@ -414,7 +414,7 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     }
 
     // TODO
-    fetchContextLength({ ...params, source });
+    // fetchContextLength({ ...params, source });
   }, [isGGUF, source, localPath, modelScopeModelId, huggingfaceRepoId]);
 
   return (

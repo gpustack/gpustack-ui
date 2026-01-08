@@ -29,26 +29,36 @@ const useAddWorker = (props: {
     cluster_id: null
   });
 
-  const handleAddWorker = async (row: ClusterListItem) => {
+  const handleAddWorker = async (row: ClusterListItem, fromWorker = false) => {
     try {
+      if (!row?.id) return;
+
       // set the title based on provider type
-      const title =
+      let title =
         row.provider === ProviderValueMap.Docker
           ? intl.formatMessage({ id: 'resources.button.create' })
           : intl.formatMessage({ id: 'clusters.button.register' });
 
-      if (!row?.id) return;
+      let clusterId: number | null = [
+        ProviderValueMap.Docker,
+        ProviderValueMap.Kubernetes
+      ].includes(row.provider as string)
+        ? row.id
+        : null;
+
+      if (fromWorker) {
+        title = intl.formatMessage({ id: 'resources.button.create' });
+      }
+
+      if (fromWorker && row.provider === ProviderValueMap.Kubernetes) {
+        clusterId = null;
+      }
 
       setOpenAddWorker({
         open: true,
         title: title,
         provider: row.provider as ProviderType,
-        cluster_id: [
-          ProviderValueMap.Docker,
-          ProviderValueMap.Kubernetes
-        ].includes(row.provider as string)
-          ? row.id
-          : null
+        cluster_id: clusterId
       });
     } catch (error: any) {
       message.error(error?.message || 'Failed to fetch cluster token');
@@ -83,8 +93,7 @@ const useAddWorker = (props: {
    * @returns
    */
   const checkDefaultCluster = (
-    clusterList: Global.BaseOption<number, ClusterListItem>[],
-    includeDigitalOcean?: boolean
+    clusterList: Global.BaseOption<number, ClusterListItem>[]
   ) => {
     // select default and ready cluster first, digitalocean no READY state
     let currentData = clusterList.find(

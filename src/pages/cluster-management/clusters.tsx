@@ -11,7 +11,7 @@ import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
-import { useIntl, useNavigate } from '@umijs/max';
+import { useIntl } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
@@ -75,7 +75,6 @@ const Clusters: React.FC = () => {
   const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
-  const navigate = useNavigate();
   const intl = useIntl();
   const { handleAddWorker, checkDefaultCluster, AddWorkerModal, setStepList } =
     useAddWorker({});

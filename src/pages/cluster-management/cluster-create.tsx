@@ -308,6 +308,9 @@ const ClusterCreate: React.FC<{
       cluster_id: res.id
     });
     checkDefaultCluster();
+    if (extraData.provider === ProviderValueMap.DigitalOcean) {
+      onClose?.();
+    }
     return true;
   };
 

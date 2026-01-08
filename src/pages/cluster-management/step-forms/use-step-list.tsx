@@ -1,16 +1,10 @@
-import { useIntl, useNavigate } from '@umijs/max';
-import { useMemoizedFn } from 'ahooks';
+import { useIntl } from '@umijs/max';
 import { useMemo } from 'react';
 import { ProviderType, ProviderValueMap } from '../config';
 import { moduleMap } from './module-registry';
 
 export default function useStepList() {
   const intl = useIntl();
-  const navigate = useNavigate();
-
-  const handleBack = useMemoizedFn(() => {
-    navigate(-1);
-  });
 
   return useMemo(
     () => [
@@ -70,8 +64,7 @@ export default function useStepList() {
         defaultShow: false,
         showForms: [moduleMap.WorkerPoolForm],
         showModules: [],
-        providers: [ProviderValueMap.DigitalOcean],
-        beforeNext: handleBack
+        providers: [ProviderValueMap.DigitalOcean]
       },
       {
         title: intl.formatMessage({ id: 'clusters.create.steps.complete' }),
@@ -130,6 +123,6 @@ export default function useStepList() {
         providers: [ProviderValueMap.Kubernetes]
       }
     ],
-    [handleBack, intl]
+    [intl]
   );
 }

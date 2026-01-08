@@ -138,7 +138,7 @@ const Catalog: React.FC = () => {
         handleInputChange={handleNameChange}
         selectOptions={categoryOptions}
         buttonIcon={<SearchOutlined />}
-        width={{ input: 230, select: 200 }}
+        widths={{ input: 230, select: 200 }}
       ></FilterBar>
       <ScrollerContext.Provider
         value={{

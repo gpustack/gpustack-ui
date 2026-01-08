@@ -95,7 +95,7 @@ const WorkerDetailContent: React.FC<{ worker_id: number | undefined }> = ({
         selectHolder={intl.formatMessage({ id: 'resources.filter.status' })}
         showSelect={true}
         selectOptions={statusList}
-        width={{ input: 300 }}
+        widths={{ input: 300 }}
       ></FilterBar>
       <ConfigProvider renderEmpty={renderEmpty}>
         <Table

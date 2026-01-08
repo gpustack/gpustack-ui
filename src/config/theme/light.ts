@@ -89,7 +89,7 @@ export default {
     darkMode: false,
     fontFamily:
       "Helvetica Neue, -apple-system, BlinkMacSystemFont, Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
-    colorText: 'rgba(0,0,0,1)',
+    colorText: '#1F1F1F',
     colorPrimary: COLOR_PRIMARY,
     colorSuccess: '#54cc98',
     colorBorder: '#d3d0d9',

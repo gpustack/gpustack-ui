@@ -1,6 +1,8 @@
 import ModalFooter from '@/components/modal-footer';
 import GSDrawer from '@/components/scroller-modal/gs-drawer';
 import ColumnWrapper from '@/pages/_components/column-wrapper';
+import { Tag } from 'antd';
+import React from 'react';
 
 const ModalFooterStyle = {
   padding: '16px 24px 8px',
@@ -9,12 +11,14 @@ const ModalFooterStyle = {
 };
 
 type AddModalProps = {
-  title: string;
+  title: React.ReactNode;
   open: boolean;
-  onCancel: () => void;
+  onCancel?: () => void;
   children?: React.ReactNode;
-  onSubmit: () => void;
-  width?: number;
+  onSubmit?: () => void;
+  width?: number | string;
+  footer?: React.ReactNode;
+  subTitle?: React.ReactNode;
 };
 const FormDrawer: React.FC<AddModalProps> = ({
   title,
@@ -22,11 +26,32 @@ const FormDrawer: React.FC<AddModalProps> = ({
   onCancel,
   onSubmit,
   children,
-  width = 600
+  width = 600,
+  subTitle,
+  footer
 }) => {
   return (
     <GSDrawer
-      title={title}
+      title={
+        <>
+          {title}
+          {subTitle && (
+            <Tag
+              variant="outlined"
+              style={{
+                fontSize: 12,
+                fontWeight: 400,
+                marginLeft: 8,
+                borderRadius: 4,
+                borderColor: 'var(--ant-color-border-secondary)',
+                color: 'var(--ant-color-text-secondary)'
+              }}
+            >
+              {subTitle}
+            </Tag>
+          )}
+        </>
+      }
       open={open}
       onClose={onCancel}
       destroyOnHidden={true}
@@ -43,11 +68,13 @@ const FormDrawer: React.FC<AddModalProps> = ({
           container: { paddingBlock: 0 }
         }}
         footer={
-          <ModalFooter
-            onOk={onSubmit}
-            onCancel={onCancel}
-            style={ModalFooterStyle}
-          ></ModalFooter>
+          footer ?? (
+            <ModalFooter
+              onOk={onSubmit}
+              onCancel={onCancel}
+              style={ModalFooterStyle}
+            ></ModalFooter>
+          )
         }
       >
         {children}

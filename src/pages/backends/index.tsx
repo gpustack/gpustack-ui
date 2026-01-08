@@ -181,7 +181,7 @@ const BackendList = () => {
       <FilterBar
         marginBottom={22}
         marginTop={30}
-        width={{
+        widths={{
           input: 300
         }}
         inputHolder={intl.formatMessage({ id: 'common.filter.name' })}

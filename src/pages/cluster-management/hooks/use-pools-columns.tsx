@@ -3,7 +3,6 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import { SealColumnProps } from '@/components/seal-table/types';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import type { SortOrder } from 'antd/es/table/interface';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
@@ -29,7 +28,7 @@ const actionItems = [
 
 const usePoolsColumns = (
   handleSelect: (val: string, record: ListItem) => void,
-  sortOrder?: SortOrder
+  sortOrder?: string[]
 ): SealColumnProps[] => {
   const intl = useIntl();
 
@@ -83,7 +82,6 @@ const usePoolsColumns = (
                 }}
               />
             }
-            SHOWTITLE
             ghost
             minWidth={20}
           >
@@ -162,7 +160,6 @@ const usePoolsColumns = (
         key: 'created_at',
         span: 4,
         showSorterTootip: false,
-        sortOrder: sortOrder,
         sorter: false,
         ellipsis: {
           showTitle: false
@@ -192,7 +189,7 @@ const usePoolsColumns = (
         )
       }
     ];
-  }, [sortOrder, handleSelect]);
+  }, [handleSelect]);
 };
 
 export default usePoolsColumns;

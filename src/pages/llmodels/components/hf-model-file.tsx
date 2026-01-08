@@ -1,7 +1,6 @@
 import { getRequestId } from '@/atoms/models';
 import BaseSelect from '@/components/seal-form/base/select';
 import SimpleOverlay from '@/components/simple-overlay';
-import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useIntl } from '@umijs/max';
 import { Empty, Spin } from 'antd';
 import _ from 'lodash';
@@ -14,13 +13,8 @@ import React, {
 } from 'react';
 import 'simplebar-react/dist/simplebar.min.css';
 import styled from 'styled-components';
-import {
-  evaluationsModelSpec,
-  queryHuggingfaceModelFiles,
-  queryModelScopeModelFiles
-} from '../apis';
+import { queryHuggingfaceModelFiles, queryModelScopeModelFiles } from '../apis';
 import { modelSourceMap } from '../config';
-import { backendOptionsMap } from '../config/backend-parameters';
 import '../style/hf-model-file.less';
 import FileSkeleton from './file-skeleton';
 import ModelFileItem from './model-file-item';
@@ -223,70 +217,6 @@ const HFModelFile: React.FC<HFModelFileProps> = forwardRef((props, ref) => {
       return list;
     } catch (error) {
       return [];
-    }
-  };
-
-  const getEvaluateResults = async (repoList: any[]) => {
-    try {
-      checkTokenRef.current?.cancel?.();
-      checkTokenRef.current = createAxiosToken();
-      const evaluations = await evaluationsModelSpec(
-        {
-          model_specs: repoList
-        },
-        {
-          token: checkTokenRef.current.token
-        }
-      );
-      return evaluations.results || [];
-    } catch (error) {
-      return [];
-    }
-  };
-
-  const handleEvaluate = async (list: any[]) => {
-    if (isDownload) {
-      return;
-    }
-    try {
-      const evaluateFileList = list.map((item: any) => {
-        // TODO: llamabox is remove from backend options, user should select a available backend
-        return {
-          backend: backendOptionsMap.llamaBox,
-          source: modelSource,
-          ...(modelSource === modelSourceMap.huggingface_value
-            ? {
-                huggingface_repo_id: props.selectedModel.name,
-                huggingface_filename: item.fakeName
-              }
-            : {
-                model_scope_model_id: props.selectedModel.name,
-                model_scope_file_path: item.fakeName
-              })
-        };
-      });
-
-      setIsEvaluating(true);
-      const evaluationList = await getEvaluateResults(evaluateFileList);
-
-      const resultList = _.map(list, (item: any, index: number) => {
-        return {
-          ...item,
-          evaluateResult: evaluationList[index]
-        };
-      });
-      const currentItem = _.find(
-        resultList,
-        (item: any) => item.path === currentPathRef.current
-      );
-
-      if (currentItem) {
-        onSelectFileAfterEvaluate?.(currentItem);
-      }
-      setDataSource({ fileList: resultList, loading: false });
-      setIsEvaluating(false);
-    } catch (error) {
-      setIsEvaluating(false);
     }
   };
 

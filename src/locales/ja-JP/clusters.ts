@@ -102,7 +102,7 @@ export default {
     '{count} new worker has been added to the cluster.',
   'clusters.addworker.message.success_multiple':
     '{count} new workers have been added to the cluster.',
-  'clusters.create.serverUrl': 'Server URL',
+  'clusters.create.serverUrl': 'GPUStack Server URL',
   'clusters.create.workerConfig': 'Worker Configuration',
   'clusters.addworker.containerName': 'Worker Container Name',
   'clusters.addworker.containerName.tips':
@@ -113,7 +113,7 @@ export default {
   'clusters.table.ip.internal': 'Internal',
   'clusters.table.ip.external': 'External',
   'clusters.form.serverUrl.tips':
-    'Specify the server URL accessible from your cloud provider.',
+    'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack directly.',
   'clusters.form.setDefault': 'Set as Default',
   'clusters.form.setDefault.tips': 'Default for deployment.',
   'clusters.addworker.noClusters': 'No available Docker clusters found',
@@ -205,7 +205,7 @@ export default {
 // 73. 'clusters.addworker.cacheVolume.holder': 'e.g. /data/cache (path must start with /)',
 // 74. 'clusters.addworker.message.success_single': '{count} new worker has been added to the cluster.',
 // 75. 'clusters.addworker.message.success_multiple': '{count} new workers have been added to the cluster.',
-// 76. 'clusters.create.serverUrl': 'Server URL',
+// 76. 'clusters.create.serverUrl': 'GPUStack Server URL',
 // 77.  'clusters.create.workerConfig': 'Worker Configuration'
 // 78.  'clusters.addworker.containerName': 'Worker Container Name',
 // 79.  'clusters.addworker.containerName.tips':'Specify a name for the worker container.',
@@ -213,7 +213,7 @@ export default {
 // 78.  'clusters.addworker.dataVolume.tips': 'Specify a data storage path for GPUStack.',
 // 79.  'clusters.table.ip.internal': 'Internal',
 // 80.  'clusters.table.ip.external': 'External',
-// 81.  'clusters.form.serverUrl.tips': 'Specify the server URL accessible from your cloud provider.',
+// 81.  'clusters.form.serverUrl.tips': 'Specify an externally accessible GPUStack service URL if the worker cannot access GPUStack directly.',
 // 82. 'clusters.addworker.externalIP.tips': 'Specify an external IP if the worker is in a VPC or private network.',
 // 83. 'clusters.form.setDefault': 'Set as Default',
 // 84. 'clusters.form.setDefault.tips': 'Default for deployment',

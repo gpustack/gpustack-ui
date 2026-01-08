@@ -310,6 +310,11 @@ const PoolForm: React.FC<AddModalProps> = forwardRef((props, ref) => {
       title={title}
       collapsible={collapsible}
       onToggle={onToggle}
+      styles={{
+        root: {
+          background: 'unset'
+        }
+      }}
       deleteBtn={
         showDelete && (
           <Button

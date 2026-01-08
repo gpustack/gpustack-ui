@@ -102,7 +102,7 @@ export default {
     '{count} новый воркер был добавлен в кластер.',
   'clusters.addworker.message.success_multiple':
     '{count} новых воркеров были добавлены в кластер.',
-  'clusters.create.serverUrl': 'URL сервера',
+  'clusters.create.serverUrl': 'URL сервера GPUStack',
   'clusters.create.workerConfig': 'Конфигурация воркера',
   'clusters.addworker.containerName': 'Имя контейнера воркера',
   'clusters.addworker.containerName.tips':
@@ -113,7 +113,7 @@ export default {
   'clusters.table.ip.internal': 'Внутренний',
   'clusters.table.ip.external': 'Внешний',
   'clusters.form.serverUrl.tips':
-    'Укажите URL сервера, доступный из вашего облачного провайдера.',
+    'Если рабочий узел не может напрямую получить доступ к GPUStack, укажите внешний URL службы GPUStack.',
   'clusters.form.setDefault': 'Установить по умолчанию',
   'clusters.form.setDefault.tips':
     'Использовать по умолчанию для развертывания.',

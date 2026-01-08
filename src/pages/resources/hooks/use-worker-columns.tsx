@@ -232,6 +232,7 @@ const useWorkerColumns = ({
   loadend,
   firstLoad,
   sortOrder,
+  sourceType,
   handleSelect
 }: {
   clusterData: {
@@ -241,6 +242,7 @@ const useWorkerColumns = ({
   loadend: boolean;
   firstLoad: boolean;
   sortOrder: string[];
+  sourceType: string;
   handleSelect: (action: string, record: ListItem) => void;
 }): ColumnsType<ListItem> => {
   const intl = useIntl();
@@ -272,7 +274,10 @@ const useWorkerColumns = ({
   return useMemo<ColumnsType<ListItem>>(
     () => [
       {
-        title: intl.formatMessage({ id: 'common.table.name' }),
+        title:
+          sourceType === 'resources'
+            ? intl.formatMessage({ id: 'common.table.name' })
+            : intl.formatMessage({ id: 'resources.table.workername' }),
         dataIndex: 'name',
         width: 100,
         sorter: tableSorter(1),
@@ -291,6 +296,7 @@ const useWorkerColumns = ({
       {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
+        hidden: sourceType === 'cluster',
         render: (id: number) => (
           <AutoTooltip ghost maxWidth={240}>
             {_.get(clusterData.data, id, '')}
@@ -402,7 +408,7 @@ const useWorkerColumns = ({
         )
       }
     ],
-    [intl, sortOrder, clusterData, loadend, firstLoad, handleSelect]
+    [intl, sourceType, sortOrder, clusterData, loadend, firstLoad, handleSelect]
   );
 };
 

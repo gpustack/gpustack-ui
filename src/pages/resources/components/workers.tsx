@@ -26,7 +26,19 @@ import useWorkerMaintenance from '../hooks/use-worker-maintenance';
 import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
 
-const Workers: React.FC = () => {
+const Workers: React.FC<{
+  cluster: ClusterListItem;
+  showSelect?: boolean;
+  showAddButton?: boolean;
+  widths?: { input: number };
+  sourceType?: string;
+}> = ({
+  cluster,
+  showSelect = true,
+  showAddButton = true,
+  widths = { input: 200 },
+  sourceType = 'resources'
+}) => {
   const {
     dataSource,
     rowSelection,
@@ -48,7 +60,10 @@ const Workers: React.FC = () => {
     events: ['UPDATE', 'DELETE', 'INSERT'],
     contentForDelete: 'resources.worker',
     watch: true,
-    API: WORKERS_API
+    API: WORKERS_API,
+    defaultQueryParams: {
+      cluster_id: cluster?.id || undefined
+    }
   });
   const { TerminalPanel, terminals, handleAddTerminal } = useTerminalTabs();
   const { MaintenanceModal, handleStopMaintenance, setOpenStatus } =
@@ -233,7 +248,8 @@ const Workers: React.FC = () => {
     loadend: dataSource.loadend,
     firstLoad: extraStatus.firstLoad,
     sortOrder,
-    handleSelect
+    handleSelect,
+    sourceType
   });
 
   useEffect(() => {
@@ -245,7 +261,7 @@ const Workers: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          showSelect={true}
+          showSelect={showSelect}
           selectHolder={intl.formatMessage({ id: 'clusters.filterBy.cluster' })}
           marginBottom={22}
           marginTop={30}
@@ -253,11 +269,11 @@ const Workers: React.FC = () => {
           handleDeleteByBatch={handleDeleteBatch}
           handleSearch={handleSearch}
           handleSelectChange={handleClusterChange}
-          handleClickPrimary={handleOnAddWorker}
+          handleClickPrimary={showAddButton ? handleOnAddWorker : undefined}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           selectOptions={clusterData.list}
-          width={{ input: 200 }}
+          widths={widths}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
@@ -269,6 +285,7 @@ const Workers: React.FC = () => {
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             rowKey="id"
+            scroll={{ x: true }}
             onChange={handleTableChange}
             rowSelection={rowSelection}
             pagination={{

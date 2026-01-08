@@ -97,7 +97,7 @@ export default {
     borderRadiusSM: 2,
     fontSize: 14,
     motion: true,
-    colorFill: '#000',
-    colorBgBase: '#000'
+    colorFill: '#0A0A0A',
+    colorBgBase: '#0A0A0A'
   }
 };

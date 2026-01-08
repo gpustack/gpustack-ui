@@ -171,7 +171,6 @@ const ClusterCreate: React.FC<{
       if (result) {
         await callback?.(result as ClusterFormData);
         const step = steps[currentStep];
-        step.beforeNext?.();
         setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
       }
     } catch (error) {

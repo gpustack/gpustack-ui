@@ -88,6 +88,7 @@ export interface CollapsibleContainerProps {
   className?: string;
   children?: React.ReactNode;
   styles?: {
+    root?: React.CSSProperties;
     body?: React.CSSProperties;
     header?: React.CSSProperties;
     content?: React.CSSProperties;
@@ -191,6 +192,9 @@ export default function CollapsibleContainer({
       className={classNames(className, { collapsible, disabled, isOpen })}
       variant={variant}
       styles={{
+        root: {
+          ...cardStyles?.root
+        },
         body: {
           padding: 0,
           ...cardStyles?.body

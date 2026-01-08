@@ -55,6 +55,7 @@ interface ActionItem {
   icon: React.ReactNode;
   [key: string]: any;
 }
+
 interface FilterBarProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange?: (value: any) => void;
@@ -76,7 +77,7 @@ interface FilterBarProps {
   showDeleteButton?: boolean;
   right?: React.ReactNode;
   left?: React.ReactNode;
-  width?: {
+  widths?: {
     input?: number;
     select?: number;
   };
@@ -102,7 +103,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
     selectHolder,
     right,
     left,
-    width
+    widths
   } = props;
   const intl = useIntl();
 
@@ -181,7 +182,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
                 id: 'common.filter.name'
               })
             }
-            style={{ width: width?.input || 230 }}
+            style={{ width: widths?.input || 230 }}
             allowClear
             onChange={handleInputChange}
           ></Input>
@@ -190,7 +191,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
               allowClear
               showSearch={false}
               placeholder={selectHolder}
-              style={{ width: width?.select || 230 }}
+              style={{ width: widths?.select || 230 }}
               size="large"
               onChange={handleSelectChange}
               options={selectOptions}

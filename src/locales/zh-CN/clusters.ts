@@ -102,7 +102,7 @@ export default {
     '已将 {count} 个新节点添加到集群中。',
   'clusters.addworker.message.success_multiple':
     '已将 {count} 个新节点添加到集群中。',
-  'clusters.create.serverUrl': '服务器地址',
+  'clusters.create.serverUrl': 'GPUStack 服务地址',
   'clusters.create.workerConfig': '节点配置',
   'clusters.addworker.containerName': '节点容器名称',
   'clusters.addworker.containerName.tips': '为节点容器指定一个名称。',
@@ -110,7 +110,8 @@ export default {
   'clusters.addworker.dataVolume.tips': '为 GPUStack 指定数据存储路径。',
   'clusters.table.ip.internal': '内',
   'clusters.table.ip.external': '外',
-  'clusters.form.serverUrl.tips': '指定可从您的云服务提供商访问的服务器地址。',
+  'clusters.form.serverUrl.tips':
+    '如果节点无法直接访问 GPUStack，则指定一个可访问的外部 GPUStack 服务地址。',
   'clusters.form.setDefault': '设为默认',
   'clusters.form.setDefault.tips': '部署时的默认集群。',
   'clusters.addworker.noClusters': '无可用的 Docker 集群',

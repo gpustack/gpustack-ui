@@ -133,7 +133,7 @@ const APIKeys: React.FC = () => {
           handleClickPrimary={handleAddKey}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          width={{ input: 300 }}
+          widths={{ input: 300 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

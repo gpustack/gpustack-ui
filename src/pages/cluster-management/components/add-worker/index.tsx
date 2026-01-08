@@ -27,7 +27,7 @@ const Footer = styled.div`
 type AddWorkerProps = {
   open: boolean;
   provider: ProviderType;
-  title: string;
+  title: React.ReactNode;
   clusterList?: Global.BaseOption<number, ClusterListItem>[];
   clusterLoading?: boolean;
   stepList: StepName[];

@@ -138,7 +138,7 @@ const WorkerPools = () => {
         showSelect={false}
         marginBottom={22}
         marginTop={22}
-        width={{ input: 300 }}
+        widths={{ input: 300 }}
         buttonText={intl.formatMessage({ id: 'clusters.button.addNodePool' })}
         rowSelection={rowSelection}
         handleInputChange={handleNameChange}

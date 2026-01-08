@@ -98,7 +98,7 @@ const GPUList: React.FC = () => {
           handleSelectChange={handleClusterChange}
           selectOptions={clusterList}
           showSelect
-          width={{ input: 200 }}
+          widths={{ input: 200 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
@@ -110,6 +110,7 @@ const GPUList: React.FC = () => {
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             rowKey="id"
+            scroll={{ x: true }}
             onChange={handleTableChange}
             pagination={{
               showSizeChanger: true,

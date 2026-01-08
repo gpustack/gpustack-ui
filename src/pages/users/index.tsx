@@ -182,7 +182,7 @@ const Users: React.FC = () => {
           handleClickPrimary={handleAddUser}
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
-          width={{ input: 300 }}
+          widths={{ input: 300 }}
         ></FilterBar>
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table

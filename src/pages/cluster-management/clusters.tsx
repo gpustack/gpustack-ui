@@ -31,6 +31,7 @@ import {
   WORKER_POOLS_API
 } from './apis';
 import ClusterModal from './cluster-modal';
+import ClusterWorkersModal from './cluster-workers-modal';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
 import {
@@ -48,6 +49,7 @@ import {
 } from './config/types';
 import useAddWorker from './hooks/use-add-worker';
 import useClusterColumns from './hooks/use-cluster-columns';
+import { useClusterWorkers } from './hooks/use-cluster-workers';
 import useCreateCluster from './hooks/use-create-cluster';
 
 const Clusters: React.FC = () => {
@@ -82,6 +84,11 @@ const Clusters: React.FC = () => {
     useCreateCluster({
       refresh: handleSearch
     });
+  const {
+    clusterWorkersModalStatus,
+    openClusterWorkersModal,
+    closeClusterWorkersModal
+  } = useClusterWorkers();
 
   const [openAddModal, setOpenAddModal] = useState<{
     open: boolean;
@@ -311,7 +318,7 @@ const Clusters: React.FC = () => {
     );
   };
 
-  const columns = useClusterColumns(handleSelect);
+  const columns = useClusterColumns(handleSelect, openClusterWorkersModal);
 
   return (
     <>
@@ -320,7 +327,7 @@ const Clusters: React.FC = () => {
           showSelect={false}
           marginBottom={22}
           marginTop={30}
-          width={{ input: 300 }}
+          widths={{ input: 300 }}
           buttonText={intl.formatMessage({ id: 'clusters.button.add' })}
           rowSelection={rowSelection}
           handleInputChange={handleNameChange}
@@ -416,6 +423,11 @@ const Clusters: React.FC = () => {
         open={clusterModalStatus.open}
         onClose={closeClusterModal}
       ></ClusterModal>
+      <ClusterWorkersModal
+        open={clusterWorkersModalStatus.open}
+        onClose={closeClusterWorkersModal}
+        cluster={clusterWorkersModalStatus.cluster}
+      ></ClusterWorkersModal>
       {AddWorkerModal}
     </>
   );

@@ -196,7 +196,7 @@ const Credentials: React.FC = () => {
           handleInputChange={handleNameChange}
           handleClickPrimary={handleAddCredential}
           rowSelection={rowSelection}
-          width={{ input: 300 }}
+          widths={{ input: 300 }}
         ></FilterBar>
 
         <ConfigProvider renderEmpty={renderEmpty}>

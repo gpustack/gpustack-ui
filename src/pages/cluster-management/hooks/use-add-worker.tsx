@@ -1,7 +1,7 @@
 import AddWorker from '@/pages/cluster-management/components/add-worker';
 import { useIntl } from '@umijs/max';
-import { message } from 'antd';
-import { useMemo, useState } from 'react';
+import { message, Tag } from 'antd';
+import React, { useMemo, useState } from 'react';
 import { StepName } from '../components/add-worker/config';
 import {
   ClusterStatusValueMap,
@@ -20,7 +20,7 @@ const useAddWorker = (props: {
   const [openAddWorker, setOpenAddWorker] = useState<{
     open: boolean;
     provider: ProviderType;
-    title: string;
+    title: React.ReactNode;
     cluster_id: number | null;
   }>({
     open: false,
@@ -56,7 +56,26 @@ const useAddWorker = (props: {
 
       setOpenAddWorker({
         open: true,
-        title: title,
+        title: (
+          <span>
+            {title}
+            {row.name && (
+              <Tag
+                variant="outlined"
+                style={{
+                  fontSize: 12,
+                  fontWeight: 400,
+                  marginLeft: 8,
+                  borderRadius: 4,
+                  borderColor: 'var(--ant-color-border-secondary)',
+                  color: 'var(--ant-color-text-secondary)'
+                }}
+              >
+                {intl.formatMessage({ id: 'clusters.title' })}: {row.name}
+              </Tag>
+            )}
+          </span>
+        ),
         provider: row.provider as ProviderType,
         cluster_id: clusterId
       });

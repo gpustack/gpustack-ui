@@ -5,6 +5,7 @@ import useTableFetch from '@/hooks/use-table-fetch';
 import PageBox from '@/pages/_components/page-box';
 import { queryClusterList } from '@/pages/cluster-management/apis';
 import { DockerStepsFromWorker } from '@/pages/cluster-management/components/add-worker/config';
+import { ProviderValueMap } from '@/pages/cluster-management/config';
 import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import useAddWorker from '@/pages/cluster-management/hooks/use-add-worker';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
@@ -191,8 +192,12 @@ const Workers: React.FC = () => {
   });
 
   const handleOnAddWorker = () => {
-    const targetCluster = checkDefaultCluster(clusterData.list);
-    if (targetCluster) {
+    if (clusterData.list.length > 0) {
+      // filter only docker clusters for add worker
+      const list = clusterData.list.filter(
+        (item) => item.provider === ProviderValueMap.Docker
+      );
+      const targetCluster = checkDefaultCluster(list);
       handleAddWorker(targetCluster as ClusterListItem);
     } else {
       message.info(intl.formatMessage({ id: 'noresult.resources.cluster' }));

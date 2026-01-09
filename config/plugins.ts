@@ -13,7 +13,7 @@ export function monacoPluginConfig(config: any) {
             entry: 'monaco-yaml',
             worker: {
               id: 'monaco-yaml/yamlWorker',
-              entry: 'monaco-yaml/yaml.worker'
+              entry: 'monaco-yaml/yaml.worker.js'
             }
           }
         ]

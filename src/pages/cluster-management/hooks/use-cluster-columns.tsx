@@ -6,7 +6,7 @@ import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tooltip, Typography } from 'antd';
+import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
@@ -28,7 +28,7 @@ const setActionsItems = (row: ClusterListItem) => {
 
 const useClusterColumns = (
   handleSelect: (val: string, record: ClusterListItem) => void,
-  onViewWorkers: (record: ClusterListItem) => void
+  onCellClick?: (record: ClusterListItem, dataIndex: string) => void
 ): SealColumnProps[] => {
   const intl = useIntl();
 
@@ -42,13 +42,7 @@ const useClusterColumns = (
         render: (text: string, record: ClusterListItem) => (
           <>
             <AutoTooltip ghost title={text}>
-              {record.workers > 0 ? (
-                <Typography.Link onClick={() => onViewWorkers(record)}>
-                  {record.name}
-                </Typography.Link>
-              ) : (
-                text
-              )}
+              {text}
             </AutoTooltip>
             {record.is_default && (
               <Tooltip
@@ -136,7 +130,7 @@ const useClusterColumns = (
         )
       }
     ];
-  }, [handleSelect, onViewWorkers]);
+  }, [handleSelect, onCellClick]);
 };
 
 export default useClusterColumns;

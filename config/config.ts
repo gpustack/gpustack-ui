@@ -29,7 +29,7 @@ export default defineConfig({
     defaultSizes: 'parsed' // stat  // gzip
   },
   mfsu: {
-    exclude: ['lodash', 'ml-pca', 'monaco-editor']
+    exclude: ['lodash', 'ml-pca']
   },
   base: process.env.npm_config_base || '/',
   ...(isProduction
@@ -81,6 +81,17 @@ export default defineConfig({
   routePrefetch: {
     defaultPrefetch: 'intent'
   },
+  // fastRefresh: false,
+  targets: {
+    firefox: 79
+  },
+  extraBabelIncludes: [
+    /node_modules\/react-error-overlay/,
+    /node_modules\/@umijs/,
+    /node_modules\/strip-ansi/,
+    /node_modules\/antd/,
+    /node_modules\/rc-/
+  ],
   keepalive: keepAlive,
   locale: {
     antd: true,

@@ -1,13 +1,13 @@
+import WorkerList from '@/pages/resources/components/workers';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { PageContainerInner } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
-import ClusterMetrics from './components/cluster-metrics';
 
 const ClusterDetailModal = () => {
   const navigate = useNavigate();
   const intl = useIntl();
   const [searchParams] = useSearchParams();
-  const provider = searchParams.get('provider');
+  const id = searchParams.get('id');
   const clusterName = searchParams.get('name');
 
   const breadcrumbItems = [
@@ -26,7 +26,13 @@ const ClusterDetailModal = () => {
         title: <PageBreadcrumb items={breadcrumbItems} />
       }}
     >
-      <ClusterMetrics />
+      <WorkerList
+        clusterId={id}
+        showAddButton={false}
+        showSelect={false}
+        widths={{ input: 360 }}
+        sourceType="cluster"
+      />
     </PageContainerInner>
   );
 };

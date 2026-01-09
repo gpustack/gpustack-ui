@@ -11,7 +11,7 @@ import type { PageActionType } from '@/config/types';
 import useExpandedRowKeys from '@/hooks/use-expanded-row-keys';
 import useTableFetch from '@/hooks/use-table-fetch';
 import useWatchList from '@/hooks/use-watch-list';
-import { useIntl } from '@umijs/max';
+import { useIntl, useNavigate } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useAtom } from 'jotai';
@@ -31,7 +31,6 @@ import {
   WORKER_POOLS_API
 } from './apis';
 import ClusterModal from './cluster-modal';
-import ClusterWorkersModal from './cluster-workers-modal';
 import AddCluster from './components/add-cluster';
 import AddPool from './components/add-pool';
 import {
@@ -49,7 +48,6 @@ import {
 } from './config/types';
 import useAddWorker from './hooks/use-add-worker';
 import useClusterColumns from './hooks/use-cluster-columns';
-import { useClusterWorkers } from './hooks/use-cluster-workers';
 import useCreateCluster from './hooks/use-create-cluster';
 
 const Clusters: React.FC = () => {
@@ -72,6 +70,7 @@ const Clusters: React.FC = () => {
     API: CLUSTERS_API,
     contentForDelete: 'menu.clusterManagement.clusters'
   });
+  const navigate = useNavigate();
   const { watchDataList: allWorkerPoolList } = useWatchList(WORKER_POOLS_API);
   const [expandAtom] = useAtom(expandKeysAtom);
   const [clusterSession, setClusterSession] = useAtom(clusterSessionAtom);
@@ -84,12 +83,6 @@ const Clusters: React.FC = () => {
     useCreateCluster({
       refresh: handleSearch
     });
-  const {
-    clusterWorkersModalStatus,
-    openClusterWorkersModal,
-    closeClusterWorkersModal
-  } = useClusterWorkers();
-
   const [openAddModal, setOpenAddModal] = useState<{
     open: boolean;
     action: PageActionType;
@@ -206,7 +199,9 @@ const Clusters: React.FC = () => {
     }
   });
 
-  const handleOnToggleExpandAll = () => {};
+  const handleOnToggleExpandAll = () => {
+    // do nothing
+  };
 
   const handleToggleExpandAll = useMemoizedFn((expanded: boolean) => {
     const keys = dataSource.dataList?.map((item) => item.id);
@@ -255,6 +250,14 @@ const Clusters: React.FC = () => {
       !allWorkerPoolList.some((item) => item.cluster_id === row.id)
     );
   };
+
+  const handleOnCell = useMemoizedFn((record: ClusterListItem, dataIndex) => {
+    if (dataIndex === 'name') {
+      navigate(
+        `/cluster-management/clusters/detail?id=${record.id}&name=${record.name}`
+      );
+    }
+  });
 
   useEffect(() => {
     const fetchCredentialList = async () => {
@@ -318,7 +321,7 @@ const Clusters: React.FC = () => {
     );
   };
 
-  const columns = useClusterColumns(handleSelect, openClusterWorkersModal);
+  const columns = useClusterColumns(handleSelect, handleOnCell);
 
   return (
     <>
@@ -423,11 +426,6 @@ const Clusters: React.FC = () => {
         open={clusterModalStatus.open}
         onClose={closeClusterModal}
       ></ClusterModal>
-      <ClusterWorkersModal
-        open={clusterWorkersModalStatus.open}
-        onClose={closeClusterWorkersModal}
-        cluster={clusterWorkersModalStatus.cluster}
-      ></ClusterWorkersModal>
       {AddWorkerModal}
     </>
   );

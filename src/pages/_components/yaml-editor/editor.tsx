@@ -1,8 +1,7 @@
 import EditorWrap from '@/components/editor-wrap';
 import { LoadingOutlined } from '@ant-design/icons';
 import Editor, { loader } from '@monaco-editor/react';
-import * as monaco from 'monaco-editor';
-import { configureMonacoYaml } from 'monaco-yaml';
+import { yamlDefaults } from 'monaco-yaml';
 import React, {
   forwardRef,
   useEffect,
@@ -10,7 +9,9 @@ import React, {
   useRef
 } from 'react';
 
-loader.config({ monaco });
+loader.config({
+  paths: { vs: '/vs' }
+});
 
 interface ViewerProps {
   ref?: any;
@@ -45,7 +46,9 @@ const EditorInner: React.FC<ViewerProps> = forwardRef((props, ref) => {
   const handleBeforeMount = (monaco: any) => {
     const yamlUri = monaco.Uri.parse(path);
 
-    configureMonacoYaml(monaco, {
+    yamlDefaults.setDiagnosticsOptions({
+      validate: false,
+      enableSchemaRequest: true,
       hover: false,
       schemas: [
         {

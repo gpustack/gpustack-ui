@@ -27,13 +27,13 @@ import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
 
 const Workers: React.FC<{
-  cluster: ClusterListItem;
+  clusterId: string | number | null;
   showSelect?: boolean;
   showAddButton?: boolean;
   widths?: { input: number };
   sourceType?: string;
 }> = ({
-  cluster,
+  clusterId,
   showSelect = true,
   showAddButton = true,
   widths = { input: 200 },
@@ -62,7 +62,7 @@ const Workers: React.FC<{
     watch: true,
     API: WORKERS_API,
     defaultQueryParams: {
-      cluster_id: cluster?.id || undefined
+      cluster_id: clusterId
     }
   });
   const { TerminalPanel, terminals, handleAddTerminal } = useTerminalTabs();

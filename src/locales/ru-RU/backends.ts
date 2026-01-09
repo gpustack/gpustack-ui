@@ -33,17 +33,13 @@ export default {
     'Пользовательское название бэкенда должно оканчиваться на «-custom».',
   'backend.quickConfig': 'Быстрая настройка',
   'backend.version.default.not.exists':
-    'The default version does not exist in {versions}.',
-  'backend.replaceEntrypoint': 'Override Image Entrypoint',
-  'backend.entrypoint': 'Image Entrypoint',
+    'Версия по умолчанию отсутствует в {versions}.',
+  'backend.replaceEntrypoint': 'Переопределить точку входа образа',
+  'backend.entrypoint': 'Точка входа образа',
   'backend.entrypoint.tips':
-    'If specified, the ENTRYPOINT defined in the image will be ignored, and the command below will be used as the container startup entrypoint.'
+    'Если указано, ENTRYPOINT, заданный в образе, будет проигнорирован, а вместо него для запуска контейнера будет использована команда ниже.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
-// 1. 'backend.version.default.not.exists': 'The default version does not exist in {versions}.',
-// 2. 'backend.replaceEntrypoint': 'Override Image Entrypoint',
-// 3. 'backend.entrypoint': 'Image Entrypoint',
-// 4. 'backend.entrypoint.tips':
-//    'If specified, the ENTRYPOINT defined in the image will be ignored, and the command below will be used as the container startup entrypoint.'
+
 // ========== End of To-Do List ==========

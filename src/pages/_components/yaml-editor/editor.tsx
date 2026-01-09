@@ -1,6 +1,7 @@
 import EditorWrap from '@/components/editor-wrap';
 import { LoadingOutlined } from '@ant-design/icons';
 import Editor, { loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
 import { yamlDefaults } from 'monaco-yaml';
 import React, {
   forwardRef,
@@ -10,7 +11,7 @@ import React, {
 } from 'react';
 
 loader.config({
-  paths: { vs: '/vs' }
+  monaco
 });
 
 interface ViewerProps {
@@ -130,8 +131,7 @@ const EditorInner: React.FC<ViewerProps> = forwardRef((props, ref) => {
           scrollbar: {
             verticalScrollbarSize: 6,
             horizontalScrollbarSize: 6
-          },
-          placeholder: placeholder
+          }
         }}
         loading={<LoadingOutlined style={{ fontSize: 24 }}></LoadingOutlined>}
         beforeMount={handleBeforeMount}

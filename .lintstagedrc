@@ -5,6 +5,7 @@
     "max lint --fix --stylelint-only",
     "prettier --cache --write"
   ],
+  "!public/vs/**": [],
   "*.ts?(x)": [
     "max lint --fix --eslint-only",
     "prettier --cache --parser=typescript --write"

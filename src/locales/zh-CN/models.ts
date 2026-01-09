@@ -208,7 +208,7 @@ export default {
   'models.mymodels.status.degrade': '异常',
   'models.mymodels.status.active': '可用',
   'models.form.kvCache.tips':
-    '扩展 KV 缓存和推测解码仅在内置后端（vLLM / SGLang）可用，请在<span class="bold-text">高级</span>配置中切换后端以启用。',
+    '扩展 KV 缓存和推测解码仅在内置后端（vLLM / SGLang）可用，请切换后端以启用。',
   'models.form.kvCache.tips2': '仅在使用内置推理后端（vLLM 或 SGLang）时支持。',
   'models.form.scheduling': '调度',
   'models.form.ramRatio': '内存与显存比例',

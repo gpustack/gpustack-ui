@@ -199,16 +199,6 @@ export default [
         hideInMenu: true,
         component: './cluster-management/cluster-detail'
       },
-      // {
-      //   name: 'clusterCreate',
-      //   path: '/cluster-management/clusters/create',
-      //   key: 'clusterCreate',
-      //   icon: 'icon-cluster2-outline',
-      //   selectedIcon: 'icon-cluster2-filled',
-      //   defaultIcon: 'icon-cluster2-outline',
-      //   hideInMenu: true,
-      //   component: './cluster-management/cluster-create'
-      // },
       {
         name: 'credentials',
         path: '/cluster-management/credentials',

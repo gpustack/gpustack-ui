@@ -219,7 +219,7 @@ export default {
   'models.mymodels.status.degrade': 'Not Ready',
   'models.mymodels.status.active': 'Ready',
   'models.form.kvCache.tips':
-    'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
+    'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend to enable them.',
   'models.form.kvCache.tips2':
     'Only supported when using built-in inference backends (vLLM or SGLang).',
   'models.form.scheduling': 'Scheduling',
@@ -318,7 +318,7 @@ export default {
 // 41.  'models.mymodels.status.degrade': 'Not Ready',
 // 42.  'models.mymodels.status.active': 'Ready',
 // 43. 'models.form.remoteURL.tips': 'Refer to the <a href="https://docs.lmcache.ai/api_reference/configurations.html" target="_blank">configuration documentation</a> for details.',
-// 44.  'models.form.kvCache.tips': 'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend in the <span class="bold-text">Advanced</span> settings to enable them.',
+// 44.  'models.form.kvCache.tips': 'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend to enable them.',
 // 45. 'models.form.kvCache.tips2': 'Only supported when using built-in inference backends (vLLM or SGLang).',
 // 46. 'models.form.scheduling': 'Scheduling',
 // 47. 'models.form.ramRatio': 'RAM-to-VRAM Ratio',

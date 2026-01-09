@@ -1,7 +1,7 @@
 import IconFont from '@/components/icon-font';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { Link, useLocation } from '@umijs/max';
-import { Divider, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useMemo, useState } from 'react';
 
@@ -67,6 +67,7 @@ const useStyles = createStyles(({ css, token }) => {
         height: 1px;
         padding-block: 0;
         padding-inline: 0;
+        justify-content: center;
       }
     `,
     menuItemContent: css`
@@ -118,6 +119,14 @@ const useStyles = createStyles(({ css, token }) => {
       &.menu-item-group-hidden {
         display: none;
       }
+    `,
+    line: css`
+      height: 1px;
+      margin-block: 6px;
+      background-color: ${token.colorSplit};
+      position: absolute;
+      left: 6px;
+      right: 6px;
     `
   };
 });
@@ -228,7 +237,7 @@ const SiderMenu: React.FC<SiderMenuProps> = (props) => {
                     ></CaretDownOutlined>
                   </span>
                 ) : is_admin ? (
-                  <Divider style={dividerStyles} />
+                  <span className={styles.line}></span>
                 ) : null}
               </div>
               <div

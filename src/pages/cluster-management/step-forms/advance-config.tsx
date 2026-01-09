@@ -5,7 +5,7 @@ import YamlEditor from '@/pages/_components/yaml-editor';
 import { useIntl } from '@umijs/max';
 import { Button, Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { ProviderType, ProviderValueMap } from '../config';
+import { ProviderType } from '../config';
 import { ClusterFormData as FormData } from '../config/types';
 import schema from '../config/worker-config.json';
 import yamlTemplate from '../config/yaml-template';
@@ -32,26 +32,6 @@ const ClusterAdvanceConfig: React.FC<{
 
   return (
     <>
-      {provider !== ProviderValueMap.DigitalOcean && (
-        <Form.Item<FormData>
-          name="server_url"
-          rules={[
-            {
-              required: false,
-              message: ''
-            }
-          ]}
-        >
-          <SealInput.Input
-            description={intl.formatMessage({
-              id: 'clusters.form.serverUrl.tips'
-            })}
-            label={intl.formatMessage({ id: 'clusters.create.serverUrl' })}
-            required={false}
-            trim={true}
-          ></SealInput.Input>
-        </Form.Item>
-      )}
       <Form.Item<FormData>
         hidden
         name="worker_config"

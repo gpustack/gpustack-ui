@@ -98,6 +98,7 @@ export default {
     'If using macOS or Windows as a worker, check GGUF (uncheck for audio models).',
   'models.form.button.addlabel': 'Add Label',
   'models.filter.category': 'Filter by category',
+  'models.filter.backend': 'Filter by backend',
   'models.list.more.logs': 'View More',
   'models.catalog.release.date': 'Release Date',
   'models.localpath.gguf.tips.title': 'GGUF format model',

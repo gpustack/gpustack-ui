@@ -168,6 +168,10 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
     const uidCountRef = useRef(0);
     const inputRef = useRef<any>(null);
     const inputImgRef = useRef<any>(null);
+    const historyRef = useRef<string[]>([]);
+    const historyIndexRef = useRef(-1);
+    const currentInputRef = useRef('');
+    const isBrowsingHistoryRef = useRef(false);
 
     const updateUidCount = () => {
       uidCountRef.current += 1;
@@ -193,15 +197,26 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
 
     const handleInputChange = (e: any) => {
       onInputChange?.(e);
+      const newContent = e.target?.value;
       setMessage({
         ...message,
-        content: e.target?.value
+        content: newContent
       });
+      if (isBrowsingHistoryRef.current && newContent) {
+        isBrowsingHistoryRef.current = false;
+      }
     };
     const handleSendMessage = () => {
+      const content = message.content;
+      if (content && content.trim()) {
+        historyRef.current = [...historyRef.current, content];
+      }
       handleSubmit({ ...message });
       if (shouldResetMessage) {
         resetMessage();
+        historyIndexRef.current = -1;
+        currentInputRef.current = '';
+        isBrowsingHistoryRef.current = false;
       }
     };
     const onStop = () => {
@@ -225,9 +240,16 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
 
     const handleAddMessage = (e?: any) => {
       e?.preventDefault();
+      const content = message.content;
+      if (content && content.trim()) {
+        historyRef.current = [...historyRef.current, content];
+      }
       addMessage?.({ ...message });
       resetMessage();
       setFocused(true);
+      historyIndexRef.current = -1;
+      currentInputRef.current = '';
+      isBrowsingHistoryRef.current = false;
       setTimeout(() => {
         inputRef.current?.focus?.();
       }, 100);
@@ -349,6 +371,51 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
       }
     };
 
+    const handleArrowUp = () => {
+      const history = historyRef.current;
+      const currentContent = message.content;
+
+      if (history.length === 0) return;
+      if (currentContent && !isBrowsingHistoryRef.current) return;
+
+      if (historyIndexRef.current === -1) {
+        currentInputRef.current = currentContent;
+      }
+
+      isBrowsingHistoryRef.current = true;
+      const newIndex = Math.min(
+        historyIndexRef.current + 1,
+        history.length - 1
+      );
+      historyIndexRef.current = newIndex;
+      setMessage({
+        ...message,
+        content: history[history.length - 1 - newIndex]
+      });
+    };
+
+    const handleArrowDown = () => {
+      const history = historyRef.current;
+      const currentContent = message.content;
+
+      if (history.length === 0) return;
+      if (currentContent && !isBrowsingHistoryRef.current) return;
+      if (historyIndexRef.current === -1) return;
+
+      isBrowsingHistoryRef.current = true;
+      const newIndex = Math.max(historyIndexRef.current - 1, -1);
+      historyIndexRef.current = newIndex;
+
+      if (newIndex === -1) {
+        setMessage({ ...message, content: currentInputRef.current });
+      } else {
+        setMessage({
+          ...message,
+          content: history[history.length - 1 - newIndex]
+        });
+      }
+    };
+
     const handleOnKeydown = (e: any) => {
       if (e.key === KeyMap.ENTER.keybinding) {
         if (e.shiftKey) {
@@ -358,6 +425,12 @@ const MessageInput: React.FC<MessageInputProps> = forwardRef(
         if (!loading) {
           handleSendMessage();
         }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        handleArrowUp();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleArrowDown();
       }
     };
 

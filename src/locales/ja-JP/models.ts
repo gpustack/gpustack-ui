@@ -218,6 +218,7 @@ export default {
   'models.mymodels.status.inactive': 'Stopped',
   'models.mymodels.status.degrade': 'Not Ready',
   'models.mymodels.status.active': 'Ready',
+  'models.mymodels.status.not_stopped': '未停止',
   'models.form.kvCache.tips':
     'Extended KV cache and speculative decoding are only available with built-in backends (vLLM / SGLang), Please switch the backend to enable them.',
   'models.form.kvCache.tips2':

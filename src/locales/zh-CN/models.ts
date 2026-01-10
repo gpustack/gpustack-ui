@@ -207,6 +207,7 @@ export default {
   'models.mymodels.status.inactive': '已停止',
   'models.mymodels.status.degrade': '异常',
   'models.mymodels.status.active': '可用',
+  'models.mymodels.status.not_stopped': '非停止',
   'models.form.kvCache.tips':
     '扩展 KV 缓存和推测解码仅在内置后端（vLLM / SGLang）可用，请切换后端以启用。',
   'models.form.kvCache.tips2': '仅在使用内置推理后端（vLLM 或 SGLang）时支持。',

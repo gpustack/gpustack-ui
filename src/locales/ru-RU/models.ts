@@ -222,6 +222,7 @@ export default {
   'models.mymodels.status.inactive': 'Остановлен',
   'models.mymodels.status.degrade': 'Не готов',
   'models.mymodels.status.active': 'Готов',
+  'models.mymodels.status.not_stopped': 'Не остановлен',
   'models.form.kvCache.tips':
     'Расширенный KV-кэш и спекулятивное декодирование доступны только для встроенных бэкендов (vLLM / SGLang). Пожалуйста, переключите бэкенд, чтобы включить их.',
   'models.form.kvCache.tips2':

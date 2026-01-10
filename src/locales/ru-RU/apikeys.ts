@@ -5,6 +5,12 @@ export default {
   'apikeys.title.save': 'Сохранить API-ключ',
   'apikeys.form.expiretime': 'Срок действия',
   'apikeys.form.apikey': 'API-ключ',
+  'apikeys.form.keytype': 'Тип ключа',
+  'apikeys.form.keytype.auto': 'Автоматически сгенерировано',
+  'apikeys.form.keytype.custom': 'Обычай',
+  'apikeys.form.customkey': 'Пользовательский ключ API',
+  'apikeys.form.customkey.minlength':
+    'Пользовательские API-ключи не могут быть пустыми.',
   'apikeys.table.name': 'Название ключа',
   'apikeys.table.save.tips':
     'Обязательно скопируйте ключ сразу. Вы не сможете увидеть его снова.',

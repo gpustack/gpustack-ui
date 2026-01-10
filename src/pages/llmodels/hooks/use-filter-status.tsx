@@ -42,6 +42,13 @@ const useFilterStatus = (options: {
       label: intl.formatMessage({
         id: 'models.mymodels.status.degrade'
       })
+    },
+    {
+      value: MyModelsStatusValueMap.NotStopped,
+      color: 'var(--ant-color-info)',
+      label: intl.formatMessage({
+        id: 'models.mymodels.status.not_stopped'
+      })
     }
   ];
 

@@ -52,8 +52,7 @@ const CHECK_RESOURCE_PATH = [
   '/resources/workers',
   '/cluster-management/clusters/list',
   '/cluster-management/credentials',
-  '/cluster-management/clusters/create',
-  ''
+  '/cluster-management/clusters/create'
 ];
 
 type NewRoute = IRoute & {
@@ -334,7 +333,7 @@ export default (props: any) => {
       <DarkMask></DarkMask>
       <ProLayout
         fixSiderbar
-        fixedHeader
+        fixedHeader={true}
         breadcrumbRender={false}
         route={route}
         location={location}
@@ -387,8 +386,8 @@ export default (props: any) => {
           )}
         </Exception>
         {NoResourceModal}
+        {contextHolder}
       </ProLayout>
-      {contextHolder}
     </ConfigProvider>
   );
 };

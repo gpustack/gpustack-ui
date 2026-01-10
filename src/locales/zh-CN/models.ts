@@ -96,6 +96,7 @@ export default {
     '当 macOS 或 Windows 作节点时勾选 GGUF（搜索语音模型时取消勾选）',
   'models.form.button.addlabel': '添加标签',
   'models.filter.category': '按类别筛选',
+  'models.filter.backend': '按后端筛选',
   'models.list.more.logs': '查看更多',
   'models.catalog.release.date': '发布日期',
   'models.localpath.gguf.tips.title': 'GGUF 格式模型',

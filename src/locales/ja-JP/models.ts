@@ -99,6 +99,7 @@ export default {
     'macOSまたはWindowsをワーカーとして使用する場合、GGUFをチェックしてください（音声モデルの場合はオフにしてください）。',
   'models.form.button.addlabel': 'ラベルを追加',
   'models.filter.category': 'カテゴリでフィルタ',
+  'models.filter.backend': 'バックエンドでフィルタ',
   'models.list.more.logs': 'さらに表示',
   'models.catalog.release.date': 'リリース日',
   'models.localpath.gguf.tips.title': 'GGUF形式のモデル',

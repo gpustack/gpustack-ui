@@ -100,6 +100,7 @@ export default {
     'Для воркеров на macOS/Windows отметьте GGUF (для аудиомоделей снимите).',
   'models.form.button.addlabel': 'Добавить метку',
   'models.filter.category': 'Фильтр по категориям',
+  'models.filter.backend': 'Фильтр по бэкенду',
   'models.list.more.logs': 'Показать больше',
   'models.catalog.release.date': 'Дата выпуска',
   'models.localpath.gguf.tips.title': 'Модель формата GGUF',

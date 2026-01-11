@@ -136,12 +136,16 @@ export async function deleteCluster(id: number) {
   });
 }
 
-export async function queryClusterDetail(params: {
-  cluster_id: number | string;
-}) {
+export async function queryClusterDetail(
+  params: {
+    cluster_id: number | string;
+  },
+  options?: any
+) {
   return request(`${DASHBOARD_API}`, {
     method: 'GET',
-    params
+    params,
+    cancelToken: options?.token
   });
 }
 

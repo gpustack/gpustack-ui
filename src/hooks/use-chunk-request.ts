@@ -6,7 +6,7 @@ import {
 } from '@/atoms/watch-request';
 import { WatchEventType } from '@/config';
 import { request } from '@umijs/max';
-import axios from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 
@@ -36,7 +36,7 @@ export const sliceJsonStr = (text: string) => {
   return result;
 };
 
-export const createAxiosToken = () => {
+export const createAxiosToken = (): CancelTokenSource => {
   const { CancelToken } = axios;
   const source = CancelToken.source();
   return source;

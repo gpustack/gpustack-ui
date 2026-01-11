@@ -2,6 +2,7 @@ import WorkerList from '@/pages/resources/components/workers';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { PageContainerInner } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
+import ClusterSystemLoad from './components/detail/cluster-system-load';
 
 const ClusterDetailModal = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const ClusterDetailModal = () => {
         title: <PageBreadcrumb items={breadcrumbItems} />
       }}
     >
+      <ClusterSystemLoad clusterId={Number(id)}></ClusterSystemLoad>
       <WorkerList
         clusterId={id}
         showAddButton={false}

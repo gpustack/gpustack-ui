@@ -6,7 +6,7 @@ import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
 import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tooltip } from 'antd';
+import { Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
@@ -42,7 +42,9 @@ const useClusterColumns = (
         render: (text: string, record: ClusterListItem) => (
           <>
             <AutoTooltip ghost title={text}>
-              {text}
+              <Typography.Link onClick={() => onCellClick?.(record, 'name')}>
+                {record.name}
+              </Typography.Link>
             </AutoTooltip>
             {record.is_default && (
               <Tooltip

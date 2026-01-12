@@ -45,7 +45,8 @@ const NO_CONTAINER_PAGES = [
   'image',
   'text2images',
   'clusterDetail',
-  'clusterCreate'
+  'clusterCreate',
+  'video'
 ];
 
 const CHECK_RESOURCE_PATH = [

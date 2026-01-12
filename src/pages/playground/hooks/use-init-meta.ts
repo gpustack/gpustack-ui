@@ -279,10 +279,13 @@ export const useInitImageMeta = (
   ) => {
     if (sizeOptions.length) {
       const sizeConfig = ImageSizeConfig.map((item) => {
-        return {
-          ...item,
-          options: sizeOptions
-        };
+        if (item.name === 'size') {
+          return {
+            ...item,
+            options: sizeOptions
+          };
+        }
+        return item;
       });
       return [...ImageCountConfig, ...sizeConfig];
     }

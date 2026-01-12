@@ -6,6 +6,7 @@ export default {
   'menu.playground.chat': 'チャット',
   'menu.playground.speech': '音声',
   'menu.playground.text2images': '画像生成',
+  'menu.playground.video': '動画',
   'menu.compare': '比較',
   'menu.models': 'モデル',
   'menu.models.modelList': 'デプロイと管理',

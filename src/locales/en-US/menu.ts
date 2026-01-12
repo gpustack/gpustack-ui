@@ -6,6 +6,7 @@ export default {
   'menu.playground.chat': 'Chat',
   'menu.playground.speech': 'Audio',
   'menu.playground.text2images': 'Image',
+  'menu.playground.video': 'Video',
   'menu.compare': 'Compare',
   'menu.models': 'Models',
   'menu.models.modelList': 'Deploy & Manage',

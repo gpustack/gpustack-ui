@@ -6,6 +6,7 @@ export default {
   'menu.playground.chat': 'Чат',
   'menu.playground.speech': 'Аудио',
   'menu.playground.text2images': 'Генерация изображений',
+  'menu.playground.video': 'Видео',
   'menu.compare': 'Сравнение',
   'menu.models': 'Модели',
   'menu.models.modelList': 'Развертывание и управление',

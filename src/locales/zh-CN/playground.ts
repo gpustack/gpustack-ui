@@ -67,6 +67,7 @@ export default {
   'playground.params.style.vivid': '生动',
   'playground.params.style.natural': '自然',
   'playground.params.empty.tips': '生成的图片将出现在这里',
+  'playground.video.empty.tips': '生成的视频将出现在这里',
   'playground.embedding.documents': '文档',
   'playground.embedding.addtext': '添加文本',
   'playground.embedding.inputyourtext': '输入你的文本',

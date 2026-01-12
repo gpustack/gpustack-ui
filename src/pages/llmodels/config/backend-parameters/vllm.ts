@@ -500,11 +500,6 @@ const options: BackendParameter[] = [
     options: []
   },
   {
-    label: '--rope-scaling',
-    value: '--rope-scaling',
-    options: []
-  },
-  {
     label: '--rope-theta',
     value: '--rope-theta',
     options: []

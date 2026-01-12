@@ -73,6 +73,16 @@ export default [
         selectedIcon: 'icon-audio-filled',
         defaultIcon: 'icon-audio1',
         component: './playground/speech'
+      },
+      {
+        name: 'video',
+        title: 'Video',
+        path: '/playground/video',
+        key: 'video',
+        icon: 'icon-video',
+        selectedIcon: 'icon-video-filled',
+        defaultIcon: 'icon-video',
+        component: './playground/video'
       }
     ]
   },

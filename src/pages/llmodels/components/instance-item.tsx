@@ -373,7 +373,7 @@ const distributeCols: ColumnProps[] = [
     locale: true,
     key: 'gpu_index',
     render: ({ row }) => {
-      const list = _.sortBy(row.gpu_index, (item: number) => item);
+      const list = row.gpu_index?.sort((a: number, b: number) => a - b) || [];
       return row.is_main ? (
         <>
           {renderGpuIndexs(list)}
@@ -538,7 +538,9 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         port: '',
         vram: calcTotalVram(instanceData.computed_resource_claim?.vram || {}),
         is_main: true,
-        gpu_index: instanceData.gpu_indexes
+        gpu_index: instanceData.gpu_indexes?.sort(
+          (a: number, b: number) => a - b
+        )
       }
     ];
 

@@ -1,3 +1,4 @@
+import { ClusterListItem } from '@/pages/cluster-management/config/types';
 import { atom } from 'jotai';
 
 // models expand keys: create, update , delete,
@@ -63,3 +64,5 @@ export const clusterSessionAtom = atom<{
   firstAddWorker: boolean;
   firstAddCluster: boolean;
 } | null>(null);
+
+export const clusterDetailAtom = atom<ClusterListItem | null>(null);

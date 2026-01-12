@@ -274,10 +274,7 @@ const useWorkerColumns = ({
   return useMemo<ColumnsType<ListItem>>(
     () => [
       {
-        title:
-          sourceType === 'resources'
-            ? intl.formatMessage({ id: 'common.table.name' })
-            : intl.formatMessage({ id: 'resources.table.workername' }),
+        title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 100,
         sorter: tableSorter(1),

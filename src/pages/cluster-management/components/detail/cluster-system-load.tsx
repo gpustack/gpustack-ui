@@ -1,5 +1,5 @@
 import CardWrapper from '@/components/card-wrapper';
-import { Col, Progress, Row } from 'antd';
+import { Col, Progress, Row, Tag } from 'antd';
 import { round } from 'lodash';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
@@ -11,9 +11,12 @@ const Container = styled.div`
   height: 86px;
   gap: 16px;
   .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 14px;
     font-weight: 500;
-    color: var(--ant-color-text-secondary);
+    color: var(--ant-color-text-tertiary);
   }
 
   .value-wrapper {
@@ -42,26 +45,30 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
     }
   }, [clusterId]);
 
-  const renderStepsProgress = (percent: number) => {
+  const renderStepsProgress = (
+    percent: number,
+    tag: { color: string; text: string }
+  ) => {
     return (
       <Progress
         percent={percent}
-        size={{
-          height: 8
-        }}
-        styles={{
-          root: {
-            width: '100%'
-          },
-          track: {
-            flex: 1
-          },
-          body: {
-            display: 'flex',
-            width: '100%'
-          }
-        }}
-        showInfo={false}
+        type="circle"
+        size={50}
+        strokeWidth={8}
+        showInfo={true}
+        format={() => (
+          <Tag
+            color={tag?.color || 'blue'}
+            style={{
+              fontSize: 11,
+              borderRadius: 12,
+              backgroundColor: 'unset',
+              fontWeight: 500
+            }}
+          >
+            {tag?.text || ''}
+          </Tag>
+        )}
       ></Progress>
     );
   };
@@ -73,11 +80,18 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
       <Col span={6}>
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
-            <div className="title">GPU Utilization</div>
+            <div className="title">
+              <span>GPU Utilization</span>
+            </div>
             <div className="value-wrapper">
               <div className="value">
                 <span>{`${round(systemLoad.current.gpu, 1)}%`}</span>
-                {renderStepsProgress(round(systemLoad.current.gpu, 1))}
+              </div>
+              <div className="chart">
+                {renderStepsProgress(round(systemLoad.current.gpu, 1), {
+                  color: 'magenta',
+                  text: 'GPU'
+                })}
               </div>
             </div>
           </Container>
@@ -86,17 +100,16 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
       <Col span={6}>
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
-            <div className="title">VRAM Utilization</div>
+            <div className="title">
+              <span>VRAM Utilization</span>
+            </div>
             <div className="value-wrapper">
               <div className="value">{`${round(systemLoad.current.vram, 1)}%`}</div>
               <div className="chart">
-                <Progress
-                  percent={round(systemLoad.current.vram, 1)}
-                  type="circle"
-                  size={50}
-                  strokeWidth={8}
-                  showInfo={false}
-                ></Progress>
+                {renderStepsProgress(round(systemLoad.current.vram, 1), {
+                  color: 'purple',
+                  text: 'VRAM'
+                })}
               </div>
             </div>
           </Container>
@@ -105,11 +118,18 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
       <Col span={6}>
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
-            <div className="title">CPU Utilization</div>
+            <div className="title">
+              <span>CPU Utilization</span>
+            </div>
             <div className="value-wrapper">
               <div className="value">
                 <span>{`${round(systemLoad.current.cpu, 1)}%`}</span>
-                {renderStepsProgress(round(systemLoad.current.cpu, 1))}
+              </div>
+              <div className="chart">
+                {renderStepsProgress(round(systemLoad.current.cpu, 1), {
+                  color: 'cyan',
+                  text: 'CPU'
+                })}
               </div>
             </div>
           </Container>
@@ -118,19 +138,18 @@ const ClusterSystemLoad: React.FC<{ clusterId: number }> = ({ clusterId }) => {
       <Col span={6}>
         <CardWrapper style={{ padding: '16px', height: 120 }}>
           <Container>
-            <div className="title">Memo Utilization</div>
+            <div className="title">
+              <span>Memo Utilization</span>
+            </div>
             <div className="value-wrapper">
               <div className="value">
                 <span>{`${round(systemLoad.current.ram, 1)}%`}</span>
               </div>
               <div className="chart">
-                <Progress
-                  percent={round(systemLoad.current.ram, 1)}
-                  type="circle"
-                  size={50}
-                  strokeWidth={8}
-                  showInfo={false}
-                ></Progress>
+                {renderStepsProgress(round(systemLoad.current.ram, 1), {
+                  color: 'green',
+                  text: 'RAM'
+                })}
               </div>
             </div>
           </Container>

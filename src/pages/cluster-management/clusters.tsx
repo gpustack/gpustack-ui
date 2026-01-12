@@ -254,7 +254,7 @@ const Clusters: React.FC = () => {
   const handleOnCell = useMemoizedFn((record: ClusterListItem, dataIndex) => {
     if (dataIndex === 'name') {
       navigate(
-        `/cluster-management/clusters/detail?id=${record.id}&name=${record.name}`
+        `/cluster-management/clusters/detail?id=${record.id}&name=${record.name}&page=clusters`
       );
     }
   });

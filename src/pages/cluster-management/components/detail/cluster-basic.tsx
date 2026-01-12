@@ -18,9 +18,9 @@ import { useClusterDetail } from '../../services/use-cluster-detail';
 
 const Container = styled.div`
   display: flex;
-  height: 184px;
+  height: 168px;
   .left {
-    padding: 24px 24px;
+    padding: 16px 24px;
     width: 160px;
     display: flex;
     flex-direction: column;
@@ -42,7 +42,7 @@ const Container = styled.div`
   }
   .right {
     flex: 1;
-    padding-block: 24px;
+    padding-block: 16px;
     padding-inline: 0 24px;
   }
 `;

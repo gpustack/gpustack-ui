@@ -40,6 +40,8 @@ export const IMG_METAKEYS = [
   'strength'
 ];
 
+export const VIDEO_METAKEYS = [];
+
 export const llmInitialValues = {
   seed: null,
   stop: null,
@@ -61,6 +63,8 @@ export const advancedFieldsDefaultValus = {
   // schedule_method: 'discrete',
   // preview: 'preview_faster'
 };
+
+export const videoAdvancedDefaultValues = {};
 
 export const openaiCompatibleFieldsDefaultValus = {
   // quality: 'standard',

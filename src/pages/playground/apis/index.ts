@@ -5,6 +5,7 @@ import { request } from '@umijs/max';
 export { GPUSTACK_API_BASE_URL, OPENAI_COMPATIBLE };
 
 export const CHAT_API = `/${OPENAI_COMPATIBLE}/chat/completions`;
+export const CREATE_VIDEO_API = `/${OPENAI_COMPATIBLE}/videos`;
 
 export const CREAT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/generations`;
 export const EDIT_IMAGE_API = `/${OPENAI_COMPATIBLE}/images/edits`;
@@ -114,6 +115,25 @@ export const createImage = async (params: {
   signal?: AbortSignal;
 }) => {
   const response = await fetch(CREAT_IMAGE_API, {
+    method: 'POST',
+    body: JSON.stringify(params.data),
+    signal: params.signal,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    return await errorHandler(response);
+  }
+  return response.json();
+};
+
+export const createVideo = async (params: {
+  data?: any;
+  signal?: AbortSignal;
+}) => {
+  const response = await fetch(CREATE_VIDEO_API, {
     method: 'POST',
     body: JSON.stringify(params.data),
     signal: params.signal,

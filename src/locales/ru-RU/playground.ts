@@ -63,6 +63,7 @@ export default {
   'playground.params.height': 'Высота',
   'playground.params.custom': 'Дополнительно',
   'playground.params.empty.tips': 'Здесь появятся сгенерированные изображения',
+  'playground.video.empty.tips': 'Здесь появятся сгенерированные видео.',
   'playground.params.standard': 'Стандарт',
   'playground.params.hd': 'HD',
   'playground.params.style.vivid': 'Яркий',

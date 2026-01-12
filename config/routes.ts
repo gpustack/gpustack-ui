@@ -80,6 +80,7 @@ export default [
         path: '/playground/video',
         key: 'video',
         icon: 'icon-video',
+        hideInMenu: true,
         selectedIcon: 'icon-video-filled',
         defaultIcon: 'icon-video',
         component: './playground/video'

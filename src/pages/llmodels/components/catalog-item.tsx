@@ -128,17 +128,20 @@ const CatalogItem: React.FC<CatalogItemProps> = (props) => {
                 </ThemeTag>
               );
             })}
-          <span className="dot"></span>
+
           {data.size > 0 && (
-            <AutoTooltip
-              style={{
-                borderRadius: 4
-              }}
-            >
-              {data.activated_size
-                ? `${data.size}${data.size_unit || 'B'}-A${data.activated_size}${data.size_unit || 'B'}`
-                : `${data.size}${data.size_unit || 'B'}`}
-            </AutoTooltip>
+            <>
+              <span className="dot"></span>
+              <AutoTooltip
+                style={{
+                  borderRadius: 4
+                }}
+              >
+                {data.activated_size
+                  ? `${data.size}${data.size_unit || 'B'}-A${data.activated_size}${data.size_unit || 'B'}`
+                  : `${data.size}${data.size_unit || 'B'}`}
+              </AutoTooltip>
+            </>
           )}
         </div>
       </div>

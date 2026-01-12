@@ -57,6 +57,7 @@ export interface ClusterListItem {
   worker_config: Record<string, any>;
   provider: ProviderType;
   credential_id: number;
+  created_at: string;
   zone: string;
   region: string;
   gpus: number;

@@ -84,6 +84,9 @@ export default {
       trackHoverBg: '#646464',
       dotActiveBorderColor: 'rgba(255,255,255,0.25)',
       dotBorderColor: 'rgba(255,255,255,0.25)'
+    },
+    Descriptions: {
+      itemPaddingBottom: 8
     }
   },
   token: {

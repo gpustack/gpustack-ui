@@ -321,12 +321,12 @@ export default (props: any) => {
       }}
       modal={{
         mask: {
-          blur: false
+          blur: true
         }
       }}
       drawer={{
         mask: {
-          blur: false
+          blur: true
         }
       }}
     >

@@ -1,7 +1,11 @@
+import { clusterDetailAtom } from '@/atoms/clusters';
 import IconFont from '@/components/icon-font';
+import Deployments from '@/pages/llmodels/index';
+import GPUList from '@/pages/resources/components/gpus';
 import WorkerList from '@/pages/resources/components/workers';
 import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { Tabs } from 'antd';
+import { useAtomValue } from 'jotai';
 import { PageContainerInner } from '../_components/page-box';
 import PageBreadcrumb from '../_components/page-breadcrumb';
 import ClusterBasic from './components/detail/cluster-basic';
@@ -13,6 +17,7 @@ const ClusterDetailModal = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const clusterName = searchParams.get('name');
+  const clusterDetailData = useAtomValue(clusterDetailAtom);
 
   const breadcrumbItems = [
     {
@@ -39,7 +44,7 @@ const ClusterDetailModal = () => {
         items={[
           {
             key: 'workers',
-            label: 'Workers',
+            label: `Workers (${clusterDetailData?.workers ?? 0})`,
             icon: <IconFont type="icon-resources" />,
             children: (
               <WorkerList
@@ -53,15 +58,15 @@ const ClusterDetailModal = () => {
           },
           {
             key: 'deployments',
-            label: 'Deployments',
+            label: `Deployments (${clusterDetailData?.models ?? 0})`,
             icon: <IconFont type="icon-rocket-launch1" />,
-            children: <div>Deployments Content</div>
+            children: <Deployments clusterId={Number(id)}></Deployments>
           },
           {
             key: 'gpus',
-            label: 'GPUs',
+            label: `GPUs (${clusterDetailData?.gpus ?? 0})`,
             icon: <IconFont type="icon-gpu1" />,
-            children: <div>GPUs Content</div>
+            children: <GPUList clusterId={Number(id)} widths={{ input: 360 }} />
           }
         ]}
       />

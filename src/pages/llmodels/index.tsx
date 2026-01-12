@@ -16,7 +16,7 @@ import {
 import TableList from './components/table-list';
 import { ListItem } from './config/types';
 
-const Models: React.FC = () => {
+const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
   const { setChunkRequest, createAxiosToken } = useSetChunkRequest();
   const { setChunkRequest: setModelInstanceChunkRequest } =
@@ -45,7 +45,7 @@ const Models: React.FC = () => {
     page: 1,
     perPage: 10,
     search: '',
-    cluster_id: 0,
+    cluster_id: clusterId || 0,
     categories: [],
     state: '',
     sort_by: ''

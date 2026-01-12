@@ -526,6 +526,8 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
         is_main: false,
         vram: calcTotalVram(item.computed_resource_claim?.vram || {}),
         gpu_index: _.keys(item.computed_resource_claim?.vram)
+          .map((i: string) => Number(i))
+          .sort((a: number, b: number) => a - b)
       };
     });
 

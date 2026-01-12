@@ -1,6 +1,8 @@
+import { clusterDetailAtom } from '@/atoms/clusters';
 import { createAxiosToken } from '@/hooks/use-chunk-request';
 import { useRequest } from 'ahooks';
 import { CancelTokenSource } from 'axios';
+import { useAtom } from 'jotai';
 import { useEffect, useRef, useState } from 'react';
 import { queryClusterDetail, queryClusterItem } from '../apis';
 import { ClusterListItem } from '../config/types';
@@ -79,6 +81,7 @@ export const useClusterDetail = () => {
   const [clusterDetail, setClusterDetail] = useState<ClusterListItem>(
     {} as ClusterListItem
   );
+  const [, setClusterDetailAtom] = useAtom(clusterDetailAtom);
 
   const {
     run: fetchClusterDetail,
@@ -96,9 +99,11 @@ export const useClusterDetail = () => {
       manual: true,
       onSuccess: (response) => {
         setClusterDetail(response);
+        setClusterDetailAtom(response);
       },
       onError: () => {
         setClusterDetail({} as ClusterListItem);
+        setClusterDetailAtom(null);
       }
     }
   );

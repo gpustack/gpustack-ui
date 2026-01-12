@@ -17,7 +17,7 @@ import PageBox from '@/pages/_components/page-box';
 import useNoResourceResult from '@/pages/llmodels/hooks/use-no-resource-result';
 import { handleBatchRequest } from '@/utils';
 import { DownOutlined, SearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { useIntl, useNavigate } from '@umijs/max';
+import { useIntl, useNavigate, useSearchParams } from '@umijs/max';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Input, Space, message } from 'antd';
 import { useAtom } from 'jotai';
@@ -139,6 +139,8 @@ const Models: React.FC<ModelsProps> = ({
     getWorkerList,
     workerList
   } = useFormInitialValues();
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get('page');
   const { saveScrollHeight, restoreScrollHeight } = useBodyScroll();
   const [updateFormInitials, setUpdateFormInitials] = useState<{
     data: any;
@@ -656,18 +658,20 @@ const Models: React.FC<ModelsProps> = ({
                 onChange={handleCategoryChange}
                 options={modelCategories.filter((item) => item.value)}
               ></BaseSelect>
-              <BaseSelect
-                allowClear
-                showSearch={false}
-                placeholder={intl.formatMessage({
-                  id: 'clusters.filterBy.cluster'
-                })}
-                style={{ width: 160 }}
-                size="large"
-                maxTagCount={1}
-                onChange={handleClusterChange}
-                options={clusterList}
-              ></BaseSelect>
+              {page !== 'clusters' && (
+                <BaseSelect
+                  allowClear
+                  showSearch={false}
+                  placeholder={intl.formatMessage({
+                    id: 'clusters.filterBy.cluster'
+                  })}
+                  style={{ width: 160 }}
+                  size="large"
+                  maxTagCount={1}
+                  onChange={handleClusterChange}
+                  options={clusterList}
+                ></BaseSelect>
+              )}
               <BaseSelect
                 allowClear
                 showSearch={false}
@@ -690,21 +694,23 @@ const Models: React.FC<ModelsProps> = ({
           }
           right={
             <Space size={20}>
-              <DropDownActions
-                menu={{
-                  items: sourceOptions,
-                  onClick: handleClickDropdown
-                }}
-                placement="bottomRight"
-              >
-                <Button
-                  icon={<DownOutlined></DownOutlined>}
-                  type="primary"
-                  iconPlacement="end"
+              {page !== 'clusters' && (
+                <DropDownActions
+                  menu={{
+                    items: sourceOptions,
+                    onClick: handleClickDropdown
+                  }}
+                  placement="bottomRight"
                 >
-                  {intl?.formatMessage?.({ id: 'models.button.deploy' })}
-                </Button>
-              </DropDownActions>
+                  <Button
+                    icon={<DownOutlined></DownOutlined>}
+                    type="primary"
+                    iconPlacement="end"
+                  >
+                    {intl?.formatMessage?.({ id: 'models.button.deploy' })}
+                  </Button>
+                </DropDownActions>
+              )}
               <DropdownButtons
                 items={ButtonList}
                 extra={

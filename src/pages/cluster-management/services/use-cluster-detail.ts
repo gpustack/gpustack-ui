@@ -39,6 +39,7 @@ export const useClusterSystemLoad = () => {
     },
     {
       manual: true,
+      cacheKey: 'cluster-system-load',
       onSuccess: (response) => {
         setSystemLoad({
           current: response.system_load?.current,

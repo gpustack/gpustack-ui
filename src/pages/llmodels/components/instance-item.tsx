@@ -16,6 +16,7 @@ import {
   DownloadOutlined,
   HddFilled,
   InfoCircleOutlined,
+  PieChartFilled,
   ThunderboltFilled
 } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
@@ -490,6 +491,16 @@ const InstanceItem: React.FC<InstanceItemProps> = ({
           {instanceData.backend_version || modelData?.backend_version
             ? `(${instanceData.backend_version || modelData?.backend_version})`
             : ''}
+        </div>
+        <div className="flex-center">
+          <PieChartFilled className="m-r-5" />
+          {intl.formatMessage({ id: 'models.table.vram.allocated' })}:{' '}
+          {convertFileSize(
+            instanceData.computed_resource_claim?.vram
+              ? calcTotalVram(instanceData.computed_resource_claim?.vram)
+              : 0,
+            1
+          )}
         </div>
       </div>
     );

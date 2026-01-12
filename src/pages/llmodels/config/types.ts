@@ -191,6 +191,7 @@ export interface CatalogItem {
   categories: string[];
   capabilities: string[];
   size: number;
+  size_unit: string;
   activated_size: number;
   licenses: string[];
   release_date: string;

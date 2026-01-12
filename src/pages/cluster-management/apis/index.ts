@@ -149,6 +149,13 @@ export async function queryClusterDetail(
   });
 }
 
+export async function queryClusterItem(params: { id: number }, options?: any) {
+  return request<ClusterListItem>(`${CLUSTERS_API}/${params.id}`, {
+    method: 'GET',
+    cancelToken: options?.token
+  });
+}
+
 export async function queryClusterToken(params: { id: number }) {
   return request(`${CLUSTERS_API}/${params.id}/${CLUSTER_TOKEN}`, {
     method: 'GET'

@@ -1,6 +1,52 @@
 import _ from 'lodash';
 import { PCA } from 'ml-pca';
 
+type Point = {
+  value: [number, number];
+  [key: string]: any;
+};
+
+const normalizeEmbeddingToCanvas = (
+  data: Point[],
+  padding = 0.9 // 90% fill the canvas
+) => {
+  let minX = Infinity,
+    maxX = -Infinity;
+  let minY = Infinity,
+    maxY = -Infinity;
+
+  data.forEach((p) => {
+    const [x, y] = p.value;
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  });
+
+  // 2. center point
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+
+  // 3. max radius
+  let maxRadius = 0;
+  data.forEach((p) => {
+    const dx = Math.abs(p.value[0] - cx);
+    const dy = Math.abs(p.value[1] - cy);
+    maxRadius = Math.max(maxRadius, dx, dy);
+  });
+
+  if (maxRadius === 0) maxRadius = 1;
+
+  // 4. scale factor
+  const scale = padding / maxRadius;
+
+  // 5. normalization
+  return data.map((p) => ({
+    ...p,
+    value: [(p.value[0] - cx) * scale, (p.value[1] - cy) * scale]
+  }));
+};
+
 self.onmessage = (
   event: MessageEvent<{
     embeddings: any[];
@@ -49,7 +95,7 @@ self.onmessage = (
     };
 
     self.postMessage({
-      scatterData: list,
+      scatterData: normalizeEmbeddingToCanvas(list),
       embeddingData: embeddingData
     });
   } catch (e) {

@@ -2,12 +2,26 @@ import Chart from '@/components/echarts/chart';
 import useChartConfig from '@/components/echarts/config';
 import EmptyData from '@/components/empty-data';
 import _ from 'lodash';
-import React, { memo, useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { ChartProps } from './types';
 
-const Scatter: React.FC<ChartProps> = (props) => {
+const Scatter: React.FC<
+  ChartProps & {
+    xMax?: number;
+    yMax?: number;
+  }
+> = (props) => {
   const { grid, title: titleConfig, isDark, chartColorMap } = useChartConfig();
-  const { seriesData, xAxisData, height, width, showEmpty, title } = props;
+  const {
+    seriesData,
+    xAxisData,
+    height,
+    width,
+    showEmpty,
+    title,
+    xMax = 1,
+    yMax = 1
+  } = props;
 
   const chart = useRef<any>(null);
 
@@ -36,8 +50,8 @@ const Scatter: React.FC<ChartProps> = (props) => {
         borderRadius: 4
       },
       xAxis: {
-        min: -1,
-        max: 1,
+        min: -xMax,
+        max: xMax,
         scale: false,
         slient: true,
         splitNumber: 15,
@@ -62,8 +76,8 @@ const Scatter: React.FC<ChartProps> = (props) => {
         boundaryGap: [0.05, 0.05]
       },
       yAxis: {
-        min: -1,
-        max: 1,
+        min: -yMax,
+        max: yMax,
         scale: false,
         slient: true,
         splitNumber: 10,
@@ -99,7 +113,7 @@ const Scatter: React.FC<ChartProps> = (props) => {
       },
       series: []
     };
-  }, [isDark]);
+  }, [isDark, xMax, yMax]);
 
   const findOverlappingPoints = useCallback(
     (data: any[], currentPoint: any) => {
@@ -201,7 +215,10 @@ const Scatter: React.FC<ChartProps> = (props) => {
   return (
     <>
       {!seriesData.length && showEmpty ? (
-        <EmptyData height={height} title={title}></EmptyData>
+        <EmptyData
+          height={height}
+          title={_.get(title, 'text', title || '')}
+        ></EmptyData>
       ) : (
         <Chart
           ref={chart}
@@ -214,4 +231,4 @@ const Scatter: React.FC<ChartProps> = (props) => {
   );
 };
 
-export default memo(Scatter);
+export default Scatter;

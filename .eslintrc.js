@@ -9,7 +9,8 @@ module.exports = {
   },
   globals: {
     Global: 'readonly',
-    React: 'readonly'
+    React: 'readonly',
+    JSX: 'readonly'
   },
   ignorePatterns: ['public/static/', 'public/vs/**']
 };

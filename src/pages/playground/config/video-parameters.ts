@@ -36,13 +36,8 @@ export const videoParamsConfig: ParamsSchema[] = [
     type: 'Select',
     name: 'size',
     options: videoSizeOptions,
-    description: {
-      text: 'playground.params.size.description',
-      html: true,
-      isLocalized: true
-    },
     label: {
-      text: 'playground.params.size',
+      text: 'playground.params.resolution',
       isLocalized: true
     },
     rules: [

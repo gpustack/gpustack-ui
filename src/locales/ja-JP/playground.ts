@@ -165,7 +165,8 @@ export default {
     'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
   'playground.uploadImage.url.holder': 'Enter an image URL',
   'playground.uploadImage.url.button': 'Add Image from URL',
-  'playground.params.duration': 'Duration (seconds)'
+  'playground.params.duration': 'Duration (seconds)',
+  'playground.params.resolution': 'Resolution'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -175,5 +176,6 @@ export default {
 // 4. 'playground.uploadImage.url.invalid': 'Please enter a direct image URL(e.g. https://.../image.png). Press ESC to cancel.',
 // 5. 'playground.uploadImage.url.holder': 'Enter an image URL'
 // 6.  'playground.uploadImage.url.button': 'Add Image from URL',
-// 7. 'playground.params.duration': 'Duration (seconds)'
+// 7. 'playground.params.duration': 'Duration (seconds)',
+// 8. 'playground.params.resolution': 'Resolution'
 // ========== End of To-Do List ==========

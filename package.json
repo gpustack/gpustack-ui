@@ -119,8 +119,5 @@
     "overrides": {
       "elliptic": "^6.6.1"
     }
-  },
-  "engines": {
-    "node": "16.20.2"
   }
 }

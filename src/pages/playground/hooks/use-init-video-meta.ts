@@ -1,6 +1,6 @@
 import {
-  ImageCustomSizeConfig,
-  ImageSizeItem
+  CustomSizeConfig,
+  SizeOption
 } from '@/pages/playground/config/params-config';
 import { generateRandomNumber } from '@/utils';
 import { useSearchParams } from '@umijs/max';
@@ -43,9 +43,9 @@ export const useInitVideoMeta = (
   const [searchParams] = useSearchParams();
   const [modelMeta, setModelMeta] = useState<any>({});
   const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(false);
-  const [videoSizeOptions, setVideoSizeOptions] = React.useState<
-    ImageSizeItem[]
-  >([]);
+  const [videoSizeOptions, setVideoSizeOptions] = React.useState<SizeOption[]>(
+    []
+  );
   const [basicParamsConfig, setBasicParamsConfig] = React.useState<
     ParamsSchema[]
   >([...videoParamsConfig]);
@@ -107,7 +107,7 @@ export const useInitVideoMeta = (
 
   const generateParamsConfig = (
     currentModel: any,
-    sizeOptions: ImageSizeItem[]
+    sizeOptions: SizeOption[]
   ) => {
     if (sizeOptions.length) {
       const sizeConfig = videoParamsConfig.map((item) => {
@@ -120,18 +120,16 @@ export const useInitVideoMeta = (
     }
     const { max_height, max_width } = currentModel.meta || {};
     // generate custom size config
-    const customSizeConfig = _.cloneDeep(ImageCustomSizeConfig).map(
-      (item: any) => {
-        const max = item.name === 'height' ? max_height : max_width;
-        return {
-          ...item,
-          attrs: {
-            ...item.attrs,
-            max: max || item.attrs.max
-          }
-        };
-      }
-    );
+    const customSizeConfig = _.cloneDeep(CustomSizeConfig).map((item: any) => {
+      const max = item.name === 'height' ? max_height : max_width;
+      return {
+        ...item,
+        attrs: {
+          ...item.attrs,
+          max: max || item.attrs.max
+        }
+      };
+    });
     return [...customSizeConfig];
   };
 
@@ -163,7 +161,7 @@ export const useInitVideoMeta = (
     if (values.size === 'custom') {
       return [
         ...basicParamsConfig,
-        ...ImageCustomSizeConfig,
+        ...CustomSizeConfig,
         ...(values.isOpenaiCompatible
           ? videoExtraConfig
           : videoAdvancedParamsConfig)
@@ -266,7 +264,7 @@ export const useInitVideoMeta = (
       if (changeValues.size && changeValues.size === 'custom') {
         setParamsConfig([
           ...basicParamsConfig,
-          ...ImageCustomSizeConfig,
+          ...CustomSizeConfig,
           ...(!isOpenaiCompatible
             ? videoAdvancedParamsConfig
             : videoExtraConfig)
@@ -342,7 +340,7 @@ export const useInitVideoMeta = (
     videoAdvancedDefaultValues,
     videoAdvancedParamsConfig,
     videoInitialValues,
-    ImageCustomSizeConfig,
+    CustomSizeConfig,
     videoExtraConfig
   };
 };

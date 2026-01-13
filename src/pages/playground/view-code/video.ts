@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { MODEL_PROXY } from '../apis';
-import { fomatNodeJsParams, formatCurlArgs } from './utils';
+import { MODEL_PROXY, OPENAI_COMPATIBLE } from '../apis';
+import { fomatNodeJsParams, formatCurlArgs, formatPyParams } from './utils';
 
 export const generateCurlCode = ({
   api: url,
@@ -13,23 +13,14 @@ export const generateCurlCode = ({
   const api = modelProxy ? `${MODEL_PROXY}/\${YOUR_API_PATH}` : url;
 
   // ========================= Curl =========================
-  let curlCode = `
-curl ${host}${api} \\
--H "Content-Type: application/json" \\
--H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
-${formatCurlArgs(parameters, isFormdata)}`.trim();
 
-  if (edit) {
-    curlCode = `
+  const curlCode = `
 curl ${host}${api} \\
 -H "Content-Type: multipart/form-data" \\
 -H "Authorization: Bearer $\{YOUR_GPUSTACK_API_KEY}" \\${modelProxy ? `\n-H "X-GPUStack-Model: ${parameters.model}" \\` : ''}
--F image="@image.png" \\
--F mask="@mask.png" \\
 ${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
-      .trim()
-      .replace(/\\$/, '');
-  }
+    .trim()
+    .replace(/\\$/, '');
 
   return curlCode;
 };
@@ -37,8 +28,7 @@ ${formatCurlArgs(_.omit(parameters, ['mask', 'image']), isFormdata)}`
 export const generateCode = ({
   api: url,
   parameters,
-  isFormdata = false,
-  edit = false
+  isFormdata = false
 }: Record<string, any>) => {
   const host = window.location.origin;
   const api = url;
@@ -47,36 +37,39 @@ export const generateCode = ({
   let curlCode = generateCurlCode({
     api: url,
     parameters,
-    isFormdata,
-    edit
+    isFormdata
   });
 
   // ========================= Python =========================
   const pythonCode = `
-import requests\n
-url="${host}${api}"
-headers = {
-  "Content-type": "application/json",
-  "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
-}
-data = ${JSON.stringify(parameters, null, 2).replace(/null/g, 'None')}\n
-response = requests.post(url, headers=headers, json=data)
-print(response.json()['data']['object'])`.trim();
+from openai import OpenAI\n
+client = OpenAI(
+  base_url="${host}/${OPENAI_COMPATIBLE}", 
+  api_key="YOUR_GPUSTACK_API_KEY"
+)
+
+video = client.videos.create(\n${formatPyParams({ ...parameters })})\n
+print(video.id)`.trim();
 
   // ========================= Node.js =========================
+  const params = fomatNodeJsParams({
+    ...parameters
+  });
+
   const nodeJsCode = `
-const axios = require('axios');
+const OpenAI = require("openai");
 
-const url = "${host}${api}";
-const headers = {
-  "Content-type": "application/json",
-  "Authorization": "Bearer $\{YOUR_GPUSTACK_API_KEY}"
-};
-const data = ${fomatNodeJsParams(parameters)};
+const openai = new OpenAI({
+  "apiKey": "YOUR_GPUSTACK_API_KEY",
+  "baseURL": "${host}/${OPENAI_COMPATIBLE}"
+});
 
-axios.post(url, data, { headers }).then((response) => {
-  console.log(response.data.object);
-});`.trim();
+async function main() {
+  const params = ${params}; 
+  const video = await openai.videos.create(params);
+  console.log(video.id);
+}
+main();`.trim();
 
   return {
     curlCode,

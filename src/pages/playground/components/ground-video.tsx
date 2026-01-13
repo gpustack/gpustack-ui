@@ -2,10 +2,9 @@ import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
 import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
-import ThumbImg from '@/pages/playground/components/thumb-img';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Tooltip } from 'antd';
+import { Button, Spin, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -116,6 +115,7 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
   const viewCodeContent = useMemo(() => {
     return generateCode({
       api: CREATE_VIDEO_API,
+      isFormdata: true,
       parameters: {
         ...finalParameters,
         prompt: currentPrompt
@@ -170,22 +170,34 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
         >
           <>
             <div className="content" style={{ height: '100%' }}>
-              <ThumbImg
-                style={{
-                  padding: 0,
-                  height: '100%',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  flexWrap: 'unset',
-                  alignItems: 'center'
-                }}
-                autoBgColor={false}
-                editable={false}
-                dataList={videoList}
-                responseable={true}
-                gutter={[8, 16]}
-                autoSize={true}
-              ></ThumbImg>
+              {videoList.length > 0 && (
+                <div
+                  style={{
+                    width: '100%',
+                    maxWidth: 720,
+                    margin: '24px auto',
+                    aspectRatio: '16 / 9',
+                    background: '#000',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.12)'
+                  }}
+                >
+                  <Spin spinning={loading}>
+                    <video
+                      src={videoList[0]?.dataUrl}
+                      poster="https://placehold.co/640x360.png?text=GPUStack"
+                      controls
+                      disablePictureInPicture
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  </Spin>
+                </div>
+              )}
               {!videoList.length && (
                 <div className="flex-column font-size-14 flex-center gap-20 justify-center hold-wrapper">
                   <VideoCameraOutlined className="font-size-32 text-secondary" />

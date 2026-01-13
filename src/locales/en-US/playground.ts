@@ -161,5 +161,6 @@ export default {
   'playground.uploadImage.url.invalid':
     'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
   'playground.uploadImage.url.holder': 'Enter an image URL',
-  'playground.uploadImage.url.button': 'Add Image from URL'
+  'playground.uploadImage.url.button': 'Add Image from URL',
+  'playground.params.duration': 'Duration (seconds)'
 };

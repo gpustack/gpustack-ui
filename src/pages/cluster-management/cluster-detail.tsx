@@ -44,7 +44,7 @@ const ClusterDetailModal = () => {
         items={[
           {
             key: 'workers',
-            label: `Workers (${clusterDetailData?.workers ?? 0})`,
+            label: `Workers`,
             icon: <IconFont type="icon-resources" />,
             children: (
               <WorkerList
@@ -58,13 +58,13 @@ const ClusterDetailModal = () => {
           },
           {
             key: 'deployments',
-            label: `Deployments (${clusterDetailData?.models ?? 0})`,
+            label: `Deployments`,
             icon: <IconFont type="icon-rocket-launch1" />,
             children: <Deployments clusterId={Number(id)}></Deployments>
           },
           {
             key: 'gpus',
-            label: `GPUs (${clusterDetailData?.gpus ?? 0})`,
+            label: `GPUs`,
             icon: <IconFont type="icon-gpu1" />,
             children: <GPUList clusterId={Number(id)} widths={{ input: 360 }} />
           }

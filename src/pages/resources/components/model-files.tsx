@@ -319,7 +319,9 @@ const ModelFiles = () => {
             tableLayout="fixed"
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            style={{ width: '100%' }}
+            scroll={{
+              x: 900
+            }}
             onChange={handleTableChange}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}

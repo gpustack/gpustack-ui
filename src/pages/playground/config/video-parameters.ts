@@ -23,8 +23,8 @@ export const videoParamsConfig: ParamsSchema[] = [
       { label: '12', value: '12' }
     ],
     label: {
-      text: 'Duration (seconds)',
-      isLocalized: false
+      text: 'playground.params.duration',
+      isLocalized: true
     },
     rules: [
       {

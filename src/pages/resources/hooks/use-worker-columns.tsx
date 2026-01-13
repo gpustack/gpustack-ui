@@ -279,7 +279,7 @@ const useWorkerColumns = ({
         width: 100,
         sorter: tableSorter(1),
         render: (text: string) => (
-          <AutoTooltip ghost maxWidth={240}>
+          <AutoTooltip ghost maxWidth={200}>
             {text}
           </AutoTooltip>
         )

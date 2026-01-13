@@ -110,14 +110,13 @@ const GPUList: React.FC<{ clusterId?: number; widths: { input: number } }> = ({
         <ConfigProvider renderEmpty={renderEmpty}>
           <Table
             columns={columns}
-            style={{ width: '100%' }}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
+            tableLayout={'auto'}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             rowKey="id"
-            scroll={{ x: true }}
+            scroll={{ x: 900 }}
             onChange={handleTableChange}
             pagination={{
               showSizeChanger: true,

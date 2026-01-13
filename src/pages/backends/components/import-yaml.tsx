@@ -86,6 +86,8 @@ const ImportYAML: React.FC<ImportYAMLProps> = forwardRef(
           return false;
         }
 
+        setError('');
+
         return content;
       } catch (error) {
         setError((error as Error).message);

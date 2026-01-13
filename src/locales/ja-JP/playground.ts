@@ -164,7 +164,8 @@ export default {
   'playground.uploadImage.url.invalid':
     'Please enter a direct image URL (e.g. https://.../image.png). Press ESC to cancel.',
   'playground.uploadImage.url.holder': 'Enter an image URL',
-  'playground.uploadImage.url.button': 'Add Image from URL'
+  'playground.uploadImage.url.button': 'Add Image from URL',
+  'playground.params.duration': 'Duration (seconds)'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -173,5 +174,6 @@ export default {
 // 3. 'playground.uploadfile.sizeError': 'File size exceeds the limit. Maximum allowed: {size}.'
 // 4. 'playground.uploadImage.url.invalid': 'Please enter a direct image URL(e.g. https://.../image.png). Press ESC to cancel.',
 // 5. 'playground.uploadImage.url.holder': 'Enter an image URL'
-// 6.  'playground.uploadImage.url.button': 'Add Image from URL'
+// 6.  'playground.uploadImage.url.button': 'Add Image from URL',
+// 7. 'playground.params.duration': 'Duration (seconds)'
 // ========== End of To-Do List ==========

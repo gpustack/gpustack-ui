@@ -13,10 +13,6 @@ export default function useTextVideo(props: any) {
   const [videoList, setVideoList] = useState<
     {
       dataUrl: string;
-      height: number | string;
-      width: string | number;
-      maxHeight: string | number;
-      maxWidth: string | number;
       uid: number;
       span?: number;
       loading?: boolean;
@@ -47,29 +43,6 @@ export default function useTextVideo(props: any) {
     return requestIdRef.current;
   };
 
-  const removeBase64Suffix = (str: string, suffix: string) => {
-    return str.endsWith(suffix) ? str.slice(0, -suffix.length) : str;
-  };
-
-  const setImageSize = (parameters: any) => {
-    let size: Record<string, string | number> = {
-      span: 12
-    };
-    if (parameters.n === 1) {
-      size.span = 24;
-    }
-    if (parameters.n === 2) {
-      size.span = 12;
-    }
-    if (parameters.n === 3) {
-      size.span = 12;
-    }
-    if (parameters.n === 4) {
-      size.span = 12;
-    }
-    return size;
-  };
-
   const setMessageId = () => {
     messageId.current = messageId.current + 1;
     return messageId.current;
@@ -91,31 +64,21 @@ export default function useTextVideo(props: any) {
       requestToken.current?.abort?.('cancel');
       requestToken.current = new AbortController();
       const currentRequestId = updateRequestId();
-      const size: any = setImageSize(parameters);
       setLoading(true);
       setMessageId();
       setTokenResult(null);
 
-      const imgSize = _.split(parameters.size, 'x').map((item: string) =>
-        _.toNumber(item)
-      );
+      const newList = [
+        {
+          dataUrl: '',
+          progress: 0,
+          loading: true,
+          preview: false,
+          uid: setMessageId()
+        }
+      ];
 
-      let newImageList = Array(parameters.n)
-        .fill({})
-        .map((item, index: number) => {
-          return {
-            dataUrl: 'data:image/png;base64,',
-            ...size,
-            progress: 0,
-            height: imgSize[1],
-            width: imgSize[0],
-            loading: true,
-            progressType: 'dashboard',
-            preview: false,
-            uid: setMessageId()
-          };
-        });
-      setVideoList(newImageList);
+      setVideoList(newList);
 
       const result = await createVideo({
         data: parameters,
@@ -145,28 +108,15 @@ export default function useTextVideo(props: any) {
         return;
       }
 
-      result?.data?.forEach((item: any, index: number) => {
-        const imgItem = newImageList[index];
+      newList[0] = {
+        ...newList[0],
+        dataUrl: result?.id,
+        loading: false,
+        progress: 100
+      };
 
-        if (item.b64_json) {
-          imgItem.dataUrl = `data:image/png;base64,${item.b64_json}`;
-        }
-
-        newImageList[index] = {
-          dataUrl: imgItem.dataUrl,
-          height: imgSize[1],
-          width: imgSize[0],
-          maxHeight: `${imgSize[1]}px`,
-          maxWidth: `${imgSize[0]}px`,
-          uid: imgItem.uid,
-          span: imgItem.span,
-          loading: false,
-          preview: true,
-          progress: 100
-        };
-      });
-      console.log('newImageList:', newImageList);
-      setVideoList([...newImageList]);
+      console.log('newList:', newList);
+      setVideoList([...newList]);
     } catch (error) {
       console.log('error:', error);
       updateRequestId();

@@ -1,7 +1,6 @@
 import LabelSelector from '@/components/label-selector';
 import CheckboxField from '@/components/seal-form/checkbox-field';
 import SealSelect from '@/components/seal-form/seal-select';
-import SealSlider from '@/components/seal-form/seal-slider';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
@@ -68,36 +67,6 @@ const AdvanceConfig = () => {
           options={modelCategories}
         ></SealSelect>
       </Form.Item>
-      {!isGGUF && modelContextData?.native && (
-        <Form.Item<FormData> name="max_context_len">
-          <SealSlider
-            label={intl.formatMessage({ id: 'models.form.maxContextLength' })}
-            inputnumber={true}
-            onChange={handleContextLengthChange}
-            included={true}
-            max={modelContextData?.scaled || 163840}
-            tooltip={{}}
-            step={1024}
-            marks={{
-              [modelContextData?.scaled]: {
-                label: 'scaled',
-                style: {
-                  transform: 'translateX(-100%)'
-                }
-              },
-              [modelContextData?.native]: {
-                label: 'native',
-                style: {
-                  transform:
-                    modelContextData?.scaled === modelContextData?.native
-                      ? 'translateX(-100%)'
-                      : 'unset'
-                }
-              }
-            }}
-          ></SealSlider>
-        </Form.Item>
-      )}
       <BackendParametersList></BackendParametersList>
       <Form.Item<FormData> name="env">
         <LabelSelector

@@ -17,32 +17,30 @@ import './style/play-ground.less';
 
 const PlaygroundRerank: React.FC = () => {
   const intl = useIntl();
-  const groundRerankerRef = useRef<any>(null);
-  const [rerankerModelList, setRerankerModelList] = useState<
-    Global.BaseOption<string>[]
-  >([]);
+  const groundVideoRef = useRef<any>(null);
+  const [modelList, setModelList] = useState<Global.BaseOption<string>[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useCollapseLayout({
     handler: () => {
-      groundRerankerRef.current?.setCollapse?.();
+      groundVideoRef.current?.setCollapse?.();
     },
-    triggeredRef: groundRerankerRef.current
+    triggeredRef: groundVideoRef.current
   });
 
   const handleViewCode = useMemoizedFn(() => {
-    groundRerankerRef.current?.viewCode?.();
+    groundVideoRef.current?.viewCode?.();
   });
 
   const handleToggleCollapse = useMemoizedFn(() => {
-    groundRerankerRef.current?.setCollapse?.();
+    groundVideoRef.current?.setCollapse?.();
   });
 
   useEffect(() => {
-    const getModelListByReranker = async () => {
+    const getModelList = async () => {
       try {
         const params = {
-          categories: modelCategoriesMap.reranker,
+          categories: modelCategoriesMap.llm,
           with_meta: true
         };
         const res = await queryModelsList(params);
@@ -61,10 +59,8 @@ const PlaygroundRerank: React.FC = () => {
     };
     const fetchData = async () => {
       try {
-        const [rerankerModelList] = await Promise.all([
-          getModelListByReranker()
-        ]);
-        setRerankerModelList(rerankerModelList);
+        const [modelList] = await Promise.all([getModelList()]);
+        setModelList(modelList);
       } catch (error) {
         setLoaded(true);
       }
@@ -75,7 +71,7 @@ const PlaygroundRerank: React.FC = () => {
   useHotkeys(
     HotKeys.RIGHT.join(','),
     () => {
-      groundRerankerRef.current?.setCollapse?.();
+      groundVideoRef.current?.setCollapse?.();
     },
     {
       preventDefault: true
@@ -103,8 +99,8 @@ const PlaygroundRerank: React.FC = () => {
       <div className="play-ground">
         <div className="chat">
           <GroundVideo
-            ref={groundRerankerRef}
-            modelList={rerankerModelList}
+            ref={groundVideoRef}
+            modelList={modelList}
             loaded={loaded}
           ></GroundVideo>
         </div>

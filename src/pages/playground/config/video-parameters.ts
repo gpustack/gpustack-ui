@@ -1,7 +1,7 @@
-import { ImageSizeItem } from './params-config';
+import { SizeOption } from './params-config';
 import { ParamsSchema } from './types';
 
-export const videoSizeOptions: ImageSizeItem[] = [
+export const videoSizeOptions: SizeOption[] = [
   { label: '720x1280', value: '720x1280', width: 720, height: 1280 },
   { label: '1280x720', value: '1280x720', width: 1280, height: 720 },
   { label: '1024x1792', value: '1024x1792', width: 1024, height: 1792 },

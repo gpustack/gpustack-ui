@@ -154,5 +154,6 @@ export default {
   'playground.uploadImage.url.invalid':
     '请输入直接的图片链接（例如：https://…/image.png）。按 ESC 可取消。',
   'playground.uploadImage.url.holder': '请输入图片链接',
-  'playground.uploadImage.url.button': '从链接添加图片'
+  'playground.uploadImage.url.button': '从链接添加图片',
+  'playground.params.duration': '时长 (秒)'
 };

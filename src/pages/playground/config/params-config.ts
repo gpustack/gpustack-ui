@@ -1,6 +1,6 @@
 import { ParamsSchema } from './types';
 
-export interface ImageSizeItem {
+export interface SizeOption {
   label: string;
   value: string;
   width: number;
@@ -504,7 +504,7 @@ export const ImageAdvancedParamsConfig: ParamsSchema[] = [
   }
 ];
 
-export const ImageCustomSizeConfig: ParamsSchema[] = [
+export const CustomSizeConfig: ParamsSchema[] = [
   {
     type: 'Slider',
     name: 'width',

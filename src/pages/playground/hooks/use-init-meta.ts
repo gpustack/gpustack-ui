@@ -1,11 +1,11 @@
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import {
+  CustomSizeConfig,
   ImageCountConfig,
-  ImageCustomSizeConfig,
   ImageSizeConfig,
-  ImageSizeItem,
   ImageconstExtraConfig,
   ImageAdvancedParamsConfig as ImgAdvancedParamsConfig,
+  SizeOption,
   imageSizeOptions as imageSizeList
 } from '@/pages/playground/config/params-config';
 import { generateRandomNumber } from '@/utils';
@@ -210,9 +210,9 @@ export const useInitImageMeta = (
   const [searchParams] = useSearchParams();
   const [modelMeta, setModelMeta] = useState<any>({});
   const [isOpenaiCompatible, setIsOpenaiCompatible] = useState<boolean>(false);
-  const [imageSizeOptions, setImageSizeOptions] = React.useState<
-    ImageSizeItem[]
-  >([]);
+  const [imageSizeOptions, setImageSizeOptions] = React.useState<SizeOption[]>(
+    []
+  );
   const [basicParamsConfig, setBasicParamsConfig] = React.useState<
     ParamsSchema[]
   >([...ImageCountConfig, ...ImageSizeConfig]);
@@ -275,7 +275,7 @@ export const useInitImageMeta = (
 
   const generateImageParamsConfig = (
     currentModel: any,
-    sizeOptions: ImageSizeItem[]
+    sizeOptions: SizeOption[]
   ) => {
     if (sizeOptions.length) {
       const sizeConfig = ImageSizeConfig.map((item) => {
@@ -290,18 +290,16 @@ export const useInitImageMeta = (
       return [...ImageCountConfig, ...sizeConfig];
     }
     const { max_height, max_width } = currentModel.meta || {};
-    const customSizeConfig = _.cloneDeep(ImageCustomSizeConfig).map(
-      (item: any) => {
-        const max = item.name === 'height' ? max_height : max_width;
-        return {
-          ...item,
-          attrs: {
-            ...item.attrs,
-            max: max || item.attrs.max
-          }
-        };
-      }
-    );
+    const customSizeConfig = _.cloneDeep(CustomSizeConfig).map((item: any) => {
+      const max = item.name === 'height' ? max_height : max_width;
+      return {
+        ...item,
+        attrs: {
+          ...item.attrs,
+          max: max || item.attrs.max
+        }
+      };
+    });
     return [...ImageCountConfig, ...customSizeConfig];
   };
 
@@ -334,7 +332,7 @@ export const useInitImageMeta = (
     if (values.size === 'custom') {
       return [
         ...basicParamsConfig,
-        ...ImageCustomSizeConfig,
+        ...CustomSizeConfig,
         ...(values.isOpenaiCompatible
           ? ImageconstExtraConfig
           : ImageAdvancedParamsConfig)
@@ -437,7 +435,7 @@ export const useInitImageMeta = (
       if (changeValues.size && changeValues.size === 'custom') {
         setParamsConfig([
           ...basicParamsConfig,
-          ...ImageCustomSizeConfig,
+          ...CustomSizeConfig,
           ...(!isOpenaiCompatible
             ? ImageAdvancedParamsConfig
             : ImageconstExtraConfig)
@@ -515,7 +513,7 @@ export const useInitImageMeta = (
     imgInitialValues,
     ImageCountConfig,
     ImageSizeConfig,
-    ImageCustomSizeConfig,
+    CustomSizeConfig,
     ImageconstExtraConfig
   };
 };

@@ -1,10 +1,9 @@
 import { setRouteCache } from '@/atoms/route-cache';
 import AlertInfo from '@/components/alert-info';
-import IconFont from '@/components/icon-font';
 import routeCachekey from '@/config/route-cachekey';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Button, Spin, Tooltip } from 'antd';
+import { Spin } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -239,22 +238,6 @@ const GroundVideo: React.FC<MessageProps> = forwardRef((props, ref) => {
             onInputChange={handleInputChange}
             shouldResetMessage={false}
             clearAll={handleClear}
-            tools={
-              <>
-                <Tooltip
-                  title={intl.formatMessage({
-                    id: 'playground.image.prompt.random'
-                  })}
-                >
-                  <Button
-                    onClick={handleRandomPrompt}
-                    size="middle"
-                    type="text"
-                    icon={<IconFont type="icon-random"></IconFont>}
-                  ></Button>
-                </Tooltip>
-              </>
-            }
           />
         </div>
       </div>

@@ -280,12 +280,11 @@ const Workers: React.FC<{
             columns={columns}
             sortDirections={TABLE_SORT_DIRECTIONS}
             showSorterTooltip={false}
-            tableLayout={dataSource.loadend ? 'auto' : 'fixed'}
-            style={{ width: '100%' }}
+            tableLayout={'auto'}
             dataSource={dataSource.dataList}
             loading={dataSource.loading}
             rowKey="id"
-            scroll={{ x: true }}
+            scroll={{ x: 900 }}
             onChange={handleTableChange}
             rowSelection={rowSelection}
             pagination={{

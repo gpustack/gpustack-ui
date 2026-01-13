@@ -51,6 +51,7 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         width: 240,
+        minWidth: 32,
         sorter: tableSorter(1),
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost maxWidth={240}>
@@ -68,9 +69,6 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'clusters.title' }),
         dataIndex: 'cluster_id',
         sorter: tableSorter(3),
-        ellipsis: {
-          showTitle: false
-        },
         render: (text: number, record: GPUDeviceItem) => (
           <AutoTooltip ghost>
             {clusterList.find((item) => item.value === text)?.label}
@@ -81,9 +79,6 @@ const useGPUColumns = (props: {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_name',
         sorter: tableSorter(4),
-        ellipsis: {
-          showTitle: false
-        },
         render: (text: string, record: GPUDeviceItem) => (
           <AutoTooltip ghost>{text}</AutoTooltip>
         )

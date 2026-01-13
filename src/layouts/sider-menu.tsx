@@ -64,6 +64,7 @@ const useStyles = createStyles(({ css, token }) => {
       }
 
       &.menu-item-group-title-collapsed {
+        position: relative;
         height: 1px;
         padding-block: 0;
         padding-inline: 0;
@@ -125,8 +126,8 @@ const useStyles = createStyles(({ css, token }) => {
       margin-block: 6px;
       background-color: ${token.colorSplit};
       position: absolute;
-      left: 6px;
-      right: 6px;
+      left: -2px;
+      right: -2px;
     `
   };
 });

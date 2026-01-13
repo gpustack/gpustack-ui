@@ -31,6 +31,7 @@ const TextWrapper = styled.div`
   align-items: center;
   cursor: pointer;
   height: 100%;
+  min-width: 32px;
 `;
 
 const PathWrapper = styled.div`
@@ -267,9 +268,7 @@ const useFilesColumns = (props: {
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
         sorter: tableSorter(1),
-        ellipsis: {
-          showTitle: false
-        },
+        minWidth: 32,
         render: (text: string, record: ListItem) => {
           const modelInfo = getModelInfo(record);
           const { source } = modelInfo;
@@ -286,10 +285,7 @@ const useFilesColumns = (props: {
         title: intl.formatMessage({ id: 'resources.worker' }),
         dataIndex: 'worker_id',
         sorter: tableSorter(2),
-        width: '18%',
-        ellipsis: {
-          showTitle: false
-        },
+        minWidth: 32,
         render: (text: string, record: ListItem) => {
           return (
             <AutoTooltip ghost>

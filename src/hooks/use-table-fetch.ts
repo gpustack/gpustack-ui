@@ -230,6 +230,12 @@ export default function useTableFetch<T>(
       ...params
     });
     fetchData({ query: { ...queryParams, ...params } });
+    if (watch) {
+      createModelsChunkRequest({
+        ...queryParams,
+        ...params
+      });
+    }
   };
 
   const handlePageChange = (page: number, pageSize: number) => {
@@ -269,10 +275,6 @@ export default function useTableFetch<T>(
   const debounceUpdateFilter = _.debounce((e: any) => {
     handleQueryChange({
       page: 1,
-      search: e.target.value
-    });
-    createModelsChunkRequest({
-      ...queryParams,
       search: e.target.value
     });
   }, 350);

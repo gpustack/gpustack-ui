@@ -91,7 +91,7 @@ const HintInput: React.FC<HintInputProps> = (props) => {
       label={label}
       options={options}
       trim={trim}
-      style={{ width: '100%' }}
+      style={{ flex: 1 }}
     />
   );
 };

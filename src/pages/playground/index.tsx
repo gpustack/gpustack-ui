@@ -120,7 +120,7 @@ const Playground: React.FC = () => {
             <Segmented
               options={optionsList}
               size="middle"
-              className="m-l-40 font-600"
+              className="m-l-24 font-600"
               value={activeKey}
               onChange={(key) => setActiveKey(key)}
             ></Segmented>

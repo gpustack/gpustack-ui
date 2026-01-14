@@ -12,5 +12,5 @@ module.exports = {
     React: 'readonly',
     JSX: 'readonly'
   },
-  ignorePatterns: ['public/static/', 'public/vs/**']
+  ignorePatterns: ['public/static/']
 };

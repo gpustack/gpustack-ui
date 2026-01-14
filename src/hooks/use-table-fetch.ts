@@ -1,3 +1,4 @@
+import { WatchEventType } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
@@ -38,6 +39,7 @@ export default function useTableFetch<T>(
     events?: EventsType[];
     defaultQueryParams?: Record<string, any>;
     isInfiniteScroll?: boolean;
+    updateManually?: boolean;
   } & WatchConfig
 ) {
   const {
@@ -50,7 +52,8 @@ export default function useTableFetch<T>(
     defaultData = [],
     events = ['UPDATE', 'DELETE'],
     defaultQueryParams = {},
-    isInfiniteScroll = false
+    isInfiniteScroll = false,
+    updateManually
   } = options;
   const pollingRef = useRef<any>(null);
   const chunkRequedtRef = useRef<any>(null);
@@ -103,27 +106,6 @@ export default function useTableFetch<T>(
   });
 
   const debounceSetExtraStatus = _.debounce(setExtraStatus, 3000);
-
-  const updateHandler = (list: any) => {
-    _.each(list, (data: any) => {
-      updateChunkedList(data);
-    });
-  };
-
-  const createModelsChunkRequest = async (params?: any) => {
-    if (!API || !watch) return;
-    chunkRequedtRef.current?.current?.cancel?.();
-    try {
-      const query = _.omit(params || queryParams, ['page', 'perPage']);
-
-      chunkRequedtRef.current = setChunkRequest({
-        url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
-        handler: updateHandler
-      });
-    } catch (error) {
-      // ignore
-    }
-  };
 
   const fetchData = async (
     params?: { query: Record<string, any>; loadmore?: boolean },
@@ -202,6 +184,40 @@ export default function useTableFetch<T>(
       debounceSetExtraStatus({
         firstLoad: false
       });
+    }
+  };
+
+  const debounceFetchData = _.debounce(fetchData, 300);
+
+  const updateHandler = (list: any) => {
+    let shouldUpdate = false;
+    _.each(list, (data: any) => {
+      updateChunkedList(data);
+    });
+    shouldUpdate = list.some(
+      (data: any) =>
+        data.type === WatchEventType.DELETE ||
+        data.type === WatchEventType.CREATE
+    );
+
+    if (shouldUpdate && updateManually && dataSource.loadend) {
+      shouldUpdate = false;
+      debounceFetchData();
+    }
+  };
+
+  const createModelsChunkRequest = async (params?: any) => {
+    if (!API || !watch) return;
+    chunkRequedtRef.current?.current?.cancel?.();
+    try {
+      const query = _.omit(params || queryParams, ['page', 'perPage']);
+
+      chunkRequedtRef.current = setChunkRequest({
+        url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
+        handler: updateHandler
+      });
+    } catch (error) {
+      // ignore
     }
   };
 
@@ -368,6 +384,7 @@ export default function useTableFetch<T>(
     modalRef,
     extraStatus,
     TABLE_SORT_DIRECTIONS,
+    debounceFetchData,
     setQueryParams,
     handleDelete,
     handleDeleteBatch,

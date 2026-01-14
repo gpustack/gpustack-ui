@@ -60,8 +60,12 @@ export default function useTableFetch<T>(
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
+
+  // ======= to resolve worker upate issue =======
   const shouldUpdateRef = useRef(false);
   const loadendRef = useRef(false);
+  const currentWatchParamsRef = useRef<any>(null);
+  // ============================================
 
   // for skeleton loading
   const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
@@ -110,7 +114,7 @@ export default function useTableFetch<T>(
   const debounceSetExtraStatus = _.debounce(setExtraStatus, 3000);
 
   const fetchData = async (
-    params?: { query: Record<string, any>; loadmore?: boolean },
+    externalParams?: { query: Record<string, any>; loadmore?: boolean },
     polling = false
   ) => {
     if (!polling) {
@@ -119,13 +123,14 @@ export default function useTableFetch<T>(
         return { ...pre };
       });
     }
-    const { query, loadmore } = params || {};
-
+    const { query, loadmore } = externalParams || {};
     try {
       const params = {
         ..._.pickBy(query || queryParams, (val: any) => !!val)
       };
       const res = await fetchAPI(params);
+      shouldUpdateRef.current = false;
+      loadendRef.current = true;
       if (!dataSource.loadend) {
         // add a delay to avoid flash
         await new Promise((resolve) => {
@@ -152,7 +157,7 @@ export default function useTableFetch<T>(
           total: newRes.pagination.total,
           totalPage: newRes.pagination.totalPage
         });
-        loadendRef.current = true;
+
         if (isInfiniteScroll) {
           setQueryParams(newParams);
         }
@@ -168,7 +173,6 @@ export default function useTableFetch<T>(
         total: res.pagination.total,
         totalPage: res.pagination.totalPage
       });
-      loadendRef.current = true;
       if (isInfiniteScroll && query?.page) {
         setQueryParams({
           ...queryParams,
@@ -185,6 +189,7 @@ export default function useTableFetch<T>(
         totalPage: dataSource.totalPage
       });
       loadendRef.current = true;
+      shouldUpdateRef.current = false;
     } finally {
       debounceSetExtraStatus({
         firstLoad: false
@@ -192,7 +197,11 @@ export default function useTableFetch<T>(
     }
   };
 
-  const debounceFetchData = _.debounce(fetchData, 300);
+  // @ts-ignore
+  const debounceFetchData = _.debounce(
+    (params: any) => fetchData(params, true),
+    300
+  );
 
   const updateHandler = (list: any) => {
     _.each(list, (data: any) => {
@@ -204,18 +213,23 @@ export default function useTableFetch<T>(
         data.type === WatchEventType.CREATE
     );
 
+    // ======= to resolve worker upate issue =======
+    // when worker list change (create/delete), fetch data again to update the list
     if (shouldUpdateRef.current && updateManually && loadendRef.current) {
-      shouldUpdateRef.current = false;
-      debounceFetchData();
+      debounceFetchData(currentWatchParamsRef.current || undefined);
     }
+    // ============================================
   };
 
   const createModelsChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
     shouldUpdateRef.current = false;
-    loadendRef.current = false;
+    // loadendRef.current = false;
     chunkRequedtRef.current?.current?.cancel?.();
     try {
+      currentWatchParamsRef.current = {
+        query: { ...(params || queryParams) }
+      };
       const query = _.omit(params || queryParams, ['page', 'perPage']);
 
       chunkRequedtRef.current = setChunkRequest({
@@ -246,18 +260,22 @@ export default function useTableFetch<T>(
   };
 
   // for filters change
-  const handleQueryChange = (params: any) => {
+  const handleQueryChange = async (params: any) => {
     loadendRef.current = false;
-    setQueryParams({
-      ...queryParams,
-      ...params
-    });
-    fetchData({ query: { ...queryParams, ...params } });
-    if (watch) {
-      createModelsChunkRequest({
-        ...queryParams,
+    setQueryParams((pre: any) => {
+      return {
+        ...pre,
         ...params
-      });
+      };
+    });
+    await fetchData({ query: { ...queryParams, ...params } });
+    if (watch) {
+      setTimeout(() => {
+        createModelsChunkRequest({
+          ...queryParams,
+          ...params
+        });
+      }, 200);
     }
   };
 
@@ -318,7 +336,11 @@ export default function useTableFetch<T>(
         await deleteAPI?.(row.id, {
           ...modalRef.current?.configuration
         });
-        fetchData();
+
+        // ======== to avoid fetch data twice, because of debounceFetchData has been run =======
+        if (!updateManually) {
+          fetchData();
+        }
       }
     });
   };

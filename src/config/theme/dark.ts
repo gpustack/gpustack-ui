@@ -12,7 +12,7 @@ export default {
       handleWidth: 32
     },
     Tag: {
-      defaultBg: '#1d1d1d'
+      defaultBg: '#272727'
     },
     Steps: {
       descriptionMaxWidth: 200,
@@ -23,8 +23,8 @@ export default {
       cellPaddingInline: 16,
       cellPaddingBlock: 6,
       cellFontSize: 14,
-      rowSelectedHoverBg: '#1d1d1d',
-      rowHoverBg: '#1d1d1d',
+      rowSelectedHoverBg: '#272727',
+      rowHoverBg: '#272727',
       rowSelectedBg: 'transparent',
       headerSortActiveBg: 'transparent',
       headerSortHoverBg: 'transparent',

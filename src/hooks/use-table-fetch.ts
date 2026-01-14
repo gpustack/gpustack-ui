@@ -60,6 +60,8 @@ export default function useTableFetch<T>(
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
+  const shouldUpdateRef = useRef(false);
+  const loadendRef = useRef(false);
 
   // for skeleton loading
   const [extraStatus, setExtraStatus] = useState<Record<string, any>>({
@@ -150,6 +152,7 @@ export default function useTableFetch<T>(
           total: newRes.pagination.total,
           totalPage: newRes.pagination.totalPage
         });
+        loadendRef.current = true;
         if (isInfiniteScroll) {
           setQueryParams(newParams);
         }
@@ -165,6 +168,7 @@ export default function useTableFetch<T>(
         total: res.pagination.total,
         totalPage: res.pagination.totalPage
       });
+      loadendRef.current = true;
       if (isInfiniteScroll && query?.page) {
         setQueryParams({
           ...queryParams,
@@ -180,6 +184,7 @@ export default function useTableFetch<T>(
         total: dataSource.total,
         totalPage: dataSource.totalPage
       });
+      loadendRef.current = true;
     } finally {
       debounceSetExtraStatus({
         firstLoad: false
@@ -190,24 +195,25 @@ export default function useTableFetch<T>(
   const debounceFetchData = _.debounce(fetchData, 300);
 
   const updateHandler = (list: any) => {
-    let shouldUpdate = false;
     _.each(list, (data: any) => {
       updateChunkedList(data);
     });
-    shouldUpdate = list.some(
+    shouldUpdateRef.current = list.some(
       (data: any) =>
         data.type === WatchEventType.DELETE ||
         data.type === WatchEventType.CREATE
     );
 
-    if (shouldUpdate && updateManually && dataSource.loadend) {
-      shouldUpdate = false;
+    if (shouldUpdateRef.current && updateManually && loadendRef.current) {
+      shouldUpdateRef.current = false;
       debounceFetchData();
     }
   };
 
   const createModelsChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
+    shouldUpdateRef.current = false;
+    loadendRef.current = false;
     chunkRequedtRef.current?.current?.cancel?.();
     try {
       const query = _.omit(params || queryParams, ['page', 'perPage']);
@@ -241,6 +247,7 @@ export default function useTableFetch<T>(
 
   // for filters change
   const handleQueryChange = (params: any) => {
+    loadendRef.current = false;
     setQueryParams({
       ...queryParams,
       ...params

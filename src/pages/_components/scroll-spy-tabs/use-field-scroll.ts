@@ -9,7 +9,6 @@ interface ScrollOptions {
 }
 
 export default function useScrollAfterExpand({
-  form,
   activeKey,
   setActiveKey,
   segmentOptions,
@@ -17,9 +16,8 @@ export default function useScrollAfterExpand({
   segmentedTop = { top: 0, offsetTop: 96 },
   getScrollElementScrollableHeight
 }: {
-  form: any;
   activeKey: string[];
-  setActiveKey: React.Dispatch<React.SetStateAction<string[]>>;
+  setActiveKey: (keys: string[]) => void;
   segmentOptions: { value: string; field: string }[];
   getScrollElementScrollableHeight?: () => {
     scrollHeight: number;
@@ -27,8 +25,8 @@ export default function useScrollAfterExpand({
   };
   defaultWait?: number;
   segmentedTop: {
-    top: number;
-    offsetTop: number;
+    top: number; // The top offset for the sticky header
+    offsetTop: number; // The offset top for the target
   };
 }) {
   const [holderHeight, setHolderHeight] = useState<number>(0);
@@ -67,7 +65,7 @@ export default function useScrollAfterExpand({
   const scrollToSegment = useMemoizedFn(
     async (val: string, options?: ScrollOptions) => {
       if (!activeKey.includes(val)) {
-        setActiveKey((prev) => [...prev, val]);
+        setActiveKey([...activeKey, val]);
         await new Promise((r) => {
           setTimeout(r, options?.wait ?? defaultWait);
         });

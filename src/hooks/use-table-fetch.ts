@@ -224,13 +224,13 @@ export default function useTableFetch<T>(
   const createModelsChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
     shouldUpdateRef.current = false;
-    // loadendRef.current = false;
     chunkRequedtRef.current?.current?.cancel?.();
     try {
+      const currentParams = params || queryParams;
       currentWatchParamsRef.current = {
-        query: { ...(params || queryParams) }
+        query: { ...currentParams }
       };
-      const query = _.omit(params || queryParams, ['page', 'perPage']);
+      const query = _.omit(currentParams, ['page', 'perPage']);
 
       chunkRequedtRef.current = setChunkRequest({
         url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
@@ -262,20 +262,11 @@ export default function useTableFetch<T>(
   // for filters change
   const handleQueryChange = async (params: any) => {
     loadendRef.current = false;
-    setQueryParams((pre: any) => {
-      return {
-        ...pre,
-        ...params
-      };
-    });
-    await fetchData({ query: { ...queryParams, ...params } });
+    const newQueryParams = { ...queryParams, ...params };
+    setQueryParams(newQueryParams);
+    await fetchData({ query: newQueryParams });
     if (watch) {
-      setTimeout(() => {
-        createModelsChunkRequest({
-          ...queryParams,
-          ...params
-        });
-      }, 200);
+      createModelsChunkRequest(newQueryParams);
     }
   };
 
@@ -291,19 +282,14 @@ export default function useTableFetch<T>(
   ) => {
     if (extra.action === 'sort') {
       const sortKeys = handleMultiSortChange(sorter);
-      setQueryParams((pre: any) => {
-        return {
-          ...pre,
-          page: 1,
-          sort_by: sortKeys.join(',')
-        };
-      });
+      const newQueryParams = {
+        ...queryParams,
+        page: 1,
+        sort_by: sortKeys.join(',')
+      };
+      setQueryParams(newQueryParams);
       fetchData({
-        query: {
-          ...queryParams,
-          page: 1,
-          sort_by: sortKeys.join(',')
-        }
+        query: newQueryParams
       });
     }
   };

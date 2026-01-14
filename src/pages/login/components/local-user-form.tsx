@@ -9,7 +9,6 @@ import {
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Divider, Form, FormInstance } from 'antd';
 import { createStyles } from 'antd-style';
-import { GET_INITIAL_PASSWORD } from '../../login/config';
 
 const useStyles = createStyles(({ token, css }) => {
   return {
@@ -37,17 +36,26 @@ const useStyles = createStyles(({ token, css }) => {
 interface LocalUserFormProps {
   handleLogin: (values: any) => void;
   form: FormInstance;
+  loginOption: {
+    saml: boolean;
+    oidc: boolean;
+    first_time_setup: boolean;
+    get_initial_password_command: string;
+  };
 }
 
 const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
-  const { handleLogin, form } = props;
+  const { handleLogin, form, loginOption } = props;
   const intl = useIntl();
   const { styles } = useStyles();
 
   const renderCommandInfo = () => {
+    if (!loginOption?.first_time_setup) {
+      return null;
+    }
     return (
       <div className={styles.commandInfo}>
-        <Divider />
+        <Divider style={{ marginTop: 16, marginBottom: 12 }} />
         <div className="content">
           <InfoCircleOutlined className="icon" />
           <span className="info">
@@ -56,8 +64,8 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
         </div>
         <HighlightCode
           theme="dark"
-          code={GET_INITIAL_PASSWORD}
-          copyValue={GET_INITIAL_PASSWORD}
+          code={loginOption.get_initial_password_command}
+          copyValue={loginOption.get_initial_password_command}
           lang="bash"
         ></HighlightCode>
       </div>
@@ -140,6 +148,7 @@ const LocalUserForm: React.FC<LocalUserFormProps> = (props) => {
       >
         {intl.formatMessage({ id: 'common.button.login' })}
       </Button>
+      {renderCommandInfo()}
     </Form>
   );
 };

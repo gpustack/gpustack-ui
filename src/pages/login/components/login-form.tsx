@@ -251,7 +251,11 @@ const LoginForm = () => {
             {renderWelCome()}
             {renderLoginButtons()}
             {(!hasThirdPartyLogin || isPassword) && (
-              <LocalUserForm handleLogin={handleLogin} form={form} />
+              <LocalUserForm
+                handleLogin={handleLogin}
+                form={form}
+                loginOption={SSOAuth.options}
+              />
             )}
             {hasThirdPartyLogin && isPassword && (
               <BackButton onClick={handleLoginWithThirdParty}>

@@ -29,7 +29,7 @@ const { Paragraph } = Typography;
 const TextWrapper = styled.div`
   display: flex;
   align-items: center;
-  cursor: pointer;
+  cursor: default;
   height: 100%;
   min-width: 32px;
 `;

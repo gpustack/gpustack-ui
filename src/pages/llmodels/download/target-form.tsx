@@ -7,7 +7,7 @@ import { ModelFileFormData as FormData } from '@/pages/resources/config/types';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
-import { minimatch } from 'minimatch';
+import minimatch from 'minimatch';
 import React, {
   forwardRef,
   useEffect,

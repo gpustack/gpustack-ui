@@ -57,10 +57,10 @@ const Workers: React.FC<{
   } = useTableFetch<ListItem>({
     fetchAPI: queryWorkersList,
     deleteAPI: deleteWorker,
-    events: ['UPDATE', 'DELETE', 'INSERT'],
     contentForDelete: 'resources.worker',
     watch: true,
     API: WORKERS_API,
+    updateManually: true,
     defaultQueryParams: {
       cluster_id: clusterId
     }

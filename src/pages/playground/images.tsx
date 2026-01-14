@@ -137,7 +137,7 @@ const TextToImages: React.FC = () => {
             <Segmented
               options={optionsList}
               size="middle"
-              className="m-l-40 font-600"
+              className="m-l-24 font-600"
               value={activeKey}
               onChange={(key) => setActiveKey(key)}
             ></Segmented>
@@ -170,7 +170,7 @@ const TextToImages: React.FC = () => {
         <Divider
           key="divider"
           orientation="vertical"
-          style={{ height: 24, marginInline: 16 }}
+          style={{ height: 16, marginInline: 16 }}
         />,
         <ExtraContent key="extra-content" />
       ]}

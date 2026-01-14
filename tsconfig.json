@@ -27,6 +27,5 @@
     "src/components/logs-viewer/parse-worker.ts",
     "src/components/image-editor/invert-worker.ts",
     "src/components/image-editor/offscreen-worker.ts"
-    // "src/pages/playground/config/embedding-worker.ts"
   ]
 }

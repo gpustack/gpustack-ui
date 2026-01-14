@@ -3,8 +3,6 @@ node_modules
 .umi-production
 public/static/*.js
 public/static/*.css
-public/vs/*/*.css
-public/vs/*/*.js
 src/components/icon-font/iconfont/iconfont.js
 src/components/icon-font/iconfont/*.css
 

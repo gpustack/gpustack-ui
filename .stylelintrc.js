@@ -3,5 +3,5 @@ module.exports = {
   rules: {
     'selector-class-pattern': null
   },
-  ignoreFiles: ['public/static/*.css', 'public/vs/**/*.css']
+  ignoreFiles: ['public/static/*.css']
 };

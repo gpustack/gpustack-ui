@@ -1,11 +1,10 @@
 import IconFont from '@/components/icon-font';
-import SegmentLine from '@/components/segment-line';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
 import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
+import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
 import { useIntl } from '@umijs/max';
-import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { Form } from 'antd';
 import _ from 'lodash';
 import React, {
@@ -14,7 +13,6 @@ import React, {
   useImperativeHandle,
   useMemo
 } from 'react';
-import styled from 'styled-components';
 import {
   DeployFormKeyMap,
   DO_NOT_NOTIFY_RECREATE,
@@ -31,7 +29,6 @@ import {
   SourceType
 } from '../config/types';
 import { generateGPUIds } from '../config/utils';
-import useFieldScroll from '../hooks/use-field-scroll';
 import { useGenerateGPUOptions } from '../hooks/use-form-initial-values';
 import useQueryBackends from '../hooks/use-query-backends';
 import { useQueryContextLength } from '../services/use-query-context-length';
@@ -47,15 +44,6 @@ const advancedRequiredFields = ['backend', 'image_name', 'run_command'];
 const scheduleRequiredFields = ['gpu_selector'];
 
 const performanceRequiredFields = ['speculative_config'];
-
-const SegmentedHeader = styled.div<{ $top?: number }>`
-  position: sticky;
-  top: ${(props) => props.$top || 0}px;
-  z-index: 10;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--ant-color-split);
-  background-color: var(--ant-color-bg-elevated);
-`;
 
 interface DataFormProps {
   initialValues?: FormData;
@@ -108,11 +96,11 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const [activeKey, setActiveKey] = React.useState<string[]>([]);
-  const [target, setTarget] = React.useState<string>(TABKeysMap.BASIC);
   const { modelContextData, fetchContextLength } = useQueryContextLength();
   const localPath = Form.useWatch('local_path', form);
   const modelScopeModelId = Form.useWatch('model_scope_model_id', form);
   const huggingfaceRepoId = Form.useWatch('huggingface_repo_id', form);
+  const scrollTabsRef = React.useRef<any>(null);
 
   const segmentOptions = [
     {
@@ -158,15 +146,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       offsetTop: 146
     };
   }, [source, formKey, action]);
-
-  const { scrollToSegment, holderHeight } = useFieldScroll({
-    form,
-    activeKey,
-    setActiveKey,
-    segmentOptions,
-    segmentedTop: segmentedTop,
-    getScrollElementScrollableHeight: getScrollElementScrollableHeight
-  });
 
   const handleSumit = () => {
     form.submit();
@@ -303,21 +282,6 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     setActiveKey(Array.isArray(keys) ? keys : [keys]);
   };
 
-  const throttleScrollToSegment = useMemoizedFn(
-    _.throttle(
-      async (val: string) => {
-        setTarget(val);
-        scrollToSegment(val, { offsetTop: segmentedTop.offsetTop });
-      },
-      500,
-      { trailing: true }
-    )
-  );
-
-  const handleTargetChange = async (val: any) => {
-    throttleScrollToSegment(val);
-  };
-
   const handleOnFinishFailed = (errorInfo: any) => {
     const { errorFields } = errorInfo;
     if (errorFields && errorFields.length > 0) {
@@ -352,18 +316,18 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
       }
 
       if (isBaseRequired) {
-        handleTargetChange(TABKeysMap.BASIC);
+        scrollTabsRef.current?.handleTargetChange(TABKeysMap.BASIC);
       } else if (isScheduleRequired) {
-        handleTargetChange(TABKeysMap.SCHEDULING);
+        scrollTabsRef.current?.handleTargetChange(TABKeysMap.SCHEDULING);
       } else if (isPerformanceRequired) {
-        handleTargetChange(TABKeysMap.PERFORMANCE);
+        scrollTabsRef.current?.handleTargetChange(TABKeysMap.PERFORMANCE);
       } else if (isAdvancedRequired && formKey === DeployFormKeyMap.CATALOG) {
-        handleTargetChange(TABKeysMap.ADVANCED);
+        scrollTabsRef.current?.handleTargetChange(TABKeysMap.ADVANCED);
       } else if (
         isAdvancedRequired &&
         formKey === DeployFormKeyMap.DEPLOYMENT
       ) {
-        handleTargetChange(TABKeysMap.BASIC);
+        scrollTabsRef.current?.handleTargetChange(TABKeysMap.BASIC);
       }
 
       setActiveKey((prev: string[]) => [
@@ -417,6 +381,10 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
     // fetchContextLength({ ...params, source });
   }, [isGGUF, source, localPath, modelScopeModelId, huggingfaceRepoId]);
 
+  const handleActiveChange = (key: string[]) => {
+    setActiveKey(key);
+  };
+
   return (
     <FormContext.Provider
       value={{
@@ -434,91 +402,91 @@ const DataForm: React.FC<DataFormProps> = forwardRef((props, ref) => {
         onBackendChange: handleBackendChange
       }}
     >
-      <SegmentedHeader $top={segmentedTop.top}>
-        <SegmentLine
-          theme={'light'}
-          defaultValue="basic"
-          value={target}
-          onChange={handleTargetChange}
-          options={segmentOptions}
-        />
-      </SegmentedHeader>
-      <Form
-        name="deployModel"
-        form={form}
-        onFinish={handleOk}
-        preserve={false}
-        clearOnDestroy={true}
-        onValuesChange={handleOnValuesChange}
-        onFinishFailed={handleOnFinishFailed}
-        scrollToFirstError={true}
-        initialValues={{
-          replicas: 1,
-          source: props.source,
-          placement_strategy: 'spread',
-          scheduleType: ScheduleValueMap.Auto,
-          categories: null,
-          restart_on_error: true,
-          distributed_inference_across_workers: true,
-          mode: 'throughput',
-          generic_proxy: false,
-          extended_kv_cache: {
-            enabled: false,
-            chunk_size: null,
-            ram_ratio: 1.2,
-            ram_size: null
-          },
-          speculative_config: {
-            enabled: false,
-            algorithm: '',
-            draft_model: null,
-            num_draft_tokens:
-              initialValues?.speculative_config?.num_draft_tokens || 4,
-            ngram_min_match_length:
-              initialValues?.speculative_config?.ngram_min_match_length || 1,
-            ngram_max_match_length:
-              initialValues?.speculative_config?.ngram_max_match_length || 10
-          },
-          ...initialValues,
-          backend_version: initialValues?.backend_version || null,
-          max_context_len: initialValues?.max_context_len || 2048
-        }}
+      <ScrollSpyTabs
+        ref={scrollTabsRef}
+        defaultTarget="basic"
+        segmentOptions={segmentOptions}
+        activeKey={activeKey}
+        setActiveKey={handleActiveChange}
+        segmentedTop={segmentedTop}
+        getScrollElementScrollableHeight={getScrollElementScrollableHeight}
       >
-        <BasicForm
-          fields={fields}
-          sourceList={sourceList}
-          clusterList={clusterList}
-          sourceDisable={sourceDisable}
-          handleClusterChange={handleClusterChange}
-          onSourceChange={onSourceChange}
-        ></BasicForm>
-        <CollapsePanel
-          activeKey={activeKey}
-          accordion={false}
-          onChange={handleOnCollapseChange}
-          items={[
-            {
-              key: TABKeysMap.PERFORMANCE,
-              label: intl.formatMessage({ id: 'models.form.performance' }),
-              forceRender: true,
-              children: <Performance></Performance>
+        <Form
+          name="deployModel"
+          form={form}
+          onFinish={handleOk}
+          preserve={false}
+          clearOnDestroy={true}
+          onValuesChange={handleOnValuesChange}
+          onFinishFailed={handleOnFinishFailed}
+          scrollToFirstError={true}
+          initialValues={{
+            replicas: 1,
+            source: props.source,
+            placement_strategy: 'spread',
+            scheduleType: ScheduleValueMap.Auto,
+            categories: null,
+            restart_on_error: true,
+            distributed_inference_across_workers: true,
+            mode: 'throughput',
+            generic_proxy: false,
+            extended_kv_cache: {
+              enabled: false,
+              chunk_size: null,
+              ram_ratio: 1.2,
+              ram_size: null
             },
-            {
-              key: TABKeysMap.SCHEDULING,
-              label: intl.formatMessage({ id: 'models.form.scheduling' }),
-              forceRender: true,
-              children: <ScheduleTypeForm></ScheduleTypeForm>
+            speculative_config: {
+              enabled: false,
+              algorithm: '',
+              draft_model: null,
+              num_draft_tokens:
+                initialValues?.speculative_config?.num_draft_tokens || 4,
+              ngram_min_match_length:
+                initialValues?.speculative_config?.ngram_min_match_length || 1,
+              ngram_max_match_length:
+                initialValues?.speculative_config?.ngram_max_match_length || 10
             },
-            {
-              key: TABKeysMap.ADVANCED,
-              label: intl.formatMessage({ id: 'resources.form.advanced' }),
-              forceRender: true,
-              children: <AdvanceConfig></AdvanceConfig>
-            }
-          ]}
-        ></CollapsePanel>
-        <div className="holder" style={{ height: holderHeight }}></div>
-      </Form>
+            ...initialValues,
+            backend_version: initialValues?.backend_version || null,
+            max_context_len: initialValues?.max_context_len || 2048
+          }}
+        >
+          <BasicForm
+            fields={fields}
+            sourceList={sourceList}
+            clusterList={clusterList}
+            sourceDisable={sourceDisable}
+            handleClusterChange={handleClusterChange}
+            onSourceChange={onSourceChange}
+          ></BasicForm>
+          <CollapsePanel
+            activeKey={activeKey}
+            accordion={false}
+            onChange={handleOnCollapseChange}
+            items={[
+              {
+                key: TABKeysMap.PERFORMANCE,
+                label: intl.formatMessage({ id: 'models.form.performance' }),
+                forceRender: true,
+                children: <Performance></Performance>
+              },
+              {
+                key: TABKeysMap.SCHEDULING,
+                label: intl.formatMessage({ id: 'models.form.scheduling' }),
+                forceRender: true,
+                children: <ScheduleTypeForm></ScheduleTypeForm>
+              },
+              {
+                key: TABKeysMap.ADVANCED,
+                label: intl.formatMessage({ id: 'resources.form.advanced' }),
+                forceRender: true,
+                children: <AdvanceConfig></AdvanceConfig>
+              }
+            ]}
+          ></CollapsePanel>
+        </Form>
+      </ScrollSpyTabs>
     </FormContext.Provider>
   );
 });

@@ -6,7 +6,7 @@ import qs from 'query-string';
 
 export const AUTH_API = '/auth';
 
-export const AUTH_CONFIG_API = '/auth-config';
+export const AUTH_CONFIG_API = '/auth/config';
 
 export const AUTH_OIDC_LOGIN_API = '/auth/oidc/login';
 export const AUTH_SAML_LOGIN_API = '/auth/saml/login';
@@ -52,5 +52,10 @@ export const updatePassword = async (params: any) => {
 };
 
 export const fetchAuthConfig = async () => {
-  return request(AUTH_CONFIG_API);
+  return request<{
+    is_saml: boolean;
+    is_oidc: boolean;
+    first_time_setup: boolean;
+    get_initial_password_command: string;
+  }>(AUTH_CONFIG_API);
 };

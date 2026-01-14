@@ -10,6 +10,8 @@ import {
 type LoginOption = {
   saml: boolean;
   oidc: boolean;
+  first_time_setup: boolean;
+  get_initial_password_command: string;
 };
 
 export function useSSOAuth({
@@ -25,7 +27,9 @@ export function useSSOAuth({
 }) {
   const [loginOption, setLoginOption] = useState<LoginOption>({
     saml: false,
-    oidc: false
+    oidc: false,
+    first_time_setup: false,
+    get_initial_password_command: ''
   });
 
   const intl = useIntl();
@@ -44,16 +48,17 @@ export function useSSOAuth({
 
   const init = async () => {
     try {
-      const authConfig = await fetchAuthConfig();
+      const { is_oidc, is_saml, ...rest } = await fetchAuthConfig();
       setLoginOption({
-        oidc: !!authConfig.is_oidc,
-        saml: !!authConfig.is_saml
+        ...rest,
+        oidc: !!is_oidc,
+        saml: !!is_saml
       });
       if (sso) {
         onLoading?.(true);
-        if (authConfig.is_oidc) {
+        if (is_oidc) {
           oidcLogin();
-        } else if (authConfig.is_saml) {
+        } else if (is_saml) {
           samlLogin();
         } else {
           onError?.(
@@ -62,7 +67,12 @@ export function useSSOAuth({
         }
       }
     } catch (error: any) {
-      setLoginOption({ oidc: false, saml: false });
+      setLoginOption({
+        oidc: false,
+        saml: false,
+        first_time_setup: false,
+        get_initial_password_command: ''
+      });
       onLoading?.(false);
     }
   };

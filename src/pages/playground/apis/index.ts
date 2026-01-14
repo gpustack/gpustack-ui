@@ -129,23 +129,15 @@ export const createImage = async (params: {
   return response.json();
 };
 
-export const createVideo = async (params: {
-  data?: any;
-  signal?: AbortSignal;
-}) => {
-  const response = await fetch(CREATE_VIDEO_API, {
+export const createVideo = async (params: { data?: any; token?: any }) => {
+  return request(CREATE_VIDEO_API, {
     method: 'POST',
-    body: JSON.stringify(params.data),
-    signal: params.signal,
+    data: params.data,
+    cancelToken: params.token,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'multipart/form-data'
     }
   });
-
-  if (!response.ok) {
-    return await errorHandler(response);
-  }
-  return response.json();
 };
 
 // ============ audio ============

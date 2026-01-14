@@ -1,3 +1,4 @@
+import { createAxiosToken } from '@/hooks/use-chunk-request';
 import useOverlayScroller from '@/hooks/use-overlay-scroller';
 import { extractErrorMessage, promptList } from '@/pages/playground/config';
 import { useIntl } from '@umijs/max';
@@ -61,8 +62,8 @@ export default function useTextVideo(props: any) {
     try {
       if (!parameters.model) return;
 
-      requestToken.current?.abort?.('cancel');
-      requestToken.current = new AbortController();
+      requestToken.current?.cancel?.('cancel');
+      requestToken.current = createAxiosToken();
       const currentRequestId = updateRequestId();
       setLoading(true);
       setMessageId();
@@ -82,7 +83,7 @@ export default function useTextVideo(props: any) {
 
       const result = await createVideo({
         data: parameters,
-        signal: requestToken.current.signal
+        token: requestToken.current.token
       });
 
       console.log('result:', result);
@@ -121,7 +122,7 @@ export default function useTextVideo(props: any) {
       console.log('error:', error);
       updateRequestId();
       stopDebounce();
-      requestToken.current?.abort?.('cancel');
+      requestToken.current?.cancel?.('cancel');
     } finally {
       setLoading(false);
     }
@@ -134,12 +135,12 @@ export default function useTextVideo(props: any) {
   };
 
   const handleStopConversation = () => {
-    requestToken.current?.abort?.('stop');
+    requestToken.current?.cancel?.('stop');
   };
 
   useEffect(() => {
     return () => {
-      requestToken.current?.abort?.('cancel');
+      requestToken.current?.cancel?.('cancel');
     };
   }, []);
 

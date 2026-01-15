@@ -195,6 +195,12 @@ export const frameworks = [
     tipLocale: true
   },
   {
+    label: 'HGGC',
+    value: GPUDriverMap.THEAD,
+    tips: ManufacturerMap[GPUDriverMap.THEAD],
+    tipLocale: true
+  },
+  {
     label: 'CPU',
     value: 'cpu'
   }

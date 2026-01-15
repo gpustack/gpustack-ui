@@ -77,7 +77,7 @@ export const GPUsConfigs: Record<
   [GPUDriverMap.THEAD]: {
     label: 'T-Head',
     value: GPUDriverMap.THEAD,
-    runtime: 'thead', // TODO: confirm runtime name
+    runtime: '', // TODO: confirm runtime name
     driver: 'ppu-smi'
   }
 };
@@ -250,7 +250,6 @@ const registerTHeadWorker = (params: AddWorkerCommandParams) => {
   return `${commonArgs}
       --volume /usr/local/PPU_SDK:/usr/local/PPU_SDK:ro \\
       --volume /var/run/cdi:/var/run/cdi \\
-      --runtime ${config.runtime} \\
       ${imageArgs}
       ${setWorkerIPArg(params)}`;
 };

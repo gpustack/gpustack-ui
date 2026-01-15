@@ -137,7 +137,7 @@ export default function useTableFetch<T>(
       axiosTokenRef.current?.cancel?.();
       axiosTokenRef.current = createAxiosToken();
       const res = await fetchAPI(params, {
-        token: axiosTokenRef.current
+        token: axiosTokenRef.current.token
       });
       shouldUpdateRef.current = false;
       loadendRef.current = true;
@@ -160,7 +160,7 @@ export default function useTableFetch<T>(
           query: { ...newParams }
         };
         const newRes = await fetchAPI(newParams, {
-          token: axiosTokenRef.current
+          token: axiosTokenRef.current.token
         });
 
         setDataSource({

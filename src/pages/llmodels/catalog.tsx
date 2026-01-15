@@ -113,11 +113,13 @@ const Catalog: React.FC = () => {
       const getCatalogSource = async () => {
         try {
           const id = dataSource.dataList?.[0]?.id;
-          const res: any = await queryCatalogItemSpec({
-            id,
-            cluster_id: null
-          });
-          sourceRef.current = res?.items?.[0]?.source;
+          if (id) {
+            const res: any = await queryCatalogItemSpec({
+              id,
+              cluster_id: null
+            });
+            sourceRef.current = res?.items?.[0]?.source;
+          }
         } catch (error) {}
       };
       getCatalogSource();

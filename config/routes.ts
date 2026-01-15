@@ -74,17 +74,6 @@ export default [
         defaultIcon: 'icon-audio1',
         component: './playground/speech'
       }
-      // {
-      //   name: 'video',
-      //   title: 'Video',
-      //   path: '/playground/video',
-      //   key: 'video',
-      //   icon: 'icon-video-outline',
-      //   hideInMenu: false,
-      //   selectedIcon: 'icon-video-filled02',
-      //   defaultIcon: 'icon-video-outline',
-      //   component: './playground/video'
-      // }
     ]
   },
   {

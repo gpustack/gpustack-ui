@@ -260,18 +260,23 @@ export default function useTableFetch<T>(
   };
 
   // for filters change
-  const handleQueryChange = async (params: any) => {
+  const handleQueryChange = async (
+    params: any,
+    options?: {
+      paginate?: boolean;
+    }
+  ) => {
     loadendRef.current = false;
     const newQueryParams = { ...queryParams, ...params };
     setQueryParams(newQueryParams);
     await fetchData({ query: newQueryParams });
-    if (watch) {
+    if (watch && !options?.paginate) {
       createModelsChunkRequest(newQueryParams);
     }
   };
 
   const handlePageChange = (page: number, pageSize: number) => {
-    handleQueryChange({ page, perPage: pageSize || 10 });
+    handleQueryChange({ page, perPage: pageSize || 10 }, { paginate: true });
   };
 
   const handleTableChange = (

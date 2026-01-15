@@ -68,6 +68,7 @@ const ModelFiles = () => {
     deleteAPI: deleteModelFile,
     API: MODEL_FILES_API,
     watch: true,
+    updateManually: true,
     contentForDelete: 'resources.modelfiles.modelfile'
   });
   const intl = useIntl();

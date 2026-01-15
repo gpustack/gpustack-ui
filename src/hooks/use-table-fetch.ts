@@ -1,6 +1,8 @@
 import { WatchEventType } from '@/config';
 import { TABLE_SORT_DIRECTIONS } from '@/config/settings';
-import useSetChunkRequest from '@/hooks/use-chunk-request';
+import useSetChunkRequest, {
+  createAxiosToken
+} from '@/hooks/use-chunk-request';
 import useTableRowSelection from '@/hooks/use-table-row-selection';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import { handleBatchRequest } from '@/utils';
@@ -60,6 +62,7 @@ export default function useTableFetch<T>(
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
+  const axiosTokenRef = useRef<string | null>(null);
 
   // ======= to resolve worker upate issue =======
   const shouldUpdateRef = useRef(false);
@@ -128,7 +131,14 @@ export default function useTableFetch<T>(
       const params = {
         ..._.pickBy(query || queryParams, (val: any) => !!val)
       };
-      const res = await fetchAPI(params);
+      currentWatchParamsRef.current = {
+        query: { ...params }
+      };
+      axiosTokenRef.current?.cancel?.();
+      axiosTokenRef.current = createAxiosToken();
+      const res = await fetchAPI(params, {
+        token: axiosTokenRef.current
+      });
       shouldUpdateRef.current = false;
       loadendRef.current = true;
       if (!dataSource.loadend) {
@@ -146,7 +156,12 @@ export default function useTableFetch<T>(
           ...params,
           page: res.pagination.totalPage
         };
-        const newRes = await fetchAPI(newParams);
+        currentWatchParamsRef.current = {
+          query: { ...newParams }
+        };
+        const newRes = await fetchAPI(newParams, {
+          token: axiosTokenRef.current
+        });
 
         setDataSource({
           dataList: loadmore
@@ -227,9 +242,7 @@ export default function useTableFetch<T>(
     chunkRequedtRef.current?.current?.cancel?.();
     try {
       const currentParams = params || queryParams;
-      currentWatchParamsRef.current = {
-        query: { ...currentParams }
-      };
+
       const query = _.omit(currentParams, ['page', 'perPage']);
 
       chunkRequedtRef.current = setChunkRequest({
@@ -392,6 +405,7 @@ export default function useTableFetch<T>(
     init();
     return () => {
       chunkRequedtRef.current?.cancel?.();
+      axiosTokenRef.current?.cancel?.();
       cacheDataListRef.current = [];
     };
   }, []);

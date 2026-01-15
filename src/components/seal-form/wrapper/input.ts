@@ -71,7 +71,6 @@ const InputWrapper = styled.div`
     box-shadow: none;
     padding-block: 5px;
     padding-inline: ${INPUT_INNER_PADDING}px;
-    height: ${INPUTHEIGHT}px !important;
     background-color: ${BGCOLOR};
   }
   .ant-input.seal-textarea {
@@ -87,7 +86,6 @@ const InputWrapper = styled.div`
     border: none;
     box-shadow: none;
     padding: 0;
-    height: ${INPUTHEIGHT}px !important;
     background-color: ${BGCOLOR};
     flex: 1;
 
@@ -112,7 +110,6 @@ const InputWrapper = styled.div`
     box-shadow: none;
     padding-block: 5px;
     padding-inline: ${INPUT_INNER_PADDING}px;
-    height: ${INPUTHEIGHT}px !important;
     background-color: transparent;
   }
   .ant-input.ant-input-disabled {
@@ -120,7 +117,6 @@ const InputWrapper = styled.div`
   }
   input.ant-input-number-input {
     flex: 1;
-    height: ${INPUTHEIGHT}px !important;
     padding-block: 6px 4px;
     padding-inline: ${INPUT_INNER_PADDING}px;
   }
@@ -145,6 +141,16 @@ const InputWrapper = styled.div`
       background-color: transparent !important;
     }
   }
+
+  &:not(.textarea-input-wrapper) {
+    .ant-input,
+    .ant-input-password,
+    .ant-input-number,
+    .ant-input-outlined,
+    input.ant-input-number-input {
+      height: ${INPUTHEIGHT}px !important;
+    }
+  }
   .ant-input-search-button {
     position: absolute;
     top: -20px;
@@ -166,9 +172,6 @@ const InputWrapper = styled.div`
   .seal-textarea-wrapper {
     height: auto;
     padding-right: 10px;
-    .ant-input-outlined {
-      height: auto !important;
-    }
     textarea {
       overflow-y: auto !important;
     }

@@ -65,7 +65,7 @@ const CustomBackend: React.FC = () => {
               required
               scaleSize={false}
               alwaysFocus={true}
-              autoSize={{ minRows: 2, maxRows: 4 }}
+              autoSize={{ minRows: 2, maxRows: 5 }}
               onBlur={handleRunCommandOnBlur}
               label={intl.formatMessage({ id: 'backend.runCommand' })}
               description={intl.formatMessage({

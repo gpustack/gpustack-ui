@@ -35,7 +35,7 @@ const Container = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
-  margin-top: 16px;
+  margin-top: 8px;
 `;
 
 const Wrapper: React.FC<WrapperProps> = ({

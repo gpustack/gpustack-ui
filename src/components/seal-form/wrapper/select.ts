@@ -109,6 +109,9 @@ const SelectWrapper = styled.div`
         .ant-select-selection-search {
           padding-inline-start: ${INPUT_INNER_PADDING}px;
         }
+        .ant-select-content-value {
+          display: none;
+        }
       }
       &.ant-select-multiple.ant-cascader .ant-select-selection-search {
         top: 0 !important;

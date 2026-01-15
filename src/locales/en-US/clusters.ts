@@ -125,5 +125,9 @@ export default {
     'You can also skip this step and add them later from the cluster list.',
   'clusters.create.k8sTips1': 'Next, register existing Kubernetes cluster.',
   'clusters.create.k8sTips2':
-    'You can also skip this step and register it later from the cluster list.'
+    'You can also skip this step and register it later from the cluster list.',
+  'clusters.addworker.theadNotes':
+    'If the <span class="bold-text">/usr/local/PPU_SDK</span> directory does not exist, please create a symbolic link pointing to the T-Head installed path: <span class="bold-text">ln -s /path/to/PPU_SDK /usr/local/PPU_SDK</span>.',
+  'clusters.addworker.theadNotes-02':
+    'T-Head PPU uses the Container Device Interface (CDI) for device injection and requires the <span class="bold-text">/var/run/cdi</span> directory to be available for CDI generation.'
 };

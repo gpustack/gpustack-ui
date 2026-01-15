@@ -96,7 +96,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       notes: AddWorkerDockerNotes[GPUDriverMap.NVIDIA],
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#nvidia-gpu',
-      icon: <ProviderImage src={nvidiaLogo} height={20} />
+      icon: <ProviderImage src={nvidiaLogo} height={18} />
     },
     {
       label: 'AMD',
@@ -139,7 +139,6 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.moorthreads' }),
       hiddenTitle: true,
-      // description: 'common.tag.experimental',
       extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.MOORE_THREADS,
       key: GPUDriverMap.MOORE_THREADS,
@@ -151,7 +150,6 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.iluvatar' }),
       hiddenTitle: true,
-      // description: 'common.tag.experimental',
       extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.ILUVATAR,
       key: GPUDriverMap.ILUVATAR,
@@ -163,7 +161,6 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.cambricon' }),
       hiddenTitle: true,
-      // description: 'common.tag.experimental',
       extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.CAMBRICON,
       key: GPUDriverMap.CAMBRICON,
@@ -175,7 +172,6 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
     {
       label: intl.formatMessage({ id: 'vendor.metax' }),
       hiddenTitle: true,
-      // description: 'common.tag.experimental',
       extra: intl.formatMessage({ id: 'common.tag.experimental' }),
       value: GPUDriverMap.METAX,
       key: GPUDriverMap.METAX,
@@ -183,6 +179,22 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#metax-gpu',
       notes: AddWorkerDockerNotes[GPUDriverMap.METAX],
       icon: <ProviderImage src={metaxLogo} height={20} />
+    },
+    {
+      label: intl.formatMessage({ id: 'vendor.thead' }),
+      hiddenTitle: true,
+      extra: intl.formatMessage({ id: 'common.tag.experimental' }),
+      value: GPUDriverMap.THEAD,
+      key: GPUDriverMap.THEAD,
+      locale: false,
+      link: 'https://docs.gpustack.ai/latest/installation/requirements/#thead-gpu',
+      notes: AddWorkerDockerNotes[GPUDriverMap.THEAD],
+      icon: (
+        <IconFont
+          type="icon-thead"
+          style={{ fontSize: 90, color: 'var(--ant-color-text)' }}
+        />
+      )
     }
   ];
 
@@ -194,7 +206,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
         current={current}
         dataList={supportedHardPlatforms}
         clickable={clickable}
-        cols={4}
+        cols={5}
       />
     </Box>
   );

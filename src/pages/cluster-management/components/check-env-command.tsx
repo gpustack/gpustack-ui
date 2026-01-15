@@ -12,6 +12,7 @@ const AddWorkerCommand: React.FC<ViewModalProps> = ({
   provider = '',
   currentGPU
 }) => {
+  console.log('check env command provider:', currentGPU);
   const code = React.useMemo(() => {
     const configs = addWorkerGuide['all'];
     const command = configs.checkEnvCommand(currentGPU);

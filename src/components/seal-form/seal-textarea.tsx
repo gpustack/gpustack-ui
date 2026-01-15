@@ -99,7 +99,7 @@ const SealTextArea: React.FC<InputTextareaProps & SealFormItemProps> = (
   console.log('style=========', style, rest);
 
   return (
-    <InputWrapper>
+    <InputWrapper className="textarea-input-wrapper">
       <Wrapper
         status={status}
         label={label && <LabelWrapper>{label}</LabelWrapper>}

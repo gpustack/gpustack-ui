@@ -63,7 +63,7 @@ const BasicForm: React.FC<AddModalProps> = ({ action, currentData }) => {
                     'vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}'
                 }
               )}
-              autoSize={{ minRows: 2, maxRows: 4 }}
+              autoSize={{ minRows: 2, maxRows: 5 }}
               label={intl.formatMessage({
                 id: 'backend.form.defaultExecuteCommand'
               })}

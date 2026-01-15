@@ -42,11 +42,15 @@ export async function downloadWorkerPrivateKey({
 }
 
 export async function queryWorkersList<T extends Record<string, any>>(
-  params: Global.SearchParams & T
+  params: Global.SearchParams & T,
+  options?: {
+    token: any;
+  }
 ) {
   return request<Global.PageResponse<ListItem>>(`${WORKERS_API}`, {
     method: 'GET',
-    params
+    params,
+    cancelToken: options?.token
   });
 }
 

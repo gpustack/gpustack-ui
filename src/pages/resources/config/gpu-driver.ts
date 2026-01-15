@@ -6,7 +6,8 @@ export const GPUDriverMap = {
   MOORE_THREADS: 'musa',
   ILUVATAR: 'corex',
   CAMBRICON: 'neuware',
-  METAX: 'maca'
+  METAX: 'maca',
+  THEAD: 'ppu'
 };
 
 export const ManufacturerMap = {
@@ -17,7 +18,8 @@ export const ManufacturerMap = {
   [GPUDriverMap.MOORE_THREADS]: 'vendor.moorthreads',
   [GPUDriverMap.ILUVATAR]: 'vendor.iluvatar',
   [GPUDriverMap.CAMBRICON]: 'vendor.cambricon',
-  [GPUDriverMap.METAX]: 'vendor.metax'
+  [GPUDriverMap.METAX]: 'vendor.metax',
+  [GPUDriverMap.THEAD]: 'vendor.thead'
 };
 
 export const GPUsConfigs: Record<
@@ -25,52 +27,58 @@ export const GPUsConfigs: Record<
   { label: string; value: string; runtime: string; driver: string }
 > = {
   [GPUDriverMap.NVIDIA]: {
-    label: ManufacturerMap[GPUDriverMap.NVIDIA],
+    label: 'Nvidia', // this label is used in echo command, do not translate
     value: GPUDriverMap.NVIDIA,
     runtime: 'nvidia',
     driver: 'nvidia-smi'
   },
   [GPUDriverMap.AMD]: {
-    label: ManufacturerMap[GPUDriverMap.AMD],
+    label: 'AMD',
     value: GPUDriverMap.AMD,
     runtime: 'amd',
     driver: 'amd-smi static'
   },
   [GPUDriverMap.ASCEND]: {
-    label: ManufacturerMap[GPUDriverMap.ASCEND],
+    label: 'Ascend',
     value: GPUDriverMap.ASCEND,
     runtime: 'ascend',
     driver: 'npu-smi info'
   },
   [GPUDriverMap.HYGON]: {
-    label: ManufacturerMap[GPUDriverMap.HYGON],
+    label: 'Hygon',
     value: GPUDriverMap.HYGON,
     runtime: '', // TODO: confirm runtime name
     driver: 'hy-smi'
   },
   [GPUDriverMap.MOORE_THREADS]: {
-    label: ManufacturerMap[GPUDriverMap.MOORE_THREADS],
+    label: 'Moore Threads',
     value: GPUDriverMap.MOORE_THREADS,
     runtime: 'mthreads',
     driver: 'mthreads-gmi'
   },
   [GPUDriverMap.ILUVATAR]: {
-    label: ManufacturerMap[GPUDriverMap.ILUVATAR],
+    label: 'Iluvatar',
     value: GPUDriverMap.ILUVATAR,
     runtime: 'iluvatar',
     driver: 'ixsmi'
   },
   [GPUDriverMap.CAMBRICON]: {
-    label: ManufacturerMap[GPUDriverMap.CAMBRICON],
+    label: 'Cambricon',
     value: GPUDriverMap.CAMBRICON,
     runtime: 'cambricon',
     driver: 'cnmon info'
   },
   [GPUDriverMap.METAX]: {
-    label: ManufacturerMap[GPUDriverMap.METAX],
+    label: 'Metax',
     value: GPUDriverMap.METAX,
     runtime: 'metax',
     driver: 'mx-smi'
+  },
+  [GPUDriverMap.THEAD]: {
+    label: 'T-Head',
+    value: GPUDriverMap.THEAD,
+    runtime: 'thead', // TODO: confirm runtime name
+    driver: 'ppu-smi'
   }
 };
 
@@ -87,7 +95,7 @@ const generateNvidiaDockerEnvCommand = (config: {
   return `${config.driver} >/dev/null 2>&1 && echo "${config.label} driver OK" || (echo "${config.label} driver issue"; exit 1) && sudo docker info 2>/dev/null | grep -q "${runtimeCheck}" && echo "${config.label} Container Toolkit OK" || (echo "${config.label} Container Toolkit not configured"; exit 1)`;
 };
 
-// avaliable for Hygon、Iluvatar、MetaX 、Cambricon
+// avaliable for Hygon、Iluvatar、MetaX 、Cambricon、T-Head
 const generateHygonDockerEnvCommand = (config: {
   label: string;
   value: string;
@@ -127,6 +135,9 @@ export const dockerEnvCommandMap = {
   ),
   [GPUDriverMap.METAX]: generateHygonDockerEnvCommand(
     GPUsConfigs[GPUDriverMap.METAX]
+  ),
+  [GPUDriverMap.THEAD]: generateHygonDockerEnvCommand(
+    GPUsConfigs[GPUDriverMap.THEAD]
   )
 };
 
@@ -145,9 +156,17 @@ interface AddWorkerCommandParams {
 
 const generateEnvArgs = (params: any) => {
   const registrationInfo = params.registrationInfo || {};
+  registrationInfo.env = {
+    ...registrationInfo.env,
+    ...params.extraEnv
+  };
   // generate environment variables args from registrationInfo.env
   let envArgs = '';
-  if (registrationInfo.env && typeof registrationInfo.env === 'object') {
+  if (
+    registrationInfo.env &&
+    typeof registrationInfo.env === 'object' &&
+    Object.keys(registrationInfo.env).length > 0
+  ) {
     Object.keys(registrationInfo.env).forEach((key) => {
       const value = registrationInfo.env[key];
       envArgs += `-e "${key}=${value}" \\\n      `;
@@ -217,6 +236,25 @@ const registerAscendWorker = (params: AddWorkerCommandParams) => {
       ${setWorkerIPArg(params)}`;
 };
 
+// avaliable for t-head
+
+const registerTHeadWorker = (params: AddWorkerCommandParams) => {
+  const config = GPUsConfigs[params.gpu];
+  const commonArgs = setNormalArgs({
+    ...params,
+    extraEnv: {
+      GPUSTACK_RUNTIME_DOCKER_RESOURCE_INJECTION_POLICY: 'CDI'
+    }
+  });
+  const imageArgs = setImageArgs(params);
+  return `${commonArgs}
+      --volume /usr/local/PPU_SDK:/usr/local/PPU_SDK:ro \\
+      --volume /var/run/cdi:/var/run/cdi \\
+      --runtime ${config.runtime} \\
+      ${imageArgs}
+      ${setWorkerIPArg(params)}`;
+};
+
 const registerHygonWorker = (params: AddWorkerCommandParams) => {
   const config = GPUsConfigs[params.gpu];
   const commonArgs = setNormalArgs(params);
@@ -273,7 +311,8 @@ export const registerAddWokerCommandMap = {
   [GPUDriverMap.ILUVATAR]: registerIluvatarWorker,
   [GPUDriverMap.CAMBRICON]: registerCambriconWorker,
   [GPUDriverMap.METAX]: registerMetaXWorker,
-  [GPUDriverMap.MOORE_THREADS]: registerWorker
+  [GPUDriverMap.MOORE_THREADS]: registerWorker,
+  [GPUDriverMap.THEAD]: registerTHeadWorker
 };
 
 export const AddWorkerDockerNotes: Record<string, string[]> = {
@@ -287,5 +326,9 @@ export const AddWorkerDockerNotes: Record<string, string[]> = {
   ],
   [GPUDriverMap.ILUVATAR]: ['clusters.addworker.corexNotes'],
   [GPUDriverMap.CAMBRICON]: ['clusters.addworker.cambriconNotes'],
-  [GPUDriverMap.METAX]: ['clusters.addworker.metaxNotes']
+  [GPUDriverMap.METAX]: ['clusters.addworker.metaxNotes'],
+  [GPUDriverMap.THEAD]: [
+    'clusters.addworker.theadNotes',
+    'clusters.addworker.theadNotes-02'
+  ]
 };

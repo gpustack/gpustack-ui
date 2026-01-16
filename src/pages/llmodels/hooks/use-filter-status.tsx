@@ -1,5 +1,7 @@
+import { backendOptionsAtom } from '@/atoms/models';
 import { useIntl } from '@umijs/max';
-import { MyModelsStatusValueMap } from '../config';
+import { useAtomValue } from 'jotai';
+import { backendLabelMap, MyModelsStatusValueMap } from '../config';
 
 const Dot = ({ color }: { color: string }) => {
   return (
@@ -20,6 +22,7 @@ const useFilterStatus = (options: {
 }) => {
   const { onStatusChange } = options;
   const intl = useIntl();
+  const backendOptions = useAtomValue(backendOptionsAtom);
 
   const statusOptions = [
     {
@@ -44,6 +47,20 @@ const useFilterStatus = (options: {
       })
     }
   ];
+
+  const backendOptionsList = [
+    ...backendOptions.map((backend) => ({
+      value: backend.value,
+      label: backend.label
+    })),
+    ...Object.entries(backendLabelMap).map(([key, value]) => ({
+      value: key,
+      label: value
+    }))
+  ].filter(
+    (option, index, self) =>
+      index === self.findIndex((t) => t.value === option.value)
+  );
 
   const labelRender = (item: any) => {
     const current = statusOptions.find((option) => option.value === item.value);
@@ -70,6 +87,7 @@ const useFilterStatus = (options: {
 
   return {
     statusOptions,
+    backendOptionsList,
     labelRender,
     optionRender,
     handleStatusChange

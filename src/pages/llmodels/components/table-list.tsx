@@ -73,6 +73,7 @@ interface ModelsProps {
   handleClusterChange: (value: number) => void;
   handleDeleteSuccess: () => void;
   handleCategoryChange: (val: any) => void;
+  handleBackendChange?: (val: any) => void;
   onViewLogs: () => void;
   onCancelViewLogs: () => void;
   handleOnToggleExpandAll: () => void;
@@ -117,6 +118,7 @@ const Models: React.FC<ModelsProps> = ({
   onViewLogs,
   onCancelViewLogs,
   handleCategoryChange,
+  handleBackendChange,
   handleOnToggleExpandAll,
   handleClusterChange,
   onStop,
@@ -161,10 +163,15 @@ const Models: React.FC<ModelsProps> = ({
     removeExpandedRowKey,
     expandedRowKeys
   } = useExpandedRowKeys(expandAtom);
-  const { labelRender, optionRender, handleStatusChange, statusOptions } =
-    useFilterStatus({
-      onStatusChange: onStatusChange
-    });
+  const {
+    labelRender,
+    optionRender,
+    handleStatusChange,
+    statusOptions,
+    backendOptionsList
+  } = useFilterStatus({
+    onStatusChange: onStatusChange
+  });
 
   const [apiAccessInfo, setAPIAccessInfo] = useState<any>({
     show: false,
@@ -683,6 +690,18 @@ const Models: React.FC<ModelsProps> = ({
                 labelRender={labelRender}
                 options={statusOptions}
                 onChange={handleStatusChange}
+              ></BaseSelect>
+              <BaseSelect
+                allowClear
+                showSearch={true}
+                placeholder={intl.formatMessage({
+                  id: 'models.filter.backend'
+                })}
+                style={{ width: 160 }}
+                size="large"
+                maxTagCount={1}
+                options={backendOptionsList}
+                onChange={handleBackendChange}
               ></BaseSelect>
               <Button
                 type="text"

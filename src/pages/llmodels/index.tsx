@@ -315,6 +315,19 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
     });
   };
 
+  const handleBackendChange = async (value: string | undefined) => {
+    handleQueryChange({
+      page: 1,
+      backend: value
+    });
+    createModelsChunkRequest({
+      search: queryParams.search,
+      categories: queryParams.categories,
+      cluster_id: queryParams.cluster_id || 0,
+      backend: value
+    });
+  };
+
   const handleOnSortChange = (order: TableOrder | Array<TableOrder>) => {
     let orderList = Array.isArray(order) ? order : [order];
     if (orderList[0].columnKey === 'replicas') {
@@ -443,6 +456,7 @@ const Models: React.FC<{ clusterId?: number }> = ({ clusterId }) => {
         handleNameChange={handleNameChange}
         handleCategoryChange={handleCategoryChange}
         handleClusterChange={handleClusterChange}
+        handleBackendChange={handleBackendChange}
         handleSearch={handleSearch}
         handlePageChange={handlePageChange}
         handleDeleteSuccess={fetchData}

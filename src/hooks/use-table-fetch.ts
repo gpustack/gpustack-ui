@@ -58,11 +58,12 @@ export default function useTableFetch<T>(
     updateManually
   } = options;
   const pollingRef = useRef<any>(null);
-  const chunkRequedtRef = useRef<any>(null);
+  const chunkRequestRef = useRef<any>(null);
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
   const axiosTokenRef = useRef<any>(null);
+  const timerIDRef = useRef<any>(null);
 
   // ======= to resolve worker upate issue =======
   const shouldUpdateRef = useRef(false);
@@ -238,16 +239,16 @@ export default function useTableFetch<T>(
     // ============================================
   };
 
-  const createModelsChunkRequest = async (params?: any) => {
+  const createTableListChunkRequest = async (params?: any) => {
     if (!API || !watch) return;
     shouldUpdateRef.current = false;
-    chunkRequedtRef.current?.current?.cancel?.();
+    chunkRequestRef.current?.current?.cancel?.();
     try {
       const currentParams = params || queryParams;
 
       const query = _.omit(currentParams, ['page', 'perPage']);
 
-      chunkRequedtRef.current = setChunkRequest({
+      chunkRequestRef.current = setChunkRequest({
         url: `${API}?${qs.stringify(_.pickBy(query, (val: any) => !!val))}`,
         handler: updateHandler
       });
@@ -286,7 +287,7 @@ export default function useTableFetch<T>(
     setQueryParams(newQueryParams);
     await fetchData({ query: newQueryParams });
     if (watch && !options?.paginate) {
-      createModelsChunkRequest(newQueryParams);
+      createTableListChunkRequest(newQueryParams);
     }
   };
 
@@ -338,7 +339,6 @@ export default function useTableFetch<T>(
       name: row.name,
       ...options,
       async onOk() {
-        console.log('OK');
         await deleteAPI?.(row.id, {
           ...modalRef.current?.configuration
         });
@@ -398,15 +398,24 @@ export default function useTableFetch<T>(
   }, [dataSource.loadend, queryParams]);
 
   useEffect(() => {
+    let mounted = true;
+
     const init = async () => {
       await fetchData();
-      setTimeout(() => {
-        createModelsChunkRequest();
+
+      timerIDRef.current = setTimeout(() => {
+        if (mounted) {
+          createTableListChunkRequest();
+        }
       }, 200);
     };
+
     init();
+
     return () => {
-      chunkRequedtRef.current?.cancel?.();
+      mounted = false;
+      clearTimeout(timerIDRef.current);
+      chunkRequestRef.current?.current?.cancel?.();
       axiosTokenRef.current?.cancel?.();
       cacheDataListRef.current = [];
     };

@@ -156,9 +156,15 @@ export async function queryClusterItem(params: { id: number }, options?: any) {
   });
 }
 
-export async function queryClusterToken(params: { id: number }) {
+export async function queryClusterToken(
+  params: { id: number },
+  options?: {
+    token?: any;
+  }
+) {
   return request(`${CLUSTERS_API}/${params.id}/${CLUSTER_TOKEN}`, {
-    method: 'GET'
+    method: 'GET',
+    cancelToken: options?.token
   });
 }
 

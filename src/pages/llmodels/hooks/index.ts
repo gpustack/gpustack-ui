@@ -240,6 +240,7 @@ export const useCheckCompatibility = () => {
         message: ''
       };
     }
+
     const {
       compatible,
       compatibility_messages = [],
@@ -263,13 +264,10 @@ export const useCheckCompatibility = () => {
       Object.entries(resource_claim_by_cluster_id || {})
     );
 
-    // current cluster resource claim
+    // current cluster resource claim: {ram: number, vram: number}
     const resource_claim = resourceClaimMap.get(`${cluster_id}`);
 
-    const hasClaim = !!resource_claim?.ram || !!resource_claim?.vram;
-
-    // current cluster is not available, but other clusters are available
-    const othersAvailable = !hasClaim && resourceClaimMap.size > 0;
+    const hasClaim = resourceClaimMap.has(`${cluster_id}`);
 
     let compatibilityMessage = compatibility_messages.join(' ');
 
@@ -288,8 +286,8 @@ export const useCheckCompatibility = () => {
     };
 
     if (hasClaim) {
-      const ram = convertFileSize(resource_claim.ram, 2);
-      const vram = convertFileSize(resource_claim.vram, 2);
+      const ram = convertFileSize(resource_claim?.ram || 0, 2);
+      const vram = convertFileSize(resource_claim?.vram || 0, 2);
       let messageId = 'models.form.check.claims';
       if (!ram) {
         messageId = 'models.form.check.claims2';
@@ -301,30 +299,11 @@ export const useCheckCompatibility = () => {
         title: intl.formatMessage({ id: 'models.form.check.passed' }),
         message: intl.formatMessage({ id: messageId }, { ram, vram })
       };
-    } else if (
-      othersAvailable &&
-      !scheduling_messages?.length &&
-      !compatibility_messages?.length
-    ) {
-      // no specific messages, but other clusters are available
-      msgData = {
-        title: intl.formatMessage({
-          id: 'models.form.check.clusterUnavailable'
-        }),
-        message: intl.formatMessage(
-          {
-            id: 'models.form.check.otherClustersAvailable'
-          },
-          {
-            clusters: getAvailableClusters(Array.from(resourceClaimMap.keys()))
-          }
-        )
-      };
     }
 
     return {
-      show: !compatible || hasClaim || othersAvailable,
-      type: !compatible || othersAvailable ? 'warning' : 'success',
+      show: !compatible || hasClaim,
+      type: !compatible ? 'warning' : 'success',
       ...msgData
     };
   };

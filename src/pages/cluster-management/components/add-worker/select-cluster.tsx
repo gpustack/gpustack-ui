@@ -1,7 +1,7 @@
 import BaseSelect from '@/components/seal-form/base/select';
 import { useIntl } from '@umijs/max';
 import { Spin, Typography } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAddWorkerContext } from './add-worker-context';
 import { AddWorkerStepProps, StepNamesMap } from './config';
 import { Title } from './constainers';
@@ -20,9 +20,16 @@ const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   } = useAddWorkerContext();
   const intl = useIntl();
 
-  const clusterId = summary.get('cluster_id');
+  const [clusterId, setClusterId] = useState<number | null>(
+    summary.get('cluster_id')
+  );
 
   const stepIndex = stepList.indexOf(StepNamesMap.SelectCluster) + 1;
+
+  const handleOnClusterChange = (value: number, option: any) => {
+    setClusterId(value);
+    onClusterChange?.(value, option);
+  };
 
   useEffect(() => {
     const unregister = registerField('cluster_id');
@@ -34,6 +41,7 @@ const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
   useEffect(() => {
     updateField('cluster_id', registrationInfo.cluster_id);
     // update cluster name in summary
+    setClusterId(registrationInfo.cluster_id);
     const selectedCluster = clusterList?.find(
       (item) => item.value === registrationInfo.cluster_id
     );
@@ -76,7 +84,7 @@ const SelectCluster: React.FC<AddWorkerStepProps> = ({ disabled }) => {
           defaultValue={registrationInfo.cluster_id}
           options={clusterList}
           value={clusterId}
-          onChange={onClusterChange}
+          onChange={handleOnClusterChange}
           style={{ width: '100%' }}
         />
         {!clusterLoading && !clusterList?.length && (

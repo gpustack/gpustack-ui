@@ -50,7 +50,7 @@ export const sliceData = (data: string, loaded: number, loadedSize: any) => {
 
 const useSetChunkRequest = () => {
   const watchRequestList = window.__GPUSTACK_WATCH_REQUEST_CLEAR__.requestList;
-  const [requestReadyState, setRequestReadyState] = useState(3);
+  const [requestReadyState, setRequestReadyState] = useState(0);
   const axiosToken = useRef<any>(null);
   const requestConfig = useRef<any>({});
   const loaded = useRef(0);
@@ -61,12 +61,13 @@ const useSetChunkRequest = () => {
   const timer = useRef<any>(null);
   const loadedSize = useRef(0);
   const workerRef = useRef<any>(null);
+  const startLoadingRef = useRef(false);
 
   const reset = () => {
     loaded.current = 0;
     total.current = 0;
     loadedSize.current = 0;
-    setRequestReadyState(3);
+    setRequestReadyState(0);
   };
 
   const createAxiosToken = () => {
@@ -169,6 +170,7 @@ const useSetChunkRequest = () => {
   const setChunkRequest = (config: RequestConfig) => {
     requestConfig.current = { ...particalConfig, ...config };
     retryCount.current = totalCount;
+    startLoadingRef.current = false;
     clearTimeout(timer.current);
     axiosChunkRequest(requestConfig.current);
     return axiosToken;
@@ -201,11 +203,17 @@ const useSetChunkRequest = () => {
         2 ** (totalCount - retryCount.current) * 1000
       );
     }
+    if (requestReadyState === 3) {
+      setTimeout(() => {
+        startLoadingRef.current = true;
+      }, 5000);
+    }
   }, [requestReadyState]);
 
   return {
     setChunkRequest,
-    createAxiosToken
+    createAxiosToken,
+    startLoadingRef
   };
 };
 

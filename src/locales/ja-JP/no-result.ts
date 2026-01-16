@@ -42,5 +42,8 @@ export default {
   'noresult.resources.gotoworker': 'Add Worker',
   'noresult.benchmark.title': 'No Benchmarks',
   'noresult.benchmark.subTitle': 'No benchmarks have been added yet.',
-  'noresult.benchmark.nofound': 'No matching benchmarks found.'
+  'noresult.benchmark.nofound': 'No matching benchmarks found.',
+  'noresult.provider.title': 'No Providers',
+  'noresult.provider.subTitle': 'No providers have been added yet.',
+  'noresult.provider.nofound': 'No matching providers found.'
 };

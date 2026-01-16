@@ -16,6 +16,7 @@ export default {
   'menu.models.userModels': 'My Models',
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
+  'menu.models.provider': 'Provider',
   'menu.modelCatalog': 'Catalog',
   'menu.resources': 'Resources',
   'menu.apikeys': 'API Keys',

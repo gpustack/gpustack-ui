@@ -43,7 +43,10 @@ export default {
   'noresult.resources.gotoworker': 'Add Worker',
   'noresult.benchmark.title': 'No Benchmarks',
   'noresult.benchmark.subTitle': 'No benchmarks have been added yet.',
-  'noresult.benchmark.nofound': 'No matching benchmarks found.'
+  'noresult.benchmark.nofound': 'No matching benchmarks found.',
+  'noresult.provider.title': 'No Providers',
+  'noresult.provider.subTitle': 'No providers have been added yet.',
+  'noresult.provider.nofound': 'No matching providers found.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -54,4 +57,7 @@ export default {
 // 5. 'noresult.benchmark.title': 'No Benchmarks',
 // 6. 'noresult.benchmark.subTitle': 'No benchmarks have been added yet.',
 // 7. 'noresult.benchmark.nofound': 'No matching benchmarks found.'
+// 5. 'noresult.provider.title': 'No Providers',
+// 6. 'noresult.provider.subTitle': 'No providers have been added yet.',
+// 7. 'noresult.provider.nofound': 'No matching providers found.'
 // ========================================================================

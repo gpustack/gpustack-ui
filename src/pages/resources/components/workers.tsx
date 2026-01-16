@@ -27,7 +27,7 @@ import UpdateLabels from './update-labels';
 import WorkerDetailModal from './worker-detail-modal';
 
 const Workers: React.FC<{
-  clusterId: string | number | null;
+  clusterId?: string | number | null;
   showSelect?: boolean;
   showAddButton?: boolean;
   widths?: { input: number };

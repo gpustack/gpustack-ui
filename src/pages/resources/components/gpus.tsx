@@ -13,7 +13,7 @@ import { GPU_DEVICES_API, queryGpuDevicesList } from '../apis';
 import { GPUDeviceItem } from '../config/types';
 import useGPUColumns from '../hooks/use-gpu-columns';
 
-const GPUList: React.FC<{ clusterId?: number; widths: { input: number } }> = ({
+const GPUList: React.FC<{ clusterId?: number; widths?: { input: number } }> = ({
   clusterId,
   widths
 }) => {

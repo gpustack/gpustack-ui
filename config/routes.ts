@@ -106,6 +106,16 @@ export default [
         component: './llmodels/index'
       },
       {
+        name: 'provider',
+        path: '/models/providers',
+        key: 'modelProviders',
+        icon: 'icon-extension-outline',
+        selectedIcon: 'icon-extension-filled',
+        defaultIcon: 'icon-extension-outline',
+        access: 'canSeeAdmin',
+        component: './maas-provider/index'
+      },
+      {
         name: 'userModels',
         path: '/models/user-models',
         key: 'userModels',

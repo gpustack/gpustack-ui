@@ -15,6 +15,7 @@ export default {
   'menu.models.userModels': '我的模型',
   'menu.models.benchmark': '基准测试',
   'menu.models.benchmarkDetail': '基准测试详情',
+  'menu.models.provider': '渠道',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
   'menu.resources': '资源',

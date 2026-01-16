@@ -40,5 +40,8 @@ export default {
   'noresult.resources.gotoworker': '添加节点',
   'noresult.benchmark.title': '暂无基准测试',
   'noresult.benchmark.subTitle': '尚未添加任何基准测试。',
-  'noresult.benchmark.nofound': '未找到匹配的基准测试'
+  'noresult.benchmark.nofound': '未找到匹配的基准测试',
+  'noresult.provider.title': '暂无渠道',
+  'noresult.provider.subTitle': '尚未添加任何渠道。',
+  'noresult.provider.nofound': '未找到匹配的渠道'
 };

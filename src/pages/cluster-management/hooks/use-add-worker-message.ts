@@ -8,7 +8,6 @@ export default function useAddWorkerMessage() {
   const chunkRequestRef = useRef<any>(null);
   const newItemsRef = useRef<any[]>([]);
   const [addedCount, setAddedCount] = useState(0);
-  const startWatchRef = useRef(false);
   const timerRef = useRef<any>(null);
 
   const showAddWorkerMessage = () => {
@@ -18,12 +17,12 @@ export default function useAddWorkerMessage() {
     }
   };
 
-  const { setChunkRequest } = useSetChunkRequest();
+  const { setChunkRequest, startLoadingRef } = useSetChunkRequest();
   const { updateChunkedList } = useUpdateChunkedList({
     events: ['CREATE', 'INSERT'],
     dataList: [],
     onCreate: (newItems: any) => {
-      if (startWatchRef.current) {
+      if (startLoadingRef.current) {
         newItemsRef.current = newItemsRef.current.concat(newItems);
         showAddWorkerMessage();
       }
@@ -39,7 +38,6 @@ export default function useAddWorkerMessage() {
   const resetAddedCount = () => {
     setAddedCount(0);
     newItemsRef.current = [];
-    startWatchRef.current = false;
     clearTimeout(timerRef.current);
   };
 
@@ -51,9 +49,6 @@ export default function useAddWorkerMessage() {
         url: WORKERS_API,
         handler: updateHandler
       });
-      timerRef.current = setTimeout(() => {
-        startWatchRef.current = true;
-      }, 5000);
     } catch (error) {
       // ignore
     }
@@ -62,7 +57,6 @@ export default function useAddWorkerMessage() {
   useEffect(() => {
     return () => {
       chunkRequestRef.current?.current?.cancel?.();
-      startWatchRef.current = false;
       newItemsRef.current = [];
       clearTimeout(timerRef.current);
     };

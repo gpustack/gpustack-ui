@@ -62,7 +62,7 @@ export default function useTableFetch<T>(
   const modalRef = useRef<any>(null);
   const rowSelection = useTableRowSelection();
   const { sortOrder, handleMultiSortChange } = useTableMultiSort();
-  const axiosTokenRef = useRef<string | null>(null);
+  const axiosTokenRef = useRef<any>(null);
 
   // ======= to resolve worker upate issue =======
   const shouldUpdateRef = useRef(false);
@@ -134,10 +134,10 @@ export default function useTableFetch<T>(
       currentWatchParamsRef.current = {
         query: { ...params }
       };
-      axiosTokenRef.current?.cancel?.();
+      axiosTokenRef.current?.cancel?.('CANCEL_PREVIOUS_REQUEST');
       axiosTokenRef.current = createAxiosToken();
       const res = await fetchAPI(params, {
-        token: axiosTokenRef.current.token
+        token: axiosTokenRef.current?.token
       });
       shouldUpdateRef.current = false;
       loadendRef.current = true;
@@ -160,7 +160,7 @@ export default function useTableFetch<T>(
           query: { ...newParams }
         };
         const newRes = await fetchAPI(newParams, {
-          token: axiosTokenRef.current.token
+          token: axiosTokenRef.current?.token
         });
 
         setDataSource({
@@ -194,15 +194,17 @@ export default function useTableFetch<T>(
           ...query
         });
       }
-    } catch (error) {
-      console.log('error', error);
-      setDataSource({
-        dataList: [],
-        loading: false,
-        loadend: true,
-        total: dataSource.total,
-        totalPage: dataSource.totalPage
-      });
+    } catch (error: any) {
+      if (error.message !== 'CANCEL_PREVIOUS_REQUEST') {
+        setDataSource({
+          dataList: [],
+          loading: false,
+          loadend: true,
+          total: dataSource.total,
+          totalPage: dataSource.totalPage
+        });
+      }
+
       loadendRef.current = true;
       shouldUpdateRef.current = false;
     } finally {

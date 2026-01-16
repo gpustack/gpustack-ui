@@ -54,10 +54,14 @@ export async function queryWorkersList<T extends Record<string, any>>(
   });
 }
 
-export async function queryGpuDevicesList(params: Global.SearchParams) {
+export async function queryGpuDevicesList(
+  params: Global.SearchParams,
+  options?: { token: any }
+) {
   return request<Global.PageResponse<GPUDeviceItem>>(`${GPU_DEVICES_API}`, {
     method: 'GET',
-    params
+    params,
+    cancelToken: options?.token
   });
 }
 

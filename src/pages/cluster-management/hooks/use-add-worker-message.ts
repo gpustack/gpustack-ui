@@ -64,6 +64,7 @@ export default function useAddWorkerMessage() {
 
   return {
     addedCount,
+    chunkRequestRef,
     createModelsChunkRequest
   };
 }

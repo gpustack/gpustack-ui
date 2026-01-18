@@ -1,7 +1,9 @@
 import React from 'react';
 
 interface ProviderModelProps {
-  name: string;
+  dataList: any[];
+  provider: string;
+  providerId: number;
 }
 
 const ProviderModels: React.FC<ProviderModelProps> = () => {

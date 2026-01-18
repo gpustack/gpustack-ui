@@ -106,7 +106,7 @@ export default [
         component: './llmodels/index'
       },
       {
-        name: 'provider',
+        name: 'providers',
         path: '/models/providers',
         key: 'modelProviders',
         icon: 'icon-extension-outline',

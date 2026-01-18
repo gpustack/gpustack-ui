@@ -27,6 +27,8 @@ import {
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
 import ProviderModels from './components/provider-models';
+import { maasProviderOptions } from './config';
+import { mockDataList } from './config/mock';
 import {
   FormData,
   MaasProviderItem as ListItem,
@@ -53,7 +55,7 @@ const MaasProvider: React.FC = () => {
     deleteAPI: deleteProvider,
     watch: true,
     API: MAAS_PROVIDERS_API,
-    contentForDelete: 'menu.clusterManagement.clusters'
+    contentForDelete: 'menu.models.providers'
   });
   const { watchDataList: allProviderModels } =
     useWatchList(PROVIDER_MODELS_API);
@@ -166,7 +168,7 @@ const MaasProvider: React.FC = () => {
       <ProviderModels
         dataList={list}
         provider={options.parent?.provider}
-        clusterId={options.parent?.id}
+        providerId={options.parent?.id}
       />
     );
   };
@@ -177,16 +179,23 @@ const MaasProvider: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
+          actionType="dropdown"
           showSelect={false}
           marginBottom={22}
           marginTop={30}
           widths={{ input: 300 }}
-          buttonText={intl.formatMessage({ id: 'clusters.button.add' })}
+          buttonText={intl.formatMessage({ id: 'providers.button.add' })}
           rowSelection={rowSelection}
           handleInputChange={handleNameChange}
           handleSearch={handleSearch}
           handleDeleteByBatch={handleDeleteBatch}
           handleClickPrimary={handleClickDropdown}
+          actionItems={maasProviderOptions.map((option) => ({
+            ...option,
+            icon: (
+              <IconFont type={option.icon as string} style={{ fontSize: 14 }} />
+            )
+          }))}
         ></FilterBar>
         <TableContext.Provider
           value={{
@@ -203,7 +212,7 @@ const MaasProvider: React.FC = () => {
             renderChildren={renderChildren}
             onTableSort={handleOnSortChange}
             showSorterTooltip={false}
-            dataSource={dataSource.dataList}
+            dataSource={mockDataList}
             loading={dataSource.loading}
             loadend={dataSource.loadend}
             rowSelection={rowSelection}

@@ -16,6 +16,7 @@ export default {
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.models.provider': 'Provider',
+  'menu.models.providers': 'Provider',
   'menu.modelCatalog': 'Каталог',
   'menu.resources': 'Ресурсы',
   'menu.apikeys': 'API-ключи',
@@ -40,7 +41,11 @@ export default {
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
+<<<<<<< HEAD
 // 1. 'menu.models.benchmark': 'Benchmarks',
 // 2. 'menu.models.benchmarkDetail': 'Benchmark Details',
 // 1. 'menu.models.provider': 'Provider',
+=======
+// 1. 'menu.models.providers': 'Provider',
+>>>>>>> ddf1a270 (feat: provider lsit)
 // ========== End of To-Do List ==========

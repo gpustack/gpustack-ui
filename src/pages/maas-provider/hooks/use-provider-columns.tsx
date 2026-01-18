@@ -1,15 +1,17 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
+import IconFont from '@/components/icon-font';
 import { SealColumnProps } from '@/components/seal-table/types';
 import StatusTag from '@/components/status-tag';
 import { tableSorter } from '@/config/settings';
-import { StarFilled } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
-import { Tooltip } from 'antd';
+import { Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import {
+  maasProviderLabelMap,
+  providerIconsMap,
   ProviderStatus,
   ProviderStatusLabelMap,
   rowActionList
@@ -28,66 +30,48 @@ const useProviderColumns = (
         title: intl.formatMessage({ id: 'common.table.name' }),
         dataIndex: 'name',
         sorter: tableSorter(1),
-        span: 3,
+        span: 5,
         render: (text: string, record: MaasProviderItem) => (
           <>
             <AutoTooltip ghost title={text}>
               {text}
             </AutoTooltip>
-            {record.is_default && (
-              <Tooltip
-                title={intl.formatMessage({
-                  id: 'clusters.form.setDefault.tips'
-                })}
-              >
-                <StarFilled
-                  style={{ color: 'var(--ant-gold-4)', marginLeft: 4 }}
-                />
-              </Tooltip>
+            {record.builtIn && (
+              <Tag color="blue" style={{ marginLeft: 8 }}>
+                BuiltIn
+              </Tag>
             )}
           </>
         )
       },
       {
-        title: intl.formatMessage({ id: 'clusters.table.provider' }),
+        title: intl.formatMessage({ id: 'providers.table.providerName' }),
         dataIndex: 'provider',
         sorter: tableSorter(2),
-        span: 3,
+        span: 4,
         render: (value: string) => (
-          <AutoTooltip ghost minWidth={20}>
-            {ProviderStatusLabelMap[value]}
-          </AutoTooltip>
+          <>
+            <IconFont
+              type={providerIconsMap[value]}
+              style={{ marginRight: 8, fontSize: 16 }}
+            ></IconFont>
+            <AutoTooltip ghost minWidth={20}>
+              {maasProviderLabelMap[value]}
+            </AutoTooltip>
+          </>
         )
       },
       {
-        title: 'GPUs',
-        dataIndex: 'gpus',
-        span: 2,
+        title: intl.formatMessage({ id: 'providers.table.modelsCounts' }),
+        dataIndex: 'models',
+        span: 3,
         sorter: tableSorter(3),
         render: (value: number) => <span>{value}</span>
       },
       {
-        title: intl.formatMessage({ id: 'clusters.table.deployments' }),
-        dataIndex: 'models',
-        sorter: tableSorter(4),
-        span: 3,
-        render: (value: number) => <span>{value}</span>
-      },
-      {
-        title: intl.formatMessage({ id: 'resources.nodes' }),
-        dataIndex: 'workers',
-        sorter: tableSorter(5),
-        span: 3,
-        render: (value: number, record: MaasProviderItem) => (
-          <span>
-            {record.ready_workers} / {record.workers}
-          </span>
-        )
-      },
-      {
         title: intl.formatMessage({ id: 'common.table.status' }),
         dataIndex: 'state',
-        span: 3,
+        span: 4,
         render: (value: string, record: MaasProviderItem) => (
           <StatusTag
             statusValue={{

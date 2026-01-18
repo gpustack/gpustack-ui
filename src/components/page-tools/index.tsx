@@ -157,9 +157,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
           actionType === 'dropdown' ? (
             <DropDownActions
               styles={{
-                root: {
-                  minWidth: 140
-                }
+                root: { minWidth: '125px' }
               }}
               menu={{
                 items: actionItems,

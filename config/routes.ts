@@ -116,6 +116,16 @@ export default [
         component: './maas-provider/index'
       },
       {
+        name: 'accesses',
+        path: '/models/accesses',
+        key: 'accesses',
+        icon: 'icon-extension-outline',
+        selectedIcon: 'icon-extension-filled',
+        defaultIcon: 'icon-extension-outline',
+        access: 'canSeeAdmin',
+        component: './model-access/index'
+      },
+      {
         name: 'userModels',
         path: '/models/user-models',
         key: 'userModels',

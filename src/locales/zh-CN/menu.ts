@@ -17,6 +17,7 @@ export default {
   'menu.models.benchmarkDetail': '基准测试详情',
   'menu.models.provider': '渠道',
   'menu.models.providers': '渠道',
+  'menu.models.accesses': '接入',
   'menu.modelCatalog': '模型库',
   'menu.models.catalog': '模型库',
   'menu.resources': '资源',

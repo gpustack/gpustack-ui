@@ -46,7 +46,10 @@ export default {
   'noresult.benchmark.nofound': 'No matching benchmarks found.',
   'noresult.provider.title': 'No Providers',
   'noresult.provider.subTitle': 'No providers have been added yet.',
-  'noresult.provider.nofound': 'No matching providers found.'
+  'noresult.provider.nofound': 'No matching providers found.',
+  'noresult.accesses.title': 'No Accesses',
+  'noresult.accesses.subTitle': 'No accesses have been added yet.',
+  'noresult.accesses.nofound': 'No matching accesses found.'
 };
 
 // ========== To-Do: Translate Keys (Remove After Translation) ==========
@@ -59,5 +62,8 @@ export default {
 // 7. 'noresult.benchmark.nofound': 'No matching benchmarks found.'
 // 5. 'noresult.provider.title': 'No Providers',
 // 6. 'noresult.provider.subTitle': 'No providers have been added yet.',
-// 7. 'noresult.provider.nofound': 'No matching providers found.'
+// 7. 'noresult.provider.nofound': 'No matching providers found.',
+// 8. 'noresult.accesses.title': 'No Accesses',
+// 9. 'noresult.accesses.subTitle': 'No accesses have been added yet.',
+// 10. 'noresult.accesses.nofound': 'No matching accesses found.'
 // ========================================================================

@@ -43,5 +43,8 @@ export default {
   'noresult.benchmark.nofound': '未找到匹配的基准测试',
   'noresult.provider.title': '暂无渠道',
   'noresult.provider.subTitle': '尚未添加任何渠道。',
-  'noresult.provider.nofound': '未找到匹配的渠道'
+  'noresult.provider.nofound': '未找到匹配的渠道',
+  'noresult.accesses.title': '暂无接入',
+  'noresult.accesses.subTitle': '尚未添加任何接入。',
+  'noresult.accesses.nofound': '未找到匹配的接入'
 };

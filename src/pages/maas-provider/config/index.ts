@@ -25,7 +25,7 @@ export const maasProviderLabelMap = {
   [maasProviderValueMap.Anthropic]: 'Anthropic'
 };
 
-export const IconsMap = {
+export const providerIconsMap = {
   [maasProviderValueMap.Doubao]: 'icon-doubao',
   [maasProviderValueMap.Qwen]: 'icon-qwen',
   [maasProviderValueMap.OpenAI]: 'icon-openai',
@@ -33,10 +33,13 @@ export const IconsMap = {
   [maasProviderValueMap.Anthropic]: 'icon-anthropic'
 };
 
-export const maasProviderOptions = Object.keys(maasProviderValueMap).map(
-  (key) => ({
-    label: maasProviderLabelMap[key],
-    value: maasProviderValueMap[key as keyof typeof maasProviderValueMap]
+export const maasProviderOptions = Object.entries(maasProviderValueMap).map(
+  ([key, value]) => ({
+    label: maasProviderLabelMap[value],
+    value: value,
+    key: value,
+    locale: false,
+    icon: providerIconsMap[value]
   })
 );
 

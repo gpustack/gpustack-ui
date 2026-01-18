@@ -16,7 +16,7 @@ export default {
   'menu.models.benchmark': 'Benchmarks',
   'menu.models.benchmarkDetail': 'Benchmark Details',
   'menu.modelCatalog': 'カタログ',
-  'menu.models.provider': 'Provider',
+  'menu.models.providers': 'Provider',
   'menu.resources': 'リソース',
   'menu.apikeys': 'APIキー',
   'menu.users': 'ユーザー',
@@ -56,4 +56,5 @@ export default {
 // 14. 'menu.resources.backendsList': 'Inference Backends',
 // 15. 'menu.models.benchmark': 'Benchmarks',
 // 15. 'menu.models.provider': 'Provider',
+// 15. 'menu.models.providers': 'Provider',
 // ========== End of To-Do List ==========

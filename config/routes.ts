@@ -119,9 +119,9 @@ export default [
         name: 'accesses',
         path: '/models/accesses',
         key: 'accesses',
-        icon: 'icon-extension-outline',
-        selectedIcon: 'icon-extension-filled',
-        defaultIcon: 'icon-extension-outline',
+        icon: 'icon-captive_portal',
+        selectedIcon: 'icon-captive_portal',
+        defaultIcon: 'icon-captive_portal',
         access: 'canSeeAdmin',
         component: './model-access/index'
       },

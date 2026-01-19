@@ -6,6 +6,7 @@ interface LabelSelectorContextProps {
     value: string | number;
     children?: { label: string; value: string | number }[];
   }>;
+  placeholder?: string[];
   currentData?: Record<string, any>;
 }
 

@@ -19,6 +19,7 @@ interface ProviderModelProps {
   dataList: any[];
   provider: string;
   providerId: number;
+  onSelect: (val: any, record: any) => void;
 }
 
 interface AccessItemProps {
@@ -31,6 +32,12 @@ export const childActionList = [
     key: 'viewlog',
     label: 'common.button.viewlog',
     icon: <IconFont type="icon-logs" />
+  },
+  {
+    key: 'fallback',
+    label: 'Fallback settings',
+    localel: false,
+    icon: <IconFont type="icon-captive_portal" />
   },
   {
     key: 'delete',
@@ -95,20 +102,14 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
   );
 };
 
-const AccessPoints: React.FC<ProviderModelProps> = ({ dataList }) => {
+const AccessPoints: React.FC<ProviderModelProps> = ({ dataList, onSelect }) => {
   console.log('AccessPoints dataList:', dataList);
   return (
     <div>
       {Array(2)
         .fill(1)
         .map((item, index) => (
-          <AccessItem
-            data={item}
-            key={index}
-            onSelect={(val, record) => {
-              console.log('Selected action:', val, 'on record:', record);
-            }}
-          ></AccessItem>
+          <AccessItem data={item} key={index} onSelect={onSelect}></AccessItem>
         ))}
     </div>
   );

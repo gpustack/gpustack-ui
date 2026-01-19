@@ -15,7 +15,7 @@ import {
 } from 'react';
 import { maasProviderType } from '../config';
 import FormContext from '../config/form-context';
-import { MaasProviderItem as ListItem } from '../config/types';
+import { FormData, MaasProviderItem as ListItem } from '../config/types';
 import AccessToken from './access-token';
 import AdvanceConfig from './advance-config';
 import Basic from './basic';
@@ -26,7 +26,7 @@ interface ProviderFormProps {
   action: PageActionType;
   provider?: maasProviderType;
   currentData?: ListItem; // Used when action is EDIT
-  onFinish: (values: FormData) => void;
+  onFinish: (values: FormData) => Promise<void>;
 }
 
 const TABKeysMap = {

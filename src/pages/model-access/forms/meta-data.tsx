@@ -1,36 +1,71 @@
-import SealInput from '@/components/seal-form/seal-input';
+import LabelSelector from '@/components/label-selector';
+import { LabelSelectorContext } from '@/components/label-selector/context';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import _ from 'lodash';
 import { FormData } from '../config/types';
 
 const MetaData = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
+  const metadata = Form.useWatch('meta', form);
+
+  const handleMetadataChange = (labels: Record<string, any>) => {
+    form.setFieldValue('meta', labels);
+  };
+
   return (
     <>
-      <Form.Item name="name" data-field="metadata">
-        <SealInput.Input
-          required
-          label={intl.formatMessage({
-            id: 'common.table.name'
-          })}
-        />
-      </Form.Item>
-      <Form.Item name="provider" hidden>
-        <SealInput.Input
-          label={intl.formatMessage({
-            id: 'providers.table.providerName'
-          })}
-        />
-      </Form.Item>
-      <Form.Item name="description">
-        <SealInput.TextArea
-          scaleSize={true}
-          label={intl.formatMessage({
-            id: 'common.table.description'
-          })}
-        ></SealInput.TextArea>
-      </Form.Item>
+      <LabelSelectorContext.Provider
+        value={{
+          options: [
+            {
+              label: 'max_token_len',
+              value: 'max_token_len'
+            },
+            {
+              label: 'max_context_len',
+              value: 'max_context_len'
+            }
+          ]
+        }}
+      >
+        <Form.Item
+          name="meta"
+          data-field="metadata"
+          rules={[
+            ({ getFieldValue }) => ({
+              validator(rule, value) {
+                if (_.keys(value).length > 0) {
+                  if (_.some(_.keys(value), (k: string) => !value[k])) {
+                    return Promise.reject(
+                      intl.formatMessage(
+                        {
+                          id: 'common.validate.value'
+                        },
+                        {
+                          name: intl.formatMessage({
+                            id: 'models.form.selector'
+                          })
+                        }
+                      )
+                    );
+                  }
+                }
+                return Promise.resolve();
+              }
+            })
+          ]}
+        >
+          <LabelSelector
+            isAutoComplete
+            label={'Metadatas'}
+            labels={metadata}
+            btnText="Add Metadata"
+            onChange={handleMetadataChange}
+          ></LabelSelector>
+        </Form.Item>
+      </LabelSelectorContext.Provider>
     </>
   );
 };

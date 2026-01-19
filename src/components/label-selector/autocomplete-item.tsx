@@ -38,7 +38,7 @@ const LabelItem: React.FC<LabelItemProps> = ({
 }) => {
   const intl = useIntl();
   const [open, setOpen] = useState(false);
-  const { options } = useLabelSelectorContext();
+  const { options, placeholder = [] } = useLabelSelectorContext();
 
   const keyOptions = useMemo(() => {
     return options?.filter(
@@ -98,7 +98,10 @@ const LabelItem: React.FC<LabelItemProps> = ({
               options={keyOptions}
               disabled={disabled}
               checkStatus="success"
-              label={intl.formatMessage({ id: 'common.input.key' })}
+              label={
+                placeholder?.[0] ||
+                intl.formatMessage({ id: 'common.input.key' })
+              }
               value={label.key}
               onChange={handleOnKeyChange}
               onBlur={(e: any) => handleKeyOnBlur(e, 'key')}
@@ -113,7 +116,10 @@ const LabelItem: React.FC<LabelItemProps> = ({
             options={valueOptions}
             disabled={disabled}
             checkStatus={label.value ? 'success' : ''}
-            label={intl.formatMessage({ id: 'common.input.value' })}
+            label={
+              placeholder?.[1] ||
+              intl.formatMessage({ id: 'common.input.value' })
+            }
             value={label.value}
             onChange={handleOnValueChange}
             onBlur={(e: any) => onBlur?.(e, 'value')}

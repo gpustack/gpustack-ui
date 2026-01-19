@@ -6,10 +6,10 @@ import styled from 'styled-components';
 type TransferKey = string | number | bigint;
 
 const TransferWrap = styled.div`
-  .ant-transfer-list {
+  .ant-transfer-section {
     width: 100%;
     height: 300px;
-    .ant-transfer-list-header-dropdown {
+    .anticon-more {
       display: none;
     }
     .ant-input-outlined {
@@ -18,7 +18,7 @@ const TransferWrap = styled.div`
       border-radius: 4px;
     }
   }
-  .ant-transfer-operation {
+  .ant-transfer-actions {
     margin: 0 16px;
     gap: 12px;
     .ant-btn-icon-only {

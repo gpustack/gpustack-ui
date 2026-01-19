@@ -7,10 +7,10 @@ import { Typography } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+import { categoryConfig } from '../../_components/model-tag';
 import { modelCategories } from '../config';
 import { CatalogItem as CatalogItemType } from '../config/types';
 import '../style/catalog-item.less';
-import { categoryConfig } from './model-tag';
 
 interface CatalogItemProps {
   activeId: number;

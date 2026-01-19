@@ -9,7 +9,7 @@ import { Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import ModelTag from '../components/model-tag';
+import ModelTag from '../../_components/model-tag';
 import { ActionList, generateSource } from '../config/button-actions';
 import { ListItem } from '../config/types';
 

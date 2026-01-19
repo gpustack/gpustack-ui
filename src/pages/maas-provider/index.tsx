@@ -62,17 +62,16 @@ const MaasProvider: React.FC = () => {
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
   const intl = useIntl();
-  const {
-    openProviderModalStatus,
-    setOpenProviderModalStatus,
-    openProviderModal,
-    closeProviderModal
-  } = useCreateProvider({
-    refresh: handleSearch
-  });
+  const { openProviderModalStatus, openProviderModal, closeProviderModal } =
+    useCreateProvider({
+      refresh: handleSearch
+    });
 
   const handleClickDropdown = () => {
-    openProviderModal('create');
+    openProviderModal(
+      'create',
+      intl.formatMessage({ id: 'providers.button.add' })
+    );
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -87,39 +86,25 @@ const MaasProvider: React.FC = () => {
         });
       }
       fetchData();
-      setOpenProviderModalStatus({
-        open: false,
-        action: PageAction.CREATE,
-        currentData: undefined,
-        title: '',
-        provider: null
-      });
+      closeProviderModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   };
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
-    setOpenProviderModalStatus({
-      open: false,
-      action: PageAction.CREATE,
-      currentData: undefined,
-      title: '',
-      provider: null
-    });
+    closeProviderModal();
   };
 
   const handleEditProvider = (row: ListItem) => {
-    setOpenProviderModalStatus({
-      open: true,
-      action: PageAction.EDIT,
-      currentData: row,
-      title: intl.formatMessage(
+    openProviderModal(
+      PageAction.EDIT,
+      intl.formatMessage(
         { id: 'clusters.edit.cluster' },
         { cluster: row.name }
       ),
-      provider: row.provider
-    });
+      row
+    );
   };
 
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
@@ -127,6 +112,9 @@ const MaasProvider: React.FC = () => {
       handleEditProvider(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
+    }
+    if (val === 'copy') {
+      openProviderModal(PageAction.EDIT, 'Copy Provider', row);
     }
   });
 
@@ -226,11 +214,11 @@ const MaasProvider: React.FC = () => {
                 image={<IconFont type="icon-extension-outline" />}
                 filters={_.omit(queryParams, ['sort_by'])}
                 noFoundText={intl.formatMessage({
-                  id: 'noresult.provider.nofound'
+                  id: 'noresult.providers.nofound'
                 })}
-                title={intl.formatMessage({ id: 'noresult.provider.title' })}
+                title={intl.formatMessage({ id: 'noresult.providers.title' })}
                 subTitle={intl.formatMessage({
-                  id: 'noresult.provider.subTitle'
+                  id: 'noresult.providers.subTitle'
                 })}
                 onClick={handleClickDropdown}
                 buttonText={intl.formatMessage({ id: 'noresult.button.add' })}

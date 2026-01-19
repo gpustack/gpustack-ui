@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import {
   ApiOutlined,
+  CopyOutlined,
   DeleteOutlined,
   DockerOutlined,
   DownloadOutlined,
@@ -62,7 +63,8 @@ const icons = {
   CaptivePortal: React.createElement(IconFont, { type: 'icon-captive_portal' }),
   StarOutlined: React.createElement(StarOutlined),
   Charger: React.createElement(IconFont, { type: 'icon-charger' }),
-  Disabled: React.createElement(IconFont, { type: 'icon-disabled' })
+  Disabled: React.createElement(IconFont, { type: 'icon-disabled' }),
+  CopyOutlined: React.createElement(CopyOutlined)
 };
 
 export default icons;

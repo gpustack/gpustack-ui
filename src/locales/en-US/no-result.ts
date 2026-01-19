@@ -46,6 +46,9 @@ export default {
   'noresult.provider.title': 'No Providers',
   'noresult.provider.subTitle': 'No providers have been added yet.',
   'noresult.provider.nofound': 'No matching providers found.',
+  'noresult.providers.title': 'No Providers',
+  'noresult.providers.subTitle': 'No providers have been added yet.',
+  'noresult.providers.nofound': 'No matching providers found.',
   'noresult.accesses.title': 'No Accesses',
   'noresult.accesses.subTitle': 'No accesses have been added yet.',
   'noresult.accesses.nofound': 'No matching accesses found.'

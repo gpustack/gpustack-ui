@@ -6,8 +6,7 @@ import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { maasProviderType } from '../config';
-import { AccessItem as ListItem } from '../config/types';
+import { FormData, AccessItem as ListItem } from '../config/types';
 import Basic from './basic';
 import Endpoints from './endpoints';
 import MetaData from './meta-data';
@@ -15,9 +14,8 @@ import MetaData from './meta-data';
 interface ProviderFormProps {
   ref?: any;
   action: PageActionType;
-  provider?: maasProviderType;
   currentData?: ListItem; // Used when action is EDIT
-  onFinish: (values: FormData) => void;
+  onFinish: (values: FormData) => Promise<void>;
 }
 
 const TABKeysMap = {
@@ -27,8 +25,8 @@ const TABKeysMap = {
   ADVANCED: 'advanced'
 };
 
-const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
-  const { action, provider, currentData, onFinish } = props;
+const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
+  const { action, currentData, onFinish } = props;
   const intl = useIntl();
   const { getScrollElementScrollableHeight } = useWrapperContext();
   const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
@@ -86,7 +84,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <Form form={form}>
+      <Form form={form} onFinish={onFinish}>
         <Basic />
         <CollapsePanel
           activeKey={activeKey}
@@ -103,9 +101,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
               key: TABKeysMap.ENDPOINTS,
               label: 'Endpoints',
               forceRender: true,
-              children: (
-                <Endpoints action={action} provider={provider}></Endpoints>
-              )
+              children: <Endpoints></Endpoints>
             }
           ]}
         ></CollapsePanel>
@@ -114,4 +110,4 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   );
 });
 
-export default ProviderForm;
+export default AccessForm;

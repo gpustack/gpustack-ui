@@ -7,6 +7,13 @@ export interface AccessItem {
 
 export interface FormData {
   name: string;
-  category: string;
   description: string;
+  categories: any[];
+  meta: Record<string, any>;
+  endpoints: {
+    provider_model_name: string;
+    weight: number;
+    model_id: number;
+    provider_id: number;
+  }[];
 }

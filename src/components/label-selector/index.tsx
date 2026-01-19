@@ -10,6 +10,7 @@ interface LabelSelectorProps {
   description?: React.ReactNode;
   disabled?: boolean;
   isAutoComplete?: boolean;
+  enablePaste?: boolean;
   onChange?: (labels: Record<string, any>) => void;
   onBlur?: (e: any, type: string, index: number) => void;
   onDelete?: (index: number) => void;
@@ -24,7 +25,8 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
   label,
   btnText,
   description,
-  isAutoComplete
+  isAutoComplete,
+  enablePaste = true
 }) => {
   const intl = useIntl();
   const [labelsData, setLabelsData] = useState({});
@@ -73,6 +75,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({
     e: React.ClipboardEvent<HTMLTextAreaElement>,
     index: number
   ) => {
+    if (!enablePaste) return;
     const clipboardText = e.clipboardData.getData('text');
     if (!clipboardText || clipboardText.indexOf('=') === -1) return;
     e.preventDefault();

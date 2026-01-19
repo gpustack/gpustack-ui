@@ -5,7 +5,7 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { maasProviderType } from '../config';
-import ProxyConfig from './proxy_config';
+import ProxyConfig from './proxy-config';
 
 const AdvanceConfig: React.FC<{
   action: PageActionType;

@@ -1,6 +1,6 @@
 import SealInput from '@/components/seal-form/seal-input';
 import SealSelect from '@/components/seal-form/seal-select';
-import { categoryOptions } from '@/pages/llmodels/config';
+import { modelCategories } from '@/pages/llmodels/config';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import { FormData } from '../config/types';
@@ -14,7 +14,11 @@ const Basic = () => {
         <SealInput.Input required label={'Model Name'} />
       </Form.Item>
       <Form.Item name="category">
-        <SealSelect options={categoryOptions} label="Category"></SealSelect>
+        <SealSelect
+          options={modelCategories}
+          label="Category"
+          allowNull
+        ></SealSelect>
       </Form.Item>
       <Form.Item name="description">
         <SealInput.TextArea

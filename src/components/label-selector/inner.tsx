@@ -1,6 +1,5 @@
-import { useIntl } from '@umijs/max';
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React from 'react';
 import AutoCompleteItem from './autocomplete-item';
 import LabelItem from './label-item';
 import Wrapper from './wrapper';
@@ -33,12 +32,6 @@ const Inner: React.FC<LabelSelectorProps> = ({
   description,
   isAutoComplete
 }) => {
-  const intl = useIntl();
-
-  useEffect(() => {
-    console.log('labels changed in Inner', labels);
-  }, [labels]);
-
   const updateLabels = (list: { key: string; value: string }[]) => {
     const newLabels = _.reduce(
       list,

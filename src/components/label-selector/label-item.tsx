@@ -1,5 +1,4 @@
 import SealInput from '@/components/seal-form/seal-input';
-import { Global } from '@/config/global';
 import { MinusOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Tooltip } from 'antd';

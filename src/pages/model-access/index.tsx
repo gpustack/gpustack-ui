@@ -26,11 +26,13 @@ import {
 } from './apis';
 import AccessPoints from './components/access-points';
 import AddAccessModal from './components/add-access-modal';
+import FallbackModal from './components/fallback-modal';
 import { maasProviderOptions } from './config';
 import { mockDataList } from './config/mock';
 import { FormData, AccessItem as ListItem } from './config/types';
 import useAccessColumns from './hooks/use-access-columns';
 import useCreateAccess from './hooks/use-create-access';
+import useFallbackSettings from './hooks/use-fallback-settings';
 
 const Accesses: React.FC = () => {
   const {
@@ -57,17 +59,20 @@ const Accesses: React.FC = () => {
   const { handleExpandChange, handleExpandAll, expandedRowKeys } =
     useExpandedRowKeys(expandAtom);
   const intl = useIntl();
+  const { openAccessModalStatus, openAccessModal, closeAccessModal } =
+    useCreateAccess();
+
   const {
-    openAccessModalStatus,
-    setOpenAccessModalStatus,
-    openAccessModal,
-    closeAccessModal
-  } = useCreateAccess({
-    refresh: handleSearch
-  });
+    openFallbackSettingsModalStatus,
+    openFallbackSettingsModal,
+    closeFallbackSettingsModal
+  } = useFallbackSettings();
 
   const handleClickDropdown = () => {
-    openAccessModal('create');
+    openAccessModal(
+      PageAction.CREATE,
+      intl.formatMessage({ id: 'accesses.button.add' })
+    );
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -82,39 +87,25 @@ const Accesses: React.FC = () => {
         });
       }
       fetchData();
-      setOpenAccessModalStatus({
-        open: false,
-        action: PageAction.CREATE,
-        currentData: undefined,
-        title: '',
-        provider: null
-      });
+      closeAccessModal();
       message.success(intl.formatMessage({ id: 'common.message.success' }));
     } catch (error) {}
   };
 
   const handleModalCancel = () => {
     console.log('handleModalCancel');
-    setOpenAccessModalStatus({
-      open: false,
-      action: PageAction.CREATE,
-      currentData: undefined,
-      title: '',
-      provider: null
-    });
+    closeAccessModal();
   };
 
   const handleEditProvider = (row: ListItem) => {
-    setOpenAccessModalStatus({
-      open: true,
-      action: PageAction.EDIT,
-      currentData: row,
-      title: intl.formatMessage(
+    openAccessModal(
+      PageAction.EDIT,
+      intl.formatMessage(
         { id: 'clusters.edit.cluster' },
         { cluster: row.name }
       ),
-      provider: row.provider
-    });
+      row
+    );
   };
 
   const handleSelect = useMemoizedFn((val: any, row: ListItem) => {
@@ -154,6 +145,12 @@ const Accesses: React.FC = () => {
     handleTableChange({}, {}, order, { action: 'sort' });
   };
 
+  const onChildSelect = useMemoizedFn((val: any, record: any) => {
+    if (val === 'fallback') {
+      openFallbackSettingsModal(PageAction.EDIT, 'Fallback Settings', record);
+    }
+  });
+
   const renderChildren = (
     list: any,
     options: { parent?: any; [key: string]: any }
@@ -163,6 +160,7 @@ const Accesses: React.FC = () => {
         dataList={list}
         provider={options.parent?.provider}
         providerId={options.parent?.id}
+        onSelect={onChildSelect}
       />
     );
   };
@@ -173,7 +171,6 @@ const Accesses: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          actionType="dropdown"
           showSelect={false}
           marginBottom={22}
           marginTop={30}
@@ -243,7 +240,6 @@ const Accesses: React.FC = () => {
         </TableContext.Provider>
       </PageBox>
       <AddAccessModal
-        provider={openAccessModalStatus.provider}
         open={openAccessModalStatus.open}
         action={openAccessModalStatus.action}
         title={openAccessModalStatus.title}
@@ -251,6 +247,12 @@ const Accesses: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAccessModal>
+      <FallbackModal
+        title={openFallbackSettingsModalStatus.title}
+        open={openFallbackSettingsModalStatus.open}
+        onCancel={closeFallbackSettingsModal}
+        onOk={closeFallbackSettingsModal}
+      ></FallbackModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

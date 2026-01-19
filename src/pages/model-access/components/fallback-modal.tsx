@@ -1,13 +1,10 @@
-import { PageActionType } from '@/config/types';
 import FormDrawer from '@/pages/_components/form-drawer';
 import React, { useRef } from 'react';
 import { FormData, AccessItem as ListItem } from '../config/types';
-
-import ModelAccessForm from '../forms';
+import FallbackSettings from '../forms/fallback-settings';
 
 type AddModalProps = {
   title: string;
-  action: PageActionType;
   open: boolean;
   currentData?: ListItem; // Used when action is EDIT
   onOk: (values: FormData) => void;
@@ -15,7 +12,6 @@ type AddModalProps = {
 };
 const AddProvider: React.FC<AddModalProps> = ({
   title,
-  action,
   open,
   currentData,
   onOk,
@@ -46,12 +42,7 @@ const AddProvider: React.FC<AddModalProps> = ({
       onSubmit={handleSubmit}
       width={600}
     >
-      <ModelAccessForm
-        ref={form}
-        action={action}
-        currentData={currentData}
-        onFinish={onFinish}
-      />
+      <FallbackSettings currentData={currentData} onFinish={onFinish} />
     </FormDrawer>
   );
 };

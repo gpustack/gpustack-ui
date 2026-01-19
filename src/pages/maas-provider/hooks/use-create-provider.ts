@@ -19,8 +19,15 @@ const useCreateProvider = (options: { refresh: () => void }) => {
     provider: null
   });
 
-  const openModal = () => {
-    setOpenModalStatus({ ...openModalStatus, open: true });
+  const openModal = (action: PageActionType, row?: ListItem) => {
+    setOpenModalStatus({
+      ...openModalStatus,
+      open: true,
+      title: action === PageAction.CREATE ? 'Create Provider' : 'Edit Provider',
+      action,
+      currentData: row,
+      provider: row ? row.provider : null
+    });
   };
 
   const closeModal = () => {

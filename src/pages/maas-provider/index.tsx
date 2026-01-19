@@ -22,7 +22,6 @@ import {
   PROVIDER_MODELS_API,
   deleteProvider,
   queryMaasProviders,
-  queryProviderModels,
   updateProvider
 } from './apis';
 import AddMaasProvider from './components/add-provider-modal';
@@ -73,7 +72,7 @@ const MaasProvider: React.FC = () => {
   });
 
   const handleClickDropdown = () => {
-    openProviderModal();
+    openProviderModal('create');
   };
 
   const handleModalOk = async (data: FormData) => {
@@ -149,10 +148,10 @@ const MaasProvider: React.FC = () => {
         cluster_id: row.id,
         page: -1
       };
-      const data = await queryProviderModels(params, {
-        token: options?.token
-      });
-      return data?.items || [];
+      // const data = await queryProviderModels(params, {
+      //   token: options?.token
+      // });
+      return [1, 2, 3];
     }
   );
 
@@ -217,7 +216,7 @@ const MaasProvider: React.FC = () => {
             loadend={dataSource.loadend}
             rowSelection={rowSelection}
             columns={columns}
-            childParentKey="cluster_id"
+            childParentKey="provider_id"
             expandable={true}
             empty={
               <NoResult

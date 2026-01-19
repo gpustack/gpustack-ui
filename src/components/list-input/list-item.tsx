@@ -8,11 +8,19 @@ interface LabelItemProps {
   onRemove: () => void;
   onChange: (value: string) => void;
   onBlur?: (e: any) => void;
+  renderItem?: (
+    data: any,
+    props: {
+      onChange: (value: string) => void;
+      onBlur?: (e: any) => void;
+    }
+  ) => React.ReactNode;
   value: string;
   label?: string;
   placeholder?: string;
   options?: Global.HintOptions[];
   trim?: boolean;
+  data?: any;
 }
 
 const ListItem: React.FC<LabelItemProps> = (props) => {
@@ -23,7 +31,9 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
     label,
     value,
     options,
-    trim = true
+    trim = true,
+    data,
+    renderItem
   } = props;
 
   const handleOnChange = (value: any) => {
@@ -32,15 +42,22 @@ const ListItem: React.FC<LabelItemProps> = (props) => {
 
   return (
     <div className="list-item">
-      <HintInput
-        value={value}
-        onChange={handleOnChange}
-        onBlur={onBlur}
-        label={label}
-        sourceOptions={options}
-        trim={trim}
-        placeholder={props.placeholder}
-      />
+      {renderItem ? (
+        renderItem(data, {
+          onChange: handleOnChange,
+          onBlur
+        })
+      ) : (
+        <HintInput
+          value={value}
+          onChange={handleOnChange}
+          onBlur={onBlur}
+          label={label}
+          sourceOptions={options}
+          trim={trim}
+          placeholder={props.placeholder}
+        />
+      )}
       <Button
         size="small"
         className="btn"

@@ -21,7 +21,7 @@ export const maasProviderLabelMap = {
   [maasProviderValueMap.Doubao]: 'Doubao',
   [maasProviderValueMap.Qwen]: 'Qwen',
   [maasProviderValueMap.OpenAI]: 'OpenAI',
-  [maasProviderValueMap.Deepseek]: 'Deepseek',
+  [maasProviderValueMap.Deepseek]: 'DeepSeek',
   [maasProviderValueMap.Anthropic]: 'Anthropic'
 };
 

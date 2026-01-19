@@ -14,6 +14,7 @@ type EventsType = 'CREATE' | 'UPDATE' | 'DELETE' | 'INSERT';
 export function useUpdateChunkedList(options: {
   events?: EventsType[];
   dataList?: any[];
+  triggerAt?: React.MutableRefObject<number>;
   limit?: number;
   onCreate?: (args: any) => void;
   onUpdate?: (args: any) => void;
@@ -24,7 +25,8 @@ export function useUpdateChunkedList(options: {
   mapFun?: (args: any) => any;
   computedID?: (d: object) => string;
 }) {
-  const { events = ['CREATE', 'DELETE', 'UPDATE', 'INSERT'] } = options;
+  const { events = ['CREATE', 'DELETE', 'UPDATE', 'INSERT'], triggerAt } =
+    options;
   const deletedIdsRef = useRef<Set<number | string>>(new Set());
   const cacheDataListRef = useRef<any[]>(options.dataList || []);
   const timerRef = useRef<any>(null);
@@ -63,6 +65,7 @@ export function useUpdateChunkedList(options: {
 
     // CREATE
     if (data?.type === WatchEventType.CREATE && events.includes('CREATE')) {
+      const latestCreateList: any[] = [];
       const newDataList = collections.reduce((acc: any[], item: any) => {
         const updateIndex = cacheDataListRef.current?.findIndex(
           (sItem: any) => sItem.id === item.id
@@ -73,6 +76,12 @@ export function useUpdateChunkedList(options: {
         } else {
           cacheDataListRef.current[updateIndex] = updateItem;
         }
+        if (
+          triggerAt?.current &&
+          Date.parse(item.created_at) >= triggerAt.current
+        ) {
+          latestCreateList.push(updateItem);
+        }
 
         return acc;
       }, []);
@@ -82,7 +91,7 @@ export function useUpdateChunkedList(options: {
         ...cacheDataListRef.current
       ].slice(0, limit);
 
-      options.onCreate?.(newDataList);
+      options.onCreate?.(latestCreateList);
     }
 
     // DELETE
@@ -112,7 +121,11 @@ export function useUpdateChunkedList(options: {
             updateItem,
             ...cacheDataListRef.current.slice(0, limit - 1)
           ];
-          options.onCreate?.([updateItem]);
+          if (options.onCreate && triggerAt?.current) {
+            if (Date.parse(item.created_at) >= triggerAt.current) {
+              options.onCreate?.([updateItem]);
+            }
+          }
         }
       });
     }

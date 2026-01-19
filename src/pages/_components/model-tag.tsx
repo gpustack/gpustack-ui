@@ -5,7 +5,7 @@ import {
   WechatWorkOutlined
 } from '@ant-design/icons';
 import { Tag } from 'antd';
-import { modelCategoriesMap } from '../config';
+import { modelCategoriesMap } from '../llmodels/config';
 
 export const categoryConfig = {
   [modelCategoriesMap.reranker]: {
@@ -53,7 +53,7 @@ const ModelTag: React.FC<ModelTagProps> = ({ categoryKey, size }) => {
   return (
     <Tag
       icon={config.icon}
-      variant="outlined"
+      variant={'outlined'}
       style={{
         height: size,
         margin: 0,

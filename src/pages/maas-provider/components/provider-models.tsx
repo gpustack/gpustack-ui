@@ -1,4 +1,4 @@
-import { categoryOptions, modelCategoriesMap } from '@/pages/llmodels/config';
+import { modelCategoriesMap } from '@/pages/llmodels/config';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -6,6 +6,7 @@ import {
 } from '@ant-design/icons';
 import { Flex, Tag } from 'antd';
 import React from 'react';
+import { categoryConfig } from '../../_components/model-tag';
 
 interface ProviderModelProps {
   dataList: any[];
@@ -61,8 +62,10 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
                   : 'gray'
             }
           >
-            {model.name} (
-            {categoryOptions.find((item) => item.value === model.type)?.label})
+            {model.name}
+            <span style={{ marginLeft: 8 }}>
+              {categoryConfig[model.type]?.icon}
+            </span>
           </Tag>
         ))}
       </Flex>

@@ -67,7 +67,7 @@ const Accesses: React.FC = () => {
   });
 
   const handleClickDropdown = () => {
-    openAccessModal();
+    openAccessModal('create');
   };
 
   const handleModalOk = async (data: FormData) => {

@@ -44,8 +44,8 @@ export const maasProviderOptions = Object.entries(maasProviderValueMap).map(
 );
 
 export const ProviderStatusValueMap: Record<string, string> = {
-  Ready: 'Ready',
-  InActive: 'Inactive'
+  Ready: 'ready',
+  InActive: 'inactive'
 };
 
 export const ProviderStatusLabelMap = {
@@ -64,6 +64,11 @@ export const rowActionList = [
     key: 'edit',
     label: 'common.button.edit',
     icon: icons.EditOutlined
+  },
+  {
+    key: 'copy',
+    label: 'common.button.copy',
+    icon: icons.CopyOutlined
   },
   {
     key: 'delete',

@@ -19,8 +19,14 @@ const useCreateAccess = (options: { refresh: () => void }) => {
     provider: null
   });
 
-  const openModal = () => {
-    setOpenModalStatus({ ...openModalStatus, open: true });
+  const openModal = (action: PageActionType, currentData?: ListItem) => {
+    setOpenModalStatus({
+      ...openModalStatus,
+      open: true,
+      action,
+      currentData,
+      title: action === PageAction.CREATE ? 'Create Access' : 'Edit Access'
+    });
   };
 
   const closeModal = () => {

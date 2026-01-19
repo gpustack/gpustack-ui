@@ -13,7 +13,6 @@ import {
   maasProviderLabelMap,
   providerIconsMap,
   ProviderStatus,
-  ProviderStatusLabelMap,
   rowActionList
 } from '../config';
 import { MaasProviderItem } from '../config/types';
@@ -69,15 +68,21 @@ const useProviderColumns = (
         render: (value: number) => <span>{value}</span>
       },
       {
-        title: intl.formatMessage({ id: 'common.table.status' }),
-        dataIndex: 'state',
-        span: 4,
+        title: intl.formatMessage({ id: 'providers.table.proxy' }),
+        dataIndex: 'proxy_config',
+        span: 3,
+        render: (value: number) => <span>{value ? 'Configured' : 'None'}</span>
+      },
+      {
+        title: 'Token Settings',
+        dataIndex: 'tokens',
+        span: 3,
         render: (value: string, record: MaasProviderItem) => (
           <StatusTag
             statusValue={{
-              status: ProviderStatus[value],
-              text: ProviderStatusLabelMap[value],
-              message: record.state_message || undefined
+              status: ProviderStatus['ready'],
+              text: 'Configured',
+              message: ''
             }}
           />
         )
@@ -86,7 +91,7 @@ const useProviderColumns = (
         title: intl.formatMessage({ id: 'common.table.createTime' }),
         dataIndex: 'created_at',
         sorter: tableSorter(6),
-        span: 4,
+        span: 3,
         render: (value: string) => (
           <AutoTooltip ghost minWidth={20}>
             {dayjs(value).format('YYYY-MM-DD HH:mm:ss')}

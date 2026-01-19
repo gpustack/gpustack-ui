@@ -5,13 +5,14 @@ import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { maasProviderType } from '../config';
+import ProxyConfig from './proxy_config';
 
 const AdvanceConfig: React.FC<{
   action: PageActionType;
   provider?: maasProviderType;
   ref?: any;
 }> = forwardRef(({ action, provider }, ref) => {
-  const [form] = Form.useForm();
+  const form = Form.useFormInstance();
   const intl = useIntl();
   const editorRef = React.useRef<any>(null);
   const [fileContent, setFileContent] = React.useState<string>('');
@@ -28,7 +29,8 @@ const AdvanceConfig: React.FC<{
 
   return (
     <>
-      <div data-field="customConfig"></div>
+      <div data-field="advanceConfig"></div>
+      <ProxyConfig></ProxyConfig>
       <Form.Item
         hidden
         name="custom_config"
@@ -43,14 +45,13 @@ const AdvanceConfig: React.FC<{
       </Form.Item>
       <YamlEditor
         ref={editorRef}
-        title={'Yaml'}
+        title={'Custom Config (YAML)'}
         value={fileContent}
         height={300}
         onUpload={(content) => {
           setFileContent(content);
         }}
       ></YamlEditor>
-      <div className="scroller-to-holder" style={{ height: 1 }}></div>
     </>
   );
 });

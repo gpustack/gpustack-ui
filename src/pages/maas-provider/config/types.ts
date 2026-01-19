@@ -7,6 +7,7 @@ export interface MaasProviderItem {
   state: string;
   state_message: string;
   provider: maasProviderType;
+  proxy_config?: any;
   builtIn: boolean;
 }
 

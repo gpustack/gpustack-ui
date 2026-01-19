@@ -22,6 +22,13 @@ const SupportedModels = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
 
+  const handleTestModel = (data: any) => {
+    data.loading = true;
+    setTimeout(() => {
+      data.loading = false;
+    }, 1000);
+  };
+
   const renderModelItem = (
     data: any,
     {
@@ -32,6 +39,11 @@ const SupportedModels = () => {
     return (
       <SelectWrapper>
         <SealSelect
+          suffixIcon={
+            <CheckCircleFilled
+              style={{ color: 'var(--ant-color-success)', fontSize: 16 }}
+            />
+          }
           alwaysFocus={true}
           value={data.value}
           onChange={onChange}
@@ -42,12 +54,12 @@ const SupportedModels = () => {
             { label: 'Model C', value: 'model_c' }
           ]}
         />
-        <span className="icon-wrapper">
-          <CheckCircleFilled
-            style={{ color: 'var(--ant-color-success)', fontSize: 16 }}
-          />
-        </span>
-        <Button type="link" size="small">
+        <Button
+          type="link"
+          size="small"
+          loading={data.loading}
+          onClick={() => handleTestModel(data)}
+        >
           Test
         </Button>
       </SelectWrapper>

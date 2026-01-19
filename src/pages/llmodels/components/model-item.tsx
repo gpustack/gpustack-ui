@@ -8,6 +8,7 @@ import { Button } from 'antd';
 import _ from 'lodash';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import { categoryConfig } from '../../_components/model-tag';
 import {
   modelCategories,
   modelCategoriesMap,
@@ -17,7 +18,6 @@ import {
   MyModelsStatusValueMap
 } from '../config';
 import { categoryToPathMap } from '../config/button-actions';
-import { categoryConfig } from './model-tag';
 
 const CardWrapper = styled.div`
   &:hover {

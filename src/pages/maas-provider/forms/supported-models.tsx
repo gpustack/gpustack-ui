@@ -1,0 +1,75 @@
+import ListInput from '@/components/list-input';
+import SealSelect from '@/components/seal-form/seal-select';
+import { CheckCircleFilled } from '@ant-design/icons';
+import { useIntl } from '@umijs/max';
+import { Button, Form } from 'antd';
+import styled from 'styled-components';
+import { FormData } from '../config/types';
+
+const SelectWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+`;
+
+const SupportedModels = () => {
+  const intl = useIntl();
+  const form = Form.useFormInstance<FormData>();
+
+  const renderModelItem = (
+    data: any,
+    {
+      onChange,
+      onBlur
+    }: { onChange: (value: string) => void; onBlur?: (e: any) => void }
+  ) => {
+    return (
+      <SelectWrapper>
+        <SealSelect
+          alwaysFocus={true}
+          value={data.value}
+          onChange={onChange}
+          onBlur={onBlur}
+          options={[
+            { label: 'Model A', value: 'model_a' },
+            { label: 'Model B', value: 'model_b' },
+            { label: 'Model C', value: 'model_c' }
+          ]}
+        />
+        <span className="icon-wrapper">
+          <CheckCircleFilled
+            style={{ color: 'var(--ant-color-success)', fontSize: 16 }}
+          />
+        </span>
+        <Button type="link" size="small">
+          Test
+        </Button>
+      </SelectWrapper>
+    );
+  };
+
+  const handleOnChange = (values: string[]) => {};
+
+  return (
+    <>
+      <Form.Item name="models">
+        <div data-field="supportedModels"></div>
+        <ListInput
+          btnText="Add Model"
+          label="Supported Models"
+          dataList={[]}
+          renderItem={renderModelItem}
+          onChange={handleOnChange}
+        ></ListInput>
+      </Form.Item>
+    </>
+  );
+};
+
+export default SupportedModels;

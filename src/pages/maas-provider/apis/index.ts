@@ -1,9 +1,9 @@
 import { request } from '@umijs/max';
 import { FormData, MaasProviderItem } from '../config/types';
 
-export const MAAS_PROVIDERS_API = '/maas-providers';
+export const MAAS_PROVIDERS_API = '/models';
 
-export const PROVIDER_MODELS_API = '/maas-provider-models';
+export const PROVIDER_MODELS_API = '/models';
 
 export async function queryMaasProviders(
   params: Global.SearchParams,

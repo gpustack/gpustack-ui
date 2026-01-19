@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { BORDERRADIUS, INPUT_INNER_PADDING, INPUTHEIGHT } from '../config';
 
 const SelectWrapper = styled.div`
+  flex: 1;
   .seal-select-wrapper {
     border: none;
     box-shadow: none;
@@ -89,6 +90,9 @@ const SelectWrapper = styled.div`
           left: 0;
           right: 0;
         }
+        .ant-select .ant-select-content {
+          padding-block: 0px 0;
+        }
       }
     }
     .ant-select-selection-overflow-item > span {
@@ -118,7 +122,7 @@ const SelectWrapper = styled.div`
       }
 
       .ant-select-content {
-        padding-block: 20px 0 !important;
+        padding-block: 20px 0;
         box-shadow: none !important;
       }
       &.ant-cascader {

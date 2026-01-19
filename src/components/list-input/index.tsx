@@ -15,6 +15,13 @@ interface ListInputProps {
   onChange: (data: string[]) => void;
   onBlur?: (e: any, index: number) => void;
   onDelete?: (index: number) => void;
+  renderItem?: (
+    data: any,
+    props: {
+      onChange: (value: string) => void;
+      onBlur?: (e: any) => void;
+    }
+  ) => React.ReactNode;
 }
 
 const ListInput: React.FC<ListInputProps> = (props) => {
@@ -28,7 +35,8 @@ const ListInput: React.FC<ListInputProps> = (props) => {
     btnText,
     options,
     labelExtra,
-    trim = true
+    trim = true,
+    renderItem
   } = props;
   const [list, setList] = React.useState<{ value: string; uid: number }[]>([]);
   const countRef = React.useRef(0);
@@ -92,12 +100,14 @@ const ListInput: React.FC<ListInputProps> = (props) => {
             <ListItem
               placeholder={props.placeholder}
               options={options}
+              data={item}
               key={item.uid}
               value={item.value}
               onBlur={(e) => onBlur?.(e, index)}
               onRemove={() => handleOnRemove(index)}
               onChange={(val) => handleOnChange(val, index)}
               trim={trim}
+              renderItem={renderItem}
             />
           );
         })}

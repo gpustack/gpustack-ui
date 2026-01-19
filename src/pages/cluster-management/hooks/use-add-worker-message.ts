@@ -9,6 +9,7 @@ export default function useAddWorkerMessage() {
   const newItemsRef = useRef<any[]>([]);
   const [addedCount, setAddedCount] = useState(0);
   const timerRef = useRef<any>(null);
+  const triggerAtRef = useRef<number>(0);
 
   const showAddWorkerMessage = () => {
     if (newItemsRef.current.length > 0) {
@@ -17,12 +18,13 @@ export default function useAddWorkerMessage() {
     }
   };
 
-  const { setChunkRequest, startLoadingRef } = useSetChunkRequest();
+  const { setChunkRequest } = useSetChunkRequest();
   const { updateChunkedList } = useUpdateChunkedList({
     events: ['CREATE', 'INSERT'],
     dataList: [],
+    triggerAt: triggerAtRef,
     onCreate: (newItems: any) => {
-      if (startLoadingRef.current) {
+      if (triggerAtRef.current) {
         newItemsRef.current = newItemsRef.current.concat(newItems);
         showAddWorkerMessage();
       }
@@ -37,18 +39,20 @@ export default function useAddWorkerMessage() {
 
   const resetAddedCount = () => {
     setAddedCount(0);
+    chunkRequestRef.current?.current?.cancel?.();
     newItemsRef.current = [];
+    triggerAtRef.current = 0;
     clearTimeout(timerRef.current);
   };
 
   const createModelsChunkRequest = async () => {
-    chunkRequestRef.current?.current?.cancel?.();
     resetAddedCount();
     try {
       chunkRequestRef.current = setChunkRequest({
         url: WORKERS_API,
         handler: updateHandler
       });
+      triggerAtRef.current = Date.now();
     } catch (error) {
       // ignore
     }
@@ -56,15 +60,14 @@ export default function useAddWorkerMessage() {
 
   useEffect(() => {
     return () => {
-      chunkRequestRef.current?.current?.cancel?.();
-      newItemsRef.current = [];
-      clearTimeout(timerRef.current);
+      resetAddedCount();
     };
   }, []);
 
   return {
     addedCount,
     chunkRequestRef,
+    reset: resetAddedCount,
     createModelsChunkRequest
   };
 }

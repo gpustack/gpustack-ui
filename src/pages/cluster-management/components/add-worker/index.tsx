@@ -60,8 +60,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     stepList = []
   } = props || {};
   const intl = useIntl();
-  const { addedCount, createModelsChunkRequest, chunkRequestRef } =
-    useAddWorkerMessage();
+  const { addedCount, createModelsChunkRequest, reset } = useAddWorkerMessage();
   const firstLoad = React.useRef(true);
   const axiosTokenRef = React.useRef<any>(null);
   const [registrationInfo, setRegistrationInfo] = React.useState<{
@@ -100,8 +99,8 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     }
     return () => {
       firstLoad.current = true;
-      chunkRequestRef.current?.current?.cancel?.();
       axiosTokenRef.current?.cancel?.();
+      reset();
     };
   }, [open, cluster_id]);
 
@@ -109,7 +108,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     if (open) {
       createModelsChunkRequest();
     } else {
-      chunkRequestRef.current?.current?.cancel?.();
+      reset();
       axiosTokenRef.current?.cancel?.();
     }
   }, [open]);

@@ -164,6 +164,7 @@ const useUsersColumns = ({
                     background: 'unset',
                     color: 'var(--ant-color-text-description)'
                   }}
+                  variant="outlined"
                   color="default"
                 >
                   {intl.formatMessage({

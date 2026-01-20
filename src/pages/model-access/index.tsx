@@ -26,13 +26,11 @@ import {
 } from './apis';
 import AccessPoints from './components/access-points';
 import AddAccessModal from './components/add-access-modal';
-import FallbackModal from './components/fallback-modal';
 import { maasProviderOptions } from './config';
 import { mockDataList } from './config/mock';
 import { FormData, AccessItem as ListItem } from './config/types';
 import useAccessColumns from './hooks/use-access-columns';
 import useCreateAccess from './hooks/use-create-access';
-import useFallbackSettings from './hooks/use-fallback-settings';
 
 const Accesses: React.FC = () => {
   const {
@@ -61,12 +59,6 @@ const Accesses: React.FC = () => {
   const intl = useIntl();
   const { openAccessModalStatus, openAccessModal, closeAccessModal } =
     useCreateAccess();
-
-  const {
-    openFallbackSettingsModalStatus,
-    openFallbackSettingsModal,
-    closeFallbackSettingsModal
-  } = useFallbackSettings();
 
   const handleClickDropdown = () => {
     openAccessModal(
@@ -147,7 +139,7 @@ const Accesses: React.FC = () => {
 
   const onChildSelect = useMemoizedFn((val: any, record: any) => {
     if (val === 'fallback') {
-      openFallbackSettingsModal(PageAction.EDIT, 'Fallback Settings', record);
+      console.log('open fallback settings modal', record);
     }
   });
 
@@ -247,12 +239,6 @@ const Accesses: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAccessModal>
-      <FallbackModal
-        title={openFallbackSettingsModalStatus.title}
-        open={openFallbackSettingsModalStatus.open}
-        onCancel={closeFallbackSettingsModal}
-        onOk={closeFallbackSettingsModal}
-      ></FallbackModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

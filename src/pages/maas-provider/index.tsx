@@ -166,7 +166,6 @@ const MaasProvider: React.FC = () => {
     <>
       <PageBox>
         <FilterBar
-          actionType="dropdown"
           showSelect={false}
           marginBottom={22}
           marginTop={30}

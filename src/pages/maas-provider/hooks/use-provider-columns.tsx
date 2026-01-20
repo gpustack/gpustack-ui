@@ -1,20 +1,16 @@
 // columns.ts
 import AutoTooltip from '@/components/auto-tooltip';
 import DropdownButtons from '@/components/drop-down-buttons';
-import IconFont from '@/components/icon-font';
 import { SealColumnProps } from '@/components/seal-table/types';
 import StatusTag from '@/components/status-tag';
+import { StatusMaps } from '@/config';
 import { tableSorter } from '@/config/settings';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import {
-  maasProviderLabelMap,
-  providerIconsMap,
-  ProviderStatus,
-  rowActionList
-} from '../config';
+import { maasProviderLabelMap, rowActionList } from '../config';
 import { MaasProviderItem } from '../config/types';
 
 const useProviderColumns = (
@@ -35,7 +31,7 @@ const useProviderColumns = (
             <AutoTooltip ghost title={text}>
               {text}
             </AutoTooltip>
-            {record.builtIn && (
+            {record.builtin && (
               <Tag color="blue" style={{ marginLeft: 8 }}>
                 BuiltIn
               </Tag>
@@ -50,10 +46,6 @@ const useProviderColumns = (
         span: 4,
         render: (value: string) => (
           <>
-            <IconFont
-              type={providerIconsMap[value]}
-              style={{ marginRight: 8, fontSize: 16 }}
-            ></IconFont>
             <AutoTooltip ghost minWidth={20}>
               {maasProviderLabelMap[value]}
             </AutoTooltip>
@@ -69,19 +61,30 @@ const useProviderColumns = (
       },
       {
         title: intl.formatMessage({ id: 'providers.table.proxy' }),
-        dataIndex: 'proxy_config',
+        dataIndex: 'proxy_url',
         span: 3,
-        render: (value: number) => <span>{value ? 'Configured' : 'None'}</span>
+        render: (value: number) => (
+          <span>
+            {value ? (
+              <CheckCircleOutlined
+                style={{ color: 'var(--ant-color-success)' }}
+              />
+            ) : (
+              '-'
+            )}
+          </span>
+        )
       },
       {
         title: 'Token Settings',
-        dataIndex: 'tokens',
+        dataIndex: 'api_tokens',
         span: 3,
         render: (value: string, record: MaasProviderItem) => (
           <StatusTag
             statusValue={{
-              status: ProviderStatus['ready'],
-              text: 'Configured',
+              status:
+                value?.length > 0 ? StatusMaps.success : StatusMaps.inactive,
+              text: value?.length > 0 ? 'Configured' : 'Unconfigured',
               message: ''
             }}
           />

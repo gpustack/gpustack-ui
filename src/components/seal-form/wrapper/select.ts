@@ -10,6 +10,9 @@ const SelectWrapper = styled.div`
     &.dropdown-visible {
       .__wrapper__ {
         .ant-cascader.ant-select.ant-select-outlined {
+          border-color: var(--ant-input-active-border-color) !important;
+          outline: 0;
+          background-color: var(--ant-input-active-bg);
           border-bottom: none !important;
           border-radius: ${BORDERRADIUS}px ${BORDERRADIUS}px 0 0;
           transition: all 0.2s ease;
@@ -82,7 +85,7 @@ const SelectWrapper = styled.div`
         }
 
         .ant-select .ant-select-input {
-          top: 5px !important;
+          top: 5px;
         }
         .ant-select-placeholder {
           position: absolute;
@@ -92,6 +95,14 @@ const SelectWrapper = styled.div`
         }
         .ant-select .ant-select-content {
           padding-block: 0px 0;
+        }
+        .ant-select.ant-cascader {
+          .ant-select-placeholder {
+            top: 0px !important;
+          }
+          .ant-select-input {
+            top: -6px !important;
+          }
         }
       }
     }

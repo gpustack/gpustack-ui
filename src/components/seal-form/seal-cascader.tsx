@@ -175,6 +175,7 @@ const SealCascader: React.FC<
       >
         <Cascader
           {...rest}
+          placeholder={placeholder}
           suffixIcon={<IconFont type="icon-down"></IconFont>}
           optionRender={
             optionNode

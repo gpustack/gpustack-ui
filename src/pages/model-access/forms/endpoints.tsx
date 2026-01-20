@@ -1,17 +1,89 @@
-import LabelSelector from '@/components/label-selector';
 import { LabelSelectorContext } from '@/components/label-selector/context';
+import MetadataList from '@/components/metadata-list';
+import SealCascader from '@/components/seal-form/seal-cascader';
+import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
 import _ from 'lodash';
+import { useState } from 'react';
 import { FormData } from '../config/types';
+
+const providerModelList = [
+  {
+    label: 'Deployments',
+    value: 'deployments',
+    children: [
+      {
+        label: 'qwen3-0.6b',
+        value: 'qwen3-0.6b',
+        key: '1',
+        provider_id: 1,
+        model_id: 101
+      },
+      {
+        label: 'deepseek',
+        value: 'deepseek',
+        key: '2',
+        provider_id: 1,
+        model_id: 102
+      }
+    ]
+  },
+  {
+    label: 'Doubao',
+    value: 'doubao',
+    children: [
+      {
+        label: 'qwen3-0.6b',
+        value: 'qwen3-0.6b',
+        key: '3',
+        provider_id: 2,
+        model_id: 201
+      },
+      {
+        label: 'deepseek',
+        value: 'deepseek',
+        key: '4',
+        provider_id: 2,
+        model_id: 202
+      }
+    ]
+  }
+];
 
 const Endpoints = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
   const endpoints = Form.useWatch('endpoints', form);
+  const [dataList, setDataList] = useState<
+    {
+      provider_model_name: string;
+      weight: number;
+      model_id: number;
+      provider_id: number;
+    }[]
+  >(endpoints || []);
 
   const handleEndpointsChange = (labels: Record<string, any>) => {
     form.setFieldValue('endpoints', labels);
+  };
+
+  const handleOnAdd = () => {
+    const newDataList = [
+      ...dataList,
+      {
+        provider_model_name: '',
+        weight: 1,
+        model_id: 0,
+        provider_id: 0
+      }
+    ];
+    setDataList(newDataList);
+  };
+
+  const handleOnDelete = (index: number, item: any) => {
+    const newDataList = dataList.filter((_, i) => i !== index);
+    setDataList(newDataList);
   };
 
   return (
@@ -58,13 +130,39 @@ const Endpoints = () => {
             })
           ]}
         >
-          <LabelSelector
-            isAutoComplete
+          <MetadataList
             label={'Endpoints'}
-            labels={endpoints}
+            dataList={dataList}
             btnText="Add Endpoint"
-            onChange={handleEndpointsChange}
-          ></LabelSelector>
+            onAdd={handleOnAdd}
+            onDelete={handleOnDelete}
+          >
+            {(item, index) => (
+              <>
+                <SealCascader
+                  required
+                  showSearch
+                  expandTrigger="hover"
+                  multiple={false}
+                  classNames={{
+                    popup: {
+                      root: 'cascader-popup-wrapper gpu-selector'
+                    }
+                  }}
+                  maxTagCount={1}
+                  placeholder="provider/model"
+                  options={providerModelList}
+                  showCheckedStrategy="SHOW_CHILD"
+                  getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                ></SealCascader>
+                <span className="seprator">:</span>
+                <SealInput.Number
+                  style={{ flex: 60 }}
+                  placeholder="weight"
+                ></SealInput.Number>
+              </>
+            )}
+          </MetadataList>
         </Form.Item>
       </LabelSelectorContext.Provider>
     </>

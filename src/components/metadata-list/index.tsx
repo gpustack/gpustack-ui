@@ -57,7 +57,7 @@ const MetadataList: React.FC<MetadataListProps> = ({
     >
       {dataList.map((item, index) => (
         <ItemContainer key={index}>
-          {children ? children(item, index) : null}
+          {children?.(item, index)}
           {!disabled && (
             <Button
               size="small"

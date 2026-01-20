@@ -230,7 +230,7 @@ default_run_command: vllm serve {{model_path}} --port {{port}} --host {{worker_i
 version_configs:
   v0.11.0:
     image_name: lm/vllm:latest
-    run_command: vllm serve {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}
+    run_command: {{model_path}} --port {{port}} --host {{worker_ip}} --served-model-name {{model_name}}
     entrypoint: "/bin/sh -c"
     custom_framework: cuda
   v0.10.0:

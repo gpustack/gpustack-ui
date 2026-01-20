@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import Card from '@/components/templates/card';
 import { useIntl } from '@umijs/max';
+import { Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { ProviderType } from '../config';
@@ -59,6 +60,11 @@ const Header = styled.div`
   }
 `;
 
+const CardBox = styled.div`
+  display: flex;
+  overflow: hidden;
+`;
+
 interface ProviderCatalogProps {
   onSelect?: (provider: string, item: any) => void;
   groupIcons?: Record<string, string>;
@@ -66,6 +72,7 @@ interface ProviderCatalogProps {
   current?: ProviderType | string;
   clickable?: boolean;
   height: string | number;
+  showTooltip?: boolean;
   dataList: {
     label: string;
     key: string;
@@ -84,7 +91,8 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
   dataList,
   clickable,
   height,
-  current
+  current,
+  showTooltip = false
 }) => {
   const intl = useIntl();
 
@@ -134,16 +142,22 @@ const ProviderCatalog: React.FC<ProviderCatalogProps> = ({
           )}
           <Wrapper $cols={cols}>
             {items?.map((action) => (
-              <Card
-                height={height}
+              <Tooltip
+                title={showTooltip ? action.label : false}
                 key={action.key}
-                onClick={() => onSelect?.(action.key as string, action)}
-                active={current === action.key}
-                disabled={action.disabled}
-                clickable={clickable}
-                header={renderTitle(action)}
-                icon={action.icon}
-              ></Card>
+              >
+                <CardBox>
+                  <Card
+                    height={height}
+                    onClick={() => onSelect?.(action.key as string, action)}
+                    active={current === action.key}
+                    disabled={action.disabled}
+                    clickable={clickable}
+                    header={renderTitle(action)}
+                    icon={action.icon}
+                  ></Card>
+                </CardBox>
+              </Tooltip>
             ))}
           </Wrapper>
         </div>

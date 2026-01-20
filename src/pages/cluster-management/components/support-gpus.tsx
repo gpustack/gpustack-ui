@@ -5,7 +5,8 @@ import iluvatarWEBP from '@/assets/logo/Iluvatar.png';
 import metaxLogo from '@/assets/logo/metax.png';
 import mooreLogo from '@/assets/logo/moore-logo.png';
 import nvidiaLogo from '@/assets/logo/nvidia.png';
-import theadLogo from '@/assets/logo/t-head.png';
+import theadLogoEN from '@/assets/logo/t-head-en.png';
+import theadLogoZH from '@/assets/logo/t-head-zh.png';
 import IconFont from '@/components/icon-font';
 import useUserSettings from '@/hooks/use-user-settings';
 import {
@@ -190,7 +191,12 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
       locale: false,
       link: 'https://docs.gpustack.ai/latest/installation/requirements/#thead-gpu',
       notes: AddWorkerDockerNotes[GPUDriverMap.THEAD],
-      icon: <ProviderImage src={theadLogo} height={22} />
+      icon: (
+        <ProviderImage
+          src={intl?.locale === 'zh-CN' ? theadLogoZH : theadLogoEN}
+          height={22}
+        />
+      )
     }
   ];
 
@@ -202,6 +208,7 @@ const SupportedHardware: React.FC<SupportedHardwareProps> = ({
         current={current}
         dataList={supportedHardPlatforms}
         clickable={clickable}
+        showTooltip={true}
         cols={5}
       />
     </Box>

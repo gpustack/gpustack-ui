@@ -87,6 +87,25 @@ const Endpoints = () => {
     setDataList(newDataList);
   };
 
+  const handleFallbackChange = (e: any, index: number) => {
+    const checked = e.target.checked;
+    const newDataList = dataList.map((item, i) => {
+      if (i === index) {
+        return {
+          ...item,
+          is_fallback: checked
+        };
+      } else if (checked) {
+        return {
+          ...item,
+          is_fallback: false
+        };
+      }
+      return item;
+    });
+    setDataList(newDataList);
+  };
+
   return (
     <>
       <LabelSelectorContext.Provider
@@ -163,6 +182,8 @@ const Endpoints = () => {
                 ></SealInput.Number>
                 <Tooltip title="fallback">
                   <Checkbox
+                    checked={item.is_fallback}
+                    onChange={(e) => handleFallbackChange(e, index)}
                     style={{ marginLeft: 12, marginRight: 4 }}
                   ></Checkbox>
                 </Tooltip>

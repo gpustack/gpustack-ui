@@ -66,6 +66,11 @@ export const rowActionList = [
     icon: icons.EditOutlined
   },
   {
+    label: 'models.button.accessSettings',
+    key: 'accessControl',
+    icon: icons.Permission
+  },
+  {
     key: 'delete',
     label: 'common.button.delete',
     icon: icons.DeleteOutlined,

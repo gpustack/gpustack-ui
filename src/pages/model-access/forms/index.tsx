@@ -84,7 +84,13 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       }}
       getScrollElementScrollableHeight={getScrollElementScrollableHeight}
     >
-      <Form form={form} onFinish={onFinish}>
+      <Form
+        form={form}
+        onFinish={onFinish}
+        initialValues={{
+          categories: []
+        }}
+      >
         <Basic />
         <CollapsePanel
           activeKey={activeKey}

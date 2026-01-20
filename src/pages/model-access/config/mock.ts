@@ -4,31 +4,31 @@ import { AccessItem, AccessPointItem } from './types';
 export const mockDataList: AccessItem[] = [
   {
     id: 1,
-    name: 'Doubao Access',
-    source: 'Doubao',
+    name: 'model-A',
+    source: 'Deployments',
     accessPoints: 5
   },
   {
     id: 2,
-    name: 'Qwen Access',
+    name: 'model-B',
     source: 'Qwen',
     accessPoints: 3
   },
   {
     id: 3,
-    name: 'OpenAI Access',
+    name: 'model-C',
     source: 'OpenAI',
     accessPoints: 8
   },
   {
     id: 4,
-    name: 'Deepseek Access',
+    name: 'model-D',
     source: 'Deepseek',
     accessPoints: 2
   },
   {
     id: 5,
-    name: 'Anthropic Access',
+    name: 'model-E',
     source: 'Anthropic',
     accessPoints: 4
   }

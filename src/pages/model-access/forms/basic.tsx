@@ -13,7 +13,7 @@ const Basic = () => {
       <Form.Item name="name" data-field="name">
         <SealInput.Input required label={'Model Name'} />
       </Form.Item>
-      <Form.Item name="category">
+      <Form.Item name="categories">
         <SealSelect
           options={modelCategories}
           label="Category"

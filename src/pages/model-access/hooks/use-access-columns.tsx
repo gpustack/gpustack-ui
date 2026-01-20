@@ -6,7 +6,7 @@ import { tableSorter } from '@/config/settings';
 import { useIntl } from '@umijs/max';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
-import { maasProviderLabelMap, rowActionList } from '../config';
+import { rowActionList } from '../config';
 import { AccessItem } from '../config/types';
 
 const useAccessColumns = (
@@ -33,14 +33,7 @@ const useAccessColumns = (
       {
         title: intl.formatMessage({ id: 'models.form.source' }),
         dataIndex: 'source',
-        span: 5,
-        render: (value: string) => (
-          <>
-            <AutoTooltip ghost minWidth={20}>
-              {maasProviderLabelMap[value]}
-            </AutoTooltip>
-          </>
-        )
+        span: 5
       },
       {
         title: intl.formatMessage({ id: 'accesses.table.accessPoints' }),

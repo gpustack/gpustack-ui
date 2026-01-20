@@ -64,6 +64,11 @@ const SealSlider: React.FC<SealSliderProps> = (props) => {
             value={value}
             controls={false}
             onChange={handleInput}
+            styles={{
+              input: {
+                paddingInline: 0
+              }
+            }}
           ></InputNumber>
         ) : (
           <span className="val">{value}</span>

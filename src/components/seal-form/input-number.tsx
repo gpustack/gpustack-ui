@@ -76,6 +76,7 @@ const SealInputNumber: React.FC<InputNumberProps & SealFormItemProps> = (
       >
         <InputNumber
           {...rest}
+          placeholder={placeholder}
           ref={inputRef}
           autoComplete="off"
           onFocus={handleOnFocus}

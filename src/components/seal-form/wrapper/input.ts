@@ -179,6 +179,9 @@ const InputWrapper = styled.div`
   .ant-input-textarea-allow-clear.ant-input-affix-wrapper {
     padding: 0;
   }
+  .ant-input-number-input:placeholder-shown {
+    font-size: var(--ant-font-size);
+  }
 `;
 
 export default InputWrapper;

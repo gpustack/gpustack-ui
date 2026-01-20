@@ -1,6 +1,7 @@
 import useSetChunkRequest from '@/hooks/use-chunk-request';
 import useUpdateChunkedList from '@/hooks/use-update-chunk-list';
 import _ from 'lodash';
+import qs from 'query-string';
 import { useEffect, useRef, useState } from 'react';
 import { WORKERS_API } from '../../resources/apis';
 
@@ -45,11 +46,11 @@ export default function useAddWorkerMessage() {
     clearTimeout(timerRef.current);
   };
 
-  const createModelsChunkRequest = async () => {
+  const createModelsChunkRequest = async (params = {}) => {
     resetAddedCount();
     try {
       chunkRequestRef.current = setChunkRequest({
-        url: WORKERS_API,
+        url: `${WORKERS_API}?${qs.stringify(_.pickBy(params, (val: any) => !!val))}`,
         handler: updateHandler
       });
       triggerAtRef.current = Date.now();

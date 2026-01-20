@@ -74,6 +74,7 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
 
   const handleOnClusterChange = (value: number, row?: any) => {
     onClusterChange?.(value, row);
+    createModelsChunkRequest({ cluster_id: value });
   };
 
   React.useEffect(() => {

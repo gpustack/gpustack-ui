@@ -1,6 +1,8 @@
 import SealInput from '@/components/seal-form/seal-input';
+import SealSelect from '@/components/seal-form/seal-select';
 import { useIntl } from '@umijs/max';
 import { Form } from 'antd';
+import { maasProviderOptions } from '../config/providers';
 import { FormData } from '../config/types';
 
 const Basic = () => {
@@ -8,7 +10,7 @@ const Basic = () => {
   const form = Form.useFormInstance<FormData>();
   return (
     <>
-      <Form.Item name="name" data-field="name">
+      <Form.Item<FormData> name="name" data-field="name">
         <SealInput.Input
           required
           label={intl.formatMessage({
@@ -16,14 +18,15 @@ const Basic = () => {
           })}
         />
       </Form.Item>
-      <Form.Item name="provider" hidden>
-        <SealInput.Input
+      <Form.Item<FormData> name={['config', 'type']}>
+        <SealSelect
+          options={maasProviderOptions}
           label={intl.formatMessage({
             id: 'providers.table.providerName'
           })}
         />
       </Form.Item>
-      <Form.Item name="description">
+      <Form.Item<FormData> name="description">
         <SealInput.TextArea
           scaleSize={true}
           label={intl.formatMessage({

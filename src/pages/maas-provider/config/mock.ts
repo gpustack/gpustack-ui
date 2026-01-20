@@ -9,7 +9,8 @@ export const mockDataList: MaasProviderItem[] = [
     models: 5,
     state_message: '',
     provider: 'doubao',
-    proxy_config: {},
+    api_tokens: ['token1', 'token2'],
+    proxy_url: 'http://proxy.example.com',
     builtIn: false
   },
   {
@@ -19,7 +20,8 @@ export const mockDataList: MaasProviderItem[] = [
     state: 'inactive',
     state_message: 'Provider is inactive',
     provider: 'qwen',
-    proxy_config: false,
+    proxy_url: 'http://proxy2.example.com',
+
     builtIn: true
   },
   {
@@ -28,7 +30,8 @@ export const mockDataList: MaasProviderItem[] = [
     name: 'OpenAI',
     state: 'ready',
     state_message: '',
-    proxy_config: null,
+    proxy_url: null,
+    api_tokens: ['tokenA'],
     provider: 'openai',
     builtIn: false
   },
@@ -39,7 +42,8 @@ export const mockDataList: MaasProviderItem[] = [
     state: 'ready',
     state_message: '',
     provider: 'deepseek',
-    proxy_config: null,
+    proxy_url: null,
+    api_tokens: ['tokenX', 'tokenY'],
     builtIn: false
   },
   {
@@ -49,7 +53,7 @@ export const mockDataList: MaasProviderItem[] = [
     state: 'inactive',
     state_message: 'Provider is inactive',
     provider: 'anthropic',
-    proxy_config: {},
+    proxy_url: {},
     builtIn: true
   }
 ];

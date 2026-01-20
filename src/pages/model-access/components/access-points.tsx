@@ -3,11 +3,12 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import StatusTag from '@/components/status-tag';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
+import { mockAccessPointList } from '../config/mock';
 
 const CellContent = styled.div`
   display: flex;
@@ -35,9 +36,8 @@ export const childActionList = [
   },
   {
     key: 'fallback',
-    label: 'Fallback settings',
-    localel: false,
-    icon: <IconFont type="icon-captive_portal" />
+    label: 'accesses.table.setAsFallback',
+    icon: <StarOutlined />
   },
   {
     key: 'delete',
@@ -61,6 +61,11 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
               }}
             >
               <AutoTooltip ghost>qwen3-0.6b-zduxy</AutoTooltip>
+              {data.is_fallback && (
+                <StarFilled
+                  style={{ color: 'var(--ant-color-warning)', marginLeft: 8 }}
+                />
+              )}
             </CellContent>
           </Col>
           <Col span={5}>
@@ -106,11 +111,9 @@ const AccessPoints: React.FC<ProviderModelProps> = ({ dataList, onSelect }) => {
   console.log('AccessPoints dataList:', dataList);
   return (
     <div>
-      {Array(2)
-        .fill(1)
-        .map((item, index) => (
-          <AccessItem data={item} key={index} onSelect={onSelect}></AccessItem>
-        ))}
+      {mockAccessPointList.map((item, index) => (
+        <AccessItem data={item} key={index} onSelect={onSelect}></AccessItem>
+      ))}
     </div>
   );
 };

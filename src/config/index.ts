@@ -29,7 +29,7 @@ export const StatusColorMap: Record<
   },
   inactive: {
     text: `var(--ant-color-text-tertiary)`,
-    border: `rgba(200,200,200,1)`,
+    border: `var(--ant-color-border)`,
     bg: `var(--ant-color-fill)`
   }
 };

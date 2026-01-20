@@ -1,3 +1,4 @@
+import AutoTooltip from '@/components/auto-tooltip';
 import { modelCategoriesMap } from '@/pages/llmodels/config';
 import {
   CheckCircleOutlined,
@@ -54,17 +55,28 @@ const ProviderModels: React.FC<ProviderModelProps> = () => {
           <Tag
             key={model.name}
             icon={iconsMap[model.status]}
+            variant="outlined"
+            styles={{
+              root: {
+                display: 'flex',
+                alignItems: 'center'
+              }
+            }}
             color={
               model.status === 'accessible'
                 ? 'success'
                 : model.status === 'inaccessible'
                   ? 'red'
-                  : 'gray'
+                  : 'default'
             }
           >
-            {model.name}
-            <span style={{ marginLeft: 8 }}>
-              {categoryConfig[model.type]?.icon}
+            <span className="flex-center">
+              <AutoTooltip ghost maxWidth={'120px'}>
+                {model.name}
+              </AutoTooltip>
+              <span style={{ marginLeft: 8 }}>
+                {categoryConfig[model.type]?.icon}
+              </span>
             </span>
           </Tag>
         ))}

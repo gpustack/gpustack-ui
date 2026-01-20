@@ -77,6 +77,7 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
 
   const handleOnClusterChange = async (value: number, row?: any) => {
     try {
+      createModelsChunkRequest({ cluster_id: value });
       axiosTokenRef.current?.cancel?.();
       axiosTokenRef.current = createAxiosToken();
       const data = await queryClusterToken(
@@ -97,21 +98,12 @@ const AddWorker: React.FC<AddWorkerProps> = (props) => {
     if (open && cluster_id && firstLoad.current) {
       handleOnClusterChange(cluster_id);
     }
-    return () => {
+    if (!open) {
+      reset();
+      axiosTokenRef.current?.cancel?.();
       firstLoad.current = true;
-      axiosTokenRef.current?.cancel?.();
-      reset();
-    };
-  }, [open, cluster_id]);
-
-  useEffect(() => {
-    if (open) {
-      createModelsChunkRequest();
-    } else {
-      reset();
-      axiosTokenRef.current?.cancel?.();
     }
-  }, [open]);
+  }, [open, cluster_id]);
 
   const renderMessage = (count: number) => {
     if (count === 1) {

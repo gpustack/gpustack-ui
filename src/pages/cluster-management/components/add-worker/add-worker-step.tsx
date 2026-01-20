@@ -74,7 +74,6 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
 
   const handleOnClusterChange = (value: number, row?: any) => {
     onClusterChange?.(value, row);
-    createModelsChunkRequest({ cluster_id: value });
   };
 
   React.useEffect(() => {
@@ -83,11 +82,13 @@ const AddWorkerSteps: React.FC<AddWorkerProps> = (props) => {
   }, [stepList]);
 
   React.useEffect(() => {
-    // this effect is only triggered when used in cluster create page
-    if (actionSource === 'page') {
-      createModelsChunkRequest();
+    // this effect is only triggered when used in cluster create page inner
+    if (actionSource === 'page' && registrationInfo?.cluster_id) {
+      createModelsChunkRequest({
+        cluster_id: registrationInfo?.cluster_id
+      });
     }
-  }, [actionSource]);
+  }, [actionSource, registrationInfo?.cluster_id]);
 
   const renderMessage = (count: number) => {
     if (count === 1) {

@@ -17,6 +17,7 @@ import { useAtom } from 'jotai';
 import _ from 'lodash';
 import NoResult from '../_components/no-result';
 import PageBox from '../_components/page-box';
+import AccessControlModal from '../llmodels/components/access-control-modal';
 import {
   ACCESS_API,
   ACCESS_POINTS_API,
@@ -30,6 +31,7 @@ import { maasProviderOptions } from './config';
 import { mockDataList } from './config/mock';
 import { FormData, AccessItem as ListItem } from './config/types';
 import useAccessColumns from './hooks/use-access-columns';
+import useAccessControl from './hooks/use-access-control';
 import useCreateAccess from './hooks/use-create-access';
 
 const Accesses: React.FC = () => {
@@ -59,6 +61,11 @@ const Accesses: React.FC = () => {
   const intl = useIntl();
   const { openAccessModalStatus, openAccessModal, closeAccessModal } =
     useCreateAccess();
+  const {
+    openAccessControlModal,
+    closeAccessControlModal,
+    openAccessControlModalStatus
+  } = useAccessControl();
 
   const handleClickDropdown = () => {
     openAccessModal(
@@ -105,6 +112,12 @@ const Accesses: React.FC = () => {
       handleEditProvider(row);
     } else if (val === 'delete') {
       handleDelete({ ...row, name: row.name });
+    } else if (val === 'accessControl') {
+      openAccessControlModal(
+        PageAction.EDIT,
+        intl.formatMessage({ id: 'models.button.accessSettings' }),
+        row
+      );
     }
   });
 
@@ -239,6 +252,13 @@ const Accesses: React.FC = () => {
         onCancel={handleModalCancel}
         onOk={handleModalOk}
       ></AddAccessModal>
+      <AccessControlModal
+        onCancel={closeAccessControlModal}
+        title={openAccessControlModalStatus.title}
+        open={openAccessControlModalStatus.open}
+        currentData={openAccessControlModalStatus.currentData || null}
+        action={openAccessControlModalStatus.action}
+      ></AccessControlModal>
       <DeleteModal ref={modalRef}></DeleteModal>
     </>
   );

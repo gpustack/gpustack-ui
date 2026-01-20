@@ -4,7 +4,7 @@ import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import StatusTag from '@/components/status-tag';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Col, Row } from 'antd';
+import { Col, Row, Tag } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
@@ -67,10 +67,22 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
             <CellContent style={{ paddingLeft: 44 }}>
               <AutoTooltip ghost>Weight: 20</AutoTooltip>
               {data.is_fallback && (
-                <IconFont
-                  type="icon-shield-filled"
-                  style={{ color: 'var(--ant-color-warning)', marginLeft: 8 }}
-                />
+                <Tag
+                  variant="outlined"
+                  color="gray"
+                  style={{
+                    color: 'var(--ant-color-text-tertiary)',
+                    marginLeft: 8,
+                    fontSize: 12,
+                    height: 18,
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 10,
+                    borderColor: 'var(--ant-color-border)'
+                  }}
+                >
+                  Fallback
+                </Tag>
               )}
             </CellContent>
           </Col>

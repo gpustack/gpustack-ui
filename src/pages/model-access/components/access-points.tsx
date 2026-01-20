@@ -3,7 +3,7 @@ import DropdownButtons from '@/components/drop-down-buttons';
 import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import StatusTag from '@/components/status-tag';
-import { DeleteOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -37,7 +37,7 @@ export const childActionList = [
   {
     key: 'fallback',
     label: 'accesses.table.setAsFallback',
-    icon: <StarOutlined />
+    icon: <IconFont type="icon-shield" />
   },
   {
     key: 'delete',
@@ -61,16 +61,17 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
               }}
             >
               <AutoTooltip ghost>qwen3-0.6b-zduxy</AutoTooltip>
-              {data.is_fallback && (
-                <StarFilled
-                  style={{ color: 'var(--ant-color-warning)', marginLeft: 8 }}
-                />
-              )}
             </CellContent>
           </Col>
           <Col span={5}>
             <CellContent style={{ paddingLeft: 44 }}>
-              <AutoTooltip ghost>Traffic: 20%</AutoTooltip>
+              <AutoTooltip ghost>Weight: 20</AutoTooltip>
+              {data.is_fallback && (
+                <IconFont
+                  type="icon-shield-filled"
+                  style={{ color: 'var(--ant-color-warning)', marginLeft: 8 }}
+                />
+              )}
             </CellContent>
           </Col>
           <Col span={5}>

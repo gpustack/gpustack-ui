@@ -3,7 +3,8 @@ import MetadataList from '@/components/metadata-list';
 import SealCascader from '@/components/seal-form/seal-cascader';
 import SealInput from '@/components/seal-form/seal-input';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
+import { Checkbox, Form } from 'antd';
+import { Tooltip } from 'antd/lib';
 import _ from 'lodash';
 import { useState } from 'react';
 import { FormData } from '../config/types';
@@ -160,6 +161,11 @@ const Endpoints = () => {
                   style={{ flex: 60 }}
                   placeholder="weight"
                 ></SealInput.Number>
+                <Tooltip title="fallback">
+                  <Checkbox
+                    style={{ marginLeft: 12, marginRight: 4 }}
+                  ></Checkbox>
+                </Tooltip>
               </>
             )}
           </MetadataList>

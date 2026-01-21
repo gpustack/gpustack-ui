@@ -122,6 +122,7 @@ export default [
         icon: 'icon-speed',
         selectedIcon: 'icon-speed-filled',
         defaultIcon: 'icon-speed',
+        access: 'canSeeAdmin',
         component: './benchmark/index'
       }
     ]

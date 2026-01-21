@@ -11,7 +11,6 @@ export interface RightActionsProps {
   handleDeleteByBatch: () => void;
   handleClickPrimary?: () => void;
   handleSettingFields?: () => void;
-  handleCompare?: () => void;
   buttonText?: string;
   rowSelection: {
     selectedRowKeys: React.Key[];
@@ -21,7 +20,6 @@ export interface RightActionsProps {
 const RightActions: React.FC<RightActionsProps> = ({
   handleDeleteByBatch,
   handleClickPrimary,
-  handleCompare,
   handleSettingFields,
   buttonText,
   rowSelection
@@ -31,9 +29,6 @@ const RightActions: React.FC<RightActionsProps> = ({
   return (
     <Space size={16}>
       <Button onClick={handleSettingFields} icon={<SettingOutlined />}></Button>
-      <Button variant="solid" color="orange" onClick={handleCompare}>
-        Compare
-      </Button>
       <Button
         icon={<PlusOutlined></PlusOutlined>}
         type="primary"

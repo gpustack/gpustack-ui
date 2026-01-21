@@ -1,6 +1,7 @@
 import IconFont from '@/components/icon-font';
 import { PageAction } from '@/config';
 import { PageActionType } from '@/config/types';
+import CollapsePanel from '@/pages/_components/collapse-panel';
 import { useWrapperContext } from '@/pages/_components/column-wrapper/use-wrapper-context';
 import ScrollSpyTabs from '@/pages/_components/scroll-spy-tabs';
 import { useIntl } from '@umijs/max';
@@ -15,6 +16,7 @@ import {
 import FormContext from '../config/form-context';
 import { FormData, BenchmarkListItem as ListItem } from '../config/types';
 import Basic from './basic';
+import DatasetForm from './dataset';
 
 interface ProviderFormProps {
   ref?: any;
@@ -25,9 +27,7 @@ interface ProviderFormProps {
 
 const TABKeysMap = {
   BASIC: 'basic',
-  SUPPORTEDMODELS: 'supportedModels',
-  CUSTOMCONFIG: 'customConfig',
-  ADVANCED: 'advanced'
+  PROFILE: 'profile'
 };
 
 const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
@@ -35,27 +35,21 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { getScrollElementScrollableHeight } = useWrapperContext();
-  const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.BASIC]);
+  const [activeKey, setActiveKey] = useState<string[]>([TABKeysMap.PROFILE]);
   const scrollTabsRef = useRef<any>(null);
 
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,
-      label: 'Basic',
+      label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       icon: <IconFont type="icon-basic" />,
       field: 'name'
     },
     {
-      value: TABKeysMap.SUPPORTEDMODELS,
-      label: 'Supported Models',
-      icon: <IconFont type="icon-speed" />,
-      field: 'supportedModels'
-    },
-    {
-      value: TABKeysMap.ADVANCED,
-      label: intl.formatMessage({ id: 'resources.form.advanced' }),
+      value: TABKeysMap.PROFILE,
+      label: intl.formatMessage({ id: 'common.title.config' }),
       icon: <IconFont type="icon-settings" />,
-      field: 'advanceConfig'
+      field: 'profile'
     }
   ];
 
@@ -88,7 +82,7 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
     <ScrollSpyTabs
       ref={scrollTabsRef}
       defaultTarget="basic"
-      segmentOptions={[]}
+      segmentOptions={segmentOptions}
       activeKey={activeKey}
       setActiveKey={handleActiveChange}
       segmentedTop={{
@@ -100,6 +94,19 @@ const ProviderForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
       <FormContext.Provider value={{ action }}>
         <Form form={form} onFinish={onFinish} initialValues={{}}>
           <Basic />
+          <CollapsePanel
+            activeKey={activeKey}
+            accordion={false}
+            onChange={handleOnCollapseChange}
+            items={[
+              {
+                key: TABKeysMap.PROFILE,
+                label: intl.formatMessage({ id: 'common.title.config' }),
+                forceRender: true,
+                children: <DatasetForm />
+              }
+            ]}
+          ></CollapsePanel>
         </Form>
       </FormContext.Provider>
     </ScrollSpyTabs>

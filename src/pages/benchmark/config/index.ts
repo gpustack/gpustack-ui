@@ -27,3 +27,27 @@ export const BenchmarkStatus: Record<string, StatusType> = {
   [BenchmarkStatusValueMap.Error]: StatusMaps.error,
   [BenchmarkStatusValueMap.Unreachable]: StatusMaps.error
 };
+
+export const profileOptions = [
+  {
+    label: 'benchmark.form.profile.latency',
+    value: 'latency_short',
+    locale: true
+  },
+  {
+    label: 'benchmark.form.profile.throughput',
+    value: 'throughput_medium',
+    locale: true
+  },
+  {
+    label: 'benchmark.form.profile.longContext',
+    value: 'long_context_stress',
+    locale: true
+  },
+  {
+    label: 'benchmark.form.profile.heavy',
+    value: 'generation_heavy',
+    locale: true
+  },
+  { label: 'benchmark.form.profile.custom', value: 'custom', locale: true }
+];

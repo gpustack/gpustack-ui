@@ -112,7 +112,7 @@ export const FilterBar: React.FC<FilterBarProps> = (props) => {
       return null;
     }
     return (
-      <Space size={20}>
+      <Space size={16}>
         {handleClickPrimary ? (
           actionType === 'dropdown' ? (
             <DropDownActions

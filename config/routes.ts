@@ -114,6 +114,15 @@ export default [
         defaultIcon: 'icon-models',
         access: 'canSeeUser',
         component: './llmodels/user-models'
+      },
+      {
+        name: 'benchmark',
+        path: '/models/benchmark',
+        key: 'benchmark',
+        icon: 'icon-speed',
+        selectedIcon: 'icon-speed-filled',
+        defaultIcon: 'icon-speed',
+        component: './benchmark/index'
       }
     ]
   },

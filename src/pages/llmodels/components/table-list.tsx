@@ -693,7 +693,7 @@ const Models: React.FC<ModelsProps> = ({
             </Space>
           }
           right={
-            <Space size={20}>
+            <Space size={16}>
               {page !== 'clusters' && (
                 <DropDownActions
                   menu={{

@@ -94,15 +94,17 @@ const ScrollSpyTabs: React.FC<ScrollSpyTabsProps> = forwardRef(
 
     return (
       <div>
-        <SegmentedHeader $top={segmentedTop.top}>
-          <SegmentLine
-            theme={'light'}
-            defaultValue={target}
-            value={target}
-            onChange={handleTargetChange}
-            options={segmentOptions}
-          />
-        </SegmentedHeader>
+        {segmentOptions.length > 0 && (
+          <SegmentedHeader $top={segmentedTop.top}>
+            <SegmentLine
+              theme={'light'}
+              defaultValue={target}
+              value={target}
+              onChange={handleTargetChange}
+              options={segmentOptions}
+            />
+          </SegmentedHeader>
+        )}
         {children}
         <div className="holder" style={{ height: holderHeight }}></div>
       </div>

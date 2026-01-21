@@ -13,6 +13,7 @@ export default {
   'menu.models.modelCatalog': 'カタログ',
   'menu.models.catalog': 'モデルカタログ',
   'menu.models.deployment': 'Deployment',
+  'menu.models.benchmark': 'Benchmark',
   'menu.modelCatalog': 'カタログ',
   'menu.resources': 'リソース',
   'menu.apikeys': 'APIキー',
@@ -50,5 +51,6 @@ export default {
 // 11. 'menu.models.userModels': 'My Models'
 // 12. 'menu.clusterManagement.clusterDetail': 'Cluster Detail',
 // 13. 'menu.clusterManagement.clusterCreate': 'Create Cluster',
-// 14. 'menu.resources.backendsList': 'Inference Backends'
+// 14. 'menu.resources.backendsList': 'Inference Backends',
+// 15. 'menu.models.benchmark': 'Benchmark',
 // ========== End of To-Do List ==========

@@ -10,6 +10,7 @@ import { useIntl } from '@umijs/max';
 import { Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
+import ProviderLogo from '../components/provider-logo';
 import { maasProviderLabelMap, rowActionList } from '../config';
 import { MaasProviderItem } from '../config/types';
 
@@ -46,8 +47,11 @@ const useProviderColumns = (
         span: 4,
         render: (value: string) => (
           <>
+            <ProviderLogo provider={value} style={{ marginRight: 8 }} />
             <AutoTooltip ghost minWidth={20}>
-              {maasProviderLabelMap[value]}
+              {maasProviderLabelMap[value]
+                ? intl.formatMessage({ id: maasProviderLabelMap[value] })
+                : value}
             </AutoTooltip>
           </>
         )

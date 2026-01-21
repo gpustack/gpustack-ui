@@ -17,6 +17,7 @@ import {
   updateBenchmark
 } from './apis';
 import AddBenchmarkModal from './components/add-benchmark-modal';
+import LeftActions from './components/left-actions';
 import RightActions from './components/right-actions';
 import { FormData, BenchmarkListItem as ListItem } from './config/types';
 import useBenchmarkColumns from './hooks/use-benchmark-columns';
@@ -123,6 +124,12 @@ const Benchmark: React.FC = () => {
           handleInputChange={handleNameChange}
           rowSelection={rowSelection}
           widths={{ input: 300 }}
+          left={
+            <LeftActions
+              handleSearch={handleSearch}
+              handleInputChange={handleNameChange}
+            ></LeftActions>
+          }
           right={
             <RightActions
               handleDeleteByBatch={handleDeleteBatch}

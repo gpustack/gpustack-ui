@@ -22,5 +22,9 @@ export default {
   'benchmark.form.profile.heavy': '高生成量',
   'benchmark.form.profile.custom': '自定义',
   'benchmark.table.inputTokenLength': '输入 Token 长度',
-  'benchmark.table.outputTokenLength': '输出 Token 长度'
+  'benchmark.table.outputTokenLength': '输出 Token 长度',
+  'benchmark.detail.summary.title': '摘要',
+  'benchmark.detail.configure.title': '配置',
+  'benchmark.detail.environment.title': '环境',
+  'benchmark.detail.logs.title': '日志'
 };

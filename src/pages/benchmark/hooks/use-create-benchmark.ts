@@ -1,0 +1,46 @@
+import { PageAction } from '@/config';
+import { PageActionType } from '@/config/types';
+import { useState } from 'react';
+import { BenchmarkListItem as ListItem } from '../config/types';
+
+const useCreateBenchmark = () => {
+  const [openModalStatus, setOpenModalStatus] = useState<{
+    open: boolean;
+    action: PageActionType;
+    currentData?: ListItem;
+    title: string;
+  }>({
+    open: false,
+    action: PageAction.CREATE,
+    currentData: undefined,
+    title: ''
+  });
+
+  const openModal = (action: PageActionType, title: string, row?: ListItem) => {
+    setOpenModalStatus({
+      ...openModalStatus,
+      open: true,
+      title: title,
+      action,
+      currentData: row
+    });
+  };
+
+  const closeModal = () => {
+    setOpenModalStatus({
+      open: false,
+      action: PageAction.CREATE,
+      currentData: undefined,
+      title: ''
+    });
+  };
+
+  return {
+    openBenchmarkModalStatus: openModalStatus,
+    setOpenBenchmarkModalStatus: setOpenModalStatus,
+    openBenchmarkModal: openModal,
+    closeBenchmarkModal: closeModal
+  };
+};
+
+export default useCreateBenchmark;

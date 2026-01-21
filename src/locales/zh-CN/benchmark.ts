@@ -3,6 +3,7 @@ export default {
   'benchmark.button.add': '添加基准测试',
   'benchmark.button.compare': '对比',
   'benchmark.table.model': '模型',
+  'benchmark.table.instance': '目标实例',
   'benchmark.table.dataset': '数据集',
   'benchmark.table.requestRate': '请求率',
   'benchmark.table.gpu': 'GPU ',
@@ -12,5 +13,14 @@ export default {
   'benchmark.table.rps': '请求数/秒',
   'benchmark.table.tps': 'Tokens/秒',
   'benchmark.table.inputLen': '输入长度',
-  'benchmark.table.outputLen': '输出长度'
+  'benchmark.table.outputLen': '输出长度',
+  'benchmark.form.profile': '模式',
+  'benchmark.form.totalRequests': '总请求数',
+  'benchmark.form.profile.latency': '延迟',
+  'benchmark.form.profile.throughput': '吞吐',
+  'benchmark.form.profile.longContext': '长上下文',
+  'benchmark.form.profile.heavy': '高生成量',
+  'benchmark.form.profile.custom': '自定义',
+  'benchmark.table.inputTokenLength': '输入 Token 长度',
+  'benchmark.table.outputTokenLength': '输出 Token 长度'
 };

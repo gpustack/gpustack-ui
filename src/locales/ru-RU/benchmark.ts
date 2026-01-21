@@ -3,6 +3,7 @@ export default {
   'benchmark.button.add': 'Add Benchmark',
   'benchmark.button.compare': 'Compare',
   'benchmark.table.model': 'Model',
+  'benchmark.table.instance': 'Endpoint',
   'benchmark.table.dataset': 'Dataset',
   'benchmark.table.requestRate': 'Request Rate',
   'benchmark.table.gpu': 'GPU ',
@@ -12,5 +13,14 @@ export default {
   'benchmark.table.rps': 'Requests/s',
   'benchmark.table.tps': 'Tokens/s',
   'benchmark.table.inputLen': 'Input Length',
-  'benchmark.table.outputLen': 'Output Length'
+  'benchmark.table.outputLen': 'Output Length',
+  'benchmark.form.profile': 'Profile',
+  'benchmark.form.totalRequests': 'Total Requests',
+  'benchmark.form.profile.latency': 'Latency',
+  'benchmark.form.profile.throughput': 'Throughput',
+  'benchmark.form.profile.longContext': 'Long Context',
+  'benchmark.form.profile.heavy': 'Generation Heavy',
+  'benchmark.form.profile.custom': 'Custom',
+  'benchmark.table.inputTokenLength': 'Input Token Length',
+  'benchmark.table.outputTokenLength': 'Output Token Length'
 };

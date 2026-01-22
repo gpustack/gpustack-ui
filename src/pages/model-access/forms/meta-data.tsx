@@ -1,71 +1,175 @@
-import LabelSelector from '@/components/label-selector';
-import { LabelSelectorContext } from '@/components/label-selector/context';
+import SingleImage from '@/components/auto-image/single-image';
+import ListInput from '@/components/list-input';
+import SealInputNumber from '@/components/seal-form/input-number';
+import SealInput from '@/components/seal-form/seal-input';
+import UploadImg from '@/pages/playground/components/upload-img';
 import { useIntl } from '@umijs/max';
-import { Form } from 'antd';
-import _ from 'lodash';
+import { Button, Form } from 'antd';
+import styled from 'styled-components';
 import { FormData } from '../config/types';
+
+const SizeWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 16px;
+`;
+
+const UploadWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const IconBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--ant-color-border);
+  border-radius: var(--ant-border-radius);
+  .icon {
+    color: var(--ant-color-text-tertiary);
+    font-size: 14px;
+    line-height: 1;
+  }
+`;
 
 const MetaData = () => {
   const intl = useIntl();
   const form = Form.useFormInstance<FormData>();
-  const metadata = Form.useWatch('meta', form);
+  const icon = Form.useWatch(['meta', 'icon'], form);
 
   const handleMetadataChange = (labels: Record<string, any>) => {
     form.setFieldValue('meta', labels);
   };
 
+  const handleUpdateImageList = (fileList: any[]) => {
+    console.log('fileList', fileList);
+    if (fileList.length === 0) {
+      return;
+    }
+    form.setFieldValue(['meta', 'icon'], fileList[0]?.dataUrl || null);
+  };
+
+  const handleDeleteIcon = () => {
+    form.setFieldValue(['meta', 'icon'], null);
+  };
+
   return (
     <>
-      <LabelSelectorContext.Provider
-        value={{
-          options: [
-            {
-              label: 'max_token_len',
-              value: 'max_token_len'
-            },
-            {
-              label: 'max_context_len',
-              value: 'max_context_len'
-            }
-          ]
-        }}
-      >
-        <Form.Item
-          name="meta"
-          data-field="metadata"
-          rules={[
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (_.keys(value).length > 0) {
-                  if (_.some(_.keys(value), (k: string) => !value[k])) {
-                    return Promise.reject(
-                      intl.formatMessage(
-                        {
-                          id: 'common.validate.value'
-                        },
-                        {
-                          name: intl.formatMessage({
-                            id: 'models.form.selector'
-                          })
-                        }
-                      )
-                    );
-                  }
-                }
-                return Promise.resolve();
-              }
-            })
-          ]}
+      <SizeWrapper>
+        <Form.Item<FormData>
+          data-field="metaSize"
+          name={['meta', 'size']}
+          normalize={(v) => (v === 0 ? null : v)}
         >
-          <LabelSelector
-            isAutoComplete
-            label={'Metadatas'}
-            labels={metadata}
-            btnText="Add Metadata"
-            onChange={handleMetadataChange}
-          ></LabelSelector>
+          <SealInputNumber
+            min={0}
+            label={`${intl.formatMessage({ id: 'accesses.form.metadata.size' })} (B)`}
+          ></SealInputNumber>
         </Form.Item>
-      </LabelSelectorContext.Provider>
+        <Form.Item<FormData>
+          name={['meta', 'activated_size']}
+          normalize={(v) => (v === 0 ? null : v)}
+        >
+          <SealInputNumber
+            min={0}
+            label={`${intl.formatMessage({
+              id: 'accesses.form.metadata.activeSize'
+            })} (B)`}
+          ></SealInputNumber>
+        </Form.Item>
+      </SizeWrapper>
+      <SizeWrapper>
+        <Form.Item<FormData> name={['meta', 'max_tokens']}>
+          <SealInput.Input
+            label={intl.formatMessage({
+              id: 'accesses.form.metadata.maxTokens'
+            })}
+            placeholder={intl.formatMessage(
+              { id: 'common.help.eg' },
+              { content: 'context/128k' }
+            )}
+          ></SealInput.Input>
+        </Form.Item>
+        <Form.Item<FormData>
+          name={['meta', 'dimensions']}
+          normalize={(v) => (v === 0 ? null : v)}
+        >
+          <SealInputNumber
+            min={0}
+            step={1}
+            precision={0}
+            label={intl.formatMessage({
+              id: 'accesses.form.metadata.dimension'
+            })}
+          ></SealInputNumber>
+        </Form.Item>
+      </SizeWrapper>
+      <Form.Item<FormData> name={['meta', 'release_date']}>
+        <SealInput.Input
+          label={intl.formatMessage({
+            id: 'accesses.form.metadata.releaseDate'
+          })}
+          placeholder={intl.formatMessage(
+            { id: 'common.help.eg' },
+            { content: '2025-05-19' }
+          )}
+        ></SealInput.Input>
+      </Form.Item>
+      <Form.Item<FormData> name={['meta', 'tags']} data-field="metadata">
+        <ListInput
+          label={intl.formatMessage({ id: 'resources.form.label' })}
+          btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
+          dataList={[]}
+          onChange={handleMetadataChange}
+        ></ListInput>
+      </Form.Item>
+      <Form.Item<FormData> name={['meta', 'licenses']} data-field="metadata">
+        <ListInput
+          label={intl.formatMessage({ id: 'accesses.form.metadata.license' })}
+          btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
+          dataList={[]}
+          onChange={handleMetadataChange}
+        ></ListInput>
+      </Form.Item>
+      <Form.Item<FormData> name={['meta', 'languages']} data-field="metadata">
+        <ListInput
+          label={intl.formatMessage({ id: 'accesses.form.metadata.languages' })}
+          btnText={intl.formatMessage({ id: 'common.button.addLabel' })}
+          dataList={[]}
+          onChange={handleMetadataChange}
+        ></ListInput>
+      </Form.Item>
+      <Form.Item<FormData> name={['meta', 'icon']} data-field="metadata">
+        <IconBox>
+          <span className="icon">
+            {intl.formatMessage({ id: 'accesses.form.metadata.icons' })}
+          </span>
+          <UploadWrapper>
+            <UploadImg
+              handleUpdateImgList={handleUpdateImageList}
+              size="middle"
+            >
+              {icon ? (
+                <SingleImage
+                  uid={1}
+                  editable={true}
+                  onDelete={handleDeleteIcon}
+                  dataUrl={icon}
+                  preview={false}
+                />
+              ) : (
+                <Button size="middle" variant="dashed" color="default">
+                  {intl.formatMessage({
+                    id: 'accesses.form.metadata.uploadIcon'
+                  })}
+                </Button>
+              )}
+            </UploadImg>
+          </UploadWrapper>
+        </IconBox>
+      </Form.Item>
     </>
   );
 };

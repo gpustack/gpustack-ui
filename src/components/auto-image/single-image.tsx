@@ -32,7 +32,7 @@ interface SingleImageProps {
 const SingleImage: React.FC<SingleImageProps> = (props) => {
   const {
     editable,
-    onDelete: handleOnDelete,
+    onDelete,
     onClick,
     autoSize,
     uid,
@@ -93,6 +93,11 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
   );
 
   const handleOnLoad = React.useCallback(async () => {}, []);
+
+  const handleOnDelete = (uid: number, e: any) => {
+    e.stopPropagation();
+    onDelete(uid);
+  };
 
   const renderProgress = () => {
     <Progress
@@ -190,7 +195,7 @@ const SingleImage: React.FC<SingleImageProps> = (props) => {
           </>
 
           {editable && (
-            <span className="del" onClick={() => handleOnDelete(uid)}>
+            <span className="del" onClick={(e) => handleOnDelete(uid, e)}>
               <CloseCircleOutlined />
             </span>
           )}

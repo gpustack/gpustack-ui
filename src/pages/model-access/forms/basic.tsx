@@ -11,12 +11,21 @@ const Basic = () => {
   return (
     <>
       <Form.Item name="name" data-field="name">
-        <SealInput.Input required label={'Model Name'} />
+        <SealInput.Input
+          required
+          label={intl.formatMessage({ id: 'models.table.name' })}
+        />
       </Form.Item>
-      <Form.Item name="categories">
+      <Form.Item
+        name="categories"
+        normalize={(value) => (value ? [value] : [])}
+        getValueProps={(value) => ({
+          value: Array.isArray(value) ? value[0] : value
+        })}
+      >
         <SealSelect
           options={modelCategories}
-          label="Category"
+          label={intl.formatMessage({ id: 'models.form.categories' })}
           allowNull
         ></SealSelect>
       </Form.Item>

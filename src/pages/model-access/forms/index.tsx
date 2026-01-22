@@ -36,20 +36,20 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
   const segmentOptions = [
     {
       value: TABKeysMap.BASIC,
-      label: 'Basic',
+      label: intl.formatMessage({ id: 'common.title.basicInfo' }),
       icon: <IconFont type="icon-basic" />,
       field: 'name'
     },
     {
       value: TABKeysMap.METADATA,
-      label: 'Metadata',
-      icon: <IconFont type="icon-speed" />,
-      field: 'metadata'
+      label: intl.formatMessage({ id: 'accesses.form.metadata.title' }),
+      icon: <IconFont type="icon-database" />,
+      field: 'metaSize'
     },
     {
       value: TABKeysMap.ENDPOINTS,
-      label: 'Endpoints',
-      icon: <IconFont type="icon-settings" />,
+      label: intl.formatMessage({ id: 'accesses.form.endpoint.title' }),
+      icon: <IconFont type="icon-language" />,
       field: 'endpoints'
     }
   ];
@@ -88,7 +88,12 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
         form={form}
         onFinish={onFinish}
         initialValues={{
-          categories: []
+          categories: [],
+          meta: {
+            size: null,
+            activated_size: null,
+            dimensions: null
+          }
         }}
       >
         <Basic />
@@ -99,13 +104,13 @@ const AccessForm: React.FC<ProviderFormProps> = forwardRef((props, ref) => {
           items={[
             {
               key: TABKeysMap.METADATA,
-              label: 'Metadata',
+              label: intl.formatMessage({ id: 'accesses.form.metadata.title' }),
               forceRender: true,
               children: <MetaData></MetaData>
             },
             {
               key: TABKeysMap.ENDPOINTS,
-              label: 'Endpoints',
+              label: intl.formatMessage({ id: 'accesses.form.endpoint.title' }),
               forceRender: true,
               children: <Endpoints></Endpoints>
             }

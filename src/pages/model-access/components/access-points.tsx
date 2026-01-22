@@ -4,12 +4,12 @@ import IconFont from '@/components/icon-font';
 import RowChildren from '@/components/seal-table/components/row-children';
 import StatusTag from '@/components/status-tag';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Col, Row, Tag } from 'antd';
+import { useIntl } from '@umijs/max';
+import { Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import styled from 'styled-components';
 import { mockAccessPointList } from '../config/mock';
-
 const CellContent = styled.div`
   display: flex;
   align-items: center;
@@ -50,6 +50,7 @@ export const childActionList = [
 ];
 
 const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
+  const intl = useIntl();
   return (
     <div style={{ borderRadius: 'var(--ant-table-header-border-radius)' }}>
       <RowChildren>
@@ -64,25 +65,19 @@ const AccessItem: React.FC<AccessItemProps> = ({ onSelect, data }) => {
             </CellContent>
           </Col>
           <Col span={5}>
-            <CellContent style={{ paddingLeft: 44 }}>
-              <AutoTooltip ghost>Weight: 20</AutoTooltip>
+            <CellContent style={{ paddingLeft: 58 }}>
+              {data.weight && (
+                <AutoTooltip ghost>
+                  {intl.formatMessage({ id: 'accesses.form.endpoint.weight' })}:
+                  20 /
+                </AutoTooltip>
+              )}
               {data.is_fallback && (
-                <Tag
-                  variant="outlined"
-                  color="gray"
-                  style={{
-                    color: 'var(--ant-color-text-tertiary)',
-                    marginLeft: 8,
-                    fontSize: 12,
-                    height: 18,
-                    display: 'flex',
-                    alignItems: 'center',
-                    borderRadius: 10,
-                    borderColor: 'var(--ant-color-border)'
-                  }}
-                >
-                  Fallback
-                </Tag>
+                <span>
+                  {intl.formatMessage({
+                    id: 'accesses.table.label.fallback'
+                  })}
+                </span>
               )}
             </CellContent>
           </Col>
